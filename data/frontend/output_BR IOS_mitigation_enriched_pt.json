@@ -1,1262 +1,1262 @@
 [
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 1,
-        "explanation": "Implementing agroforestry systems in Ilh\u00e9us is a high priority due to the city's tropical rainforest biome, which is well-suited for such sustainable agricultural practices. Agroforestry can help mitigate the impacts of climate change by enhancing biodiversity and improving soil health, which is crucial given the high risk of droughts affecting food security. Additionally, these systems can contribute to reducing land use emissions, which are a significant part of the city's total emissions. By integrating trees with crops and livestock, agroforestry can also improve water retention in the soil, addressing the moderate issue of inadequate water access in the region.",
-        "action": {
-            "ActionID": "icare_0050",
-            "ActionName": "Implementar Sistemas Agroflorestais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover sistemas agroflorestais integrando \u00e1rvores na produ\u00e7\u00e3o de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Fornecimento de suporte t\u00e9cnico e orienta\u00e7\u00e3o aos agricultores sobre o design e implementa\u00e7\u00e3o de sistemas agroflorestais.",
-                "Desenvolvimento de incentivos financeiros ou subs\u00eddios para tornar a agrofloresta mais economicamente atraente.",
-                "Cria\u00e7\u00e3o de pol\u00edticas que integrem pr\u00e1ticas agroflorestais no planejamento do uso da terra agr\u00edcola e nos sistemas de posse de terra."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas convertidas em sistemas agroflorestais (%).",
-                "N\u00famero de novos projetos agroflorestais implementados.",
-                "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 2,
-        "explanation": "Strengthening mechanisms for deforestation control in Ilh\u00e9us is crucial due to its location in a tropical rainforest biome, which is highly susceptible to deforestation. The city faces significant environmental challenges, including high emissions from land use, which contribute to climate change and biodiversity loss. By enhancing deforestation control, Ilh\u00e9us can protect its rich biodiversity and mitigate the impacts of climate change, such as droughts and floods, which pose high risks to public health and infrastructure. This action is a priority as it supports sustainable development and resilience against environmental hazards.",
-        "action": {
-            "ActionID": "icare_0134",
-            "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aprimorar o monitoramento e a fiscaliza\u00e7\u00e3o para prevenir o desmatamento ilegal e promover o uso sustent\u00e1vel da terra.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Forte estrutura legal, tecnologias de monitoramento avan\u00e7adas (sat\u00e9lites e drones) e capacita\u00e7\u00e3o para as autoridades locais.",
-                "Colabora\u00e7\u00e3o com comunidades locais e financiamento adequado para os esfor\u00e7os de fiscaliza\u00e7\u00e3o.",
-                "Transpar\u00eancia e responsabilidade na elabora\u00e7\u00e3o de relat\u00f3rios para garantir a implementa\u00e7\u00e3o eficaz."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total monitorada para desmatamento (hectares/ano).",
-                "Redu\u00e7\u00e3o na taxa anual de desmatamento (%).",
-                "Quantidade de emiss\u00f5es evitadas pela redu\u00e7\u00e3o do desmatamento (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 3,
-        "explanation": "Promoting urban reforestation and green corridors in Ilh\u00e9us is crucial due to the city's tropical rainforest biome, which supports rich biodiversity. This action can help mitigate the impacts of heatwaves and improve public health by reducing urban heat islands. Additionally, increasing green spaces can enhance the city's resilience to floods and landslides, which are significant risks in the area. Urban reforestation also contributes to carbon sequestration, helping to offset emissions and improve air quality.",
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aumentar a cobertura arb\u00f3rea urbana para mitigar o efeito de ilha de calor urbano e melhorar a biodiversidade.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identifica\u00e7\u00e3o de \u00e1reas priorit\u00e1rias e sele\u00e7\u00e3o de esp\u00e9cies nativas e resilientes ao clima para o plantio de \u00e1rvores.",
-                "Parcerias com organiza\u00e7\u00f5es locais e viveiros, e aloca\u00e7\u00e3o de recursos para plantio e manuten\u00e7\u00e3o.",
-                "Envolvimento da comunidade para garantir cuidado e apoio a longo prazo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento na cobertura de dossel arb\u00f3reo urbano (%)",
-                "Comprimento total de corredores verdes criados ou restaurados (quil\u00f4metros)",
-                "Redu\u00e7\u00e3o nas temperaturas do efeito de ilha de calor urbano (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0128",
-        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 4,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Ilh\u00e9us is a priority due to the city's significant environmental challenges. The region is characterized by a tropical rainforest biome, which is crucial for biodiversity and climate regulation. However, Ilh\u00e9us faces high risks from droughts, floods, and landslides, which threaten water resources, food security, and public health. Implementing PES programs can incentivize the protection and sustainable management of these vital ecosystems, helping to mitigate these risks and enhance the city's resilience to climate change impacts.",
-        "action": {
-            "ActionID": "icare_0128",
-            "ActionName": "Estabelecer Programas Municipais de Pagamento por Servi\u00e7os Ambientais (PSA)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar programas que paguem aos propriet\u00e1rios de terras por manterem ou melhorarem as condi\u00e7\u00f5es ambientais em suas propriedades.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Cria\u00e7\u00e3o de mecanismos de financiamento e crit\u00e9rios de elegibilidade claros com indicadores de desempenho.",
-                "Parcerias com organiza\u00e7\u00f5es ambientais e campanhas de conscientiza\u00e7\u00e3o para incentivar a participa\u00e7\u00e3o.",
-                "Integra\u00e7\u00e3o com estruturas legais para garantir a sustentabilidade do programa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de contratos ativos de Pagamento por Servi\u00e7os Ambientais (PSA) assinados.",
-                "\u00c1rea total sob pr\u00e1ticas de conserva\u00e7\u00e3o ou restaura\u00e7\u00e3o incentivadas (hectares).",
-                "Quantidade de carbono sequestrado ou emiss\u00f5es evitadas por meio de a\u00e7\u00f5es de PSA (tCO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 5,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Ilh\u00e9us is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. By providing technical support and education to rural communities, these actions can enhance agricultural resilience and productivity, ensuring a stable food supply. Additionally, ATER initiatives can help mitigate the socio-economic challenges faced by moderate-income populations by improving agricultural practices and increasing income opportunities. This action is a priority as it addresses both immediate and long-term needs for sustainable development in the region.",
-        "action": {
-            "ActionID": "icare_0130",
-            "ActionName": "Conduzir A\u00e7\u00f5es de Assist\u00eancia T\u00e9cnica e Extens\u00e3o Rural (ATER)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fornecer suporte t\u00e9cnico e treinamento aos produtores rurais para a produ\u00e7\u00e3o agr\u00edcola sustent\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidade de pessoal t\u00e9cnico qualificado e programas de forma\u00e7\u00e3o personalizados.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa agr\u00edcola e aloca\u00e7\u00e3o de recursos para o desenvolvimento de capacidades.",
-                "Envolvimento com produtores rurais para garantir a participa\u00e7\u00e3o ativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de produtores beneficiados com assist\u00eancia t\u00e9cnica rural (% do total).",
-                "Percentual de participantes adotando pr\u00e1ticas resilientes ao clima.",
-                "Redu\u00e7\u00e3o da vulnerabilidade das propriedades ao risco clim\u00e1tico (%)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 6,
-        "explanation": "Facilitating technology transfer for conservation practices in Ilh\u00e9us is crucial due to the city's vulnerability to environmental hazards such as droughts and floods. These hazards pose significant risks to water resources, food security, and public health, which are critical areas that can benefit from advanced conservation technologies. By implementing this action, Ilh\u00e9us can enhance its resilience against climate impacts, ensuring sustainable management of its natural resources. Additionally, improved conservation practices can help mitigate emissions from land use, which is a major contributor to the city's total emissions.",
-        "action": {
-            "ActionID": "icare_0129",
-            "ActionName": "Facilitar a Transfer\u00eancia de Tecnologia para Pr\u00e1ticas de Conserva\u00e7\u00e3o",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover a ado\u00e7\u00e3o de pr\u00e1ticas agr\u00edcolas sustent\u00e1veis por meio de treinamento, projetos piloto e demonstra\u00e7\u00f5es de tecnologia.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar pr\u00e1ticas sustent\u00e1veis.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a ado\u00e7\u00e3o.",
-                "Acesso a assist\u00eancia t\u00e9cnica para implementa\u00e7\u00e3o bem-sucedida."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de tecnologias de conserva\u00e7\u00e3o transferidas e aplicadas em fazendas.",
-                "Percentual de produtores treinados para implementar pr\u00e1ticas de conserva\u00e7\u00e3o.",
-                "Redu\u00e7\u00e3o na degrada\u00e7\u00e3o do solo ou aumento na cobertura vegetal (hectares)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 7,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Ilh\u00e9us due to its moderate risk of food insecurity exacerbated by droughts and floods. By supporting local agroecological practices, the city can enhance its resilience to climate impacts, ensuring a more stable and sustainable food supply. This action also supports local farmers, boosting the local economy and reducing the carbon footprint associated with transporting food from distant locations. Additionally, it aligns with the city's need to address socio-economic challenges by providing healthier food options to its population.",
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Priorizar a Aquisi\u00e7\u00e3o de Produtos Agroecol\u00f3gicos Produzidos Localmente em Compras P\u00fablicas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Concentre-se em comprar alimentos sustent\u00e1veis e produzidos localmente para institui\u00e7\u00f5es p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de pol\u00edticas de aquisi\u00e7\u00e3o e identifica\u00e7\u00e3o de fornecedores locais confi\u00e1veis.",
-                "Parcerias com produtores e aloca\u00e7\u00e3o de financiamento para programas de aquisi\u00e7\u00e3o sustent\u00e1vel.",
-                "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os crit\u00e9rios de sustentabilidade."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem do volume total de compras p\u00fablicas provenientes de produtores agroecol\u00f3gicos locais.",
-                "Quantidade de emiss\u00f5es de CO\u2082 evitadas devido \u00e0 redu\u00e7\u00e3o da dist\u00e2ncia de transporte (tCO\u2082e).",
-                "N\u00famero de produtores agroecol\u00f3gicos beneficiados pelas compras p\u00fablicas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 8,
-        "explanation": "Supporting regenerative agriculture practices in Ilh\u00e9us is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. By promoting these practices, the city can enhance soil health, increase biodiversity, and improve water retention, thereby mitigating the effects of droughts. Additionally, regenerative agriculture can help reduce land use emissions, which are a major contributor to the city's total emissions. This action aligns with the need to build resilience in the agricultural sector, ensuring sustainable food production and security for the population.",
-        "action": {
-            "ActionID": "icare_0100",
-            "ActionName": "Apoiar Pr\u00e1ticas de Agricultura Regenerativa",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Apoiar pr\u00e1ticas agr\u00edcolas regenerativas que se concentrem na restaura\u00e7\u00e3o da sa\u00fade do solo e na redu\u00e7\u00e3o das emiss\u00f5es de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de programas de treinamento e recursos para educar os agricultores sobre t\u00e9cnicas agr\u00edcolas regenerativas, como cobertura vegetal e redu\u00e7\u00e3o do preparo do solo.",
-                "Implementa\u00e7\u00e3o de incentivos financeiros ou subs\u00eddios para apoiar a ado\u00e7\u00e3o de pr\u00e1ticas regenerativas.",
-                "Colabora\u00e7\u00e3o com institui\u00e7\u00f5es de pesquisa agr\u00edcola para monitorar e documentar a efic\u00e1cia das pr\u00e1ticas regenerativas na captura de carbono e na melhoria da sa\u00fade do solo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento nos n\u00edveis de carbono org\u00e2nico do solo (toneladas/hectare).",
-                "Redu\u00e7\u00e3o no uso de \u00e1gua por hectare na produ\u00e7\u00e3o agr\u00edcola (%).",
-                "N\u00famero de projetos piloto de agricultura regenerativa implementados."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 9,
-        "explanation": "Promoting organic farming in Ilh\u00e9us is a priority due to its potential to enhance food security, which is at high risk from droughts and floods. Organic farming practices can improve soil health and water retention, making crops more resilient to climate hazards. Additionally, this approach can reduce dependency on chemical fertilizers and pesticides, which aligns with the city's need to manage its environmental footprint. By supporting organic farming, Ilh\u00e9us can also boost local economies and provide healthier food options for its residents.",
-        "action": {
-            "ActionID": "icare_0096",
-            "ActionName": "Promover a Agricultura Org\u00e2nica",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar a ado\u00e7\u00e3o de pr\u00e1ticas de agricultura org\u00e2nica que evitem o uso de produtos qu\u00edmicos e contribuam para a sa\u00fade do solo e captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Fornecimento de incentivos financeiros, subs\u00eddios ou subs\u00eddios para apoiar a transi\u00e7\u00e3o para pr\u00e1ticas de agricultura org\u00e2nica.",
-                "Desenvolvimento de redes de treinamento e apoio para educar os agricultores sobre m\u00e9todos de agricultura org\u00e2nica e seus benef\u00edcios.",
-                "Estabelecimento de sistemas de certifica\u00e7\u00e3o e estrat\u00e9gias de acesso ao mercado para garantir a viabilidade econ\u00f4mica dos produtos org\u00e2nicos."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas sob pr\u00e1ticas de agricultura org\u00e2nica (%).",
-                "Aumento no teor de carbono org\u00e2nico do solo (toneladas de carbono por hectare).",
-                "Redu\u00e7\u00e3o no uso de fertilizantes qu\u00edmicos e pesticidas (quilogramas/hectare/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 10,
-        "explanation": "Encouraging local agroecological production and short supply chains is crucial for Ilh\u00e9us due to its vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. By promoting sustainable agricultural practices, the city can enhance its resilience against these risks and ensure a stable food supply. Additionally, short supply chains reduce transportation emissions, contributing to lower overall emissions in the city. This action also supports the local economy by empowering small-scale farmers and fostering community-based food systems.",
-        "action": {
-            "ActionID": "icare_0132",
-            "ActionName": "Incentivar a Produ\u00e7\u00e3o Agroecol\u00f3gica Local e Cadeias Curtas de Abastecimento",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Apoiar pr\u00e1ticas agr\u00edcolas locais e sustent\u00e1veis e reduzir as emiss\u00f5es associadas ao transporte de alimentos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Incentivos para pr\u00e1ticas agr\u00edcolas sustent\u00e1veis e desenvolvimento de redes locais de distribui\u00e7\u00e3o de alimentos.",
-                "Parcerias com produtores e investimento em infraestrutura para apoiar mercados locais.",
-                "Pol\u00edticas para priorizar m\u00e9todos de transporte de baixa emiss\u00e3o."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de produtores aderindo a pr\u00e1ticas agroecol\u00f3gicas locais.",
-                "Percentual de alimentos consumidos na cidade provenientes de cadeias curtas.",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es associadas ao transporte de alimentos (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 11,
-        "explanation": "Supporting the implementation of ecological fiscal incentives in Ilh\u00e9us is crucial due to the city's significant environmental challenges, such as high emissions and vulnerability to climate hazards like droughts and floods. These incentives can encourage sustainable practices and investments in green infrastructure, which are essential for mitigating the impacts of climate change. Additionally, by promoting ecological fiscal policies, Ilh\u00e9us can enhance its resilience against environmental risks, improve public health, and ensure long-term economic stability. This action aligns with the city's need to address its socio-economic factors and improve access to public services.",
-        "action": {
-            "ActionID": "icare_0136",
-            "ActionName": "Apoiar a Implementa\u00e7\u00e3o de Incentivos Fiscais Ecol\u00f3gicos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar a aplica\u00e7\u00e3o de impostos ecol\u00f3gicos e incentivos para promover a conserva\u00e7\u00e3o ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecer um quadro regulat\u00f3rio claro com taxas de impostos justas e incentivos para a sustentabilidade.",
-                "Implementar sistemas de monitoramento eficazes para rastrear a conformidade e medir o impacto.",
-                "Promover a conscientiza\u00e7\u00e3o p\u00fablica e fomentar a colabora\u00e7\u00e3o entre governos, empresas e comunidades."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de munic\u00edpios que adotaram incentivos fiscais ambientais.",
-                "Percentual da receita tribut\u00e1ria gasta em pr\u00e1ticas sustent\u00e1veis.",
-                "\u00c1rea ou n\u00famero de propriedades beneficiadas por pr\u00e1ticas de conserva\u00e7\u00e3o como resultado de incentivos."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0085",
-        "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 12,
-        "explanation": "Promoting the adoption of agroecological pest control in Ilh\u00e9us is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which can severely impact food security. By implementing sustainable pest control methods, the city can enhance its agricultural resilience, ensuring a stable food supply even in adverse conditions. Additionally, agroecological practices can help preserve the biodiversity of the tropical rainforest biome, which is essential for maintaining ecological balance and supporting local livelihoods. This action aligns with the need to address socio-economic factors and improve the overall sustainability of agricultural practices in the region.",
-        "action": {
-            "ActionID": "icare_0085",
-            "ActionName": "Promover a Ado\u00e7\u00e3o do Controle de Pragas Agroecol\u00f3gico",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar m\u00e9todos de controle de pragas que sejam agroecol\u00f3gicos, como o uso de predadores naturais e plantas repelentes, para reduzir a depend\u00eancia de pesticidas qu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de programas educacionais para informar os agricultores sobre m\u00e9todos de controle de pragas agroecol\u00f3gicos e seus benef\u00edcios.",
-                "Fornecimento de acesso a recursos ou materiais para implementar m\u00e9todos de controle de pragas naturais, como a introdu\u00e7\u00e3o de insetos ben\u00e9ficos ou o cultivo de plantas repelentes.",
-                "Cria\u00e7\u00e3o de incentivos ou redes de apoio para encorajar a transi\u00e7\u00e3o do uso de pesticidas qu\u00edmicos em favor de alternativas sustent\u00e1veis."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento nas taxas de produtividade em \u00e1reas que adotam controle agroecol\u00f3gico de pragas (%).",
-                "N\u00famero de campanhas educativas realizadas sobre controle sustent\u00e1vel de pragas.",
-                "Impacto nos custos totais de produ\u00e7\u00e3o devido \u00e0 ado\u00e7\u00e3o de pr\u00e1ticas agroecol\u00f3gicas (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 13,
-        "explanation": "Promoting sustainable agricultural practices in Ilh\u00e9us is crucial due to the city's vulnerability to droughts, which significantly impact food security. By adopting sustainable methods, the city can enhance its resilience against climate-related risks, ensuring a stable food supply. Additionally, these practices can help reduce land use emissions, which are a major contributor to the city's total emissions. Implementing sustainable agriculture will also support the local economy by potentially increasing productivity and reducing dependency on external food sources.",
-        "action": {
-            "ActionID": "icare_0102",
-            "ActionName": "Promover Pr\u00e1ticas Agr\u00edcolas Sustent\u00e1veis",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar pr\u00e1ticas agr\u00edcolas que reduzam as emiss\u00f5es de gases de efeito estufa, como o uso reduzido de fertilizantes e agroqu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de programas educacionais e recursos para promover pr\u00e1ticas agr\u00edcolas sustent\u00e1veis entre os agricultores.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas que incentivem a redu\u00e7\u00e3o do uso de fertilizantes e agroqu\u00edmicos, como subs\u00eddios para insumos org\u00e2nicos ou t\u00e9cnicas de cultivo sustent\u00e1vel.",
-                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas para fornecer suporte t\u00e9cnico e orienta\u00e7\u00e3o sobre pr\u00e1ticas de redu\u00e7\u00e3o de emiss\u00f5es."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas adotando pr\u00e1ticas sustent\u00e1veis (% do total de terras agr\u00edcolas).",
-                "Aumento no rendimento das colheitas por hectare (toneladas/hectare) devido a m\u00e9todos sustent\u00e1veis.",
-                "Redu\u00e7\u00e3o no uso de \u00e1gua para agricultura (litros ou m\u00b3/hectare/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 14,
-        "explanation": "Creating incentives for agroforestry practices in livestock systems is crucial for Ilh\u00e9us due to its tropical rainforest biome, which is highly sensitive to deforestation and land degradation. Agroforestry can enhance biodiversity, improve soil health, and increase carbon sequestration, which are vital for mitigating climate change impacts. Additionally, integrating trees into livestock systems can help manage water resources more sustainably, addressing the city's moderate risk of droughts and improving resilience against climate-related hazards. This action supports sustainable agricultural practices, which are essential for maintaining food security and reducing land use emissions in the region.",
-        "action": {
-            "ActionID": "icare_0084",
-            "ActionName": "Criar Incentivos para Pr\u00e1ticas de Agroflorestas em Sistemas de Pecu\u00e1ria",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Criar incentivos financeiros e t\u00e9cnicos para integrar pr\u00e1ticas de agrofloresta\u00e7\u00e3o em sistemas de pecu\u00e1ria, promovendo a captura de carbono, prote\u00e7\u00e3o do solo e melhoria da biodiversidade.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de programas de incentivos financeiros, como subs\u00eddios ou isen\u00e7\u00f5es fiscais, para apoiar os agricultores na integra\u00e7\u00e3o da agrofloresta com sistemas de pecu\u00e1ria.",
-                "Fornecimento de assist\u00eancia t\u00e9cnica e treinamento aos agricultores sobre as melhores pr\u00e1ticas para a integra\u00e7\u00e3o da agrofloresta nas opera\u00e7\u00f5es de pecu\u00e1ria.",
-                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas e ambientais para monitorar e avaliar os impactos das pr\u00e1ticas agroflorestais na captura de carbono, sa\u00fade do solo e biodiversidade."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de incentivos financeiros fornecidos para integrar a agrofloresta em sistemas de pecu\u00e1ria.",
-                "Aumento na qualidade do solo e cobertura vegetal em propriedades manejadas (%).",
-                "Crescimento da biodiversidade em \u00e1reas de agrofloresta (% de esp\u00e9cies identificadas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 15,
-        "explanation": "Encouraging renewable energy policies at the municipal level in Ilh\u00e9us is crucial due to the city's significant stationary energy emissions, which contribute to its overall carbon footprint. By promoting renewable energy, Ilh\u00e9us can reduce its reliance on fossil fuels, thereby decreasing emissions and mitigating climate change impacts. Additionally, renewable energy initiatives can enhance energy security, which is particularly important given the city's vulnerability to droughts that can affect energy supply. Implementing these policies can also stimulate local economic growth by creating green jobs and fostering sustainable development.",
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Incentivar pol\u00edticas de energia renov\u00e1vel a n\u00edvel municipal",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Defender e implementar pol\u00edticas que priorizem o desenvolvimento e a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nas opera\u00e7\u00f5es e no planejamento do governo local.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Vontade pol\u00edtica e lideran\u00e7a para priorizar a energia renov\u00e1vel nas pol\u00edticas e processos de planejamento do governo local",
-                "Desenvolvimento de pol\u00edticas claras e estruturas regulat\u00f3rias que facilitem a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nas opera\u00e7\u00f5es governamentais",
-                "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transi\u00e7\u00e3o para a energia renov\u00e1vel na infraestrutura e opera\u00e7\u00f5es municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de projetos de energia renov\u00e1vel aprovados ou iniciados anualmente a n\u00edvel municipal.",
-                "Percentagem da demanda de energia municipal atendida por fontes renov\u00e1veis (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de carbono municipais devido \u00e0 ado\u00e7\u00e3o de energia renov\u00e1vel (toneladas de CO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 16,
-        "explanation": "Supporting agroecological certification programs in Ilh\u00e9us is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. By promoting sustainable agricultural practices, these programs can enhance resilience against these hazards, ensuring a stable food supply. Additionally, agroecological practices can help reduce land use emissions, which are a major contributor to the city's total emissions. This action aligns with the need to address socio-economic factors by potentially providing better income opportunities for local farmers through certified sustainable practices.",
-        "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Apoiar Programas de Certifica\u00e7\u00e3o Agroecol\u00f3gica",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar a certifica\u00e7\u00e3o de produtos agroecol\u00f3gicos que atendam a crit\u00e9rios de sustentabilidade e tenham baixo impacto ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de padr\u00f5es de certifica\u00e7\u00e3o claros e acess\u00edveis para produtos agroecol\u00f3gicos que enfatizem a sustentabilidade e o baixo impacto ambiental.",
-                "Apoio a agricultores e produtores para atender aos requisitos de certifica\u00e7\u00e3o por meio de treinamento, assist\u00eancia financeira ou orienta\u00e7\u00e3o t\u00e9cnica.",
-                "Cria\u00e7\u00e3o de estrat\u00e9gias de marketing e parcerias para aumentar a visibilidade e a demanda por produtos agroecol\u00f3gicos certificados nos mercados locais e globais."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de agricultores ou produtores obtendo certifica\u00e7\u00f5es agroecol\u00f3gicas.",
-                "Percentual de produtos agr\u00edcolas certificados no mercado (%).",
-                "Redu\u00e7\u00e3o no uso de insumos sint\u00e9ticos (por exemplo, fertilizantes, pesticidas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 17,
-        "explanation": "The implementation of free public transportation programs during peak hours in Ilh\u00e9us is a strategic action to address transportation emissions, which are a significant contributor to the city's total emissions. By encouraging the use of public transport, the city can reduce the reliance on individual vehicles, thereby decreasing emissions and improving air quality. Additionally, this initiative can alleviate traffic congestion during peak hours, enhancing the overall efficiency of the city's transportation network. Furthermore, providing free transportation can improve accessibility for low-income residents, supporting socio-economic equity in the region.",
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementa\u00e7\u00e3o de programas de transporte p\u00fablico gratuito durante os hor\u00e1rios de pico para reduzir o uso de ve\u00edculos individuais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar o uso do transporte p\u00fablico oferecendo servi\u00e7os gratuitos durante os hor\u00e1rios de pico para trabalhadores e estudantes. Esta medida reduz a congest\u00e3o urbana, diminui o n\u00famero de ve\u00edculos individuais nas estradas e, consequentemente, reduz as emiss\u00f5es de gases de efeito estufa associadas ao transporte privado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Aloca\u00e7\u00e3o de financiamento para subsidiar servi\u00e7os de transporte p\u00fablico gratuito durante as horas de pico.",
-                "Desenvolvimento de pol\u00edticas para garantir a sustentabilidade e efici\u00eancia dos sistemas de transporte p\u00fablico diante do aumento da demanda.",
-                "Coordena\u00e7\u00e3o com empregadores e institui\u00e7\u00f5es educacionais para otimizar os hor\u00e1rios de pico e promover a iniciativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nos n\u00edveis de polui\u00e7\u00e3o do ar durante as horas de pico (concentra\u00e7\u00e3o de PM2.5/PM10).",
-                "N\u00famero de ve\u00edculos particulares removidos das estradas durante as horas de pico.",
-                "Taxa de satisfa\u00e7\u00e3o p\u00fablica com a iniciativa de transporte gratuito (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 18,
-        "explanation": "The adoption of biomethane in public fleets in Ilh\u00e9us is a significant action due to the city's high transportation emissions, which contribute substantially to its total emissions profile. By transitioning to biomethane, a cleaner alternative fuel, the city can reduce its carbon footprint and improve air quality. This action is particularly important given the moderate risk of inadequate water access and the need to mitigate climate change impacts, such as droughts and heatwaves, which threaten public health and infrastructure. Additionally, using biomethane supports energy security by diversifying energy sources and reducing reliance on fossil fuels.",
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Ado\u00e7\u00e3o de biometano em frotas p\u00fablicas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Utilizar biometano produzido a partir de res\u00edduos urbanos e agroindustriais para abastecer \u00f4nibus e caminh\u00f5es p\u00fablicos, reduzindo as emiss\u00f5es de gases de efeito estufa nas frotas municipais",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de infraestrutura para a produ\u00e7\u00e3o, processamento e distribui\u00e7\u00e3o de biometano a partir de res\u00edduos urbanos e agroindustriais.",
-                "Retrofit ou aquisi\u00e7\u00e3o de \u00f4nibus e caminh\u00f5es p\u00fablicos capazes de usar biometano como fonte de combust\u00edvel.",
-                "Estabelecimento de pol\u00edticas e incentivos financeiros para apoiar a produ\u00e7\u00e3o de biometano e sua integra\u00e7\u00e3o nas frotas municipais."
-            ],
-            "KeyPerformanceIndicators": [
-                "Economia de custos na opera\u00e7\u00e3o da frota devido ao uso de biometano (USD/ano).",
-                "Aumento na capacidade de produ\u00e7\u00e3o de biometano (%).",
-                "Percentagem de biometano obtido localmente versus importado."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 19,
-        "explanation": "Integrating renewables into municipal water systems in Ilh\u00e9us is a crucial step towards enhancing energy security and reducing emissions. The city faces significant risks from droughts, which impact water resources and energy security, making it essential to ensure a reliable and sustainable water supply. By utilizing renewable energy, the city can decrease its reliance on traditional energy sources, thereby reducing stationary energy emissions. This action also aligns with the city's need to address moderate inadequate water access, improving public service delivery and resilience against climate-related hazards.",
-        "action": {
-            "ActionID": "icare_0024",
-            "ActionName": "Integrar energias renov\u00e1veis nos sistemas municipais de \u00e1gua",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, para impulsionar sistemas de tratamento, bombeamento e distribui\u00e7\u00e3o de \u00e1gua, reduzindo custos de energia e emiss\u00f5es.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, em sistemas de tratamento e distribui\u00e7\u00e3o de \u00e1gua",
-                "Expertise t\u00e9cnica e infraestrutura para adaptar sistemas existentes com solu\u00e7\u00f5es de energia renov\u00e1vel ou projetar novas instala\u00e7\u00f5es alimentadas por energias renov\u00e1veis",
-                "Apoio pol\u00edtico e regulat\u00f3rio para incentivar o uso de energia limpa em sistemas de \u00e1gua e garantir sua integra\u00e7\u00e3o nas redes de energia municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de sistemas municipais de \u00e1gua alimentados por energias renov\u00e1veis.",
-                "Redu\u00e7\u00e3o no consumo de energia de fontes n\u00e3o renov\u00e1veis (kWh/ano).",
-                "Emiss\u00f5es de GEE evitadas (toneladas de CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0127",
-        "actionName": "Accelerate Environmental Regularization of Rural Properties",
-        "actionPriority": 20,
-        "explanation": "Accelerating the environmental regularization of rural properties in Ilh\u00e9us is crucial due to the city's significant land use emissions, which are the highest among its emission sources. This action can help mitigate the impact of these emissions by ensuring that rural properties adhere to environmental standards, thus preserving the tropical rainforest biome. Additionally, regularization can enhance the resilience of rural areas to climate hazards such as droughts and floods, which pose high risks to food security and infrastructure. By prioritizing this action, Ilh\u00e9us can make substantial progress in reducing its overall environmental footprint and improving sustainability.",
-        "action": {
-            "ActionID": "icare_0127",
-            "ActionName": "Acelerar a Regulariza\u00e7\u00e3o Ambiental de Propriedades Rurais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar programas para registrar propriedades no Cadastro Ambiental Rural (CAR) e aderir aos compromissos de restaura\u00e7\u00e3o ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Acesso a plataformas digitais e treinamento t\u00e9cnico para processos de registro e restaura\u00e7\u00e3o de propriedades.",
-                "Incentivos financeiros e parcerias com ag\u00eancias ambientais para apoiar a implementa\u00e7\u00e3o.",
-                "Mecanismos de monitoramento e fiscaliza\u00e7\u00e3o para garantir o cumprimento dos compromissos de restaura\u00e7\u00e3o."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de propriedades rurais com Cadastro Ambiental Rural (CAR) regularizado.",
-                "\u00c1rea total de vegeta\u00e7\u00e3o nativa protegida ou restaurada em propriedades regularizadas (hectares).",
-                "Redu\u00e7\u00e3o anual nas emiss\u00f5es de gases de efeito estufa (tCO\u2082e) devido \u00e0 regulariza\u00e7\u00e3o."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0050",
+    "actionName": "Implement Agroforestry Systems",
+    "actionPriority": 1,
+    "explanation": "A implementação de sistemas agroflorestais em Ilhéus é uma alta prioridade devido ao bioma de floresta tropical da cidade, que é bastante adequado para práticas agrícolas sustentáveis desse tipo. A agrofloresta pode ajudar a mitigar os impactos das mudanças climáticas ao aumentar a biodiversidade e melhorar a saúde do solo, o que é crucial, considerando o alto risco de secas que afetam a segurança alimentar. Além disso, esses sistemas podem contribuir para a redução das emissões provenientes do uso da terra, que representam uma parte significativa das emissões totais da cidade. Ao integrar árvores com culturas e criação de animais, a agrofloresta também pode melhorar a retenção de água no solo, enfrentando o problema moderado de acesso inadequado à água na região.",
+    "action": {
+      "ActionID": "icare_0050",
+      "ActionName": "Implementar Sistemas Agroflorestais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover sistemas agroflorestais integrando árvores na produção de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecimento de suporte técnico e orientação aos agricultores sobre o design e implementação de sistemas agroflorestais.",
+        "Desenvolvimento de incentivos financeiros ou subsídios para tornar a agrofloresta mais economicamente atraente.",
+        "Criação de políticas que integrem práticas agroflorestais no planejamento do uso da terra agrícola e nos sistemas de posse de terra."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas convertidas em sistemas agroflorestais (%).",
+        "Número de novos projetos agroflorestais implementados.",
+        "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0134",
+    "actionName": "Strengthen Mechanisms for Deforestation Control",
+    "actionPriority": 2,
+    "explanation": "O fortalecimento dos mecanismos de controle do desmatamento em Ilhéus é crucial devido à sua localização em um bioma de floresta tropical, altamente suscetível ao desmatamento. A cidade enfrenta desafios ambientais significativos, incluindo altas emissões provenientes do uso da terra, que contribuem para as mudanças climáticas e a perda de biodiversidade. Ao aprimorar o controle do desmatamento, Ilhéus pode proteger sua rica biodiversidade e mitigar os impactos das mudanças climáticas, como secas e inundações, que representam altos riscos para a saúde pública e a infraestrutura. Essa ação é prioritária, pois apoia o desenvolvimento sustentável e a resiliência diante de riscos ambientais.",
+    "action": {
+      "ActionID": "icare_0134",
+      "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aprimorar o monitoramento e a fiscalização para prevenir o desmatamento ilegal e promover o uso sustentável da terra.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Forte estrutura legal, tecnologias de monitoramento avançadas (satélites e drones) e capacitação para as autoridades locais.",
+        "Colaboração com comunidades locais e financiamento adequado para os esforços de fiscalização.",
+        "Transparência e responsabilidade na elaboração de relatórios para garantir a implementação eficaz."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total monitorada para desmatamento (hectares/ano).",
+        "Redução na taxa anual de desmatamento (%).",
+        "Quantidade de emissões evitadas pela redução do desmatamento (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0133",
+    "actionName": "Promote Urban Reforestation and Green Corridors",
+    "actionPriority": 3,
+    "explanation": "Promover a reflorestação urbana e a criação de corredores verdes em Ilhéus é fundamental devido ao bioma de floresta tropical da cidade, que abriga uma rica biodiversidade. Essa ação pode ajudar a mitigar os impactos das ondas de calor e melhorar a saúde pública ao reduzir as ilhas de calor urbanas. Além disso, o aumento de áreas verdes pode fortalecer a resiliência da cidade a enchentes e deslizamentos de terra, que são riscos significativos na região. A reflorestação urbana também contribui para a captura de carbono, ajudando a compensar emissões e melhorar a qualidade do ar.",
+    "action": {
+      "ActionID": "icare_0133",
+      "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aumentar a cobertura arbórea urbana para mitigar o efeito de ilha de calor urbano e melhorar a biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Identificação de áreas prioritárias e seleção de espécies nativas e resilientes ao clima para o plantio de árvores.",
+        "Parcerias com organizações locais e viveiros, e alocação de recursos para plantio e manutenção.",
+        "Envolvimento da comunidade para garantir cuidado e apoio a longo prazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento na cobertura de dossel arbóreo urbano (%)",
+        "Comprimento total de corredores verdes criados ou restaurados (quilômetros)",
+        "Redução nas temperaturas do efeito de ilha de calor urbano (°C)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0128",
+    "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+    "actionPriority": 4,
+    "explanation": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA) em Ilhéus é uma prioridade devido aos significativos desafios ambientais enfrentados pela cidade. A região é caracterizada por um bioma de floresta tropical, fundamental para a biodiversidade e a regulação do clima. No entanto, Ilhéus enfrenta altos riscos de secas, inundações e deslizamentos de terra, que ameaçam os recursos hídricos, a segurança alimentar e a saúde pública. A implementação de programas de PSA pode incentivar a proteção e o manejo sustentável desses ecossistemas vitais, ajudando a mitigar esses riscos e a aumentar a resiliência da cidade aos impactos das mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0128",
+      "ActionName": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas que paguem aos proprietários de terras por manterem ou melhorarem as condições ambientais em suas propriedades.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Criação de mecanismos de financiamento e critérios de elegibilidade claros com indicadores de desempenho.",
+        "Parcerias com organizações ambientais e campanhas de conscientização para incentivar a participação.",
+        "Integração com estruturas legais para garantir a sustentabilidade do programa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de contratos ativos de Pagamento por Serviços Ambientais (PSA) assinados.",
+        "Área total sob práticas de conservação ou restauração incentivadas (hectares).",
+        "Quantidade de carbono sequestrado ou emissões evitadas por meio de ações de PSA (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0130",
+    "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+    "actionPriority": 5,
+    "explanation": "Realizar ações de Assistência Técnica e Extensão Rural (ATER) em Ilhéus é fundamental devido à vulnerabilidade da cidade a riscos climáticos, como secas e enchentes, que impactam significativamente a segurança alimentar. Ao oferecer suporte técnico e educação às comunidades rurais, essas ações podem aumentar a resiliência e a produtividade agrícola, garantindo um abastecimento alimentar estável. Além disso, as iniciativas de ATER podem ajudar a mitigar os desafios socioeconômicos enfrentados pelas populações de renda moderada, por meio da melhoria das práticas agrícolas e do aumento das oportunidades de renda. Essa ação é prioritária, pois atende tanto às necessidades imediatas quanto às de longo prazo para o desenvolvimento sustentável da região.",
+    "action": {
+      "ActionID": "icare_0130",
+      "ActionName": "Conduzir Ações de Assistência Técnica e Extensão Rural (ATER)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fornecer suporte técnico e treinamento aos produtores rurais para a produção agrícola sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de pessoal técnico qualificado e programas de formação personalizados.",
+        "Parcerias com instituições de pesquisa agrícola e alocação de recursos para o desenvolvimento de capacidades.",
+        "Envolvimento com produtores rurais para garantir a participação ativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de produtores beneficiados com assistência técnica rural (% do total).",
+        "Percentual de participantes adotando práticas resilientes ao clima.",
+        "Redução da vulnerabilidade das propriedades ao risco climático (%)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0129",
+    "actionName": "Facilitate Technology Transfer for Conservation Practices",
+    "actionPriority": 6,
+    "explanation": "Facilitar a transferência de tecnologia para práticas de conservação em Ilhéus é crucial devido à vulnerabilidade da cidade a riscos ambientais, como secas e inundações. Esses riscos representam ameaças significativas aos recursos hídricos, à segurança alimentar e à saúde pública, áreas críticas que podem se beneficiar de tecnologias avançadas de conservação. Ao implementar essa ação, Ilhéus pode aumentar sua resiliência frente aos impactos climáticos, garantindo a gestão sustentável de seus recursos naturais. Além disso, a melhoria das práticas de conservação pode ajudar a mitigar as emissões provenientes do uso da terra, que é um dos principais contribuintes para o total de emissões da cidade.",
+    "action": {
+      "ActionID": "icare_0129",
+      "ActionName": "Facilitar a Transferência de Tecnologia para Práticas de Conservação",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover a adoção de práticas agrícolas sustentáveis por meio de treinamento, projetos piloto e demonstrações de tecnologia.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar práticas sustentáveis.",
+        "Parcerias com instituições de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a adoção.",
+        "Acesso a assistência técnica para implementação bem-sucedida."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de tecnologias de conservação transferidas e aplicadas em fazendas.",
+        "Percentual de produtores treinados para implementar práticas de conservação.",
+        "Redução na degradação do solo ou aumento na cobertura vegetal (hectares)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 7,
+    "explanation": "Priorizar a aquisição de produtos agroecológicos produzidos localmente nas compras públicas é fundamental para Ilhéus, devido ao seu risco moderado de insegurança alimentar, agravado por secas e enchentes. Ao apoiar práticas agroecológicas locais, a cidade pode aumentar sua resiliência aos impactos climáticos, garantindo um abastecimento alimentar mais estável e sustentável. Essa ação também beneficia os agricultores locais, impulsionando a economia local e reduzindo a pegada de carbono associada ao transporte de alimentos de locais distantes. Além disso, está alinhada com a necessidade do município de enfrentar desafios socioeconômicos, ao oferecer opções alimentares mais saudáveis para sua população.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar a Aquisição de Produtos Agroecológicos Produzidos Localmente em Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Concentre-se em comprar alimentos sustentáveis e produzidos localmente para instituições públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas de aquisição e identificação de fornecedores locais confiáveis.",
+        "Parcerias com produtores e alocação de financiamento para programas de aquisição sustentável.",
+        "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os critérios de sustentabilidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem do volume total de compras públicas provenientes de produtores agroecológicos locais.",
+        "Quantidade de emissões de CO₂ evitadas devido à redução da distância de transporte (tCO₂e).",
+        "Número de produtores agroecológicos beneficiados pelas compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0100",
+    "actionName": "Support Regenerative Agriculture Practices",
+    "actionPriority": 8,
+    "explanation": "Apoiar práticas de agricultura regenerativa em Ilhéus é fundamental devido à vulnerabilidade da cidade a riscos climáticos, como secas e inundações, que impactam significativamente a segurança alimentar. Ao promover essas práticas, a cidade pode melhorar a saúde do solo, aumentar a biodiversidade e aprimorar a retenção de água, mitigando assim os efeitos das secas. Além disso, a agricultura regenerativa pode ajudar a reduzir as emissões provenientes do uso da terra, que são um dos principais contribuintes para as emissões totais da cidade. Essa ação está alinhada com a necessidade de fortalecer a resiliência do setor agrícola, garantindo a produção e a segurança alimentar sustentável para a população.",
+    "action": {
+      "ActionID": "icare_0100",
+      "ActionName": "Apoiar Práticas de Agricultura Regenerativa",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoiar práticas agrícolas regenerativas que se concentrem na restauração da saúde do solo e na redução das emissões de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas de treinamento e recursos para educar os agricultores sobre técnicas agrícolas regenerativas, como cobertura vegetal e redução do preparo do solo.",
+        "Implementação de incentivos financeiros ou subsídios para apoiar a adoção de práticas regenerativas.",
+        "Colaboração com instituições de pesquisa agrícola para monitorar e documentar a eficácia das práticas regenerativas na captura de carbono e na melhoria da saúde do solo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento nos níveis de carbono orgânico do solo (toneladas/hectare).",
+        "Redução no uso de água por hectare na produção agrícola (%).",
+        "Número de projetos piloto de agricultura regenerativa implementados."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0096",
+    "actionName": "Promote Organic Farming",
+    "actionPriority": 9,
+    "explanation": "Promover a agricultura orgânica em Ilhéus é uma prioridade devido ao seu potencial para aumentar a segurança alimentar, que está sob alto risco devido a secas e inundações. As práticas de agricultura orgânica podem melhorar a saúde do solo e a retenção de água, tornando as culturas mais resilientes aos riscos climáticos. Além disso, essa abordagem pode reduzir a dependência de fertilizantes químicos e pesticidas, o que está alinhado com a necessidade da cidade de gerenciar sua pegada ambiental. Ao apoiar a agricultura orgânica, Ilhéus também pode impulsionar a economia local e oferecer opções alimentares mais saudáveis para seus moradores.",
+    "action": {
+      "ActionID": "icare_0096",
+      "ActionName": "Promover a Agricultura Orgânica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a adoção de práticas de agricultura orgânica que evitem o uso de produtos químicos e contribuam para a saúde do solo e captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecimento de incentivos financeiros, subsídios ou subsídios para apoiar a transição para práticas de agricultura orgânica.",
+        "Desenvolvimento de redes de treinamento e apoio para educar os agricultores sobre métodos de agricultura orgânica e seus benefícios.",
+        "Estabelecimento de sistemas de certificação e estratégias de acesso ao mercado para garantir a viabilidade econômica dos produtos orgânicos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas sob práticas de agricultura orgânica (%).",
+        "Aumento no teor de carbono orgânico do solo (toneladas de carbono por hectare).",
+        "Redução no uso de fertilizantes químicos e pesticidas (quilogramas/hectare/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0132",
+    "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+    "actionPriority": 10,
+    "explanation": "Incentivar a produção agroecológica local e cadeias curtas de abastecimento é fundamental para Ilhéus devido à sua vulnerabilidade a riscos climáticos, como secas e inundações, que impactam significativamente a segurança alimentar. Ao promover práticas agrícolas sustentáveis, a cidade pode aumentar sua resiliência diante desses riscos e garantir um abastecimento alimentar estável. Além disso, as cadeias curtas de abastecimento reduzem as emissões de transporte, contribuindo para a diminuição das emissões totais na cidade. Essa ação também fortalece a economia local ao empoderar pequenos agricultores e fomentar sistemas alimentares baseados na comunidade.",
+    "action": {
+      "ActionID": "icare_0132",
+      "ActionName": "Incentivar a Produção Agroecológica Local e Cadeias Curtas de Abastecimento",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoiar práticas agrícolas locais e sustentáveis e reduzir as emissões associadas ao transporte de alimentos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Incentivos para práticas agrícolas sustentáveis e desenvolvimento de redes locais de distribuição de alimentos.",
+        "Parcerias com produtores e investimento em infraestrutura para apoiar mercados locais.",
+        "Políticas para priorizar métodos de transporte de baixa emissão."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de produtores aderindo a práticas agroecológicas locais.",
+        "Percentual de alimentos consumidos na cidade provenientes de cadeias curtas.",
+        "Redução nas emissões associadas ao transporte de alimentos (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0136",
+    "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+    "actionPriority": 11,
+    "explanation": "Apoiar a implementação de incentivos fiscais ecológicos em Ilhéus é fundamental devido aos significativos desafios ambientais da cidade, como altas emissões e vulnerabilidade a riscos climáticos, como secas e inundações. Esses incentivos podem estimular práticas sustentáveis e investimentos em infraestrutura verde, que são essenciais para mitigar os impactos das mudanças climáticas. Além disso, ao promover políticas fiscais ecológicas, Ilhéus pode aumentar sua resiliência frente aos riscos ambientais, melhorar a saúde pública e garantir a estabilidade econômica a longo prazo. Essa ação está alinhada com a necessidade da cidade de enfrentar seus fatores socioeconômicos e melhorar o acesso aos serviços públicos.",
+    "action": {
+      "ActionID": "icare_0136",
+      "ActionName": "Apoiar a Implementação de Incentivos Fiscais Ecológicos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a aplicação de impostos ecológicos e incentivos para promover a conservação ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro regulatório claro com taxas de impostos justas e incentivos para a sustentabilidade.",
+        "Implementar sistemas de monitoramento eficazes para rastrear a conformidade e medir o impacto.",
+        "Promover a conscientização pública e fomentar a colaboração entre governos, empresas e comunidades."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de municípios que adotaram incentivos fiscais ambientais.",
+        "Percentual da receita tributária gasta em práticas sustentáveis.",
+        "Área ou número de propriedades beneficiadas por práticas de conservação como resultado de incentivos."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0085",
+    "actionName": "Promote the Adoption of Agroecological Pest Control",
+    "actionPriority": 12,
+    "explanation": "Promover a adoção do controle agroecológico de pragas em Ilhéus é crucial devido à vulnerabilidade da cidade a riscos climáticos, como secas e enchentes, que podem impactar severamente a segurança alimentar. Ao implementar métodos sustentáveis de controle de pragas, a cidade pode aumentar sua resiliência agrícola, garantindo um fornecimento estável de alimentos mesmo em condições adversas. Além disso, as práticas agroecológicas podem ajudar a preservar a biodiversidade do bioma de floresta tropical, essencial para manter o equilíbrio ecológico e apoiar os meios de subsistência locais. Essa ação está alinhada com a necessidade de abordar fatores socioeconômicos e melhorar a sustentabilidade geral das práticas agrícolas na região.",
+    "action": {
+      "ActionID": "icare_0085",
+      "ActionName": "Promover a Adoção do Controle de Pragas Agroecológico",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar métodos de controle de pragas que sejam agroecológicos, como o uso de predadores naturais e plantas repelentes, para reduzir a dependência de pesticidas químicos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de programas educacionais para informar os agricultores sobre métodos de controle de pragas agroecológicos e seus benefícios.",
+        "Fornecimento de acesso a recursos ou materiais para implementar métodos de controle de pragas naturais, como a introdução de insetos benéficos ou o cultivo de plantas repelentes.",
+        "Criação de incentivos ou redes de apoio para encorajar a transição do uso de pesticidas químicos em favor de alternativas sustentáveis."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento nas taxas de produtividade em áreas que adotam controle agroecológico de pragas (%).",
+        "Número de campanhas educativas realizadas sobre controle sustentável de pragas.",
+        "Impacto nos custos totais de produção devido à adoção de práticas agroecológicas (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0102",
+    "actionName": "Promote Sustainable Agricultural Practices",
+    "actionPriority": 13,
+    "explanation": "Promover práticas agrícolas sustentáveis em Ilhéus é fundamental devido à vulnerabilidade da cidade às secas, que impactam significativamente a segurança alimentar. Ao adotar métodos sustentáveis, a cidade pode aumentar sua resiliência frente aos riscos relacionados ao clima, garantindo um abastecimento alimentar estável. Além disso, essas práticas podem ajudar a reduzir as emissões provenientes do uso da terra, que são um dos principais contribuintes para o total de emissões da cidade. A implementação da agricultura sustentável também apoiará a economia local, ao potencialmente aumentar a produtividade e reduzir a dependência de fontes externas de alimentos.",
+    "action": {
+      "ActionID": "icare_0102",
+      "ActionName": "Promover Práticas Agrícolas Sustentáveis",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar práticas agrícolas que reduzam as emissões de gases de efeito estufa, como o uso reduzido de fertilizantes e agroquímicos.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas educacionais e recursos para promover práticas agrícolas sustentáveis entre os agricultores.",
+        "Implementação de políticas que incentivem a redução do uso de fertilizantes e agroquímicos, como subsídios para insumos orgânicos ou técnicas de cultivo sustentável.",
+        "Colaboração com organizações agrícolas para fornecer suporte técnico e orientação sobre práticas de redução de emissões."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas adotando práticas sustentáveis (% do total de terras agrícolas).",
+        "Aumento no rendimento das colheitas por hectare (toneladas/hectare) devido a métodos sustentáveis.",
+        "Redução no uso de água para agricultura (litros ou m³/hectare/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0084",
+    "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+    "actionPriority": 14,
+    "explanation": "Criar incentivos para práticas de agroflorestas em sistemas de pecuária é crucial para Ilhéus devido ao seu bioma de floresta tropical, que é altamente sensível ao desmatamento e à degradação do solo. A agrofloresta pode aumentar a biodiversidade, melhorar a saúde do solo e ampliar o sequestro de carbono, fatores essenciais para mitigar os impactos das mudanças climáticas. Além disso, a integração de árvores nos sistemas de pecuária pode ajudar a gerir os recursos hídricos de forma mais sustentável, enfrentando o risco moderado de secas na cidade e aumentando a resiliência contra perigos relacionados ao clima. Essa ação apoia práticas agrícolas sustentáveis, que são fundamentais para manter a segurança alimentar e reduzir as emissões provenientes do uso da terra na região.",
+    "action": {
+      "ActionID": "icare_0084",
+      "ActionName": "Criar Incentivos para Práticas de Agroflorestas em Sistemas de Pecuária",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Criar incentivos financeiros e técnicos para integrar práticas de agroflorestação em sistemas de pecuária, promovendo a captura de carbono, proteção do solo e melhoria da biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas de incentivos financeiros, como subsídios ou isenções fiscais, para apoiar os agricultores na integração da agrofloresta com sistemas de pecuária.",
+        "Fornecimento de assistência técnica e treinamento aos agricultores sobre as melhores práticas para a integração da agrofloresta nas operações de pecuária.",
+        "Colaboração com organizações agrícolas e ambientais para monitorar e avaliar os impactos das práticas agroflorestais na captura de carbono, saúde do solo e biodiversidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de incentivos financeiros fornecidos para integrar a agrofloresta em sistemas de pecuária.",
+        "Aumento na qualidade do solo e cobertura vegetal em propriedades manejadas (%).",
+        "Crescimento da biodiversidade em áreas de agrofloresta (% de espécies identificadas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 15,
+    "explanation": "Incentivar políticas de energia renovável em nível municipal em Ilhéus é fundamental devido às significativas emissões de energia estacionária da cidade, que contribuem para sua pegada de carbono total. Ao promover a energia renovável, Ilhéus pode reduzir sua dependência de combustíveis fósseis, diminuindo assim as emissões e mitigando os impactos das mudanças climáticas. Além disso, iniciativas de energia renovável podem aumentar a segurança energética, o que é particularmente importante considerando a vulnerabilidade da cidade a secas que podem afetar o fornecimento de energia. A implementação dessas políticas também pode estimular o crescimento econômico local, criando empregos verdes e promovendo o desenvolvimento sustentável.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Incentivar políticas de energia renovável a nível municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Defender e implementar políticas que priorizem o desenvolvimento e a integração de sistemas de energia renovável nas operações e no planejamento do governo local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e liderança para priorizar a energia renovável nas políticas e processos de planejamento do governo local",
+        "Desenvolvimento de políticas claras e estruturas regulatórias que facilitem a integração de sistemas de energia renovável nas operações governamentais",
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transição para a energia renovável na infraestrutura e operações municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia renovável aprovados ou iniciados anualmente a nível municipal.",
+        "Percentagem da demanda de energia municipal atendida por fontes renováveis (%).",
+        "Redução nas emissões de carbono municipais devido à adoção de energia renovável (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0099",
+    "actionName": "Support Agroecological Certification Programs",
+    "actionPriority": 16,
+    "explanation": "Apoiar programas de certificação agroecológica em Ilhéus é fundamental devido à vulnerabilidade da cidade a riscos climáticos, como secas e inundações, que impactam significativamente a segurança alimentar. Ao promover práticas agrícolas sustentáveis, esses programas podem aumentar a resiliência diante desses riscos, garantindo um abastecimento alimentar estável. Além disso, as práticas agroecológicas podem ajudar a reduzir as emissões provenientes do uso da terra, que são um dos principais contribuintes para as emissões totais da cidade. Essa ação está alinhada com a necessidade de abordar fatores socioeconômicos, ao potencialmente proporcionar melhores oportunidades de renda para os agricultores locais por meio de práticas sustentáveis certificadas.",
+    "action": {
+      "ActionID": "icare_0099",
+      "ActionName": "Apoiar Programas de Certificação Agroecológica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a certificação de produtos agroecológicos que atendam a critérios de sustentabilidade e tenham baixo impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de padrões de certificação claros e acessíveis para produtos agroecológicos que enfatizem a sustentabilidade e o baixo impacto ambiental.",
+        "Apoio a agricultores e produtores para atender aos requisitos de certificação por meio de treinamento, assistência financeira ou orientação técnica.",
+        "Criação de estratégias de marketing e parcerias para aumentar a visibilidade e a demanda por produtos agroecológicos certificados nos mercados locais e globais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de agricultores ou produtores obtendo certificações agroecológicas.",
+        "Percentual de produtos agrícolas certificados no mercado (%).",
+        "Redução no uso de insumos sintéticos (por exemplo, fertilizantes, pesticidas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 17,
+    "explanation": "A implementação de programas de transporte público gratuito durante os horários de pico em Ilhéus é uma ação estratégica para enfrentar as emissões do setor de transporte, que são um dos principais contribuintes para o total de emissões da cidade. Ao incentivar o uso do transporte público, a cidade pode reduzir a dependência de veículos individuais, diminuindo assim as emissões e melhorando a qualidade do ar. Além disso, essa iniciativa pode aliviar a congestão do tráfego nos horários de pico, aumentando a eficiência geral da rede de transporte da cidade. Ademais, oferecer transporte gratuito pode melhorar a acessibilidade para os moradores de baixa renda, promovendo a equidade socioeconômica na região.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementação de programas de transporte público gratuito durante os horários de pico para reduzir o uso de veículos individuais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar o uso do transporte público oferecendo serviços gratuitos durante os horários de pico para trabalhadores e estudantes. Esta medida reduz a congestão urbana, diminui o número de veículos individuais nas estradas e, consequentemente, reduz as emissões de gases de efeito estufa associadas ao transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Alocação de financiamento para subsidiar serviços de transporte público gratuito durante as horas de pico.",
+        "Desenvolvimento de políticas para garantir a sustentabilidade e eficiência dos sistemas de transporte público diante do aumento da demanda.",
+        "Coordenação com empregadores e instituições educacionais para otimizar os horários de pico e promover a iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nos níveis de poluição do ar durante as horas de pico (concentração de PM2.5/PM10).",
+        "Número de veículos particulares removidos das estradas durante as horas de pico.",
+        "Taxa de satisfação pública com a iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0094",
+    "actionName": "Adoption of biomethane in public fleets.",
+    "actionPriority": 18,
+    "explanation": "A adoção do biometano nas frotas públicas de Ilhéus é uma ação significativa devido às altas emissões do setor de transporte na cidade, que contribuem substancialmente para o seu perfil total de emissões. Ao fazer a transição para o biometano, um combustível alternativo mais limpo, a cidade pode reduzir sua pegada de carbono e melhorar a qualidade do ar. Essa ação é especialmente importante diante do risco moderado de acesso inadequado à água e da necessidade de mitigar os impactos das mudanças climáticas, como secas e ondas de calor, que ameaçam a saúde pública e a infraestrutura. Além disso, o uso do biometano fortalece a segurança energética ao diversificar as fontes de energia e reduzir a dependência de combustíveis fósseis.",
+    "action": {
+      "ActionID": "icare_0094",
+      "ActionName": "Adoção de biometano em frotas públicas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar biometano produzido a partir de resíduos urbanos e agroindustriais para abastecer ônibus e caminhões públicos, reduzindo as emissões de gases de efeito estufa nas frotas municipais",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de infraestrutura para a produção, processamento e distribuição de biometano a partir de resíduos urbanos e agroindustriais.",
+        "Retrofit ou aquisição de ônibus e caminhões públicos capazes de usar biometano como fonte de combustível.",
+        "Estabelecimento de políticas e incentivos financeiros para apoiar a produção de biometano e sua integração nas frotas municipais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Economia de custos na operação da frota devido ao uso de biometano (USD/ano).",
+        "Aumento na capacidade de produção de biometano (%).",
+        "Percentagem de biometano obtido localmente versus importado."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 19,
+    "explanation": "Integrar fontes renováveis aos sistemas municipais de água em Ilhéus é um passo crucial para aumentar a segurança energética e reduzir as emissões. A cidade enfrenta riscos significativos de secas, que impactam os recursos hídricos e a segurança energética, tornando essencial garantir um abastecimento de água confiável e sustentável. Ao utilizar energia renovável, a cidade pode diminuir sua dependência de fontes tradicionais de energia, reduzindo assim as emissões do setor energético estacionário. Essa ação também está alinhada com a necessidade do município de enfrentar o acesso inadequado à água em nível moderado, melhorando a prestação de serviços públicos e a resiliência diante de riscos climáticos.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energias renováveis nos sistemas municipais de água",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fontes de energia renovável, como energia solar ou eólica, para impulsionar sistemas de tratamento, bombeamento e distribuição de água, reduzindo custos de energia e emissões.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renovável, como energia solar ou eólica, em sistemas de tratamento e distribuição de água",
+        "Expertise técnica e infraestrutura para adaptar sistemas existentes com soluções de energia renovável ou projetar novas instalações alimentadas por energias renováveis",
+        "Apoio político e regulatório para incentivar o uso de energia limpa em sistemas de água e garantir sua integração nas redes de energia municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de sistemas municipais de água alimentados por energias renováveis.",
+        "Redução no consumo de energia de fontes não renováveis (kWh/ano).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR IOS",
+    "cityName": "Ilhéus",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0127",
+    "actionName": "Accelerate Environmental Regularization of Rural Properties",
+    "actionPriority": 20,
+    "explanation": "Acelerar a regularização ambiental das propriedades rurais em Ilhéus é fundamental devido às significativas emissões provenientes do uso da terra na cidade, que representam a maior fonte de emissões locais. Essa ação pode ajudar a mitigar o impacto dessas emissões ao garantir que as propriedades rurais cumpram as normas ambientais, preservando assim o bioma da floresta tropical. Além disso, a regularização pode aumentar a resiliência das áreas rurais a riscos climáticos, como secas e inundações, que representam grandes ameaças à segurança alimentar e à infraestrutura. Ao priorizar essa ação, Ilhéus pode avançar consideravelmente na redução de sua pegada ambiental e na promoção da sustentabilidade.",
+    "action": {
+      "ActionID": "icare_0127",
+      "ActionName": "Acelerar a Regularização Ambiental de Propriedades Rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas para registrar propriedades no Cadastro Ambiental Rural (CAR) e aderir aos compromissos de restauração ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Acesso a plataformas digitais e treinamento técnico para processos de registro e restauração de propriedades.",
+        "Incentivos financeiros e parcerias com agências ambientais para apoiar a implementação.",
+        "Mecanismos de monitoramento e fiscalização para garantir o cumprimento dos compromissos de restauração."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de propriedades rurais com Cadastro Ambiental Rural (CAR) regularizado.",
+        "Área total de vegetação nativa protegida ou restaurada em propriedades regularizadas (hectares).",
+        "Redução anual nas emissões de gases de efeito estufa (tCO₂e) devido à regularização."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
 ]

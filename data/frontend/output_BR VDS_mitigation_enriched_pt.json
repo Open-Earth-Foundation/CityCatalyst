@@ -1,1267 +1,1267 @@
 [
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 1,
-        "explanation": "For the city of Vit\u00f3ria de Santo Ant\u00e3o, fostering municipal renewable energy policies creates a regulatory framework that accelerates the transition from fossil fuels to clean energy. This action mobilizes public and private investments in sustainable technologies while reducing overall emissions. It aligns local governance with broader climate targets, laying the foundation for long-term environmental resilience.",
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Incentivar pol\u00edticas de energia renov\u00e1vel a n\u00edvel municipal",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Defender e implementar pol\u00edticas que priorizem o desenvolvimento e a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nas opera\u00e7\u00f5es e no planejamento do governo local.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Vontade pol\u00edtica e lideran\u00e7a para priorizar a energia renov\u00e1vel nas pol\u00edticas e processos de planejamento do governo local",
-                "Desenvolvimento de pol\u00edticas claras e estruturas regulat\u00f3rias que facilitem a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nas opera\u00e7\u00f5es governamentais",
-                "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transi\u00e7\u00e3o para a energia renov\u00e1vel na infraestrutura e opera\u00e7\u00f5es municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de projetos de energia renov\u00e1vel aprovados ou iniciados anualmente a n\u00edvel municipal.",
-                "Percentagem da demanda de energia municipal atendida por fontes renov\u00e1veis (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de carbono municipais devido \u00e0 ado\u00e7\u00e3o de energia renov\u00e1vel (toneladas de CO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 2,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, implementing an urban toll decreases the use of private vehicles by incentivizing public transportation and carpooling. This measure helps lower traffic congestion and reduces vehicular emissions, thus directly contributing to improved urban air quality. It also encourages a cultural shift toward sustainable mobility practices, benefiting both the environment and public health.",
-        "action": {
-            "ActionID": "icare_0139",
-            "ActionName": "Implementa\u00e7\u00e3o de ped\u00e1gio urbano.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estabelecimento de uma taxa de congestionamento e/ou rod\u00edzio de placas para ve\u00edculos leves em \u00e1reas saturadas e em hor\u00e1rios saturados",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecer um quadro legal claro e investir em tecnologia para monitoramento e fiscaliza\u00e7\u00e3o (por exemplo, c\u00e2meras, sensores).",
-                "Lan\u00e7ar campanhas de conscientiza\u00e7\u00e3o e garantir a disponibilidade de transporte p\u00fablico eficiente ou solu\u00e7\u00f5es alternativas de mobilidade.",
-                "Colaborar com governos locais e ag\u00eancias de transporte, e estabelecer sistemas para monitorar e avaliar a efic\u00e1cia da pol\u00edtica."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o das emiss\u00f5es de CO\u2082 do transporte rodovi\u00e1rio urbano (tCO\u2082e/ano).",
-                "Receita gerada pela implementa\u00e7\u00e3o da taxa de congestionamento urbano (R$)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 3,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, enhancing cycling infrastructure and pedestrian pathways promotes healthy, low-carbon travel alternatives. This development reduces reliance on motorized transport, easing congestion and decreasing emissions. Additionally, resilient, well-designed walkways ensure that public spaces remain safe and accessible during extreme weather, thus fostering a more livable urban environment.",
-        "action": {
-            "ActionID": "icare_0044",
-            "ActionName": "Expandir a infraestrutura ciclovi\u00e1ria e construir passarelas p\u00fablicas e cal\u00e7adas acess\u00edveis, priorizando medidas resilientes \u00e0s amea\u00e7as clim\u00e1ticas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "O principal objetivo desta a\u00e7\u00e3o \u00e9 promover a mobilidade ativa, garantindo a seguran\u00e7a, o conforto e a prioridade do movimento de pedestres, pessoas com defici\u00eancia (ou mobilidade reduzida) e ve\u00edculos e equipamentos movidos por for\u00e7a humana, como bicicletas e patinetes.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimentos em infraestrutura em cal\u00e7adas seguras e acess\u00edveis, ciclovias e instala\u00e7\u00f5es para pessoas com defici\u00eancia",
-                "Estruturas de pol\u00edticas e regulamentos para priorizar a mobilidade ativa e estabelecer padr\u00f5es de seguran\u00e7a para pedestres e ve\u00edculos n\u00e3o motorizados",
-                "Campanhas de conscientiza\u00e7\u00e3o p\u00fablica para promover a mobilidade ativa e educar os cidad\u00e3os sobre os benef\u00edcios de caminhar, andar de bicicleta e usar outros meios de transporte movidos a energia humana"
-            ],
-            "KeyPerformanceIndicators": [
-                "Quil\u00f4metros de novas ciclovias e passarelas constru\u00eddas anualmente.",
-                "Aumento no uso di\u00e1rio de infraestrutura ciclovi\u00e1ria e pedonal (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es do transporte urbano (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, offering free public transportation during peak hours encourages residents to choose collective transit over driving. This policy reduces traffic congestion and cuts emissions from individual vehicles, improving urban air quality. It also ensures equitable access to mobility options, particularly benefiting lower-income segments of the community.",
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementa\u00e7\u00e3o de programas de transporte p\u00fablico gratuito durante os hor\u00e1rios de pico para reduzir o uso de ve\u00edculos individuais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar o uso do transporte p\u00fablico oferecendo servi\u00e7os gratuitos durante os hor\u00e1rios de pico para trabalhadores e estudantes. Esta medida reduz a congest\u00e3o urbana, diminui o n\u00famero de ve\u00edculos individuais nas estradas e, consequentemente, reduz as emiss\u00f5es de gases de efeito estufa associadas ao transporte privado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Aloca\u00e7\u00e3o de financiamento para subsidiar servi\u00e7os de transporte p\u00fablico gratuito durante as horas de pico.",
-                "Desenvolvimento de pol\u00edticas para garantir a sustentabilidade e efici\u00eancia dos sistemas de transporte p\u00fablico diante do aumento da demanda.",
-                "Coordena\u00e7\u00e3o com empregadores e institui\u00e7\u00f5es educacionais para otimizar os hor\u00e1rios de pico e promover a iniciativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nos n\u00edveis de polui\u00e7\u00e3o do ar durante as horas de pico (concentra\u00e7\u00e3o de PM2.5/PM10).",
-                "N\u00famero de ve\u00edculos particulares removidos das estradas durante as horas de pico.",
-                "Taxa de satisfa\u00e7\u00e3o p\u00fablica com a iniciativa de transporte gratuito (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 5,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, establishing bike-sharing programs that focus on electric bikes offers a healthy and sustainable alternative to car travel. This initiative helps reduce congestion and vehicular emissions while promoting active lifestyles. Electric bikes make cycling accessible to a broader population, further integrating green mobility solutions into the urban landscape.",
-        "action": {
-            "ActionID": "icare_0121",
-            "ActionName": "Incentivo \u00e0 cria\u00e7\u00e3o de programas de compartilhamento de bicicletas em \u00e1reas urbanas, com foco em bicicletas el\u00e9tricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta a\u00e7\u00e3o incentiva o estabelecimento de sistemas de compartilhamento de bicicletas nas cidades, promovendo especificamente o uso de bicicletas el\u00e9tricas. Esses sistemas permitem que os residentes aluguem bicicletas el\u00e9tricas para viagens curtas, reduzindo a depend\u00eancia de carros para o transporte urbano. Ao integrar bicicletas el\u00e9tricas, as cidades podem reduzir ainda mais as emiss\u00f5es de gases de efeito estufa, aliviar a congest\u00e3o do tr\u00e1fego e promover um modo de transporte mais saud\u00e1vel e sustent\u00e1vel tanto para \u00e1reas urbanas quanto rurais. Esta iniciativa tamb\u00e9m apoia a igualdade de mobilidade, pois torna as bicicletas mais acess\u00edveis a uma gama mais ampla de pessoas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecimento de sistemas de compartilhamento de bicicletas com foco em bicicletas el\u00e9tricas para reduzir a depend\u00eancia de carros.",
-                "Integra\u00e7\u00e3o de bicicletas el\u00e9tricas para reduzir as emiss\u00f5es de gases de efeito estufa, aliviar o congestionamento do tr\u00e1fego e promover o transporte sustent\u00e1vel.",
-                "Promo\u00e7\u00e3o da igualdade de mobilidade tornando as bicicletas el\u00e9tricas acess\u00edveis a uma popula\u00e7\u00e3o mais ampla."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de bicicletas el\u00e9tricas dispon\u00edveis em programas de compartilhamento de bicicletas.",
-                "Aumento anual no n\u00famero de usu\u00e1rios de compartilhamento de bicicletas.",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es de CO\u2082 equivalente com a ado\u00e7\u00e3o do compartilhamento de bicicletas el\u00e9tricas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 6,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, deploying 100% electric, on-demand transport systems offers a flexible alternative to traditional commuting options. This solution reduces emissions and noise pollution by replacing fossil-fuel vehicles, while efficiently meeting varying passenger demands. The approach enhances urban mobility and supports the city\u2019s transition toward cleaner public transit.",
-        "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Implantar sistemas de transporte sob demanda com frotas 100% el\u00e9tricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Servi\u00e7os de transporte coletivo sob demanda, baseados em aplicativos, otimizam o uso de ve\u00edculos el\u00e9tricos, reduzindo as emiss\u00f5es por passageiro.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de plataformas digitais e aplicativos para gerenciar eficientemente servi\u00e7os de transporte coletivo sob demanda.",
-                "Expans\u00e3o de frotas de ve\u00edculos el\u00e9tricos adaptadas para solu\u00e7\u00f5es de transporte compartilhado.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas e incentivos para incentivar a ado\u00e7\u00e3o e o uso de servi\u00e7os de transporte el\u00e9trico compartilhado."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de usu\u00e1rios ativos do sistema de frota el\u00e9trica sob demanda.",
-                "Percentual da demanda de transporte urbano atendida por sistemas sob demanda.",
-                "Redu\u00e7\u00e3o nos n\u00edveis de polui\u00e7\u00e3o sonora em \u00e1reas urbanas"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 7,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, converting public fleets to run on biomethane significantly lowers greenhouse gas emissions compared to conventional fuels. This shift not only improves air quality but also utilizes locally produced renewable energy, aligning public transport with sustainable practices. The result is a cleaner and more efficient transit system that benefits both health and the environment.",
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Ado\u00e7\u00e3o de biometano em frotas p\u00fablicas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Utilizar biometano produzido a partir de res\u00edduos urbanos e agroindustriais para abastecer \u00f4nibus e caminh\u00f5es p\u00fablicos, reduzindo as emiss\u00f5es de gases de efeito estufa nas frotas municipais",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de infraestrutura para a produ\u00e7\u00e3o, processamento e distribui\u00e7\u00e3o de biometano a partir de res\u00edduos urbanos e agroindustriais.",
-                "Retrofit ou aquisi\u00e7\u00e3o de \u00f4nibus e caminh\u00f5es p\u00fablicos capazes de usar biometano como fonte de combust\u00edvel.",
-                "Estabelecimento de pol\u00edticas e incentivos financeiros para apoiar a produ\u00e7\u00e3o de biometano e sua integra\u00e7\u00e3o nas frotas municipais."
-            ],
-            "KeyPerformanceIndicators": [
-                "Economia de custos na opera\u00e7\u00e3o da frota devido ao uso de biometano (USD/ano).",
-                "Aumento na capacidade de produ\u00e7\u00e3o de biometano (%).",
-                "Percentagem de biometano obtido localmente versus importado."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 8,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, deploying electric drones for last-mile deliveries offers an innovative way to reduce the reliance on traditional delivery vans. This technology minimizes road congestion and cuts emissions by efficiently transporting small packages. It also helps in reaching areas that are difficult to navigate by conventional vehicles, supporting the city\u2019s commitment to smart, sustainable logistics.",
-        "action": {
-            "ActionID": "icare_0090",
-            "ActionName": "Ado\u00e7\u00e3o de drones el\u00e9tricos para entregas de \u00faltima milha.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "off-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Substituir ve\u00edculos tradicionais por drones el\u00e9tricos para entregas de curta dist\u00e2ncia em centros urbanos, reduzindo emiss\u00f5es e congestionamento de tr\u00e1fego.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de regulamentos para o espa\u00e7o a\u00e9reo urbano para garantir a opera\u00e7\u00e3o segura e eficiente de drones de entrega.",
-                "Investimento em infraestrutura de carregamento e manuten\u00e7\u00e3o para apoiar uma frota de drones el\u00e9tricos.",
-                "Colabora\u00e7\u00e3o com empresas de log\u00edstica para integrar drones em redes de entrega de \u00faltima milha."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o do tempo de entrega em compara\u00e7\u00e3o com m\u00e9todos tradicionais (minutos).",
-                "Aumento na satisfa\u00e7\u00e3o do cliente com entregas por drones (%).",
-                "Redu\u00e7\u00e3o do congestionamento de tr\u00e1fego causado por ve\u00edculos de entrega (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 9,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, technical assistance and rural extension initiatives enable local farmers to adopt sustainable, efficient practices. These actions improve agricultural productivity and resilience while reducing the environmental impacts associated with conventional methods. By empowering rural communities, the city enhances long-term food security and ecosystem health.",
-        "action": {
-            "ActionID": "icare_0130",
-            "ActionName": "Conduzir A\u00e7\u00f5es de Assist\u00eancia T\u00e9cnica e Extens\u00e3o Rural (ATER)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fornecer suporte t\u00e9cnico e treinamento aos produtores rurais para a produ\u00e7\u00e3o agr\u00edcola sustent\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidade de pessoal t\u00e9cnico qualificado e programas de forma\u00e7\u00e3o personalizados.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa agr\u00edcola e aloca\u00e7\u00e3o de recursos para o desenvolvimento de capacidades.",
-                "Envolvimento com produtores rurais para garantir a participa\u00e7\u00e3o ativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de produtores beneficiados com assist\u00eancia t\u00e9cnica rural (% do total).",
-                "Percentual de participantes adotando pr\u00e1ticas resilientes ao clima.",
-                "Redu\u00e7\u00e3o da vulnerabilidade das propriedades ao risco clim\u00e1tico (%)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 10,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, integrating trees into agricultural practices (agroforestry) enhances soil quality, improves water retention, and sequesters carbon. This sustainable technique makes farms more resilient to climate shocks while providing additional crops and resources. It represents a win-win strategy for both environmental protection and agricultural productivity.",
-        "action": {
-            "ActionID": "icare_0050",
-            "ActionName": "Implementar Sistemas Agroflorestais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover sistemas agroflorestais integrando \u00e1rvores na produ\u00e7\u00e3o de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Fornecimento de suporte t\u00e9cnico e orienta\u00e7\u00e3o aos agricultores sobre o design e implementa\u00e7\u00e3o de sistemas agroflorestais.",
-                "Desenvolvimento de incentivos financeiros ou subs\u00eddios para tornar a agrofloresta mais economicamente atraente.",
-                "Cria\u00e7\u00e3o de pol\u00edticas que integrem pr\u00e1ticas agroflorestais no planejamento do uso da terra agr\u00edcola e nos sistemas de posse de terra."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas convertidas em sistemas agroflorestais (%).",
-                "N\u00famero de novos projetos agroflorestais implementados.",
-                "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 11,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, transferring modern conservation technology to local stakeholders boosts the efficiency of resource management and reduces environmental impacts. Improved methods such as precision irrigation and sustainable pest control enhance local productivity while preserving natural ecosystems. This knowledge sharing builds capacity and fosters long-term sustainability.",
-        "action": {
-            "ActionID": "icare_0129",
-            "ActionName": "Facilitar a Transfer\u00eancia de Tecnologia para Pr\u00e1ticas de Conserva\u00e7\u00e3o",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover a ado\u00e7\u00e3o de pr\u00e1ticas agr\u00edcolas sustent\u00e1veis por meio de treinamento, projetos piloto e demonstra\u00e7\u00f5es de tecnologia.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar pr\u00e1ticas sustent\u00e1veis.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a ado\u00e7\u00e3o.",
-                "Acesso a assist\u00eancia t\u00e9cnica para implementa\u00e7\u00e3o bem-sucedida."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de tecnologias de conserva\u00e7\u00e3o transferidas e aplicadas em fazendas.",
-                "Percentual de produtores treinados para implementar pr\u00e1ticas de conserva\u00e7\u00e3o.",
-                "Redu\u00e7\u00e3o na degrada\u00e7\u00e3o do solo ou aumento na cobertura vegetal (hectares)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 12,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, sourcing locally produced agroecological products in public procurement supports sustainable agriculture and cuts transportation emissions. This practice bolsters the regional economy and encourages environmentally responsible production methods. It also ensures that public institutions benefit from healthier, locally adapted food supplies.",
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Priorizar a Aquisi\u00e7\u00e3o de Produtos Agroecol\u00f3gicos Produzidos Localmente em Compras P\u00fablicas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Concentre-se em comprar alimentos sustent\u00e1veis e produzidos localmente para institui\u00e7\u00f5es p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de pol\u00edticas de aquisi\u00e7\u00e3o e identifica\u00e7\u00e3o de fornecedores locais confi\u00e1veis.",
-                "Parcerias com produtores e aloca\u00e7\u00e3o de financiamento para programas de aquisi\u00e7\u00e3o sustent\u00e1vel.",
-                "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os crit\u00e9rios de sustentabilidade."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem do volume total de compras p\u00fablicas provenientes de produtores agroecol\u00f3gicos locais.",
-                "Quantidade de emiss\u00f5es de CO\u2082 evitadas devido \u00e0 redu\u00e7\u00e3o da dist\u00e2ncia de transporte (tCO\u2082e).",
-                "N\u00famero de produtores agroecol\u00f3gicos beneficiados pelas compras p\u00fablicas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 13,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, integrating renewable energy into water treatment and distribution enhances efficiency and reliability of municipal services. This approach reduces operational costs and aligns water infrastructure with clean energy objectives. It further ensures that the city\u2019s water systems remain resilient under changing climate conditions.",
-        "action": {
-            "ActionID": "icare_0024",
-            "ActionName": "Integrar energias renov\u00e1veis nos sistemas municipais de \u00e1gua",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, para impulsionar sistemas de tratamento, bombeamento e distribui\u00e7\u00e3o de \u00e1gua, reduzindo custos de energia e emiss\u00f5es.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, em sistemas de tratamento e distribui\u00e7\u00e3o de \u00e1gua",
-                "Expertise t\u00e9cnica e infraestrutura para adaptar sistemas existentes com solu\u00e7\u00f5es de energia renov\u00e1vel ou projetar novas instala\u00e7\u00f5es alimentadas por energias renov\u00e1veis",
-                "Apoio pol\u00edtico e regulat\u00f3rio para incentivar o uso de energia limpa em sistemas de \u00e1gua e garantir sua integra\u00e7\u00e3o nas redes de energia municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de sistemas municipais de \u00e1gua alimentados por energias renov\u00e1veis.",
-                "Redu\u00e7\u00e3o no consumo de energia de fontes n\u00e3o renov\u00e1veis (kWh/ano).",
-                "Emiss\u00f5es de GEE evitadas (toneladas de CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 14,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, community solar farms democratize renewable energy by making clean power more accessible to residents and local businesses. These projects empower communities to produce their own energy, reducing reliance on centralized grids. They also promote local job creation and environmental awareness through shared ownership.",
-        "action": {
-            "ActionID": "icare_0038",
-            "ActionName": "Promover fazendas solares comunit\u00e1rias",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Desenvolver e incentivar a ado\u00e7\u00e3o de projetos de energia solar compartilhada, permitindo que as comunidades se beneficiem coletivamente de energia limpa e renov\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de pol\u00edticas e estruturas regulat\u00f3rias para apoiar projetos de energia solar compartilhada baseados na comunidade e garantir o acesso equitativo \u00e0 energia limpa",
-                "Disponibilidade de mecanismos financeiros ou incentivos para ajudar as comunidades a investir e manter sistemas de energia solar compartilhada",
-                "Colabora\u00e7\u00e3o entre governos locais, fornecedores de energia e organiza\u00e7\u00f5es comunit\u00e1rias para projetar e implementar projetos de energia solar compartilhada de forma eficaz"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de resid\u00eancias atendidas por projetos solares comunit\u00e1rios.",
-                "Emiss\u00f5es de GEE evitadas atrav\u00e9s da produ\u00e7\u00e3o de energia solar (toneladas de CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0085",
-        "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 15,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, adopting agroecological pest control methods reduces the need for chemical pesticides, preserving soil and water quality. This sustainable technique promotes the use of natural predators and organic practices that lower environmental and health risks. It also contributes to a more resilient agricultural sector through eco-friendly management.",
-        "action": {
-            "ActionID": "icare_0085",
-            "ActionName": "Promover a Ado\u00e7\u00e3o do Controle de Pragas Agroecol\u00f3gico",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar m\u00e9todos de controle de pragas que sejam agroecol\u00f3gicos, como o uso de predadores naturais e plantas repelentes, para reduzir a depend\u00eancia de pesticidas qu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de programas educacionais para informar os agricultores sobre m\u00e9todos de controle de pragas agroecol\u00f3gicos e seus benef\u00edcios.",
-                "Fornecimento de acesso a recursos ou materiais para implementar m\u00e9todos de controle de pragas naturais, como a introdu\u00e7\u00e3o de insetos ben\u00e9ficos ou o cultivo de plantas repelentes.",
-                "Cria\u00e7\u00e3o de incentivos ou redes de apoio para encorajar a transi\u00e7\u00e3o do uso de pesticidas qu\u00edmicos em favor de alternativas sustent\u00e1veis."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento nas taxas de produtividade em \u00e1reas que adotam controle agroecol\u00f3gico de pragas (%).",
-                "N\u00famero de campanhas educativas realizadas sobre controle sustent\u00e1vel de pragas.",
-                "Impacto nos custos totais de produ\u00e7\u00e3o devido \u00e0 ado\u00e7\u00e3o de pr\u00e1ticas agroecol\u00f3gicas (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "c40_0026",
-        "actionName": "Vehicle Emissions",
-        "actionPriority": 16,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, reducing vehicle emissions directly improves urban air quality and public health. Enhanced emission standards and cleaner technology lower the environmental footprint of the transport sector. This measure is critical in densely populated areas where traffic is a major source of pollutants.",
-        "action": {
-            "ActionID": "c40_0026",
-            "ActionName": "Emiss\u00f5es de Ve\u00edculos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "As estrat\u00e9gias de redu\u00e7\u00e3o de \"Vehicle Emissions\" concentram-se em minimizar o impacto ambiental de todos os tipos de ve\u00edculos. A implementa\u00e7\u00e3o de tecnologias mais limpas e a promo\u00e7\u00e3o de combust\u00edveis alternativos contribuem para a redu\u00e7\u00e3o das emiss\u00f5es, promovendo um transporte sustent\u00e1vel e ecol\u00f3gico.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "As estrat\u00e9gias de redu\u00e7\u00e3o de \"Emiss\u00f5es de Ve\u00edculos\" promovem inerentemente a equidade e a inclus\u00e3o ao abordar os impactos ambientais que afetam desproporcionalmente comunidades vulner\u00e1veis e carentes. Essas comunidades frequentemente enfrentam n\u00edveis mais altos de polui\u00e7\u00e3o do ar e problemas de sa\u00fade relacionados devido \u00e0 proximidade com \u00e1reas de tr\u00e1fego intenso e zonas industriais. Ao implementar tecnologias mais limpas e promover combust\u00edveis alternativos, a a\u00e7\u00e3o beneficia diretamente essas popula\u00e7\u00f5es ao melhorar a qualidade do ar e reduzir os riscos \u00e0 sa\u00fade.\n\nAl\u00e9m disso, o foco em transporte sustent\u00e1vel e ecol\u00f3gico pode melhorar o acesso a op\u00e7\u00f5es de transporte acess\u00edveis e eficientes para comunidades carentes, que podem n\u00e3o ter transporte p\u00fablico confi\u00e1vel. Essa inclus\u00e3o garante que todos os membros da comunidade, independentemente do status socioecon\u00f4mico, possam se beneficiar de um ar mais limpo e melhores resultados de sa\u00fade p\u00fablica. No geral, a a\u00e7\u00e3o reconhece e aborda as necessidades espec\u00edficas das popula\u00e7\u00f5es vulner\u00e1veis, promovendo uma abordagem mais equitativa para a a\u00e7\u00e3o clim\u00e1tica.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento e disponibilidade de tecnologias de ve\u00edculos mais limpos",
-                "Infraestrutura para distribui\u00e7\u00e3o de combust\u00edveis alternativos",
-                "Pol\u00edticas e regulamenta\u00e7\u00f5es governamentais que apoiam a redu\u00e7\u00e3o de emiss\u00f5es",
-                "Conscientiza\u00e7\u00e3o p\u00fablica e aceita\u00e7\u00e3o de op\u00e7\u00f5es de transporte ecol\u00f3gicas",
-                "Investimento em pesquisa e desenvolvimento de solu\u00e7\u00f5es de transporte sustent\u00e1vel"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de ve\u00edculos (CO2, NOx, PM)",
-                "Percentagem de ve\u00edculos utilizando combust\u00edveis alternativos",
-                "N\u00famero de ve\u00edculos el\u00e9tricos nas estradas",
-                "Melhorias na efici\u00eancia de combust\u00edvel (milhas por gal\u00e3o)",
-                "Taxa de ado\u00e7\u00e3o de tecnologias mais limpas",
-                "Redu\u00e7\u00e3o no consumo de combust\u00edveis f\u00f3sseis",
-                "Taxas de uso de transporte p\u00fablico",
-                "Melhorias no \u00edndice de qualidade do ar",
-                "Percentagem de zonas de baixa emiss\u00e3o estabelecidas",
-                "Investimento em infraestrutura de transporte sustent\u00e1vel"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0097",
-        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
-        "actionPriority": 17,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, promoting decentralized renewable energy generation empowers local communities to produce their own clean power. This decreases dependency on large, centralized grids and reduces transmission losses. Distributed energy strengthens resilience and creates economic opportunities in local markets.",
-        "action": {
-            "ActionID": "icare_0097",
-            "ActionName": "Apoiar a Gera\u00e7\u00e3o de Energia Distribu\u00edda em Resid\u00eancias e Neg\u00f3cios",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Facilitar o uso de pain\u00e9is solares e outras tecnologias de energia renov\u00e1vel em resid\u00eancias e edif\u00edcios comerciais.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Fornecer incentivos financeiros, regulamenta\u00e7\u00f5es claras de instala\u00e7\u00e3o e acesso a tecnologias acess\u00edveis para pain\u00e9is solares.",
-                "Lan\u00e7ar campanhas de conscientiza\u00e7\u00e3o p\u00fablica e oferecer treinamento para propriet\u00e1rios de resid\u00eancias e empresas.",
-                "Incentivar a ado\u00e7\u00e3o de tecnologias de energia renov\u00e1vel para promover economias de energia a longo prazo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Capacidade instalada de gera\u00e7\u00e3o de energia distribu\u00edda (MW).",
-                "Percentual de resid\u00eancias e empresas gerando sua pr\u00f3pria energia (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de CO\u2082 atrav\u00e9s da gera\u00e7\u00e3o distribu\u00edda (tCO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 18,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, expanding rail-based transit reduces the number of private vehicles on the road, easing congestion and lowering emissions. High-capacity systems move more people efficiently, reducing per capita energy use and travel time. This upgrade not only improves urban mobility but also has significant environmental and social benefits.",
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expans\u00e3o dos sistemas de transporte p\u00fablico em massa sobre trilhos (metr\u00f4s, VLTs e monotrilhos).",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esses sistemas oferecem alta capacidade e baixas emiss\u00f5es, cruciais para cidades com alta densidade populacional.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimento no desenvolvimento e expans\u00e3o da infraestrutura de transporte p\u00fablico de alta capacidade, como \u00f4nibus el\u00e9tricos e sistemas de metr\u00f4.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas e incentivos para encorajar o uso de transporte p\u00fablico em vez de ve\u00edculos particulares.",
-                "Integra\u00e7\u00e3o de fontes de energia renov\u00e1vel para alimentar esses sistemas, reduzindo ainda mais as emiss\u00f5es."
-            ],
-            "KeyPerformanceIndicators": [
-                "Comprimento das novas linhas de tr\u00e2nsito constru\u00eddas (km/ano).",
-                "Redu\u00e7\u00e3o na congest\u00e3o do tr\u00e1fego rodovi\u00e1rio (%).",
-                "Redu\u00e7\u00e3o no uso de ve\u00edculos privados (n\u00famero de viagens evitadas/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 19,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, providing fiscal incentives for sustainable practices motivates businesses to lower emissions and conserve resources. These financial tools make it economically attractive to invest in green technologies and responsible practices. Over time, such incentives drive a market shift towards environmentally sustainable production methods.",
-        "action": {
-            "ActionID": "icare_0136",
-            "ActionName": "Apoiar a Implementa\u00e7\u00e3o de Incentivos Fiscais Ecol\u00f3gicos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar a aplica\u00e7\u00e3o de impostos ecol\u00f3gicos e incentivos para promover a conserva\u00e7\u00e3o ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecer um quadro regulat\u00f3rio claro com taxas de impostos justas e incentivos para a sustentabilidade.",
-                "Implementar sistemas de monitoramento eficazes para rastrear a conformidade e medir o impacto.",
-                "Promover a conscientiza\u00e7\u00e3o p\u00fablica e fomentar a colabora\u00e7\u00e3o entre governos, empresas e comunidades."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de munic\u00edpios que adotaram incentivos fiscais ambientais.",
-                "Percentual da receita tribut\u00e1ria gasta em pr\u00e1ticas sustent\u00e1veis.",
-                "\u00c1rea ou n\u00famero de propriedades beneficiadas por pr\u00e1ticas de conserva\u00e7\u00e3o como resultado de incentivos."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 20,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, enhancing deforestation controls protects vital forest ecosystems that act as carbon sinks and regulate water cycles. By curbing illegal logging and land clearing, the city preserves biodiversity and natural resources. This conservation effort is key to mitigating climate impacts and ensuring long-term environmental stability.",
-        "action": {
-            "ActionID": "icare_0134",
-            "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aprimorar o monitoramento e a fiscaliza\u00e7\u00e3o para prevenir o desmatamento ilegal e promover o uso sustent\u00e1vel da terra.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Forte estrutura legal, tecnologias de monitoramento avan\u00e7adas (sat\u00e9lites e drones) e capacita\u00e7\u00e3o para as autoridades locais.",
-                "Colabora\u00e7\u00e3o com comunidades locais e financiamento adequado para os esfor\u00e7os de fiscaliza\u00e7\u00e3o.",
-                "Transpar\u00eancia e responsabilidade na elabora\u00e7\u00e3o de relat\u00f3rios para garantir a implementa\u00e7\u00e3o eficaz."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total monitorada para desmatamento (hectares/ano).",
-                "Redu\u00e7\u00e3o na taxa anual de desmatamento (%).",
-                "Quantidade de emiss\u00f5es evitadas pela redu\u00e7\u00e3o do desmatamento (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 1,
+    "explanation": "Para a cidade de Vitória de Santo Antão, promover políticas municipais de energia renovável cria um marco regulatório que acelera a transição dos combustíveis fósseis para a energia limpa. Essa ação mobiliza investimentos públicos e privados em tecnologias sustentáveis, ao mesmo tempo em que reduz as emissões totais. Ela alinha a governança local com metas climáticas mais amplas, estabelecendo as bases para a resiliência ambiental a longo prazo.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Incentivar políticas de energia renovável a nível municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Defender e implementar políticas que priorizem o desenvolvimento e a integração de sistemas de energia renovável nas operações e no planejamento do governo local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e liderança para priorizar a energia renovável nas políticas e processos de planejamento do governo local",
+        "Desenvolvimento de políticas claras e estruturas regulatórias que facilitem a integração de sistemas de energia renovável nas operações governamentais",
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transição para a energia renovável na infraestrutura e operações municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia renovável aprovados ou iniciados anualmente a nível municipal.",
+        "Percentagem da demanda de energia municipal atendida por fontes renováveis (%).",
+        "Redução nas emissões de carbono municipais devido à adoção de energia renovável (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0139",
+    "actionName": "Implementation of urban toll.",
+    "actionPriority": 2,
+    "explanation": "Para Vitória de Santo Antão, a implementação de um pedágio urbano diminui o uso de veículos particulares ao incentivar o transporte público e o uso de caronas. Essa medida ajuda a reduzir a congestão do tráfego e as emissões de veículos, contribuindo diretamente para a melhoria da qualidade do ar urbano. Além disso, promove uma mudança cultural em direção a práticas de mobilidade sustentável, beneficiando tanto o meio ambiente quanto a saúde pública.",
+    "action": {
+      "ActionID": "icare_0139",
+      "ActionName": "Implementação de pedágio urbano.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecimento de uma taxa de congestionamento e/ou rodízio de placas para veículos leves em áreas saturadas e em horários saturados",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro legal claro e investir em tecnologia para monitoramento e fiscalização (por exemplo, câmeras, sensores).",
+        "Lançar campanhas de conscientização e garantir a disponibilidade de transporte público eficiente ou soluções alternativas de mobilidade.",
+        "Colaborar com governos locais e agências de transporte, e estabelecer sistemas para monitorar e avaliar a eficácia da política."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução das emissões de CO₂ do transporte rodoviário urbano (tCO₂e/ano).",
+        "Receita gerada pela implementação da taxa de congestionamento urbano (R$)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0044",
+    "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+    "actionPriority": 3,
+    "explanation": "Para Vitória de Santo Antão, aprimorar a infraestrutura cicloviária e as vias para pedestres promove alternativas de deslocamento saudáveis e de baixo carbono. Esse desenvolvimento reduz a dependência do transporte motorizado, aliviando a congestão e diminuindo as emissões. Além disso, calçadas resilientes e bem projetadas garantem que os espaços públicos permaneçam seguros e acessíveis durante eventos climáticos extremos, promovendo assim um ambiente urbano mais habitável.",
+    "action": {
+      "ActionID": "icare_0044",
+      "ActionName": "Expandir a infraestrutura cicloviária e construir passarelas públicas e calçadas acessíveis, priorizando medidas resilientes às ameaças climáticas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "O principal objetivo desta ação é promover a mobilidade ativa, garantindo a segurança, o conforto e a prioridade do movimento de pedestres, pessoas com deficiência (ou mobilidade reduzida) e veículos e equipamentos movidos por força humana, como bicicletas e patinetes.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimentos em infraestrutura em calçadas seguras e acessíveis, ciclovias e instalações para pessoas com deficiência",
+        "Estruturas de políticas e regulamentos para priorizar a mobilidade ativa e estabelecer padrões de segurança para pedestres e veículos não motorizados",
+        "Campanhas de conscientização pública para promover a mobilidade ativa e educar os cidadãos sobre os benefícios de caminhar, andar de bicicleta e usar outros meios de transporte movidos a energia humana"
+      ],
+      "KeyPerformanceIndicators": [
+        "Quilômetros de novas ciclovias e passarelas construídas anualmente.",
+        "Aumento no uso diário de infraestrutura cicloviária e pedonal (%).",
+        "Redução nas emissões do transporte urbano (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 4,
+    "explanation": "Para Vitória de Santo Antão, oferecer transporte público gratuito durante os horários de pico incentiva os moradores a optarem pelo transporte coletivo em vez de dirigir. Essa política reduz a congestão do tráfego e diminui as emissões de veículos individuais, melhorando a qualidade do ar urbano. Além disso, garante acesso equitativo às opções de mobilidade, beneficiando especialmente os segmentos de menor renda da comunidade.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementação de programas de transporte público gratuito durante os horários de pico para reduzir o uso de veículos individuais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar o uso do transporte público oferecendo serviços gratuitos durante os horários de pico para trabalhadores e estudantes. Esta medida reduz a congestão urbana, diminui o número de veículos individuais nas estradas e, consequentemente, reduz as emissões de gases de efeito estufa associadas ao transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Alocação de financiamento para subsidiar serviços de transporte público gratuito durante as horas de pico.",
+        "Desenvolvimento de políticas para garantir a sustentabilidade e eficiência dos sistemas de transporte público diante do aumento da demanda.",
+        "Coordenação com empregadores e instituições educacionais para otimizar os horários de pico e promover a iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nos níveis de poluição do ar durante as horas de pico (concentração de PM2.5/PM10).",
+        "Número de veículos particulares removidos das estradas durante as horas de pico.",
+        "Taxa de satisfação pública com a iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0121",
+    "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+    "actionPriority": 5,
+    "explanation": "Para Vitória de Santo Antão, estabelecer programas de compartilhamento de bicicletas com foco em bicicletas elétricas oferece uma alternativa saudável e sustentável ao uso de carros. Essa iniciativa ajuda a reduzir a congestão e as emissões de veículos, ao mesmo tempo em que promove estilos de vida mais ativos. As bicicletas elétricas tornam o ciclismo acessível a uma parcela maior da população, integrando ainda mais soluções de mobilidade verde ao cenário urbano.",
+    "action": {
+      "ActionID": "icare_0121",
+      "ActionName": "Incentivo à criação de programas de compartilhamento de bicicletas em áreas urbanas, com foco em bicicletas elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação incentiva o estabelecimento de sistemas de compartilhamento de bicicletas nas cidades, promovendo especificamente o uso de bicicletas elétricas. Esses sistemas permitem que os residentes aluguem bicicletas elétricas para viagens curtas, reduzindo a dependência de carros para o transporte urbano. Ao integrar bicicletas elétricas, as cidades podem reduzir ainda mais as emissões de gases de efeito estufa, aliviar a congestão do tráfego e promover um modo de transporte mais saudável e sustentável tanto para áreas urbanas quanto rurais. Esta iniciativa também apoia a igualdade de mobilidade, pois torna as bicicletas mais acessíveis a uma gama mais ampla de pessoas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecimento de sistemas de compartilhamento de bicicletas com foco em bicicletas elétricas para reduzir a dependência de carros.",
+        "Integração de bicicletas elétricas para reduzir as emissões de gases de efeito estufa, aliviar o congestionamento do tráfego e promover o transporte sustentável.",
+        "Promoção da igualdade de mobilidade tornando as bicicletas elétricas acessíveis a uma população mais ampla."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de bicicletas elétricas disponíveis em programas de compartilhamento de bicicletas.",
+        "Aumento anual no número de usuários de compartilhamento de bicicletas.",
+        "Redução estimada nas emissões de CO₂ equivalente com a adoção do compartilhamento de bicicletas elétricas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0068",
+    "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+    "actionPriority": 6,
+    "explanation": "Para Vitória de Santo Antão, implantar sistemas de transporte 100% elétricos e sob demanda oferece uma alternativa flexível às opções tradicionais de deslocamento. Essa solução reduz as emissões e a poluição sonora ao substituir veículos movidos a combustíveis fósseis, ao mesmo tempo em que atende de forma eficiente às demandas variadas dos passageiros. A abordagem aprimora a mobilidade urbana e apoia a transição da cidade para um transporte público mais limpo.",
+    "action": {
+      "ActionID": "icare_0068",
+      "ActionName": "Implantar sistemas de transporte sob demanda com frotas 100% elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Serviços de transporte coletivo sob demanda, baseados em aplicativos, otimizam o uso de veículos elétricos, reduzindo as emissões por passageiro.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de plataformas digitais e aplicativos para gerenciar eficientemente serviços de transporte coletivo sob demanda.",
+        "Expansão de frotas de veículos elétricos adaptadas para soluções de transporte compartilhado.",
+        "Implementação de políticas e incentivos para incentivar a adoção e o uso de serviços de transporte elétrico compartilhado."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de usuários ativos do sistema de frota elétrica sob demanda.",
+        "Percentual da demanda de transporte urbano atendida por sistemas sob demanda.",
+        "Redução nos níveis de poluição sonora em áreas urbanas"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0094",
+    "actionName": "Adoption of biomethane in public fleets.",
+    "actionPriority": 7,
+    "explanation": "Para Vitória de Santo Antão, converter as frotas públicas para operar com biometano reduz significativamente as emissões de gases de efeito estufa em comparação com os combustíveis convencionais. Essa mudança não só melhora a qualidade do ar, como também utiliza energia renovável produzida localmente, alinhando o transporte público com práticas sustentáveis. O resultado é um sistema de transporte mais limpo e eficiente, que beneficia tanto a saúde quanto o meio ambiente.",
+    "action": {
+      "ActionID": "icare_0094",
+      "ActionName": "Adoção de biometano em frotas públicas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar biometano produzido a partir de resíduos urbanos e agroindustriais para abastecer ônibus e caminhões públicos, reduzindo as emissões de gases de efeito estufa nas frotas municipais",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de infraestrutura para a produção, processamento e distribuição de biometano a partir de resíduos urbanos e agroindustriais.",
+        "Retrofit ou aquisição de ônibus e caminhões públicos capazes de usar biometano como fonte de combustível.",
+        "Estabelecimento de políticas e incentivos financeiros para apoiar a produção de biometano e sua integração nas frotas municipais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Economia de custos na operação da frota devido ao uso de biometano (USD/ano).",
+        "Aumento na capacidade de produção de biometano (%).",
+        "Percentagem de biometano obtido localmente versus importado."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0090",
+    "actionName": "Adoption of electric drones for last-mile deliveries.",
+    "actionPriority": 8,
+    "explanation": "Para Vitória de Santo Antão, a utilização de drones elétricos para entregas na última milha oferece uma forma inovadora de reduzir a dependência de vans de entrega tradicionais. Essa tecnologia minimiza o congestionamento nas vias e reduz as emissões ao transportar pequenos pacotes de maneira eficiente. Além disso, contribui para alcançar áreas de difícil acesso para veículos convencionais, apoiando o compromisso da cidade com uma logística inteligente e sustentável.",
+    "action": {
+      "ActionID": "icare_0090",
+      "ActionName": "Adoção de drones elétricos para entregas de última milha.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "off-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Substituir veículos tradicionais por drones elétricos para entregas de curta distância em centros urbanos, reduzindo emissões e congestionamento de tráfego.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de regulamentos para o espaço aéreo urbano para garantir a operação segura e eficiente de drones de entrega.",
+        "Investimento em infraestrutura de carregamento e manutenção para apoiar uma frota de drones elétricos.",
+        "Colaboração com empresas de logística para integrar drones em redes de entrega de última milha."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução do tempo de entrega em comparação com métodos tradicionais (minutos).",
+        "Aumento na satisfação do cliente com entregas por drones (%).",
+        "Redução do congestionamento de tráfego causado por veículos de entrega (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0130",
+    "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+    "actionPriority": 9,
+    "explanation": "Para Vitória de Santo Antão, as iniciativas de assistência técnica e extensão rural permitem que os agricultores locais adotem práticas sustentáveis e eficientes. Essas ações melhoram a produtividade agrícola e a resiliência, ao mesmo tempo em que reduzem os impactos ambientais associados aos métodos convencionais. Ao fortalecer as comunidades rurais, o município promove a segurança alimentar a longo prazo e a saúde dos ecossistemas.",
+    "action": {
+      "ActionID": "icare_0130",
+      "ActionName": "Conduzir Ações de Assistência Técnica e Extensão Rural (ATER)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fornecer suporte técnico e treinamento aos produtores rurais para a produção agrícola sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de pessoal técnico qualificado e programas de formação personalizados.",
+        "Parcerias com instituições de pesquisa agrícola e alocação de recursos para o desenvolvimento de capacidades.",
+        "Envolvimento com produtores rurais para garantir a participação ativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de produtores beneficiados com assistência técnica rural (% do total).",
+        "Percentual de participantes adotando práticas resilientes ao clima.",
+        "Redução da vulnerabilidade das propriedades ao risco climático (%)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0050",
+    "actionName": "Implement Agroforestry Systems",
+    "actionPriority": 10,
+    "explanation": "Para Vitória de Santo Antão, integrar árvores às práticas agrícolas (agrofloresta) melhora a qualidade do solo, aumenta a retenção de água e sequestra carbono. Essa técnica sustentável torna as propriedades rurais mais resilientes a choques climáticos, além de fornecer culturas e recursos adicionais. Trata-se de uma estratégia vantajosa tanto para a proteção ambiental quanto para a produtividade agrícola.",
+    "action": {
+      "ActionID": "icare_0050",
+      "ActionName": "Implementar Sistemas Agroflorestais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover sistemas agroflorestais integrando árvores na produção de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecimento de suporte técnico e orientação aos agricultores sobre o design e implementação de sistemas agroflorestais.",
+        "Desenvolvimento de incentivos financeiros ou subsídios para tornar a agrofloresta mais economicamente atraente.",
+        "Criação de políticas que integrem práticas agroflorestais no planejamento do uso da terra agrícola e nos sistemas de posse de terra."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas convertidas em sistemas agroflorestais (%).",
+        "Número de novos projetos agroflorestais implementados.",
+        "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0129",
+    "actionName": "Facilitate Technology Transfer for Conservation Practices",
+    "actionPriority": 11,
+    "explanation": "Para Vitória de Santo Antão, transferir tecnologia moderna de conservação para os atores locais aumenta a eficiência da gestão dos recursos e reduz os impactos ambientais. Métodos aprimorados, como irrigação de precisão e controle sustentável de pragas, elevam a produtividade local enquanto preservam os ecossistemas naturais. Esse compartilhamento de conhecimento fortalece a capacidade local e promove a sustentabilidade a longo prazo.",
+    "action": {
+      "ActionID": "icare_0129",
+      "ActionName": "Facilitar a Transferência de Tecnologia para Práticas de Conservação",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover a adoção de práticas agrícolas sustentáveis por meio de treinamento, projetos piloto e demonstrações de tecnologia.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar práticas sustentáveis.",
+        "Parcerias com instituições de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a adoção.",
+        "Acesso a assistência técnica para implementação bem-sucedida."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de tecnologias de conservação transferidas e aplicadas em fazendas.",
+        "Percentual de produtores treinados para implementar práticas de conservação.",
+        "Redução na degradação do solo ou aumento na cobertura vegetal (hectares)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 12,
+    "explanation": "Para Vitória de Santo Antão, adquirir produtos agroecológicos produzidos localmente nas compras públicas apoia a agricultura sustentável e reduz as emissões de transporte. Essa prática fortalece a economia regional e incentiva métodos de produção ambientalmente responsáveis. Além disso, garante que as instituições públicas se beneficiem de alimentos mais saudáveis e adaptados à realidade local.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar a Aquisição de Produtos Agroecológicos Produzidos Localmente em Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Concentre-se em comprar alimentos sustentáveis e produzidos localmente para instituições públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas de aquisição e identificação de fornecedores locais confiáveis.",
+        "Parcerias com produtores e alocação de financiamento para programas de aquisição sustentável.",
+        "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os critérios de sustentabilidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem do volume total de compras públicas provenientes de produtores agroecológicos locais.",
+        "Quantidade de emissões de CO₂ evitadas devido à redução da distância de transporte (tCO₂e).",
+        "Número de produtores agroecológicos beneficiados pelas compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 13,
+    "explanation": "Para Vitória de Santo Antão, integrar fontes de energia renovável ao tratamento e à distribuição de água aumenta a eficiência e a confiabilidade dos serviços municipais. Essa abordagem reduz os custos operacionais e alinha a infraestrutura hídrica aos objetivos de energia limpa. Além disso, garante que os sistemas de água da cidade permaneçam resilientes diante das mudanças nas condições climáticas.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energias renováveis nos sistemas municipais de água",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fontes de energia renovável, como energia solar ou eólica, para impulsionar sistemas de tratamento, bombeamento e distribuição de água, reduzindo custos de energia e emissões.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renovável, como energia solar ou eólica, em sistemas de tratamento e distribuição de água",
+        "Expertise técnica e infraestrutura para adaptar sistemas existentes com soluções de energia renovável ou projetar novas instalações alimentadas por energias renováveis",
+        "Apoio político e regulatório para incentivar o uso de energia limpa em sistemas de água e garantir sua integração nas redes de energia municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de sistemas municipais de água alimentados por energias renováveis.",
+        "Redução no consumo de energia de fontes não renováveis (kWh/ano).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0038",
+    "actionName": "Promote community solar farms",
+    "actionPriority": 14,
+    "explanation": "Para Vitória de Santo Antão, as fazendas solares comunitárias democratizam a energia renovável ao tornar a energia limpa mais acessível para os moradores e empresas locais. Esses projetos capacitam as comunidades a produzirem sua própria energia, reduzindo a dependência das redes centralizadas. Eles também promovem a criação de empregos locais e a conscientização ambiental por meio da propriedade compartilhada.",
+    "action": {
+      "ActionID": "icare_0038",
+      "ActionName": "Promover fazendas solares comunitárias",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Desenvolver e incentivar a adoção de projetos de energia solar compartilhada, permitindo que as comunidades se beneficiem coletivamente de energia limpa e renovável.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas e estruturas regulatórias para apoiar projetos de energia solar compartilhada baseados na comunidade e garantir o acesso equitativo à energia limpa",
+        "Disponibilidade de mecanismos financeiros ou incentivos para ajudar as comunidades a investir e manter sistemas de energia solar compartilhada",
+        "Colaboração entre governos locais, fornecedores de energia e organizações comunitárias para projetar e implementar projetos de energia solar compartilhada de forma eficaz"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de residências atendidas por projetos solares comunitários.",
+        "Emissões de GEE evitadas através da produção de energia solar (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0085",
+    "actionName": "Promote the Adoption of Agroecological Pest Control",
+    "actionPriority": 15,
+    "explanation": "Para Vitória de Santo Antão, a adoção de métodos agroecológicos de controle de pragas reduz a necessidade de pesticidas químicos, preservando a qualidade do solo e da água. Essa técnica sustentável promove o uso de predadores naturais e práticas orgânicas que diminuem os riscos ambientais e à saúde. Ela também contribui para um setor agrícola mais resiliente por meio de um manejo ecologicamente correto.",
+    "action": {
+      "ActionID": "icare_0085",
+      "ActionName": "Promover a Adoção do Controle de Pragas Agroecológico",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar métodos de controle de pragas que sejam agroecológicos, como o uso de predadores naturais e plantas repelentes, para reduzir a dependência de pesticidas químicos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de programas educacionais para informar os agricultores sobre métodos de controle de pragas agroecológicos e seus benefícios.",
+        "Fornecimento de acesso a recursos ou materiais para implementar métodos de controle de pragas naturais, como a introdução de insetos benéficos ou o cultivo de plantas repelentes.",
+        "Criação de incentivos ou redes de apoio para encorajar a transição do uso de pesticidas químicos em favor de alternativas sustentáveis."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento nas taxas de produtividade em áreas que adotam controle agroecológico de pragas (%).",
+        "Número de campanhas educativas realizadas sobre controle sustentável de pragas.",
+        "Impacto nos custos totais de produção devido à adoção de práticas agroecológicas (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "c40_0026",
+    "actionName": "Vehicle Emissions",
+    "actionPriority": 16,
+    "explanation": "Para Vitória de Santo Antão, a redução das emissões de veículos melhora diretamente a qualidade do ar urbano e a saúde pública. Padrões de emissão mais rigorosos e tecnologias mais limpas diminuem a pegada ambiental do setor de transportes. Essa medida é fundamental em áreas densamente povoadas, onde o tráfego é uma das principais fontes de poluentes.",
+    "action": {
+      "ActionID": "c40_0026",
+      "ActionName": "Emissões de Veículos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "As estratégias de redução de \"Vehicle Emissions\" concentram-se em minimizar o impacto ambiental de todos os tipos de veículos. A implementação de tecnologias mais limpas e a promoção de combustíveis alternativos contribuem para a redução das emissões, promovendo um transporte sustentável e ecológico.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "As estratégias de redução de \"Emissões de Veículos\" promovem inerentemente a equidade e a inclusão ao abordar os impactos ambientais que afetam desproporcionalmente comunidades vulneráveis e carentes. Essas comunidades frequentemente enfrentam níveis mais altos de poluição do ar e problemas de saúde relacionados devido à proximidade com áreas de tráfego intenso e zonas industriais. Ao implementar tecnologias mais limpas e promover combustíveis alternativos, a ação beneficia diretamente essas populações ao melhorar a qualidade do ar e reduzir os riscos à saúde.\n\nAlém disso, o foco em transporte sustentável e ecológico pode melhorar o acesso a opções de transporte acessíveis e eficientes para comunidades carentes, que podem não ter transporte público confiável. Essa inclusão garante que todos os membros da comunidade, independentemente do status socioeconômico, possam se beneficiar de um ar mais limpo e melhores resultados de saúde pública. No geral, a ação reconhece e aborda as necessidades específicas das populações vulneráveis, promovendo uma abordagem mais equitativa para a ação climática.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento e disponibilidade de tecnologias de veículos mais limpos",
+        "Infraestrutura para distribuição de combustíveis alternativos",
+        "Políticas e regulamentações governamentais que apoiam a redução de emissões",
+        "Conscientização pública e aceitação de opções de transporte ecológicas",
+        "Investimento em pesquisa e desenvolvimento de soluções de transporte sustentável"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas emissões de veículos (CO2, NOx, PM)",
+        "Percentagem de veículos utilizando combustíveis alternativos",
+        "Número de veículos elétricos nas estradas",
+        "Melhorias na eficiência de combustível (milhas por galão)",
+        "Taxa de adoção de tecnologias mais limpas",
+        "Redução no consumo de combustíveis fósseis",
+        "Taxas de uso de transporte público",
+        "Melhorias no índice de qualidade do ar",
+        "Percentagem de zonas de baixa emissão estabelecidas",
+        "Investimento em infraestrutura de transporte sustentável"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0097",
+    "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+    "actionPriority": 17,
+    "explanation": "Para Vitória de Santo Antão, promover a geração descentralizada de energia renovável capacita as comunidades locais a produzirem sua própria energia limpa. Isso diminui a dependência de grandes redes centralizadas e reduz as perdas na transmissão. A energia distribuída fortalece a resiliência e cria oportunidades econômicas nos mercados locais.",
+    "action": {
+      "ActionID": "icare_0097",
+      "ActionName": "Apoiar a Geração de Energia Distribuída em Residências e Negócios",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Facilitar o uso de painéis solares e outras tecnologias de energia renovável em residências e edifícios comerciais.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecer incentivos financeiros, regulamentações claras de instalação e acesso a tecnologias acessíveis para painéis solares.",
+        "Lançar campanhas de conscientização pública e oferecer treinamento para proprietários de residências e empresas.",
+        "Incentivar a adoção de tecnologias de energia renovável para promover economias de energia a longo prazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Capacidade instalada de geração de energia distribuída (MW).",
+        "Percentual de residências e empresas gerando sua própria energia (%).",
+        "Redução nas emissões de CO₂ através da geração distribuída (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0057",
+    "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+    "actionPriority": 18,
+    "explanation": "Para Vitória de Santo Antão, a expansão do transporte sobre trilhos reduz o número de veículos particulares nas ruas, aliviando o congestionamento e diminuindo as emissões. Sistemas de alta capacidade transportam mais pessoas de forma eficiente, reduzindo o consumo de energia per capita e o tempo de viagem. Essa melhoria não só aprimora a mobilidade urbana, como também traz benefícios ambientais e sociais significativos.",
+    "action": {
+      "ActionID": "icare_0057",
+      "ActionName": "Expansão dos sistemas de transporte público em massa sobre trilhos (metrôs, VLTs e monotrilhos).",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "railways"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esses sistemas oferecem alta capacidade e baixas emissões, cruciais para cidades com alta densidade populacional.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento no desenvolvimento e expansão da infraestrutura de transporte público de alta capacidade, como ônibus elétricos e sistemas de metrô.",
+        "Implementação de políticas e incentivos para encorajar o uso de transporte público em vez de veículos particulares.",
+        "Integração de fontes de energia renovável para alimentar esses sistemas, reduzindo ainda mais as emissões."
+      ],
+      "KeyPerformanceIndicators": [
+        "Comprimento das novas linhas de trânsito construídas (km/ano).",
+        "Redução na congestão do tráfego rodoviário (%).",
+        "Redução no uso de veículos privados (número de viagens evitadas/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0136",
+    "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+    "actionPriority": 19,
+    "explanation": "Para Vitória de Santo Antão, oferecer incentivos fiscais para práticas sustentáveis motiva as empresas a reduzirem emissões e conservarem recursos. Essas ferramentas financeiras tornam economicamente atraente o investimento em tecnologias verdes e práticas responsáveis. Com o tempo, tais incentivos promovem uma mudança de mercado em direção a métodos de produção ambientalmente sustentáveis.",
+    "action": {
+      "ActionID": "icare_0136",
+      "ActionName": "Apoiar a Implementação de Incentivos Fiscais Ecológicos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a aplicação de impostos ecológicos e incentivos para promover a conservação ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro regulatório claro com taxas de impostos justas e incentivos para a sustentabilidade.",
+        "Implementar sistemas de monitoramento eficazes para rastrear a conformidade e medir o impacto.",
+        "Promover a conscientização pública e fomentar a colaboração entre governos, empresas e comunidades."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de municípios que adotaram incentivos fiscais ambientais.",
+        "Percentual da receita tributária gasta em práticas sustentáveis.",
+        "Área ou número de propriedades beneficiadas por práticas de conservação como resultado de incentivos."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0134",
+    "actionName": "Strengthen Mechanisms for Deforestation Control",
+    "actionPriority": 20,
+    "explanation": "Para Vitória de Santo Antão, fortalecer os controles contra o desmatamento protege ecossistemas florestais vitais que atuam como sumidouros de carbono e regulam os ciclos da água. Ao coibir o corte ilegal de madeira e a limpeza de terras, a cidade preserva a biodiversidade e os recursos naturais. Esse esforço de conservação é fundamental para mitigar os impactos climáticos e garantir a estabilidade ambiental a longo prazo.",
+    "action": {
+      "ActionID": "icare_0134",
+      "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aprimorar o monitoramento e a fiscalização para prevenir o desmatamento ilegal e promover o uso sustentável da terra.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Forte estrutura legal, tecnologias de monitoramento avançadas (satélites e drones) e capacitação para as autoridades locais.",
+        "Colaboração com comunidades locais e financiamento adequado para os esforços de fiscalização.",
+        "Transparência e responsabilidade na elaboração de relatórios para garantir a implementação eficaz."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total monitorada para desmatamento (hectares/ano).",
+        "Redução na taxa anual de desmatamento (%).",
+        "Quantidade de emissões evitadas pela redução do desmatamento (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
 ]

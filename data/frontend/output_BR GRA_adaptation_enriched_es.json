@@ -1,1301 +1,1301 @@
 [
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "The development of a Climate Action Plan is crucial for Gravata\u00ed due to its significant environmental challenges. The city faces high emissions from transportation and stationary energy, contributing to its total emissions of over 678,000 tons. Additionally, the city is at risk from various climate hazards, including droughts, heatwaves, and floods, which threaten public health and infrastructure. By prioritizing a Climate Action Plan, Gravata\u00ed can strategically address these risks and work towards reducing its carbon footprint, enhancing resilience, and ensuring sustainable development.",
-        "action": {
-            "ActionID": "icare_0176",
-            "ActionName": "Desarrollo del Plan de Acci\u00f3n Clim\u00e1tica",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "storms",
-                "sea-level-rise",
-                "wildfires",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Un plan integral que describe las estrategias y acciones de una ciudad para mitigar las emisiones de gases de efecto invernadero y adaptarse a los impactos del cambio clim\u00e1tico, que t\u00edpicamente incluye una evaluaci\u00f3n de los riesgos y vulnerabilidades clim\u00e1ticas de la ciudad, el establecimiento de objetivos de reducci\u00f3n de emisiones y la implementaci\u00f3n de acciones en varios sectores como energ\u00eda, transporte, gesti\u00f3n de residuos y planificaci\u00f3n urbana.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Voluntad pol\u00edtica y compromiso del gobierno",
-                "Participaci\u00f3n y colaboraci\u00f3n de las partes interesadas",
-                "Financiaci\u00f3n y recursos para la implementaci\u00f3n"
-            ],
-            "KeyPerformanceIndicators": [
-                "Objetivos de reducci\u00f3n de emisiones de gases de efecto invernadero.",
-                "N\u00famero de acciones de adaptaci\u00f3n al clima implementadas.",
-                "Inversi\u00f3n en proyectos de mitigaci\u00f3n y adaptaci\u00f3n al clima."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "storms": "medium",
-                "sea-level-rise": "medium",
-                "wildfires": "medium",
-                "floods": "medium",
-                "landslides": "medium",
-                "diseases": "medium",
-                "heatwaves": "medium",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 2,
-        "explanation": "Strengthening programs for control and conservation of protected areas in Gravata\u00ed is crucial due to the city's vulnerability to environmental hazards such as droughts and heatwaves. These hazards pose significant risks to biodiversity, which can be mitigated by effective conservation efforts. Additionally, maintaining protected areas can help preserve the natural landscape and support the local ecosystem, which is vital for the city's resilience against climate change impacts. By prioritizing this action, Gravata\u00ed can enhance its environmental sustainability and safeguard its natural resources for future generations.",
-        "action": {
-            "ActionID": "icare_0162",
-            "ActionName": "Fortalecer los programas de control y conservaci\u00f3n de \u00e1reas protegidas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves",
-                "diseases"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta acci\u00f3n se centra en implementar una serie de estrategias integradas para mejorar la conservaci\u00f3n ambiental y maximizar sus beneficios, como la expansi\u00f3n de \u00e1reas protegidas, el desarrollo de planes de manejo para unidades de conservaci\u00f3n y la capacitaci\u00f3n de gu\u00edas de ecoturismo para fortalecer el turismo sostenible.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expansi\u00f3n de \u00e1reas protegidas para mejorar la conservaci\u00f3n ambiental.",
-                "Desarrollo de planes de manejo para unidades de conservaci\u00f3n.",
-                "Capacitaci\u00f3n de gu\u00edas de ecoturismo para promover el turismo sostenible."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de aumento en el \u00e1rea de regiones protegidas (%).",
-                "Reducci\u00f3n en las tasas de deforestaci\u00f3n en \u00e1reas protegidas anualmente (%).",
-                "N\u00famero de programas de conservaci\u00f3n fortalecidos anualmente."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "floods": "high",
-                "landslides": "high",
-                "heatwaves": "medium",
-                "diseases": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 3,
-        "explanation": "Establishing a plan for preparation and emergency response measures in the event of extreme weather events is crucial for Gravata\u00ed due to its vulnerability to various climate hazards. The city faces significant risks from floods, landslides, and heatwaves, which can severely impact public health and infrastructure. By having a robust emergency response plan, the city can mitigate the adverse effects of these events, ensuring the safety and well-being of its residents. Additionally, such a plan can enhance the city's resilience, allowing for quicker recovery and reducing long-term economic impacts.",
-        "action": {
-            "ActionID": "icare_0169",
-            "ActionName": "Establecer un Plan de Preparaci\u00f3n y Medidas de Respuesta de Emergencia en caso de eventos clim\u00e1ticos extremos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta acci\u00f3n se centra en preparar al municipio para responder a eventos extremos, con el objetivo de proporcionar una respuesta r\u00e1pida que minimice los impactos en la poblaci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de un plan integral de respuesta a emergencias que incluya la coordinaci\u00f3n entre las autoridades locales, los servicios de emergencia y las organizaciones comunitarias",
-                "Inversi\u00f3n en sistemas de alerta temprana e infraestructura para garantizar respuestas oportunas y efectivas a eventos extremos",
-                "Capacitaci\u00f3n y desarrollo de capacidades para los respondedores locales y las comunidades para mejorar la preparaci\u00f3n y la resiliencia ante eventos extremos"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de asociaciones de respuesta de emergencia establecidas.",
-                "Tiempo promedio de respuesta durante eventos clim\u00e1ticos extremos (horas).",
-                "Porcentaje de reducci\u00f3n en v\u00edctimas y da\u00f1os durante eventos clim\u00e1ticos extremos anualmente (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "high",
-                "diseases": "medium",
-                "landslides": "high",
-                "floods": "high",
-                "wildfires": "high",
-                "sea-level-rise": "low",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 4,
-        "explanation": "Encouraging sustainable land use practices in Gravata\u00ed is crucial due to the significant land use emissions contributing to the city's total emissions. With a biome characterized by grassland and savanna, sustainable practices can help preserve biodiversity and mitigate the impact of droughts, which are a key risk factor for the region. Additionally, sustainable land use can enhance food security and reduce the vulnerability of the local population to climate-related hazards. By prioritizing this action, Gravata\u00ed can work towards reducing its environmental footprint and improving resilience against climate change impacts.",
-        "action": {
-            "ActionID": "icare_0149",
-            "ActionName": "Fomentar pr\u00e1cticas sostenibles de uso de la tierra",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Promover m\u00e9todos que garanticen la conservaci\u00f3n y salud del suelo, preservando la biodiversidad, reduciendo la erosi\u00f3n y minimizando los impactos ambientales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Proporcionar acceso a conocimientos t\u00e9cnicos y capacitaci\u00f3n sobre pr\u00e1cticas de manejo sostenible del suelo.",
-                "Ofrecer incentivos financieros y formar asociaciones con instituciones de investigaci\u00f3n y agricultores locales.",
-                "Desarrollar sistemas de monitoreo para la salud del suelo y la biodiversidad, e implementar pol\u00edticas para el control de la erosi\u00f3n."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de \u00e1rea de tierra gestionada bajo pr\u00e1cticas de uso sostenible de la tierra (%)",
-                "Reducci\u00f3n en las tasas de deforestaci\u00f3n o degradaci\u00f3n de la tierra (%)",
-                "Aumento en los indicadores de biodiversidad en tierras gestionadas (por ejemplo, conteo de especies, calidad del h\u00e1bitat)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "medium",
-                "landslides": "high",
-                "floods": "medium",
-                "wildfires": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0152",
-        "actionName": "Recovery of degraded areas",
-        "actionPriority": 5,
-        "explanation": "The recovery of degraded areas in Gravata\u00ed is crucial due to the city's biome, which is primarily grassland and savanna. Restoring these areas can enhance biodiversity, which is currently at risk from both droughts and heatwaves. Additionally, rehabilitating degraded land can help mitigate land use emissions, which are a significant component of the city's total emissions. This action also supports the city's resilience against climate change impacts, such as landslides and floods, which pose high risks to public health and infrastructure.",
-        "action": {
-            "ActionID": "icare_0152",
-            "ActionName": "Recuperaci\u00f3n de \u00e1reas degradadas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Restaurar los ecosistemas da\u00f1ados por actividades humanas mediante la replantaci\u00f3n de vegetaci\u00f3n nativa, la restauraci\u00f3n del suelo, la eliminaci\u00f3n de especies invasoras y la implementaci\u00f3n de t\u00e9cnicas de gesti\u00f3n sostenible.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Desarrollar un plan de restauraci\u00f3n claro y asegurar financiamiento para la gesti\u00f3n a largo plazo.",
-                "Asegurar el acceso a especies de plantas nativas y proporcionar capacitaci\u00f3n en pr\u00e1cticas sostenibles.",
-                "Eliminar especies invasoras y colaborar con las comunidades locales para una restauraci\u00f3n exitosa del ecosistema."
-            ],
-            "KeyPerformanceIndicators": [
-                "Hect\u00e1reas de tierra degradada restauradas anualmente",
-                "Aumento en la cobertura vegetal (%) en \u00e1reas restauradas",
-                "N\u00famero de comunidades locales involucradas en proyectos de restauraci\u00f3n"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "landslides": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 6,
-        "explanation": "The action 'Relocation and Environmental Restoration in Vulnerable Areas' is crucial for Gravata\u00ed due to its high risk of public health impacts from landslides and floods. These hazards pose significant threats to the safety and well-being of residents, particularly in vulnerable areas. By focusing on relocation and environmental restoration, the city can mitigate these risks, enhance resilience, and protect its population. Additionally, addressing these environmental challenges can improve overall living conditions and reduce future disaster-related costs.",
-        "action": {
-            "ActionID": "icare_0181",
-            "ActionName": "Reubicaci\u00f3n y Restauraci\u00f3n Ambiental en \u00c1reas Vulnerables",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Un proyecto integral que aborda la vulnerabilidad socioambiental de un asentamiento informal. Incluye la reubicaci\u00f3n de residentes de \u00e1reas propensas a inundaciones, la restauraci\u00f3n del medio ambiente y la provisi\u00f3n de infraestructura y servicios sociales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Financiamiento adecuado",
-                "Coordinaci\u00f3n interinstitucional",
-                "Seguridad de tenencia de la tierra"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de hogares reubicados.",
-                "Progreso de la restauraci\u00f3n ambiental.",
-                "Reducci\u00f3n del riesgo de inundaci\u00f3n."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "landslides": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0157",
-        "actionName": "Maintenance and Revitalization of Riparian Forests",
-        "actionPriority": 7,
-        "explanation": "The maintenance and revitalization of riparian forests in Gravata\u00ed is crucial due to the city's vulnerability to floods and landslides, which pose significant risks to public health and infrastructure. Riparian forests play a vital role in stabilizing soil and reducing the impact of these hazards by enhancing water absorption and preventing erosion. Additionally, these forests contribute to biodiversity conservation, which is important given the city's grassland/savanna biome. By prioritizing this action, Gravata\u00ed can mitigate environmental risks and enhance the resilience of its ecosystems and communities.",
-        "action": {
-            "ActionID": "icare_0157",
-            "ActionName": "Mantenimiento y Revitalizaci\u00f3n de Bosques Ribere\u00f1os",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "landslides",
-                "floods",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mapeo y evaluaci\u00f3n de bosques ribere\u00f1os degradados, desarrollo de planes de revitalizaci\u00f3n con la plantaci\u00f3n de especies nativas, control de especies invasoras, medidas de contenci\u00f3n de la erosi\u00f3n y evaluaciones peri\u00f3dicas de los impactos en las condiciones ambientales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Asegurar la disponibilidad de datos geoespaciales y el mapeo previo de \u00e1reas degradadas.",
-                "Formar asociaciones con viveros locales y proporcionar equipo y mano de obra calificada para el control de especies invasoras.",
-                "Asegurar recursos financieros y establecer un sistema de monitoreo para evaluar los impactos ambientales."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total de bosques ribere\u00f1os restaurados (ha).",
-                "N\u00famero de proyectos implementados.",
-                "Reducci\u00f3n de la erosi\u00f3n y sedimentaci\u00f3n de cuerpos de agua (toneladas/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "medium",
-                "landslides": "high",
-                "floods": "high",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 8,
-        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Gravata\u00ed is crucial due to the city's vulnerability to water-related hazards such as droughts and floods. The city's moderate risk of inadequate water access further emphasizes the need for improved water management and monitoring. By establishing this system, Gravata\u00ed can enhance its ability to predict and respond to water scarcity and flooding events, thereby safeguarding public health and infrastructure. Additionally, this action supports sustainable water resource management, which is vital for the city's socio-economic stability and resilience against climate change impacts.",
-        "action": {
-            "ActionID": "icare_0164",
-            "ActionName": "Sistema de Monitoreo Hidrol\u00f3gico con Estaciones de Telemetr\u00eda",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementaci\u00f3n de un sistema de monitoreo hidrol\u00f3gico con estaciones de telemetr\u00eda para monitorear la lluvia, los niveles de agua y las variables meteorol\u00f3gicas en tiempo real.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Equipamiento e infraestructura",
-                "Sistema robusto de gesti\u00f3n de datos",
-                "Coordinaci\u00f3n institucional"
-            ],
-            "KeyPerformanceIndicators": [
-                "Puntualidad de los datos",
-                "Rentabilidad",
-                "Efectividad de mitigaci\u00f3n"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 9,
-        "explanation": "The action to develop diagnostics and restore areas of Special Social Interest Zones (ZEIS) in Gravata\u00ed is crucial due to the city's socio-economic context. With a very low-income population, improving these areas can significantly enhance living conditions and access to essential services. Additionally, addressing these zones can help mitigate risks associated with public health hazards, such as diseases and floods, which are significant concerns for the city. By focusing on ZEIS, the city can promote social equity and resilience against environmental challenges.",
-        "action": {
-            "ActionID": "icare_0151",
-            "ActionName": "Desarrollar diagn\u00f3sticos y restaurar \u00e1reas de Zonas de Inter\u00e9s Social Especial (ZEIS)",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "sea-level-rise",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Prioridad a las \u00e1reas ZEIS en acciones de mejora de vivienda y la aplicaci\u00f3n de recursos del Fondo de Urbanizaci\u00f3n, con la implementaci\u00f3n de infraestructura urbana que considere la adaptaci\u00f3n clim\u00e1tica en estos espacios. Uso de Soluciones basadas en la Naturaleza (NbS) en la adaptaci\u00f3n del saneamiento ambiental y las infraestructuras verdes y azules que potencian el ocio, la cultura, la agricultura urbana y actividades para fortalecer las asociaciones comunitarias.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de financiamiento del Fondo de Urbanizaci\u00f3n y otros mecanismos financieros para apoyar mejoras en la vivienda e infraestructura urbana en \u00e1reas ZEIS",
-                "Colaboraci\u00f3n entre urbanistas, expertos ambientales y comunidades locales para dise\u00f1ar e implementar soluciones basadas en la naturaleza (NbS) para la infraestructura urbana",
-                "Marcos de pol\u00edticas y regulaciones que integren medidas de adaptaci\u00f3n al clima en la planificaci\u00f3n urbana, asegurando que las inversiones prioricen la sostenibilidad ambiental y la comunidad"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de \u00e1reas ZEIS diagnosticadas y restauradas.",
-                "Porcentaje de residentes beneficiados por las \u00e1reas restauradas (%).",
-                "Inversiones p\u00fablicas asignadas a las \u00e1reas ZEIS (monto en moneda)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "sea-level-rise": "medium",
-                "floods": "medium",
-                "landslides": "low",
-                "diseases": "medium",
-                "heatwaves": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 10,
-        "explanation": "The implementation of urban gardens in Gravata\u00ed is a significant action due to its potential to enhance food security and promote sustainable land use. Given the city's vulnerability to droughts, urban gardens can provide a resilient food source and reduce dependency on external food supplies. Additionally, these gardens can help mitigate urban heat effects and improve biodiversity within the city. By fostering community engagement, urban gardens also contribute to social cohesion and provide educational opportunities about sustainable practices.",
-        "action": {
-            "ActionID": "icare_0156",
-            "ActionName": "Implementaci\u00f3n de huertos urbanos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Identificar y evaluar la viabilidad de \u00e1reas adecuadas para la instalaci\u00f3n de huertos urbanos y asegurar que los sitios elegidos cumplan con las expectativas de la comunidad.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Asegurar la disponibilidad de mapas detallados de uso del suelo y datos de planificaci\u00f3n urbana.",
-                "Involucrarse con las comunidades locales para comprender sus necesidades y expectativas.",
-                "Evaluar la calidad del suelo, la disponibilidad de agua y formar asociaciones para apoyar el establecimiento y mantenimiento de jardines."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de huertos urbanos creados.",
-                "Cantidad de alimentos producidos localmente (kg/a\u00f1o).",
-                "N\u00famero de beneficiarios directos."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "landslides": "low",
-                "floods": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 11,
-        "explanation": "Creating the Municipal Climate Change Forum in Gravata\u00ed is a crucial step towards addressing the city's environmental challenges. The city faces significant risks from climate-related hazards such as droughts, heatwaves, and floods, which impact water resources, public health, and infrastructure. Establishing a dedicated forum will facilitate coordinated efforts among stakeholders to develop and implement effective climate adaptation and mitigation strategies. This initiative will also enhance community engagement and awareness, empowering residents to contribute to sustainable solutions.",
-        "action": {
-            "ActionID": "icare_0148",
-            "ActionName": "Crear el Foro Municipal de Cambio Clim\u00e1tico",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "diseases",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Creaci\u00f3n de un Foro Municipal de Cambio Clim\u00e1tico con la participaci\u00f3n de l\u00edderes comunitarios, cient\u00edficos, colectivos, institutos de investigaci\u00f3n, ONG y miembros de la administraci\u00f3n municipal y estatal. El Foro servir\u00e1 como referencia para acciones relacionadas con el Cambio Clim\u00e1tico, con el objetivo de monitorear futuras pol\u00edticas sobre el tema en el municipio, estimular el di\u00e1logo y crear una red de discusiones sobre la crisis clim\u00e1tica.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Participaci\u00f3n de diversos actores, incluidos l\u00edderes comunitarios, cient\u00edficos, ONG y autoridades locales, para establecer y mantener el Foro.",
-                "Asignaci\u00f3n de recursos para facilitar reuniones, talleres y eventos regulares para que el Foro permanezca activo e impactante.",
-                "Desarrollo de un marco claro y directrices para que el Foro monitoree y gu\u00ede las pol\u00edticas e iniciativas de cambio clim\u00e1tico dentro del municipio."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de partes interesadas clave participando activamente en el foro.",
-                "N\u00famero de pol\u00edticas o acciones relacionadas con el clima propuestas a trav\u00e9s del foro.",
-                "Participaci\u00f3n p\u00fablica en iniciativas del foro (medida por la asistencia a eventos o encuestas)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "diseases": "medium",
-                "heatwaves": "medium",
-                "landslides": "low",
-                "floods": "medium",
-                "wildfires": "medium",
-                "sea-level-rise": "medium",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 12,
-        "explanation": "Implementing stringent building codes in Gravata\u00ed is crucial due to the city's vulnerability to natural hazards such as floods and landslides. These hazards pose significant risks to public health and infrastructure, as indicated by the high risk scores. By enforcing robust building standards, the city can enhance the resilience of its infrastructure, thereby protecting its residents and reducing potential economic losses. Additionally, improved building codes can contribute to better energy efficiency, aligning with the city's need to manage its stationary energy emissions.",
-        "action": {
-            "ActionID": "ipcc_0088",
-            "ActionName": "C\u00f3digos de construcci\u00f3n",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides"
-            ],
-            "Sector": [
-                "road_infrastructure",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "El desarrollo e implementaci\u00f3n de c\u00f3digos de construcci\u00f3n y regulaciones de dise\u00f1o arquitect\u00f3nico dirigidos a integrar par\u00e1metros de adaptaci\u00f3n clim\u00e1tica. Estos c\u00f3digos est\u00e1n enfocados en reducir riesgos de peligros inducidos por el clima, como inundaciones y deslizamientos de tierra. Tambi\u00e9n apoyan el desarrollo urbano resiliente al clima al guiar el uso del suelo, las pr\u00e1cticas de construcci\u00f3n y los est\u00e1ndares de infraestructura. La iniciativa fomenta la planificaci\u00f3n urbana estrat\u00e9gica a largo plazo para coordinar inversiones p\u00fablicas y privadas en adaptaci\u00f3n, incluyendo la creaci\u00f3n de zonas seguras y la transformaci\u00f3n de asentamientos precarios. Asegura que la nueva infraestructura sea resiliente a los riesgos clim\u00e1ticos y que los espacios urbanos sean seguros y sostenibles para las poblaciones actuales y futuras.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promueve la planificaci\u00f3n urbana inclusiva abordando los riesgos en asentamientos informales y precarios e integrando eco-parques y eco-jardines para poblaciones vulnerables.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integraci\u00f3n con evaluaciones locales de riesgo clim\u00e1tico",
-                "Colaboraci\u00f3n estrat\u00e9gica entre urbanistas y autoridades municipales"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de incidentes de inundaciones urbanas",
-                "Mayor disponibilidad de viviendas seguras en \u00e1reas de riesgo",
-                "Tasa de implementaci\u00f3n de eco-parques y eco-jardines en \u00e1reas vulnerables"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "floods": "high",
-                "landslides": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 13,
-        "explanation": "Improving food storage and distribution is crucial for Gravata\u00ed due to its vulnerability to droughts and floods, which can severely impact food security. The city's moderate risk of droughts and high risk of floods highlight the need for robust food systems to ensure consistent supply and reduce waste. Enhancing these systems can also mitigate the effects of climate-related disruptions, ensuring that the population has reliable access to food. Additionally, better food distribution can support the local economy by reducing losses and improving efficiency.",
-        "action": {
-            "ActionID": "ipcc_0097",
-            "ActionName": "Mejoras en el almacenamiento/distribuci\u00f3n de alimentos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms",
-                "heatwaves"
-            ],
-            "Sector": [
-                "food_security",
-                "road_infrastructure"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mejorar los sistemas de almacenamiento y distribuci\u00f3n de alimentos mediante la mejora de la infraestructura de transporte, la optimizaci\u00f3n de las redes comerciales y el acortamiento de las cadenas de suministro para garantizar la disponibilidad local de alimentos y la resiliencia ante los impactos clim\u00e1ticos. Esta acci\u00f3n tambi\u00e9n incluye aumentar la capacidad de las instalaciones de almacenamiento de alimentos locales para reducir las p\u00e9rdidas post-cosecha, abordar las ineficiencias en la log\u00edstica y reforzar la infraestructura para productos perecederos. Su objetivo es mejorar la seguridad alimentaria y reducir la vulnerabilidad a eventos extremos, interrupciones e impactos en cascada, especialmente durante pandemias y otras crisis.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Apoya el acceso equitativo a alimentos para poblaciones marginadas y vulnerables al priorizar la producci\u00f3n local de alimentos y mejorar los sistemas de distribuci\u00f3n que llegan a \u00e1reas desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en infraestructura",
-                "Incentivos pol\u00edticos para la producci\u00f3n local de alimentos",
-                "Colaboraci\u00f3n con los sectores de log\u00edstica y comercio",
-                "Tecnolog\u00eda para la optimizaci\u00f3n de la cadena de suministro"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de p\u00e9rdidas post-cosecha",
-                "Aumento de la disponibilidad de alimentos locales",
-                "Mejora de la eficiencia del transporte para la distribuci\u00f3n de alimentos",
-                "Acortamiento de las cadenas de suministro"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "storms": "high",
-                "heatwaves": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 14,
-        "explanation": "Improving the availability of health infrastructure in Gravata\u00ed is crucial due to the high risk of public health impacts from various hazards. The city faces significant threats from diseases and floods, both of which have high risk scores and can severely affect public health. Enhancing health infrastructure will help mitigate these risks by ensuring better preparedness and response capabilities. Additionally, with a growing population, the demand for robust health services is likely to increase, making this action a priority for the city's resilience and well-being.",
-        "action": {
-            "ActionID": "ipcc_0093",
-            "ActionName": "Disponibilidad de infraestructura sanitaria",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "sea-level-rise",
-                "diseases"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Garantizar el acceso a infraestructura de agua potable segura, proteger los servicios de salud y mejorar los sistemas de saneamiento para mitigar los impactos clim\u00e1ticos. Esto incluye desarrollar medidas adaptativas para la seguridad del agua frente a sequ\u00edas, inundaciones y el aumento del nivel del mar. Fortalecer la resiliencia de la infraestructura asegura un acceso equitativo a los servicios de salud, reduce los riesgos de contaminaci\u00f3n y aborda los impactos de los peligros inducidos por el clima.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Mejora el acceso a recursos cr\u00edticos de salud y agua para comunidades vulnerables y desatendidas, mitigando las inequidades causadas por los impactos clim\u00e1ticos.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Financiamiento adecuado",
-                "inversiones tecnol\u00f3gicas en infraestructura de salud y agua",
-                "gobernanza efectiva y coordinaci\u00f3n intersectorial"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de enfermedades transmitidas por el agua",
-                "mejor acceso a agua potable",
-                "n\u00famero de instalaciones de salud resilientes desarrolladas"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "sea-level-rise": "high",
-                "diseases": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0180",
-        "actionName": "Implement permeable pavements and increase green areas in roadways",
-        "actionPriority": 15,
-        "explanation": "Implementing permeable pavements and increasing green areas in roadways is crucial for Gravata\u00ed due to its vulnerability to floods, which pose a significant risk to public health and infrastructure. By enhancing the city's ability to manage stormwater, this action can mitigate the impact of heavy rainfall and reduce the likelihood of flooding. Additionally, increasing green areas can improve urban biodiversity and contribute to better air quality, which is beneficial for the overall health of the population. This action aligns with the city's need to address environmental challenges while promoting sustainable urban development.",
-        "action": {
-            "ActionID": "icare_0180",
-            "ActionName": "Implementar pavimentos permeables y aumentar las \u00e1reas verdes en las v\u00edas p\u00fablicas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Incrementar las \u00e1reas permeables y semi-permeables en edificios y espacios p\u00fablicos bajo la administraci\u00f3n de la Ciudad, con la adopci\u00f3n de soluciones basadas en la naturaleza (NbS). En \u00e1reas con limitaciones de espacio, la acci\u00f3n incluye an\u00e1lisis de viabilidad para implementar pavimentos permeables y aumentar las \u00e1reas verdes en las v\u00edas. Entre las soluciones de construcci\u00f3n tradicionales, se encuentran caracter\u00edsticas como bordillos y canaletas con desag\u00fces pluviales, as\u00ed como soluciones a mayor escala como estanques de retenci\u00f3n. Las soluciones basadas en la naturaleza incluyen la plantaci\u00f3n de \u00e1rboles urbanos, techos verdes, cisternas de agua de lluvia, bio-swales, y m\u00e1s.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Expansi\u00f3n de \u00e1reas permeables y semi-permeables en edificios administrados por la ciudad y espacios p\u00fablicos.",
-                "Adopci\u00f3n de soluciones basadas en la naturaleza (NbS) como la plantaci\u00f3n de \u00e1rboles urbanos, techos verdes, cisternas de agua de lluvia y bio-swales.",
-                "An\u00e1lisis de viabilidad para pavimentos permeables y aumento de \u00e1reas verdes en carreteras, junto con soluciones tradicionales de gesti\u00f3n de aguas pluviales como bordillos, canaletas y estanques de retenci\u00f3n."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en la escorrent\u00eda de agua superficial durante eventos de lluvia (%).",
-                "Disminuci\u00f3n en la ocurrencia de inundaciones en \u00e1reas modificadas.",
-                "Porcentaje de espacios p\u00fablicos que cumplen con las nuevas regulaciones de superficies permeables."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "floods": "high",
-                "landslides": "medium",
-                "heatwaves": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 16,
-        "explanation": "Improving access to health care in Gravata\u00ed is crucial due to the high risk of public health impacts from various hazards such as heatwaves, diseases, and floods. The city's vulnerability to these hazards, particularly the extremely high risk from landslides and floods, underscores the need for robust health care systems to manage potential health crises. Additionally, enhancing health care access can mitigate the effects of socio-economic challenges, as the city has a very low-income population that may struggle to afford private health services. Prioritizing health care access will help ensure that all residents, especially the most vulnerable, receive timely and adequate medical attention during emergencies.",
-        "action": {
-            "ActionID": "ipcc_0094",
-            "ActionName": "Acceso a la atenci\u00f3n m\u00e9dica",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "droughts"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mejorar el acceso a los servicios de atenci\u00f3n m\u00e9dica, incluidos los servicios de salud y nutrici\u00f3n, agua limpia, saneamiento y recursos de salud mental culturalmente apropiados. Ampliar las capacidades de telemedicina permite una entrega eficiente de servicios de salud, particularmente para poblaciones remotas y desatendidas. Fortalecer los sistemas b\u00e1sicos de salud p\u00fablica y la preparaci\u00f3n para desastres puede reducir r\u00e1pidamente la vulnerabilidad a los riesgos de salud relacionados con el clima.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promueve el acceso equitativo a la atenci\u00f3n m\u00e9dica para grupos marginados y vulnerables, incluidas las poblaciones sin hogar, las comunidades remotas y aquellos afectados por desigualdades en la vivienda.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en tecnolog\u00edas de telemedicina",
-                "Fortalecimiento de la gobernanza de los sistemas de salud p\u00fablica",
-                "Desarrollo de capacidades para los trabajadores de la salud",
-                "Mejoras en la infraestructura de las instalaciones de salud"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de la mortalidad relacionada con el clima",
-                "Mayor acceso a la telemedicina",
-                "N\u00famero de programas de salud adaptados culturalmente implementados",
-                "Mejora de los indicadores de acceso al agua y saneamiento"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "floods": "high",
-                "droughts": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0144",
-        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
-        "actionPriority": 17,
-        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Gravata\u00ed due to its vulnerability to various climate hazards. The city faces significant risks from floods, landslides, and heatwaves, which can severely impact public health and infrastructure. Establishing a financial support program would help mitigate the economic burden on affected communities and enhance resilience against these events. Additionally, such a program could facilitate quicker recovery and adaptation, ensuring the well-being and safety of the population.",
-        "action": {
-            "ActionID": "icare_0144",
-            "ActionName": "Creaci\u00f3n de un Programa de Apoyo Financiero para Abordar Eventos Clim\u00e1ticos Extremos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "wildfires",
-                "floods",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Creaci\u00f3n de un programa para mitigar los efectos de las tragedias clim\u00e1ticas, incluyendo asistencia financiera a las familias afectadas y esfuerzos para asegurar recursos adicionales para la recuperaci\u00f3n y reconstrucci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Recursos financieros",
-                "Planes de respuesta de emergencia",
-                "Coordinaci\u00f3n institucional"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de personas asistidas",
-                "Rentabilidad",
-                "Resiliencia comunitaria"
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "medium",
-                "diseases": "medium",
-                "landslides": "medium",
-                "wildfires": "medium",
-                "floods": "medium",
-                "sea-level-rise": "medium",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0145",
-        "actionName": "Strengthen the healthcare network to attend to climate victims",
-        "actionPriority": 18,
-        "explanation": "Strengthening the healthcare network in Gravata\u00ed is crucial due to the high risk of public health impacts from climate-related hazards. The city faces significant threats from heatwaves, diseases, and floods, all of which can severely strain existing healthcare resources. By enhancing the healthcare infrastructure, the city can better manage the increased demand for medical services during climate emergencies. This action will also help mitigate the long-term health impacts on the population, ensuring a more resilient community in the face of climate change.",
-        "action": {
-            "ActionID": "icare_0145",
-            "ActionName": "Fortalecer la red de atenci\u00f3n m\u00e9dica para atender a las v\u00edctimas del clima",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "storms",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mejorar la infraestructura de las unidades de salud para asistir a las personas que requieren atenci\u00f3n m\u00e9dica debido a impactos asociados con riesgos clim\u00e1ticos (v\u00edctimas del clima), como aquellos afectados por olas de calor o inundaciones, especialmente en \u00e1reas m\u00e1s vulnerables. Desarrollar planes de acci\u00f3n para preparar la red de salud para situaciones extremas relacionadas con el clima.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en la renovaci\u00f3n y expansi\u00f3n de las instalaciones de salud, asegurando que est\u00e9n equipadas para manejar los impactos en la salud relacionados con el clima, especialmente en \u00e1reas vulnerables.",
-                "Desarrollo de planes de acci\u00f3n y programas de capacitaci\u00f3n para profesionales de la salud para responder a eventos clim\u00e1ticos extremos como olas de calor e inundaciones.",
-                "Colaboraci\u00f3n con autoridades locales, equipos de respuesta a emergencias y expertos en clima para crear un marco integral para preparar la red de salud ante los riesgos clim\u00e1ticos."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de instalaciones de salud mejoradas para emergencias relacionadas con el clima.",
-                "Aumento en el personal de salud capacitado en respuesta a emergencias clim\u00e1ticas (%).",
-                "N\u00famero de lesiones relacionadas con el clima tratadas con \u00e9xito. |||"
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "diseases": "medium",
-                "landslides": "medium",
-                "floods": "high",
-                "storms": "high",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 19,
-        "explanation": "Farm and fishery improvements are crucial for Gravata\u00ed due to the city's vulnerability to droughts, which significantly impact water resources and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience to climate variability. Additionally, improving fisheries can support local food supply and economic stability, especially given the very low income levels in the area. These improvements can also contribute to reducing emissions from land use, which is a notable source of emissions in the city.",
-        "action": {
-            "ActionID": "ipcc_0096",
-            "ActionName": "Mejoras en granjas/pesquer\u00edas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementar una serie de estrategias para adaptar granjas y pesquer\u00edas a los impactos clim\u00e1ticos. Esto incluye cambiar el equipo de pesca o la potencia de los barcos, adoptar nuevas variedades de cultivos o ajustar los calendarios de siembra, mejorar los sistemas de riego, integrar sistemas de cultivos y ganado, reubicar el ganado con una mejor gesti\u00f3n de pastizales y adoptar sistemas agroecol\u00f3gicos y de agroforester\u00eda. Innovaciones tecnol\u00f3gicas como la agricultura inteligente y medidas financieras como los subsidios apoyan estas adaptaciones.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Garantiza el acceso a recursos para agricultores y pescadores marginados, promueve opciones diversas de sustento y fortalece la resiliencia en comunidades desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Apoyo pol\u00edtico para la agricultura y pesca resilientes al clima",
-                "Acceso a financiamiento y subsidios",
-                "Capacitaci\u00f3n para adoptar nuevas pr\u00e1cticas",
-                "Mejora de la infraestructura de mercado"
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento de la productividad agr\u00edcola y pesquera",
-                "Tasa de adopci\u00f3n de sistemas integrados",
-                "Reducci\u00f3n de p\u00e9rdidas de rendimiento relacionadas con el clima"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "floods": "medium",
-                "wildfires": "low",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 20,
-        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for Gravata\u00ed due to its potential impact on food security and waste emissions. With a population of over 265,000, reducing food waste can significantly lower waste emissions, which currently stand at 92,907.36. Additionally, improving dietary habits can enhance public health, which is at risk from various hazards such as diseases and floods. This action aligns with the city's need to address food security challenges exacerbated by climate-related risks like droughts and floods.",
-        "action": {
-            "ActionID": "ipcc_0098",
-            "ActionName": "Cambio de comportamiento en dietas y desperdicio de alimentos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Reducir la p\u00e9rdida y el desperdicio de alimentos mediante la mejora de las pr\u00e1cticas de producci\u00f3n, distribuci\u00f3n y consumo de alimentos. Las acciones incluyen mejorar las t\u00e9cnicas agr\u00edcolas, adoptar tecnolog\u00edas de ahorro de agua, implementar soluciones de almacenamiento de bajo costo y promover dietas basadas en plantas. Los responsables de pol\u00edticas pueden fomentar estos comportamientos con pol\u00edticas de precios adecuadas, iniciativas de agricultura sostenible y apoyo a grupos desfavorecidos. La acci\u00f3n enfatiza el cambio hacia dietas m\u00e1s saludables, la reducci\u00f3n del consumo excesivo y el apoyo a los sistemas alimentarios locales para mitigar las emisiones de gases de efecto invernadero y garantizar la seguridad alimentaria ante el cambio clim\u00e1tico.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promueve el acceso a alimentos asequibles y saludables para comunidades vulnerables, empoderando a mujeres, j\u00f3venes y grupos socialmente desfavorecidos. Fomenta la participaci\u00f3n equitativa en pr\u00e1cticas agr\u00edcolas sostenibles y redes alimentarias locales.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Educaci\u00f3n y formaci\u00f3n para agricultores",
-                "Acceso a insumos agr\u00edcolas sostenibles",
-                "Apoyo pol\u00edtico para pr\u00e1cticas sostenibles",
-                "Infraestructura tecnol\u00f3gica para almacenamiento y procesamiento"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en los porcentajes de p\u00e9rdida y desperdicio de alimentos",
-                "Aumento en la adopci\u00f3n de dietas basadas en plantas",
-                "Mejora en los indicadores de seguridad alimentaria",
-                "Reducci\u00f3n de emisiones de GEI de los sistemas alimentarios"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "medium",
-                "floods": "medium",
-                "wildfires": "low"
-            },
-            "biome": "none"
-        }
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0176",
+    "actionName": "Development of Climate Action Plan",
+    "actionPriority": 1,
+    "explanation": "El desarrollo de un Plan de Acción Climática es crucial para Gravataí debido a sus importantes desafíos ambientales. La ciudad enfrenta altas emisiones provenientes del transporte y de la energía estacionaria, lo que contribuye a un total de más de 678,000 toneladas de emisiones. Además, la ciudad está en riesgo por diversos peligros climáticos, incluyendo sequías, olas de calor e inundaciones, que amenazan la salud pública y la infraestructura. Al priorizar un Plan de Acción Climática, Gravataí puede abordar estratégicamente estos riesgos y trabajar para reducir su huella de carbono, aumentar su resiliencia y garantizar un desarrollo sostenible.",
+    "action": {
+      "ActionID": "icare_0176",
+      "ActionName": "Desarrollo del Plan de Acción Climática",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "wildfires",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Un plan integral que describe las estrategias y acciones de una ciudad para mitigar las emisiones de gases de efecto invernadero y adaptarse a los impactos del cambio climático, que típicamente incluye una evaluación de los riesgos y vulnerabilidades climáticas de la ciudad, el establecimiento de objetivos de reducción de emisiones y la implementación de acciones en varios sectores como energía, transporte, gestión de residuos y planificación urbana.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Voluntad política y compromiso del gobierno",
+        "Participación y colaboración de las partes interesadas",
+        "Financiación y recursos para la implementación"
+      ],
+      "KeyPerformanceIndicators": [
+        "Objetivos de reducción de emisiones de gases de efecto invernadero.",
+        "Número de acciones de adaptación al clima implementadas.",
+        "Inversión en proyectos de mitigación y adaptación al clima."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "medium",
+        "sea-level-rise": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "landslides": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "droughts": "medium"
+      },
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0162",
+    "actionName": "Strengthen programs for control and conservation of protected areas",
+    "actionPriority": 2,
+    "explanation": "El fortalecimiento de los programas para el control y la conservación de las áreas protegidas en Gravataí es crucial debido a la vulnerabilidad de la ciudad frente a peligros ambientales como sequías y olas de calor. Estos peligros representan riesgos significativos para la biodiversidad, los cuales pueden ser mitigados mediante esfuerzos de conservación efectivos. Además, el mantenimiento de las áreas protegidas puede ayudar a preservar el paisaje natural y apoyar el ecosistema local, lo cual es vital para la resiliencia de la ciudad ante los impactos del cambio climático. Al priorizar esta acción, Gravataí puede mejorar su sostenibilidad ambiental y salvaguardar sus recursos naturales para las futuras generaciones.",
+    "action": {
+      "ActionID": "icare_0162",
+      "ActionName": "Fortalecer los programas de control y conservación de áreas protegidas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves",
+        "diseases"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en implementar una serie de estrategias integradas para mejorar la conservación ambiental y maximizar sus beneficios, como la expansión de áreas protegidas, el desarrollo de planes de manejo para unidades de conservación y la capacitación de guías de ecoturismo para fortalecer el turismo sostenible.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expansión de áreas protegidas para mejorar la conservación ambiental.",
+        "Desarrollo de planes de manejo para unidades de conservación.",
+        "Capacitación de guías de ecoturismo para promover el turismo sostenible."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de aumento en el área de regiones protegidas (%).",
+        "Reducción en las tasas de deforestación en áreas protegidas anualmente (%).",
+        "Número de programas de conservación fortalecidos anualmente."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high",
+        "heatwaves": "medium",
+        "diseases": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0169",
+    "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+    "actionPriority": 3,
+    "explanation": "Establecer un plan de preparación y medidas de respuesta ante emergencias en caso de eventos climáticos extremos es crucial para Gravataí debido a su vulnerabilidad frente a diversos riesgos climáticos. La ciudad enfrenta riesgos significativos de inundaciones, deslizamientos de tierra y olas de calor, los cuales pueden afectar gravemente la salud pública y la infraestructura. Al contar con un plan de respuesta a emergencias sólido, la ciudad puede mitigar los efectos adversos de estos eventos, garantizando la seguridad y el bienestar de sus habitantes. Además, dicho plan puede fortalecer la resiliencia de la ciudad, permitiendo una recuperación más rápida y reduciendo los impactos económicos a largo plazo.",
+    "action": {
+      "ActionID": "icare_0169",
+      "ActionName": "Establecer un Plan de Preparación y Medidas de Respuesta de Emergencia en caso de eventos climáticos extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en preparar al municipio para responder a eventos extremos, con el objetivo de proporcionar una respuesta rápida que minimice los impactos en la población.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de un plan integral de respuesta a emergencias que incluya la coordinación entre las autoridades locales, los servicios de emergencia y las organizaciones comunitarias",
+        "Inversión en sistemas de alerta temprana e infraestructura para garantizar respuestas oportunas y efectivas a eventos extremos",
+        "Capacitación y desarrollo de capacidades para los respondedores locales y las comunidades para mejorar la preparación y la resiliencia ante eventos extremos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de asociaciones de respuesta de emergencia establecidas.",
+        "Tiempo promedio de respuesta durante eventos climáticos extremos (horas).",
+        "Porcentaje de reducción en víctimas y daños durante eventos climáticos extremos anualmente (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "wildfires": "high",
+        "sea-level-rise": "low",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0149",
+    "actionName": "Encourage sustainable land use practices",
+    "actionPriority": 4,
+    "explanation": "Fomentar prácticas sostenibles de uso del suelo en Gravataí es fundamental debido a las significativas emisiones derivadas del uso del suelo que contribuyen al total de emisiones de la ciudad. Con un bioma caracterizado por pastizales y sabana, las prácticas sostenibles pueden ayudar a preservar la biodiversidad y mitigar el impacto de las sequías, que constituyen un factor de riesgo clave para la región. Además, el uso sostenible del suelo puede mejorar la seguridad alimentaria y reducir la vulnerabilidad de la población local ante peligros relacionados con el clima. Al priorizar esta acción, Gravataí puede avanzar hacia la reducción de su huella ambiental y mejorar su resiliencia frente a los impactos del cambio climático.",
+    "action": {
+      "ActionID": "icare_0149",
+      "ActionName": "Fomentar prácticas sostenibles de uso de la tierra",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Promover métodos que garanticen la conservación y salud del suelo, preservando la biodiversidad, reduciendo la erosión y minimizando los impactos ambientales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Proporcionar acceso a conocimientos técnicos y capacitación sobre prácticas de manejo sostenible del suelo.",
+        "Ofrecer incentivos financieros y formar asociaciones con instituciones de investigación y agricultores locales.",
+        "Desarrollar sistemas de monitoreo para la salud del suelo y la biodiversidad, e implementar políticas para el control de la erosión."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de área de tierra gestionada bajo prácticas de uso sostenible de la tierra (%)",
+        "Reducción en las tasas de deforestación o degradación de la tierra (%)",
+        "Aumento en los indicadores de biodiversidad en tierras gestionadas (por ejemplo, conteo de especies, calidad del hábitat)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "medium",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0152",
+    "actionName": "Recovery of degraded areas",
+    "actionPriority": 5,
+    "explanation": "La recuperación de las áreas degradadas en Gravataí es crucial debido al bioma de la ciudad, que es principalmente pastizal y sabana. Restaurar estas áreas puede aumentar la biodiversidad, la cual actualmente está en riesgo tanto por las sequías como por las olas de calor. Además, la rehabilitación de tierras degradadas puede ayudar a mitigar las emisiones derivadas del uso del suelo, que constituyen un componente significativo de las emisiones totales de la ciudad. Esta acción también fortalece la resiliencia de la ciudad frente a los impactos del cambio climático, como deslizamientos de tierra e inundaciones, que representan altos riesgos para la salud pública y la infraestructura.",
+    "action": {
+      "ActionID": "icare_0152",
+      "ActionName": "Recuperación de áreas degradadas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar los ecosistemas dañados por actividades humanas mediante la replantación de vegetación nativa, la restauración del suelo, la eliminación de especies invasoras y la implementación de técnicas de gestión sostenible.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Desarrollar un plan de restauración claro y asegurar financiamiento para la gestión a largo plazo.",
+        "Asegurar el acceso a especies de plantas nativas y proporcionar capacitación en prácticas sostenibles.",
+        "Eliminar especies invasoras y colaborar con las comunidades locales para una restauración exitosa del ecosistema."
+      ],
+      "KeyPerformanceIndicators": [
+        "Hectáreas de tierra degradada restauradas anualmente",
+        "Aumento en la cobertura vegetal (%) en áreas restauradas",
+        "Número de comunidades locales involucradas en proyectos de restauración"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0181",
+    "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+    "actionPriority": 6,
+    "explanation": "La acción “Reubicación y Restauración Ambiental en Áreas Vulnerables” es crucial para Gravataí debido al alto riesgo de impactos en la salud pública por deslizamientos de tierra e inundaciones. Estos peligros representan amenazas significativas para la seguridad y el bienestar de los residentes, especialmente en las zonas vulnerables. Al centrarse en la reubicación y la restauración ambiental, la ciudad puede mitigar estos riesgos, aumentar la resiliencia y proteger a su población. Además, abordar estos desafíos ambientales puede mejorar las condiciones de vida en general y reducir los costos futuros relacionados con desastres.",
+    "action": {
+      "ActionID": "icare_0181",
+      "ActionName": "Reubicación y Restauración Ambiental en Áreas Vulnerables",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Un proyecto integral que aborda la vulnerabilidad socioambiental de un asentamiento informal. Incluye la reubicación de residentes de áreas propensas a inundaciones, la restauración del medio ambiente y la provisión de infraestructura y servicios sociales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamiento adecuado",
+        "Coordinación interinstitucional",
+        "Seguridad de tenencia de la tierra"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de hogares reubicados.",
+        "Progreso de la restauración ambiental.",
+        "Reducción del riesgo de inundación."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0157",
+    "actionName": "Maintenance and Revitalization of Riparian Forests",
+    "actionPriority": 7,
+    "explanation": "El mantenimiento y la revitalización de los bosques ribereños en Gravataí son cruciales debido a la vulnerabilidad de la ciudad a inundaciones y deslizamientos de tierra, los cuales representan riesgos significativos para la salud pública y la infraestructura. Los bosques ribereños desempeñan un papel vital en la estabilización del suelo y la reducción del impacto de estos peligros al mejorar la absorción de agua y prevenir la erosión. Además, estos bosques contribuyen a la conservación de la biodiversidad, lo cual es importante dado el bioma de pastizal/sabana de la ciudad. Al priorizar esta acción, Gravataí puede mitigar los riesgos ambientales y aumentar la resiliencia de sus ecosistemas y comunidades.",
+    "action": {
+      "ActionID": "icare_0157",
+      "ActionName": "Mantenimiento y Revitalización de Bosques Ribereños",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mapeo y evaluación de bosques ribereños degradados, desarrollo de planes de revitalización con la plantación de especies nativas, control de especies invasoras, medidas de contención de la erosión y evaluaciones periódicas de los impactos en las condiciones ambientales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Asegurar la disponibilidad de datos geoespaciales y el mapeo previo de áreas degradadas.",
+        "Formar asociaciones con viveros locales y proporcionar equipo y mano de obra calificada para el control de especies invasoras.",
+        "Asegurar recursos financieros y establecer un sistema de monitoreo para evaluar los impactos ambientales."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total de bosques ribereños restaurados (ha).",
+        "Número de proyectos implementados.",
+        "Reducción de la erosión y sedimentación de cuerpos de agua (toneladas/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0164",
+    "actionName": "Hydrological Monitoring System with Telemetry Stations",
+    "actionPriority": 8,
+    "explanation": "Implementar un sistema de monitoreo hidrológico con estaciones de telemetría en Gravataí es crucial debido a la vulnerabilidad de la ciudad frente a peligros relacionados con el agua, como sequías e inundaciones. El riesgo moderado de acceso inadecuado al agua en la ciudad resalta aún más la necesidad de mejorar la gestión y el monitoreo de los recursos hídricos. Al establecer este sistema, Gravataí puede mejorar su capacidad para predecir y responder a eventos de escasez de agua e inundaciones, protegiendo así la salud pública y la infraestructura. Además, esta acción apoya la gestión sostenible de los recursos hídricos, lo cual es fundamental para la estabilidad socioeconómica de la ciudad y su resiliencia frente a los impactos del cambio climático.",
+    "action": {
+      "ActionID": "icare_0164",
+      "ActionName": "Sistema de Monitoreo Hidrológico con Estaciones de Telemetría",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementación de un sistema de monitoreo hidrológico con estaciones de telemetría para monitorear la lluvia, los niveles de agua y las variables meteorológicas en tiempo real.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Equipamiento e infraestructura",
+        "Sistema robusto de gestión de datos",
+        "Coordinación institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Puntualidad de los datos",
+        "Rentabilidad",
+        "Efectividad de mitigación"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0151",
+    "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+    "actionPriority": 9,
+    "explanation": "La acción de desarrollar diagnósticos y restaurar áreas de Zonas Especiales de Interés Social (ZEIS) en Gravataí es crucial debido al contexto socioeconómico de la ciudad. Con una población de muy bajos ingresos, la mejora de estas áreas puede aumentar significativamente las condiciones de vida y el acceso a servicios esenciales. Además, abordar estas zonas puede ayudar a mitigar los riesgos asociados con peligros para la salud pública, como enfermedades e inundaciones, que son preocupaciones importantes para la ciudad. Al enfocarse en las ZEIS, la ciudad puede promover la equidad social y la resiliencia frente a los desafíos ambientales.",
+    "action": {
+      "ActionID": "icare_0151",
+      "ActionName": "Desarrollar diagnósticos y restaurar áreas de Zonas de Interés Social Especial (ZEIS)",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "sea-level-rise",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Prioridad a las áreas ZEIS en acciones de mejora de vivienda y la aplicación de recursos del Fondo de Urbanización, con la implementación de infraestructura urbana que considere la adaptación climática en estos espacios. Uso de Soluciones basadas en la Naturaleza (NbS) en la adaptación del saneamiento ambiental y las infraestructuras verdes y azules que potencian el ocio, la cultura, la agricultura urbana y actividades para fortalecer las asociaciones comunitarias.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de financiamiento del Fondo de Urbanización y otros mecanismos financieros para apoyar mejoras en la vivienda e infraestructura urbana en áreas ZEIS",
+        "Colaboración entre urbanistas, expertos ambientales y comunidades locales para diseñar e implementar soluciones basadas en la naturaleza (NbS) para la infraestructura urbana",
+        "Marcos de políticas y regulaciones que integren medidas de adaptación al clima en la planificación urbana, asegurando que las inversiones prioricen la sostenibilidad ambiental y la comunidad"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de áreas ZEIS diagnosticadas y restauradas.",
+        "Porcentaje de residentes beneficiados por las áreas restauradas (%).",
+        "Inversiones públicas asignadas a las áreas ZEIS (monto en moneda)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "sea-level-rise": "medium",
+        "floods": "medium",
+        "landslides": "low",
+        "diseases": "medium",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0156",
+    "actionName": "Implementation of urban gardens",
+    "actionPriority": 10,
+    "explanation": "La implementación de huertos urbanos en Gravataí es una acción significativa debido a su potencial para mejorar la seguridad alimentaria y promover el uso sostenible del suelo. Dada la vulnerabilidad de la ciudad a las sequías, los huertos urbanos pueden proporcionar una fuente de alimentos resiliente y reducir la dependencia de suministros externos. Además, estos huertos pueden ayudar a mitigar los efectos del calor urbano y mejorar la biodiversidad dentro de la ciudad. Al fomentar la participación comunitaria, los huertos urbanos también contribuyen a la cohesión social y ofrecen oportunidades educativas sobre prácticas sostenibles.",
+    "action": {
+      "ActionID": "icare_0156",
+      "ActionName": "Implementación de huertos urbanos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Identificar y evaluar la viabilidad de áreas adecuadas para la instalación de huertos urbanos y asegurar que los sitios elegidos cumplan con las expectativas de la comunidad.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Asegurar la disponibilidad de mapas detallados de uso del suelo y datos de planificación urbana.",
+        "Involucrarse con las comunidades locales para comprender sus necesidades y expectativas.",
+        "Evaluar la calidad del suelo, la disponibilidad de agua y formar asociaciones para apoyar el establecimiento y mantenimiento de jardines."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de huertos urbanos creados.",
+        "Cantidad de alimentos producidos localmente (kg/año).",
+        "Número de beneficiarios directos."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "landslides": "low",
+        "floods": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0148",
+    "actionName": "Create the Municipal Climate Change Forum",
+    "actionPriority": 11,
+    "explanation": "La creación del Foro Municipal de Cambio Climático en Gravataí es un paso crucial para abordar los desafíos ambientales de la ciudad. Gravataí enfrenta riesgos significativos derivados de peligros relacionados con el clima, como sequías, olas de calor e inundaciones, que afectan los recursos hídricos, la salud pública y la infraestructura. El establecimiento de un foro dedicado facilitará los esfuerzos coordinados entre las partes interesadas para desarrollar e implementar estrategias efectivas de adaptación y mitigación climática. Esta iniciativa también fomentará la participación y la concienciación de la comunidad, empoderando a los residentes para contribuir a soluciones sostenibles.",
+    "action": {
+      "ActionID": "icare_0148",
+      "ActionName": "Crear el Foro Municipal de Cambio Climático",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "diseases",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Creación de un Foro Municipal de Cambio Climático con la participación de líderes comunitarios, científicos, colectivos, institutos de investigación, ONG y miembros de la administración municipal y estatal. El Foro servirá como referencia para acciones relacionadas con el Cambio Climático, con el objetivo de monitorear futuras políticas sobre el tema en el municipio, estimular el diálogo y crear una red de discusiones sobre la crisis climática.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Participación de diversos actores, incluidos líderes comunitarios, científicos, ONG y autoridades locales, para establecer y mantener el Foro.",
+        "Asignación de recursos para facilitar reuniones, talleres y eventos regulares para que el Foro permanezca activo e impactante.",
+        "Desarrollo de un marco claro y directrices para que el Foro monitoree y guíe las políticas e iniciativas de cambio climático dentro del municipio."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de partes interesadas clave participando activamente en el foro.",
+        "Número de políticas o acciones relacionadas con el clima propuestas a través del foro.",
+        "Participación pública en iniciativas del foro (medida por la asistencia a eventos o encuestas)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "landslides": "low",
+        "floods": "medium",
+        "wildfires": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0088",
+    "actionName": "Building codes",
+    "actionPriority": 12,
+    "explanation": "La implementación de códigos de construcción estrictos en Gravataí es crucial debido a la vulnerabilidad de la ciudad frente a peligros naturales como inundaciones y deslizamientos de tierra. Estos riesgos representan amenazas significativas para la salud pública y la infraestructura, como lo indican los altos puntajes de riesgo. Al hacer cumplir normas de construcción robustas, la ciudad puede aumentar la resiliencia de su infraestructura, protegiendo así a sus residentes y reduciendo posibles pérdidas económicas. Además, la mejora de los códigos de construcción puede contribuir a una mayor eficiencia energética, en línea con la necesidad de la ciudad de gestionar sus emisiones energéticas estacionarias.",
+    "action": {
+      "ActionID": "ipcc_0088",
+      "ActionName": "Códigos de construcción",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides"
+      ],
+      "Sector": [
+        "road_infrastructure",
+        "geo-hydrological_disasters"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "El desarrollo e implementación de códigos de construcción y regulaciones de diseño arquitectónico dirigidos a integrar parámetros de adaptación climática. Estos códigos están enfocados en reducir riesgos de peligros inducidos por el clima, como inundaciones y deslizamientos de tierra. También apoyan el desarrollo urbano resiliente al clima al guiar el uso del suelo, las prácticas de construcción y los estándares de infraestructura. La iniciativa fomenta la planificación urbana estratégica a largo plazo para coordinar inversiones públicas y privadas en adaptación, incluyendo la creación de zonas seguras y la transformación de asentamientos precarios. Asegura que la nueva infraestructura sea resiliente a los riesgos climáticos y que los espacios urbanos sean seguros y sostenibles para las poblaciones actuales y futuras.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": "Promueve la planificación urbana inclusiva abordando los riesgos en asentamientos informales y precarios e integrando eco-parques y eco-jardines para poblaciones vulnerables.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Integración con evaluaciones locales de riesgo climático",
+        "Colaboración estratégica entre urbanistas y autoridades municipales"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de incidentes de inundaciones urbanas",
+        "Mayor disponibilidad de viviendas seguras en áreas de riesgo",
+        "Tasa de implementación de eco-parques y eco-jardines en áreas vulnerables"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0097",
+    "actionName": "Food storage/distribution improvements",
+    "actionPriority": 13,
+    "explanation": "Mejorar el almacenamiento y la distribución de alimentos es crucial para Gravataí debido a su vulnerabilidad a las sequías e inundaciones, las cuales pueden afectar gravemente la seguridad alimentaria. El riesgo moderado de sequías y el alto riesgo de inundaciones en la ciudad resaltan la necesidad de sistemas alimentarios sólidos para garantizar un suministro constante y reducir el desperdicio. Fortalecer estos sistemas también puede mitigar los efectos de las alteraciones relacionadas con el clima, asegurando que la población tenga acceso confiable a los alimentos. Además, una mejor distribución de alimentos puede apoyar la economía local al reducir las pérdidas y mejorar la eficiencia.",
+    "action": {
+      "ActionID": "ipcc_0097",
+      "ActionName": "Mejoras en el almacenamiento/distribución de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms",
+        "heatwaves"
+      ],
+      "Sector": [
+        "food_security",
+        "road_infrastructure"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar los sistemas de almacenamiento y distribución de alimentos mediante la mejora de la infraestructura de transporte, la optimización de las redes comerciales y el acortamiento de las cadenas de suministro para garantizar la disponibilidad local de alimentos y la resiliencia ante los impactos climáticos. Esta acción también incluye aumentar la capacidad de las instalaciones de almacenamiento de alimentos locales para reducir las pérdidas post-cosecha, abordar las ineficiencias en la logística y reforzar la infraestructura para productos perecederos. Su objetivo es mejorar la seguridad alimentaria y reducir la vulnerabilidad a eventos extremos, interrupciones e impactos en cascada, especialmente durante pandemias y otras crisis.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Apoya el acceso equitativo a alimentos para poblaciones marginadas y vulnerables al priorizar la producción local de alimentos y mejorar los sistemas de distribución que llegan a áreas desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en infraestructura",
+        "Incentivos políticos para la producción local de alimentos",
+        "Colaboración con los sectores de logística y comercio",
+        "Tecnología para la optimización de la cadena de suministro"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de pérdidas post-cosecha",
+        "Aumento de la disponibilidad de alimentos locales",
+        "Mejora de la eficiencia del transporte para la distribución de alimentos",
+        "Acortamiento de las cadenas de suministro"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0093",
+    "actionName": "Availability of health infrastructure",
+    "actionPriority": 14,
+    "explanation": "Mejorar la disponibilidad de infraestructura de salud en Gravataí es crucial debido al alto riesgo de impactos en la salud pública por diversos peligros. La ciudad enfrenta amenazas significativas por enfermedades e inundaciones, ambas con altos niveles de riesgo y capaces de afectar gravemente la salud pública. Fortalecer la infraestructura de salud ayudará a mitigar estos riesgos al garantizar una mejor preparación y capacidad de respuesta. Además, con una población en crecimiento, es probable que la demanda de servicios de salud sólidos aumente, lo que convierte esta acción en una prioridad para la resiliencia y el bienestar de la ciudad.",
+    "action": {
+      "ActionID": "ipcc_0093",
+      "ActionName": "Disponibilidad de infraestructura sanitaria",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "sea-level-rise",
+        "diseases"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Garantizar el acceso a infraestructura de agua potable segura, proteger los servicios de salud y mejorar los sistemas de saneamiento para mitigar los impactos climáticos. Esto incluye desarrollar medidas adaptativas para la seguridad del agua frente a sequías, inundaciones y el aumento del nivel del mar. Fortalecer la resiliencia de la infraestructura asegura un acceso equitativo a los servicios de salud, reduce los riesgos de contaminación y aborda los impactos de los peligros inducidos por el clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Mejora el acceso a recursos críticos de salud y agua para comunidades vulnerables y desatendidas, mitigando las inequidades causadas por los impactos climáticos.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamiento adecuado",
+        "inversiones tecnológicas en infraestructura de salud y agua",
+        "gobernanza efectiva y coordinación intersectorial"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de enfermedades transmitidas por el agua",
+        "mejor acceso a agua potable",
+        "número de instalaciones de salud resilientes desarrolladas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "sea-level-rise": "high",
+        "diseases": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0180",
+    "actionName": "Implement permeable pavements and increase green areas in roadways",
+    "actionPriority": 15,
+    "explanation": "La implementación de pavimentos permeables y el aumento de áreas verdes en las vías urbanas es crucial para Gravataí debido a su vulnerabilidad a las inundaciones, las cuales representan un riesgo significativo para la salud pública y la infraestructura. Al mejorar la capacidad de la ciudad para gestionar las aguas pluviales, esta acción puede mitigar el impacto de las lluvias intensas y reducir la probabilidad de inundaciones. Además, el incremento de áreas verdes puede mejorar la biodiversidad urbana y contribuir a una mejor calidad del aire, lo que resulta beneficioso para la salud general de la población. Esta medida está alineada con la necesidad de la ciudad de enfrentar los desafíos ambientales mientras promueve un desarrollo urbano sostenible.",
+    "action": {
+      "ActionID": "icare_0180",
+      "ActionName": "Implementar pavimentos permeables y aumentar las áreas verdes en las vías públicas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Incrementar las áreas permeables y semi-permeables en edificios y espacios públicos bajo la administración de la Ciudad, con la adopción de soluciones basadas en la naturaleza (NbS). En áreas con limitaciones de espacio, la acción incluye análisis de viabilidad para implementar pavimentos permeables y aumentar las áreas verdes en las vías. Entre las soluciones de construcción tradicionales, se encuentran características como bordillos y canaletas con desagües pluviales, así como soluciones a mayor escala como estanques de retención. Las soluciones basadas en la naturaleza incluyen la plantación de árboles urbanos, techos verdes, cisternas de agua de lluvia, bio-swales, y más.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Expansión de áreas permeables y semi-permeables en edificios administrados por la ciudad y espacios públicos.",
+        "Adopción de soluciones basadas en la naturaleza (NbS) como la plantación de árboles urbanos, techos verdes, cisternas de agua de lluvia y bio-swales.",
+        "Análisis de viabilidad para pavimentos permeables y aumento de áreas verdes en carreteras, junto con soluciones tradicionales de gestión de aguas pluviales como bordillos, canaletas y estanques de retención."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en la escorrentía de agua superficial durante eventos de lluvia (%).",
+        "Disminución en la ocurrencia de inundaciones en áreas modificadas.",
+        "Porcentaje de espacios públicos que cumplen con las nuevas regulaciones de superficies permeables."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "medium",
+        "heatwaves": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0094",
+    "actionName": "Access to health care",
+    "actionPriority": 16,
+    "explanation": "Mejorar el acceso a la atención médica en Gravataí es crucial debido al alto riesgo de impactos en la salud pública por diversos peligros, como olas de calor, enfermedades e inundaciones. La vulnerabilidad de la ciudad ante estos riesgos, especialmente el riesgo extremadamente alto de deslizamientos de tierra e inundaciones, resalta la necesidad de contar con sistemas de salud sólidos para gestionar posibles crisis sanitarias. Además, mejorar el acceso a la atención médica puede mitigar los efectos de los desafíos socioeconómicos, ya que la ciudad cuenta con una población de muy bajos ingresos que puede tener dificultades para costear servicios de salud privados. Priorizar el acceso a la atención médica ayudará a garantizar que todos los residentes, especialmente los más vulnerables, reciban atención médica oportuna y adecuada durante emergencias.",
+    "action": {
+      "ActionID": "ipcc_0094",
+      "ActionName": "Acceso a la atención médica",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "droughts"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar el acceso a los servicios de atención médica, incluidos los servicios de salud y nutrición, agua limpia, saneamiento y recursos de salud mental culturalmente apropiados. Ampliar las capacidades de telemedicina permite una entrega eficiente de servicios de salud, particularmente para poblaciones remotas y desatendidas. Fortalecer los sistemas básicos de salud pública y la preparación para desastres puede reducir rápidamente la vulnerabilidad a los riesgos de salud relacionados con el clima.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promueve el acceso equitativo a la atención médica para grupos marginados y vulnerables, incluidas las poblaciones sin hogar, las comunidades remotas y aquellos afectados por desigualdades en la vivienda.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en tecnologías de telemedicina",
+        "Fortalecimiento de la gobernanza de los sistemas de salud pública",
+        "Desarrollo de capacidades para los trabajadores de la salud",
+        "Mejoras en la infraestructura de las instalaciones de salud"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de la mortalidad relacionada con el clima",
+        "Mayor acceso a la telemedicina",
+        "Número de programas de salud adaptados culturalmente implementados",
+        "Mejora de los indicadores de acceso al agua y saneamiento"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "droughts": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0144",
+    "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+    "actionPriority": 17,
+    "explanation": "La creación de un programa de apoyo financiero para hacer frente a eventos climáticos extremos es crucial para Gravataí debido a su vulnerabilidad ante diversos riesgos climáticos. La ciudad enfrenta riesgos significativos de inundaciones, deslizamientos de tierra y olas de calor, los cuales pueden afectar gravemente la salud pública y la infraestructura. Establecer un programa de apoyo financiero ayudaría a mitigar la carga económica sobre las comunidades afectadas y a fortalecer la resiliencia frente a estos eventos. Además, dicho programa podría facilitar una recuperación y adaptación más rápidas, garantizando el bienestar y la seguridad de la población.",
+    "action": {
+      "ActionID": "icare_0144",
+      "ActionName": "Creación de un Programa de Apoyo Financiero para Abordar Eventos Climáticos Extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "wildfires",
+        "floods",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Creación de un programa para mitigar los efectos de las tragedias climáticas, incluyendo asistencia financiera a las familias afectadas y esfuerzos para asegurar recursos adicionales para la recuperación y reconstrucción.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Recursos financieros",
+        "Planes de respuesta de emergencia",
+        "Coordinación institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de personas asistidas",
+        "Rentabilidad",
+        "Resiliencia comunitaria"
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "diseases": "medium",
+        "landslides": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0145",
+    "actionName": "Strengthen the healthcare network to attend to climate victims",
+    "actionPriority": 18,
+    "explanation": "El fortalecimiento de la red de atención médica en Gravataí es crucial debido al alto riesgo de impactos en la salud pública derivados de peligros relacionados con el clima. La ciudad enfrenta amenazas significativas por olas de calor, enfermedades e inundaciones, todas las cuales pueden ejercer una presión severa sobre los recursos sanitarios existentes. Al mejorar la infraestructura de salud, la ciudad podrá gestionar mejor el aumento de la demanda de servicios médicos durante emergencias climáticas. Esta acción también ayudará a mitigar los impactos a largo plazo en la salud de la población, asegurando una comunidad más resiliente frente al cambio climático.",
+    "action": {
+      "ActionID": "icare_0145",
+      "ActionName": "Fortalecer la red de atención médica para atender a las víctimas del clima",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "storms",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar la infraestructura de las unidades de salud para asistir a las personas que requieren atención médica debido a impactos asociados con riesgos climáticos (víctimas del clima), como aquellos afectados por olas de calor o inundaciones, especialmente en áreas más vulnerables. Desarrollar planes de acción para preparar la red de salud para situaciones extremas relacionadas con el clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Inversión en la renovación y expansión de las instalaciones de salud, asegurando que estén equipadas para manejar los impactos en la salud relacionados con el clima, especialmente en áreas vulnerables.",
+        "Desarrollo de planes de acción y programas de capacitación para profesionales de la salud para responder a eventos climáticos extremos como olas de calor e inundaciones.",
+        "Colaboración con autoridades locales, equipos de respuesta a emergencias y expertos en clima para crear un marco integral para preparar la red de salud ante los riesgos climáticos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de instalaciones de salud mejoradas para emergencias relacionadas con el clima.",
+        "Aumento en el personal de salud capacitado en respuesta a emergencias climáticas (%).",
+        "Número de lesiones relacionadas con el clima tratadas con éxito. |||"
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "medium",
+        "floods": "high",
+        "storms": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0096",
+    "actionName": "Farm/fishery improvements",
+    "actionPriority": 19,
+    "explanation": "Las mejoras en la agricultura y la pesca son cruciales para Gravataí debido a la vulnerabilidad de la ciudad a las sequías, que afectan significativamente los recursos hídricos y la seguridad alimentaria. El fortalecimiento de las prácticas agrícolas puede ayudar a mitigar estos riesgos al aumentar la resiliencia frente a la variabilidad climática. Además, el mejoramiento de la pesca puede apoyar el suministro local de alimentos y la estabilidad económica, especialmente considerando los muy bajos niveles de ingresos en la zona. Estas mejoras también pueden contribuir a la reducción de emisiones derivadas del uso del suelo, que es una fuente importante de emisiones en la ciudad.",
+    "action": {
+      "ActionID": "ipcc_0096",
+      "ActionName": "Mejoras en granjas/pesquerías",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementar una serie de estrategias para adaptar granjas y pesquerías a los impactos climáticos. Esto incluye cambiar el equipo de pesca o la potencia de los barcos, adoptar nuevas variedades de cultivos o ajustar los calendarios de siembra, mejorar los sistemas de riego, integrar sistemas de cultivos y ganado, reubicar el ganado con una mejor gestión de pastizales y adoptar sistemas agroecológicos y de agroforestería. Innovaciones tecnológicas como la agricultura inteligente y medidas financieras como los subsidios apoyan estas adaptaciones.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garantiza el acceso a recursos para agricultores y pescadores marginados, promueve opciones diversas de sustento y fortalece la resiliencia en comunidades desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Apoyo político para la agricultura y pesca resilientes al clima",
+        "Acceso a financiamiento y subsidios",
+        "Capacitación para adoptar nuevas prácticas",
+        "Mejora de la infraestructura de mercado"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento de la productividad agrícola y pesquera",
+        "Tasa de adopción de sistemas integrados",
+        "Reducción de pérdidas de rendimiento relacionadas con el clima"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "wildfires": "low",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GRA",
+    "cityName": "Gravataí",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0098",
+    "actionName": "Behaviour change in diets and food waste",
+    "actionPriority": 20,
+    "explanation": "La acción de promover el cambio de comportamiento en las dietas y la reducción del desperdicio de alimentos es crucial para Gravataí debido a su potencial impacto en la seguridad alimentaria y las emisiones de residuos. Con una población de más de 265,000 habitantes, reducir el desperdicio de alimentos puede disminuir significativamente las emisiones de residuos, que actualmente ascienden a 92,907.36. Además, mejorar los hábitos alimenticios puede fortalecer la salud pública, la cual está en riesgo debido a diversos peligros como enfermedades e inundaciones. Esta acción está alineada con la necesidad de la ciudad de abordar los desafíos de la seguridad alimentaria, agravados por riesgos climáticos como sequías e inundaciones.",
+    "action": {
+      "ActionID": "ipcc_0098",
+      "ActionName": "Cambio de comportamiento en dietas y desperdicio de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Reducir la pérdida y el desperdicio de alimentos mediante la mejora de las prácticas de producción, distribución y consumo de alimentos. Las acciones incluyen mejorar las técnicas agrícolas, adoptar tecnologías de ahorro de agua, implementar soluciones de almacenamiento de bajo costo y promover dietas basadas en plantas. Los responsables de políticas pueden fomentar estos comportamientos con políticas de precios adecuadas, iniciativas de agricultura sostenible y apoyo a grupos desfavorecidos. La acción enfatiza el cambio hacia dietas más saludables, la reducción del consumo excesivo y el apoyo a los sistemas alimentarios locales para mitigar las emisiones de gases de efecto invernadero y garantizar la seguridad alimentaria ante el cambio climático.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promueve el acceso a alimentos asequibles y saludables para comunidades vulnerables, empoderando a mujeres, jóvenes y grupos socialmente desfavorecidos. Fomenta la participación equitativa en prácticas agrícolas sostenibles y redes alimentarias locales.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Educación y formación para agricultores",
+        "Acceso a insumos agrícolas sostenibles",
+        "Apoyo político para prácticas sostenibles",
+        "Infraestructura tecnológica para almacenamiento y procesamiento"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en los porcentajes de pérdida y desperdicio de alimentos",
+        "Aumento en la adopción de dietas basadas en plantas",
+        "Mejora en los indicadores de seguridad alimentaria",
+        "Reducción de emisiones de GEI de los sistemas alimentarios"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "medium",
+        "floods": "medium",
+        "wildfires": "low"
+      },
+      "biome": "none"
+    }
+  }
 ]

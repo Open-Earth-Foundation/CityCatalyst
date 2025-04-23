@@ -1,1262 +1,1262 @@
 [
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 1,
-        "explanation": "Implementing agroforestry systems in Aracruz is a high priority due to the city's tropical rainforest biome, which is well-suited for such sustainable agricultural practices. Agroforestry can help mitigate land use emissions, which are a significant component of the city's total emissions. Additionally, these systems can enhance biodiversity and improve resilience against climate hazards like droughts and floods, which pose substantial risks to the region. By integrating trees with crops and livestock, agroforestry can also support local food security and provide economic benefits to the community.",
-        "action": {
-            "ActionID": "icare_0050",
-            "ActionName": "Implementar Sistemas Agroflorestais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover sistemas agroflorestais integrando \u00e1rvores na produ\u00e7\u00e3o de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Fornecimento de suporte t\u00e9cnico e orienta\u00e7\u00e3o aos agricultores sobre o design e implementa\u00e7\u00e3o de sistemas agroflorestais.",
-                "Desenvolvimento de incentivos financeiros ou subs\u00eddios para tornar a agrofloresta mais economicamente atraente.",
-                "Cria\u00e7\u00e3o de pol\u00edticas que integrem pr\u00e1ticas agroflorestais no planejamento do uso da terra agr\u00edcola e nos sistemas de posse de terra."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas convertidas em sistemas agroflorestais (%).",
-                "N\u00famero de novos projetos agroflorestais implementados.",
-                "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 2,
-        "explanation": "Strengthening mechanisms for deforestation control in Aracruz is crucial due to its location within a tropical rainforest biome. This area is particularly vulnerable to deforestation, which can lead to significant biodiversity loss and increased carbon emissions. By enhancing deforestation control, the city can help preserve its natural environment, which is vital for maintaining ecological balance and supporting local biodiversity. Additionally, controlling deforestation can mitigate land use emissions, which are a significant component of the city's total emissions, thereby contributing to broader climate change mitigation efforts.",
-        "action": {
-            "ActionID": "icare_0134",
-            "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aprimorar o monitoramento e a fiscaliza\u00e7\u00e3o para prevenir o desmatamento ilegal e promover o uso sustent\u00e1vel da terra.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Forte estrutura legal, tecnologias de monitoramento avan\u00e7adas (sat\u00e9lites e drones) e capacita\u00e7\u00e3o para as autoridades locais.",
-                "Colabora\u00e7\u00e3o com comunidades locais e financiamento adequado para os esfor\u00e7os de fiscaliza\u00e7\u00e3o.",
-                "Transpar\u00eancia e responsabilidade na elabora\u00e7\u00e3o de relat\u00f3rios para garantir a implementa\u00e7\u00e3o eficaz."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total monitorada para desmatamento (hectares/ano).",
-                "Redu\u00e7\u00e3o na taxa anual de desmatamento (%).",
-                "Quantidade de emiss\u00f5es evitadas pela redu\u00e7\u00e3o do desmatamento (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 3,
-        "explanation": "Encouraging renewable energy policies at the municipal level in Aracruz is crucial due to the city's significant stationary energy emissions. Transitioning to renewable energy sources can help reduce these emissions, contributing to a cleaner environment and mitigating climate change impacts. Additionally, promoting renewable energy can enhance energy security, which is vital given the city's vulnerability to droughts affecting energy resources. Implementing such policies can also stimulate local economic growth by creating green jobs and fostering sustainable development.",
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Incentivar pol\u00edticas de energia renov\u00e1vel a n\u00edvel municipal",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Defender e implementar pol\u00edticas que priorizem o desenvolvimento e a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nas opera\u00e7\u00f5es e no planejamento do governo local.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Vontade pol\u00edtica e lideran\u00e7a para priorizar a energia renov\u00e1vel nas pol\u00edticas e processos de planejamento do governo local",
-                "Desenvolvimento de pol\u00edticas claras e estruturas regulat\u00f3rias que facilitem a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nas opera\u00e7\u00f5es governamentais",
-                "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transi\u00e7\u00e3o para a energia renov\u00e1vel na infraestrutura e opera\u00e7\u00f5es municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de projetos de energia renov\u00e1vel aprovados ou iniciados anualmente a n\u00edvel municipal.",
-                "Percentagem da demanda de energia municipal atendida por fontes renov\u00e1veis (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de carbono municipais devido \u00e0 ado\u00e7\u00e3o de energia renov\u00e1vel (toneladas de CO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0128",
-        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 4,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Aracruz is crucial due to the city's tropical rainforest biome, which plays a significant role in carbon sequestration and biodiversity conservation. The PES programs can incentivize landowners to maintain and enhance ecosystem services, which is vital given the high emissions from land use in the area. Additionally, these programs can help mitigate the impacts of climate hazards such as droughts and floods, which pose significant risks to water resources, food security, and public health. By prioritizing PES, Aracruz can enhance its resilience to climate change while promoting sustainable development.",
-        "action": {
-            "ActionID": "icare_0128",
-            "ActionName": "Estabelecer Programas Municipais de Pagamento por Servi\u00e7os Ambientais (PSA)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar programas que paguem aos propriet\u00e1rios de terras por manterem ou melhorarem as condi\u00e7\u00f5es ambientais em suas propriedades.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Cria\u00e7\u00e3o de mecanismos de financiamento e crit\u00e9rios de elegibilidade claros com indicadores de desempenho.",
-                "Parcerias com organiza\u00e7\u00f5es ambientais e campanhas de conscientiza\u00e7\u00e3o para incentivar a participa\u00e7\u00e3o.",
-                "Integra\u00e7\u00e3o com estruturas legais para garantir a sustentabilidade do programa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de contratos ativos de Pagamento por Servi\u00e7os Ambientais (PSA) assinados.",
-                "\u00c1rea total sob pr\u00e1ticas de conserva\u00e7\u00e3o ou restaura\u00e7\u00e3o incentivadas (hectares).",
-                "Quantidade de carbono sequestrado ou emiss\u00f5es evitadas por meio de a\u00e7\u00f5es de PSA (tCO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 5,
-        "explanation": "Promoting urban reforestation and green corridors in Aracruz is crucial due to its tropical rainforest biome, which supports rich biodiversity. This action can help mitigate the impacts of heatwaves and improve public health by reducing urban heat island effects. Additionally, reforestation can enhance water retention in the soil, reducing the risk of floods and landslides, which are significant hazards for the city. By increasing green spaces, the city can also improve air quality and provide recreational areas for its residents, contributing to overall well-being.",
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aumentar a cobertura arb\u00f3rea urbana para mitigar o efeito de ilha de calor urbano e melhorar a biodiversidade.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identifica\u00e7\u00e3o de \u00e1reas priorit\u00e1rias e sele\u00e7\u00e3o de esp\u00e9cies nativas e resilientes ao clima para o plantio de \u00e1rvores.",
-                "Parcerias com organiza\u00e7\u00f5es locais e viveiros, e aloca\u00e7\u00e3o de recursos para plantio e manuten\u00e7\u00e3o.",
-                "Envolvimento da comunidade para garantir cuidado e apoio a longo prazo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento na cobertura de dossel arb\u00f3reo urbano (%)",
-                "Comprimento total de corredores verdes criados ou restaurados (quil\u00f4metros)",
-                "Redu\u00e7\u00e3o nas temperaturas do efeito de ilha de calor urbano (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 6,
-        "explanation": "Facilitating technology transfer for conservation practices in Aracruz is crucial due to the city's location in a tropical rainforest biome, which is rich in biodiversity but also vulnerable to environmental changes. The city faces significant risks from droughts and heatwaves, which can impact water resources, food security, and public health. By adopting advanced conservation technologies, Aracruz can better manage its natural resources and mitigate the adverse effects of climate hazards. This action supports sustainable development and helps preserve the ecological balance in the region, ensuring long-term resilience against environmental threats.",
-        "action": {
-            "ActionID": "icare_0129",
-            "ActionName": "Facilitar a Transfer\u00eancia de Tecnologia para Pr\u00e1ticas de Conserva\u00e7\u00e3o",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover a ado\u00e7\u00e3o de pr\u00e1ticas agr\u00edcolas sustent\u00e1veis por meio de treinamento, projetos piloto e demonstra\u00e7\u00f5es de tecnologia.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar pr\u00e1ticas sustent\u00e1veis.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a ado\u00e7\u00e3o.",
-                "Acesso a assist\u00eancia t\u00e9cnica para implementa\u00e7\u00e3o bem-sucedida."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de tecnologias de conserva\u00e7\u00e3o transferidas e aplicadas em fazendas.",
-                "Percentual de produtores treinados para implementar pr\u00e1ticas de conserva\u00e7\u00e3o.",
-                "Redu\u00e7\u00e3o na degrada\u00e7\u00e3o do solo ou aumento na cobertura vegetal (hectares)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 7,
-        "explanation": "Integrating renewables into municipal water systems in Aracruz is a crucial step towards reducing the city's stationary energy emissions, which are a significant contributor to its overall carbon footprint. Given the city's tropical rainforest biome, there is potential for harnessing renewable energy sources such as solar and wind, which can be effectively utilized in water systems. This action not only supports environmental sustainability but also enhances energy security, which is at risk due to droughts. By prioritizing this action, Aracruz can improve its resilience against climate-related hazards while promoting sustainable development.",
-        "action": {
-            "ActionID": "icare_0024",
-            "ActionName": "Integrar energias renov\u00e1veis nos sistemas municipais de \u00e1gua",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, para impulsionar sistemas de tratamento, bombeamento e distribui\u00e7\u00e3o de \u00e1gua, reduzindo custos de energia e emiss\u00f5es.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, em sistemas de tratamento e distribui\u00e7\u00e3o de \u00e1gua",
-                "Expertise t\u00e9cnica e infraestrutura para adaptar sistemas existentes com solu\u00e7\u00f5es de energia renov\u00e1vel ou projetar novas instala\u00e7\u00f5es alimentadas por energias renov\u00e1veis",
-                "Apoio pol\u00edtico e regulat\u00f3rio para incentivar o uso de energia limpa em sistemas de \u00e1gua e garantir sua integra\u00e7\u00e3o nas redes de energia municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de sistemas municipais de \u00e1gua alimentados por energias renov\u00e1veis.",
-                "Redu\u00e7\u00e3o no consumo de energia de fontes n\u00e3o renov\u00e1veis (kWh/ano).",
-                "Emiss\u00f5es de GEE evitadas (toneladas de CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 8,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Aracruz is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods. These actions can help improve agricultural practices, ensuring food security and sustainable land use, which are vital given the city's tropical rainforest biome. Additionally, ATER initiatives can support local farmers in adapting to changing climate conditions, thereby enhancing resilience against environmental risks. By prioritizing this action, Aracruz can strengthen its socio-economic stability and reduce emissions from land use, contributing to overall environmental sustainability.",
-        "action": {
-            "ActionID": "icare_0130",
-            "ActionName": "Conduzir A\u00e7\u00f5es de Assist\u00eancia T\u00e9cnica e Extens\u00e3o Rural (ATER)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fornecer suporte t\u00e9cnico e treinamento aos produtores rurais para a produ\u00e7\u00e3o agr\u00edcola sustent\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidade de pessoal t\u00e9cnico qualificado e programas de forma\u00e7\u00e3o personalizados.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa agr\u00edcola e aloca\u00e7\u00e3o de recursos para o desenvolvimento de capacidades.",
-                "Envolvimento com produtores rurais para garantir a participa\u00e7\u00e3o ativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de produtores beneficiados com assist\u00eancia t\u00e9cnica rural (% do total).",
-                "Percentual de participantes adotando pr\u00e1ticas resilientes ao clima.",
-                "Redu\u00e7\u00e3o da vulnerabilidade das propriedades ao risco clim\u00e1tico (%)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 9,
-        "explanation": "Promoting sustainable agricultural practices in Aracruz is crucial due to the city's tropical rainforest biome, which is sensitive to environmental changes. The city faces significant risks from droughts, impacting water resources and food security, making sustainable agriculture a priority to ensure resilience. By adopting these practices, Aracruz can reduce land use emissions, which are currently a major contributor to its total emissions. Additionally, sustainable agriculture can help mitigate the effects of climate change, supporting biodiversity and improving the socio-economic conditions of the local population.",
-        "action": {
-            "ActionID": "icare_0102",
-            "ActionName": "Promover Pr\u00e1ticas Agr\u00edcolas Sustent\u00e1veis",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar pr\u00e1ticas agr\u00edcolas que reduzam as emiss\u00f5es de gases de efeito estufa, como o uso reduzido de fertilizantes e agroqu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de programas educacionais e recursos para promover pr\u00e1ticas agr\u00edcolas sustent\u00e1veis entre os agricultores.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas que incentivem a redu\u00e7\u00e3o do uso de fertilizantes e agroqu\u00edmicos, como subs\u00eddios para insumos org\u00e2nicos ou t\u00e9cnicas de cultivo sustent\u00e1vel.",
-                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas para fornecer suporte t\u00e9cnico e orienta\u00e7\u00e3o sobre pr\u00e1ticas de redu\u00e7\u00e3o de emiss\u00f5es."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas adotando pr\u00e1ticas sustent\u00e1veis (% do total de terras agr\u00edcolas).",
-                "Aumento no rendimento das colheitas por hectare (toneladas/hectare) devido a m\u00e9todos sustent\u00e1veis.",
-                "Redu\u00e7\u00e3o no uso de \u00e1gua para agricultura (litros ou m\u00b3/hectare/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 10,
-        "explanation": "Creating incentives for agroforestry practices in livestock systems is crucial for Aracruz due to its tropical rainforest biome, which is highly sensitive to land use changes. Agroforestry can help mitigate land use emissions, which are a significant component of the city's total emissions. Additionally, integrating trees into livestock systems can enhance biodiversity and improve resilience against climate hazards such as droughts and floods. This action supports sustainable agricultural practices, which are essential for maintaining the ecological balance and ensuring long-term food security in the region.",
-        "action": {
-            "ActionID": "icare_0084",
-            "ActionName": "Criar Incentivos para Pr\u00e1ticas de Agroflorestas em Sistemas de Pecu\u00e1ria",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Criar incentivos financeiros e t\u00e9cnicos para integrar pr\u00e1ticas de agrofloresta\u00e7\u00e3o em sistemas de pecu\u00e1ria, promovendo a captura de carbono, prote\u00e7\u00e3o do solo e melhoria da biodiversidade.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de programas de incentivos financeiros, como subs\u00eddios ou isen\u00e7\u00f5es fiscais, para apoiar os agricultores na integra\u00e7\u00e3o da agrofloresta com sistemas de pecu\u00e1ria.",
-                "Fornecimento de assist\u00eancia t\u00e9cnica e treinamento aos agricultores sobre as melhores pr\u00e1ticas para a integra\u00e7\u00e3o da agrofloresta nas opera\u00e7\u00f5es de pecu\u00e1ria.",
-                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas e ambientais para monitorar e avaliar os impactos das pr\u00e1ticas agroflorestais na captura de carbono, sa\u00fade do solo e biodiversidade."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de incentivos financeiros fornecidos para integrar a agrofloresta em sistemas de pecu\u00e1ria.",
-                "Aumento na qualidade do solo e cobertura vegetal em propriedades manejadas (%).",
-                "Crescimento da biodiversidade em \u00e1reas de agrofloresta (% de esp\u00e9cies identificadas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 11,
-        "explanation": "Supporting regenerative agriculture practices in Aracruz is crucial due to the city's tropical rainforest biome, which is sensitive to environmental changes. This action can help mitigate land use emissions, which are a significant contributor to the city's total emissions. By enhancing soil health and biodiversity, regenerative agriculture can also improve food security, which is at risk from both droughts and floods. Additionally, these practices can increase resilience against climate hazards, such as droughts, which threaten water and energy security in the region.",
-        "action": {
-            "ActionID": "icare_0100",
-            "ActionName": "Apoiar Pr\u00e1ticas de Agricultura Regenerativa",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Apoiar pr\u00e1ticas agr\u00edcolas regenerativas que se concentrem na restaura\u00e7\u00e3o da sa\u00fade do solo e na redu\u00e7\u00e3o das emiss\u00f5es de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de programas de treinamento e recursos para educar os agricultores sobre t\u00e9cnicas agr\u00edcolas regenerativas, como cobertura vegetal e redu\u00e7\u00e3o do preparo do solo.",
-                "Implementa\u00e7\u00e3o de incentivos financeiros ou subs\u00eddios para apoiar a ado\u00e7\u00e3o de pr\u00e1ticas regenerativas.",
-                "Colabora\u00e7\u00e3o com institui\u00e7\u00f5es de pesquisa agr\u00edcola para monitorar e documentar a efic\u00e1cia das pr\u00e1ticas regenerativas na captura de carbono e na melhoria da sa\u00fade do solo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento nos n\u00edveis de carbono org\u00e2nico do solo (toneladas/hectare).",
-                "Redu\u00e7\u00e3o no uso de \u00e1gua por hectare na produ\u00e7\u00e3o agr\u00edcola (%).",
-                "N\u00famero de projetos piloto de agricultura regenerativa implementados."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 12,
-        "explanation": "Promoting organic farming in Aracruz is a strategic action due to its potential to enhance food security and reduce environmental impact. The city faces significant risks from droughts, which can affect food production, making sustainable agricultural practices crucial. Organic farming can improve soil health and water retention, mitigating some of the adverse effects of climate change. Additionally, it aligns with the city's low industrial emissions, supporting a transition to more sustainable land use practices.",
-        "action": {
-            "ActionID": "icare_0096",
-            "ActionName": "Promover a Agricultura Org\u00e2nica",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar a ado\u00e7\u00e3o de pr\u00e1ticas de agricultura org\u00e2nica que evitem o uso de produtos qu\u00edmicos e contribuam para a sa\u00fade do solo e captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Fornecimento de incentivos financeiros, subs\u00eddios ou subs\u00eddios para apoiar a transi\u00e7\u00e3o para pr\u00e1ticas de agricultura org\u00e2nica.",
-                "Desenvolvimento de redes de treinamento e apoio para educar os agricultores sobre m\u00e9todos de agricultura org\u00e2nica e seus benef\u00edcios.",
-                "Estabelecimento de sistemas de certifica\u00e7\u00e3o e estrat\u00e9gias de acesso ao mercado para garantir a viabilidade econ\u00f4mica dos produtos org\u00e2nicos."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas sob pr\u00e1ticas de agricultura org\u00e2nica (%).",
-                "Aumento no teor de carbono org\u00e2nico do solo (toneladas de carbono por hectare).",
-                "Redu\u00e7\u00e3o no uso de fertilizantes qu\u00edmicos e pesticidas (quilogramas/hectare/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 13,
-        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Aracruz due to its potential to reduce transportation emissions, which are a significant contributor to the city's total emissions. By promoting electric bikes, the city can offer a sustainable and efficient alternative to traditional vehicles, thereby decreasing reliance on fossil fuels and reducing air pollution. Additionally, this initiative can enhance urban mobility and provide a cost-effective transportation option for residents, aligning with the city's socio-economic context of very low income. Furthermore, encouraging cycling can improve public health by promoting physical activity and reducing the risk of diseases exacerbated by pollution.",
-        "action": {
-            "ActionID": "icare_0121",
-            "ActionName": "Incentivo \u00e0 cria\u00e7\u00e3o de programas de compartilhamento de bicicletas em \u00e1reas urbanas, com foco em bicicletas el\u00e9tricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta a\u00e7\u00e3o incentiva o estabelecimento de sistemas de compartilhamento de bicicletas nas cidades, promovendo especificamente o uso de bicicletas el\u00e9tricas. Esses sistemas permitem que os residentes aluguem bicicletas el\u00e9tricas para viagens curtas, reduzindo a depend\u00eancia de carros para o transporte urbano. Ao integrar bicicletas el\u00e9tricas, as cidades podem reduzir ainda mais as emiss\u00f5es de gases de efeito estufa, aliviar a congest\u00e3o do tr\u00e1fego e promover um modo de transporte mais saud\u00e1vel e sustent\u00e1vel tanto para \u00e1reas urbanas quanto rurais. Esta iniciativa tamb\u00e9m apoia a igualdade de mobilidade, pois torna as bicicletas mais acess\u00edveis a uma gama mais ampla de pessoas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecimento de sistemas de compartilhamento de bicicletas com foco em bicicletas el\u00e9tricas para reduzir a depend\u00eancia de carros.",
-                "Integra\u00e7\u00e3o de bicicletas el\u00e9tricas para reduzir as emiss\u00f5es de gases de efeito estufa, aliviar o congestionamento do tr\u00e1fego e promover o transporte sustent\u00e1vel.",
-                "Promo\u00e7\u00e3o da igualdade de mobilidade tornando as bicicletas el\u00e9tricas acess\u00edveis a uma popula\u00e7\u00e3o mais ampla."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de bicicletas el\u00e9tricas dispon\u00edveis em programas de compartilhamento de bicicletas.",
-                "Aumento anual no n\u00famero de usu\u00e1rios de compartilhamento de bicicletas.",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es de CO\u2082 equivalente com a ado\u00e7\u00e3o do compartilhamento de bicicletas el\u00e9tricas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 14,
-        "explanation": "The implementation of free public transportation programs during peak hours in Aracruz is a strategic action to address transportation emissions, which are a significant contributor to the city's total emissions. By encouraging the use of public transport, the city can reduce the reliance on individual vehicles, thereby decreasing emissions and improving air quality. Additionally, this initiative can alleviate traffic congestion during peak hours, enhancing the overall efficiency of the city's transportation network. Furthermore, providing free transportation can support low-income residents, aligning with the city's socio-economic goals and improving access to essential services.",
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementa\u00e7\u00e3o de programas de transporte p\u00fablico gratuito durante os hor\u00e1rios de pico para reduzir o uso de ve\u00edculos individuais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar o uso do transporte p\u00fablico oferecendo servi\u00e7os gratuitos durante os hor\u00e1rios de pico para trabalhadores e estudantes. Esta medida reduz a congest\u00e3o urbana, diminui o n\u00famero de ve\u00edculos individuais nas estradas e, consequentemente, reduz as emiss\u00f5es de gases de efeito estufa associadas ao transporte privado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Aloca\u00e7\u00e3o de financiamento para subsidiar servi\u00e7os de transporte p\u00fablico gratuito durante as horas de pico.",
-                "Desenvolvimento de pol\u00edticas para garantir a sustentabilidade e efici\u00eancia dos sistemas de transporte p\u00fablico diante do aumento da demanda.",
-                "Coordena\u00e7\u00e3o com empregadores e institui\u00e7\u00f5es educacionais para otimizar os hor\u00e1rios de pico e promover a iniciativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nos n\u00edveis de polui\u00e7\u00e3o do ar durante as horas de pico (concentra\u00e7\u00e3o de PM2.5/PM10).",
-                "N\u00famero de ve\u00edculos particulares removidos das estradas durante as horas de pico.",
-                "Taxa de satisfa\u00e7\u00e3o p\u00fablica com a iniciativa de transporte gratuito (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 15,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Aracruz due to its potential to enhance food security. The city faces significant risks from droughts and floods, which can disrupt food supply chains. By supporting local agroecological practices, the city can build resilience against these climate impacts and ensure a more stable food supply. Additionally, this action can stimulate the local economy by supporting local farmers and reducing dependency on external food sources.",
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Priorizar a Aquisi\u00e7\u00e3o de Produtos Agroecol\u00f3gicos Produzidos Localmente em Compras P\u00fablicas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Concentre-se em comprar alimentos sustent\u00e1veis e produzidos localmente para institui\u00e7\u00f5es p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de pol\u00edticas de aquisi\u00e7\u00e3o e identifica\u00e7\u00e3o de fornecedores locais confi\u00e1veis.",
-                "Parcerias com produtores e aloca\u00e7\u00e3o de financiamento para programas de aquisi\u00e7\u00e3o sustent\u00e1vel.",
-                "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os crit\u00e9rios de sustentabilidade."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem do volume total de compras p\u00fablicas provenientes de produtores agroecol\u00f3gicos locais.",
-                "Quantidade de emiss\u00f5es de CO\u2082 evitadas devido \u00e0 redu\u00e7\u00e3o da dist\u00e2ncia de transporte (tCO\u2082e).",
-                "N\u00famero de produtores agroecol\u00f3gicos beneficiados pelas compras p\u00fablicas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 16,
-        "explanation": "Creating credit lines for residential and community wind energy projects in Aracruz is a strategic move to enhance energy security and reduce emissions. The city has significant stationary energy emissions, and promoting wind energy can help mitigate these emissions. Additionally, the region faces risks related to energy security due to droughts, making renewable energy sources like wind crucial for resilience. This action also aligns with the city's need to diversify its energy sources and reduce reliance on traditional energy forms, contributing to long-term sustainability.",
-        "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Criar linhas de cr\u00e9dito para projetos de energia e\u00f3lica residencial e comunit\u00e1ria",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estabelecer programas de financiamento acess\u00edveis para apoiar o desenvolvimento e a ado\u00e7\u00e3o de sistemas de energia e\u00f3lica em resid\u00eancias e projetos comunit\u00e1rios, possibilitando uma transi\u00e7\u00e3o para fontes de energia mais limpas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de programas financeiros, subs\u00eddios ou subven\u00e7\u00f5es para tornar os sistemas de energia e\u00f3lica acess\u00edveis para resid\u00eancias e projetos comunit\u00e1rios",
-                "Acesso a expertise t\u00e9cnica e recursos para orientar a instala\u00e7\u00e3o e manuten\u00e7\u00e3o de sistemas de energia e\u00f3lica em ambientes residenciais e comunit\u00e1rios",
-                "Apoio pol\u00edtico e regulat\u00f3rio para incentivar a ado\u00e7\u00e3o de energia e\u00f3lica, incluindo processos de licenciamento simplificados e incentivos para projetos de energia limpa"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de projetos de energia e\u00f3lica financiados anualmente.",
-                "Capacidade instalada de sistemas de energia e\u00f3lica de projetos apoiados por cr\u00e9dito (MW).",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es equivalentes de CO\u2082 pela ado\u00e7\u00e3o de energia e\u00f3lica."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 17,
-        "explanation": "Supporting the implementation of ecological fiscal incentives in Aracruz is crucial due to the city's significant environmental challenges, such as high emissions and vulnerability to climate hazards like floods and droughts. These incentives can encourage sustainable practices and reduce emissions, aligning with the city's need to address its substantial stationary energy and transportation emissions. Additionally, ecological fiscal policies can promote biodiversity conservation, which is vital given the city's tropical rainforest biome. By prioritizing this action, Aracruz can enhance its resilience to climate impacts and improve its overall environmental sustainability.",
-        "action": {
-            "ActionID": "icare_0136",
-            "ActionName": "Apoiar a Implementa\u00e7\u00e3o de Incentivos Fiscais Ecol\u00f3gicos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar a aplica\u00e7\u00e3o de impostos ecol\u00f3gicos e incentivos para promover a conserva\u00e7\u00e3o ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecer um quadro regulat\u00f3rio claro com taxas de impostos justas e incentivos para a sustentabilidade.",
-                "Implementar sistemas de monitoramento eficazes para rastrear a conformidade e medir o impacto.",
-                "Promover a conscientiza\u00e7\u00e3o p\u00fablica e fomentar a colabora\u00e7\u00e3o entre governos, empresas e comunidades."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de munic\u00edpios que adotaram incentivos fiscais ambientais.",
-                "Percentual da receita tribut\u00e1ria gasta em pr\u00e1ticas sustent\u00e1veis.",
-                "\u00c1rea ou n\u00famero de propriedades beneficiadas por pr\u00e1ticas de conserva\u00e7\u00e3o como resultado de incentivos."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 18,
-        "explanation": "The adoption of biomethane in public fleets in Aracruz is a significant step towards reducing transportation emissions, which currently contribute substantially to the city's total emissions. By transitioning to biomethane, the city can leverage its tropical rainforest biome to produce renewable energy, thus decreasing reliance on fossil fuels. This action not only addresses environmental concerns but also enhances energy security, which is crucial given the city's vulnerability to droughts affecting energy resources. Furthermore, it aligns with the city's socio-economic context by potentially creating green jobs and supporting low-income communities.",
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Ado\u00e7\u00e3o de biometano em frotas p\u00fablicas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Utilizar biometano produzido a partir de res\u00edduos urbanos e agroindustriais para abastecer \u00f4nibus e caminh\u00f5es p\u00fablicos, reduzindo as emiss\u00f5es de gases de efeito estufa nas frotas municipais",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de infraestrutura para a produ\u00e7\u00e3o, processamento e distribui\u00e7\u00e3o de biometano a partir de res\u00edduos urbanos e agroindustriais.",
-                "Retrofit ou aquisi\u00e7\u00e3o de \u00f4nibus e caminh\u00f5es p\u00fablicos capazes de usar biometano como fonte de combust\u00edvel.",
-                "Estabelecimento de pol\u00edticas e incentivos financeiros para apoiar a produ\u00e7\u00e3o de biometano e sua integra\u00e7\u00e3o nas frotas municipais."
-            ],
-            "KeyPerformanceIndicators": [
-                "Economia de custos na opera\u00e7\u00e3o da frota devido ao uso de biometano (USD/ano).",
-                "Aumento na capacidade de produ\u00e7\u00e3o de biometano (%).",
-                "Percentagem de biometano obtido localmente versus importado."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0097",
-        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
-        "actionPriority": 19,
-        "explanation": "Supporting distributed energy generation in residences and businesses in Aracruz is crucial due to the city's high stationary energy emissions. By promoting local energy production, the city can reduce its reliance on centralized power sources, which often contribute significantly to emissions. This action also aligns with the need to enhance energy security, especially in the face of climate-related risks such as droughts and heatwaves. Furthermore, distributed energy systems can provide resilience against power outages and reduce energy costs for residents and businesses, contributing to the overall socio-economic development of the region.",
-        "action": {
-            "ActionID": "icare_0097",
-            "ActionName": "Apoiar a Gera\u00e7\u00e3o de Energia Distribu\u00edda em Resid\u00eancias e Neg\u00f3cios",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Facilitar o uso de pain\u00e9is solares e outras tecnologias de energia renov\u00e1vel em resid\u00eancias e edif\u00edcios comerciais.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Fornecer incentivos financeiros, regulamenta\u00e7\u00f5es claras de instala\u00e7\u00e3o e acesso a tecnologias acess\u00edveis para pain\u00e9is solares.",
-                "Lan\u00e7ar campanhas de conscientiza\u00e7\u00e3o p\u00fablica e oferecer treinamento para propriet\u00e1rios de resid\u00eancias e empresas.",
-                "Incentivar a ado\u00e7\u00e3o de tecnologias de energia renov\u00e1vel para promover economias de energia a longo prazo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Capacidade instalada de gera\u00e7\u00e3o de energia distribu\u00edda (MW).",
-                "Percentual de resid\u00eancias e empresas gerando sua pr\u00f3pria energia (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de CO\u2082 atrav\u00e9s da gera\u00e7\u00e3o distribu\u00edda (tCO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0085",
-        "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 20,
-        "explanation": "Promoting the adoption of agroecological pest control in Aracruz is crucial due to its tropical rainforest biome, which supports a rich biodiversity that can be threatened by conventional pest control methods. This action aligns with the need to protect biodiversity, which is at risk from both droughts and heatwaves. By adopting sustainable pest control practices, the city can enhance food security, which is also vulnerable to climate hazards like floods and droughts. Additionally, this approach can contribute to reducing land use emissions, which are a significant part of the city's total emissions profile.",
-        "action": {
-            "ActionID": "icare_0085",
-            "ActionName": "Promover a Ado\u00e7\u00e3o do Controle de Pragas Agroecol\u00f3gico",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar m\u00e9todos de controle de pragas que sejam agroecol\u00f3gicos, como o uso de predadores naturais e plantas repelentes, para reduzir a depend\u00eancia de pesticidas qu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de programas educacionais para informar os agricultores sobre m\u00e9todos de controle de pragas agroecol\u00f3gicos e seus benef\u00edcios.",
-                "Fornecimento de acesso a recursos ou materiais para implementar m\u00e9todos de controle de pragas naturais, como a introdu\u00e7\u00e3o de insetos ben\u00e9ficos ou o cultivo de plantas repelentes.",
-                "Cria\u00e7\u00e3o de incentivos ou redes de apoio para encorajar a transi\u00e7\u00e3o do uso de pesticidas qu\u00edmicos em favor de alternativas sustent\u00e1veis."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento nas taxas de produtividade em \u00e1reas que adotam controle agroecol\u00f3gico de pragas (%).",
-                "N\u00famero de campanhas educativas realizadas sobre controle sustent\u00e1vel de pragas.",
-                "Impacto nos custos totais de produ\u00e7\u00e3o devido \u00e0 ado\u00e7\u00e3o de pr\u00e1ticas agroecol\u00f3gicas (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0050",
+    "actionName": "Implement Agroforestry Systems",
+    "actionPriority": 1,
+    "explanation": "A implementação de sistemas agroflorestais em Aracruz é uma alta prioridade devido ao bioma de floresta tropical da cidade, que é bastante adequado para esse tipo de prática agrícola sustentável. A agrofloresta pode ajudar a mitigar as emissões provenientes do uso da terra, que representam uma parte significativa do total de emissões do município. Além disso, esses sistemas podem aumentar a biodiversidade e melhorar a resiliência contra riscos climáticos, como secas e inundações, que representam ameaças consideráveis para a região. Ao integrar árvores com culturas agrícolas e criação de animais, a agrofloresta também pode contribuir para a segurança alimentar local e proporcionar benefícios econômicos à comunidade.",
+    "action": {
+      "ActionID": "icare_0050",
+      "ActionName": "Implementar Sistemas Agroflorestais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover sistemas agroflorestais integrando árvores na produção de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecimento de suporte técnico e orientação aos agricultores sobre o design e implementação de sistemas agroflorestais.",
+        "Desenvolvimento de incentivos financeiros ou subsídios para tornar a agrofloresta mais economicamente atraente.",
+        "Criação de políticas que integrem práticas agroflorestais no planejamento do uso da terra agrícola e nos sistemas de posse de terra."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas convertidas em sistemas agroflorestais (%).",
+        "Número de novos projetos agroflorestais implementados.",
+        "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0134",
+    "actionName": "Strengthen Mechanisms for Deforestation Control",
+    "actionPriority": 2,
+    "explanation": "O fortalecimento dos mecanismos de controle do desmatamento em Aracruz é crucial devido à sua localização em um bioma de floresta tropical. Esta área é particularmente vulnerável ao desmatamento, o que pode levar a uma perda significativa de biodiversidade e ao aumento das emissões de carbono. Ao aprimorar o controle do desmatamento, o município pode ajudar a preservar seu ambiente natural, que é vital para a manutenção do equilíbrio ecológico e o suporte à biodiversidade local. Além disso, o controle do desmatamento pode mitigar as emissões decorrentes do uso da terra, que representam uma parcela significativa das emissões totais do município, contribuindo assim para esforços mais amplos de mitigação das mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0134",
+      "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aprimorar o monitoramento e a fiscalização para prevenir o desmatamento ilegal e promover o uso sustentável da terra.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Forte estrutura legal, tecnologias de monitoramento avançadas (satélites e drones) e capacitação para as autoridades locais.",
+        "Colaboração com comunidades locais e financiamento adequado para os esforços de fiscalização.",
+        "Transparência e responsabilidade na elaboração de relatórios para garantir a implementação eficaz."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total monitorada para desmatamento (hectares/ano).",
+        "Redução na taxa anual de desmatamento (%).",
+        "Quantidade de emissões evitadas pela redução do desmatamento (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 3,
+    "explanation": "Incentivar políticas de energia renovável em nível municipal em Aracruz é fundamental devido às significativas emissões de energia estacionária da cidade. A transição para fontes de energia renovável pode ajudar a reduzir essas emissões, contribuindo para um ambiente mais limpo e mitigando os impactos das mudanças climáticas. Além disso, promover a energia renovável pode aumentar a segurança energética, o que é vital considerando a vulnerabilidade da cidade a secas que afetam os recursos energéticos. A implementação dessas políticas também pode estimular o crescimento econômico local, criando empregos verdes e promovendo o desenvolvimento sustentável.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Incentivar políticas de energia renovável a nível municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Defender e implementar políticas que priorizem o desenvolvimento e a integração de sistemas de energia renovável nas operações e no planejamento do governo local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e liderança para priorizar a energia renovável nas políticas e processos de planejamento do governo local",
+        "Desenvolvimento de políticas claras e estruturas regulatórias que facilitem a integração de sistemas de energia renovável nas operações governamentais",
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transição para a energia renovável na infraestrutura e operações municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia renovável aprovados ou iniciados anualmente a nível municipal.",
+        "Percentagem da demanda de energia municipal atendida por fontes renováveis (%).",
+        "Redução nas emissões de carbono municipais devido à adoção de energia renovável (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0128",
+    "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+    "actionPriority": 4,
+    "explanation": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA) em Aracruz é fundamental devido ao bioma de floresta tropical da cidade, que desempenha um papel significativo na captura de carbono e na conservação da biodiversidade. Os programas de PSA podem incentivar os proprietários de terras a manter e aprimorar os serviços ecossistêmicos, o que é vital considerando as altas emissões provenientes do uso do solo na região. Além disso, esses programas podem ajudar a mitigar os impactos de eventos climáticos extremos, como secas e inundações, que representam riscos significativos para os recursos hídricos, a segurança alimentar e a saúde pública. Ao priorizar o PSA, Aracruz pode aumentar sua resiliência às mudanças climáticas enquanto promove o desenvolvimento sustentável.",
+    "action": {
+      "ActionID": "icare_0128",
+      "ActionName": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas que paguem aos proprietários de terras por manterem ou melhorarem as condições ambientais em suas propriedades.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Criação de mecanismos de financiamento e critérios de elegibilidade claros com indicadores de desempenho.",
+        "Parcerias com organizações ambientais e campanhas de conscientização para incentivar a participação.",
+        "Integração com estruturas legais para garantir a sustentabilidade do programa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de contratos ativos de Pagamento por Serviços Ambientais (PSA) assinados.",
+        "Área total sob práticas de conservação ou restauração incentivadas (hectares).",
+        "Quantidade de carbono sequestrado ou emissões evitadas por meio de ações de PSA (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0133",
+    "actionName": "Promote Urban Reforestation and Green Corridors",
+    "actionPriority": 5,
+    "explanation": "Promover a reflorestação urbana e a criação de corredores verdes em Aracruz é fundamental devido ao seu bioma de floresta tropical, que abriga uma rica biodiversidade. Essa ação pode ajudar a mitigar os impactos das ondas de calor e melhorar a saúde pública ao reduzir os efeitos das ilhas de calor urbanas. Além disso, o reflorestamento pode aumentar a retenção de água no solo, diminuindo o risco de enchentes e deslizamentos de terra, que são perigos significativos para a cidade. Ao ampliar as áreas verdes, a cidade também pode melhorar a qualidade do ar e oferecer espaços de lazer para seus moradores, contribuindo para o bem-estar geral.",
+    "action": {
+      "ActionID": "icare_0133",
+      "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aumentar a cobertura arbórea urbana para mitigar o efeito de ilha de calor urbano e melhorar a biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Identificação de áreas prioritárias e seleção de espécies nativas e resilientes ao clima para o plantio de árvores.",
+        "Parcerias com organizações locais e viveiros, e alocação de recursos para plantio e manutenção.",
+        "Envolvimento da comunidade para garantir cuidado e apoio a longo prazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento na cobertura de dossel arbóreo urbano (%)",
+        "Comprimento total de corredores verdes criados ou restaurados (quilômetros)",
+        "Redução nas temperaturas do efeito de ilha de calor urbano (°C)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0129",
+    "actionName": "Facilitate Technology Transfer for Conservation Practices",
+    "actionPriority": 6,
+    "explanation": "Facilitar a transferência de tecnologia para práticas de conservação em Aracruz é crucial devido à localização da cidade em um bioma de floresta tropical, que é rico em biodiversidade, mas também vulnerável a mudanças ambientais. A cidade enfrenta riscos significativos de secas e ondas de calor, que podem impactar os recursos hídricos, a segurança alimentar e a saúde pública. Ao adotar tecnologias avançadas de conservação, Aracruz pode gerenciar melhor seus recursos naturais e mitigar os efeitos adversos dos perigos climáticos. Essa ação apoia o desenvolvimento sustentável e ajuda a preservar o equilíbrio ecológico da região, garantindo resiliência a longo prazo contra ameaças ambientais.",
+    "action": {
+      "ActionID": "icare_0129",
+      "ActionName": "Facilitar a Transferência de Tecnologia para Práticas de Conservação",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover a adoção de práticas agrícolas sustentáveis por meio de treinamento, projetos piloto e demonstrações de tecnologia.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar práticas sustentáveis.",
+        "Parcerias com instituições de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a adoção.",
+        "Acesso a assistência técnica para implementação bem-sucedida."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de tecnologias de conservação transferidas e aplicadas em fazendas.",
+        "Percentual de produtores treinados para implementar práticas de conservação.",
+        "Redução na degradação do solo ou aumento na cobertura vegetal (hectares)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 7,
+    "explanation": "Integrar fontes de energia renovável aos sistemas municipais de água em Aracruz é um passo crucial para reduzir as emissões de energia estacionária da cidade, que contribuem significativamente para sua pegada de carbono total. Considerando o bioma de floresta tropical da cidade, há potencial para aproveitar fontes de energia renovável, como solar e eólica, que podem ser utilizadas de forma eficaz nos sistemas de água. Essa ação não só apoia a sustentabilidade ambiental, como também fortalece a segurança energética, que está em risco devido às secas. Ao priorizar essa iniciativa, Aracruz pode aumentar sua resiliência frente a riscos climáticos, ao mesmo tempo em que promove o desenvolvimento sustentável.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energias renováveis nos sistemas municipais de água",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fontes de energia renovável, como energia solar ou eólica, para impulsionar sistemas de tratamento, bombeamento e distribuição de água, reduzindo custos de energia e emissões.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renovável, como energia solar ou eólica, em sistemas de tratamento e distribuição de água",
+        "Expertise técnica e infraestrutura para adaptar sistemas existentes com soluções de energia renovável ou projetar novas instalações alimentadas por energias renováveis",
+        "Apoio político e regulatório para incentivar o uso de energia limpa em sistemas de água e garantir sua integração nas redes de energia municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de sistemas municipais de água alimentados por energias renováveis.",
+        "Redução no consumo de energia de fontes não renováveis (kWh/ano).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0130",
+    "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+    "actionPriority": 8,
+    "explanation": "Realizar ações de Assistência Técnica e Extensão Rural (ATER) em Aracruz é fundamental devido à vulnerabilidade do município a riscos climáticos, como secas e inundações. Essas ações podem ajudar a melhorar as práticas agrícolas, garantindo a segurança alimentar e o uso sustentável do solo, aspectos essenciais considerando o bioma de floresta tropical da cidade. Além disso, as iniciativas de ATER podem apoiar os agricultores locais na adaptação às mudanças nas condições climáticas, aumentando assim a resiliência frente aos riscos ambientais. Ao priorizar essa ação, Aracruz pode fortalecer sua estabilidade socioeconômica e reduzir as emissões provenientes do uso do solo, contribuindo para a sustentabilidade ambiental como um todo.",
+    "action": {
+      "ActionID": "icare_0130",
+      "ActionName": "Conduzir Ações de Assistência Técnica e Extensão Rural (ATER)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fornecer suporte técnico e treinamento aos produtores rurais para a produção agrícola sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de pessoal técnico qualificado e programas de formação personalizados.",
+        "Parcerias com instituições de pesquisa agrícola e alocação de recursos para o desenvolvimento de capacidades.",
+        "Envolvimento com produtores rurais para garantir a participação ativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de produtores beneficiados com assistência técnica rural (% do total).",
+        "Percentual de participantes adotando práticas resilientes ao clima.",
+        "Redução da vulnerabilidade das propriedades ao risco climático (%)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0102",
+    "actionName": "Promote Sustainable Agricultural Practices",
+    "actionPriority": 9,
+    "explanation": "Promover práticas agrícolas sustentáveis em Aracruz é fundamental devido ao bioma de floresta tropical da cidade, que é sensível a mudanças ambientais. A cidade enfrenta riscos significativos de secas, impactando os recursos hídricos e a segurança alimentar, tornando a agricultura sustentável uma prioridade para garantir resiliência. Ao adotar essas práticas, Aracruz pode reduzir as emissões provenientes do uso da terra, que atualmente são um dos principais contribuintes para o total de emissões do município. Além disso, a agricultura sustentável pode ajudar a mitigar os efeitos das mudanças climáticas, apoiar a biodiversidade e melhorar as condições socioeconômicas da população local.",
+    "action": {
+      "ActionID": "icare_0102",
+      "ActionName": "Promover Práticas Agrícolas Sustentáveis",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar práticas agrícolas que reduzam as emissões de gases de efeito estufa, como o uso reduzido de fertilizantes e agroquímicos.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas educacionais e recursos para promover práticas agrícolas sustentáveis entre os agricultores.",
+        "Implementação de políticas que incentivem a redução do uso de fertilizantes e agroquímicos, como subsídios para insumos orgânicos ou técnicas de cultivo sustentável.",
+        "Colaboração com organizações agrícolas para fornecer suporte técnico e orientação sobre práticas de redução de emissões."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas adotando práticas sustentáveis (% do total de terras agrícolas).",
+        "Aumento no rendimento das colheitas por hectare (toneladas/hectare) devido a métodos sustentáveis.",
+        "Redução no uso de água para agricultura (litros ou m³/hectare/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0084",
+    "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+    "actionPriority": 10,
+    "explanation": "Criar incentivos para práticas de agrofloresta em sistemas de pecuária é fundamental para Aracruz devido ao seu bioma de floresta tropical, que é altamente sensível a mudanças no uso da terra. A agrofloresta pode ajudar a mitigar as emissões provenientes do uso da terra, que representam uma parte significativa do total de emissões do município. Além disso, a integração de árvores nos sistemas pecuários pode aumentar a biodiversidade e melhorar a resiliência contra riscos climáticos, como secas e inundações. Essa ação apoia práticas agrícolas sustentáveis, que são essenciais para manter o equilíbrio ecológico e garantir a segurança alimentar a longo prazo na região.",
+    "action": {
+      "ActionID": "icare_0084",
+      "ActionName": "Criar Incentivos para Práticas de Agroflorestas em Sistemas de Pecuária",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Criar incentivos financeiros e técnicos para integrar práticas de agroflorestação em sistemas de pecuária, promovendo a captura de carbono, proteção do solo e melhoria da biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas de incentivos financeiros, como subsídios ou isenções fiscais, para apoiar os agricultores na integração da agrofloresta com sistemas de pecuária.",
+        "Fornecimento de assistência técnica e treinamento aos agricultores sobre as melhores práticas para a integração da agrofloresta nas operações de pecuária.",
+        "Colaboração com organizações agrícolas e ambientais para monitorar e avaliar os impactos das práticas agroflorestais na captura de carbono, saúde do solo e biodiversidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de incentivos financeiros fornecidos para integrar a agrofloresta em sistemas de pecuária.",
+        "Aumento na qualidade do solo e cobertura vegetal em propriedades manejadas (%).",
+        "Crescimento da biodiversidade em áreas de agrofloresta (% de espécies identificadas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0100",
+    "actionName": "Support Regenerative Agriculture Practices",
+    "actionPriority": 11,
+    "explanation": "Apoiar práticas de agricultura regenerativa em Aracruz é fundamental devido ao bioma de floresta tropical da cidade, que é sensível a mudanças ambientais. Essa ação pode ajudar a mitigar as emissões provenientes do uso da terra, que são um dos principais contribuintes para o total de emissões do município. Ao melhorar a saúde do solo e a biodiversidade, a agricultura regenerativa também pode fortalecer a segurança alimentar, que está ameaçada tanto por secas quanto por inundações. Além disso, essas práticas podem aumentar a resiliência diante de riscos climáticos, como as secas, que ameaçam a segurança hídrica e energética da região.",
+    "action": {
+      "ActionID": "icare_0100",
+      "ActionName": "Apoiar Práticas de Agricultura Regenerativa",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoiar práticas agrícolas regenerativas que se concentrem na restauração da saúde do solo e na redução das emissões de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas de treinamento e recursos para educar os agricultores sobre técnicas agrícolas regenerativas, como cobertura vegetal e redução do preparo do solo.",
+        "Implementação de incentivos financeiros ou subsídios para apoiar a adoção de práticas regenerativas.",
+        "Colaboração com instituições de pesquisa agrícola para monitorar e documentar a eficácia das práticas regenerativas na captura de carbono e na melhoria da saúde do solo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento nos níveis de carbono orgânico do solo (toneladas/hectare).",
+        "Redução no uso de água por hectare na produção agrícola (%).",
+        "Número de projetos piloto de agricultura regenerativa implementados."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0096",
+    "actionName": "Promote Organic Farming",
+    "actionPriority": 12,
+    "explanation": "Promover a agricultura orgânica em Aracruz é uma ação estratégica devido ao seu potencial para aumentar a segurança alimentar e reduzir o impacto ambiental. A cidade enfrenta riscos significativos de secas, que podem afetar a produção de alimentos, tornando as práticas agrícolas sustentáveis cruciais. A agricultura orgânica pode melhorar a saúde do solo e a retenção de água, mitigando alguns dos efeitos adversos das mudanças climáticas. Além disso, ela está alinhada com as baixas emissões industriais da cidade, apoiando a transição para práticas de uso da terra mais sustentáveis.",
+    "action": {
+      "ActionID": "icare_0096",
+      "ActionName": "Promover a Agricultura Orgânica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a adoção de práticas de agricultura orgânica que evitem o uso de produtos químicos e contribuam para a saúde do solo e captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecimento de incentivos financeiros, subsídios ou subsídios para apoiar a transição para práticas de agricultura orgânica.",
+        "Desenvolvimento de redes de treinamento e apoio para educar os agricultores sobre métodos de agricultura orgânica e seus benefícios.",
+        "Estabelecimento de sistemas de certificação e estratégias de acesso ao mercado para garantir a viabilidade econômica dos produtos orgânicos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas sob práticas de agricultura orgânica (%).",
+        "Aumento no teor de carbono orgânico do solo (toneladas de carbono por hectare).",
+        "Redução no uso de fertilizantes químicos e pesticidas (quilogramas/hectare/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0121",
+    "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+    "actionPriority": 13,
+    "explanation": "A ação de incentivar programas de compartilhamento de bicicletas, especialmente com bicicletas elétricas, é crucial para Aracruz devido ao seu potencial de reduzir as emissões do setor de transporte, que são um dos principais contribuintes para as emissões totais da cidade. Ao promover bicicletas elétricas, a cidade pode oferecer uma alternativa sustentável e eficiente aos veículos tradicionais, diminuindo assim a dependência de combustíveis fósseis e reduzindo a poluição do ar. Além disso, essa iniciativa pode melhorar a mobilidade urbana e proporcionar uma opção de transporte econômica para os moradores, alinhando-se ao contexto socioeconômico de renda muito baixa do município. Ademais, o incentivo ao uso da bicicleta pode melhorar a saúde pública ao promover a atividade física e reduzir o risco de doenças agravadas pela poluição.",
+    "action": {
+      "ActionID": "icare_0121",
+      "ActionName": "Incentivo à criação de programas de compartilhamento de bicicletas em áreas urbanas, com foco em bicicletas elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação incentiva o estabelecimento de sistemas de compartilhamento de bicicletas nas cidades, promovendo especificamente o uso de bicicletas elétricas. Esses sistemas permitem que os residentes aluguem bicicletas elétricas para viagens curtas, reduzindo a dependência de carros para o transporte urbano. Ao integrar bicicletas elétricas, as cidades podem reduzir ainda mais as emissões de gases de efeito estufa, aliviar a congestão do tráfego e promover um modo de transporte mais saudável e sustentável tanto para áreas urbanas quanto rurais. Esta iniciativa também apoia a igualdade de mobilidade, pois torna as bicicletas mais acessíveis a uma gama mais ampla de pessoas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecimento de sistemas de compartilhamento de bicicletas com foco em bicicletas elétricas para reduzir a dependência de carros.",
+        "Integração de bicicletas elétricas para reduzir as emissões de gases de efeito estufa, aliviar o congestionamento do tráfego e promover o transporte sustentável.",
+        "Promoção da igualdade de mobilidade tornando as bicicletas elétricas acessíveis a uma população mais ampla."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de bicicletas elétricas disponíveis em programas de compartilhamento de bicicletas.",
+        "Aumento anual no número de usuários de compartilhamento de bicicletas.",
+        "Redução estimada nas emissões de CO₂ equivalente com a adoção do compartilhamento de bicicletas elétricas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 14,
+    "explanation": "A implementação de programas de transporte público gratuito durante os horários de pico em Aracruz é uma ação estratégica para enfrentar as emissões do setor de transporte, que são um dos principais contribuintes para o total de emissões da cidade. Ao incentivar o uso do transporte público, a cidade pode reduzir a dependência de veículos individuais, diminuindo assim as emissões e melhorando a qualidade do ar. Além disso, essa iniciativa pode aliviar a congestão do tráfego nos horários de pico, aumentando a eficiência geral da rede de transporte da cidade. Ademais, oferecer transporte gratuito pode beneficiar os moradores de baixa renda, alinhando-se aos objetivos socioeconômicos do município e melhorando o acesso a serviços essenciais.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementação de programas de transporte público gratuito durante os horários de pico para reduzir o uso de veículos individuais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar o uso do transporte público oferecendo serviços gratuitos durante os horários de pico para trabalhadores e estudantes. Esta medida reduz a congestão urbana, diminui o número de veículos individuais nas estradas e, consequentemente, reduz as emissões de gases de efeito estufa associadas ao transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Alocação de financiamento para subsidiar serviços de transporte público gratuito durante as horas de pico.",
+        "Desenvolvimento de políticas para garantir a sustentabilidade e eficiência dos sistemas de transporte público diante do aumento da demanda.",
+        "Coordenação com empregadores e instituições educacionais para otimizar os horários de pico e promover a iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nos níveis de poluição do ar durante as horas de pico (concentração de PM2.5/PM10).",
+        "Número de veículos particulares removidos das estradas durante as horas de pico.",
+        "Taxa de satisfação pública com a iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 15,
+    "explanation": "Priorizar a aquisição de produtos agroecológicos produzidos localmente nas compras públicas é fundamental para Aracruz devido ao seu potencial de fortalecer a segurança alimentar. A cidade enfrenta riscos significativos de secas e enchentes, que podem interromper as cadeias de abastecimento de alimentos. Ao apoiar práticas agroecológicas locais, o município pode aumentar a resiliência diante desses impactos climáticos e garantir um fornecimento de alimentos mais estável. Além disso, essa ação pode estimular a economia local ao apoiar os agricultores locais e reduzir a dependência de fontes externas de alimentos.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar a Aquisição de Produtos Agroecológicos Produzidos Localmente em Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Concentre-se em comprar alimentos sustentáveis e produzidos localmente para instituições públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas de aquisição e identificação de fornecedores locais confiáveis.",
+        "Parcerias com produtores e alocação de financiamento para programas de aquisição sustentável.",
+        "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os critérios de sustentabilidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem do volume total de compras públicas provenientes de produtores agroecológicos locais.",
+        "Quantidade de emissões de CO₂ evitadas devido à redução da distância de transporte (tCO₂e).",
+        "Número de produtores agroecológicos beneficiados pelas compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0005",
+    "actionName": "Create credit lines for residential and community wind energy projects",
+    "actionPriority": 16,
+    "explanation": "A criação de linhas de crédito para projetos de energia eólica residenciais e comunitários em Aracruz é uma medida estratégica para aumentar a segurança energética e reduzir as emissões. A cidade apresenta emissões significativas no setor de energia estacionária, e a promoção da energia eólica pode ajudar a mitigar essas emissões. Além disso, a região enfrenta riscos relacionados à segurança energética devido a períodos de seca, tornando fontes renováveis como a energia eólica essenciais para a resiliência. Essa ação também está alinhada com a necessidade do município de diversificar suas fontes de energia e reduzir a dependência de formas tradicionais, contribuindo para a sustentabilidade a longo prazo.",
+    "action": {
+      "ActionID": "icare_0005",
+      "ActionName": "Criar linhas de crédito para projetos de energia eólica residencial e comunitária",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecer programas de financiamento acessíveis para apoiar o desenvolvimento e a adoção de sistemas de energia eólica em residências e projetos comunitários, possibilitando uma transição para fontes de energia mais limpas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 2,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de programas financeiros, subsídios ou subvenções para tornar os sistemas de energia eólica acessíveis para residências e projetos comunitários",
+        "Acesso a expertise técnica e recursos para orientar a instalação e manutenção de sistemas de energia eólica em ambientes residenciais e comunitários",
+        "Apoio político e regulatório para incentivar a adoção de energia eólica, incluindo processos de licenciamento simplificados e incentivos para projetos de energia limpa"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia eólica financiados anualmente.",
+        "Capacidade instalada de sistemas de energia eólica de projetos apoiados por crédito (MW).",
+        "Redução estimada nas emissões equivalentes de CO₂ pela adoção de energia eólica."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0136",
+    "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+    "actionPriority": 17,
+    "explanation": "Apoiar a implementação de incentivos fiscais ecológicos em Aracruz é fundamental devido aos significativos desafios ambientais enfrentados pelo município, como altas emissões e vulnerabilidade a riscos climáticos, como enchentes e secas. Esses incentivos podem estimular práticas sustentáveis e reduzir as emissões, alinhando-se à necessidade da cidade de enfrentar suas substanciais emissões provenientes dos setores de energia estacionária e transporte. Além disso, políticas fiscais ecológicas podem promover a conservação da biodiversidade, o que é vital considerando o bioma de floresta tropical do município. Ao priorizar essa ação, Aracruz pode aumentar sua resiliência aos impactos climáticos e melhorar sua sustentabilidade ambiental como um todo.",
+    "action": {
+      "ActionID": "icare_0136",
+      "ActionName": "Apoiar a Implementação de Incentivos Fiscais Ecológicos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a aplicação de impostos ecológicos e incentivos para promover a conservação ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro regulatório claro com taxas de impostos justas e incentivos para a sustentabilidade.",
+        "Implementar sistemas de monitoramento eficazes para rastrear a conformidade e medir o impacto.",
+        "Promover a conscientização pública e fomentar a colaboração entre governos, empresas e comunidades."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de municípios que adotaram incentivos fiscais ambientais.",
+        "Percentual da receita tributária gasta em práticas sustentáveis.",
+        "Área ou número de propriedades beneficiadas por práticas de conservação como resultado de incentivos."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0094",
+    "actionName": "Adoption of biomethane in public fleets.",
+    "actionPriority": 18,
+    "explanation": "A adoção do biometano nas frotas públicas de Aracruz é um passo significativo para a redução das emissões do setor de transporte, que atualmente contribuem de forma substancial para o total de emissões da cidade. Ao fazer a transição para o biometano, a cidade pode aproveitar seu bioma de floresta tropical para produzir energia renovável, diminuindo assim a dependência de combustíveis fósseis. Essa ação não só aborda questões ambientais, mas também fortalece a segurança energética, o que é crucial, considerando a vulnerabilidade da cidade a secas que afetam os recursos energéticos. Além disso, está alinhada ao contexto socioeconômico do município, ao potencialmente criar empregos verdes e apoiar comunidades de baixa renda.",
+    "action": {
+      "ActionID": "icare_0094",
+      "ActionName": "Adoção de biometano em frotas públicas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar biometano produzido a partir de resíduos urbanos e agroindustriais para abastecer ônibus e caminhões públicos, reduzindo as emissões de gases de efeito estufa nas frotas municipais",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de infraestrutura para a produção, processamento e distribuição de biometano a partir de resíduos urbanos e agroindustriais.",
+        "Retrofit ou aquisição de ônibus e caminhões públicos capazes de usar biometano como fonte de combustível.",
+        "Estabelecimento de políticas e incentivos financeiros para apoiar a produção de biometano e sua integração nas frotas municipais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Economia de custos na operação da frota devido ao uso de biometano (USD/ano).",
+        "Aumento na capacidade de produção de biometano (%).",
+        "Percentagem de biometano obtido localmente versus importado."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0097",
+    "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+    "actionPriority": 19,
+    "explanation": "Apoiar a geração distribuída de energia em residências e empresas em Aracruz é fundamental devido às altas emissões estacionárias de energia na cidade. Ao promover a produção local de energia, o município pode reduzir sua dependência de fontes centralizadas de eletricidade, que frequentemente contribuem de forma significativa para as emissões. Essa ação também está alinhada com a necessidade de aumentar a segurança energética, especialmente diante de riscos climáticos como secas e ondas de calor. Além disso, sistemas de energia distribuída podem proporcionar maior resiliência contra quedas de energia e reduzir os custos energéticos para moradores e empresas, contribuindo para o desenvolvimento socioeconômico geral da região.",
+    "action": {
+      "ActionID": "icare_0097",
+      "ActionName": "Apoiar a Geração de Energia Distribuída em Residências e Negócios",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Facilitar o uso de painéis solares e outras tecnologias de energia renovável em residências e edifícios comerciais.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecer incentivos financeiros, regulamentações claras de instalação e acesso a tecnologias acessíveis para painéis solares.",
+        "Lançar campanhas de conscientização pública e oferecer treinamento para proprietários de residências e empresas.",
+        "Incentivar a adoção de tecnologias de energia renovável para promover economias de energia a longo prazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Capacidade instalada de geração de energia distribuída (MW).",
+        "Percentual de residências e empresas gerando sua própria energia (%).",
+        "Redução nas emissões de CO₂ através da geração distribuída (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0085",
+    "actionName": "Promote the Adoption of Agroecological Pest Control",
+    "actionPriority": 20,
+    "explanation": "Promover a adoção do controle agroecológico de pragas em Aracruz é fundamental devido ao seu bioma de floresta tropical, que abriga uma rica biodiversidade ameaçada pelos métodos convencionais de controle de pragas. Essa ação está alinhada com a necessidade de proteger a biodiversidade, que está em risco tanto por secas quanto por ondas de calor. Ao adotar práticas sustentáveis de controle de pragas, o município pode fortalecer a segurança alimentar, que também é vulnerável a riscos climáticos como enchentes e secas. Além disso, essa abordagem pode contribuir para a redução das emissões provenientes do uso da terra, que representam uma parte significativa do perfil total de emissões da cidade.",
+    "action": {
+      "ActionID": "icare_0085",
+      "ActionName": "Promover a Adoção do Controle de Pragas Agroecológico",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar métodos de controle de pragas que sejam agroecológicos, como o uso de predadores naturais e plantas repelentes, para reduzir a dependência de pesticidas químicos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de programas educacionais para informar os agricultores sobre métodos de controle de pragas agroecológicos e seus benefícios.",
+        "Fornecimento de acesso a recursos ou materiais para implementar métodos de controle de pragas naturais, como a introdução de insetos benéficos ou o cultivo de plantas repelentes.",
+        "Criação de incentivos ou redes de apoio para encorajar a transição do uso de pesticidas químicos em favor de alternativas sustentáveis."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento nas taxas de produtividade em áreas que adotam controle agroecológico de pragas (%).",
+        "Número de campanhas educativas realizadas sobre controle sustentável de pragas.",
+        "Impacto nos custos totais de produção devido à adoção de práticas agroecológicas (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
 ]

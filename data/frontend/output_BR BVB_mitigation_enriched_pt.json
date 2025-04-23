@@ -1,1261 +1,1261 @@
 [
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 1,
-        "explanation": "Implementing agroforestry systems in Boa Vista is a high priority due to the city's tropical rainforest biome, which is well-suited for such sustainable agricultural practices. Agroforestry can help mitigate the high land use emissions by integrating trees with crops and livestock, enhancing carbon sequestration and reducing deforestation pressures. Additionally, this action can improve food security, which is crucial given the city's vulnerability to droughts and floods, as identified in the climate change risk assessment. By promoting biodiversity and soil health, agroforestry systems also contribute to long-term ecological resilience and sustainability in the region.",
-        "action": {
-            "ActionID": "icare_0050",
-            "ActionName": "Implementar Sistemas Agroflorestais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover sistemas agroflorestais integrando \u00e1rvores na produ\u00e7\u00e3o de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Fornecimento de suporte t\u00e9cnico e orienta\u00e7\u00e3o aos agricultores sobre o design e implementa\u00e7\u00e3o de sistemas agroflorestais.",
-                "Desenvolvimento de incentivos financeiros ou subs\u00eddios para tornar a agrofloresta mais economicamente atraente.",
-                "Cria\u00e7\u00e3o de pol\u00edticas que integrem pr\u00e1ticas agroflorestais no planejamento do uso da terra agr\u00edcola e nos sistemas de posse de terra."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas convertidas em sistemas agroflorestais (%).",
-                "N\u00famero de novos projetos agroflorestais implementados.",
-                "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 2,
-        "explanation": "Promoting urban reforestation and green corridors in Boa Vista is crucial due to the city's tropical rainforest biome, which naturally supports rich biodiversity. This action can help mitigate the high emissions from transportation and land use by enhancing carbon sequestration. Additionally, increasing green spaces can improve public health by reducing the urban heat island effect, which is particularly important given the high risk of heatwaves. Furthermore, green corridors can enhance the resilience of the city's infrastructure against floods by improving water absorption and reducing runoff.",
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aumentar a cobertura arb\u00f3rea urbana para mitigar o efeito de ilha de calor urbano e melhorar a biodiversidade.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identifica\u00e7\u00e3o de \u00e1reas priorit\u00e1rias e sele\u00e7\u00e3o de esp\u00e9cies nativas e resilientes ao clima para o plantio de \u00e1rvores.",
-                "Parcerias com organiza\u00e7\u00f5es locais e viveiros, e aloca\u00e7\u00e3o de recursos para plantio e manuten\u00e7\u00e3o.",
-                "Envolvimento da comunidade para garantir cuidado e apoio a longo prazo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento na cobertura de dossel arb\u00f3reo urbano (%)",
-                "Comprimento total de corredores verdes criados ou restaurados (quil\u00f4metros)",
-                "Redu\u00e7\u00e3o nas temperaturas do efeito de ilha de calor urbano (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 3,
-        "explanation": "Strengthening mechanisms for deforestation control in Boa Vista is crucial due to the city's location within a tropical rainforest biome. Deforestation can exacerbate climate change impacts, such as increased droughts and heatwaves, which are already significant risks for the region. By controlling deforestation, the city can help preserve biodiversity and maintain ecosystem services that are vital for water and food security. Additionally, reducing deforestation can contribute to lowering land use emissions, which are a significant component of the city's total emissions profile.",
-        "action": {
-            "ActionID": "icare_0134",
-            "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aprimorar o monitoramento e a fiscaliza\u00e7\u00e3o para prevenir o desmatamento ilegal e promover o uso sustent\u00e1vel da terra.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Forte estrutura legal, tecnologias de monitoramento avan\u00e7adas (sat\u00e9lites e drones) e capacita\u00e7\u00e3o para as autoridades locais.",
-                "Colabora\u00e7\u00e3o com comunidades locais e financiamento adequado para os esfor\u00e7os de fiscaliza\u00e7\u00e3o.",
-                "Transpar\u00eancia e responsabilidade na elabora\u00e7\u00e3o de relat\u00f3rios para garantir a implementa\u00e7\u00e3o eficaz."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total monitorada para desmatamento (hectares/ano).",
-                "Redu\u00e7\u00e3o na taxa anual de desmatamento (%).",
-                "Quantidade de emiss\u00f5es evitadas pela redu\u00e7\u00e3o do desmatamento (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 4,
-        "explanation": "Facilitating technology transfer for conservation practices in Boa Vista is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to environmental changes. The city faces significant risks from droughts and heatwaves, impacting water resources, food security, and public health. By adopting advanced conservation technologies, Boa Vista can enhance its resilience against these climate hazards, ensuring sustainable management of its natural resources. Additionally, improving conservation practices can help mitigate the high emissions from land use, contributing to overall environmental sustainability.",
-        "action": {
-            "ActionID": "icare_0129",
-            "ActionName": "Facilitar a Transfer\u00eancia de Tecnologia para Pr\u00e1ticas de Conserva\u00e7\u00e3o",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover a ado\u00e7\u00e3o de pr\u00e1ticas agr\u00edcolas sustent\u00e1veis por meio de treinamento, projetos piloto e demonstra\u00e7\u00f5es de tecnologia.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar pr\u00e1ticas sustent\u00e1veis.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a ado\u00e7\u00e3o.",
-                "Acesso a assist\u00eancia t\u00e9cnica para implementa\u00e7\u00e3o bem-sucedida."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de tecnologias de conserva\u00e7\u00e3o transferidas e aplicadas em fazendas.",
-                "Percentual de produtores treinados para implementar pr\u00e1ticas de conserva\u00e7\u00e3o.",
-                "Redu\u00e7\u00e3o na degrada\u00e7\u00e3o do solo ou aumento na cobertura vegetal (hectares)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 5,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Boa Vista is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact water resources and food security. These actions can help improve agricultural practices, enhance food production, and ensure sustainable water management, thereby mitigating the risks associated with these hazards. Additionally, ATER initiatives can support the local economy by providing farmers with the knowledge and tools needed to adapt to changing environmental conditions, ultimately contributing to the region's resilience and sustainability.",
-        "action": {
-            "ActionID": "icare_0130",
-            "ActionName": "Conduzir A\u00e7\u00f5es de Assist\u00eancia T\u00e9cnica e Extens\u00e3o Rural (ATER)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fornecer suporte t\u00e9cnico e treinamento aos produtores rurais para a produ\u00e7\u00e3o agr\u00edcola sustent\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidade de pessoal t\u00e9cnico qualificado e programas de forma\u00e7\u00e3o personalizados.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa agr\u00edcola e aloca\u00e7\u00e3o de recursos para o desenvolvimento de capacidades.",
-                "Envolvimento com produtores rurais para garantir a participa\u00e7\u00e3o ativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de produtores beneficiados com assist\u00eancia t\u00e9cnica rural (% do total).",
-                "Percentual de participantes adotando pr\u00e1ticas resilientes ao clima.",
-                "Redu\u00e7\u00e3o da vulnerabilidade das propriedades ao risco clim\u00e1tico (%)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0128",
-        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 6,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Boa Vista is crucial due to the city's significant land use emissions and its location within a tropical rainforest biome. PES programs can incentivize landowners to conserve and restore natural ecosystems, which can help reduce emissions and enhance biodiversity. Additionally, these programs can provide economic benefits to local communities, aligning with the city's low-income socio-economic status. Implementing PES can also contribute to mitigating the impacts of climate hazards such as droughts and floods, which pose high risks to water resources and infrastructure in the region.",
-        "action": {
-            "ActionID": "icare_0128",
-            "ActionName": "Estabelecer Programas Municipais de Pagamento por Servi\u00e7os Ambientais (PSA)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar programas que paguem aos propriet\u00e1rios de terras por manterem ou melhorarem as condi\u00e7\u00f5es ambientais em suas propriedades.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Cria\u00e7\u00e3o de mecanismos de financiamento e crit\u00e9rios de elegibilidade claros com indicadores de desempenho.",
-                "Parcerias com organiza\u00e7\u00f5es ambientais e campanhas de conscientiza\u00e7\u00e3o para incentivar a participa\u00e7\u00e3o.",
-                "Integra\u00e7\u00e3o com estruturas legais para garantir a sustentabilidade do programa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de contratos ativos de Pagamento por Servi\u00e7os Ambientais (PSA) assinados.",
-                "\u00c1rea total sob pr\u00e1ticas de conserva\u00e7\u00e3o ou restaura\u00e7\u00e3o incentivadas (hectares).",
-                "Quantidade de carbono sequestrado ou emiss\u00f5es evitadas por meio de a\u00e7\u00f5es de PSA (tCO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 7,
-        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Boa Vista due to its high transportation emissions, which are a significant contributor to the city's total emissions. By promoting electric bike usage, the city can reduce reliance on fossil fuel-powered vehicles, thereby decreasing air pollution and greenhouse gas emissions. Additionally, this initiative can improve public health by encouraging physical activity and providing a sustainable transportation option, which is particularly important given the city's vulnerability to heatwaves and other climate-related hazards. Furthermore, enhancing urban mobility through bike-sharing can alleviate traffic congestion and improve the overall quality of life for residents.",
-        "action": {
-            "ActionID": "icare_0121",
-            "ActionName": "Incentivo \u00e0 cria\u00e7\u00e3o de programas de compartilhamento de bicicletas em \u00e1reas urbanas, com foco em bicicletas el\u00e9tricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta a\u00e7\u00e3o incentiva o estabelecimento de sistemas de compartilhamento de bicicletas nas cidades, promovendo especificamente o uso de bicicletas el\u00e9tricas. Esses sistemas permitem que os residentes aluguem bicicletas el\u00e9tricas para viagens curtas, reduzindo a depend\u00eancia de carros para o transporte urbano. Ao integrar bicicletas el\u00e9tricas, as cidades podem reduzir ainda mais as emiss\u00f5es de gases de efeito estufa, aliviar a congest\u00e3o do tr\u00e1fego e promover um modo de transporte mais saud\u00e1vel e sustent\u00e1vel tanto para \u00e1reas urbanas quanto rurais. Esta iniciativa tamb\u00e9m apoia a igualdade de mobilidade, pois torna as bicicletas mais acess\u00edveis a uma gama mais ampla de pessoas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecimento de sistemas de compartilhamento de bicicletas com foco em bicicletas el\u00e9tricas para reduzir a depend\u00eancia de carros.",
-                "Integra\u00e7\u00e3o de bicicletas el\u00e9tricas para reduzir as emiss\u00f5es de gases de efeito estufa, aliviar o congestionamento do tr\u00e1fego e promover o transporte sustent\u00e1vel.",
-                "Promo\u00e7\u00e3o da igualdade de mobilidade tornando as bicicletas el\u00e9tricas acess\u00edveis a uma popula\u00e7\u00e3o mais ampla."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de bicicletas el\u00e9tricas dispon\u00edveis em programas de compartilhamento de bicicletas.",
-                "Aumento anual no n\u00famero de usu\u00e1rios de compartilhamento de bicicletas.",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es de CO\u2082 equivalente com a ado\u00e7\u00e3o do compartilhamento de bicicletas el\u00e9tricas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 8,
-        "explanation": "The implementation of an urban toll in Boa Vista is a priority due to the high transportation emissions, which are a significant contributor to the city's total emissions. By introducing a toll, the city can encourage the use of public transportation and reduce the number of vehicles on the road, thereby decreasing emissions. Additionally, this action can help mitigate the impact of heatwaves and improve public health by reducing air pollution. The toll can also generate revenue that can be reinvested in sustainable transportation infrastructure, further supporting the city's environmental goals.",
-        "action": {
-            "ActionID": "icare_0139",
-            "ActionName": "Implementa\u00e7\u00e3o de ped\u00e1gio urbano.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estabelecimento de uma taxa de congestionamento e/ou rod\u00edzio de placas para ve\u00edculos leves em \u00e1reas saturadas e em hor\u00e1rios saturados",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecer um quadro legal claro e investir em tecnologia para monitoramento e fiscaliza\u00e7\u00e3o (por exemplo, c\u00e2meras, sensores).",
-                "Lan\u00e7ar campanhas de conscientiza\u00e7\u00e3o e garantir a disponibilidade de transporte p\u00fablico eficiente ou solu\u00e7\u00f5es alternativas de mobilidade.",
-                "Colaborar com governos locais e ag\u00eancias de transporte, e estabelecer sistemas para monitorar e avaliar a efic\u00e1cia da pol\u00edtica."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o das emiss\u00f5es de CO\u2082 do transporte rodovi\u00e1rio urbano (tCO\u2082e/ano).",
-                "Receita gerada pela implementa\u00e7\u00e3o da taxa de congestionamento urbano (R$)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 9,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Boa Vista due to its significant risk of droughts impacting water and food security. By supporting local agroecological practices, the city can enhance its resilience against these climate hazards, ensuring a more stable food supply. Additionally, this action can stimulate the local economy by supporting small-scale farmers and reducing dependency on external food sources. It also aligns with sustainable practices that can help mitigate environmental impacts, contributing to the overall reduction of emissions in the region.",
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Priorizar a Aquisi\u00e7\u00e3o de Produtos Agroecol\u00f3gicos Produzidos Localmente em Compras P\u00fablicas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Concentre-se em comprar alimentos sustent\u00e1veis e produzidos localmente para institui\u00e7\u00f5es p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de pol\u00edticas de aquisi\u00e7\u00e3o e identifica\u00e7\u00e3o de fornecedores locais confi\u00e1veis.",
-                "Parcerias com produtores e aloca\u00e7\u00e3o de financiamento para programas de aquisi\u00e7\u00e3o sustent\u00e1vel.",
-                "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os crit\u00e9rios de sustentabilidade."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem do volume total de compras p\u00fablicas provenientes de produtores agroecol\u00f3gicos locais.",
-                "Quantidade de emiss\u00f5es de CO\u2082 evitadas devido \u00e0 redu\u00e7\u00e3o da dist\u00e2ncia de transporte (tCO\u2082e).",
-                "N\u00famero de produtores agroecol\u00f3gicos beneficiados pelas compras p\u00fablicas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 10,
-        "explanation": "Creating incentives for agroforestry practices in livestock systems is crucial for Boa Vista due to its tropical rainforest biome, which is highly sensitive to deforestation and land degradation. Agroforestry can help mitigate land use emissions, which are a significant contributor to the city's total emissions. Additionally, integrating trees into livestock systems can enhance biodiversity and improve resilience against climate hazards such as droughts and floods, which pose high risks to the region. This action supports sustainable land management and can contribute to long-term food security and environmental health in Boa Vista.",
-        "action": {
-            "ActionID": "icare_0084",
-            "ActionName": "Criar Incentivos para Pr\u00e1ticas de Agroflorestas em Sistemas de Pecu\u00e1ria",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Criar incentivos financeiros e t\u00e9cnicos para integrar pr\u00e1ticas de agrofloresta\u00e7\u00e3o em sistemas de pecu\u00e1ria, promovendo a captura de carbono, prote\u00e7\u00e3o do solo e melhoria da biodiversidade.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de programas de incentivos financeiros, como subs\u00eddios ou isen\u00e7\u00f5es fiscais, para apoiar os agricultores na integra\u00e7\u00e3o da agrofloresta com sistemas de pecu\u00e1ria.",
-                "Fornecimento de assist\u00eancia t\u00e9cnica e treinamento aos agricultores sobre as melhores pr\u00e1ticas para a integra\u00e7\u00e3o da agrofloresta nas opera\u00e7\u00f5es de pecu\u00e1ria.",
-                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas e ambientais para monitorar e avaliar os impactos das pr\u00e1ticas agroflorestais na captura de carbono, sa\u00fade do solo e biodiversidade."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de incentivos financeiros fornecidos para integrar a agrofloresta em sistemas de pecu\u00e1ria.",
-                "Aumento na qualidade do solo e cobertura vegetal em propriedades manejadas (%).",
-                "Crescimento da biodiversidade em \u00e1reas de agrofloresta (% de esp\u00e9cies identificadas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 11,
-        "explanation": "The implementation of free public transportation programs during peak hours in Boa Vista is a crucial action to address the city's high transportation emissions, which are a significant contributor to its total emissions. By encouraging the use of public transport, the city can reduce the reliance on individual vehicles, thereby decreasing emissions and improving air quality. Additionally, this initiative can enhance accessibility for low-income residents, aligning with the city's socio-economic context where low income is prevalent. Furthermore, reducing vehicle congestion can mitigate the impact of heatwaves on public health by lowering urban heat and improving overall quality of life.",
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementa\u00e7\u00e3o de programas de transporte p\u00fablico gratuito durante os hor\u00e1rios de pico para reduzir o uso de ve\u00edculos individuais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar o uso do transporte p\u00fablico oferecendo servi\u00e7os gratuitos durante os hor\u00e1rios de pico para trabalhadores e estudantes. Esta medida reduz a congest\u00e3o urbana, diminui o n\u00famero de ve\u00edculos individuais nas estradas e, consequentemente, reduz as emiss\u00f5es de gases de efeito estufa associadas ao transporte privado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Aloca\u00e7\u00e3o de financiamento para subsidiar servi\u00e7os de transporte p\u00fablico gratuito durante as horas de pico.",
-                "Desenvolvimento de pol\u00edticas para garantir a sustentabilidade e efici\u00eancia dos sistemas de transporte p\u00fablico diante do aumento da demanda.",
-                "Coordena\u00e7\u00e3o com empregadores e institui\u00e7\u00f5es educacionais para otimizar os hor\u00e1rios de pico e promover a iniciativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nos n\u00edveis de polui\u00e7\u00e3o do ar durante as horas de pico (concentra\u00e7\u00e3o de PM2.5/PM10).",
-                "N\u00famero de ve\u00edculos particulares removidos das estradas durante as horas de pico.",
-                "Taxa de satisfa\u00e7\u00e3o p\u00fablica com a iniciativa de transporte gratuito (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 12,
-        "explanation": "Supporting the implementation of ecological fiscal incentives in Boa Vista is crucial due to the city's significant environmental challenges. With high emissions from transportation and land use, these incentives can encourage sustainable practices and reduce the overall carbon footprint. Additionally, Boa Vista faces severe risks from climate hazards like droughts and heatwaves, which threaten water resources and public health. By promoting ecological fiscal policies, the city can enhance its resilience against these climate impacts and foster a more sustainable economic model.",
-        "action": {
-            "ActionID": "icare_0136",
-            "ActionName": "Apoiar a Implementa\u00e7\u00e3o de Incentivos Fiscais Ecol\u00f3gicos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar a aplica\u00e7\u00e3o de impostos ecol\u00f3gicos e incentivos para promover a conserva\u00e7\u00e3o ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecer um quadro regulat\u00f3rio claro com taxas de impostos justas e incentivos para a sustentabilidade.",
-                "Implementar sistemas de monitoramento eficazes para rastrear a conformidade e medir o impacto.",
-                "Promover a conscientiza\u00e7\u00e3o p\u00fablica e fomentar a colabora\u00e7\u00e3o entre governos, empresas e comunidades."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de munic\u00edpios que adotaram incentivos fiscais ambientais.",
-                "Percentual da receita tribut\u00e1ria gasta em pr\u00e1ticas sustent\u00e1veis.",
-                "\u00c1rea ou n\u00famero de propriedades beneficiadas por pr\u00e1ticas de conserva\u00e7\u00e3o como resultado de incentivos."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0085",
-        "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 13,
-        "explanation": "Promoting the adoption of agroecological pest control in Boa Vista is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which can severely impact food security. By implementing sustainable pest control methods, the city can enhance its agricultural resilience, ensuring a stable food supply even in adverse conditions. Additionally, agroecological practices can help preserve the biodiversity of the tropical rainforest biome, which is vital for maintaining ecological balance and supporting local livelihoods. This action aligns with the need to address socio-economic challenges, as it can provide low-income communities with more sustainable and cost-effective agricultural solutions.",
-        "action": {
-            "ActionID": "icare_0085",
-            "ActionName": "Promover a Ado\u00e7\u00e3o do Controle de Pragas Agroecol\u00f3gico",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar m\u00e9todos de controle de pragas que sejam agroecol\u00f3gicos, como o uso de predadores naturais e plantas repelentes, para reduzir a depend\u00eancia de pesticidas qu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de programas educacionais para informar os agricultores sobre m\u00e9todos de controle de pragas agroecol\u00f3gicos e seus benef\u00edcios.",
-                "Fornecimento de acesso a recursos ou materiais para implementar m\u00e9todos de controle de pragas naturais, como a introdu\u00e7\u00e3o de insetos ben\u00e9ficos ou o cultivo de plantas repelentes.",
-                "Cria\u00e7\u00e3o de incentivos ou redes de apoio para encorajar a transi\u00e7\u00e3o do uso de pesticidas qu\u00edmicos em favor de alternativas sustent\u00e1veis."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento nas taxas de produtividade em \u00e1reas que adotam controle agroecol\u00f3gico de pragas (%).",
-                "N\u00famero de campanhas educativas realizadas sobre controle sustent\u00e1vel de pragas.",
-                "Impacto nos custos totais de produ\u00e7\u00e3o devido \u00e0 ado\u00e7\u00e3o de pr\u00e1ticas agroecol\u00f3gicas (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 14,
-        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Boa Vista is a strategic move to address the city's high transportation emissions, which are a significant contributor to its total emissions. This action can help reduce the carbon footprint and improve air quality, aligning with global sustainability goals. Additionally, electric fleets can offer a more reliable and efficient transportation option, which is crucial given the city's low income and inadequate access to public services. By prioritizing this action, Boa Vista can make significant strides in mitigating climate change impacts and enhancing the quality of life for its residents.",
-        "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Implantar sistemas de transporte sob demanda com frotas 100% el\u00e9tricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Servi\u00e7os de transporte coletivo sob demanda, baseados em aplicativos, otimizam o uso de ve\u00edculos el\u00e9tricos, reduzindo as emiss\u00f5es por passageiro.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de plataformas digitais e aplicativos para gerenciar eficientemente servi\u00e7os de transporte coletivo sob demanda.",
-                "Expans\u00e3o de frotas de ve\u00edculos el\u00e9tricos adaptadas para solu\u00e7\u00f5es de transporte compartilhado.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas e incentivos para incentivar a ado\u00e7\u00e3o e o uso de servi\u00e7os de transporte el\u00e9trico compartilhado."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de usu\u00e1rios ativos do sistema de frota el\u00e9trica sob demanda.",
-                "Percentual da demanda de transporte urbano atendida por sistemas sob demanda.",
-                "Redu\u00e7\u00e3o nos n\u00edveis de polui\u00e7\u00e3o sonora em \u00e1reas urbanas"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 15,
-        "explanation": "The adoption of biomethane in public fleets in Boa Vista is a strategic action to reduce transportation emissions, which are a significant contributor to the city's total emissions. Given the city's high transportation emissions, transitioning to biomethane can substantially lower the carbon footprint and improve air quality. Additionally, this action aligns with the city's need to enhance energy security, as it provides a renewable and locally sourced energy alternative. Implementing biomethane can also serve as a model for sustainable practices, encouraging further adoption of clean energy solutions in the region.",
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Ado\u00e7\u00e3o de biometano em frotas p\u00fablicas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Utilizar biometano produzido a partir de res\u00edduos urbanos e agroindustriais para abastecer \u00f4nibus e caminh\u00f5es p\u00fablicos, reduzindo as emiss\u00f5es de gases de efeito estufa nas frotas municipais",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de infraestrutura para a produ\u00e7\u00e3o, processamento e distribui\u00e7\u00e3o de biometano a partir de res\u00edduos urbanos e agroindustriais.",
-                "Retrofit ou aquisi\u00e7\u00e3o de \u00f4nibus e caminh\u00f5es p\u00fablicos capazes de usar biometano como fonte de combust\u00edvel.",
-                "Estabelecimento de pol\u00edticas e incentivos financeiros para apoiar a produ\u00e7\u00e3o de biometano e sua integra\u00e7\u00e3o nas frotas municipais."
-            ],
-            "KeyPerformanceIndicators": [
-                "Economia de custos na opera\u00e7\u00e3o da frota devido ao uso de biometano (USD/ano).",
-                "Aumento na capacidade de produ\u00e7\u00e3o de biometano (%).",
-                "Percentagem de biometano obtido localmente versus importado."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 16,
-        "explanation": "Expanding the cycling infrastructure and building public walkways in Boa Vista is crucial due to the city's high transportation emissions, which are a significant contributor to its total emissions. By promoting cycling and walking, the city can reduce its reliance on motor vehicles, thereby decreasing emissions and improving air quality. Additionally, creating infrastructure that is resilient to climate threats is essential given the city's vulnerability to hazards such as floods and heatwaves, which can impact public health and infrastructure. This action not only addresses environmental concerns but also enhances the quality of life for residents by providing safer and more sustainable transportation options.",
-        "action": {
-            "ActionID": "icare_0044",
-            "ActionName": "Expandir a infraestrutura ciclovi\u00e1ria e construir passarelas p\u00fablicas e cal\u00e7adas acess\u00edveis, priorizando medidas resilientes \u00e0s amea\u00e7as clim\u00e1ticas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "O principal objetivo desta a\u00e7\u00e3o \u00e9 promover a mobilidade ativa, garantindo a seguran\u00e7a, o conforto e a prioridade do movimento de pedestres, pessoas com defici\u00eancia (ou mobilidade reduzida) e ve\u00edculos e equipamentos movidos por for\u00e7a humana, como bicicletas e patinetes.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimentos em infraestrutura em cal\u00e7adas seguras e acess\u00edveis, ciclovias e instala\u00e7\u00f5es para pessoas com defici\u00eancia",
-                "Estruturas de pol\u00edticas e regulamentos para priorizar a mobilidade ativa e estabelecer padr\u00f5es de seguran\u00e7a para pedestres e ve\u00edculos n\u00e3o motorizados",
-                "Campanhas de conscientiza\u00e7\u00e3o p\u00fablica para promover a mobilidade ativa e educar os cidad\u00e3os sobre os benef\u00edcios de caminhar, andar de bicicleta e usar outros meios de transporte movidos a energia humana"
-            ],
-            "KeyPerformanceIndicators": [
-                "Quil\u00f4metros de novas ciclovias e passarelas constru\u00eddas anualmente.",
-                "Aumento no uso di\u00e1rio de infraestrutura ciclovi\u00e1ria e pedonal (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es do transporte urbano (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 17,
-        "explanation": "The adoption of electric drones for last-mile deliveries in Boa Vista is a strategic move to reduce transportation emissions, which are currently a significant contributor to the city's total emissions. By utilizing electric drones, the city can decrease its reliance on traditional delivery vehicles that contribute to high levels of carbon emissions. This action also aligns with the city's need to address energy security risks associated with climate change impacts, such as heatwaves and droughts. Furthermore, electric drones can improve delivery efficiency and accessibility in areas with inadequate infrastructure, supporting the city's socio-economic development.",
-        "action": {
-            "ActionID": "icare_0090",
-            "ActionName": "Ado\u00e7\u00e3o de drones el\u00e9tricos para entregas de \u00faltima milha.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "off-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Substituir ve\u00edculos tradicionais por drones el\u00e9tricos para entregas de curta dist\u00e2ncia em centros urbanos, reduzindo emiss\u00f5es e congestionamento de tr\u00e1fego.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de regulamentos para o espa\u00e7o a\u00e9reo urbano para garantir a opera\u00e7\u00e3o segura e eficiente de drones de entrega.",
-                "Investimento em infraestrutura de carregamento e manuten\u00e7\u00e3o para apoiar uma frota de drones el\u00e9tricos.",
-                "Colabora\u00e7\u00e3o com empresas de log\u00edstica para integrar drones em redes de entrega de \u00faltima milha."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o do tempo de entrega em compara\u00e7\u00e3o com m\u00e9todos tradicionais (minutos).",
-                "Aumento na satisfa\u00e7\u00e3o do cliente com entregas por drones (%).",
-                "Redu\u00e7\u00e3o do congestionamento de tr\u00e1fego causado por ve\u00edculos de entrega (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 18,
-        "explanation": "The expansion of mass transit systems on rails in Boa Vista is a crucial action due to the city's high transportation emissions, which are a significant contributor to its total emissions. By developing efficient rail systems, the city can reduce its reliance on road transport, thereby decreasing emissions and improving air quality. Additionally, enhancing public transit can provide more equitable access to transportation for residents, particularly in a region with low-income levels. This action also aligns with the need to mitigate risks associated with climate change impacts, such as heatwaves and floods, by promoting sustainable urban mobility.",
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expans\u00e3o dos sistemas de transporte p\u00fablico em massa sobre trilhos (metr\u00f4s, VLTs e monotrilhos).",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esses sistemas oferecem alta capacidade e baixas emiss\u00f5es, cruciais para cidades com alta densidade populacional.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimento no desenvolvimento e expans\u00e3o da infraestrutura de transporte p\u00fablico de alta capacidade, como \u00f4nibus el\u00e9tricos e sistemas de metr\u00f4.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas e incentivos para encorajar o uso de transporte p\u00fablico em vez de ve\u00edculos particulares.",
-                "Integra\u00e7\u00e3o de fontes de energia renov\u00e1vel para alimentar esses sistemas, reduzindo ainda mais as emiss\u00f5es."
-            ],
-            "KeyPerformanceIndicators": [
-                "Comprimento das novas linhas de tr\u00e2nsito constru\u00eddas (km/ano).",
-                "Redu\u00e7\u00e3o na congest\u00e3o do tr\u00e1fego rodovi\u00e1rio (%).",
-                "Redu\u00e7\u00e3o no uso de ve\u00edculos privados (n\u00famero de viagens evitadas/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 19,
-        "explanation": "Encouraging local agroecological production and short supply chains in Boa Vista is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. By promoting local agriculture, the city can enhance its resilience against these risks, ensuring a more stable and sustainable food supply. Additionally, this action can help reduce transportation emissions, which are a major contributor to the city's overall emissions, by minimizing the need for long-distance food transport. Furthermore, supporting local farmers can boost the local economy and improve socio-economic conditions, particularly in a region with low-income levels.",
-        "action": {
-            "ActionID": "icare_0132",
-            "ActionName": "Incentivar a Produ\u00e7\u00e3o Agroecol\u00f3gica Local e Cadeias Curtas de Abastecimento",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Apoiar pr\u00e1ticas agr\u00edcolas locais e sustent\u00e1veis e reduzir as emiss\u00f5es associadas ao transporte de alimentos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Incentivos para pr\u00e1ticas agr\u00edcolas sustent\u00e1veis e desenvolvimento de redes locais de distribui\u00e7\u00e3o de alimentos.",
-                "Parcerias com produtores e investimento em infraestrutura para apoiar mercados locais.",
-                "Pol\u00edticas para priorizar m\u00e9todos de transporte de baixa emiss\u00e3o."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de produtores aderindo a pr\u00e1ticas agroecol\u00f3gicas locais.",
-                "Percentual de alimentos consumidos na cidade provenientes de cadeias curtas.",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es associadas ao transporte de alimentos (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR BVB",
-        "cityName": "Boa Vista",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 20,
-        "explanation": "Promoting sustainable agricultural practices in Boa Vista is crucial due to the city's vulnerability to droughts, which significantly impact water resources and food security. By adopting sustainable methods, the city can enhance its resilience against these climate hazards, ensuring a stable food supply and reducing dependency on external resources. Additionally, sustainable agriculture can help mitigate land use emissions, which are a significant contributor to the city's total emissions, thereby supporting broader environmental goals.",
-        "action": {
-            "ActionID": "icare_0102",
-            "ActionName": "Promover Pr\u00e1ticas Agr\u00edcolas Sustent\u00e1veis",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar pr\u00e1ticas agr\u00edcolas que reduzam as emiss\u00f5es de gases de efeito estufa, como o uso reduzido de fertilizantes e agroqu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de programas educacionais e recursos para promover pr\u00e1ticas agr\u00edcolas sustent\u00e1veis entre os agricultores.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas que incentivem a redu\u00e7\u00e3o do uso de fertilizantes e agroqu\u00edmicos, como subs\u00eddios para insumos org\u00e2nicos ou t\u00e9cnicas de cultivo sustent\u00e1vel.",
-                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas para fornecer suporte t\u00e9cnico e orienta\u00e7\u00e3o sobre pr\u00e1ticas de redu\u00e7\u00e3o de emiss\u00f5es."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas adotando pr\u00e1ticas sustent\u00e1veis (% do total de terras agr\u00edcolas).",
-                "Aumento no rendimento das colheitas por hectare (toneladas/hectare) devido a m\u00e9todos sustent\u00e1veis.",
-                "Redu\u00e7\u00e3o no uso de \u00e1gua para agricultura (litros ou m\u00b3/hectare/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0050",
+    "actionName": "Implement Agroforestry Systems",
+    "actionPriority": 1,
+    "explanation": "A implementação de sistemas agroflorestais em Boa Vista é uma alta prioridade devido ao bioma de floresta tropical da cidade, que é bastante adequado para práticas agrícolas sustentáveis desse tipo. A agrofloresta pode ajudar a mitigar as altas emissões decorrentes do uso da terra ao integrar árvores com culturas e criação de animais, aumentando a captura de carbono e reduzindo as pressões sobre o desmatamento. Além disso, essa ação pode melhorar a segurança alimentar, o que é crucial considerando a vulnerabilidade da cidade a secas e inundações, conforme identificado na avaliação de risco das mudanças climáticas. Ao promover a biodiversidade e a saúde do solo, os sistemas agroflorestais também contribuem para a resiliência ecológica e a sustentabilidade a longo prazo na região.",
+    "action": {
+      "ActionID": "icare_0050",
+      "ActionName": "Implementar Sistemas Agroflorestais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover sistemas agroflorestais integrando árvores na produção de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecimento de suporte técnico e orientação aos agricultores sobre o design e implementação de sistemas agroflorestais.",
+        "Desenvolvimento de incentivos financeiros ou subsídios para tornar a agrofloresta mais economicamente atraente.",
+        "Criação de políticas que integrem práticas agroflorestais no planejamento do uso da terra agrícola e nos sistemas de posse de terra."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas convertidas em sistemas agroflorestais (%).",
+        "Número de novos projetos agroflorestais implementados.",
+        "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0133",
+    "actionName": "Promote Urban Reforestation and Green Corridors",
+    "actionPriority": 2,
+    "explanation": "Promover a reflorestação urbana e a criação de corredores verdes em Boa Vista é fundamental devido ao bioma de floresta tropical da cidade, que naturalmente sustenta uma rica biodiversidade. Essa ação pode ajudar a mitigar as altas emissões provenientes do transporte e do uso do solo, ao aumentar a captura de carbono. Além disso, a ampliação de áreas verdes pode melhorar a saúde pública ao reduzir o efeito de ilha de calor urbana, o que é especialmente importante diante do alto risco de ondas de calor. Ademais, os corredores verdes podem aumentar a resiliência da infraestrutura da cidade contra enchentes, ao melhorar a absorção de água e reduzir o escoamento superficial.",
+    "action": {
+      "ActionID": "icare_0133",
+      "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aumentar a cobertura arbórea urbana para mitigar o efeito de ilha de calor urbano e melhorar a biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Identificação de áreas prioritárias e seleção de espécies nativas e resilientes ao clima para o plantio de árvores.",
+        "Parcerias com organizações locais e viveiros, e alocação de recursos para plantio e manutenção.",
+        "Envolvimento da comunidade para garantir cuidado e apoio a longo prazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento na cobertura de dossel arbóreo urbano (%)",
+        "Comprimento total de corredores verdes criados ou restaurados (quilômetros)",
+        "Redução nas temperaturas do efeito de ilha de calor urbano (°C)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0134",
+    "actionName": "Strengthen Mechanisms for Deforestation Control",
+    "actionPriority": 3,
+    "explanation": "O fortalecimento dos mecanismos de controle do desmatamento em Boa Vista é crucial devido à localização da cidade dentro de um bioma de floresta tropical. O desmatamento pode agravar os impactos das mudanças climáticas, como o aumento de secas e ondas de calor, que já representam riscos significativos para a região. Ao controlar o desmatamento, a cidade pode ajudar a preservar a biodiversidade e manter os serviços ecossistêmicos que são vitais para a segurança hídrica e alimentar. Além disso, a redução do desmatamento pode contribuir para a diminuição das emissões provenientes do uso da terra, que representam uma parte significativa do perfil total de emissões da cidade.",
+    "action": {
+      "ActionID": "icare_0134",
+      "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aprimorar o monitoramento e a fiscalização para prevenir o desmatamento ilegal e promover o uso sustentável da terra.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Forte estrutura legal, tecnologias de monitoramento avançadas (satélites e drones) e capacitação para as autoridades locais.",
+        "Colaboração com comunidades locais e financiamento adequado para os esforços de fiscalização.",
+        "Transparência e responsabilidade na elaboração de relatórios para garantir a implementação eficaz."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total monitorada para desmatamento (hectares/ano).",
+        "Redução na taxa anual de desmatamento (%).",
+        "Quantidade de emissões evitadas pela redução do desmatamento (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0129",
+    "actionName": "Facilitate Technology Transfer for Conservation Practices",
+    "actionPriority": 4,
+    "explanation": "Facilitar a transferência de tecnologia para práticas de conservação em Boa Vista é crucial devido à localização da cidade em um bioma de floresta tropical, altamente sensível a mudanças ambientais. A cidade enfrenta riscos significativos de secas e ondas de calor, que afetam os recursos hídricos, a segurança alimentar e a saúde pública. Ao adotar tecnologias avançadas de conservação, Boa Vista pode aumentar sua resiliência diante desses perigos climáticos, garantindo a gestão sustentável de seus recursos naturais. Além disso, a melhoria das práticas de conservação pode ajudar a mitigar as altas emissões provenientes do uso da terra, contribuindo para a sustentabilidade ambiental como um todo.",
+    "action": {
+      "ActionID": "icare_0129",
+      "ActionName": "Facilitar a Transferência de Tecnologia para Práticas de Conservação",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover a adoção de práticas agrícolas sustentáveis por meio de treinamento, projetos piloto e demonstrações de tecnologia.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar práticas sustentáveis.",
+        "Parcerias com instituições de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a adoção.",
+        "Acesso a assistência técnica para implementação bem-sucedida."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de tecnologias de conservação transferidas e aplicadas em fazendas.",
+        "Percentual de produtores treinados para implementar práticas de conservação.",
+        "Redução na degradação do solo ou aumento na cobertura vegetal (hectares)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0130",
+    "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+    "actionPriority": 5,
+    "explanation": "Realizar ações de Assistência Técnica e Extensão Rural (ATER) em Boa Vista é fundamental devido à vulnerabilidade da cidade a riscos climáticos, como secas e inundações, que impactam significativamente os recursos hídricos e a segurança alimentar. Essas ações podem ajudar a melhorar as práticas agrícolas, aumentar a produção de alimentos e garantir a gestão sustentável da água, mitigando assim os riscos associados a esses perigos. Além disso, as iniciativas de ATER podem apoiar a economia local ao fornecer aos agricultores o conhecimento e as ferramentas necessários para se adaptarem às mudanças nas condições ambientais, contribuindo, em última análise, para a resiliência e sustentabilidade da região.",
+    "action": {
+      "ActionID": "icare_0130",
+      "ActionName": "Conduzir Ações de Assistência Técnica e Extensão Rural (ATER)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fornecer suporte técnico e treinamento aos produtores rurais para a produção agrícola sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de pessoal técnico qualificado e programas de formação personalizados.",
+        "Parcerias com instituições de pesquisa agrícola e alocação de recursos para o desenvolvimento de capacidades.",
+        "Envolvimento com produtores rurais para garantir a participação ativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de produtores beneficiados com assistência técnica rural (% do total).",
+        "Percentual de participantes adotando práticas resilientes ao clima.",
+        "Redução da vulnerabilidade das propriedades ao risco climático (%)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0128",
+    "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+    "actionPriority": 6,
+    "explanation": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA) em Boa Vista é fundamental devido às significativas emissões provenientes do uso do solo na cidade e à sua localização em um bioma de floresta tropical. Os programas de PSA podem incentivar os proprietários de terras a conservar e restaurar ecossistemas naturais, o que pode ajudar a reduzir as emissões e aumentar a biodiversidade. Além disso, esses programas podem proporcionar benefícios econômicos às comunidades locais, alinhando-se com o status socioeconômico de baixa renda da cidade. A implementação do PSA também pode contribuir para mitigar os impactos de riscos climáticos, como secas e inundações, que representam grandes ameaças aos recursos hídricos e à infraestrutura da região.",
+    "action": {
+      "ActionID": "icare_0128",
+      "ActionName": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas que paguem aos proprietários de terras por manterem ou melhorarem as condições ambientais em suas propriedades.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Criação de mecanismos de financiamento e critérios de elegibilidade claros com indicadores de desempenho.",
+        "Parcerias com organizações ambientais e campanhas de conscientização para incentivar a participação.",
+        "Integração com estruturas legais para garantir a sustentabilidade do programa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de contratos ativos de Pagamento por Serviços Ambientais (PSA) assinados.",
+        "Área total sob práticas de conservação ou restauração incentivadas (hectares).",
+        "Quantidade de carbono sequestrado ou emissões evitadas por meio de ações de PSA (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0121",
+    "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+    "actionPriority": 7,
+    "explanation": "A ação de incentivar programas de compartilhamento de bicicletas, especialmente com bicicletas elétricas, é crucial para Boa Vista devido às suas altas emissões provenientes do transporte, que são um contribuinte significativo para o total de emissões da cidade. Ao promover o uso de bicicletas elétricas, a cidade pode reduzir a dependência de veículos movidos a combustíveis fósseis, diminuindo assim a poluição do ar e as emissões de gases de efeito estufa. Além disso, essa iniciativa pode melhorar a saúde pública ao incentivar a atividade física e oferecer uma opção de transporte sustentável, o que é particularmente importante considerando a vulnerabilidade da cidade a ondas de calor e outros riscos relacionados ao clima. Ademais, o fortalecimento da mobilidade urbana por meio do compartilhamento de bicicletas pode aliviar a congestão do trânsito e melhorar a qualidade de vida dos moradores.",
+    "action": {
+      "ActionID": "icare_0121",
+      "ActionName": "Incentivo à criação de programas de compartilhamento de bicicletas em áreas urbanas, com foco em bicicletas elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação incentiva o estabelecimento de sistemas de compartilhamento de bicicletas nas cidades, promovendo especificamente o uso de bicicletas elétricas. Esses sistemas permitem que os residentes aluguem bicicletas elétricas para viagens curtas, reduzindo a dependência de carros para o transporte urbano. Ao integrar bicicletas elétricas, as cidades podem reduzir ainda mais as emissões de gases de efeito estufa, aliviar a congestão do tráfego e promover um modo de transporte mais saudável e sustentável tanto para áreas urbanas quanto rurais. Esta iniciativa também apoia a igualdade de mobilidade, pois torna as bicicletas mais acessíveis a uma gama mais ampla de pessoas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecimento de sistemas de compartilhamento de bicicletas com foco em bicicletas elétricas para reduzir a dependência de carros.",
+        "Integração de bicicletas elétricas para reduzir as emissões de gases de efeito estufa, aliviar o congestionamento do tráfego e promover o transporte sustentável.",
+        "Promoção da igualdade de mobilidade tornando as bicicletas elétricas acessíveis a uma população mais ampla."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de bicicletas elétricas disponíveis em programas de compartilhamento de bicicletas.",
+        "Aumento anual no número de usuários de compartilhamento de bicicletas.",
+        "Redução estimada nas emissões de CO₂ equivalente com a adoção do compartilhamento de bicicletas elétricas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0139",
+    "actionName": "Implementation of urban toll.",
+    "actionPriority": 8,
+    "explanation": "A implementação de um pedágio urbano em Boa Vista é uma prioridade devido às altas emissões do setor de transporte, que são um dos principais contribuintes para o total de emissões da cidade. Ao introduzir um pedágio, a cidade pode incentivar o uso do transporte público e reduzir o número de veículos nas ruas, diminuindo assim as emissões. Além disso, essa medida pode ajudar a mitigar o impacto das ondas de calor e melhorar a saúde pública ao reduzir a poluição do ar. O pedágio também pode gerar receitas que podem ser reinvestidas em infraestrutura de transporte sustentável, apoiando ainda mais os objetivos ambientais da cidade.",
+    "action": {
+      "ActionID": "icare_0139",
+      "ActionName": "Implementação de pedágio urbano.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecimento de uma taxa de congestionamento e/ou rodízio de placas para veículos leves em áreas saturadas e em horários saturados",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro legal claro e investir em tecnologia para monitoramento e fiscalização (por exemplo, câmeras, sensores).",
+        "Lançar campanhas de conscientização e garantir a disponibilidade de transporte público eficiente ou soluções alternativas de mobilidade.",
+        "Colaborar com governos locais e agências de transporte, e estabelecer sistemas para monitorar e avaliar a eficácia da política."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução das emissões de CO₂ do transporte rodoviário urbano (tCO₂e/ano).",
+        "Receita gerada pela implementação da taxa de congestionamento urbano (R$)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 9,
+    "explanation": "Priorizar a aquisição de produtos agroecológicos produzidos localmente nas compras públicas é fundamental para Boa Vista, devido ao risco significativo de secas que afetam a segurança hídrica e alimentar. Ao apoiar práticas agroecológicas locais, a cidade pode aumentar sua resiliência diante desses riscos climáticos, garantindo um abastecimento alimentar mais estável. Além disso, essa ação pode estimular a economia local ao apoiar pequenos agricultores e reduzir a dependência de fontes externas de alimentos. Também está alinhada a práticas sustentáveis que podem ajudar a mitigar impactos ambientais, contribuindo para a redução geral das emissões na região.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar a Aquisição de Produtos Agroecológicos Produzidos Localmente em Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Concentre-se em comprar alimentos sustentáveis e produzidos localmente para instituições públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas de aquisição e identificação de fornecedores locais confiáveis.",
+        "Parcerias com produtores e alocação de financiamento para programas de aquisição sustentável.",
+        "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os critérios de sustentabilidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem do volume total de compras públicas provenientes de produtores agroecológicos locais.",
+        "Quantidade de emissões de CO₂ evitadas devido à redução da distância de transporte (tCO₂e).",
+        "Número de produtores agroecológicos beneficiados pelas compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0084",
+    "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+    "actionPriority": 10,
+    "explanation": "Criar incentivos para práticas de agrofloresta em sistemas de pecuária é fundamental para Boa Vista devido ao seu bioma de floresta tropical, que é altamente sensível ao desmatamento e à degradação do solo. A agrofloresta pode ajudar a mitigar as emissões provenientes do uso da terra, que são um dos principais contribuintes para o total de emissões da cidade. Além disso, a integração de árvores nos sistemas de pecuária pode aumentar a biodiversidade e melhorar a resiliência contra riscos climáticos, como secas e inundações, que representam grandes ameaças para a região. Essa ação apoia a gestão sustentável da terra e pode contribuir para a segurança alimentar a longo prazo e para a saúde ambiental em Boa Vista.",
+    "action": {
+      "ActionID": "icare_0084",
+      "ActionName": "Criar Incentivos para Práticas de Agroflorestas em Sistemas de Pecuária",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Criar incentivos financeiros e técnicos para integrar práticas de agroflorestação em sistemas de pecuária, promovendo a captura de carbono, proteção do solo e melhoria da biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas de incentivos financeiros, como subsídios ou isenções fiscais, para apoiar os agricultores na integração da agrofloresta com sistemas de pecuária.",
+        "Fornecimento de assistência técnica e treinamento aos agricultores sobre as melhores práticas para a integração da agrofloresta nas operações de pecuária.",
+        "Colaboração com organizações agrícolas e ambientais para monitorar e avaliar os impactos das práticas agroflorestais na captura de carbono, saúde do solo e biodiversidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de incentivos financeiros fornecidos para integrar a agrofloresta em sistemas de pecuária.",
+        "Aumento na qualidade do solo e cobertura vegetal em propriedades manejadas (%).",
+        "Crescimento da biodiversidade em áreas de agrofloresta (% de espécies identificadas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 11,
+    "explanation": "A implementação de programas de transporte público gratuito durante os horários de pico em Boa Vista é uma ação crucial para enfrentar as altas emissões do setor de transporte na cidade, que são um dos principais contribuintes para o total de emissões. Ao incentivar o uso do transporte público, a cidade pode reduzir a dependência de veículos individuais, diminuindo assim as emissões e melhorando a qualidade do ar. Além disso, essa iniciativa pode aumentar a acessibilidade para os moradores de baixa renda, alinhando-se ao contexto socioeconômico da cidade, onde a baixa renda é predominante. Ademais, a redução da congestão de veículos pode mitigar o impacto das ondas de calor na saúde pública, ao diminuir o calor urbano e melhorar a qualidade de vida de forma geral.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementação de programas de transporte público gratuito durante os horários de pico para reduzir o uso de veículos individuais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar o uso do transporte público oferecendo serviços gratuitos durante os horários de pico para trabalhadores e estudantes. Esta medida reduz a congestão urbana, diminui o número de veículos individuais nas estradas e, consequentemente, reduz as emissões de gases de efeito estufa associadas ao transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Alocação de financiamento para subsidiar serviços de transporte público gratuito durante as horas de pico.",
+        "Desenvolvimento de políticas para garantir a sustentabilidade e eficiência dos sistemas de transporte público diante do aumento da demanda.",
+        "Coordenação com empregadores e instituições educacionais para otimizar os horários de pico e promover a iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nos níveis de poluição do ar durante as horas de pico (concentração de PM2.5/PM10).",
+        "Número de veículos particulares removidos das estradas durante as horas de pico.",
+        "Taxa de satisfação pública com a iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0136",
+    "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+    "actionPriority": 12,
+    "explanation": "Apoiar a implementação de incentivos fiscais ecológicos em Boa Vista é fundamental devido aos significativos desafios ambientais enfrentados pela cidade. Com altas emissões provenientes do transporte e do uso do solo, esses incentivos podem estimular práticas sustentáveis e reduzir a pegada de carbono total. Além disso, Boa Vista enfrenta riscos severos de ameaças climáticas, como secas e ondas de calor, que colocam em risco os recursos hídricos e a saúde pública. Ao promover políticas fiscais ecológicas, a cidade pode aumentar sua resiliência diante desses impactos climáticos e fomentar um modelo econômico mais sustentável.",
+    "action": {
+      "ActionID": "icare_0136",
+      "ActionName": "Apoiar a Implementação de Incentivos Fiscais Ecológicos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a aplicação de impostos ecológicos e incentivos para promover a conservação ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro regulatório claro com taxas de impostos justas e incentivos para a sustentabilidade.",
+        "Implementar sistemas de monitoramento eficazes para rastrear a conformidade e medir o impacto.",
+        "Promover a conscientização pública e fomentar a colaboração entre governos, empresas e comunidades."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de municípios que adotaram incentivos fiscais ambientais.",
+        "Percentual da receita tributária gasta em práticas sustentáveis.",
+        "Área ou número de propriedades beneficiadas por práticas de conservação como resultado de incentivos."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0085",
+    "actionName": "Promote the Adoption of Agroecological Pest Control",
+    "actionPriority": 13,
+    "explanation": "Promover a adoção do controle agroecológico de pragas em Boa Vista é crucial devido à vulnerabilidade da cidade a riscos climáticos, como secas e inundações, que podem impactar severamente a segurança alimentar. Ao implementar métodos sustentáveis de controle de pragas, a cidade pode aumentar sua resiliência agrícola, garantindo um fornecimento estável de alimentos mesmo em condições adversas. Além disso, as práticas agroecológicas podem ajudar a preservar a biodiversidade do bioma de floresta tropical, que é vital para manter o equilíbrio ecológico e apoiar os meios de subsistência locais. Essa ação está alinhada com a necessidade de enfrentar desafios socioeconômicos, pois pode oferecer às comunidades de baixa renda soluções agrícolas mais sustentáveis e econômicas.",
+    "action": {
+      "ActionID": "icare_0085",
+      "ActionName": "Promover a Adoção do Controle de Pragas Agroecológico",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar métodos de controle de pragas que sejam agroecológicos, como o uso de predadores naturais e plantas repelentes, para reduzir a dependência de pesticidas químicos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de programas educacionais para informar os agricultores sobre métodos de controle de pragas agroecológicos e seus benefícios.",
+        "Fornecimento de acesso a recursos ou materiais para implementar métodos de controle de pragas naturais, como a introdução de insetos benéficos ou o cultivo de plantas repelentes.",
+        "Criação de incentivos ou redes de apoio para encorajar a transição do uso de pesticidas químicos em favor de alternativas sustentáveis."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento nas taxas de produtividade em áreas que adotam controle agroecológico de pragas (%).",
+        "Número de campanhas educativas realizadas sobre controle sustentável de pragas.",
+        "Impacto nos custos totais de produção devido à adoção de práticas agroecológicas (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0068",
+    "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+    "actionPriority": 14,
+    "explanation": "Implantar sistemas de transporte sob demanda com frotas 100% elétricas em Boa Vista é uma medida estratégica para enfrentar as altas emissões do setor de transporte na cidade, que são um dos principais contribuintes para as emissões totais. Essa ação pode ajudar a reduzir a pegada de carbono e melhorar a qualidade do ar, alinhando-se com os objetivos globais de sustentabilidade. Além disso, as frotas elétricas podem oferecer uma opção de transporte mais confiável e eficiente, o que é fundamental considerando a baixa renda da população e o acesso inadequado a serviços públicos. Ao priorizar essa iniciativa, Boa Vista pode avançar significativamente na mitigação dos impactos das mudanças climáticas e na melhoria da qualidade de vida de seus habitantes.",
+    "action": {
+      "ActionID": "icare_0068",
+      "ActionName": "Implantar sistemas de transporte sob demanda com frotas 100% elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Serviços de transporte coletivo sob demanda, baseados em aplicativos, otimizam o uso de veículos elétricos, reduzindo as emissões por passageiro.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de plataformas digitais e aplicativos para gerenciar eficientemente serviços de transporte coletivo sob demanda.",
+        "Expansão de frotas de veículos elétricos adaptadas para soluções de transporte compartilhado.",
+        "Implementação de políticas e incentivos para incentivar a adoção e o uso de serviços de transporte elétrico compartilhado."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de usuários ativos do sistema de frota elétrica sob demanda.",
+        "Percentual da demanda de transporte urbano atendida por sistemas sob demanda.",
+        "Redução nos níveis de poluição sonora em áreas urbanas"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0094",
+    "actionName": "Adoption of biomethane in public fleets.",
+    "actionPriority": 15,
+    "explanation": "A adoção do biometano nas frotas públicas de Boa Vista é uma ação estratégica para reduzir as emissões do setor de transporte, que representam uma contribuição significativa para o total de emissões da cidade. Diante das altas emissões provenientes do transporte, a transição para o biometano pode reduzir substancialmente a pegada de carbono e melhorar a qualidade do ar. Além disso, essa iniciativa está alinhada com a necessidade da cidade de fortalecer a segurança energética, pois oferece uma alternativa energética renovável e de origem local. A implementação do biometano também pode servir como modelo de práticas sustentáveis, incentivando a adoção de soluções de energia limpa em toda a região.",
+    "action": {
+      "ActionID": "icare_0094",
+      "ActionName": "Adoção de biometano em frotas públicas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar biometano produzido a partir de resíduos urbanos e agroindustriais para abastecer ônibus e caminhões públicos, reduzindo as emissões de gases de efeito estufa nas frotas municipais",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de infraestrutura para a produção, processamento e distribuição de biometano a partir de resíduos urbanos e agroindustriais.",
+        "Retrofit ou aquisição de ônibus e caminhões públicos capazes de usar biometano como fonte de combustível.",
+        "Estabelecimento de políticas e incentivos financeiros para apoiar a produção de biometano e sua integração nas frotas municipais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Economia de custos na operação da frota devido ao uso de biometano (USD/ano).",
+        "Aumento na capacidade de produção de biometano (%).",
+        "Percentagem de biometano obtido localmente versus importado."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0044",
+    "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+    "actionPriority": 16,
+    "explanation": "Expandir a infraestrutura cicloviária e construir passarelas públicas em Boa Vista é crucial devido às altas emissões de transporte da cidade, que são um contribuinte significativo para suas emissões totais. Ao promover o uso da bicicleta e a caminhada, a cidade pode reduzir sua dependência de veículos motorizados, diminuindo assim as emissões e melhorando a qualidade do ar. Além disso, criar uma infraestrutura resiliente a ameaças climáticas é essencial, considerando a vulnerabilidade da cidade a riscos como enchentes e ondas de calor, que podem impactar a saúde pública e a infraestrutura. Essa ação não só aborda questões ambientais, mas também melhora a qualidade de vida dos moradores ao oferecer opções de transporte mais seguras e sustentáveis.",
+    "action": {
+      "ActionID": "icare_0044",
+      "ActionName": "Expandir a infraestrutura cicloviária e construir passarelas públicas e calçadas acessíveis, priorizando medidas resilientes às ameaças climáticas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "O principal objetivo desta ação é promover a mobilidade ativa, garantindo a segurança, o conforto e a prioridade do movimento de pedestres, pessoas com deficiência (ou mobilidade reduzida) e veículos e equipamentos movidos por força humana, como bicicletas e patinetes.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimentos em infraestrutura em calçadas seguras e acessíveis, ciclovias e instalações para pessoas com deficiência",
+        "Estruturas de políticas e regulamentos para priorizar a mobilidade ativa e estabelecer padrões de segurança para pedestres e veículos não motorizados",
+        "Campanhas de conscientização pública para promover a mobilidade ativa e educar os cidadãos sobre os benefícios de caminhar, andar de bicicleta e usar outros meios de transporte movidos a energia humana"
+      ],
+      "KeyPerformanceIndicators": [
+        "Quilômetros de novas ciclovias e passarelas construídas anualmente.",
+        "Aumento no uso diário de infraestrutura cicloviária e pedonal (%).",
+        "Redução nas emissões do transporte urbano (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0090",
+    "actionName": "Adoption of electric drones for last-mile deliveries.",
+    "actionPriority": 17,
+    "explanation": "A adoção de drones elétricos para entregas de última milha em Boa Vista é uma medida estratégica para reduzir as emissões do setor de transporte, que atualmente são um dos principais contribuintes para o total de emissões da cidade. Ao utilizar drones elétricos, a cidade pode diminuir sua dependência de veículos de entrega tradicionais, que contribuem para altos níveis de emissões de carbono. Essa ação também está alinhada com a necessidade da cidade de enfrentar riscos à segurança energética associados aos impactos das mudanças climáticas, como ondas de calor e secas. Além disso, os drones elétricos podem melhorar a eficiência e a acessibilidade das entregas em áreas com infraestrutura inadequada, apoiando o desenvolvimento socioeconômico da cidade.",
+    "action": {
+      "ActionID": "icare_0090",
+      "ActionName": "Adoção de drones elétricos para entregas de última milha.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "off-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Substituir veículos tradicionais por drones elétricos para entregas de curta distância em centros urbanos, reduzindo emissões e congestionamento de tráfego.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de regulamentos para o espaço aéreo urbano para garantir a operação segura e eficiente de drones de entrega.",
+        "Investimento em infraestrutura de carregamento e manutenção para apoiar uma frota de drones elétricos.",
+        "Colaboração com empresas de logística para integrar drones em redes de entrega de última milha."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução do tempo de entrega em comparação com métodos tradicionais (minutos).",
+        "Aumento na satisfação do cliente com entregas por drones (%).",
+        "Redução do congestionamento de tráfego causado por veículos de entrega (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0057",
+    "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+    "actionPriority": 18,
+    "explanation": "A expansão dos sistemas de transporte coletivo sobre trilhos em Boa Vista é uma ação crucial devido às altas emissões do setor de transporte na cidade, que são um dos principais contribuintes para suas emissões totais. Ao desenvolver sistemas ferroviários eficientes, a cidade pode reduzir sua dependência do transporte rodoviário, diminuindo assim as emissões e melhorando a qualidade do ar. Além disso, o aprimoramento do transporte público pode proporcionar um acesso mais equitativo à mobilidade para os moradores, especialmente em uma região com baixos níveis de renda. Essa ação também está alinhada com a necessidade de mitigar riscos associados aos impactos das mudanças climáticas, como ondas de calor e inundações, promovendo uma mobilidade urbana sustentável.",
+    "action": {
+      "ActionID": "icare_0057",
+      "ActionName": "Expansão dos sistemas de transporte público em massa sobre trilhos (metrôs, VLTs e monotrilhos).",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "railways"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esses sistemas oferecem alta capacidade e baixas emissões, cruciais para cidades com alta densidade populacional.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento no desenvolvimento e expansão da infraestrutura de transporte público de alta capacidade, como ônibus elétricos e sistemas de metrô.",
+        "Implementação de políticas e incentivos para encorajar o uso de transporte público em vez de veículos particulares.",
+        "Integração de fontes de energia renovável para alimentar esses sistemas, reduzindo ainda mais as emissões."
+      ],
+      "KeyPerformanceIndicators": [
+        "Comprimento das novas linhas de trânsito construídas (km/ano).",
+        "Redução na congestão do tráfego rodoviário (%).",
+        "Redução no uso de veículos privados (número de viagens evitadas/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0132",
+    "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+    "actionPriority": 19,
+    "explanation": "Incentivar a produção agroecológica local e cadeias curtas de abastecimento em Boa Vista é fundamental devido à vulnerabilidade da cidade a riscos climáticos, como secas e inundações, que impactam significativamente a segurança alimentar. Ao promover a agricultura local, a cidade pode aumentar sua resiliência diante desses riscos, garantindo um abastecimento de alimentos mais estável e sustentável. Além disso, essa ação pode ajudar a reduzir as emissões do transporte, que são um dos principais contribuintes para as emissões totais da cidade, ao minimizar a necessidade de transporte de alimentos a longas distâncias. Ademais, apoiar os agricultores locais pode impulsionar a economia local e melhorar as condições socioeconômicas, especialmente em uma região com baixos níveis de renda.",
+    "action": {
+      "ActionID": "icare_0132",
+      "ActionName": "Incentivar a Produção Agroecológica Local e Cadeias Curtas de Abastecimento",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoiar práticas agrícolas locais e sustentáveis e reduzir as emissões associadas ao transporte de alimentos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Incentivos para práticas agrícolas sustentáveis e desenvolvimento de redes locais de distribuição de alimentos.",
+        "Parcerias com produtores e investimento em infraestrutura para apoiar mercados locais.",
+        "Políticas para priorizar métodos de transporte de baixa emissão."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de produtores aderindo a práticas agroecológicas locais.",
+        "Percentual de alimentos consumidos na cidade provenientes de cadeias curtas.",
+        "Redução nas emissões associadas ao transporte de alimentos (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR BVB",
+    "cityName": "Boa Vista",
+    "region": "RR",
+    "regionName": "Roraima",
+    "actionId": "icare_0102",
+    "actionName": "Promote Sustainable Agricultural Practices",
+    "actionPriority": 20,
+    "explanation": "Promover práticas agrícolas sustentáveis em Boa Vista é fundamental devido à vulnerabilidade da cidade às secas, que impactam significativamente os recursos hídricos e a segurança alimentar. Ao adotar métodos sustentáveis, a cidade pode aumentar sua resiliência diante desses riscos climáticos, garantindo um abastecimento alimentar estável e reduzindo a dependência de recursos externos. Além disso, a agricultura sustentável pode ajudar a mitigar as emissões provenientes do uso da terra, que são um dos principais contribuintes para as emissões totais da cidade, apoiando assim objetivos ambientais mais amplos.",
+    "action": {
+      "ActionID": "icare_0102",
+      "ActionName": "Promover Práticas Agrícolas Sustentáveis",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar práticas agrícolas que reduzam as emissões de gases de efeito estufa, como o uso reduzido de fertilizantes e agroquímicos.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas educacionais e recursos para promover práticas agrícolas sustentáveis entre os agricultores.",
+        "Implementação de políticas que incentivem a redução do uso de fertilizantes e agroquímicos, como subsídios para insumos orgânicos ou técnicas de cultivo sustentável.",
+        "Colaboração com organizações agrícolas para fornecer suporte técnico e orientação sobre práticas de redução de emissões."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas adotando práticas sustentáveis (% do total de terras agrícolas).",
+        "Aumento no rendimento das colheitas por hectare (toneladas/hectare) devido a métodos sustentáveis.",
+        "Redução no uso de água para agricultura (litros ou m³/hectare/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
 ]

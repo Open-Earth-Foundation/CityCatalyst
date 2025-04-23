@@ -1,1308 +1,1308 @@
 [
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 1,
-        "explanation": "Establishing a plan for preparation and emergency response measures in Arapiraca is crucial due to the city's high vulnerability to extreme weather events. The city faces significant risks from hazards such as droughts, heatwaves, and floods, which can severely impact public health, infrastructure, and food security. With inadequate sanitation and moderate water access issues, the population is particularly susceptible to the adverse effects of these events. Implementing a comprehensive emergency response plan will help mitigate these risks, protect the community, and enhance resilience against future climate-related challenges.",
-        "action": {
-            "ActionID": "icare_0169",
-            "ActionName": "Establecer un Plan de Preparaci\u00f3n y Medidas de Respuesta de Emergencia en caso de eventos clim\u00e1ticos extremos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta acci\u00f3n se centra en preparar al municipio para responder a eventos extremos, con el objetivo de proporcionar una respuesta r\u00e1pida que minimice los impactos en la poblaci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de un plan integral de respuesta a emergencias que incluya la coordinaci\u00f3n entre las autoridades locales, los servicios de emergencia y las organizaciones comunitarias",
-                "Inversi\u00f3n en sistemas de alerta temprana e infraestructura para garantizar respuestas oportunas y efectivas a eventos extremos",
-                "Capacitaci\u00f3n y desarrollo de capacidades para los respondedores locales y las comunidades para mejorar la preparaci\u00f3n y la resiliencia ante eventos extremos"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de asociaciones de respuesta de emergencia establecidas.",
-                "Tiempo promedio de respuesta durante eventos clim\u00e1ticos extremos (horas).",
-                "Porcentaje de reducci\u00f3n en v\u00edctimas y da\u00f1os durante eventos clim\u00e1ticos extremos anualmente (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "high",
-                "diseases": "medium",
-                "landslides": "high",
-                "floods": "high",
-                "wildfires": "high",
-                "sea-level-rise": "low",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 2,
-        "explanation": "The development of a Climate Action Plan is crucial for Arapiraca due to its high vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These hazards pose significant risks to public health, food security, and infrastructure, making it imperative to have a strategic plan in place. Additionally, the city's moderate low-income population and inadequate access to sanitation services further exacerbate the impacts of these climate risks. A comprehensive Climate Action Plan will help in identifying and implementing effective measures to mitigate these risks and enhance the city's resilience. This action is a priority as it lays the foundation for sustainable development and long-term environmental health in Arapiraca.",
-        "action": {
-            "ActionID": "icare_0176",
-            "ActionName": "Desarrollo del Plan de Acci\u00f3n Clim\u00e1tica",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "storms",
-                "sea-level-rise",
-                "wildfires",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Un plan integral que describe las estrategias y acciones de una ciudad para mitigar las emisiones de gases de efecto invernadero y adaptarse a los impactos del cambio clim\u00e1tico, que t\u00edpicamente incluye una evaluaci\u00f3n de los riesgos y vulnerabilidades clim\u00e1ticas de la ciudad, el establecimiento de objetivos de reducci\u00f3n de emisiones y la implementaci\u00f3n de acciones en varios sectores como energ\u00eda, transporte, gesti\u00f3n de residuos y planificaci\u00f3n urbana.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Voluntad pol\u00edtica y compromiso del gobierno",
-                "Participaci\u00f3n y colaboraci\u00f3n de las partes interesadas",
-                "Financiaci\u00f3n y recursos para la implementaci\u00f3n"
-            ],
-            "KeyPerformanceIndicators": [
-                "Objetivos de reducci\u00f3n de emisiones de gases de efecto invernadero.",
-                "N\u00famero de acciones de adaptaci\u00f3n al clima implementadas.",
-                "Inversi\u00f3n en proyectos de mitigaci\u00f3n y adaptaci\u00f3n al clima."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "storms": "medium",
-                "sea-level-rise": "medium",
-                "wildfires": "medium",
-                "floods": "medium",
-                "landslides": "medium",
-                "diseases": "medium",
-                "heatwaves": "medium",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 3,
-        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Arapiraca is crucial due to the city's moderate low-income population and high inadequate sanitation issues. These areas often house vulnerable communities that are disproportionately affected by environmental and socio-economic challenges. By focusing on ZEIS, the city can improve living conditions, enhance public health, and reduce the risk of diseases, which is a significant concern given the high risk of public health impacts from hazards like heatwaves and floods. This action aligns with the need to address socio-economic disparities and improve resilience against climate-related risks.",
-        "action": {
-            "ActionID": "icare_0151",
-            "ActionName": "Desarrollar diagn\u00f3sticos y restaurar \u00e1reas de Zonas de Inter\u00e9s Social Especial (ZEIS)",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "sea-level-rise",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Prioridad a las \u00e1reas ZEIS en acciones de mejora de vivienda y la aplicaci\u00f3n de recursos del Fondo de Urbanizaci\u00f3n, con la implementaci\u00f3n de infraestructura urbana que considere la adaptaci\u00f3n clim\u00e1tica en estos espacios. Uso de Soluciones basadas en la Naturaleza (NbS) en la adaptaci\u00f3n del saneamiento ambiental y las infraestructuras verdes y azules que potencian el ocio, la cultura, la agricultura urbana y actividades para fortalecer las asociaciones comunitarias.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de financiamiento del Fondo de Urbanizaci\u00f3n y otros mecanismos financieros para apoyar mejoras en la vivienda e infraestructura urbana en \u00e1reas ZEIS",
-                "Colaboraci\u00f3n entre urbanistas, expertos ambientales y comunidades locales para dise\u00f1ar e implementar soluciones basadas en la naturaleza (NbS) para la infraestructura urbana",
-                "Marcos de pol\u00edticas y regulaciones que integren medidas de adaptaci\u00f3n al clima en la planificaci\u00f3n urbana, asegurando que las inversiones prioricen la sostenibilidad ambiental y la comunidad"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de \u00e1reas ZEIS diagnosticadas y restauradas.",
-                "Porcentaje de residentes beneficiados por las \u00e1reas restauradas (%).",
-                "Inversiones p\u00fablicas asignadas a las \u00e1reas ZEIS (monto en moneda)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "sea-level-rise": "medium",
-                "floods": "medium",
-                "landslides": "low",
-                "diseases": "medium",
-                "heatwaves": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 4,
-        "explanation": "Strengthening programs for control and conservation of protected areas in Arapiraca is crucial due to the city's vulnerability to environmental hazards such as droughts and heatwaves. These hazards pose significant risks to biodiversity and public health, making conservation efforts vital for maintaining ecological balance and protecting the community. Additionally, the city's desert biome and moderate socio-economic challenges necessitate proactive measures to preserve natural resources and enhance resilience against climate impacts. By prioritizing conservation, Arapiraca can safeguard its natural heritage and improve the quality of life for its residents.",
-        "action": {
-            "ActionID": "icare_0162",
-            "ActionName": "Fortalecer los programas de control y conservaci\u00f3n de \u00e1reas protegidas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves",
-                "diseases"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta acci\u00f3n se centra en implementar una serie de estrategias integradas para mejorar la conservaci\u00f3n ambiental y maximizar sus beneficios, como la expansi\u00f3n de \u00e1reas protegidas, el desarrollo de planes de manejo para unidades de conservaci\u00f3n y la capacitaci\u00f3n de gu\u00edas de ecoturismo para fortalecer el turismo sostenible.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expansi\u00f3n de \u00e1reas protegidas para mejorar la conservaci\u00f3n ambiental.",
-                "Desarrollo de planes de manejo para unidades de conservaci\u00f3n.",
-                "Capacitaci\u00f3n de gu\u00edas de ecoturismo para promover el turismo sostenible."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de aumento en el \u00e1rea de regiones protegidas (%).",
-                "Reducci\u00f3n en las tasas de deforestaci\u00f3n en \u00e1reas protegidas anualmente (%).",
-                "N\u00famero de programas de conservaci\u00f3n fortalecidos anualmente."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "floods": "high",
-                "landslides": "high",
-                "heatwaves": "medium",
-                "diseases": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0152",
-        "actionName": "Recovery of degraded areas",
-        "actionPriority": 5,
-        "explanation": "The action 'Recovery of degraded areas' is crucial for Arapiraca due to its desert biome and the associated environmental challenges. Restoring degraded areas can help mitigate the impacts of droughts, which are a significant risk to water resources and food security in the region. Additionally, improving land conditions can enhance biodiversity and contribute to better public health outcomes by reducing the risk of diseases. This action supports sustainable land use, which is essential for reducing emissions and improving the overall resilience of the city against climate hazards.",
-        "action": {
-            "ActionID": "icare_0152",
-            "ActionName": "Recuperaci\u00f3n de \u00e1reas degradadas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Restaurar los ecosistemas da\u00f1ados por actividades humanas mediante la replantaci\u00f3n de vegetaci\u00f3n nativa, la restauraci\u00f3n del suelo, la eliminaci\u00f3n de especies invasoras y la implementaci\u00f3n de t\u00e9cnicas de gesti\u00f3n sostenible.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Desarrollar un plan de restauraci\u00f3n claro y asegurar financiamiento para la gesti\u00f3n a largo plazo.",
-                "Asegurar el acceso a especies de plantas nativas y proporcionar capacitaci\u00f3n en pr\u00e1cticas sostenibles.",
-                "Eliminar especies invasoras y colaborar con las comunidades locales para una restauraci\u00f3n exitosa del ecosistema."
-            ],
-            "KeyPerformanceIndicators": [
-                "Hect\u00e1reas de tierra degradada restauradas anualmente",
-                "Aumento en la cobertura vegetal (%) en \u00e1reas restauradas",
-                "N\u00famero de comunidades locales involucradas en proyectos de restauraci\u00f3n"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "landslides": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0157",
-        "actionName": "Maintenance and Revitalization of Riparian Forests",
-        "actionPriority": 6,
-        "explanation": "The maintenance and revitalization of riparian forests in Arapiraca is crucial due to the city's vulnerability to droughts and floods. Riparian forests play a significant role in stabilizing soil and reducing the impact of floods, which is a high-risk hazard for the city's infrastructure and public health. Additionally, these forests help in maintaining water quality and availability, which is essential given the moderate inadequate water access in the region. By enhancing these natural buffers, the city can mitigate some of the adverse effects of climate change, particularly those related to water resources and food security.",
-        "action": {
-            "ActionID": "icare_0157",
-            "ActionName": "Mantenimiento y Revitalizaci\u00f3n de Bosques Ribere\u00f1os",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "landslides",
-                "floods",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mapeo y evaluaci\u00f3n de bosques ribere\u00f1os degradados, desarrollo de planes de revitalizaci\u00f3n con la plantaci\u00f3n de especies nativas, control de especies invasoras, medidas de contenci\u00f3n de la erosi\u00f3n y evaluaciones peri\u00f3dicas de los impactos en las condiciones ambientales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Asegurar la disponibilidad de datos geoespaciales y el mapeo previo de \u00e1reas degradadas.",
-                "Formar asociaciones con viveros locales y proporcionar equipo y mano de obra calificada para el control de especies invasoras.",
-                "Asegurar recursos financieros y establecer un sistema de monitoreo para evaluar los impactos ambientales."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total de bosques ribere\u00f1os restaurados (ha).",
-                "N\u00famero de proyectos implementados.",
-                "Reducci\u00f3n de la erosi\u00f3n y sedimentaci\u00f3n de cuerpos de agua (toneladas/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "medium",
-                "landslides": "high",
-                "floods": "high",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0145",
-        "actionName": "Strengthen the healthcare network to attend to climate victims",
-        "actionPriority": 7,
-        "explanation": "Strengthening the healthcare network in Arapiraca is crucial due to the high risk of public health impacts from climate-related hazards such as heatwaves, diseases, and floods. The city faces significant challenges with inadequate sanitation and moderate water access, which can exacerbate health issues during extreme weather events. By enhancing healthcare services, the city can better manage and mitigate the health impacts on its population, particularly during emergencies. This action is vital to ensure the resilience of the community against the increasing frequency and intensity of climate-related health risks.",
-        "action": {
-            "ActionID": "icare_0145",
-            "ActionName": "Fortalecer la red de atenci\u00f3n m\u00e9dica para atender a las v\u00edctimas del clima",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "storms",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mejorar la infraestructura de las unidades de salud para asistir a las personas que requieren atenci\u00f3n m\u00e9dica debido a impactos asociados con riesgos clim\u00e1ticos (v\u00edctimas del clima), como aquellos afectados por olas de calor o inundaciones, especialmente en \u00e1reas m\u00e1s vulnerables. Desarrollar planes de acci\u00f3n para preparar la red de salud para situaciones extremas relacionadas con el clima.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en la renovaci\u00f3n y expansi\u00f3n de las instalaciones de salud, asegurando que est\u00e9n equipadas para manejar los impactos en la salud relacionados con el clima, especialmente en \u00e1reas vulnerables.",
-                "Desarrollo de planes de acci\u00f3n y programas de capacitaci\u00f3n para profesionales de la salud para responder a eventos clim\u00e1ticos extremos como olas de calor e inundaciones.",
-                "Colaboraci\u00f3n con autoridades locales, equipos de respuesta a emergencias y expertos en clima para crear un marco integral para preparar la red de salud ante los riesgos clim\u00e1ticos."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de instalaciones de salud mejoradas para emergencias relacionadas con el clima.",
-                "Aumento en el personal de salud capacitado en respuesta a emergencias clim\u00e1ticas (%).",
-                "N\u00famero de lesiones relacionadas con el clima tratadas con \u00e9xito. |||"
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "diseases": "medium",
-                "landslides": "medium",
-                "floods": "high",
-                "storms": "high",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 8,
-        "explanation": "Encouraging sustainable land use practices in Arapiraca is crucial due to the significant land use emissions contributing to the city's total emissions. With a biome classified as desert, the city faces challenges related to land degradation and limited natural resources, making sustainable practices essential for maintaining ecological balance. Additionally, sustainable land use can help mitigate the impacts of climate hazards such as droughts and floods, which pose risks to food security and public health. By prioritizing this action, Arapiraca can enhance its resilience against environmental threats and promote long-term sustainability.",
-        "action": {
-            "ActionID": "icare_0149",
-            "ActionName": "Fomentar pr\u00e1cticas sostenibles de uso de la tierra",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Promover m\u00e9todos que garanticen la conservaci\u00f3n y salud del suelo, preservando la biodiversidad, reduciendo la erosi\u00f3n y minimizando los impactos ambientales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Proporcionar acceso a conocimientos t\u00e9cnicos y capacitaci\u00f3n sobre pr\u00e1cticas de manejo sostenible del suelo.",
-                "Ofrecer incentivos financieros y formar asociaciones con instituciones de investigaci\u00f3n y agricultores locales.",
-                "Desarrollar sistemas de monitoreo para la salud del suelo y la biodiversidad, e implementar pol\u00edticas para el control de la erosi\u00f3n."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de \u00e1rea de tierra gestionada bajo pr\u00e1cticas de uso sostenible de la tierra (%)",
-                "Reducci\u00f3n en las tasas de deforestaci\u00f3n o degradaci\u00f3n de la tierra (%)",
-                "Aumento en los indicadores de biodiversidad en tierras gestionadas (por ejemplo, conteo de especies, calidad del h\u00e1bitat)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "medium",
-                "landslides": "high",
-                "floods": "medium",
-                "wildfires": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 9,
-        "explanation": "The implementation of urban gardens in Arapiraca is a significant action due to its potential to enhance food security, which is a critical issue given the high risk of floods impacting food supply. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food sources and increasing resilience against climate-related disruptions. Additionally, these gardens can improve community well-being by offering green spaces that mitigate the urban heat island effect, which is particularly important in a region facing high risks from heatwaves. Furthermore, urban gardens can contribute to reducing waste emissions by promoting composting and recycling organic waste, aligning with the city's environmental goals.",
-        "action": {
-            "ActionID": "icare_0156",
-            "ActionName": "Implementaci\u00f3n de huertos urbanos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Identificar y evaluar la viabilidad de \u00e1reas adecuadas para la instalaci\u00f3n de huertos urbanos y asegurar que los sitios elegidos cumplan con las expectativas de la comunidad.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Asegurar la disponibilidad de mapas detallados de uso del suelo y datos de planificaci\u00f3n urbana.",
-                "Involucrarse con las comunidades locales para comprender sus necesidades y expectativas.",
-                "Evaluar la calidad del suelo, la disponibilidad de agua y formar asociaciones para apoyar el establecimiento y mantenimiento de jardines."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de huertos urbanos creados.",
-                "Cantidad de alimentos producidos localmente (kg/a\u00f1o).",
-                "N\u00famero de beneficiarios directos."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "landslides": "low",
-                "floods": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 10,
-        "explanation": "Improving food storage and distribution is crucial for Arapiraca due to its vulnerability to droughts and floods, which significantly impact food security. The city faces a high risk of food insecurity, as indicated by the climate change risk assessment. Enhancing food storage and distribution systems can help mitigate these risks by ensuring a stable food supply during adverse weather conditions. Additionally, better food management can reduce waste emissions, contributing to overall emission reduction efforts in the city.",
-        "action": {
-            "ActionID": "ipcc_0097",
-            "ActionName": "Mejoras en el almacenamiento/distribuci\u00f3n de alimentos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms",
-                "heatwaves"
-            ],
-            "Sector": [
-                "food_security",
-                "road_infrastructure"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mejorar los sistemas de almacenamiento y distribuci\u00f3n de alimentos mediante la mejora de la infraestructura de transporte, la optimizaci\u00f3n de las redes comerciales y el acortamiento de las cadenas de suministro para garantizar la disponibilidad local de alimentos y la resiliencia ante los impactos clim\u00e1ticos. Esta acci\u00f3n tambi\u00e9n incluye aumentar la capacidad de las instalaciones de almacenamiento de alimentos locales para reducir las p\u00e9rdidas post-cosecha, abordar las ineficiencias en la log\u00edstica y reforzar la infraestructura para productos perecederos. Su objetivo es mejorar la seguridad alimentaria y reducir la vulnerabilidad a eventos extremos, interrupciones e impactos en cascada, especialmente durante pandemias y otras crisis.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Apoya el acceso equitativo a alimentos para poblaciones marginadas y vulnerables al priorizar la producci\u00f3n local de alimentos y mejorar los sistemas de distribuci\u00f3n que llegan a \u00e1reas desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en infraestructura",
-                "Incentivos pol\u00edticos para la producci\u00f3n local de alimentos",
-                "Colaboraci\u00f3n con los sectores de log\u00edstica y comercio",
-                "Tecnolog\u00eda para la optimizaci\u00f3n de la cadena de suministro"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de p\u00e9rdidas post-cosecha",
-                "Aumento de la disponibilidad de alimentos locales",
-                "Mejora de la eficiencia del transporte para la distribuci\u00f3n de alimentos",
-                "Acortamiento de las cadenas de suministro"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "storms": "high",
-                "heatwaves": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 11,
-        "explanation": "Creating the Municipal Climate Change Forum in Arapiraca is a crucial step towards addressing the city's environmental challenges. The city faces significant risks from climate-related hazards such as droughts, heatwaves, and floods, which impact water resources, public health, and food security. Establishing a forum will facilitate collaboration among stakeholders, enabling the development of comprehensive strategies to mitigate these risks. Additionally, it will provide a platform for community engagement and education, fostering a more resilient and informed population. This initiative is essential for coordinating efforts to reduce emissions and adapt to the changing climate conditions in the region.",
-        "action": {
-            "ActionID": "icare_0148",
-            "ActionName": "Crear el Foro Municipal de Cambio Clim\u00e1tico",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "diseases",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Creaci\u00f3n de un Foro Municipal de Cambio Clim\u00e1tico con la participaci\u00f3n de l\u00edderes comunitarios, cient\u00edficos, colectivos, institutos de investigaci\u00f3n, ONG y miembros de la administraci\u00f3n municipal y estatal. El Foro servir\u00e1 como referencia para acciones relacionadas con el Cambio Clim\u00e1tico, con el objetivo de monitorear futuras pol\u00edticas sobre el tema en el municipio, estimular el di\u00e1logo y crear una red de discusiones sobre la crisis clim\u00e1tica.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Participaci\u00f3n de diversos actores, incluidos l\u00edderes comunitarios, cient\u00edficos, ONG y autoridades locales, para establecer y mantener el Foro.",
-                "Asignaci\u00f3n de recursos para facilitar reuniones, talleres y eventos regulares para que el Foro permanezca activo e impactante.",
-                "Desarrollo de un marco claro y directrices para que el Foro monitoree y gu\u00ede las pol\u00edticas e iniciativas de cambio clim\u00e1tico dentro del municipio."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de partes interesadas clave participando activamente en el foro.",
-                "N\u00famero de pol\u00edticas o acciones relacionadas con el clima propuestas a trav\u00e9s del foro.",
-                "Participaci\u00f3n p\u00fablica en iniciativas del foro (medida por la asistencia a eventos o encuestas)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "diseases": "medium",
-                "heatwaves": "medium",
-                "landslides": "low",
-                "floods": "medium",
-                "wildfires": "medium",
-                "sea-level-rise": "medium",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 12,
-        "explanation": "Farm and fishery improvements are crucial for Arapiraca due to the significant risk of droughts impacting water resources and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience to climate variability. Additionally, improving fisheries can support local food supply and economic stability, which is vital given the moderate low-income levels in the region. This action also aligns with the need to address high emissions from land use, contributing to overall environmental sustainability.",
-        "action": {
-            "ActionID": "ipcc_0096",
-            "ActionName": "Mejoras en granjas/pesquer\u00edas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementar una serie de estrategias para adaptar granjas y pesquer\u00edas a los impactos clim\u00e1ticos. Esto incluye cambiar el equipo de pesca o la potencia de los barcos, adoptar nuevas variedades de cultivos o ajustar los calendarios de siembra, mejorar los sistemas de riego, integrar sistemas de cultivos y ganado, reubicar el ganado con una mejor gesti\u00f3n de pastizales y adoptar sistemas agroecol\u00f3gicos y de agroforester\u00eda. Innovaciones tecnol\u00f3gicas como la agricultura inteligente y medidas financieras como los subsidios apoyan estas adaptaciones.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Garantiza el acceso a recursos para agricultores y pescadores marginados, promueve opciones diversas de sustento y fortalece la resiliencia en comunidades desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Apoyo pol\u00edtico para la agricultura y pesca resilientes al clima",
-                "Acceso a financiamiento y subsidios",
-                "Capacitaci\u00f3n para adoptar nuevas pr\u00e1cticas",
-                "Mejora de la infraestructura de mercado"
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento de la productividad agr\u00edcola y pesquera",
-                "Tasa de adopci\u00f3n de sistemas integrados",
-                "Reducci\u00f3n de p\u00e9rdidas de rendimiento relacionadas con el clima"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "floods": "medium",
-                "wildfires": "low",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 13,
-        "explanation": "Improving access to health care in Arapiraca is crucial due to the high risk of public health impacts from hazards such as heatwaves, diseases, and floods. The city's moderate low-income population may face challenges in accessing adequate health services, making it essential to prioritize health care improvements. Additionally, the high risk of public health issues underscores the need for robust health care infrastructure to mitigate these risks effectively. Addressing health care access can significantly enhance the city's resilience against climate-related health threats.",
-        "action": {
-            "ActionID": "ipcc_0094",
-            "ActionName": "Acceso a la atenci\u00f3n m\u00e9dica",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "droughts"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mejorar el acceso a los servicios de atenci\u00f3n m\u00e9dica, incluidos los servicios de salud y nutrici\u00f3n, agua limpia, saneamiento y recursos de salud mental culturalmente apropiados. Ampliar las capacidades de telemedicina permite una entrega eficiente de servicios de salud, particularmente para poblaciones remotas y desatendidas. Fortalecer los sistemas b\u00e1sicos de salud p\u00fablica y la preparaci\u00f3n para desastres puede reducir r\u00e1pidamente la vulnerabilidad a los riesgos de salud relacionados con el clima.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promueve el acceso equitativo a la atenci\u00f3n m\u00e9dica para grupos marginados y vulnerables, incluidas las poblaciones sin hogar, las comunidades remotas y aquellos afectados por desigualdades en la vivienda.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en tecnolog\u00edas de telemedicina",
-                "Fortalecimiento de la gobernanza de los sistemas de salud p\u00fablica",
-                "Desarrollo de capacidades para los trabajadores de la salud",
-                "Mejoras en la infraestructura de las instalaciones de salud"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de la mortalidad relacionada con el clima",
-                "Mayor acceso a la telemedicina",
-                "N\u00famero de programas de salud adaptados culturalmente implementados",
-                "Mejora de los indicadores de acceso al agua y saneamiento"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "floods": "high",
-                "droughts": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 14,
-        "explanation": "The action of relocating and restoring the environment in vulnerable areas is crucial for Arapiraca due to its high risk of public health impacts from heatwaves and landslides. The city faces significant challenges with inadequate sanitation and moderate water access, which can exacerbate health risks during extreme weather events. By focusing on relocation and environmental restoration, the city can mitigate these risks and improve living conditions for its residents. Additionally, addressing these vulnerabilities can enhance the city's resilience to climate change impacts, particularly in areas prone to flooding and other hazards.",
-        "action": {
-            "ActionID": "icare_0181",
-            "ActionName": "Reubicaci\u00f3n y Restauraci\u00f3n Ambiental en \u00c1reas Vulnerables",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Un proyecto integral que aborda la vulnerabilidad socioambiental de un asentamiento informal. Incluye la reubicaci\u00f3n de residentes de \u00e1reas propensas a inundaciones, la restauraci\u00f3n del medio ambiente y la provisi\u00f3n de infraestructura y servicios sociales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Financiamiento adecuado",
-                "Coordinaci\u00f3n interinstitucional",
-                "Seguridad de tenencia de la tierra"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de hogares reubicados.",
-                "Progreso de la restauraci\u00f3n ambiental.",
-                "Reducci\u00f3n del riesgo de inundaci\u00f3n."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "landslides": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0144",
-        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
-        "actionPriority": 15,
-        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Arapiraca due to its high vulnerability to climate-related hazards. The city faces significant risks from droughts, heatwaves, and floods, which can severely impact public health, food security, and infrastructure. Establishing a financial support program would provide necessary resources to mitigate these impacts and enhance the city's resilience. Additionally, such a program could help alleviate the socio-economic burden on moderate-income residents who are disproportionately affected by these events.",
-        "action": {
-            "ActionID": "icare_0144",
-            "ActionName": "Creaci\u00f3n de un Programa de Apoyo Financiero para Abordar Eventos Clim\u00e1ticos Extremos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "wildfires",
-                "floods",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Creaci\u00f3n de un programa para mitigar los efectos de las tragedias clim\u00e1ticas, incluyendo asistencia financiera a las familias afectadas y esfuerzos para asegurar recursos adicionales para la recuperaci\u00f3n y reconstrucci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Recursos financieros",
-                "Planes de respuesta de emergencia",
-                "Coordinaci\u00f3n institucional"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de personas asistidas",
-                "Rentabilidad",
-                "Resiliencia comunitaria"
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "medium",
-                "diseases": "medium",
-                "landslides": "medium",
-                "wildfires": "medium",
-                "floods": "medium",
-                "sea-level-rise": "medium",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 16,
-        "explanation": "The action of recovering and preserving green areas in Arapiraca is crucial due to the city's desert biome, which makes it vulnerable to environmental degradation. Green areas can help mitigate the effects of heatwaves, which pose a significant risk to public health and infrastructure. Additionally, enhancing green spaces can improve biodiversity and contribute to better air quality, which is essential given the city's high emissions from stationary energy and transportation. This action also supports the city's resilience against climate change impacts, such as droughts and floods, by improving water retention and reducing urban heat islands.",
-        "action": {
-            "ActionID": "icare_0175",
-            "ActionName": "Recuperaci\u00f3n y preservaci\u00f3n de \u00e1reas verdes",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Rehabilitaci\u00f3n y protecci\u00f3n de los espacios verdes existentes, como parques, bosques y humedales, y expansi\u00f3n de \u00e1reas verdes mediante la plantaci\u00f3n de \u00e1rboles y vegetaci\u00f3n en \u00e1reas urbanas y periurbanas. Estas \u00e1reas proporcionan soluciones naturales para la gesti\u00f3n de los recursos h\u00eddricos, la reducci\u00f3n del estr\u00e9s t\u00e9rmico, la mejora de la calidad del aire y el aumento de la biodiversidad.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de terrenos adecuados para espacios verdes",
-                "Acceso a recursos h\u00eddricos para riego"
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea de espacios verdes creados o restaurados.",
-                "\u00cdndices de biodiversidad en \u00e1reas verdes.",
-                "Participaci\u00f3n comunitaria en actividades de espacios verdes."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "floods": "high",
-                "wildfires": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0180",
-        "actionName": "Implement permeable pavements and increase green areas in roadways",
-        "actionPriority": 17,
-        "explanation": "Implementing permeable pavements and increasing green areas in roadways is crucial for Arapiraca due to its high risk of floods and inadequate sanitation. These measures can help manage stormwater more effectively, reducing the impact of floods on infrastructure and public health. Additionally, increasing green areas can improve urban biodiversity and provide cooling effects, which are beneficial in mitigating the impacts of heatwaves. This action also aligns with the city's need to address its environmental challenges and improve the quality of life for its residents.",
-        "action": {
-            "ActionID": "icare_0180",
-            "ActionName": "Implementar pavimentos permeables y aumentar las \u00e1reas verdes en las v\u00edas p\u00fablicas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Incrementar las \u00e1reas permeables y semi-permeables en edificios y espacios p\u00fablicos bajo la administraci\u00f3n de la Ciudad, con la adopci\u00f3n de soluciones basadas en la naturaleza (NbS). En \u00e1reas con limitaciones de espacio, la acci\u00f3n incluye an\u00e1lisis de viabilidad para implementar pavimentos permeables y aumentar las \u00e1reas verdes en las v\u00edas. Entre las soluciones de construcci\u00f3n tradicionales, se encuentran caracter\u00edsticas como bordillos y canaletas con desag\u00fces pluviales, as\u00ed como soluciones a mayor escala como estanques de retenci\u00f3n. Las soluciones basadas en la naturaleza incluyen la plantaci\u00f3n de \u00e1rboles urbanos, techos verdes, cisternas de agua de lluvia, bio-swales, y m\u00e1s.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Expansi\u00f3n de \u00e1reas permeables y semi-permeables en edificios administrados por la ciudad y espacios p\u00fablicos.",
-                "Adopci\u00f3n de soluciones basadas en la naturaleza (NbS) como la plantaci\u00f3n de \u00e1rboles urbanos, techos verdes, cisternas de agua de lluvia y bio-swales.",
-                "An\u00e1lisis de viabilidad para pavimentos permeables y aumento de \u00e1reas verdes en carreteras, junto con soluciones tradicionales de gesti\u00f3n de aguas pluviales como bordillos, canaletas y estanques de retenci\u00f3n."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en la escorrent\u00eda de agua superficial durante eventos de lluvia (%).",
-                "Disminuci\u00f3n en la ocurrencia de inundaciones en \u00e1reas modificadas.",
-                "Porcentaje de espacios p\u00fablicos que cumplen con las nuevas regulaciones de superficies permeables."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "floods": "high",
-                "landslides": "medium",
-                "heatwaves": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 18,
-        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Arapiraca is crucial due to the city's vulnerability to droughts and water resource challenges. The city faces moderate inadequate water access, which can be exacerbated by climate change impacts such as droughts. By establishing a monitoring system, the city can better manage its water resources, anticipate shortages, and implement timely interventions. This action is essential for ensuring water security and supporting the city's socio-economic stability.",
-        "action": {
-            "ActionID": "icare_0164",
-            "ActionName": "Sistema de Monitoreo Hidrol\u00f3gico con Estaciones de Telemetr\u00eda",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementaci\u00f3n de un sistema de monitoreo hidrol\u00f3gico con estaciones de telemetr\u00eda para monitorear la lluvia, los niveles de agua y las variables meteorol\u00f3gicas en tiempo real.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Equipamiento e infraestructura",
-                "Sistema robusto de gesti\u00f3n de datos",
-                "Coordinaci\u00f3n institucional"
-            ],
-            "KeyPerformanceIndicators": [
-                "Puntualidad de los datos",
-                "Rentabilidad",
-                "Efectividad de mitigaci\u00f3n"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 19,
-        "explanation": "Implementing building codes in Arapiraca is crucial due to the high risk of natural hazards such as heatwaves, floods, and landslides. These hazards pose significant threats to public health and infrastructure, making it essential to ensure that buildings are constructed to withstand such events. Additionally, with the city's moderate population density and socio-economic challenges, enforcing building codes can enhance safety and resilience, protecting vulnerable communities. By prioritizing this action, Arapiraca can mitigate the impacts of climate-related risks and improve overall urban resilience.",
-        "action": {
-            "ActionID": "ipcc_0088",
-            "ActionName": "C\u00f3digos de construcci\u00f3n",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides"
-            ],
-            "Sector": [
-                "road_infrastructure",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "El desarrollo e implementaci\u00f3n de c\u00f3digos de construcci\u00f3n y regulaciones de dise\u00f1o arquitect\u00f3nico dirigidos a integrar par\u00e1metros de adaptaci\u00f3n clim\u00e1tica. Estos c\u00f3digos est\u00e1n enfocados en reducir riesgos de peligros inducidos por el clima, como inundaciones y deslizamientos de tierra. Tambi\u00e9n apoyan el desarrollo urbano resiliente al clima al guiar el uso del suelo, las pr\u00e1cticas de construcci\u00f3n y los est\u00e1ndares de infraestructura. La iniciativa fomenta la planificaci\u00f3n urbana estrat\u00e9gica a largo plazo para coordinar inversiones p\u00fablicas y privadas en adaptaci\u00f3n, incluyendo la creaci\u00f3n de zonas seguras y la transformaci\u00f3n de asentamientos precarios. Asegura que la nueva infraestructura sea resiliente a los riesgos clim\u00e1ticos y que los espacios urbanos sean seguros y sostenibles para las poblaciones actuales y futuras.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promueve la planificaci\u00f3n urbana inclusiva abordando los riesgos en asentamientos informales y precarios e integrando eco-parques y eco-jardines para poblaciones vulnerables.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integraci\u00f3n con evaluaciones locales de riesgo clim\u00e1tico",
-                "Colaboraci\u00f3n estrat\u00e9gica entre urbanistas y autoridades municipales"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de incidentes de inundaciones urbanas",
-                "Mayor disponibilidad de viviendas seguras en \u00e1reas de riesgo",
-                "Tasa de implementaci\u00f3n de eco-parques y eco-jardines en \u00e1reas vulnerables"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "floods": "high",
-                "landslides": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 20,
-        "explanation": "Ecosystem-based adaptation is crucial for Arapiraca due to its desert biome and the high risk of droughts impacting water resources and food security. Implementing this action can help enhance the resilience of local ecosystems, which in turn supports biodiversity and provides natural buffers against climate hazards. Additionally, ecosystem-based strategies can improve the quality of life by mitigating the effects of heatwaves and reducing the vulnerability of public health and infrastructure. Given the city's moderate low-income levels, such nature-based solutions can offer cost-effective and sustainable benefits.",
-        "action": {
-            "ActionID": "ipcc_0086",
-            "ActionName": "Adaptaci\u00f3n basada en ecosistemas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "storms",
-                "sea-level-rise",
-                "heatwaves",
-                "floods"
-            ],
-            "Sector": [
-                "biodiversity",
-                "geo-hydrological_disasters",
-                "water_resources",
-                "public_health"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Restaurar y gestionar de manera sostenible los ecosistemas marinos, costeros, urbanos, fluviales y de humedales para proteger contra peligros clim\u00e1ticos como marejadas cicl\u00f3nicas, inundaciones y olas de calor. Los esfuerzos incluyen agroecolog\u00eda, vegetaci\u00f3n costera y marina y arrecifes, corredores de vegetaci\u00f3n, restauraci\u00f3n de h\u00e1bitats de manglares, espacios verdes urbanos para reducir las temperaturas. Estas acciones mejoran la biodiversidad, almacenan carbono, mejoran la calidad del agua y proporcionan co-beneficios socioecon\u00f3micos y culturales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Apoya a las comunidades vulnerables mejorando la resiliencia clim\u00e1tica, promoviendo el acceso equitativo a los servicios ecosist\u00e9micos y creando oportunidades de sustento, especialmente para las poblaciones marginadas y desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Participaci\u00f3n comunitaria",
-                "Apoyo regulatorio",
-                "Inversi\u00f3n financiera",
-                "Planificaci\u00f3n urbana",
-                "Vegetaci\u00f3n resiliente al clima",
-                "Evaluaciones de biodiversidad",
-                "Gesti\u00f3n de cuencas",
-                "Planificaci\u00f3n aguas arriba",
-                "Financiaci\u00f3n sostenible"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de da\u00f1os por marejadas cicl\u00f3nicas",
-                "Tasas de secuestro de carbono",
-                "Aumento de la biodiversidad",
-                "Reducci\u00f3n de la temperatura en \u00e1reas urbanas",
-                "Mejora de la calidad del agua",
-                "Acceso a espacios verdes por comunidades desatendidas",
-                "Reducci\u00f3n de eventos de inundaci\u00f3n",
-                "Mejora de la salud del ecosistema"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "storms": "high",
-                "sea-level-rise": "high",
-                "heatwaves": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0169",
+    "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+    "actionPriority": 1,
+    "explanation": "Establecer un plan de preparación y medidas de respuesta ante emergencias en Arapiraca es crucial debido a la alta vulnerabilidad de la ciudad frente a eventos climáticos extremos. La ciudad enfrenta riesgos significativos por amenazas como sequías, olas de calor e inundaciones, que pueden afectar gravemente la salud pública, la infraestructura y la seguridad alimentaria. Con un saneamiento inadecuado y problemas moderados de acceso al agua, la población es particularmente susceptible a los efectos adversos de estos eventos. Implementar un plan integral de respuesta ante emergencias ayudará a mitigar estos riesgos, proteger a la comunidad y fortalecer la resiliencia frente a futuros desafíos relacionados con el clima.",
+    "action": {
+      "ActionID": "icare_0169",
+      "ActionName": "Establecer un Plan de Preparación y Medidas de Respuesta de Emergencia en caso de eventos climáticos extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en preparar al municipio para responder a eventos extremos, con el objetivo de proporcionar una respuesta rápida que minimice los impactos en la población.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de un plan integral de respuesta a emergencias que incluya la coordinación entre las autoridades locales, los servicios de emergencia y las organizaciones comunitarias",
+        "Inversión en sistemas de alerta temprana e infraestructura para garantizar respuestas oportunas y efectivas a eventos extremos",
+        "Capacitación y desarrollo de capacidades para los respondedores locales y las comunidades para mejorar la preparación y la resiliencia ante eventos extremos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de asociaciones de respuesta de emergencia establecidas.",
+        "Tiempo promedio de respuesta durante eventos climáticos extremos (horas).",
+        "Porcentaje de reducción en víctimas y daños durante eventos climáticos extremos anualmente (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "wildfires": "high",
+        "sea-level-rise": "low",
+        "storms": "high"
+      },
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0176",
+    "actionName": "Development of Climate Action Plan",
+    "actionPriority": 2,
+    "explanation": "El desarrollo de un Plan de Acción Climática es crucial para Arapiraca debido a su alta vulnerabilidad frente a peligros relacionados con el clima, como sequías, olas de calor e inundaciones. Estos peligros representan riesgos significativos para la salud pública, la seguridad alimentaria y la infraestructura, lo que hace imprescindible contar con un plan estratégico. Además, la población de ingresos moderados a bajos de la ciudad y el acceso insuficiente a servicios de saneamiento agravan aún más los impactos de estos riesgos climáticos. Un Plan de Acción Climática integral ayudará a identificar e implementar medidas efectivas para mitigar estos riesgos y fortalecer la resiliencia de la ciudad. Esta acción es una prioridad, ya que sienta las bases para el desarrollo sostenible y la salud ambiental a largo plazo en Arapiraca.",
+    "action": {
+      "ActionID": "icare_0176",
+      "ActionName": "Desarrollo del Plan de Acción Climática",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "wildfires",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Un plan integral que describe las estrategias y acciones de una ciudad para mitigar las emisiones de gases de efecto invernadero y adaptarse a los impactos del cambio climático, que típicamente incluye una evaluación de los riesgos y vulnerabilidades climáticas de la ciudad, el establecimiento de objetivos de reducción de emisiones y la implementación de acciones en varios sectores como energía, transporte, gestión de residuos y planificación urbana.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Voluntad política y compromiso del gobierno",
+        "Participación y colaboración de las partes interesadas",
+        "Financiación y recursos para la implementación"
+      ],
+      "KeyPerformanceIndicators": [
+        "Objetivos de reducción de emisiones de gases de efecto invernadero.",
+        "Número de acciones de adaptación al clima implementadas.",
+        "Inversión en proyectos de mitigación y adaptación al clima."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "medium",
+        "sea-level-rise": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "landslides": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0151",
+    "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+    "actionPriority": 3,
+    "explanation": "Desarrollar diagnósticos y restaurar las áreas de Zonas Especiales de Interés Social (ZEIS) en Arapiraca es fundamental debido a la presencia de una población de ingresos moderados a bajos y a los altos índices de saneamiento inadecuado en la ciudad. Estas áreas suelen albergar comunidades vulnerables que se ven afectadas de manera desproporcionada por desafíos ambientales y socioeconómicos. Al enfocarse en las ZEIS, la ciudad puede mejorar las condiciones de vida, fortalecer la salud pública y reducir el riesgo de enfermedades, lo cual es una preocupación significativa dado el alto riesgo de impactos en la salud pública por amenazas como olas de calor e inundaciones. Esta acción está alineada con la necesidad de abordar las disparidades socioeconómicas y mejorar la resiliencia frente a los riesgos relacionados con el clima.",
+    "action": {
+      "ActionID": "icare_0151",
+      "ActionName": "Desarrollar diagnósticos y restaurar áreas de Zonas de Interés Social Especial (ZEIS)",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "sea-level-rise",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Prioridad a las áreas ZEIS en acciones de mejora de vivienda y la aplicación de recursos del Fondo de Urbanización, con la implementación de infraestructura urbana que considere la adaptación climática en estos espacios. Uso de Soluciones basadas en la Naturaleza (NbS) en la adaptación del saneamiento ambiental y las infraestructuras verdes y azules que potencian el ocio, la cultura, la agricultura urbana y actividades para fortalecer las asociaciones comunitarias.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de financiamiento del Fondo de Urbanización y otros mecanismos financieros para apoyar mejoras en la vivienda e infraestructura urbana en áreas ZEIS",
+        "Colaboración entre urbanistas, expertos ambientales y comunidades locales para diseñar e implementar soluciones basadas en la naturaleza (NbS) para la infraestructura urbana",
+        "Marcos de políticas y regulaciones que integren medidas de adaptación al clima en la planificación urbana, asegurando que las inversiones prioricen la sostenibilidad ambiental y la comunidad"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de áreas ZEIS diagnosticadas y restauradas.",
+        "Porcentaje de residentes beneficiados por las áreas restauradas (%).",
+        "Inversiones públicas asignadas a las áreas ZEIS (monto en moneda)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "sea-level-rise": "medium",
+        "floods": "medium",
+        "landslides": "low",
+        "diseases": "medium",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0162",
+    "actionName": "Strengthen programs for control and conservation of protected areas",
+    "actionPriority": 4,
+    "explanation": "El fortalecimiento de los programas para el control y la conservación de las áreas protegidas en Arapiraca es crucial debido a la vulnerabilidad de la ciudad frente a peligros ambientales como sequías y olas de calor. Estos riesgos representan amenazas significativas para la biodiversidad y la salud pública, lo que hace que los esfuerzos de conservación sean vitales para mantener el equilibrio ecológico y proteger a la comunidad. Además, el bioma desértico de la ciudad y los desafíos socioeconómicos moderados requieren medidas proactivas para preservar los recursos naturales y aumentar la resiliencia frente a los impactos climáticos. Al priorizar la conservación, Arapiraca puede salvaguardar su patrimonio natural y mejorar la calidad de vida de sus habitantes.",
+    "action": {
+      "ActionID": "icare_0162",
+      "ActionName": "Fortalecer los programas de control y conservación de áreas protegidas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves",
+        "diseases"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en implementar una serie de estrategias integradas para mejorar la conservación ambiental y maximizar sus beneficios, como la expansión de áreas protegidas, el desarrollo de planes de manejo para unidades de conservación y la capacitación de guías de ecoturismo para fortalecer el turismo sostenible.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expansión de áreas protegidas para mejorar la conservación ambiental.",
+        "Desarrollo de planes de manejo para unidades de conservación.",
+        "Capacitación de guías de ecoturismo para promover el turismo sostenible."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de aumento en el área de regiones protegidas (%).",
+        "Reducción en las tasas de deforestación en áreas protegidas anualmente (%).",
+        "Número de programas de conservación fortalecidos anualmente."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high",
+        "heatwaves": "medium",
+        "diseases": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0152",
+    "actionName": "Recovery of degraded areas",
+    "actionPriority": 5,
+    "explanation": "La acción de ‘Recuperación de áreas degradadas’ es crucial para Arapiraca debido a su bioma desértico y los desafíos ambientales asociados. Restaurar las áreas degradadas puede ayudar a mitigar los impactos de las sequías, que representan un riesgo significativo para los recursos hídricos y la seguridad alimentaria en la región. Además, mejorar las condiciones del suelo puede aumentar la biodiversidad y contribuir a mejores resultados en la salud pública al reducir el riesgo de enfermedades. Esta acción apoya el uso sostenible del suelo, lo cual es esencial para reducir las emisiones y mejorar la resiliencia general de la ciudad frente a los peligros climáticos.",
+    "action": {
+      "ActionID": "icare_0152",
+      "ActionName": "Recuperación de áreas degradadas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar los ecosistemas dañados por actividades humanas mediante la replantación de vegetación nativa, la restauración del suelo, la eliminación de especies invasoras y la implementación de técnicas de gestión sostenible.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Desarrollar un plan de restauración claro y asegurar financiamiento para la gestión a largo plazo.",
+        "Asegurar el acceso a especies de plantas nativas y proporcionar capacitación en prácticas sostenibles.",
+        "Eliminar especies invasoras y colaborar con las comunidades locales para una restauración exitosa del ecosistema."
+      ],
+      "KeyPerformanceIndicators": [
+        "Hectáreas de tierra degradada restauradas anualmente",
+        "Aumento en la cobertura vegetal (%) en áreas restauradas",
+        "Número de comunidades locales involucradas en proyectos de restauración"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0157",
+    "actionName": "Maintenance and Revitalization of Riparian Forests",
+    "actionPriority": 6,
+    "explanation": "El mantenimiento y la revitalización de los bosques ribereños en Arapiraca son cruciales debido a la vulnerabilidad de la ciudad a sequías e inundaciones. Los bosques ribereños desempeñan un papel significativo en la estabilización del suelo y la reducción del impacto de las inundaciones, que representan un riesgo elevado para la infraestructura de la ciudad y la salud pública. Además, estos bosques ayudan a mantener la calidad y disponibilidad del agua, lo cual es esencial dada la moderada insuficiencia de acceso al agua en la región. Al fortalecer estos amortiguadores naturales, la ciudad puede mitigar algunos de los efectos adversos del cambio climático, especialmente aquellos relacionados con los recursos hídricos y la seguridad alimentaria.",
+    "action": {
+      "ActionID": "icare_0157",
+      "ActionName": "Mantenimiento y Revitalización de Bosques Ribereños",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mapeo y evaluación de bosques ribereños degradados, desarrollo de planes de revitalización con la plantación de especies nativas, control de especies invasoras, medidas de contención de la erosión y evaluaciones periódicas de los impactos en las condiciones ambientales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Asegurar la disponibilidad de datos geoespaciales y el mapeo previo de áreas degradadas.",
+        "Formar asociaciones con viveros locales y proporcionar equipo y mano de obra calificada para el control de especies invasoras.",
+        "Asegurar recursos financieros y establecer un sistema de monitoreo para evaluar los impactos ambientales."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total de bosques ribereños restaurados (ha).",
+        "Número de proyectos implementados.",
+        "Reducción de la erosión y sedimentación de cuerpos de agua (toneladas/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0145",
+    "actionName": "Strengthen the healthcare network to attend to climate victims",
+    "actionPriority": 7,
+    "explanation": "Fortalecer la red de atención médica en Arapiraca es crucial debido al alto riesgo de impactos en la salud pública por peligros relacionados con el clima, como olas de calor, enfermedades e inundaciones. La ciudad enfrenta desafíos significativos debido a un saneamiento inadecuado y un acceso moderado al agua, lo que puede agravar los problemas de salud durante eventos climáticos extremos. Al mejorar los servicios de salud, la ciudad podrá gestionar y mitigar mejor los impactos en la salud de su población, especialmente durante emergencias. Esta acción es fundamental para garantizar la resiliencia de la comunidad frente al aumento en la frecuencia e intensidad de los riesgos para la salud relacionados con el clima.",
+    "action": {
+      "ActionID": "icare_0145",
+      "ActionName": "Fortalecer la red de atención médica para atender a las víctimas del clima",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "storms",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar la infraestructura de las unidades de salud para asistir a las personas que requieren atención médica debido a impactos asociados con riesgos climáticos (víctimas del clima), como aquellos afectados por olas de calor o inundaciones, especialmente en áreas más vulnerables. Desarrollar planes de acción para preparar la red de salud para situaciones extremas relacionadas con el clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Inversión en la renovación y expansión de las instalaciones de salud, asegurando que estén equipadas para manejar los impactos en la salud relacionados con el clima, especialmente en áreas vulnerables.",
+        "Desarrollo de planes de acción y programas de capacitación para profesionales de la salud para responder a eventos climáticos extremos como olas de calor e inundaciones.",
+        "Colaboración con autoridades locales, equipos de respuesta a emergencias y expertos en clima para crear un marco integral para preparar la red de salud ante los riesgos climáticos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de instalaciones de salud mejoradas para emergencias relacionadas con el clima.",
+        "Aumento en el personal de salud capacitado en respuesta a emergencias climáticas (%).",
+        "Número de lesiones relacionadas con el clima tratadas con éxito. |||"
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "medium",
+        "floods": "high",
+        "storms": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0149",
+    "actionName": "Encourage sustainable land use practices",
+    "actionPriority": 8,
+    "explanation": "Fomentar prácticas sostenibles de uso del suelo en Arapiraca es crucial debido a las significativas emisiones derivadas del uso del suelo que contribuyen al total de emisiones de la ciudad. Con un bioma clasificado como desértico, la ciudad enfrenta desafíos relacionados con la degradación del suelo y la escasez de recursos naturales, lo que hace que las prácticas sostenibles sean esenciales para mantener el equilibrio ecológico. Además, el uso sostenible del suelo puede ayudar a mitigar los impactos de amenazas climáticas como sequías e inundaciones, que representan riesgos para la seguridad alimentaria y la salud pública. Al priorizar esta acción, Arapiraca puede fortalecer su resiliencia frente a amenazas ambientales y promover la sostenibilidad a largo plazo.",
+    "action": {
+      "ActionID": "icare_0149",
+      "ActionName": "Fomentar prácticas sostenibles de uso de la tierra",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Promover métodos que garanticen la conservación y salud del suelo, preservando la biodiversidad, reduciendo la erosión y minimizando los impactos ambientales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Proporcionar acceso a conocimientos técnicos y capacitación sobre prácticas de manejo sostenible del suelo.",
+        "Ofrecer incentivos financieros y formar asociaciones con instituciones de investigación y agricultores locales.",
+        "Desarrollar sistemas de monitoreo para la salud del suelo y la biodiversidad, e implementar políticas para el control de la erosión."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de área de tierra gestionada bajo prácticas de uso sostenible de la tierra (%)",
+        "Reducción en las tasas de deforestación o degradación de la tierra (%)",
+        "Aumento en los indicadores de biodiversidad en tierras gestionadas (por ejemplo, conteo de especies, calidad del hábitat)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "medium",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0156",
+    "actionName": "Implementation of urban gardens",
+    "actionPriority": 9,
+    "explanation": "La implementación de huertos urbanos en Arapiraca es una acción significativa debido a su potencial para mejorar la seguridad alimentaria, un tema crítico dado el alto riesgo de inundaciones que afecta el suministro de alimentos. Los huertos urbanos pueden proporcionar una fuente sostenible de productos frescos, reduciendo la dependencia de fuentes externas de alimentos y aumentando la resiliencia frente a las interrupciones relacionadas con el clima. Además, estos huertos pueden mejorar el bienestar comunitario al ofrecer espacios verdes que mitigan el efecto de isla de calor urbana, lo cual es especialmente importante en una región que enfrenta altos riesgos de olas de calor. Asimismo, los huertos urbanos pueden contribuir a la reducción de emisiones de residuos al promover el compostaje y el reciclaje de desechos orgánicos, en línea con los objetivos ambientales de la ciudad.",
+    "action": {
+      "ActionID": "icare_0156",
+      "ActionName": "Implementación de huertos urbanos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Identificar y evaluar la viabilidad de áreas adecuadas para la instalación de huertos urbanos y asegurar que los sitios elegidos cumplan con las expectativas de la comunidad.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Asegurar la disponibilidad de mapas detallados de uso del suelo y datos de planificación urbana.",
+        "Involucrarse con las comunidades locales para comprender sus necesidades y expectativas.",
+        "Evaluar la calidad del suelo, la disponibilidad de agua y formar asociaciones para apoyar el establecimiento y mantenimiento de jardines."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de huertos urbanos creados.",
+        "Cantidad de alimentos producidos localmente (kg/año).",
+        "Número de beneficiarios directos."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "landslides": "low",
+        "floods": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "ipcc_0097",
+    "actionName": "Food storage/distribution improvements",
+    "actionPriority": 10,
+    "explanation": "Mejorar el almacenamiento y la distribución de alimentos es crucial para Arapiraca debido a su vulnerabilidad a las sequías e inundaciones, que afectan significativamente la seguridad alimentaria. La ciudad enfrenta un alto riesgo de inseguridad alimentaria, según lo indica la evaluación de riesgos por cambio climático. Fortalecer los sistemas de almacenamiento y distribución de alimentos puede ayudar a mitigar estos riesgos al garantizar un suministro estable de alimentos durante condiciones climáticas adversas. Además, una mejor gestión de los alimentos puede reducir las emisiones derivadas de los desechos, contribuyendo así a los esfuerzos generales de reducción de emisiones en la ciudad.",
+    "action": {
+      "ActionID": "ipcc_0097",
+      "ActionName": "Mejoras en el almacenamiento/distribución de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms",
+        "heatwaves"
+      ],
+      "Sector": [
+        "food_security",
+        "road_infrastructure"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar los sistemas de almacenamiento y distribución de alimentos mediante la mejora de la infraestructura de transporte, la optimización de las redes comerciales y el acortamiento de las cadenas de suministro para garantizar la disponibilidad local de alimentos y la resiliencia ante los impactos climáticos. Esta acción también incluye aumentar la capacidad de las instalaciones de almacenamiento de alimentos locales para reducir las pérdidas post-cosecha, abordar las ineficiencias en la logística y reforzar la infraestructura para productos perecederos. Su objetivo es mejorar la seguridad alimentaria y reducir la vulnerabilidad a eventos extremos, interrupciones e impactos en cascada, especialmente durante pandemias y otras crisis.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Apoya el acceso equitativo a alimentos para poblaciones marginadas y vulnerables al priorizar la producción local de alimentos y mejorar los sistemas de distribución que llegan a áreas desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en infraestructura",
+        "Incentivos políticos para la producción local de alimentos",
+        "Colaboración con los sectores de logística y comercio",
+        "Tecnología para la optimización de la cadena de suministro"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de pérdidas post-cosecha",
+        "Aumento de la disponibilidad de alimentos locales",
+        "Mejora de la eficiencia del transporte para la distribución de alimentos",
+        "Acortamiento de las cadenas de suministro"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0148",
+    "actionName": "Create the Municipal Climate Change Forum",
+    "actionPriority": 11,
+    "explanation": "La creación del Foro Municipal de Cambio Climático en Arapiraca es un paso crucial para abordar los desafíos ambientales de la ciudad. La ciudad enfrenta riesgos significativos derivados de peligros relacionados con el clima, como sequías, olas de calor e inundaciones, que afectan los recursos hídricos, la salud pública y la seguridad alimentaria. El establecimiento de un foro facilitará la colaboración entre las partes interesadas, permitiendo el desarrollo de estrategias integrales para mitigar estos riesgos. Además, proporcionará una plataforma para la participación y educación de la comunidad, fomentando una población más resiliente e informada. Esta iniciativa es esencial para coordinar los esfuerzos destinados a reducir las emisiones y adaptarse a las condiciones climáticas cambiantes en la región.",
+    "action": {
+      "ActionID": "icare_0148",
+      "ActionName": "Crear el Foro Municipal de Cambio Climático",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "diseases",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Creación de un Foro Municipal de Cambio Climático con la participación de líderes comunitarios, científicos, colectivos, institutos de investigación, ONG y miembros de la administración municipal y estatal. El Foro servirá como referencia para acciones relacionadas con el Cambio Climático, con el objetivo de monitorear futuras políticas sobre el tema en el municipio, estimular el diálogo y crear una red de discusiones sobre la crisis climática.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Participación de diversos actores, incluidos líderes comunitarios, científicos, ONG y autoridades locales, para establecer y mantener el Foro.",
+        "Asignación de recursos para facilitar reuniones, talleres y eventos regulares para que el Foro permanezca activo e impactante.",
+        "Desarrollo de un marco claro y directrices para que el Foro monitoree y guíe las políticas e iniciativas de cambio climático dentro del municipio."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de partes interesadas clave participando activamente en el foro.",
+        "Número de políticas o acciones relacionadas con el clima propuestas a través del foro.",
+        "Participación pública en iniciativas del foro (medida por la asistencia a eventos o encuestas)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "landslides": "low",
+        "floods": "medium",
+        "wildfires": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "ipcc_0096",
+    "actionName": "Farm/fishery improvements",
+    "actionPriority": 12,
+    "explanation": "Las mejoras en la agricultura y la pesca son cruciales para Arapiraca debido al riesgo significativo de sequías que afectan los recursos hídricos y la seguridad alimentaria. El fortalecimiento de las prácticas agrícolas puede ayudar a mitigar estos riesgos al aumentar la resiliencia frente a la variabilidad climática. Además, el mejoramiento de las pesquerías puede apoyar el suministro local de alimentos y la estabilidad económica, lo cual es vital dado el nivel de ingresos moderadamente bajos en la región. Esta acción también está alineada con la necesidad de abordar las altas emisiones derivadas del uso del suelo, contribuyendo así a la sostenibilidad ambiental en general.",
+    "action": {
+      "ActionID": "ipcc_0096",
+      "ActionName": "Mejoras en granjas/pesquerías",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementar una serie de estrategias para adaptar granjas y pesquerías a los impactos climáticos. Esto incluye cambiar el equipo de pesca o la potencia de los barcos, adoptar nuevas variedades de cultivos o ajustar los calendarios de siembra, mejorar los sistemas de riego, integrar sistemas de cultivos y ganado, reubicar el ganado con una mejor gestión de pastizales y adoptar sistemas agroecológicos y de agroforestería. Innovaciones tecnológicas como la agricultura inteligente y medidas financieras como los subsidios apoyan estas adaptaciones.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garantiza el acceso a recursos para agricultores y pescadores marginados, promueve opciones diversas de sustento y fortalece la resiliencia en comunidades desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Apoyo político para la agricultura y pesca resilientes al clima",
+        "Acceso a financiamiento y subsidios",
+        "Capacitación para adoptar nuevas prácticas",
+        "Mejora de la infraestructura de mercado"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento de la productividad agrícola y pesquera",
+        "Tasa de adopción de sistemas integrados",
+        "Reducción de pérdidas de rendimiento relacionadas con el clima"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "wildfires": "low",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "ipcc_0094",
+    "actionName": "Access to health care",
+    "actionPriority": 13,
+    "explanation": "Mejorar el acceso a la atención médica en Arapiraca es crucial debido al alto riesgo de impactos en la salud pública por peligros como olas de calor, enfermedades e inundaciones. La población de ingresos moderados a bajos de la ciudad puede enfrentar desafíos para acceder a servicios de salud adecuados, lo que hace esencial priorizar las mejoras en la atención médica. Además, el alto riesgo de problemas de salud pública resalta la necesidad de una infraestructura sanitaria sólida para mitigar estos riesgos de manera efectiva. Abordar el acceso a la atención médica puede mejorar significativamente la resiliencia de la ciudad frente a amenazas para la salud relacionadas con el clima.",
+    "action": {
+      "ActionID": "ipcc_0094",
+      "ActionName": "Acceso a la atención médica",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "droughts"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar el acceso a los servicios de atención médica, incluidos los servicios de salud y nutrición, agua limpia, saneamiento y recursos de salud mental culturalmente apropiados. Ampliar las capacidades de telemedicina permite una entrega eficiente de servicios de salud, particularmente para poblaciones remotas y desatendidas. Fortalecer los sistemas básicos de salud pública y la preparación para desastres puede reducir rápidamente la vulnerabilidad a los riesgos de salud relacionados con el clima.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promueve el acceso equitativo a la atención médica para grupos marginados y vulnerables, incluidas las poblaciones sin hogar, las comunidades remotas y aquellos afectados por desigualdades en la vivienda.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en tecnologías de telemedicina",
+        "Fortalecimiento de la gobernanza de los sistemas de salud pública",
+        "Desarrollo de capacidades para los trabajadores de la salud",
+        "Mejoras en la infraestructura de las instalaciones de salud"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de la mortalidad relacionada con el clima",
+        "Mayor acceso a la telemedicina",
+        "Número de programas de salud adaptados culturalmente implementados",
+        "Mejora de los indicadores de acceso al agua y saneamiento"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "droughts": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0181",
+    "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+    "actionPriority": 14,
+    "explanation": "La acción de reubicar y restaurar el medio ambiente en áreas vulnerables es crucial para Arapiraca debido a su alto riesgo de impactos en la salud pública por olas de calor y deslizamientos de tierra. La ciudad enfrenta desafíos significativos por el saneamiento inadecuado y el acceso moderado al agua, lo que puede agravar los riesgos para la salud durante eventos climáticos extremos. Al centrarse en la reubicación y la restauración ambiental, la ciudad puede mitigar estos riesgos y mejorar las condiciones de vida de sus habitantes. Además, abordar estas vulnerabilidades puede aumentar la resiliencia de la ciudad frente a los impactos del cambio climático, especialmente en las zonas propensas a inundaciones y otros peligros.",
+    "action": {
+      "ActionID": "icare_0181",
+      "ActionName": "Reubicación y Restauración Ambiental en Áreas Vulnerables",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Un proyecto integral que aborda la vulnerabilidad socioambiental de un asentamiento informal. Incluye la reubicación de residentes de áreas propensas a inundaciones, la restauración del medio ambiente y la provisión de infraestructura y servicios sociales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamiento adecuado",
+        "Coordinación interinstitucional",
+        "Seguridad de tenencia de la tierra"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de hogares reubicados.",
+        "Progreso de la restauración ambiental.",
+        "Reducción del riesgo de inundación."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0144",
+    "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+    "actionPriority": 15,
+    "explanation": "La creación de un programa de apoyo financiero para hacer frente a eventos climáticos extremos es crucial para Arapiraca debido a su alta vulnerabilidad ante riesgos relacionados con el clima. La ciudad enfrenta riesgos significativos de sequías, olas de calor e inundaciones, los cuales pueden afectar gravemente la salud pública, la seguridad alimentaria y la infraestructura. Establecer un programa de apoyo financiero proporcionaría los recursos necesarios para mitigar estos impactos y fortalecer la resiliencia de la ciudad. Además, dicho programa podría ayudar a aliviar la carga socioeconómica sobre los residentes de ingresos medios, quienes se ven desproporcionadamente afectados por estos eventos.",
+    "action": {
+      "ActionID": "icare_0144",
+      "ActionName": "Creación de un Programa de Apoyo Financiero para Abordar Eventos Climáticos Extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "wildfires",
+        "floods",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Creación de un programa para mitigar los efectos de las tragedias climáticas, incluyendo asistencia financiera a las familias afectadas y esfuerzos para asegurar recursos adicionales para la recuperación y reconstrucción.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Recursos financieros",
+        "Planes de respuesta de emergencia",
+        "Coordinación institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de personas asistidas",
+        "Rentabilidad",
+        "Resiliencia comunitaria"
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "diseases": "medium",
+        "landslides": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0175",
+    "actionName": "Recovery and preservation of green areas",
+    "actionPriority": 16,
+    "explanation": "La acción de recuperar y preservar las áreas verdes en Arapiraca es crucial debido al bioma desértico de la ciudad, lo que la hace vulnerable a la degradación ambiental. Las áreas verdes pueden ayudar a mitigar los efectos de las olas de calor, que representan un riesgo significativo para la salud pública y la infraestructura. Además, la mejora de los espacios verdes puede incrementar la biodiversidad y contribuir a una mejor calidad del aire, lo cual es esencial dado el alto nivel de emisiones de la ciudad provenientes de la energía estacionaria y el transporte. Esta acción también fortalece la resiliencia de la ciudad frente a los impactos del cambio climático, como sequías e inundaciones, al mejorar la retención de agua y reducir las islas de calor urbanas.",
+    "action": {
+      "ActionID": "icare_0175",
+      "ActionName": "Recuperación y preservación de áreas verdes",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Rehabilitación y protección de los espacios verdes existentes, como parques, bosques y humedales, y expansión de áreas verdes mediante la plantación de árboles y vegetación en áreas urbanas y periurbanas. Estas áreas proporcionan soluciones naturales para la gestión de los recursos hídricos, la reducción del estrés térmico, la mejora de la calidad del aire y el aumento de la biodiversidad.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de terrenos adecuados para espacios verdes",
+        "Acceso a recursos hídricos para riego"
+      ],
+      "KeyPerformanceIndicators": [
+        "Área de espacios verdes creados o restaurados.",
+        "Índices de biodiversidad en áreas verdes.",
+        "Participación comunitaria en actividades de espacios verdes."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0180",
+    "actionName": "Implement permeable pavements and increase green areas in roadways",
+    "actionPriority": 17,
+    "explanation": "La implementación de pavimentos permeables y el aumento de áreas verdes en las vías es crucial para Arapiraca debido a su alto riesgo de inundaciones y al saneamiento inadecuado. Estas medidas pueden ayudar a gestionar el agua de lluvia de manera más eficaz, reduciendo el impacto de las inundaciones en la infraestructura y la salud pública. Además, incrementar las áreas verdes puede mejorar la biodiversidad urbana y proporcionar efectos de enfriamiento, lo cual es beneficioso para mitigar los impactos de las olas de calor. Esta acción también está alineada con la necesidad de la ciudad de abordar sus desafíos ambientales y mejorar la calidad de vida de sus habitantes.",
+    "action": {
+      "ActionID": "icare_0180",
+      "ActionName": "Implementar pavimentos permeables y aumentar las áreas verdes en las vías públicas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Incrementar las áreas permeables y semi-permeables en edificios y espacios públicos bajo la administración de la Ciudad, con la adopción de soluciones basadas en la naturaleza (NbS). En áreas con limitaciones de espacio, la acción incluye análisis de viabilidad para implementar pavimentos permeables y aumentar las áreas verdes en las vías. Entre las soluciones de construcción tradicionales, se encuentran características como bordillos y canaletas con desagües pluviales, así como soluciones a mayor escala como estanques de retención. Las soluciones basadas en la naturaleza incluyen la plantación de árboles urbanos, techos verdes, cisternas de agua de lluvia, bio-swales, y más.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Expansión de áreas permeables y semi-permeables en edificios administrados por la ciudad y espacios públicos.",
+        "Adopción de soluciones basadas en la naturaleza (NbS) como la plantación de árboles urbanos, techos verdes, cisternas de agua de lluvia y bio-swales.",
+        "Análisis de viabilidad para pavimentos permeables y aumento de áreas verdes en carreteras, junto con soluciones tradicionales de gestión de aguas pluviales como bordillos, canaletas y estanques de retención."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en la escorrentía de agua superficial durante eventos de lluvia (%).",
+        "Disminución en la ocurrencia de inundaciones en áreas modificadas.",
+        "Porcentaje de espacios públicos que cumplen con las nuevas regulaciones de superficies permeables."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "medium",
+        "heatwaves": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "icare_0164",
+    "actionName": "Hydrological Monitoring System with Telemetry Stations",
+    "actionPriority": 18,
+    "explanation": "La implementación de un sistema de monitoreo hidrológico con estaciones de telemetría en Arapiraca es crucial debido a la vulnerabilidad de la ciudad frente a las sequías y los desafíos relacionados con los recursos hídricos. La ciudad enfrenta un acceso al agua moderadamente inadecuado, situación que puede verse agravada por los impactos del cambio climático, como las sequías. Al establecer un sistema de monitoreo, la ciudad podrá gestionar mejor sus recursos hídricos, anticipar escasez y aplicar intervenciones oportunas. Esta acción es esencial para garantizar la seguridad hídrica y apoyar la estabilidad socioeconómica de la ciudad.",
+    "action": {
+      "ActionID": "icare_0164",
+      "ActionName": "Sistema de Monitoreo Hidrológico con Estaciones de Telemetría",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementación de un sistema de monitoreo hidrológico con estaciones de telemetría para monitorear la lluvia, los niveles de agua y las variables meteorológicas en tiempo real.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Equipamiento e infraestructura",
+        "Sistema robusto de gestión de datos",
+        "Coordinación institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Puntualidad de los datos",
+        "Rentabilidad",
+        "Efectividad de mitigación"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "ipcc_0088",
+    "actionName": "Building codes",
+    "actionPriority": 19,
+    "explanation": "La implementación de códigos de construcción en Arapiraca es crucial debido al alto riesgo de peligros naturales como olas de calor, inundaciones y deslizamientos de tierra. Estos peligros representan amenazas significativas para la salud pública y la infraestructura, por lo que es esencial garantizar que los edificios se construyan para resistir tales eventos. Además, dado que la ciudad tiene una densidad de población moderada y enfrenta desafíos socioeconómicos, hacer cumplir los códigos de construcción puede mejorar la seguridad y la resiliencia, protegiendo a las comunidades vulnerables. Al priorizar esta acción, Arapiraca puede mitigar los impactos de los riesgos relacionados con el clima y mejorar la resiliencia urbana en general.",
+    "action": {
+      "ActionID": "ipcc_0088",
+      "ActionName": "Códigos de construcción",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides"
+      ],
+      "Sector": [
+        "road_infrastructure",
+        "geo-hydrological_disasters"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "El desarrollo e implementación de códigos de construcción y regulaciones de diseño arquitectónico dirigidos a integrar parámetros de adaptación climática. Estos códigos están enfocados en reducir riesgos de peligros inducidos por el clima, como inundaciones y deslizamientos de tierra. También apoyan el desarrollo urbano resiliente al clima al guiar el uso del suelo, las prácticas de construcción y los estándares de infraestructura. La iniciativa fomenta la planificación urbana estratégica a largo plazo para coordinar inversiones públicas y privadas en adaptación, incluyendo la creación de zonas seguras y la transformación de asentamientos precarios. Asegura que la nueva infraestructura sea resiliente a los riesgos climáticos y que los espacios urbanos sean seguros y sostenibles para las poblaciones actuales y futuras.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": "Promueve la planificación urbana inclusiva abordando los riesgos en asentamientos informales y precarios e integrando eco-parques y eco-jardines para poblaciones vulnerables.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Integración con evaluaciones locales de riesgo climático",
+        "Colaboración estratégica entre urbanistas y autoridades municipales"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de incidentes de inundaciones urbanas",
+        "Mayor disponibilidad de viviendas seguras en áreas de riesgo",
+        "Tasa de implementación de eco-parques y eco-jardines en áreas vulnerables"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ARC",
+    "cityName": "Arapiraca",
+    "region": "AL",
+    "regionName": "Alagoas",
+    "actionId": "ipcc_0086",
+    "actionName": "Ecosystem-based adaptation",
+    "actionPriority": 20,
+    "explanation": "La adaptación basada en los ecosistemas es crucial para Arapiraca debido a su bioma desértico y al alto riesgo de sequías que afectan los recursos hídricos y la seguridad alimentaria. Implementar esta acción puede ayudar a fortalecer la resiliencia de los ecosistemas locales, lo que a su vez apoya la biodiversidad y proporciona barreras naturales contra los peligros climáticos. Además, las estrategias basadas en los ecosistemas pueden mejorar la calidad de vida al mitigar los efectos de las olas de calor y reducir la vulnerabilidad de la salud pública y la infraestructura. Dado el nivel de ingresos moderadamente bajos de la ciudad, este tipo de soluciones basadas en la naturaleza pueden ofrecer beneficios sostenibles y rentables.",
+    "action": {
+      "ActionID": "ipcc_0086",
+      "ActionName": "Adaptación basada en ecosistemas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "heatwaves",
+        "floods"
+      ],
+      "Sector": [
+        "biodiversity",
+        "geo-hydrological_disasters",
+        "water_resources",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar y gestionar de manera sostenible los ecosistemas marinos, costeros, urbanos, fluviales y de humedales para proteger contra peligros climáticos como marejadas ciclónicas, inundaciones y olas de calor. Los esfuerzos incluyen agroecología, vegetación costera y marina y arrecifes, corredores de vegetación, restauración de hábitats de manglares, espacios verdes urbanos para reducir las temperaturas. Estas acciones mejoran la biodiversidad, almacenan carbono, mejoran la calidad del agua y proporcionan co-beneficios socioeconómicos y culturales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": "Apoya a las comunidades vulnerables mejorando la resiliencia climática, promoviendo el acceso equitativo a los servicios ecosistémicos y creando oportunidades de sustento, especialmente para las poblaciones marginadas y desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Participación comunitaria",
+        "Apoyo regulatorio",
+        "Inversión financiera",
+        "Planificación urbana",
+        "Vegetación resiliente al clima",
+        "Evaluaciones de biodiversidad",
+        "Gestión de cuencas",
+        "Planificación aguas arriba",
+        "Financiación sostenible"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de daños por marejadas ciclónicas",
+        "Tasas de secuestro de carbono",
+        "Aumento de la biodiversidad",
+        "Reducción de la temperatura en áreas urbanas",
+        "Mejora de la calidad del agua",
+        "Acceso a espacios verdes por comunidades desatendidas",
+        "Reducción de eventos de inundación",
+        "Mejora de la salud del ecosistema"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "high",
+        "sea-level-rise": "high",
+        "heatwaves": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  }
 ]

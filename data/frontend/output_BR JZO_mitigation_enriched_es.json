@@ -1,1261 +1,1261 @@
 [
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 1,
-        "explanation": "Implementing agroforestry systems in Juazeiro is a high priority due to the city's desert biome and the significant risk of droughts impacting water resources, food security, and energy security. Agroforestry can enhance soil fertility, improve water retention, and increase biodiversity, which are crucial for mitigating the effects of droughts. Additionally, this action can contribute to reducing land use emissions, which are currently a major component of the city's total emissions. By integrating trees with crops and livestock, agroforestry systems can also provide economic benefits to local communities, aligning with the socio-economic needs of the region.",
-        "action": {
-            "ActionID": "icare_0050",
-            "ActionName": "Implementar Sistemas Agroforestales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover sistemas agroforestales integrando \u00e1rboles en el cultivo de alimentos y pastos, aumentando la biodiversidad y la captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Provisi\u00f3n de apoyo t\u00e9cnico y orientaci\u00f3n a los agricultores sobre el dise\u00f1o e implementaci\u00f3n de sistemas agroforestales.",
-                "Desarrollo de incentivos financieros o subsidios para hacer la agroforester\u00eda m\u00e1s atractiva econ\u00f3micamente.",
-                "Creaci\u00f3n de pol\u00edticas que integren pr\u00e1cticas agroforestales en la planificaci\u00f3n del uso del suelo agr\u00edcola y los sistemas de tenencia de la tierra."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de tierras agr\u00edcolas convertidas en sistemas agroforestales (%).",
-                "N\u00famero de nuevos proyectos agroforestales implementados.",
-                "Aumento en la captura de carbono en sistemas agroforestales (toneladas de CO\u2082e/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 2,
-        "explanation": "Strengthening mechanisms for deforestation control in Juazeiro is crucial due to the city's location in a desert biome, where vegetation plays a vital role in maintaining ecological balance. Deforestation can exacerbate the risk of droughts, which are already a significant threat to water resources, food security, and energy security in the region. By enhancing deforestation control, Juazeiro can mitigate these risks and contribute to reducing land use emissions, which are a major component of the city's total emissions. This action is also aligned with protecting biodiversity, which is under threat from both droughts and heatwaves.",
-        "action": {
-            "ActionID": "icare_0134",
-            "ActionName": "Fortalecer los Mecanismos para el Control de la Deforestaci\u00f3n",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Mejorar la supervisi\u00f3n y la aplicaci\u00f3n de la ley para prevenir la deforestaci\u00f3n ilegal y promover el uso sostenible de la tierra.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Fuerte marco legal, tecnolog\u00edas de monitoreo avanzadas (sat\u00e9lites y drones), y desarrollo de capacidades para las autoridades locales.",
-                "Colaboraci\u00f3n con las comunidades locales y financiaci\u00f3n adecuada para los esfuerzos de aplicaci\u00f3n.",
-                "Transparencia y responsabilidad en los informes para garantizar una implementaci\u00f3n efectiva."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total monitoreada para la deforestaci\u00f3n (hect\u00e1reas/a\u00f1o).",
-                "Reducci\u00f3n en la tasa anual de deforestaci\u00f3n (%).",
-                "Cantidad de emisiones evitadas al reducir la deforestaci\u00f3n (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 3,
-        "explanation": "Promoting urban reforestation and green corridors in Juazeiro is crucial due to the city's desert biome and the associated environmental challenges. The introduction of more green spaces can help mitigate the effects of heatwaves, which pose a significant risk to public health and infrastructure. Additionally, increasing vegetation can improve air quality and provide natural cooling, which is essential given the high risk of droughts affecting water and energy security. This action also supports biodiversity, offering habitats for various species and enhancing the overall ecological balance in the urban environment.",
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promover la Reforestaci\u00f3n Urbana y los Corredores Verdes",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aumentar la cobertura arb\u00f3rea urbana para mitigar el efecto de isla de calor urbano y mejorar la biodiversidad.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identificaci\u00f3n de \u00e1reas prioritarias y selecci\u00f3n de especies nativas y resilientes al clima para la plantaci\u00f3n de \u00e1rboles.",
-                "Alianzas con organizaciones locales y viveros, y asignaci\u00f3n de recursos para la plantaci\u00f3n y el mantenimiento.",
-                "Participaci\u00f3n comunitaria para garantizar el cuidado y apoyo a largo plazo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento en la cobertura de dosel arb\u00f3reo urbano (%)",
-                "Longitud total de corredores verdes creados o restaurados (kil\u00f3metros)",
-                "Reducci\u00f3n en las temperaturas del efecto de isla de calor urbano (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 4,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Juazeiro is crucial due to the city's vulnerability to droughts, which significantly impact water resources and food security. These actions can help improve agricultural practices, making them more resilient to climate hazards and ensuring food security for the population. Additionally, ATER initiatives can support sustainable land use, reducing emissions from land use changes and enhancing the overall environmental resilience of the region. By prioritizing this action, Juazeiro can better manage its natural resources and mitigate the adverse effects of climate change on its rural communities.",
-        "action": {
-            "ActionID": "icare_0130",
-            "ActionName": "Realizar Acciones de Asistencia T\u00e9cnica y Extensi\u00f3n Rural (ATER)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Proporcionar apoyo t\u00e9cnico y capacitaci\u00f3n a los productores rurales para la producci\u00f3n agr\u00edcola sostenible.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidad de personal t\u00e9cnico calificado y programas de formaci\u00f3n adaptados.",
-                "Alianzas con instituciones de investigaci\u00f3n agr\u00edcola y asignaci\u00f3n de recursos para el desarrollo de capacidades.",
-                "Compromiso con los productores rurales para asegurar su participaci\u00f3n activa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de productores beneficiados con asistencia t\u00e9cnica rural (% del total).",
-                "Porcentaje de participantes que adoptan pr\u00e1cticas resilientes al clima.",
-                "Vulnerabilidad reducida de las propiedades al riesgo clim\u00e1tico (%)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0128",
-        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 5,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Juazeiro is a high priority due to the city's significant environmental challenges. The region faces severe risks from droughts, which impact water resources, food security, and energy security. By implementing PES, the city can incentivize sustainable land management practices that help mitigate these risks. Additionally, PES programs can enhance biodiversity conservation and improve the resilience of local ecosystems, which are crucial given the city's desert biome and the high risk of biodiversity loss.",
-        "action": {
-            "ActionID": "icare_0128",
-            "ActionName": "Establecer Programas Municipales de Pago por Servicios Ambientales (PES)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar programas que paguen a los propietarios de tierras por mantener o mejorar las condiciones ambientales en sus propiedades.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Creaci\u00f3n de mecanismos de financiaci\u00f3n y criterios de elegibilidad claros con indicadores de rendimiento.",
-                "Alianzas con organizaciones ambientales y campa\u00f1as de concienciaci\u00f3n para fomentar la participaci\u00f3n.",
-                "Integraci\u00f3n con marcos legales para garantizar la sostenibilidad del programa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de contratos activos de Pago por Servicios Ambientales (PES) firmados.",
-                "\u00c1rea total bajo pr\u00e1cticas de conservaci\u00f3n o restauraci\u00f3n incentivadas (hect\u00e1reas).",
-                "Cantidad de carbono secuestrado o emisiones evitadas a trav\u00e9s de acciones de PES (tCO\u2082e/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 6,
-        "explanation": "Facilitating technology transfer for conservation practices in Juazeiro is crucial due to the city's high vulnerability to droughts and heatwaves. These hazards pose significant risks to water resources, food security, and energy security, which are vital for the city's sustainability. By adopting advanced conservation technologies, Juazeiro can enhance its resilience against these climate impacts, ensuring better resource management and protection of biodiversity. Additionally, improved conservation practices can help mitigate emissions from land use, contributing to the city's overall environmental goals.",
-        "action": {
-            "ActionID": "icare_0129",
-            "ActionName": "Facilitar la Transferencia de Tecnolog\u00eda para Pr\u00e1cticas de Conservaci\u00f3n",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover la adopci\u00f3n de pr\u00e1cticas agr\u00edcolas sostenibles mediante la capacitaci\u00f3n, proyectos piloto y demostraciones tecnol\u00f3gicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Provisi\u00f3n de programas de capacitaci\u00f3n y establecimiento de proyectos piloto para mostrar pr\u00e1cticas sostenibles.",
-                "Alianzas con instituciones de investigaci\u00f3n para el desarrollo de tecnolog\u00eda e incentivos financieros para fomentar la adopci\u00f3n.",
-                "Acceso a asistencia t\u00e9cnica para una implementaci\u00f3n exitosa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de tecnolog\u00edas de conservaci\u00f3n transferidas y aplicadas en las granjas.",
-                "Porcentaje de productores capacitados para implementar pr\u00e1cticas de conservaci\u00f3n.",
-                "Reducci\u00f3n en la degradaci\u00f3n del suelo o aumento en la cobertura vegetal (hect\u00e1reas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 7,
-        "explanation": "Promoting sustainable agricultural practices in Juazeiro is crucial due to the city's vulnerability to droughts, which significantly impact water resources and food security. The region's desert biome and moderate low-income population further emphasize the need for resilient agricultural methods to ensure food availability and economic stability. By adopting sustainable practices, Juazeiro can mitigate the adverse effects of climate change, improve soil health, and enhance water conservation, ultimately supporting the community's long-term sustainability and resilience.",
-        "action": {
-            "ActionID": "icare_0102",
-            "ActionName": "Promover Pr\u00e1cticas Agr\u00edcolas Sostenibles",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar pr\u00e1cticas agr\u00edcolas que reduzcan las emisiones de gases de efecto invernadero, como el uso reducido de fertilizantes y agroqu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de programas educativos y recursos para promover pr\u00e1cticas agr\u00edcolas sostenibles entre los agricultores.",
-                "Implementaci\u00f3n de pol\u00edticas que incentiven la reducci\u00f3n del uso de fertilizantes y agroqu\u00edmicos, como subsidios para insumos org\u00e1nicos o t\u00e9cnicas de cultivo sostenibles.",
-                "Colaboraci\u00f3n con organizaciones agr\u00edcolas para proporcionar apoyo t\u00e9cnico y orientaci\u00f3n sobre pr\u00e1cticas que reduzcan las emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de tierras agr\u00edcolas que adoptan pr\u00e1cticas sostenibles (% del total de tierras agr\u00edcolas).",
-                "Aumento en el rendimiento de cultivos por hect\u00e1rea (toneladas/hect\u00e1rea) debido a m\u00e9todos sostenibles.",
-                "Reducci\u00f3n en el uso de agua para la agricultura (litros o m\u00b3/hect\u00e1rea/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 8,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Juazeiro due to its moderate low-income population and the high risk of droughts affecting food security. By supporting local agroecological producers, the city can enhance food security and resilience against climate impacts, such as droughts and floods, which are significant risks in the region. This action also promotes sustainable agricultural practices, which can help reduce emissions from land use and improve the overall environmental health of the area. Additionally, it supports the local economy by providing income opportunities for local farmers, thereby addressing socio-economic challenges.",
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Priorizar la Adquisici\u00f3n de Productos Agroecol\u00f3gicos de Producci\u00f3n Local en Compras P\u00fablicas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Centrarse en comprar alimentos sostenibles y producidos localmente para las instituciones p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de pol\u00edticas de adquisici\u00f3n e identificaci\u00f3n de proveedores locales confiables.",
-                "Alianzas con productores y asignaci\u00f3n de fondos para programas de adquisici\u00f3n sostenible.",
-                "Establecimiento de sistemas de monitoreo para garantizar el cumplimiento de los criterios de sostenibilidad."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje del volumen total de compras p\u00fablicas provenientes de productores agroecol\u00f3gicos locales.",
-                "Cantidad de emisiones de CO\u2082 evitadas debido a la reducci\u00f3n de la distancia de transporte (tCO\u2082e).",
-                "N\u00famero de productores agroecol\u00f3gicos beneficiados por las compras p\u00fablicas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 9,
-        "explanation": "Supporting agroecological certification programs in Juazeiro is crucial due to the city's vulnerability to droughts, which significantly impact water resources and food security. By promoting sustainable agricultural practices, these programs can help mitigate the effects of climate change and improve resilience against environmental hazards. Additionally, agroecological practices can enhance soil health and biodiversity, contributing to long-term sustainability and food security in the region. This action aligns with the need to address socio-economic challenges, as it can provide economic opportunities for local farmers and communities.",
-        "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Apoyar los Programas de Certificaci\u00f3n Agroecol\u00f3gica",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar la certificaci\u00f3n de productos agroecol\u00f3gicos que cumplan con criterios de sostenibilidad y tengan bajo impacto ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de est\u00e1ndares de certificaci\u00f3n claros y accesibles para productos agroecol\u00f3gicos que enfatizan la sostenibilidad y el bajo impacto ambiental.",
-                "Apoyo a los agricultores y productores para cumplir con los requisitos de certificaci\u00f3n a trav\u00e9s de capacitaci\u00f3n, asistencia financiera o orientaci\u00f3n t\u00e9cnica.",
-                "Creaci\u00f3n de estrategias de marketing y asociaciones para aumentar la visibilidad y la demanda de productos agroecol\u00f3gicos certificados en los mercados locales y globales."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de agricultores o productores que obtienen certificaciones agroecol\u00f3gicas.",
-                "Porcentaje de productos agr\u00edcolas certificados en el mercado (%).",
-                "Reducci\u00f3n en el uso de insumos sint\u00e9ticos (por ejemplo, fertilizantes, pesticidas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 10,
-        "explanation": "Creating incentives for agroforestry practices in livestock systems is crucial for Juazeiro due to its desert biome and the high risk of droughts impacting water and food security. Agroforestry can enhance soil fertility and water retention, which are vital in a region with very low water access. Additionally, integrating trees into livestock systems can help sequester carbon, thereby reducing the city's significant land use emissions. This action also supports biodiversity, which is at risk from both droughts and heatwaves, by providing habitats and improving ecosystem resilience.",
-        "action": {
-            "ActionID": "icare_0084",
-            "ActionName": "Crear incentivos para pr\u00e1cticas de agroforester\u00eda en sistemas ganaderos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Crear incentivos financieros y t\u00e9cnicos para integrar pr\u00e1cticas de agroforester\u00eda en los sistemas de ganader\u00eda, promoviendo la captura de carbono, la protecci\u00f3n del suelo y la mejora de la biodiversidad.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de programas de incentivos financieros, como subsidios o exenciones fiscales, para apoyar a los agricultores en la integraci\u00f3n de la agroforester\u00eda con los sistemas de ganader\u00eda.",
-                "Provisi\u00f3n de asistencia t\u00e9cnica y capacitaci\u00f3n a los agricultores sobre las mejores pr\u00e1cticas para la integraci\u00f3n de la agroforester\u00eda en las operaciones ganaderas.",
-                "Colaboraci\u00f3n con organizaciones agr\u00edcolas y ambientales para monitorear y evaluar los impactos de las pr\u00e1cticas de agroforester\u00eda en la captura de carbono, la salud del suelo y la biodiversidad."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de incentivos financieros proporcionados para integrar la agroforester\u00eda en los sistemas de ganader\u00eda.",
-                "Aumento en la calidad del suelo y la cobertura vegetal en propiedades gestionadas (%).",
-                "Crecimiento en la biodiversidad en \u00e1reas de agroforester\u00eda (% de especies identificadas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 11,
-        "explanation": "Encouraging local agroecological production and short supply chains is crucial for Juazeiro due to its vulnerability to droughts, which significantly impact water and food security. By promoting sustainable agricultural practices, the city can enhance its resilience against climate-related risks and ensure a stable food supply. Additionally, short supply chains reduce transportation emissions, contributing to lower overall emissions in the city. This action also supports the local economy by empowering small-scale farmers and fostering community-based food systems.",
-        "action": {
-            "ActionID": "icare_0132",
-            "ActionName": "Fomentar la Producci\u00f3n Agroecol\u00f3gica Local y las Cadenas de Suministro Cortas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Apoyar pr\u00e1cticas agr\u00edcolas locales y sostenibles y reducir las emisiones asociadas con el transporte de alimentos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Incentivos para pr\u00e1cticas agr\u00edcolas sostenibles y desarrollo de redes locales de distribuci\u00f3n de alimentos.",
-                "Alianzas con productores e inversi\u00f3n en infraestructura para apoyar los mercados locales.",
-                "Pol\u00edticas para priorizar m\u00e9todos de transporte de bajas emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de productores que se adhieren a pr\u00e1cticas agroecol\u00f3gicas locales.",
-                "Porcentaje de alimentos consumidos en la ciudad provenientes de cadenas cortas.",
-                "Reducci\u00f3n de emisiones asociadas con el transporte de alimentos (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 12,
-        "explanation": "Supporting the implementation of ecological fiscal incentives in Juazeiro is crucial due to the city's significant environmental challenges. With a high total emissions level and a desert biome, promoting sustainable practices through fiscal incentives can help reduce emissions and encourage conservation efforts. Additionally, the city faces severe risks from climate hazards such as droughts and heatwaves, which threaten water resources, food security, and public health. By incentivizing ecological practices, Juazeiro can enhance its resilience to these climate impacts and promote sustainable development.",
-        "action": {
-            "ActionID": "icare_0136",
-            "ActionName": "Apoyar la Implementaci\u00f3n de Incentivos Fiscales Ecol\u00f3gicos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar la aplicaci\u00f3n de impuestos ecol\u00f3gicos e incentivos para promover la conservaci\u00f3n ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establecer un marco regulatorio claro con tasas impositivas justas e incentivos para la sostenibilidad.",
-                "Implementar sistemas de monitoreo efectivos para rastrear el cumplimiento y medir el impacto.",
-                "Promover la concienciaci\u00f3n p\u00fablica y fomentar la colaboraci\u00f3n entre gobiernos, empresas y comunidades."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de municipios que han adoptado incentivos fiscales ambientales.",
-                "Porcentaje de ingresos fiscales gastados en pr\u00e1cticas sostenibles.",
-                "Superficie o n\u00famero de propiedades que se benefician de pr\u00e1cticas de conservaci\u00f3n como resultado de los incentivos."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 13,
-        "explanation": "Promoting organic farming in Juazeiro is a strategic action due to the city's vulnerability to droughts, which significantly impact water resources and food security. Organic farming practices can enhance soil health and water retention, making agriculture more resilient to climate change. Additionally, this approach can reduce reliance on chemical fertilizers and pesticides, which aligns with the city's need to manage its environmental footprint. By fostering organic farming, Juazeiro can improve food security and support sustainable agricultural practices, which are crucial given the socio-economic context of moderate low-income levels.",
-        "action": {
-            "ActionID": "icare_0096",
-            "ActionName": "Promover la Agricultura Org\u00e1nica",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar la adopci\u00f3n de pr\u00e1cticas de agricultura org\u00e1nica que eviten el uso de productos qu\u00edmicos y contribuyan a la salud del suelo y la captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Provisi\u00f3n de incentivos financieros, subsidios o subvenciones para apoyar la transici\u00f3n a pr\u00e1cticas de agricultura org\u00e1nica.",
-                "Desarrollo de redes de capacitaci\u00f3n y apoyo para educar a los agricultores sobre m\u00e9todos de agricultura org\u00e1nica y sus beneficios.",
-                "Establecimiento de sistemas de certificaci\u00f3n y estrategias de acceso al mercado para asegurar la viabilidad econ\u00f3mica de los productos org\u00e1nicos."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de tierras agr\u00edcolas bajo pr\u00e1cticas de agricultura org\u00e1nica (%).",
-                "Aumento en el contenido de carbono org\u00e1nico del suelo (toneladas de carbono por hect\u00e1rea).",
-                "Reducci\u00f3n en el uso de fertilizantes qu\u00edmicos y pesticidas (kilogramos/hect\u00e1rea/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0085",
-        "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 14,
-        "explanation": "Promoting the adoption of agroecological pest control in Juazeiro is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which can severely impact food security. By implementing sustainable pest control methods, the city can enhance its agricultural resilience, ensuring a stable food supply even under adverse conditions. Additionally, agroecological practices can help preserve biodiversity, which is at risk from both droughts and heatwaves. This action aligns with the need to mitigate environmental impacts while supporting the socio-economic stability of the region.",
-        "action": {
-            "ActionID": "icare_0085",
-            "ActionName": "Promover la Adopci\u00f3n del Control de Plagas Agroecol\u00f3gico",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar m\u00e9todos de control de plagas que sean agroecol\u00f3gicos, como el uso de depredadores naturales y plantas repelentes, para reducir la dependencia de pesticidas qu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de programas educativos para informar a los agricultores sobre m\u00e9todos de control de plagas agroecol\u00f3gicos y sus beneficios.",
-                "Provisi\u00f3n de acceso a recursos o materiales para implementar m\u00e9todos de control de plagas naturales, como la introducci\u00f3n de insectos beneficiosos o el cultivo de plantas repelentes.",
-                "Creaci\u00f3n de incentivos o redes de apoyo para fomentar la transici\u00f3n de los pesticidas qu\u00edmicos hacia alternativas sostenibles."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento en las tasas de productividad en \u00e1reas que adoptan el control de plagas agroecol\u00f3gico (%).",
-                "N\u00famero de campa\u00f1as educativas realizadas sobre el control sostenible de plagas.",
-                "Impacto en los costos totales de producci\u00f3n debido a la adopci\u00f3n de pr\u00e1cticas agroecol\u00f3gicas (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 15,
-        "explanation": "Supporting regenerative agriculture practices in Juazeiro is crucial due to the city's vulnerability to droughts, which significantly impact water resources and food security. By promoting these practices, the city can enhance soil health, increase water retention, and improve crop yields, thereby mitigating the effects of droughts. Additionally, regenerative agriculture can contribute to reducing land use emissions, which are a significant component of Juazeiro's total emissions. This action aligns with the need to address both environmental sustainability and socio-economic resilience in the region.",
-        "action": {
-            "ActionID": "icare_0100",
-            "ActionName": "Apoyar las Pr\u00e1cticas de Agricultura Regenerativa",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Apoyar pr\u00e1cticas agr\u00edcolas regenerativas que se centren en restaurar la salud del suelo y reducir las emisiones de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de programas de capacitaci\u00f3n y recursos para educar a los agricultores sobre t\u00e9cnicas agr\u00edcolas regenerativas, como el cultivo de cobertura y la reducci\u00f3n de la labranza.",
-                "Implementaci\u00f3n de incentivos financieros o subsidios para apoyar la adopci\u00f3n de pr\u00e1cticas regenerativas.",
-                "Colaboraci\u00f3n con instituciones de investigaci\u00f3n agr\u00edcola para monitorear y documentar la efectividad de las pr\u00e1cticas regenerativas en la captura de carbono y la mejora de la salud del suelo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento en los niveles de carbono org\u00e1nico del suelo (toneladas/hect\u00e1rea).",
-                "Reducci\u00f3n en el uso de agua por hect\u00e1rea en la producci\u00f3n agr\u00edcola (%).",
-                "N\u00famero de proyectos piloto de agricultura regenerativa implementados."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 16,
-        "explanation": "Encouraging renewable energy policies at the municipal level in Juazeiro is crucial due to the city's high stationary energy emissions, which contribute significantly to its total emissions. Transitioning to renewable energy sources can help reduce these emissions, thereby mitigating the impact of climate change. Additionally, renewable energy can enhance energy security, which is vital given the city's high risk of energy insecurity due to droughts. Implementing these policies can also stimulate local economic growth by creating green jobs and reducing dependency on non-renewable energy sources.",
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Fomentar pol\u00edticas de energ\u00eda renovable a nivel municipal",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Abogar por e implementar pol\u00edticas que prioricen el desarrollo e integraci\u00f3n de sistemas de energ\u00eda renovable en las operaciones y planificaci\u00f3n del gobierno local.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Voluntad pol\u00edtica y liderazgo para priorizar la energ\u00eda renovable en las pol\u00edticas y procesos de planificaci\u00f3n del gobierno local",
-                "Desarrollo de pol\u00edticas claras y marcos regulatorios que faciliten la integraci\u00f3n de sistemas de energ\u00eda renovable en las operaciones gubernamentales",
-                "Disponibilidad de financiamiento o mecanismos financieros para apoyar la transici\u00f3n a la energ\u00eda renovable en la infraestructura y operaciones municipales"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de proyectos de energ\u00eda renovable aprobados o iniciados anualmente a nivel municipal.",
-                "Porcentaje de la demanda energ\u00e9tica municipal cubierta por fuentes renovables (%).",
-                "Reducci\u00f3n de las emisiones de carbono municipales debido a la adopci\u00f3n de energ\u00eda renovable (toneladas de CO\u2082e/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0127",
-        "actionName": "Accelerate Environmental Regularization of Rural Properties",
-        "actionPriority": 17,
-        "explanation": "Accelerating the environmental regularization of rural properties in Juazeiro is crucial due to the city's significant land use emissions, which are the highest among all emission categories. This action can help mitigate the impact of these emissions by ensuring that rural properties adhere to environmental standards, thus preserving the local biome and reducing deforestation. Additionally, regularization can improve land management practices, which is vital in a region facing high risks from droughts and other climate hazards. By prioritizing this action, Juazeiro can enhance its resilience to climate change and promote sustainable development.",
-        "action": {
-            "ActionID": "icare_0127",
-            "ActionName": "Acelerar la Regularizaci\u00f3n Ambiental de Propiedades Rurales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar programas para registrar propiedades en el Registro Ambiental Rural (CAR) y adherirse a los compromisos de restauraci\u00f3n ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Acceso a plataformas digitales y capacitaci\u00f3n t\u00e9cnica para los procesos de registro y restauraci\u00f3n de propiedades.",
-                "Incentivos financieros y asociaciones con agencias ambientales para apoyar la implementaci\u00f3n.",
-                "Mecanismos de monitoreo y cumplimiento para asegurar el cumplimiento de los compromisos de restauraci\u00f3n."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de propiedades rurales con Registro Ambiental Rural (CAR) regularizado.",
-                "\u00c1rea total de vegetaci\u00f3n nativa protegida o restaurada en propiedades regularizadas (hect\u00e1reas).",
-                "Reducci\u00f3n anual de emisiones de gases de efecto invernadero (tCO\u2082e) debido a la regularizaci\u00f3n."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0101",
-        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
-        "actionPriority": 18,
-        "explanation": "Encouraging the use of low-emission agricultural machinery in Juazeiro is crucial due to the city's significant land use emissions, which are a major contributor to its total emissions profile. By adopting cleaner technologies in agriculture, the city can reduce its environmental impact and improve air quality. Additionally, this action aligns with the need to address the high risk of droughts impacting water and food security, as more efficient machinery can help conserve resources. Implementing this action can also support the local economy by promoting sustainable agricultural practices.",
-        "action": {
-            "ActionID": "icare_0101",
-            "ActionName": "Fomentar el uso de maquinaria agr\u00edcola de bajas emisiones",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover el uso de maquinaria agr\u00edcola de bajas emisiones de carbono, como tractores y equipos impulsados por biocombustibles o energ\u00eda solar.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Establecimiento de programas de financiaci\u00f3n o incentivos para que los agricultores compren maquinaria agr\u00edcola de bajas emisiones de carbono.",
-                "Desarrollo de asociaciones con fabricantes de maquinaria para crear y distribuir soluciones de equipos sostenibles.",
-                "Implementaci\u00f3n de programas de capacitaci\u00f3n y apoyo para ayudar a los agricultores a integrar y mantener maquinaria agr\u00edcola de bajas emisiones de carbono."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de emisiones de maquinaria agr\u00edcola (toneladas de CO\u2082e/a\u00f1o).",
-                "N\u00famero de subsidios o incentivos proporcionados para maquinaria de bajas emisiones.",
-                "Porcentaje de agricultores capacitados para operar maquinaria de bajas emisiones."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 19,
-        "explanation": "Integrating renewables into municipal water systems in Juazeiro is crucial due to the city's high risk of droughts, which significantly impacts water resources. By utilizing renewable energy, the city can ensure a more reliable and sustainable water supply, reducing dependency on traditional energy sources that may be affected by climate hazards. This action also aligns with the need to lower stationary energy emissions, contributing to overall emission reduction goals. Furthermore, enhancing the resilience of water systems through renewable integration can improve public health and energy security, which are critical given the city's socio-economic context.",
-        "action": {
-            "ActionID": "icare_0024",
-            "ActionName": "Integrar energ\u00edas renovables en los sistemas de agua municipales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar fuentes de energ\u00eda renovable, como la solar o la e\u00f3lica, para impulsar los sistemas de tratamiento, bombeo y distribuci\u00f3n de agua, reduciendo los costos de energ\u00eda y las emisiones.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de financiaci\u00f3n o incentivos financieros para integrar fuentes de energ\u00eda renovable como la solar o la e\u00f3lica en los sistemas de tratamiento y distribuci\u00f3n de agua",
-                "Experiencia t\u00e9cnica e infraestructura para adaptar los sistemas existentes con soluciones de energ\u00eda renovable o dise\u00f1ar nuevas instalaciones alimentadas por energ\u00edas renovables",
-                "Apoyo pol\u00edtico y regulatorio para fomentar el uso de energ\u00eda limpia en los sistemas de agua y asegurar su integraci\u00f3n en las redes energ\u00e9ticas municipales"
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de sistemas de agua municipales alimentados por energ\u00edas renovables.",
-                "Reducci\u00f3n en el consumo de energ\u00eda de fuentes no renovables (kWh/a\u00f1o).",
-                "Emisiones de GEI evitadas (toneladas de CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR JZO",
-        "cityName": "Juazeiro",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 20,
-        "explanation": "The implementation of an urban toll in Juazeiro is a strategic action aimed at reducing transportation emissions, which are a significant contributor to the city's total emissions. By introducing a toll, the city can encourage the use of public transportation and reduce the number of private vehicles on the road, thereby decreasing traffic congestion and air pollution. This action is particularly important given the city's moderate low-income population, as it can also generate revenue that could be reinvested into improving public transportation infrastructure. Additionally, reducing vehicle emissions can help mitigate the impact of heatwaves and improve public health by lowering air pollution levels.",
-        "action": {
-            "ActionID": "icare_0139",
-            "ActionName": "Implementaci\u00f3n de peaje urbano.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Establecimiento de un cargo por congesti\u00f3n y/o rotaci\u00f3n de matr\u00edculas para veh\u00edculos ligeros en \u00e1reas saturadas y en horarios saturados",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establecer un marco legal claro e invertir en tecnolog\u00eda para el monitoreo y la aplicaci\u00f3n (por ejemplo, c\u00e1maras, sensores).",
-                "Lanzar campa\u00f1as de concienciaci\u00f3n y asegurar la disponibilidad de transporte p\u00fablico eficiente o soluciones de movilidad alternativas.",
-                "Colaborar con los gobiernos locales y las agencias de transporte, y establecer sistemas para monitorear y evaluar la efectividad de la pol\u00edtica."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de emisiones de CO\u2082 del transporte por carretera urbano (tCO\u2082e/a\u00f1o).",
-                "Ingresos generados por la implementaci\u00f3n del cargo por congesti\u00f3n urbana (R$)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0050",
+    "actionName": "Implement Agroforestry Systems",
+    "actionPriority": 1,
+    "explanation": "La implementación de sistemas agroforestales en Juazeiro es una alta prioridad debido al bioma desértico de la ciudad y al riesgo significativo de sequías que afectan los recursos hídricos, la seguridad alimentaria y la seguridad energética. La agroforestería puede mejorar la fertilidad del suelo, aumentar la retención de agua y elevar la biodiversidad, aspectos cruciales para mitigar los efectos de las sequías. Además, esta acción puede contribuir a reducir las emisiones derivadas del uso del suelo, que actualmente representan una parte importante del total de emisiones de la ciudad. Al integrar árboles con cultivos y ganado, los sistemas agroforestales también pueden proporcionar beneficios económicos a las comunidades locales, alineándose con las necesidades socioeconómicas de la región.",
+    "action": {
+      "ActionID": "icare_0050",
+      "ActionName": "Implementar Sistemas Agroforestales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover sistemas agroforestales integrando árboles en el cultivo de alimentos y pastos, aumentando la biodiversidad y la captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Provisión de apoyo técnico y orientación a los agricultores sobre el diseño e implementación de sistemas agroforestales.",
+        "Desarrollo de incentivos financieros o subsidios para hacer la agroforestería más atractiva económicamente.",
+        "Creación de políticas que integren prácticas agroforestales en la planificación del uso del suelo agrícola y los sistemas de tenencia de la tierra."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de tierras agrícolas convertidas en sistemas agroforestales (%).",
+        "Número de nuevos proyectos agroforestales implementados.",
+        "Aumento en la captura de carbono en sistemas agroforestales (toneladas de CO₂e/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0134",
+    "actionName": "Strengthen Mechanisms for Deforestation Control",
+    "actionPriority": 2,
+    "explanation": "El fortalecimiento de los mecanismos para el control de la deforestación en Juazeiro es crucial debido a la ubicación de la ciudad en un bioma desértico, donde la vegetación desempeña un papel vital en el mantenimiento del equilibrio ecológico. La deforestación puede agravar el riesgo de sequías, que ya representan una amenaza significativa para los recursos hídricos, la seguridad alimentaria y la seguridad energética en la región. Al mejorar el control de la deforestación, Juazeiro puede mitigar estos riesgos y contribuir a la reducción de las emisiones derivadas del uso del suelo, que constituyen un componente importante del total de emisiones de la ciudad. Esta acción también está alineada con la protección de la biodiversidad, que se encuentra amenazada tanto por las sequías como por las olas de calor.",
+    "action": {
+      "ActionID": "icare_0134",
+      "ActionName": "Fortalecer los Mecanismos para el Control de la Deforestación",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Mejorar la supervisión y la aplicación de la ley para prevenir la deforestación ilegal y promover el uso sostenible de la tierra.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fuerte marco legal, tecnologías de monitoreo avanzadas (satélites y drones), y desarrollo de capacidades para las autoridades locales.",
+        "Colaboración con las comunidades locales y financiación adecuada para los esfuerzos de aplicación.",
+        "Transparencia y responsabilidad en los informes para garantizar una implementación efectiva."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total monitoreada para la deforestación (hectáreas/año).",
+        "Reducción en la tasa anual de deforestación (%).",
+        "Cantidad de emisiones evitadas al reducir la deforestación (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0133",
+    "actionName": "Promote Urban Reforestation and Green Corridors",
+    "actionPriority": 3,
+    "explanation": "Promover la reforestación urbana y los corredores verdes en Juazeiro es crucial debido al bioma desértico de la ciudad y los desafíos ambientales asociados. La introducción de más espacios verdes puede ayudar a mitigar los efectos de las olas de calor, que representan un riesgo significativo para la salud pública y la infraestructura. Además, aumentar la vegetación puede mejorar la calidad del aire y proporcionar enfriamiento natural, lo cual es esencial dado el alto riesgo de sequías que afectan la seguridad hídrica y energética. Esta acción también apoya la biodiversidad, ofreciendo hábitats para diversas especies y mejorando el equilibrio ecológico general en el entorno urbano.",
+    "action": {
+      "ActionID": "icare_0133",
+      "ActionName": "Promover la Reforestación Urbana y los Corredores Verdes",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aumentar la cobertura arbórea urbana para mitigar el efecto de isla de calor urbano y mejorar la biodiversidad.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Identificación de áreas prioritarias y selección de especies nativas y resilientes al clima para la plantación de árboles.",
+        "Alianzas con organizaciones locales y viveros, y asignación de recursos para la plantación y el mantenimiento.",
+        "Participación comunitaria para garantizar el cuidado y apoyo a largo plazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento en la cobertura de dosel arbóreo urbano (%)",
+        "Longitud total de corredores verdes creados o restaurados (kilómetros)",
+        "Reducción en las temperaturas del efecto de isla de calor urbano (°C)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0130",
+    "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+    "actionPriority": 4,
+    "explanation": "Llevar a cabo acciones de Asistencia Técnica y Extensión Rural (ATER) en Juazeiro es fundamental debido a la vulnerabilidad de la ciudad ante las sequías, las cuales afectan significativamente los recursos hídricos y la seguridad alimentaria. Estas acciones pueden contribuir a mejorar las prácticas agrícolas, haciéndolas más resilientes frente a los riesgos climáticos y garantizando la seguridad alimentaria de la población. Además, las iniciativas de ATER pueden apoyar el uso sostenible del suelo, reduciendo las emisiones derivadas de los cambios en el uso de la tierra y fortaleciendo la resiliencia ambiental general de la región. Al priorizar esta acción, Juazeiro podrá gestionar mejor sus recursos naturales y mitigar los efectos adversos del cambio climático en sus comunidades rurales.",
+    "action": {
+      "ActionID": "icare_0130",
+      "ActionName": "Realizar Acciones de Asistencia Técnica y Extensión Rural (ATER)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Proporcionar apoyo técnico y capacitación a los productores rurales para la producción agrícola sostenible.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidad de personal técnico calificado y programas de formación adaptados.",
+        "Alianzas con instituciones de investigación agrícola y asignación de recursos para el desarrollo de capacidades.",
+        "Compromiso con los productores rurales para asegurar su participación activa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de productores beneficiados con asistencia técnica rural (% del total).",
+        "Porcentaje de participantes que adoptan prácticas resilientes al clima.",
+        "Vulnerabilidad reducida de las propiedades al riesgo climático (%)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0128",
+    "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+    "actionPriority": 5,
+    "explanation": "Establecer programas municipales de Pago por Servicios Ambientales (PSA) en Juazeiro es una alta prioridad debido a los importantes desafíos ambientales de la ciudad. La región enfrenta graves riesgos por sequías, que afectan los recursos hídricos, la seguridad alimentaria y la seguridad energética. Al implementar el PSA, la ciudad puede incentivar prácticas sostenibles de manejo de la tierra que ayuden a mitigar estos riesgos. Además, los programas de PSA pueden fortalecer la conservación de la biodiversidad y mejorar la resiliencia de los ecosistemas locales, lo cual es crucial dado el bioma desértico de la ciudad y el alto riesgo de pérdida de biodiversidad.",
+    "action": {
+      "ActionID": "icare_0128",
+      "ActionName": "Establecer Programas Municipales de Pago por Servicios Ambientales (PES)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas que paguen a los propietarios de tierras por mantener o mejorar las condiciones ambientales en sus propiedades.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Creación de mecanismos de financiación y criterios de elegibilidad claros con indicadores de rendimiento.",
+        "Alianzas con organizaciones ambientales y campañas de concienciación para fomentar la participación.",
+        "Integración con marcos legales para garantizar la sostenibilidad del programa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de contratos activos de Pago por Servicios Ambientales (PES) firmados.",
+        "Área total bajo prácticas de conservación o restauración incentivadas (hectáreas).",
+        "Cantidad de carbono secuestrado o emisiones evitadas a través de acciones de PES (tCO₂e/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0129",
+    "actionName": "Facilitate Technology Transfer for Conservation Practices",
+    "actionPriority": 6,
+    "explanation": "Facilitar la transferencia de tecnología para prácticas de conservación en Juazeiro es crucial debido a la alta vulnerabilidad de la ciudad a las sequías y olas de calor. Estos peligros representan riesgos significativos para los recursos hídricos, la seguridad alimentaria y la seguridad energética, los cuales son vitales para la sostenibilidad de la ciudad. Al adoptar tecnologías avanzadas de conservación, Juazeiro puede aumentar su resiliencia frente a estos impactos climáticos, asegurando una mejor gestión de los recursos y la protección de la biodiversidad. Además, la mejora de las prácticas de conservación puede ayudar a mitigar las emisiones derivadas del uso del suelo, contribuyendo a los objetivos ambientales generales de la ciudad.",
+    "action": {
+      "ActionID": "icare_0129",
+      "ActionName": "Facilitar la Transferencia de Tecnología para Prácticas de Conservación",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover la adopción de prácticas agrícolas sostenibles mediante la capacitación, proyectos piloto y demostraciones tecnológicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Provisión de programas de capacitación y establecimiento de proyectos piloto para mostrar prácticas sostenibles.",
+        "Alianzas con instituciones de investigación para el desarrollo de tecnología e incentivos financieros para fomentar la adopción.",
+        "Acceso a asistencia técnica para una implementación exitosa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de tecnologías de conservación transferidas y aplicadas en las granjas.",
+        "Porcentaje de productores capacitados para implementar prácticas de conservación.",
+        "Reducción en la degradación del suelo o aumento en la cobertura vegetal (hectáreas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0102",
+    "actionName": "Promote Sustainable Agricultural Practices",
+    "actionPriority": 7,
+    "explanation": "Promover prácticas agrícolas sostenibles en Juazeiro es crucial debido a la vulnerabilidad de la ciudad a las sequías, las cuales afectan significativamente los recursos hídricos y la seguridad alimentaria. El bioma desértico de la región y la población de ingresos moderados y bajos resaltan aún más la necesidad de métodos agrícolas resilientes para garantizar la disponibilidad de alimentos y la estabilidad económica. Al adoptar prácticas sostenibles, Juazeiro puede mitigar los efectos adversos del cambio climático, mejorar la salud del suelo y optimizar la conservación del agua, apoyando así la sostenibilidad y resiliencia a largo plazo de la comunidad.",
+    "action": {
+      "ActionID": "icare_0102",
+      "ActionName": "Promover Prácticas Agrícolas Sostenibles",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar prácticas agrícolas que reduzcan las emisiones de gases de efecto invernadero, como el uso reducido de fertilizantes y agroquímicos.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desarrollo de programas educativos y recursos para promover prácticas agrícolas sostenibles entre los agricultores.",
+        "Implementación de políticas que incentiven la reducción del uso de fertilizantes y agroquímicos, como subsidios para insumos orgánicos o técnicas de cultivo sostenibles.",
+        "Colaboración con organizaciones agrícolas para proporcionar apoyo técnico y orientación sobre prácticas que reduzcan las emisiones."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de tierras agrícolas que adoptan prácticas sostenibles (% del total de tierras agrícolas).",
+        "Aumento en el rendimiento de cultivos por hectárea (toneladas/hectárea) debido a métodos sostenibles.",
+        "Reducción en el uso de agua para la agricultura (litros o m³/hectárea/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 8,
+    "explanation": "Priorizar la adquisición de productos agroecológicos producidos localmente en las compras públicas es crucial para Juazeiro debido a su población de ingresos moderados y al alto riesgo de sequías que afectan la seguridad alimentaria. Al apoyar a los productores agroecológicos locales, la ciudad puede mejorar la seguridad alimentaria y la resiliencia frente a los impactos climáticos, como sequías e inundaciones, que representan riesgos significativos en la región. Esta acción también promueve prácticas agrícolas sostenibles, lo que puede ayudar a reducir las emisiones derivadas del uso del suelo y mejorar la salud ambiental general del área. Además, apoya la economía local al brindar oportunidades de ingresos para los agricultores locales, abordando así los desafíos socioeconómicos.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar la Adquisición de Productos Agroecológicos de Producción Local en Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Centrarse en comprar alimentos sostenibles y producidos localmente para las instituciones públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de políticas de adquisición e identificación de proveedores locales confiables.",
+        "Alianzas con productores y asignación de fondos para programas de adquisición sostenible.",
+        "Establecimiento de sistemas de monitoreo para garantizar el cumplimiento de los criterios de sostenibilidad."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje del volumen total de compras públicas provenientes de productores agroecológicos locales.",
+        "Cantidad de emisiones de CO₂ evitadas debido a la reducción de la distancia de transporte (tCO₂e).",
+        "Número de productores agroecológicos beneficiados por las compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0099",
+    "actionName": "Support Agroecological Certification Programs",
+    "actionPriority": 9,
+    "explanation": "Apoyar los programas de certificación agroecológica en Juazeiro es fundamental debido a la vulnerabilidad de la ciudad a las sequías, las cuales afectan significativamente los recursos hídricos y la seguridad alimentaria. Al promover prácticas agrícolas sostenibles, estos programas pueden ayudar a mitigar los efectos del cambio climático y mejorar la resiliencia frente a los riesgos ambientales. Además, las prácticas agroecológicas pueden mejorar la salud del suelo y la biodiversidad, contribuyendo a la sostenibilidad y la seguridad alimentaria a largo plazo en la región. Esta acción está alineada con la necesidad de abordar los desafíos socioeconómicos, ya que puede brindar oportunidades económicas para los agricultores y las comunidades locales.",
+    "action": {
+      "ActionID": "icare_0099",
+      "ActionName": "Apoyar los Programas de Certificación Agroecológica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar la certificación de productos agroecológicos que cumplan con criterios de sostenibilidad y tengan bajo impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de estándares de certificación claros y accesibles para productos agroecológicos que enfatizan la sostenibilidad y el bajo impacto ambiental.",
+        "Apoyo a los agricultores y productores para cumplir con los requisitos de certificación a través de capacitación, asistencia financiera o orientación técnica.",
+        "Creación de estrategias de marketing y asociaciones para aumentar la visibilidad y la demanda de productos agroecológicos certificados en los mercados locales y globales."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de agricultores o productores que obtienen certificaciones agroecológicas.",
+        "Porcentaje de productos agrícolas certificados en el mercado (%).",
+        "Reducción en el uso de insumos sintéticos (por ejemplo, fertilizantes, pesticidas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0084",
+    "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+    "actionPriority": 10,
+    "explanation": "Crear incentivos para las prácticas de agroforestería en los sistemas ganaderos es crucial para Juazeiro debido a su bioma desértico y al alto riesgo de sequías que afectan la seguridad hídrica y alimentaria. La agroforestería puede mejorar la fertilidad del suelo y la retención de agua, aspectos vitales en una región con acceso muy limitado al agua. Además, la integración de árboles en los sistemas ganaderos puede ayudar a secuestrar carbono, reduciendo así las importantes emisiones por uso de suelo de la ciudad. Esta acción también apoya la biodiversidad, que está en riesgo tanto por las sequías como por las olas de calor, al proporcionar hábitats y mejorar la resiliencia de los ecosistemas.",
+    "action": {
+      "ActionID": "icare_0084",
+      "ActionName": "Crear incentivos para prácticas de agroforestería en sistemas ganaderos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Crear incentivos financieros y técnicos para integrar prácticas de agroforestería en los sistemas de ganadería, promoviendo la captura de carbono, la protección del suelo y la mejora de la biodiversidad.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desarrollo de programas de incentivos financieros, como subsidios o exenciones fiscales, para apoyar a los agricultores en la integración de la agroforestería con los sistemas de ganadería.",
+        "Provisión de asistencia técnica y capacitación a los agricultores sobre las mejores prácticas para la integración de la agroforestería en las operaciones ganaderas.",
+        "Colaboración con organizaciones agrícolas y ambientales para monitorear y evaluar los impactos de las prácticas de agroforestería en la captura de carbono, la salud del suelo y la biodiversidad."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de incentivos financieros proporcionados para integrar la agroforestería en los sistemas de ganadería.",
+        "Aumento en la calidad del suelo y la cobertura vegetal en propiedades gestionadas (%).",
+        "Crecimiento en la biodiversidad en áreas de agroforestería (% de especies identificadas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0132",
+    "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+    "actionPriority": 11,
+    "explanation": "Fomentar la producción agroecológica local y las cadenas cortas de suministro es crucial para Juazeiro debido a su vulnerabilidad a las sequías, que afectan significativamente la seguridad hídrica y alimentaria. Al promover prácticas agrícolas sostenibles, la ciudad puede aumentar su resiliencia frente a los riesgos relacionados con el clima y garantizar un suministro de alimentos estable. Además, las cadenas cortas de suministro reducen las emisiones del transporte, contribuyendo a disminuir las emisiones totales en la ciudad. Esta acción también apoya la economía local al empoderar a los pequeños agricultores y fomentar sistemas alimentarios basados en la comunidad.",
+    "action": {
+      "ActionID": "icare_0132",
+      "ActionName": "Fomentar la Producción Agroecológica Local y las Cadenas de Suministro Cortas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoyar prácticas agrícolas locales y sostenibles y reducir las emisiones asociadas con el transporte de alimentos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Incentivos para prácticas agrícolas sostenibles y desarrollo de redes locales de distribución de alimentos.",
+        "Alianzas con productores e inversión en infraestructura para apoyar los mercados locales.",
+        "Políticas para priorizar métodos de transporte de bajas emisiones."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de productores que se adhieren a prácticas agroecológicas locales.",
+        "Porcentaje de alimentos consumidos en la ciudad provenientes de cadenas cortas.",
+        "Reducción de emisiones asociadas con el transporte de alimentos (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0136",
+    "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+    "actionPriority": 12,
+    "explanation": "Apoyar la implementación de incentivos fiscales ecológicos en Juazeiro es crucial debido a los importantes desafíos ambientales de la ciudad. Con un alto nivel total de emisiones y un bioma desértico, promover prácticas sostenibles a través de incentivos fiscales puede ayudar a reducir las emisiones y fomentar los esfuerzos de conservación. Además, la ciudad enfrenta graves riesgos por peligros climáticos como sequías y olas de calor, que amenazan los recursos hídricos, la seguridad alimentaria y la salud pública. Al incentivar prácticas ecológicas, Juazeiro puede aumentar su resiliencia frente a estos impactos climáticos y promover el desarrollo sostenible.",
+    "action": {
+      "ActionID": "icare_0136",
+      "ActionName": "Apoyar la Implementación de Incentivos Fiscales Ecológicos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar la aplicación de impuestos ecológicos e incentivos para promover la conservación ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Establecer un marco regulatorio claro con tasas impositivas justas e incentivos para la sostenibilidad.",
+        "Implementar sistemas de monitoreo efectivos para rastrear el cumplimiento y medir el impacto.",
+        "Promover la concienciación pública y fomentar la colaboración entre gobiernos, empresas y comunidades."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de municipios que han adoptado incentivos fiscales ambientales.",
+        "Porcentaje de ingresos fiscales gastados en prácticas sostenibles.",
+        "Superficie o número de propiedades que se benefician de prácticas de conservación como resultado de los incentivos."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0096",
+    "actionName": "Promote Organic Farming",
+    "actionPriority": 13,
+    "explanation": "Promover la agricultura orgánica en Juazeiro es una acción estratégica debido a la vulnerabilidad de la ciudad a las sequías, las cuales afectan significativamente los recursos hídricos y la seguridad alimentaria. Las prácticas de agricultura orgánica pueden mejorar la salud del suelo y la retención de agua, haciendo que la agricultura sea más resiliente al cambio climático. Además, este enfoque puede reducir la dependencia de fertilizantes y pesticidas químicos, lo que está en línea con la necesidad de la ciudad de gestionar su huella ambiental. Al fomentar la agricultura orgánica, Juazeiro puede mejorar la seguridad alimentaria y apoyar prácticas agrícolas sostenibles, lo cual es crucial dado el contexto socioeconómico de niveles de ingresos moderadamente bajos.",
+    "action": {
+      "ActionID": "icare_0096",
+      "ActionName": "Promover la Agricultura Orgánica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar la adopción de prácticas de agricultura orgánica que eviten el uso de productos químicos y contribuyan a la salud del suelo y la captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Provisión de incentivos financieros, subsidios o subvenciones para apoyar la transición a prácticas de agricultura orgánica.",
+        "Desarrollo de redes de capacitación y apoyo para educar a los agricultores sobre métodos de agricultura orgánica y sus beneficios.",
+        "Establecimiento de sistemas de certificación y estrategias de acceso al mercado para asegurar la viabilidad económica de los productos orgánicos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de tierras agrícolas bajo prácticas de agricultura orgánica (%).",
+        "Aumento en el contenido de carbono orgánico del suelo (toneladas de carbono por hectárea).",
+        "Reducción en el uso de fertilizantes químicos y pesticidas (kilogramos/hectárea/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0085",
+    "actionName": "Promote the Adoption of Agroecological Pest Control",
+    "actionPriority": 14,
+    "explanation": "Promover la adopción del control agroecológico de plagas en Juazeiro es crucial debido a la vulnerabilidad de la ciudad frente a peligros climáticos como sequías e inundaciones, los cuales pueden afectar gravemente la seguridad alimentaria. Al implementar métodos sostenibles de control de plagas, la ciudad puede fortalecer su resiliencia agrícola, asegurando un suministro estable de alimentos incluso en condiciones adversas. Además, las prácticas agroecológicas pueden ayudar a preservar la biodiversidad, que está en riesgo tanto por las sequías como por las olas de calor. Esta acción está alineada con la necesidad de mitigar los impactos ambientales mientras se apoya la estabilidad socioeconómica de la región.",
+    "action": {
+      "ActionID": "icare_0085",
+      "ActionName": "Promover la Adopción del Control de Plagas Agroecológico",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar métodos de control de plagas que sean agroecológicos, como el uso de depredadores naturales y plantas repelentes, para reducir la dependencia de pesticidas químicos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de programas educativos para informar a los agricultores sobre métodos de control de plagas agroecológicos y sus beneficios.",
+        "Provisión de acceso a recursos o materiales para implementar métodos de control de plagas naturales, como la introducción de insectos beneficiosos o el cultivo de plantas repelentes.",
+        "Creación de incentivos o redes de apoyo para fomentar la transición de los pesticidas químicos hacia alternativas sostenibles."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento en las tasas de productividad en áreas que adoptan el control de plagas agroecológico (%).",
+        "Número de campañas educativas realizadas sobre el control sostenible de plagas.",
+        "Impacto en los costos totales de producción debido a la adopción de prácticas agroecológicas (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0100",
+    "actionName": "Support Regenerative Agriculture Practices",
+    "actionPriority": 15,
+    "explanation": "Apoyar las prácticas de agricultura regenerativa en Juazeiro es fundamental debido a la vulnerabilidad de la ciudad a las sequías, las cuales afectan significativamente los recursos hídricos y la seguridad alimentaria. Al promover estas prácticas, la ciudad puede mejorar la salud del suelo, aumentar la retención de agua y mejorar los rendimientos de los cultivos, mitigando así los efectos de las sequías. Además, la agricultura regenerativa puede contribuir a reducir las emisiones derivadas del uso del suelo, que representan una parte significativa de las emisiones totales de Juazeiro. Esta acción está alineada con la necesidad de abordar tanto la sostenibilidad ambiental como la resiliencia socioeconómica en la región.",
+    "action": {
+      "ActionID": "icare_0100",
+      "ActionName": "Apoyar las Prácticas de Agricultura Regenerativa",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoyar prácticas agrícolas regenerativas que se centren en restaurar la salud del suelo y reducir las emisiones de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desarrollo de programas de capacitación y recursos para educar a los agricultores sobre técnicas agrícolas regenerativas, como el cultivo de cobertura y la reducción de la labranza.",
+        "Implementación de incentivos financieros o subsidios para apoyar la adopción de prácticas regenerativas.",
+        "Colaboración con instituciones de investigación agrícola para monitorear y documentar la efectividad de las prácticas regenerativas en la captura de carbono y la mejora de la salud del suelo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento en los niveles de carbono orgánico del suelo (toneladas/hectárea).",
+        "Reducción en el uso de agua por hectárea en la producción agrícola (%).",
+        "Número de proyectos piloto de agricultura regenerativa implementados."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 16,
+    "explanation": "Fomentar políticas de energía renovable a nivel municipal en Juazeiro es crucial debido a las altas emisiones de energía estacionaria de la ciudad, las cuales contribuyen significativamente a sus emisiones totales. La transición hacia fuentes de energía renovable puede ayudar a reducir estas emisiones, mitigando así el impacto del cambio climático. Además, la energía renovable puede mejorar la seguridad energética, lo cual es vital dado el alto riesgo de inseguridad energética en la ciudad debido a las sequías. La implementación de estas políticas también puede estimular el crecimiento económico local mediante la creación de empleos verdes y la reducción de la dependencia de fuentes de energía no renovables.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Fomentar políticas de energía renovable a nivel municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Abogar por e implementar políticas que prioricen el desarrollo e integración de sistemas de energía renovable en las operaciones y planificación del gobierno local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Voluntad política y liderazgo para priorizar la energía renovable en las políticas y procesos de planificación del gobierno local",
+        "Desarrollo de políticas claras y marcos regulatorios que faciliten la integración de sistemas de energía renovable en las operaciones gubernamentales",
+        "Disponibilidad de financiamiento o mecanismos financieros para apoyar la transición a la energía renovable en la infraestructura y operaciones municipales"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de proyectos de energía renovable aprobados o iniciados anualmente a nivel municipal.",
+        "Porcentaje de la demanda energética municipal cubierta por fuentes renovables (%).",
+        "Reducción de las emisiones de carbono municipales debido a la adopción de energía renovable (toneladas de CO₂e/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0127",
+    "actionName": "Accelerate Environmental Regularization of Rural Properties",
+    "actionPriority": 17,
+    "explanation": "Acelerar la regularización ambiental de las propiedades rurales en Juazeiro es crucial debido a las significativas emisiones por uso del suelo en la ciudad, que son las más altas entre todas las categorías de emisiones. Esta acción puede ayudar a mitigar el impacto de dichas emisiones al garantizar que las propiedades rurales cumplan con las normas ambientales, preservando así el bioma local y reduciendo la deforestación. Además, la regularización puede mejorar las prácticas de gestión de la tierra, lo cual es vital en una región que enfrenta altos riesgos de sequías y otros peligros climáticos. Al priorizar esta acción, Juazeiro puede fortalecer su resiliencia frente al cambio climático y promover el desarrollo sostenible.",
+    "action": {
+      "ActionID": "icare_0127",
+      "ActionName": "Acelerar la Regularización Ambiental de Propiedades Rurales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas para registrar propiedades en el Registro Ambiental Rural (CAR) y adherirse a los compromisos de restauración ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Acceso a plataformas digitales y capacitación técnica para los procesos de registro y restauración de propiedades.",
+        "Incentivos financieros y asociaciones con agencias ambientales para apoyar la implementación.",
+        "Mecanismos de monitoreo y cumplimiento para asegurar el cumplimiento de los compromisos de restauración."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de propiedades rurales con Registro Ambiental Rural (CAR) regularizado.",
+        "Área total de vegetación nativa protegida o restaurada en propiedades regularizadas (hectáreas).",
+        "Reducción anual de emisiones de gases de efecto invernadero (tCO₂e) debido a la regularización."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0101",
+    "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+    "actionPriority": 18,
+    "explanation": "Fomentar el uso de maquinaria agrícola de bajas emisiones en Juazeiro es crucial debido a las significativas emisiones derivadas del uso del suelo en la ciudad, las cuales constituyen un importante aporte a su perfil total de emisiones. Al adoptar tecnologías más limpias en la agricultura, la ciudad puede reducir su impacto ambiental y mejorar la calidad del aire. Además, esta acción está alineada con la necesidad de abordar el alto riesgo de sequías que afectan la seguridad hídrica y alimentaria, ya que una maquinaria más eficiente puede ayudar a conservar los recursos. Implementar esta medida también puede apoyar la economía local al promover prácticas agrícolas sostenibles.",
+    "action": {
+      "ActionID": "icare_0101",
+      "ActionName": "Fomentar el uso de maquinaria agrícola de bajas emisiones",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover el uso de maquinaria agrícola de bajas emisiones de carbono, como tractores y equipos impulsados por biocombustibles o energía solar.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Establecimiento de programas de financiación o incentivos para que los agricultores compren maquinaria agrícola de bajas emisiones de carbono.",
+        "Desarrollo de asociaciones con fabricantes de maquinaria para crear y distribuir soluciones de equipos sostenibles.",
+        "Implementación de programas de capacitación y apoyo para ayudar a los agricultores a integrar y mantener maquinaria agrícola de bajas emisiones de carbono."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de emisiones de maquinaria agrícola (toneladas de CO₂e/año).",
+        "Número de subsidios o incentivos proporcionados para maquinaria de bajas emisiones.",
+        "Porcentaje de agricultores capacitados para operar maquinaria de bajas emisiones."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 19,
+    "explanation": "Integrar energías renovables en los sistemas municipales de agua en Juazeiro es crucial debido al alto riesgo de sequías en la ciudad, lo que impacta significativamente los recursos hídricos. Al utilizar energía renovable, la ciudad puede garantizar un suministro de agua más confiable y sostenible, reduciendo la dependencia de fuentes de energía tradicionales que pueden verse afectadas por riesgos climáticos. Esta acción también está alineada con la necesidad de disminuir las emisiones de energía estacionaria, contribuyendo a los objetivos generales de reducción de emisiones. Además, fortalecer la resiliencia de los sistemas de agua mediante la integración de energías renovables puede mejorar la salud pública y la seguridad energética, aspectos fundamentales dado el contexto socioeconómico de la ciudad.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energías renovables en los sistemas de agua municipales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fuentes de energía renovable, como la solar o la eólica, para impulsar los sistemas de tratamiento, bombeo y distribución de agua, reduciendo los costos de energía y las emisiones.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de financiación o incentivos financieros para integrar fuentes de energía renovable como la solar o la eólica en los sistemas de tratamiento y distribución de agua",
+        "Experiencia técnica e infraestructura para adaptar los sistemas existentes con soluciones de energía renovable o diseñar nuevas instalaciones alimentadas por energías renovables",
+        "Apoyo político y regulatorio para fomentar el uso de energía limpia en los sistemas de agua y asegurar su integración en las redes energéticas municipales"
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de sistemas de agua municipales alimentados por energías renovables.",
+        "Reducción en el consumo de energía de fuentes no renovables (kWh/año).",
+        "Emisiones de GEI evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR JZO",
+    "cityName": "Juazeiro",
+    "region": "BA",
+    "regionName": "Bahia",
+    "actionId": "icare_0139",
+    "actionName": "Implementation of urban toll.",
+    "actionPriority": 20,
+    "explanation": "La implementación de un peaje urbano en Juazeiro es una acción estratégica orientada a reducir las emisiones del transporte, que constituyen una parte significativa de las emisiones totales de la ciudad. Al introducir un peaje, la ciudad puede fomentar el uso del transporte público y disminuir la cantidad de vehículos privados en circulación, lo que a su vez reduce la congestión del tráfico y la contaminación del aire. Esta acción es especialmente importante dado que la ciudad cuenta con una población de ingresos moderados a bajos, ya que también puede generar ingresos que podrían reinvertirse en la mejora de la infraestructura del transporte público. Además, la reducción de las emisiones de vehículos puede ayudar a mitigar el impacto de las olas de calor y mejorar la salud pública al disminuir los niveles de contaminación del aire.",
+    "action": {
+      "ActionID": "icare_0139",
+      "ActionName": "Implementación de peaje urbano.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Establecimiento de un cargo por congestión y/o rotación de matrículas para vehículos ligeros en áreas saturadas y en horarios saturados",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Establecer un marco legal claro e invertir en tecnología para el monitoreo y la aplicación (por ejemplo, cámaras, sensores).",
+        "Lanzar campañas de concienciación y asegurar la disponibilidad de transporte público eficiente o soluciones de movilidad alternativas.",
+        "Colaborar con los gobiernos locales y las agencias de transporte, y establecer sistemas para monitorear y evaluar la efectividad de la política."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de emisiones de CO₂ del transporte por carretera urbano (tCO₂e/año).",
+        "Ingresos generados por la implementación del cargo por congestión urbana (R$)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
 ]

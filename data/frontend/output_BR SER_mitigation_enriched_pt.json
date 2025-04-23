@@ -1,1267 +1,1267 @@
 [
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 1,
-        "explanation": "The implementation of an urban toll in Serra is a priority due to the high transportation emissions, which are a significant contributor to the city's total emissions. By introducing a toll, the city can effectively manage traffic congestion, reduce vehicle emissions, and encourage the use of public transportation. This action is crucial in addressing the environmental impact of transportation and improving air quality, which is vital for public health. Additionally, reducing traffic congestion can enhance the overall quality of life for residents and support sustainable urban development.",
-        "action": {
-            "ActionID": "icare_0139",
-            "ActionName": "Implementa\u00e7\u00e3o de ped\u00e1gio urbano.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estabelecimento de uma taxa de congestionamento e/ou rod\u00edzio de placas para ve\u00edculos leves em \u00e1reas saturadas e em hor\u00e1rios saturados",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecer um quadro legal claro e investir em tecnologia para monitoramento e fiscaliza\u00e7\u00e3o (por exemplo, c\u00e2meras, sensores).",
-                "Lan\u00e7ar campanhas de conscientiza\u00e7\u00e3o e garantir a disponibilidade de transporte p\u00fablico eficiente ou solu\u00e7\u00f5es alternativas de mobilidade.",
-                "Colaborar com governos locais e ag\u00eancias de transporte, e estabelecer sistemas para monitorar e avaliar a efic\u00e1cia da pol\u00edtica."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o das emiss\u00f5es de CO\u2082 do transporte rodovi\u00e1rio urbano (tCO\u2082e/ano).",
-                "Receita gerada pela implementa\u00e7\u00e3o da taxa de congestionamento urbano (R$)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 2,
-        "explanation": "The adoption of biomethane in public fleets is a significant action for Serra due to its potential to reduce transportation emissions, which are currently a major contributor to the city's total emissions. By transitioning to biomethane, the city can decrease its reliance on fossil fuels, thereby lowering greenhouse gas emissions and improving air quality. This action also aligns with the city's need to enhance energy security, as it provides a renewable and locally sourced energy alternative. Furthermore, adopting biomethane supports the city's efforts to mitigate climate risks associated with transportation emissions, contributing to a more sustainable urban environment.",
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Ado\u00e7\u00e3o de biometano em frotas p\u00fablicas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Utilizar biometano produzido a partir de res\u00edduos urbanos e agroindustriais para abastecer \u00f4nibus e caminh\u00f5es p\u00fablicos, reduzindo as emiss\u00f5es de gases de efeito estufa nas frotas municipais",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de infraestrutura para a produ\u00e7\u00e3o, processamento e distribui\u00e7\u00e3o de biometano a partir de res\u00edduos urbanos e agroindustriais.",
-                "Retrofit ou aquisi\u00e7\u00e3o de \u00f4nibus e caminh\u00f5es p\u00fablicos capazes de usar biometano como fonte de combust\u00edvel.",
-                "Estabelecimento de pol\u00edticas e incentivos financeiros para apoiar a produ\u00e7\u00e3o de biometano e sua integra\u00e7\u00e3o nas frotas municipais."
-            ],
-            "KeyPerformanceIndicators": [
-                "Economia de custos na opera\u00e7\u00e3o da frota devido ao uso de biometano (USD/ano).",
-                "Aumento na capacidade de produ\u00e7\u00e3o de biometano (%).",
-                "Percentagem de biometano obtido localmente versus importado."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 3,
-        "explanation": "The implementation of free public transportation programs during peak hours in Serra is a strategic action to address the high transportation emissions, which are a significant contributor to the city's total emissions. By encouraging the use of public transport, the city can reduce the reliance on individual vehicles, thereby decreasing traffic congestion and air pollution. This initiative also aligns with the city's socio-economic context, as it can provide financial relief to residents with very low income, enhancing their mobility and access to opportunities. Additionally, reducing vehicle emissions can contribute to better public health outcomes by improving air quality, which is crucial given the city's vulnerability to heatwaves and related health risks.",
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementa\u00e7\u00e3o de programas de transporte p\u00fablico gratuito durante os hor\u00e1rios de pico para reduzir o uso de ve\u00edculos individuais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar o uso do transporte p\u00fablico oferecendo servi\u00e7os gratuitos durante os hor\u00e1rios de pico para trabalhadores e estudantes. Esta medida reduz a congest\u00e3o urbana, diminui o n\u00famero de ve\u00edculos individuais nas estradas e, consequentemente, reduz as emiss\u00f5es de gases de efeito estufa associadas ao transporte privado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Aloca\u00e7\u00e3o de financiamento para subsidiar servi\u00e7os de transporte p\u00fablico gratuito durante as horas de pico.",
-                "Desenvolvimento de pol\u00edticas para garantir a sustentabilidade e efici\u00eancia dos sistemas de transporte p\u00fablico diante do aumento da demanda.",
-                "Coordena\u00e7\u00e3o com empregadores e institui\u00e7\u00f5es educacionais para otimizar os hor\u00e1rios de pico e promover a iniciativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nos n\u00edveis de polui\u00e7\u00e3o do ar durante as horas de pico (concentra\u00e7\u00e3o de PM2.5/PM10).",
-                "N\u00famero de ve\u00edculos particulares removidos das estradas durante as horas de pico.",
-                "Taxa de satisfa\u00e7\u00e3o p\u00fablica com a iniciativa de transporte gratuito (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 4,
-        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Serra is a crucial step towards reducing transportation emissions, which are currently a significant contributor to the city's total emissions. This action aligns with the city's need to address high transportation emissions, which are a major source of pollution. Additionally, the use of electric vehicles will help mitigate the impact of heatwaves and improve public health by reducing air pollution. Implementing this system can also enhance mobility and accessibility for residents, particularly in areas with inadequate public transport options.",
-        "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Implantar sistemas de transporte sob demanda com frotas 100% el\u00e9tricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Servi\u00e7os de transporte coletivo sob demanda, baseados em aplicativos, otimizam o uso de ve\u00edculos el\u00e9tricos, reduzindo as emiss\u00f5es por passageiro.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de plataformas digitais e aplicativos para gerenciar eficientemente servi\u00e7os de transporte coletivo sob demanda.",
-                "Expans\u00e3o de frotas de ve\u00edculos el\u00e9tricos adaptadas para solu\u00e7\u00f5es de transporte compartilhado.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas e incentivos para incentivar a ado\u00e7\u00e3o e o uso de servi\u00e7os de transporte el\u00e9trico compartilhado."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de usu\u00e1rios ativos do sistema de frota el\u00e9trica sob demanda.",
-                "Percentual da demanda de transporte urbano atendida por sistemas sob demanda.",
-                "Redu\u00e7\u00e3o nos n\u00edveis de polui\u00e7\u00e3o sonora em \u00e1reas urbanas"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 5,
-        "explanation": "The adoption of electric drones for last-mile deliveries in Serra is a strategic move to reduce transportation emissions, which are currently a significant contributor to the city's total emissions. By transitioning to electric drones, the city can decrease its reliance on traditional delivery vehicles, thereby lowering carbon emissions and improving air quality. Additionally, this action supports the city's efforts to enhance energy security by reducing the demand for fossil fuels. Implementing this technology can also help mitigate the impact of heatwaves on public health by reducing the urban heat island effect associated with conventional delivery methods.",
-        "action": {
-            "ActionID": "icare_0090",
-            "ActionName": "Ado\u00e7\u00e3o de drones el\u00e9tricos para entregas de \u00faltima milha.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "off-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Substituir ve\u00edculos tradicionais por drones el\u00e9tricos para entregas de curta dist\u00e2ncia em centros urbanos, reduzindo emiss\u00f5es e congestionamento de tr\u00e1fego.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de regulamentos para o espa\u00e7o a\u00e9reo urbano para garantir a opera\u00e7\u00e3o segura e eficiente de drones de entrega.",
-                "Investimento em infraestrutura de carregamento e manuten\u00e7\u00e3o para apoiar uma frota de drones el\u00e9tricos.",
-                "Colabora\u00e7\u00e3o com empresas de log\u00edstica para integrar drones em redes de entrega de \u00faltima milha."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o do tempo de entrega em compara\u00e7\u00e3o com m\u00e9todos tradicionais (minutos).",
-                "Aumento na satisfa\u00e7\u00e3o do cliente com entregas por drones (%).",
-                "Redu\u00e7\u00e3o do congestionamento de tr\u00e1fego causado por ve\u00edculos de entrega (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 6,
-        "explanation": "Expanding cycling infrastructure and building public walkways in Serra is crucial due to the city's high population density and the need to reduce transportation emissions, which are a significant contributor to the city's total emissions. By promoting cycling and walking, the city can decrease reliance on motor vehicles, thereby reducing air pollution and improving public health. Additionally, designing these infrastructures to be resilient to climate threats, such as floods and heatwaves, will enhance the city's ability to cope with the impacts of climate change, ensuring long-term sustainability and safety for its residents.",
-        "action": {
-            "ActionID": "icare_0044",
-            "ActionName": "Expandir a infraestrutura ciclovi\u00e1ria e construir passarelas p\u00fablicas e cal\u00e7adas acess\u00edveis, priorizando medidas resilientes \u00e0s amea\u00e7as clim\u00e1ticas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "O principal objetivo desta a\u00e7\u00e3o \u00e9 promover a mobilidade ativa, garantindo a seguran\u00e7a, o conforto e a prioridade do movimento de pedestres, pessoas com defici\u00eancia (ou mobilidade reduzida) e ve\u00edculos e equipamentos movidos por for\u00e7a humana, como bicicletas e patinetes.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimentos em infraestrutura em cal\u00e7adas seguras e acess\u00edveis, ciclovias e instala\u00e7\u00f5es para pessoas com defici\u00eancia",
-                "Estruturas de pol\u00edticas e regulamentos para priorizar a mobilidade ativa e estabelecer padr\u00f5es de seguran\u00e7a para pedestres e ve\u00edculos n\u00e3o motorizados",
-                "Campanhas de conscientiza\u00e7\u00e3o p\u00fablica para promover a mobilidade ativa e educar os cidad\u00e3os sobre os benef\u00edcios de caminhar, andar de bicicleta e usar outros meios de transporte movidos a energia humana"
-            ],
-            "KeyPerformanceIndicators": [
-                "Quil\u00f4metros de novas ciclovias e passarelas constru\u00eddas anualmente.",
-                "Aumento no uso di\u00e1rio de infraestrutura ciclovi\u00e1ria e pedonal (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es do transporte urbano (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 7,
-        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Serra due to its high transportation emissions. By promoting alternative transportation methods, the city can significantly reduce its carbon footprint and improve air quality. Additionally, electric bikes offer a sustainable and efficient mode of transport that can alleviate traffic congestion in urban areas. This initiative also aligns with the city's need to enhance public health by encouraging physical activity and reducing pollution-related health risks.",
-        "action": {
-            "ActionID": "icare_0121",
-            "ActionName": "Incentivo \u00e0 cria\u00e7\u00e3o de programas de compartilhamento de bicicletas em \u00e1reas urbanas, com foco em bicicletas el\u00e9tricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta a\u00e7\u00e3o incentiva o estabelecimento de sistemas de compartilhamento de bicicletas nas cidades, promovendo especificamente o uso de bicicletas el\u00e9tricas. Esses sistemas permitem que os residentes aluguem bicicletas el\u00e9tricas para viagens curtas, reduzindo a depend\u00eancia de carros para o transporte urbano. Ao integrar bicicletas el\u00e9tricas, as cidades podem reduzir ainda mais as emiss\u00f5es de gases de efeito estufa, aliviar a congest\u00e3o do tr\u00e1fego e promover um modo de transporte mais saud\u00e1vel e sustent\u00e1vel tanto para \u00e1reas urbanas quanto rurais. Esta iniciativa tamb\u00e9m apoia a igualdade de mobilidade, pois torna as bicicletas mais acess\u00edveis a uma gama mais ampla de pessoas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecimento de sistemas de compartilhamento de bicicletas com foco em bicicletas el\u00e9tricas para reduzir a depend\u00eancia de carros.",
-                "Integra\u00e7\u00e3o de bicicletas el\u00e9tricas para reduzir as emiss\u00f5es de gases de efeito estufa, aliviar o congestionamento do tr\u00e1fego e promover o transporte sustent\u00e1vel.",
-                "Promo\u00e7\u00e3o da igualdade de mobilidade tornando as bicicletas el\u00e9tricas acess\u00edveis a uma popula\u00e7\u00e3o mais ampla."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de bicicletas el\u00e9tricas dispon\u00edveis em programas de compartilhamento de bicicletas.",
-                "Aumento anual no n\u00famero de usu\u00e1rios de compartilhamento de bicicletas.",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es de CO\u2082 equivalente com a ado\u00e7\u00e3o do compartilhamento de bicicletas el\u00e9tricas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 8,
-        "explanation": "The expansion of mass transit systems on rails in Serra is a critical action due to the city's high transportation emissions, which are a significant contributor to its total emissions. By enhancing public transportation infrastructure, Serra can reduce reliance on private vehicles, thereby decreasing emissions and improving air quality. Additionally, improved mass transit can alleviate traffic congestion, making the city more accessible and livable for its residents. This action also supports economic growth by providing efficient and reliable transportation options, which can attract businesses and tourism.",
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expans\u00e3o dos sistemas de transporte p\u00fablico em massa sobre trilhos (metr\u00f4s, VLTs e monotrilhos).",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esses sistemas oferecem alta capacidade e baixas emiss\u00f5es, cruciais para cidades com alta densidade populacional.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimento no desenvolvimento e expans\u00e3o da infraestrutura de transporte p\u00fablico de alta capacidade, como \u00f4nibus el\u00e9tricos e sistemas de metr\u00f4.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas e incentivos para encorajar o uso de transporte p\u00fablico em vez de ve\u00edculos particulares.",
-                "Integra\u00e7\u00e3o de fontes de energia renov\u00e1vel para alimentar esses sistemas, reduzindo ainda mais as emiss\u00f5es."
-            ],
-            "KeyPerformanceIndicators": [
-                "Comprimento das novas linhas de tr\u00e2nsito constru\u00eddas (km/ano).",
-                "Redu\u00e7\u00e3o na congest\u00e3o do tr\u00e1fego rodovi\u00e1rio (%).",
-                "Redu\u00e7\u00e3o no uso de ve\u00edculos privados (n\u00famero de viagens evitadas/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0026",
-        "actionName": "Vehicle Emissions",
-        "actionPriority": 9,
-        "explanation": "The action to address vehicle emissions in Serra is a priority due to the significant contribution of transportation to the city's overall emissions. With transportation emissions accounting for a large portion of the total emissions, reducing vehicle emissions can substantially lower the city's carbon footprint. Additionally, improving air quality by reducing vehicle emissions can have positive impacts on public health, which is crucial given the city's vulnerability to health hazards like heatwaves and diseases. Addressing vehicle emissions aligns with the city's need to enhance energy security and mitigate risks associated with climate change.",
-        "action": {
-            "ActionID": "c40_0026",
-            "ActionName": "Emiss\u00f5es de Ve\u00edculos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "As estrat\u00e9gias de redu\u00e7\u00e3o de \"Vehicle Emissions\" concentram-se em minimizar o impacto ambiental de todos os tipos de ve\u00edculos. A implementa\u00e7\u00e3o de tecnologias mais limpas e a promo\u00e7\u00e3o de combust\u00edveis alternativos contribuem para a redu\u00e7\u00e3o das emiss\u00f5es, promovendo um transporte sustent\u00e1vel e ecol\u00f3gico.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "As estrat\u00e9gias de redu\u00e7\u00e3o de \"Emiss\u00f5es de Ve\u00edculos\" promovem inerentemente a equidade e a inclus\u00e3o ao abordar os impactos ambientais que afetam desproporcionalmente comunidades vulner\u00e1veis e carentes. Essas comunidades frequentemente enfrentam n\u00edveis mais altos de polui\u00e7\u00e3o do ar e problemas de sa\u00fade relacionados devido \u00e0 proximidade com \u00e1reas de tr\u00e1fego intenso e zonas industriais. Ao implementar tecnologias mais limpas e promover combust\u00edveis alternativos, a a\u00e7\u00e3o beneficia diretamente essas popula\u00e7\u00f5es ao melhorar a qualidade do ar e reduzir os riscos \u00e0 sa\u00fade.\n\nAl\u00e9m disso, o foco em transporte sustent\u00e1vel e ecol\u00f3gico pode melhorar o acesso a op\u00e7\u00f5es de transporte acess\u00edveis e eficientes para comunidades carentes, que podem n\u00e3o ter transporte p\u00fablico confi\u00e1vel. Essa inclus\u00e3o garante que todos os membros da comunidade, independentemente do status socioecon\u00f4mico, possam se beneficiar de um ar mais limpo e melhores resultados de sa\u00fade p\u00fablica. No geral, a a\u00e7\u00e3o reconhece e aborda as necessidades espec\u00edficas das popula\u00e7\u00f5es vulner\u00e1veis, promovendo uma abordagem mais equitativa para a a\u00e7\u00e3o clim\u00e1tica.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento e disponibilidade de tecnologias de ve\u00edculos mais limpos",
-                "Infraestrutura para distribui\u00e7\u00e3o de combust\u00edveis alternativos",
-                "Pol\u00edticas e regulamenta\u00e7\u00f5es governamentais que apoiam a redu\u00e7\u00e3o de emiss\u00f5es",
-                "Conscientiza\u00e7\u00e3o p\u00fablica e aceita\u00e7\u00e3o de op\u00e7\u00f5es de transporte ecol\u00f3gicas",
-                "Investimento em pesquisa e desenvolvimento de solu\u00e7\u00f5es de transporte sustent\u00e1vel"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de ve\u00edculos (CO2, NOx, PM)",
-                "Percentagem de ve\u00edculos utilizando combust\u00edveis alternativos",
-                "N\u00famero de ve\u00edculos el\u00e9tricos nas estradas",
-                "Melhorias na efici\u00eancia de combust\u00edvel (milhas por gal\u00e3o)",
-                "Taxa de ado\u00e7\u00e3o de tecnologias mais limpas",
-                "Redu\u00e7\u00e3o no consumo de combust\u00edveis f\u00f3sseis",
-                "Taxas de uso de transporte p\u00fablico",
-                "Melhorias no \u00edndice de qualidade do ar",
-                "Percentagem de zonas de baixa emiss\u00e3o estabelecidas",
-                "Investimento em infraestrutura de transporte sustent\u00e1vel"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 10,
-        "explanation": "Promoting the use of bicycles in Serra is crucial due to the city's high transportation emissions, which are a significant contributor to its total emissions. By expanding bicycle infrastructure and raising awareness, the city can reduce its carbon footprint and improve air quality. Additionally, encouraging cycling can alleviate traffic congestion and promote healthier lifestyles among residents. Given the city's tropical rainforest biome, cycling can be a sustainable and efficient mode of transport, aligning with environmental conservation efforts.",
-        "action": {
-            "ActionID": "icare_0118",
-            "ActionName": "Promover o uso de bicicletas como um modo regular de transporte atrav\u00e9s da expans\u00e3o da infraestrutura e estrat\u00e9gias de conscientiza\u00e7\u00e3o e comunica\u00e7\u00e3o.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar a ado\u00e7\u00e3o de bicicletas como um modo regular de transporte, expandindo a infraestrutura ciclovi\u00e1ria, como ciclovias dedicadas, instala\u00e7\u00f5es de estacionamento e esta\u00e7\u00f5es de reparo. Al\u00e9m disso, implementar campanhas de conscientiza\u00e7\u00e3o e estrat\u00e9gias de comunica\u00e7\u00e3o para destacar os benef\u00edcios ambientais, de sa\u00fade e econ\u00f4micos do ciclismo, visando aumentar a participa\u00e7\u00e3o p\u00fablica e tornar o ciclismo uma op\u00e7\u00e3o de transporte vi\u00e1vel e sustent\u00e1vel para o deslocamento di\u00e1rio.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expandir a infraestrutura para ciclismo, incluindo faixas exclusivas para bicicletas, instala\u00e7\u00f5es de estacionamento e esta\u00e7\u00f5es de reparo.",
-                "Implementar campanhas de conscientiza\u00e7\u00e3o para destacar os benef\u00edcios ambientais, de sa\u00fade e econ\u00f4micos do ciclismo.",
-                "Promover a participa\u00e7\u00e3o p\u00fablica por meio de estrat\u00e9gias de comunica\u00e7\u00e3o, tornando o ciclismo uma op\u00e7\u00e3o vi\u00e1vel e sustent\u00e1vel para o deslocamento di\u00e1rio."
-            ],
-            "KeyPerformanceIndicators": [
-                "Comprimento de novas ciclovias adicionadas \u00e0 rede urbana (km).",
-                "Aumento anual no n\u00famero de usu\u00e1rios de bicicleta em \u00e1reas urbanas.",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es de CO\u2082 equivalente devido \u00e0 mudan\u00e7a para o ciclismo."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 11,
-        "explanation": "Encouraging renewable energy policies at the municipal level in Serra is crucial due to the city's high stationary energy emissions. Transitioning to renewable energy sources can significantly reduce these emissions, contributing to a cleaner environment. Additionally, renewable energy can enhance energy security, which is vital given the high risk of energy insecurity due to droughts. Implementing these policies can also stimulate local economic growth by creating green jobs and reducing dependency on non-renewable energy sources.",
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Incentivar pol\u00edticas de energia renov\u00e1vel a n\u00edvel municipal",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Defender e implementar pol\u00edticas que priorizem o desenvolvimento e a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nas opera\u00e7\u00f5es e no planejamento do governo local.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Vontade pol\u00edtica e lideran\u00e7a para priorizar a energia renov\u00e1vel nas pol\u00edticas e processos de planejamento do governo local",
-                "Desenvolvimento de pol\u00edticas claras e estruturas regulat\u00f3rias que facilitem a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nas opera\u00e7\u00f5es governamentais",
-                "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transi\u00e7\u00e3o para a energia renov\u00e1vel na infraestrutura e opera\u00e7\u00f5es municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de projetos de energia renov\u00e1vel aprovados ou iniciados anualmente a n\u00edvel municipal.",
-                "Percentagem da demanda de energia municipal atendida por fontes renov\u00e1veis (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de carbono municipais devido \u00e0 ado\u00e7\u00e3o de energia renov\u00e1vel (toneladas de CO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0021",
-        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
-        "actionPriority": 12,
-        "explanation": "Encouraging and promoting sustainable and rational use of individual motorized transportation in Serra is crucial due to the high transportation emissions, which are a significant contributor to the city's total emissions. By focusing on this action, the city can address a major source of its carbon footprint, thereby contributing to overall emission reduction goals. Additionally, promoting sustainable transportation can help mitigate the impact of heatwaves and improve public health by reducing air pollution. This action aligns with the city's need to enhance energy security and reduce vulnerability to climate-related hazards.",
-        "action": {
-            "ActionID": "icare_0021",
-            "ActionName": "Incentivar e promover medidas para o uso sustent\u00e1vel e racional do transporte motorizado individual",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "O objetivo desta a\u00e7\u00e3o \u00e9 racionalizar o uso do transporte motorizado individual, reduzindo sua participa\u00e7\u00e3o na matriz de mobilidade. Tamb\u00e9m \u00e9 importante regulamentar os servi\u00e7os de transporte privado baseados em aplicativos, visando fornecer um servi\u00e7o de qualidade integrado \u00e0 mobilidade geral da cidade.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de pol\u00edticas e regulamentos para reduzir o uso de transporte motorizado individual e incentivar modos de transporte alternativos",
-                "Integra\u00e7\u00e3o de servi\u00e7os de transporte privado baseados em aplicativos com o sistema de transporte p\u00fablico da cidade para mobilidade sem interrup\u00e7\u00f5es",
-                "Investimento em infraestrutura de transporte p\u00fablico para fornecer alternativas acess\u00edveis, confi\u00e1veis e de alta qualidade ao uso de carros particulares"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentual de redu\u00e7\u00e3o no uso de ve\u00edculos particulares na cidade (%).",
-                "Aumento anual no uso de transporte p\u00fablico (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de CO\u2082 equivalente devido \u00e0 diminui\u00e7\u00e3o do transporte motorizado (toneladas/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 13,
-        "explanation": "The development of micro-logistics hubs to encourage the use of electric cargo bikes in Serra is a strategic action to address the city's high transportation emissions. With transportation being a significant contributor to the city's total emissions, this initiative can help reduce the carbon footprint by promoting cleaner, more sustainable modes of transport. Additionally, the use of electric cargo bikes can alleviate traffic congestion and improve air quality, enhancing the overall urban environment. This action also aligns with the city's need to adapt to climate risks, such as heatwaves and floods, by fostering resilient and sustainable urban infrastructure.",
-        "action": {
-            "ActionID": "icare_0092",
-            "ActionName": "Desenvolvimento de micro-hubs log\u00edsticos para incentivar o uso de bicicletas de carga el\u00e9tricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Criar centros log\u00edsticos de pequena escala em bairros urbanos para facilitar entregas usando bicicletas de carga el\u00e9tricas, enquanto implementa incentivos fiscais ou subs\u00eddios para que as empresas adotem essas bicicletas como modo de transporte, reduzindo emiss\u00f5es e melhorando a efici\u00eancia das entregas em \u00e1reas densamente povoadas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Identifica\u00e7\u00e3o e desenvolvimento de locais adequados para centros log\u00edsticos de pequena escala dentro de bairros urbanos.",
-                "Concess\u00e3o de incentivos fiscais, subs\u00eddios ou subven\u00e7\u00f5es para encorajar as empresas a fazerem a transi\u00e7\u00e3o para bicicletas de carga el\u00e9tricas.",
-                "Estabelecimento de parcerias com empresas de log\u00edstica para garantir a integra\u00e7\u00e3o e efici\u00eancia nas opera\u00e7\u00f5es de entrega utilizando esses centros."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o na dist\u00e2ncia percorrida por ve\u00edculos de entrega tradicionais (km/ano).",
-                "Aumento na efici\u00eancia operacional dos centros log\u00edsticos (%).",
-                "N\u00famero de empresas utilizando micro-centros log\u00edsticos para entregas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0012",
-        "actionName": "Electric Technologies",
-        "actionPriority": 14,
-        "explanation": "The action 'Electric Technologies' is a priority for Serra due to its potential to significantly reduce stationary energy emissions, which currently contribute a substantial portion of the city's total emissions. By adopting electric technologies, Serra can transition towards cleaner energy sources, thereby decreasing its reliance on fossil fuels and reducing greenhouse gas emissions. This transition is crucial for improving air quality and mitigating the impacts of climate change, particularly in a city with a tropical rainforest biome that is sensitive to environmental changes. Additionally, enhancing electric technologies can support energy security, which is a key concern given the high risk of energy-related impacts from droughts.",
-        "action": {
-            "ActionID": "ipcc_0012",
-            "ActionName": "Tecnologias El\u00e9tricas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Ado\u00e7\u00e3o de tecnologias de ve\u00edculos el\u00e9tricos, incluindo Ve\u00edculos El\u00e9tricos a Bateria (BEVs), Ve\u00edculos El\u00e9tricos H\u00edbridos (HEVs) e Ve\u00edculos El\u00e9tricos H\u00edbridos Plug-in (PHEVs), para reduzir as emiss\u00f5es de GEE e a depend\u00eancia de combust\u00edveis f\u00f3sseis. Os BEVs operam apenas com eletricidade, produzindo zero emiss\u00f5es; os HEVs combinam um motor de combust\u00e3o interna com um motor el\u00e9trico; os PHEVs permitem uma condu\u00e7\u00e3o prolongada apenas com eletricidade.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Reduz a depend\u00eancia de combust\u00edveis f\u00f3sseis, melhora a qualidade do ar e oferece op\u00e7\u00f5es de transporte mais limpas que podem beneficiar comunidades desfavorecidas.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Depend\u00eancia dos avan\u00e7os nas tecnologias de baterias",
-                "desenvolvimento de infraestrutura de carregamento",
-                "pol\u00edticas para subs\u00eddios e incentivos",
-                "integra\u00e7\u00e3o com fontes de energia renov\u00e1vel para gera\u00e7\u00e3o de eletricidade"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de ve\u00edculos el\u00e9tricos na frota de ve\u00edculos",
-                "redu\u00e7\u00e3o nas emiss\u00f5es de GEE por quil\u00f4metro percorrido",
-                "disponibilidade de infraestrutura de carregamento"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0060",
-        "actionName": "Introduction of modular and automated collective transport systems.",
-        "actionPriority": 15,
-        "explanation": "The introduction of modular and automated collective transport systems in Serra is a crucial step towards reducing transportation emissions, which are currently a significant contributor to the city's total emissions. With a high population density, efficient public transport can alleviate congestion and reduce the reliance on private vehicles, thereby lowering emissions. Additionally, improving public transport infrastructure can enhance access to services for low-income residents, promoting social equity. This action also aligns with the need to address infrastructure vulnerabilities to climate hazards such as floods and landslides, ensuring a resilient urban environment.",
-        "action": {
-            "ActionID": "icare_0060",
-            "ActionName": "Introdu\u00e7\u00e3o de sistemas de transporte coletivo modulares e automatizados.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Sistemas automatizados e modulares se adaptam \u00e0 demanda em tempo real, otimizando o uso de energia e reduzindo emiss\u00f5es.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimento no desenvolvimento e implementa\u00e7\u00e3o de sistemas automatizados e modulares capazes de ajustar a demanda de energia em tempo real.",
-                "Integra\u00e7\u00e3o de tecnologias de redes inteligentes e plataformas de gest\u00e3o de energia para otimizar o uso de fontes de energia renov\u00e1veis.",
-                "Colabora\u00e7\u00e3o com ind\u00fastrias e prestadores de servi\u00e7os para incorporar esses sistemas na infraestrutura existente, garantindo efici\u00eancia e redu\u00e7\u00e3o de emiss\u00f5es."
-            ],
-            "KeyPerformanceIndicators": [
-                "Tempo m\u00e9dio de espera para passageiros utilizando os novos sistemas (minutos).",
-                "Consumo de energia por quil\u00f4metro por passageiro (kWh/passageiro-km).",
-                "Taxa de satisfa\u00e7\u00e3o p\u00fablica com sistemas de transporte modulares (%)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0059",
-        "actionName": "Modernization of ports and airports with zero-emission technologies",
-        "actionPriority": 16,
-        "explanation": "The modernization of ports and airports with zero-emission technologies is crucial for Serra due to its significant transportation emissions, which are a major contributor to the city's overall carbon footprint. By implementing zero-emission technologies, Serra can significantly reduce its transportation-related emissions, aligning with global sustainability goals. Additionally, this action can enhance the city's resilience against climate change impacts, such as sea-level rise and extreme weather events, which pose risks to infrastructure. Furthermore, modernizing these facilities can improve economic efficiency and attract more sustainable business opportunities, fostering economic growth in the region.",
-        "action": {
-            "ActionID": "icare_0059",
-            "ActionName": "Moderniza\u00e7\u00e3o de portos e aeroportos com tecnologias de emiss\u00e3o zero",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "aviation"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Portos e aeroportos podem substituir m\u00e1quinas pesadas e ve\u00edculos por vers\u00f5es el\u00e9tricas ou movidas a hidrog\u00eanio, reduzindo as emiss\u00f5es de GEE nas principais infraestruturas de transporte.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Investimento no desenvolvimento e implementa\u00e7\u00e3o de m\u00e1quinas e ve\u00edculos movidos a eletricidade e hidrog\u00eanio para portos e aeroportos.",
-                "Constru\u00e7\u00e3o de infraestrutura de reabastecimento e carregamento para equipamentos movidos a eletricidade e hidrog\u00eanio dentro desses centros de transporte.",
-                "Colabora\u00e7\u00e3o com \u00f3rg\u00e3os reguladores para garantir que novas tecnologias cumpram os padr\u00f5es ambientais e regulamentos de seguran\u00e7a."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de opera\u00e7\u00f5es alimentadas por tecnologias de emiss\u00e3o zero.",
-                "Redu\u00e7\u00e3o anual no uso de combust\u00edveis f\u00f3sseis em portos e aeroportos (litros/ano).",
-                "Redu\u00e7\u00e3o de emiss\u00f5es de GEE pela moderniza\u00e7\u00e3o de portos e aeroportos (toneladas de CO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 17,
-        "explanation": "The implementation of prioritized routes for sustainable vehicles in Serra is crucial due to the city's high transportation emissions, which are a significant contributor to its total emissions. By promoting the use of sustainable vehicles, the city can effectively reduce its carbon footprint and improve air quality. Additionally, this action aligns with the city's need to address climate risks, such as heatwaves and public health concerns, by fostering a cleaner and more sustainable urban environment. Prioritizing sustainable transportation can also enhance energy security by reducing reliance on fossil fuels.",
-        "action": {
-            "ActionID": "icare_0091",
-            "ActionName": "Implementa\u00e7\u00e3o de rotas priorit\u00e1rias para ve\u00edculos sustent\u00e1veis.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Criar faixas priorit\u00e1rias para ve\u00edculos el\u00e9tricos, h\u00edbridos e de baixa emiss\u00e3o em centros urbanos para incentivar sua ado\u00e7\u00e3o e reduzir a polui\u00e7\u00e3o em \u00e1reas de alto tr\u00e1fego.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Implementa\u00e7\u00e3o de sistemas de gest\u00e3o de tr\u00e1fego para aplicar e monitorar o uso de faixas priorit\u00e1rias.",
-                "Desenvolvimento de sinaliza\u00e7\u00e3o clara e campanhas de conscientiza\u00e7\u00e3o p\u00fablica para informar os motoristas sobre a elegibilidade e o uso das faixas.",
-                "Estabelecimento de estruturas regulat\u00f3rias que incentivem a ado\u00e7\u00e3o de ve\u00edculos de baixa emiss\u00e3o para elegibilidade nas faixas priorit\u00e1rias."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de ve\u00edculos sustent\u00e1veis utilizando rotas priorit\u00e1rias.",
-                "Aumento na efici\u00eancia de entrega de mercadorias transportadas por rotas priorit\u00e1rias (%).",
-                "Taxa de aceita\u00e7\u00e3o p\u00fablica das rotas priorit\u00e1rias para ve\u00edculos sustent\u00e1veis (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 18,
-        "explanation": "Increasing the attractiveness of the municipal bus system in Serra is crucial due to the high transportation emissions, which are a significant contributor to the city's total emissions. By promoting public transport, the city can reduce its carbon footprint and alleviate traffic congestion, leading to improved air quality and public health. Additionally, enhancing the bus system can provide a more affordable and accessible transportation option for residents, particularly benefiting those with very low income. This action aligns with the city's need to address environmental and socio-economic challenges effectively.",
-        "action": {
-            "ActionID": "icare_0117",
-            "ActionName": "Aumentar a atratividade do sistema de \u00f4nibus municipal para promover este modo de transporte.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aumentar a qualidade da presta\u00e7\u00e3o de servi\u00e7os de transporte, visando a mudan\u00e7a modal de passageiros do transporte motorizado privado para o transporte p\u00fablico, reduzindo assim as emiss\u00f5es geradas por carros e motocicletas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Melhorar a qualidade dos servi\u00e7os de transporte p\u00fablico para atrair passageiros do transporte motorizado privado.",
-                "Implementar pol\u00edticas e infraestruturas que apoiem e aumentem a efici\u00eancia dos sistemas de transporte p\u00fablico.",
-                "Promover a conscientiza\u00e7\u00e3o sobre os benef\u00edcios ambientais do transporte p\u00fablico para incentivar uma mudan\u00e7a modal e reduzir as emiss\u00f5es."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento anual no n\u00famero de passageiros utilizando o sistema de \u00f4nibus municipal.",
-                "Percentual de rotas de \u00f4nibus com confiabilidade melhorada no tempo de viagem.",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es equivalentes de CO\u2082 devido ao aumento do uso de transporte p\u00fablico."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 19,
-        "explanation": "Integrating renewables into municipal water systems in Serra is crucial due to the city's vulnerability to droughts, which significantly impact water resources. By utilizing renewable energy, the city can ensure a more reliable and sustainable water supply, reducing dependency on traditional energy sources that may be affected by climate hazards. This action also aligns with the city's need to lower its stationary energy emissions, contributing to overall emission reduction goals. Furthermore, enhancing the resilience of water systems through renewable integration can mitigate risks associated with inadequate water access, supporting the city's socio-economic stability.",
-        "action": {
-            "ActionID": "icare_0024",
-            "ActionName": "Integrar energias renov\u00e1veis nos sistemas municipais de \u00e1gua",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, para impulsionar sistemas de tratamento, bombeamento e distribui\u00e7\u00e3o de \u00e1gua, reduzindo custos de energia e emiss\u00f5es.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, em sistemas de tratamento e distribui\u00e7\u00e3o de \u00e1gua",
-                "Expertise t\u00e9cnica e infraestrutura para adaptar sistemas existentes com solu\u00e7\u00f5es de energia renov\u00e1vel ou projetar novas instala\u00e7\u00f5es alimentadas por energias renov\u00e1veis",
-                "Apoio pol\u00edtico e regulat\u00f3rio para incentivar o uso de energia limpa em sistemas de \u00e1gua e garantir sua integra\u00e7\u00e3o nas redes de energia municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de sistemas municipais de \u00e1gua alimentados por energias renov\u00e1veis.",
-                "Redu\u00e7\u00e3o no consumo de energia de fontes n\u00e3o renov\u00e1veis (kWh/ano).",
-                "Emiss\u00f5es de GEE evitadas (toneladas de CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0126",
-        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
-        "actionPriority": 20,
-        "explanation": "The implementation of green fuel supply infrastructure for aircraft in Serra is a strategic action to reduce transportation emissions, which are a significant contributor to the city's total emissions. By transitioning to biofuels or green hydrogen, the city can significantly lower its carbon footprint, aligning with global sustainability goals. Additionally, this action supports energy security by diversifying fuel sources, which is crucial given the high risk of energy insecurity due to droughts. Furthermore, investing in green infrastructure can stimulate local economic growth and create jobs, contributing to the socio-economic development of the region.",
-        "action": {
-            "ActionID": "icare_0126",
-            "ActionName": "Implementa\u00e7\u00e3o de infraestrutura de fornecimento de combust\u00edveis verdes para aeronaves, como biocombust\u00edveis ou hidrog\u00eanio verde.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "aviation"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta a\u00e7\u00e3o visa promover a sustentabilidade nos aeroportos atrav\u00e9s da implementa\u00e7\u00e3o de infraestrutura para abastecimento de aeronaves com combust\u00edveis de baixo carbono. O uso de biocombust\u00edveis ou hidrog\u00eanio verde pode reduzir significativamente as emiss\u00f5es de GEE no setor de avia\u00e7\u00e3o. Al\u00e9m disso, a transi\u00e7\u00e3o para essas fontes de energia mais limpas contribuir\u00e1 para alcan\u00e7ar metas de descarboniza\u00e7\u00e3o no setor de transporte, mantendo a efici\u00eancia operacional nos aeroportos e minimizando seu impacto ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolver infraestrutura para abastecer aeronaves com combust\u00edveis de baixo carbono, como biocombust\u00edveis ou hidrog\u00eanio verde.",
-                "Garantir a disponibilidade de fontes de combust\u00edvel sustent\u00e1veis e a tecnologia necess\u00e1ria para as opera\u00e7\u00f5es de abastecimento.",
-                "Monitorar e avaliar o impacto ambiental e a efici\u00eancia operacional da transi\u00e7\u00e3o para combust\u00edveis de baixo carbono."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de aeroportos com infraestrutura de biocombust\u00edvel ou hidrog\u00eanio verde.",
-                "Quantidade de combust\u00edvel verde consumido pelo setor de avia\u00e7\u00e3o (litros/ano).",
-                "Redu\u00e7\u00e3o das emiss\u00f5es de CO\u2082 da avia\u00e7\u00e3o atrav\u00e9s do uso de combust\u00edveis alternativos (tCO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0139",
+    "actionName": "Implementation of urban toll.",
+    "actionPriority": 1,
+    "explanation": "A implementação de um pedágio urbano na Serra é uma prioridade devido às altas emissões do setor de transporte, que são um dos principais contribuintes para o total de emissões da cidade. Ao introduzir um pedágio, a cidade pode gerenciar de forma eficaz a congestão do tráfego, reduzir as emissões de veículos e incentivar o uso do transporte público. Essa ação é crucial para enfrentar o impacto ambiental do transporte e melhorar a qualidade do ar, o que é fundamental para a saúde pública. Além disso, a redução da congestão do tráfego pode melhorar a qualidade de vida dos moradores e apoiar o desenvolvimento urbano sustentável.",
+    "action": {
+      "ActionID": "icare_0139",
+      "ActionName": "Implementação de pedágio urbano.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecimento de uma taxa de congestionamento e/ou rodízio de placas para veículos leves em áreas saturadas e em horários saturados",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro legal claro e investir em tecnologia para monitoramento e fiscalização (por exemplo, câmeras, sensores).",
+        "Lançar campanhas de conscientização e garantir a disponibilidade de transporte público eficiente ou soluções alternativas de mobilidade.",
+        "Colaborar com governos locais e agências de transporte, e estabelecer sistemas para monitorar e avaliar a eficácia da política."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução das emissões de CO₂ do transporte rodoviário urbano (tCO₂e/ano).",
+        "Receita gerada pela implementação da taxa de congestionamento urbano (R$)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0094",
+    "actionName": "Adoption of biomethane in public fleets.",
+    "actionPriority": 2,
+    "explanation": "A adoção do biometano em frotas públicas é uma ação significativa para a Serra devido ao seu potencial de reduzir as emissões do transporte, que atualmente são um dos principais contribuintes para o total de emissões da cidade. Ao fazer a transição para o biometano, a cidade pode diminuir sua dependência de combustíveis fósseis, reduzindo assim as emissões de gases de efeito estufa e melhorando a qualidade do ar. Essa ação também está alinhada com a necessidade da cidade de fortalecer a segurança energética, pois oferece uma alternativa energética renovável e de origem local. Além disso, a adoção do biometano apoia os esforços da cidade para mitigar os riscos climáticos associados às emissões do transporte, contribuindo para um ambiente urbano mais sustentável.",
+    "action": {
+      "ActionID": "icare_0094",
+      "ActionName": "Adoção de biometano em frotas públicas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar biometano produzido a partir de resíduos urbanos e agroindustriais para abastecer ônibus e caminhões públicos, reduzindo as emissões de gases de efeito estufa nas frotas municipais",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de infraestrutura para a produção, processamento e distribuição de biometano a partir de resíduos urbanos e agroindustriais.",
+        "Retrofit ou aquisição de ônibus e caminhões públicos capazes de usar biometano como fonte de combustível.",
+        "Estabelecimento de políticas e incentivos financeiros para apoiar a produção de biometano e sua integração nas frotas municipais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Economia de custos na operação da frota devido ao uso de biometano (USD/ano).",
+        "Aumento na capacidade de produção de biometano (%).",
+        "Percentagem de biometano obtido localmente versus importado."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 3,
+    "explanation": "A implementação de programas de transporte público gratuito durante os horários de pico na Serra é uma ação estratégica para enfrentar as altas emissões do setor de transporte, que são um dos principais contribuintes para o total de emissões da cidade. Ao incentivar o uso do transporte público, a cidade pode reduzir a dependência de veículos individuais, diminuindo assim o congestionamento do tráfego e a poluição do ar. Essa iniciativa também está alinhada com o contexto socioeconômico da cidade, pois pode proporcionar alívio financeiro aos moradores de baixa renda, ampliando sua mobilidade e acesso a oportunidades. Além disso, a redução das emissões de veículos pode contribuir para melhores resultados em saúde pública ao melhorar a qualidade do ar, o que é fundamental, considerando a vulnerabilidade da cidade a ondas de calor e riscos de saúde relacionados.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementação de programas de transporte público gratuito durante os horários de pico para reduzir o uso de veículos individuais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar o uso do transporte público oferecendo serviços gratuitos durante os horários de pico para trabalhadores e estudantes. Esta medida reduz a congestão urbana, diminui o número de veículos individuais nas estradas e, consequentemente, reduz as emissões de gases de efeito estufa associadas ao transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Alocação de financiamento para subsidiar serviços de transporte público gratuito durante as horas de pico.",
+        "Desenvolvimento de políticas para garantir a sustentabilidade e eficiência dos sistemas de transporte público diante do aumento da demanda.",
+        "Coordenação com empregadores e instituições educacionais para otimizar os horários de pico e promover a iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nos níveis de poluição do ar durante as horas de pico (concentração de PM2.5/PM10).",
+        "Número de veículos particulares removidos das estradas durante as horas de pico.",
+        "Taxa de satisfação pública com a iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0068",
+    "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+    "actionPriority": 4,
+    "explanation": "Implantar sistemas de transporte sob demanda com frotas 100% elétricas na Serra é um passo crucial para reduzir as emissões do setor de transporte, que atualmente são um dos principais contribuintes para o total de emissões da cidade. Essa ação está alinhada com a necessidade do município de enfrentar as altas emissões do transporte, que são uma das maiores fontes de poluição. Além disso, o uso de veículos elétricos ajudará a mitigar o impacto das ondas de calor e a melhorar a saúde pública, reduzindo a poluição do ar. A implementação desse sistema também pode aprimorar a mobilidade e a acessibilidade para os moradores, especialmente em áreas com opções inadequadas de transporte público.",
+    "action": {
+      "ActionID": "icare_0068",
+      "ActionName": "Implantar sistemas de transporte sob demanda com frotas 100% elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Serviços de transporte coletivo sob demanda, baseados em aplicativos, otimizam o uso de veículos elétricos, reduzindo as emissões por passageiro.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de plataformas digitais e aplicativos para gerenciar eficientemente serviços de transporte coletivo sob demanda.",
+        "Expansão de frotas de veículos elétricos adaptadas para soluções de transporte compartilhado.",
+        "Implementação de políticas e incentivos para incentivar a adoção e o uso de serviços de transporte elétrico compartilhado."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de usuários ativos do sistema de frota elétrica sob demanda.",
+        "Percentual da demanda de transporte urbano atendida por sistemas sob demanda.",
+        "Redução nos níveis de poluição sonora em áreas urbanas"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0090",
+    "actionName": "Adoption of electric drones for last-mile deliveries.",
+    "actionPriority": 5,
+    "explanation": "A adoção de drones elétricos para entregas de última milha em Serra é uma medida estratégica para reduzir as emissões do transporte, que atualmente são um dos principais contribuintes para o total de emissões da cidade. Ao fazer a transição para drones elétricos, a cidade pode diminuir sua dependência de veículos de entrega tradicionais, reduzindo assim as emissões de carbono e melhorando a qualidade do ar. Além disso, essa ação apoia os esforços da cidade para fortalecer a segurança energética ao diminuir a demanda por combustíveis fósseis. A implementação dessa tecnologia também pode ajudar a mitigar o impacto das ondas de calor na saúde pública, ao reduzir o efeito de ilha de calor urbana associado aos métodos convencionais de entrega.",
+    "action": {
+      "ActionID": "icare_0090",
+      "ActionName": "Adoção de drones elétricos para entregas de última milha.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "off-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Substituir veículos tradicionais por drones elétricos para entregas de curta distância em centros urbanos, reduzindo emissões e congestionamento de tráfego.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de regulamentos para o espaço aéreo urbano para garantir a operação segura e eficiente de drones de entrega.",
+        "Investimento em infraestrutura de carregamento e manutenção para apoiar uma frota de drones elétricos.",
+        "Colaboração com empresas de logística para integrar drones em redes de entrega de última milha."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução do tempo de entrega em comparação com métodos tradicionais (minutos).",
+        "Aumento na satisfação do cliente com entregas por drones (%).",
+        "Redução do congestionamento de tráfego causado por veículos de entrega (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0044",
+    "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+    "actionPriority": 6,
+    "explanation": "Expandir a infraestrutura cicloviária e construir passarelas públicas na Serra é fundamental devido à alta densidade populacional da cidade e à necessidade de reduzir as emissões do transporte, que são um dos principais contribuintes para o total de emissões do município. Ao promover o uso da bicicleta e a caminhada, a cidade pode diminuir a dependência de veículos motorizados, reduzindo assim a poluição do ar e melhorando a saúde pública. Além disso, projetar essas infraestruturas para serem resilientes a ameaças climáticas, como enchentes e ondas de calor, aumentará a capacidade da cidade de lidar com os impactos das mudanças climáticas, garantindo sustentabilidade e segurança a longo prazo para seus habitantes.",
+    "action": {
+      "ActionID": "icare_0044",
+      "ActionName": "Expandir a infraestrutura cicloviária e construir passarelas públicas e calçadas acessíveis, priorizando medidas resilientes às ameaças climáticas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "O principal objetivo desta ação é promover a mobilidade ativa, garantindo a segurança, o conforto e a prioridade do movimento de pedestres, pessoas com deficiência (ou mobilidade reduzida) e veículos e equipamentos movidos por força humana, como bicicletas e patinetes.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimentos em infraestrutura em calçadas seguras e acessíveis, ciclovias e instalações para pessoas com deficiência",
+        "Estruturas de políticas e regulamentos para priorizar a mobilidade ativa e estabelecer padrões de segurança para pedestres e veículos não motorizados",
+        "Campanhas de conscientização pública para promover a mobilidade ativa e educar os cidadãos sobre os benefícios de caminhar, andar de bicicleta e usar outros meios de transporte movidos a energia humana"
+      ],
+      "KeyPerformanceIndicators": [
+        "Quilômetros de novas ciclovias e passarelas construídas anualmente.",
+        "Aumento no uso diário de infraestrutura cicloviária e pedonal (%).",
+        "Redução nas emissões do transporte urbano (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0121",
+    "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+    "actionPriority": 7,
+    "explanation": "A ação de incentivar programas de compartilhamento de bicicletas, especialmente com bicicletas elétricas, é crucial para a Serra devido às suas altas emissões de transporte. Ao promover métodos alternativos de transporte, a cidade pode reduzir significativamente sua pegada de carbono e melhorar a qualidade do ar. Além disso, as bicicletas elétricas oferecem um modo de transporte sustentável e eficiente que pode aliviar a congestão do tráfego em áreas urbanas. Essa iniciativa também está alinhada com a necessidade da cidade de promover a saúde pública, incentivando a atividade física e reduzindo os riscos à saúde relacionados à poluição.",
+    "action": {
+      "ActionID": "icare_0121",
+      "ActionName": "Incentivo à criação de programas de compartilhamento de bicicletas em áreas urbanas, com foco em bicicletas elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação incentiva o estabelecimento de sistemas de compartilhamento de bicicletas nas cidades, promovendo especificamente o uso de bicicletas elétricas. Esses sistemas permitem que os residentes aluguem bicicletas elétricas para viagens curtas, reduzindo a dependência de carros para o transporte urbano. Ao integrar bicicletas elétricas, as cidades podem reduzir ainda mais as emissões de gases de efeito estufa, aliviar a congestão do tráfego e promover um modo de transporte mais saudável e sustentável tanto para áreas urbanas quanto rurais. Esta iniciativa também apoia a igualdade de mobilidade, pois torna as bicicletas mais acessíveis a uma gama mais ampla de pessoas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecimento de sistemas de compartilhamento de bicicletas com foco em bicicletas elétricas para reduzir a dependência de carros.",
+        "Integração de bicicletas elétricas para reduzir as emissões de gases de efeito estufa, aliviar o congestionamento do tráfego e promover o transporte sustentável.",
+        "Promoção da igualdade de mobilidade tornando as bicicletas elétricas acessíveis a uma população mais ampla."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de bicicletas elétricas disponíveis em programas de compartilhamento de bicicletas.",
+        "Aumento anual no número de usuários de compartilhamento de bicicletas.",
+        "Redução estimada nas emissões de CO₂ equivalente com a adoção do compartilhamento de bicicletas elétricas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0057",
+    "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+    "actionPriority": 8,
+    "explanation": "A expansão dos sistemas de transporte coletivo sobre trilhos em Serra é uma ação fundamental devido às altas emissões de transporte da cidade, que contribuem significativamente para o total de suas emissões. Ao aprimorar a infraestrutura de transporte público, Serra pode reduzir a dependência de veículos particulares, diminuindo assim as emissões e melhorando a qualidade do ar. Além disso, a melhoria do transporte coletivo pode aliviar a congestão do tráfego, tornando a cidade mais acessível e habitável para seus moradores. Essa ação também apoia o crescimento econômico ao oferecer opções de transporte eficientes e confiáveis, o que pode atrair empresas e turismo.",
+    "action": {
+      "ActionID": "icare_0057",
+      "ActionName": "Expansão dos sistemas de transporte público em massa sobre trilhos (metrôs, VLTs e monotrilhos).",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "railways"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esses sistemas oferecem alta capacidade e baixas emissões, cruciais para cidades com alta densidade populacional.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento no desenvolvimento e expansão da infraestrutura de transporte público de alta capacidade, como ônibus elétricos e sistemas de metrô.",
+        "Implementação de políticas e incentivos para encorajar o uso de transporte público em vez de veículos particulares.",
+        "Integração de fontes de energia renovável para alimentar esses sistemas, reduzindo ainda mais as emissões."
+      ],
+      "KeyPerformanceIndicators": [
+        "Comprimento das novas linhas de trânsito construídas (km/ano).",
+        "Redução na congestão do tráfego rodoviário (%).",
+        "Redução no uso de veículos privados (número de viagens evitadas/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "c40_0026",
+    "actionName": "Vehicle Emissions",
+    "actionPriority": 9,
+    "explanation": "A ação para enfrentar as emissões de veículos na Serra é uma prioridade devido à significativa contribuição do transporte para as emissões totais da cidade. Com as emissões do setor de transporte representando uma grande parcela do total, a redução das emissões veiculares pode diminuir substancialmente a pegada de carbono da cidade. Além disso, a melhoria da qualidade do ar por meio da redução das emissões de veículos pode ter impactos positivos na saúde pública, o que é crucial, considerando a vulnerabilidade da cidade a riscos à saúde, como ondas de calor e doenças. Enfrentar as emissões de veículos está alinhado com a necessidade da cidade de fortalecer a segurança energética e mitigar os riscos associados às mudanças climáticas.",
+    "action": {
+      "ActionID": "c40_0026",
+      "ActionName": "Emissões de Veículos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "As estratégias de redução de \"Vehicle Emissions\" concentram-se em minimizar o impacto ambiental de todos os tipos de veículos. A implementação de tecnologias mais limpas e a promoção de combustíveis alternativos contribuem para a redução das emissões, promovendo um transporte sustentável e ecológico.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "As estratégias de redução de \"Emissões de Veículos\" promovem inerentemente a equidade e a inclusão ao abordar os impactos ambientais que afetam desproporcionalmente comunidades vulneráveis e carentes. Essas comunidades frequentemente enfrentam níveis mais altos de poluição do ar e problemas de saúde relacionados devido à proximidade com áreas de tráfego intenso e zonas industriais. Ao implementar tecnologias mais limpas e promover combustíveis alternativos, a ação beneficia diretamente essas populações ao melhorar a qualidade do ar e reduzir os riscos à saúde.\n\nAlém disso, o foco em transporte sustentável e ecológico pode melhorar o acesso a opções de transporte acessíveis e eficientes para comunidades carentes, que podem não ter transporte público confiável. Essa inclusão garante que todos os membros da comunidade, independentemente do status socioeconômico, possam se beneficiar de um ar mais limpo e melhores resultados de saúde pública. No geral, a ação reconhece e aborda as necessidades específicas das populações vulneráveis, promovendo uma abordagem mais equitativa para a ação climática.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento e disponibilidade de tecnologias de veículos mais limpos",
+        "Infraestrutura para distribuição de combustíveis alternativos",
+        "Políticas e regulamentações governamentais que apoiam a redução de emissões",
+        "Conscientização pública e aceitação de opções de transporte ecológicas",
+        "Investimento em pesquisa e desenvolvimento de soluções de transporte sustentável"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas emissões de veículos (CO2, NOx, PM)",
+        "Percentagem de veículos utilizando combustíveis alternativos",
+        "Número de veículos elétricos nas estradas",
+        "Melhorias na eficiência de combustível (milhas por galão)",
+        "Taxa de adoção de tecnologias mais limpas",
+        "Redução no consumo de combustíveis fósseis",
+        "Taxas de uso de transporte público",
+        "Melhorias no índice de qualidade do ar",
+        "Percentagem de zonas de baixa emissão estabelecidas",
+        "Investimento em infraestrutura de transporte sustentável"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0118",
+    "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+    "actionPriority": 10,
+    "explanation": "Promover o uso de bicicletas na Serra é fundamental devido às altas emissões de transporte da cidade, que representam uma parte significativa de suas emissões totais. Ao expandir a infraestrutura cicloviária e aumentar a conscientização, a cidade pode reduzir sua pegada de carbono e melhorar a qualidade do ar. Além disso, incentivar o ciclismo pode aliviar a congestão do trânsito e promover estilos de vida mais saudáveis entre os moradores. Considerando o bioma de floresta tropical da cidade, o uso da bicicleta pode ser um meio de transporte sustentável e eficiente, alinhando-se com os esforços de conservação ambiental.",
+    "action": {
+      "ActionID": "icare_0118",
+      "ActionName": "Promover o uso de bicicletas como um modo regular de transporte através da expansão da infraestrutura e estratégias de conscientização e comunicação.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a adoção de bicicletas como um modo regular de transporte, expandindo a infraestrutura cicloviária, como ciclovias dedicadas, instalações de estacionamento e estações de reparo. Além disso, implementar campanhas de conscientização e estratégias de comunicação para destacar os benefícios ambientais, de saúde e econômicos do ciclismo, visando aumentar a participação pública e tornar o ciclismo uma opção de transporte viável e sustentável para o deslocamento diário.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expandir a infraestrutura para ciclismo, incluindo faixas exclusivas para bicicletas, instalações de estacionamento e estações de reparo.",
+        "Implementar campanhas de conscientização para destacar os benefícios ambientais, de saúde e econômicos do ciclismo.",
+        "Promover a participação pública por meio de estratégias de comunicação, tornando o ciclismo uma opção viável e sustentável para o deslocamento diário."
+      ],
+      "KeyPerformanceIndicators": [
+        "Comprimento de novas ciclovias adicionadas à rede urbana (km).",
+        "Aumento anual no número de usuários de bicicleta em áreas urbanas.",
+        "Redução estimada nas emissões de CO₂ equivalente devido à mudança para o ciclismo."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 11,
+    "explanation": "Incentivar políticas de energia renovável em nível municipal em Serra é fundamental devido às altas emissões de energia estacionária da cidade. A transição para fontes de energia renovável pode reduzir significativamente essas emissões, contribuindo para um ambiente mais limpo. Além disso, a energia renovável pode aumentar a segurança energética, o que é vital diante do alto risco de insegurança energética causado por secas. A implementação dessas políticas também pode estimular o crescimento econômico local, criando empregos verdes e reduzindo a dependência de fontes de energia não renováveis.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Incentivar políticas de energia renovável a nível municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Defender e implementar políticas que priorizem o desenvolvimento e a integração de sistemas de energia renovável nas operações e no planejamento do governo local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e liderança para priorizar a energia renovável nas políticas e processos de planejamento do governo local",
+        "Desenvolvimento de políticas claras e estruturas regulatórias que facilitem a integração de sistemas de energia renovável nas operações governamentais",
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transição para a energia renovável na infraestrutura e operações municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia renovável aprovados ou iniciados anualmente a nível municipal.",
+        "Percentagem da demanda de energia municipal atendida por fontes renováveis (%).",
+        "Redução nas emissões de carbono municipais devido à adoção de energia renovável (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0021",
+    "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
+    "actionPriority": 12,
+    "explanation": "Incentivar e promover o uso sustentável e racional do transporte motorizado individual na Serra é fundamental devido às altas emissões provenientes do setor de transportes, que são um dos principais contribuintes para o total de emissões da cidade. Ao focar nessa ação, o município pode enfrentar uma das maiores fontes de sua pegada de carbono, contribuindo assim para as metas gerais de redução de emissões. Além disso, promover o transporte sustentável pode ajudar a mitigar o impacto das ondas de calor e melhorar a saúde pública ao reduzir a poluição do ar. Essa ação está alinhada com a necessidade da cidade de fortalecer a segurança energética e reduzir a vulnerabilidade a riscos relacionados ao clima.",
+    "action": {
+      "ActionID": "icare_0021",
+      "ActionName": "Incentivar e promover medidas para o uso sustentável e racional do transporte motorizado individual",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "O objetivo desta ação é racionalizar o uso do transporte motorizado individual, reduzindo sua participação na matriz de mobilidade. Também é importante regulamentar os serviços de transporte privado baseados em aplicativos, visando fornecer um serviço de qualidade integrado à mobilidade geral da cidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas e regulamentos para reduzir o uso de transporte motorizado individual e incentivar modos de transporte alternativos",
+        "Integração de serviços de transporte privado baseados em aplicativos com o sistema de transporte público da cidade para mobilidade sem interrupções",
+        "Investimento em infraestrutura de transporte público para fornecer alternativas acessíveis, confiáveis e de alta qualidade ao uso de carros particulares"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentual de redução no uso de veículos particulares na cidade (%).",
+        "Aumento anual no uso de transporte público (%).",
+        "Redução nas emissões de CO₂ equivalente devido à diminuição do transporte motorizado (toneladas/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0092",
+    "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+    "actionPriority": 13,
+    "explanation": "O desenvolvimento de micro-hubs logísticos para incentivar o uso de bicicletas de carga elétricas em Serra é uma ação estratégica para enfrentar as altas emissões do setor de transporte na cidade. Como o transporte é um dos principais responsáveis pelas emissões totais do município, essa iniciativa pode ajudar a reduzir a pegada de carbono ao promover modos de transporte mais limpos e sustentáveis. Além disso, o uso de bicicletas de carga elétricas pode aliviar a congestão do tráfego e melhorar a qualidade do ar, contribuindo para um ambiente urbano mais saudável. Essa ação também está alinhada com a necessidade da cidade de se adaptar aos riscos climáticos, como ondas de calor e inundações, ao promover uma infraestrutura urbana resiliente e sustentável.",
+    "action": {
+      "ActionID": "icare_0092",
+      "ActionName": "Desenvolvimento de micro-hubs logísticos para incentivar o uso de bicicletas de carga elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Criar centros logísticos de pequena escala em bairros urbanos para facilitar entregas usando bicicletas de carga elétricas, enquanto implementa incentivos fiscais ou subsídios para que as empresas adotem essas bicicletas como modo de transporte, reduzindo emissões e melhorando a eficiência das entregas em áreas densamente povoadas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "20-39",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Identificação e desenvolvimento de locais adequados para centros logísticos de pequena escala dentro de bairros urbanos.",
+        "Concessão de incentivos fiscais, subsídios ou subvenções para encorajar as empresas a fazerem a transição para bicicletas de carga elétricas.",
+        "Estabelecimento de parcerias com empresas de logística para garantir a integração e eficiência nas operações de entrega utilizando esses centros."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução na distância percorrida por veículos de entrega tradicionais (km/ano).",
+        "Aumento na eficiência operacional dos centros logísticos (%).",
+        "Número de empresas utilizando micro-centros logísticos para entregas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "ipcc_0012",
+    "actionName": "Electric Technologies",
+    "actionPriority": 14,
+    "explanation": "A ação ‘Tecnologias Elétricas’ é uma prioridade para Serra devido ao seu potencial de reduzir significativamente as emissões de energia estacionária, que atualmente contribuem com uma parcela substancial das emissões totais da cidade. Ao adotar tecnologias elétricas, Serra pode fazer a transição para fontes de energia mais limpas, diminuindo assim sua dependência de combustíveis fósseis e reduzindo as emissões de gases de efeito estufa. Essa transição é crucial para melhorar a qualidade do ar e mitigar os impactos das mudanças climáticas, especialmente em uma cidade com bioma de floresta tropical úmida, sensível a alterações ambientais. Além disso, o aprimoramento das tecnologias elétricas pode fortalecer a segurança energética, que é uma preocupação fundamental, dado o alto risco de impactos relacionados à energia decorrentes de secas.",
+    "action": {
+      "ActionID": "ipcc_0012",
+      "ActionName": "Tecnologias Elétricas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Adoção de tecnologias de veículos elétricos, incluindo Veículos Elétricos a Bateria (BEVs), Veículos Elétricos Híbridos (HEVs) e Veículos Elétricos Híbridos Plug-in (PHEVs), para reduzir as emissões de GEE e a dependência de combustíveis fósseis. Os BEVs operam apenas com eletricidade, produzindo zero emissões; os HEVs combinam um motor de combustão interna com um motor elétrico; os PHEVs permitem uma condução prolongada apenas com eletricidade.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Reduz a dependência de combustíveis fósseis, melhora a qualidade do ar e oferece opções de transporte mais limpas que podem beneficiar comunidades desfavorecidas.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Dependência dos avanços nas tecnologias de baterias",
+        "desenvolvimento de infraestrutura de carregamento",
+        "políticas para subsídios e incentivos",
+        "integração com fontes de energia renovável para geração de eletricidade"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de veículos elétricos na frota de veículos",
+        "redução nas emissões de GEE por quilômetro percorrido",
+        "disponibilidade de infraestrutura de carregamento"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0060",
+    "actionName": "Introduction of modular and automated collective transport systems.",
+    "actionPriority": 15,
+    "explanation": "A introdução de sistemas de transporte coletivo modulares e automatizados em Serra é um passo crucial para a redução das emissões do setor de transporte, que atualmente representam uma contribuição significativa para o total de emissões da cidade. Com uma alta densidade populacional, o transporte público eficiente pode aliviar a congestão e reduzir a dependência de veículos particulares, diminuindo assim as emissões. Além disso, a melhoria da infraestrutura de transporte público pode ampliar o acesso a serviços para residentes de baixa renda, promovendo a equidade social. Essa ação também está alinhada com a necessidade de enfrentar vulnerabilidades da infraestrutura diante de riscos climáticos, como enchentes e deslizamentos de terra, garantindo um ambiente urbano resiliente.",
+    "action": {
+      "ActionID": "icare_0060",
+      "ActionName": "Introdução de sistemas de transporte coletivo modulares e automatizados.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Sistemas automatizados e modulares se adaptam à demanda em tempo real, otimizando o uso de energia e reduzindo emissões.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento no desenvolvimento e implementação de sistemas automatizados e modulares capazes de ajustar a demanda de energia em tempo real.",
+        "Integração de tecnologias de redes inteligentes e plataformas de gestão de energia para otimizar o uso de fontes de energia renováveis.",
+        "Colaboração com indústrias e prestadores de serviços para incorporar esses sistemas na infraestrutura existente, garantindo eficiência e redução de emissões."
+      ],
+      "KeyPerformanceIndicators": [
+        "Tempo médio de espera para passageiros utilizando os novos sistemas (minutos).",
+        "Consumo de energia por quilômetro por passageiro (kWh/passageiro-km).",
+        "Taxa de satisfação pública com sistemas de transporte modulares (%)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0059",
+    "actionName": "Modernization of ports and airports with zero-emission technologies",
+    "actionPriority": 16,
+    "explanation": "A modernização dos portos e aeroportos com tecnologias de emissão zero é crucial para Serra devido às suas significativas emissões provenientes do setor de transporte, que são um dos principais contribuintes para a pegada de carbono total da cidade. Ao implementar tecnologias de emissão zero, Serra pode reduzir significativamente as emissões relacionadas ao transporte, alinhando-se com as metas globais de sustentabilidade. Além disso, essa ação pode aumentar a resiliência da cidade frente aos impactos das mudanças climáticas, como a elevação do nível do mar e eventos climáticos extremos, que representam riscos para a infraestrutura. Ademais, a modernização dessas instalações pode melhorar a eficiência econômica e atrair oportunidades de negócios mais sustentáveis, promovendo o crescimento econômico na região.",
+    "action": {
+      "ActionID": "icare_0059",
+      "ActionName": "Modernização de portos e aeroportos com tecnologias de emissão zero",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "aviation"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Portos e aeroportos podem substituir máquinas pesadas e veículos por versões elétricas ou movidas a hidrogênio, reduzindo as emissões de GEE nas principais infraestruturas de transporte.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Investimento no desenvolvimento e implementação de máquinas e veículos movidos a eletricidade e hidrogênio para portos e aeroportos.",
+        "Construção de infraestrutura de reabastecimento e carregamento para equipamentos movidos a eletricidade e hidrogênio dentro desses centros de transporte.",
+        "Colaboração com órgãos reguladores para garantir que novas tecnologias cumpram os padrões ambientais e regulamentos de segurança."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de operações alimentadas por tecnologias de emissão zero.",
+        "Redução anual no uso de combustíveis fósseis em portos e aeroportos (litros/ano).",
+        "Redução de emissões de GEE pela modernização de portos e aeroportos (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0091",
+    "actionName": "Implementation of prioritized routes for sustainable vehicles.",
+    "actionPriority": 17,
+    "explanation": "A implementação de rotas prioritárias para veículos sustentáveis na Serra é crucial devido às altas emissões do setor de transporte na cidade, que representam uma contribuição significativa para o total de emissões. Ao promover o uso de veículos sustentáveis, a cidade pode reduzir efetivamente sua pegada de carbono e melhorar a qualidade do ar. Além disso, essa ação está alinhada com a necessidade da cidade de enfrentar riscos climáticos, como ondas de calor e questões de saúde pública, promovendo um ambiente urbano mais limpo e sustentável. Priorizar o transporte sustentável também pode fortalecer a segurança energética ao reduzir a dependência de combustíveis fósseis.",
+    "action": {
+      "ActionID": "icare_0091",
+      "ActionName": "Implementação de rotas prioritárias para veículos sustentáveis.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Criar faixas prioritárias para veículos elétricos, híbridos e de baixa emissão em centros urbanos para incentivar sua adoção e reduzir a poluição em áreas de alto tráfego.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Implementação de sistemas de gestão de tráfego para aplicar e monitorar o uso de faixas prioritárias.",
+        "Desenvolvimento de sinalização clara e campanhas de conscientização pública para informar os motoristas sobre a elegibilidade e o uso das faixas.",
+        "Estabelecimento de estruturas regulatórias que incentivem a adoção de veículos de baixa emissão para elegibilidade nas faixas prioritárias."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de veículos sustentáveis utilizando rotas prioritárias.",
+        "Aumento na eficiência de entrega de mercadorias transportadas por rotas prioritárias (%).",
+        "Taxa de aceitação pública das rotas prioritárias para veículos sustentáveis (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0117",
+    "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+    "actionPriority": 18,
+    "explanation": "Aumentar a atratividade do sistema municipal de ônibus em Serra é fundamental devido às altas emissões do setor de transporte, que são um dos principais contribuintes para o total de emissões da cidade. Ao promover o transporte público, a cidade pode reduzir sua pegada de carbono e aliviar a congestão do tráfego, resultando em melhor qualidade do ar e saúde pública. Além disso, aprimorar o sistema de ônibus pode oferecer uma opção de transporte mais acessível e econômica para os moradores, beneficiando especialmente aqueles com renda muito baixa. Essa ação está alinhada com a necessidade da cidade de enfrentar de forma eficaz os desafios ambientais e socioeconômicos.",
+    "action": {
+      "ActionID": "icare_0117",
+      "ActionName": "Aumentar a atratividade do sistema de ônibus municipal para promover este modo de transporte.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aumentar a qualidade da prestação de serviços de transporte, visando a mudança modal de passageiros do transporte motorizado privado para o transporte público, reduzindo assim as emissões geradas por carros e motocicletas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Melhorar a qualidade dos serviços de transporte público para atrair passageiros do transporte motorizado privado.",
+        "Implementar políticas e infraestruturas que apoiem e aumentem a eficiência dos sistemas de transporte público.",
+        "Promover a conscientização sobre os benefícios ambientais do transporte público para incentivar uma mudança modal e reduzir as emissões."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento anual no número de passageiros utilizando o sistema de ônibus municipal.",
+        "Percentual de rotas de ônibus com confiabilidade melhorada no tempo de viagem.",
+        "Redução estimada nas emissões equivalentes de CO₂ devido ao aumento do uso de transporte público."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 19,
+    "explanation": "Integrar fontes de energia renovável aos sistemas municipais de água em Serra é fundamental devido à vulnerabilidade da cidade a secas, que impactam significativamente os recursos hídricos. Ao utilizar energia renovável, a cidade pode garantir um abastecimento de água mais confiável e sustentável, reduzindo a dependência de fontes de energia tradicionais que podem ser afetadas por riscos climáticos. Essa ação também está alinhada com a necessidade do município de reduzir suas emissões de energia estacionária, contribuindo para as metas gerais de redução de emissões. Além disso, fortalecer a resiliência dos sistemas de água por meio da integração de renováveis pode mitigar riscos associados ao acesso inadequado à água, apoiando a estabilidade socioeconômica da cidade.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energias renováveis nos sistemas municipais de água",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fontes de energia renovável, como energia solar ou eólica, para impulsionar sistemas de tratamento, bombeamento e distribuição de água, reduzindo custos de energia e emissões.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renovável, como energia solar ou eólica, em sistemas de tratamento e distribuição de água",
+        "Expertise técnica e infraestrutura para adaptar sistemas existentes com soluções de energia renovável ou projetar novas instalações alimentadas por energias renováveis",
+        "Apoio político e regulatório para incentivar o uso de energia limpa em sistemas de água e garantir sua integração nas redes de energia municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de sistemas municipais de água alimentados por energias renováveis.",
+        "Redução no consumo de energia de fontes não renováveis (kWh/ano).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SER",
+    "cityName": "Serra",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0126",
+    "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
+    "actionPriority": 20,
+    "explanation": "A implementação de infraestrutura para o fornecimento de combustíveis verdes para aeronaves em Serra é uma ação estratégica para reduzir as emissões do setor de transporte, que representam uma contribuição significativa para o total de emissões da cidade. Ao fazer a transição para biocombustíveis ou hidrogênio verde, a cidade pode reduzir consideravelmente sua pegada de carbono, alinhando-se com as metas globais de sustentabilidade. Além disso, essa ação fortalece a segurança energética ao diversificar as fontes de combustível, o que é fundamental diante do alto risco de insegurança energética causado por períodos de seca. Ademais, o investimento em infraestrutura verde pode estimular o crescimento econômico local e gerar empregos, contribuindo para o desenvolvimento socioeconômico da região.",
+    "action": {
+      "ActionID": "icare_0126",
+      "ActionName": "Implementação de infraestrutura de fornecimento de combustíveis verdes para aeronaves, como biocombustíveis ou hidrogênio verde.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "aviation"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação visa promover a sustentabilidade nos aeroportos através da implementação de infraestrutura para abastecimento de aeronaves com combustíveis de baixo carbono. O uso de biocombustíveis ou hidrogênio verde pode reduzir significativamente as emissões de GEE no setor de aviação. Além disso, a transição para essas fontes de energia mais limpas contribuirá para alcançar metas de descarbonização no setor de transporte, mantendo a eficiência operacional nos aeroportos e minimizando seu impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolver infraestrutura para abastecer aeronaves com combustíveis de baixo carbono, como biocombustíveis ou hidrogênio verde.",
+        "Garantir a disponibilidade de fontes de combustível sustentáveis e a tecnologia necessária para as operações de abastecimento.",
+        "Monitorar e avaliar o impacto ambiental e a eficiência operacional da transição para combustíveis de baixo carbono."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de aeroportos com infraestrutura de biocombustível ou hidrogênio verde.",
+        "Quantidade de combustível verde consumido pelo setor de aviação (litros/ano).",
+        "Redução das emissões de CO₂ da aviação através do uso de combustíveis alternativos (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
 ]

@@ -1,1268 +1,1268 @@
 [
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 1,
-        "explanation": "The implementation of an urban toll in Campo Grande is a priority due to the city's high transportation emissions, which are a significant contributor to its overall carbon footprint. By introducing a toll, the city can effectively manage traffic congestion, encouraging the use of public transportation and reducing vehicle emissions. This action is particularly important given the city's low population density, which can lead to increased reliance on personal vehicles. Additionally, reducing transportation emissions aligns with the city's broader environmental goals and can help mitigate the impacts of climate change-related hazards such as heatwaves and floods.",
-        "action": {
-            "ActionID": "icare_0139",
-            "ActionName": "Implementaci\u00f3n de peaje urbano.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Establecimiento de un cargo por congesti\u00f3n y/o rotaci\u00f3n de matr\u00edculas para veh\u00edculos ligeros en \u00e1reas saturadas y en horarios saturados",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establecer un marco legal claro e invertir en tecnolog\u00eda para el monitoreo y la aplicaci\u00f3n (por ejemplo, c\u00e1maras, sensores).",
-                "Lanzar campa\u00f1as de concienciaci\u00f3n y asegurar la disponibilidad de transporte p\u00fablico eficiente o soluciones de movilidad alternativas.",
-                "Colaborar con los gobiernos locales y las agencias de transporte, y establecer sistemas para monitorear y evaluar la efectividad de la pol\u00edtica."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de emisiones de CO\u2082 del transporte por carretera urbano (tCO\u2082e/a\u00f1o).",
-                "Ingresos generados por la implementaci\u00f3n del cargo por congesti\u00f3n urbana (R$)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 2,
-        "explanation": "The implementation of free public transportation programs during peak hours in Campo Grande is a strategic action to address the city's high transportation emissions, which are a significant contributor to its total emissions. By encouraging the use of public transport, the city can reduce the reliance on individual vehicles, thereby decreasing emissions and improving air quality. Additionally, this initiative can alleviate traffic congestion during peak hours, enhancing the overall efficiency of the city's transportation network. Furthermore, providing free public transportation can also support low-income residents, aligning with the city's socio-economic needs.",
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementaci\u00f3n de programas de transporte p\u00fablico gratuito durante las horas pico para reducir el uso de veh\u00edculos individuales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar el uso del transporte p\u00fablico ofreciendo servicios gratuitos durante las horas pico para trabajadores y estudiantes. Esta medida reduce la congesti\u00f3n urbana, disminuye el n\u00famero de veh\u00edculos individuales en la carretera y, en consecuencia, reduce las emisiones de gases de efecto invernadero asociadas con el transporte privado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Asignaci\u00f3n de fondos para subsidiar servicios de transporte p\u00fablico gratuito durante las horas pico.",
-                "Desarrollo de pol\u00edticas para garantizar la sostenibilidad y eficiencia de los sistemas de transporte p\u00fablico ante el aumento de la demanda.",
-                "Coordinaci\u00f3n con empleadores e instituciones educativas para optimizar los horarios de las horas pico y promover la iniciativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en los niveles de contaminaci\u00f3n del aire durante las horas pico (concentraci\u00f3n de PM2.5/PM10).",
-                "N\u00famero de veh\u00edculos privados retirados de las carreteras durante las horas pico.",
-                "Tasa de satisfacci\u00f3n p\u00fablica con la iniciativa de transporte gratuito (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 3,
-        "explanation": "The adoption of biomethane in public fleets in Campo Grande is a significant action due to the city's high transportation emissions, which are a major contributor to its overall carbon footprint. By transitioning to biomethane, the city can reduce its reliance on fossil fuels, thereby decreasing greenhouse gas emissions and improving air quality. Additionally, this action supports energy security by diversifying energy sources, which is crucial given the city's vulnerability to energy disruptions caused by climate hazards like droughts and heatwaves. Implementing biomethane in public fleets also aligns with sustainable development goals, promoting a cleaner and more resilient urban environment.",
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Adopci\u00f3n de biometano en flotas p\u00fablicas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Utilizar biometano producido a partir de residuos urbanos y agroindustriales para alimentar autobuses y camiones p\u00fablicos, reduciendo las emisiones de gases de efecto invernadero en las flotas municipales.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de infraestructura para la producci\u00f3n, procesamiento y distribuci\u00f3n de biometano a partir de residuos urbanos y agroindustriales.",
-                "Adaptaci\u00f3n o adquisici\u00f3n de autobuses y camiones p\u00fablicos capaces de utilizar biometano como fuente de combustible.",
-                "Establecimiento de pol\u00edticas e incentivos financieros para apoyar la producci\u00f3n de biometano y su integraci\u00f3n en las flotas municipales."
-            ],
-            "KeyPerformanceIndicators": [
-                "Ahorro de costos en la operaci\u00f3n de la flota debido al uso de biometano (USD/a\u00f1o).",
-                "Aumento en la capacidad de producci\u00f3n de biometano (%).",
-                "Porcentaje de biometano obtenido localmente versus importado."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 4,
-        "explanation": "Expanding cycling infrastructure and building public walkways in Campo Grande is crucial due to the city's high transportation emissions, which contribute significantly to its total emissions. By promoting cycling and walking, the city can reduce reliance on motor vehicles, thereby decreasing emissions and improving air quality. Additionally, creating infrastructure that is resilient to climate threats addresses the city's vulnerability to hazards like floods and heatwaves, enhancing public safety and accessibility. This action also supports public health by encouraging physical activity and providing safer, more sustainable transportation options.",
-        "action": {
-            "ActionID": "icare_0044",
-            "ActionName": "Expandir la infraestructura para bicicletas y construir paseos p\u00fablicos y aceras accesibles, priorizando medidas resilientes a las amenazas clim\u00e1ticas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "El objetivo principal de esta acci\u00f3n es promover la movilidad activa, garantizando la seguridad, comodidad y prioridad del movimiento peatonal, de personas con discapacidades (o movilidad reducida), y de veh\u00edculos y equipos impulsados por humanos, como bicicletas y patinetes.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversiones en infraestructura para pasarelas peatonales seguras y accesibles, carriles para bicicletas e instalaciones para personas con discapacidades",
-                "Marcos de pol\u00edticas y regulaciones para priorizar la movilidad activa y establecer est\u00e1ndares de seguridad para peatones y veh\u00edculos no motorizados",
-                "Campa\u00f1as de concienciaci\u00f3n p\u00fablica para promover la movilidad activa y educar a los ciudadanos sobre los beneficios de caminar, andar en bicicleta y usar otros medios de transporte impulsados por humanos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Kil\u00f3metros de nuevos carriles bici y senderos peatonales construidos anualmente.",
-                "Aumento en el uso diario de la infraestructura para ciclistas y peatones (%).",
-                "Reducci\u00f3n en las emisiones del transporte urbano (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 5,
-        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Campo Grande due to its high transportation emissions. By promoting alternative transportation methods, the city can significantly reduce its carbon footprint and improve air quality. Additionally, electric bikes offer a sustainable and accessible mode of transport that can alleviate traffic congestion and provide a healthier lifestyle option for residents. This initiative aligns with the city's need to address environmental challenges while enhancing urban mobility.",
-        "action": {
-            "ActionID": "icare_0121",
-            "ActionName": "Incentivo para crear programas de bicicletas compartidas en \u00e1reas urbanas, con un enfoque en bicicletas el\u00e9ctricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta acci\u00f3n fomenta el establecimiento de sistemas de bicicletas compartidas en las ciudades, promoviendo espec\u00edficamente el uso de bicicletas el\u00e9ctricas. Estos sistemas permiten a los residentes alquilar bicicletas el\u00e9ctricas para viajes cortos, reduciendo la dependencia de los autom\u00f3viles para el transporte urbano. Al integrar bicicletas el\u00e9ctricas, las ciudades pueden reducir a\u00fan m\u00e1s las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover un modo de transporte m\u00e1s saludable y sostenible tanto para \u00e1reas urbanas como rurales. Esta iniciativa tambi\u00e9n apoya la igualdad de movilidad, ya que hace que las bicicletas sean m\u00e1s accesibles para un rango m\u00e1s amplio de personas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establecimiento de sistemas de bicicletas compartidas con un enfoque en bicicletas el\u00e9ctricas para reducir la dependencia del autom\u00f3vil.",
-                "Integraci\u00f3n de bicicletas el\u00e9ctricas para reducir las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover el transporte sostenible.",
-                "Promoci\u00f3n de la igualdad de movilidad haciendo que las bicicletas el\u00e9ctricas sean accesibles para una poblaci\u00f3n m\u00e1s amplia."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de bicicletas el\u00e9ctricas disponibles en programas de bicicletas compartidas.",
-                "Aumento anual en usuarios de bicicletas compartidas.",
-                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de bicicletas el\u00e9ctricas compartidas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 6,
-        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Campo Grande is a strategic move to address the city's high transportation emissions, which are a significant contributor to its total emissions. This action can help reduce the carbon footprint and improve air quality, benefiting public health. Additionally, electric fleets can offer a sustainable alternative to traditional vehicles, aligning with global trends towards cleaner energy solutions. Implementing this system can also enhance mobility and accessibility for residents, particularly in areas with inadequate public transport options.",
-        "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Desplegar sistemas de transporte bajo demanda con flotas 100% el\u00e9ctricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Servicios de transporte colectivo bajo demanda, basados en aplicaciones, optimizan el uso de veh\u00edculos el\u00e9ctricos, reduciendo las emisiones por pasajero.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de plataformas digitales y aplicaciones para gestionar eficientemente servicios de transporte colectivo bajo demanda.",
-                "Expansi\u00f3n de flotas de veh\u00edculos el\u00e9ctricos adaptadas para soluciones de transporte compartido.",
-                "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar la adopci\u00f3n y el uso de servicios de transporte el\u00e9ctrico compartido."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de usuarios activos del sistema de flota el\u00e9ctrica bajo demanda.",
-                "Porcentaje de demanda de transporte urbano satisfecho por sistemas bajo demanda.",
-                "Reducci\u00f3n en los niveles de contaminaci\u00f3n ac\u00fastica en \u00e1reas urbanas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 7,
-        "explanation": "The adoption of electric drones for last-mile deliveries in Campo Grande is a strategic move to reduce transportation emissions, which are a significant contributor to the city's total emissions. By utilizing electric drones, the city can decrease reliance on traditional delivery vehicles, thereby cutting down on fossil fuel consumption and air pollution. This action also aligns with the city's need to address environmental concerns while improving delivery efficiency in a rapidly growing urban area. Furthermore, it supports innovation and technological advancement, positioning Campo Grande as a forward-thinking city in terms of sustainable urban logistics.",
-        "action": {
-            "ActionID": "icare_0090",
-            "ActionName": "Adopci\u00f3n de drones el\u00e9ctricos para entregas de \u00faltima milla.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "off-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Reemplazar los veh\u00edculos tradicionales con drones el\u00e9ctricos para entregas de corta distancia en centros urbanos, reduciendo emisiones y congesti\u00f3n de tr\u00e1fico.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de regulaciones del espacio a\u00e9reo urbano para garantizar la operaci\u00f3n segura y eficiente de drones de entrega.",
-                "Inversi\u00f3n en infraestructura de carga y mantenimiento para apoyar una flota de drones el\u00e9ctricos.",
-                "Colaboraci\u00f3n con empresas de log\u00edstica para integrar drones en redes de entrega de \u00faltima milla."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n del tiempo de entrega en comparaci\u00f3n con los m\u00e9todos tradicionales (minutos).",
-                "Aumento en la satisfacci\u00f3n del cliente con las entregas mediante drones (%).",
-                "Reducci\u00f3n de la congesti\u00f3n del tr\u00e1fico causada por veh\u00edculos de entrega (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 8,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Campo Grande is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. By providing technical support and education to rural communities, these actions can enhance agricultural resilience and productivity, ensuring a stable food supply. Additionally, ATER initiatives can help mitigate the socio-economic challenges faced by low-income populations, promoting sustainable development and improving overall quality of life in the region. This action aligns with the need to address the high risk of droughts and floods, which are critical threats to the city's infrastructure and public health.",
-        "action": {
-            "ActionID": "icare_0130",
-            "ActionName": "Realizar Acciones de Asistencia T\u00e9cnica y Extensi\u00f3n Rural (ATER)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Proporcionar apoyo t\u00e9cnico y capacitaci\u00f3n a los productores rurales para la producci\u00f3n agr\u00edcola sostenible.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidad de personal t\u00e9cnico calificado y programas de formaci\u00f3n adaptados.",
-                "Alianzas con instituciones de investigaci\u00f3n agr\u00edcola y asignaci\u00f3n de recursos para el desarrollo de capacidades.",
-                "Compromiso con los productores rurales para asegurar su participaci\u00f3n activa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de productores beneficiados con asistencia t\u00e9cnica rural (% del total).",
-                "Porcentaje de participantes que adoptan pr\u00e1cticas resilientes al clima.",
-                "Vulnerabilidad reducida de las propiedades al riesgo clim\u00e1tico (%)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 9,
-        "explanation": "The expansion of mass transit systems on rails in Campo Grande is a crucial action due to the city's high transportation emissions, which contribute significantly to its total emissions. By enhancing public transportation infrastructure, the city can reduce reliance on private vehicles, thereby decreasing emissions and improving air quality. Additionally, improved mass transit can provide more equitable access to transportation for low-income residents, aligning with the city's socio-economic needs. This action also supports the city's resilience against climate risks by reducing the carbon footprint and promoting sustainable urban development.",
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expansi\u00f3n de los sistemas de transporte masivo sobre rieles (metros, LRTs y monorra\u00edles).",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estos sistemas ofrecen alta capacidad y bajas emisiones, cruciales para ciudades con alta densidad de poblaci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en el desarrollo y expansi\u00f3n de infraestructuras de transporte p\u00fablico de alta capacidad, como autobuses el\u00e9ctricos y sistemas de metro.",
-                "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar el uso del transporte p\u00fablico sobre los veh\u00edculos privados.",
-                "Integraci\u00f3n de fuentes de energ\u00eda renovable para alimentar estos sistemas, reduciendo a\u00fan m\u00e1s las emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "Longitud de las nuevas l\u00edneas de tr\u00e1nsito construidas (km/a\u00f1o).",
-                "Reducci\u00f3n en la congesti\u00f3n del tr\u00e1fico vial (%).",
-                "Reducci\u00f3n en el uso de veh\u00edculos privados (n\u00famero de viajes evitados/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 10,
-        "explanation": "Implementing agroforestry systems in Campo Grande is a crucial action due to the city's vulnerability to droughts, which significantly impact water resources and food security. Agroforestry can enhance soil moisture retention and improve biodiversity, helping to mitigate the effects of droughts. Additionally, this approach can contribute to reducing land use emissions, which are a significant part of the city's total emissions. By integrating trees into agricultural landscapes, agroforestry systems can also support local livelihoods and improve resilience against climate-related hazards.",
-        "action": {
-            "ActionID": "icare_0050",
-            "ActionName": "Implementar Sistemas Agroforestales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover sistemas agroforestales integrando \u00e1rboles en el cultivo de alimentos y pastos, aumentando la biodiversidad y la captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Provisi\u00f3n de apoyo t\u00e9cnico y orientaci\u00f3n a los agricultores sobre el dise\u00f1o e implementaci\u00f3n de sistemas agroforestales.",
-                "Desarrollo de incentivos financieros o subsidios para hacer la agroforester\u00eda m\u00e1s atractiva econ\u00f3micamente.",
-                "Creaci\u00f3n de pol\u00edticas que integren pr\u00e1cticas agroforestales en la planificaci\u00f3n del uso del suelo agr\u00edcola y los sistemas de tenencia de la tierra."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de tierras agr\u00edcolas convertidas en sistemas agroforestales (%).",
-                "N\u00famero de nuevos proyectos agroforestales implementados.",
-                "Aumento en la captura de carbono en sistemas agroforestales (toneladas de CO\u2082e/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 11,
-        "explanation": "Facilitating technology transfer for conservation practices in Campo Grande is crucial due to the city's vulnerability to environmental hazards such as droughts and floods. These hazards pose significant risks to water resources, food security, and public health, making it essential to adopt advanced conservation techniques. By transferring technology, the city can enhance its resilience against these climate impacts, ensuring sustainable management of natural resources. Additionally, improved conservation practices can help mitigate emissions from land use, contributing to the overall reduction of the city's carbon footprint.",
-        "action": {
-            "ActionID": "icare_0129",
-            "ActionName": "Facilitar la Transferencia de Tecnolog\u00eda para Pr\u00e1cticas de Conservaci\u00f3n",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover la adopci\u00f3n de pr\u00e1cticas agr\u00edcolas sostenibles mediante la capacitaci\u00f3n, proyectos piloto y demostraciones tecnol\u00f3gicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Provisi\u00f3n de programas de capacitaci\u00f3n y establecimiento de proyectos piloto para mostrar pr\u00e1cticas sostenibles.",
-                "Alianzas con instituciones de investigaci\u00f3n para el desarrollo de tecnolog\u00eda e incentivos financieros para fomentar la adopci\u00f3n.",
-                "Acceso a asistencia t\u00e9cnica para una implementaci\u00f3n exitosa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de tecnolog\u00edas de conservaci\u00f3n transferidas y aplicadas en las granjas.",
-                "Porcentaje de productores capacitados para implementar pr\u00e1cticas de conservaci\u00f3n.",
-                "Reducci\u00f3n en la degradaci\u00f3n del suelo o aumento en la cobertura vegetal (hect\u00e1reas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0128",
-        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 12,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Campo Grande is crucial due to the city's significant environmental challenges. The region faces high risks from droughts and heatwaves, which impact water resources, food security, and public health. Implementing PES can incentivize landowners to maintain and restore ecosystems, thereby enhancing the city's resilience to these climate hazards. Additionally, PES programs can contribute to reducing emissions from land use, which is a significant source of the city's total emissions, thus supporting broader environmental and sustainability goals.",
-        "action": {
-            "ActionID": "icare_0128",
-            "ActionName": "Establecer Programas Municipales de Pago por Servicios Ambientales (PES)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar programas que paguen a los propietarios de tierras por mantener o mejorar las condiciones ambientales en sus propiedades.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Creaci\u00f3n de mecanismos de financiaci\u00f3n y criterios de elegibilidad claros con indicadores de rendimiento.",
-                "Alianzas con organizaciones ambientales y campa\u00f1as de concienciaci\u00f3n para fomentar la participaci\u00f3n.",
-                "Integraci\u00f3n con marcos legales para garantizar la sostenibilidad del programa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de contratos activos de Pago por Servicios Ambientales (PES) firmados.",
-                "\u00c1rea total bajo pr\u00e1cticas de conservaci\u00f3n o restauraci\u00f3n incentivadas (hect\u00e1reas).",
-                "Cantidad de carbono secuestrado o emisiones evitadas a trav\u00e9s de acciones de PES (tCO\u2082e/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 13,
-        "explanation": "Promoting the use of bicycles in Campo Grande is crucial due to the city's high transportation emissions, which contribute significantly to its total emissions. By expanding bicycle infrastructure and raising awareness, the city can reduce its reliance on motor vehicles, thereby decreasing air pollution and improving public health. Additionally, this action supports sustainable urban mobility, which is essential in a city with a growing population and limited public transport options. Encouraging cycling can also enhance the quality of life by reducing traffic congestion and promoting a healthier lifestyle.",
-        "action": {
-            "ActionID": "icare_0118",
-            "ActionName": "Promover el uso de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura y estrategias de concienciaci\u00f3n y comunicaci\u00f3n.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar la adopci\u00f3n de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura para ciclistas, como carriles bici dedicados, instalaciones de estacionamiento y estaciones de reparaci\u00f3n. Adem\u00e1s, implementar campa\u00f1as de concienciaci\u00f3n y estrategias de comunicaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo, con el objetivo de aumentar la participaci\u00f3n p\u00fablica y hacer del ciclismo una opci\u00f3n de transporte viable y sostenible para el desplazamiento diario.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expandir la infraestructura para bicicletas, incluyendo carriles exclusivos para bicicletas, instalaciones de estacionamiento y estaciones de reparaci\u00f3n.",
-                "Implementar campa\u00f1as de concienciaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo.",
-                "Promover la participaci\u00f3n p\u00fablica a trav\u00e9s de estrategias de comunicaci\u00f3n, haciendo del ciclismo una opci\u00f3n viable y sostenible para el desplazamiento diario."
-            ],
-            "KeyPerformanceIndicators": [
-                "Longitud de los nuevos carriles bici a\u00f1adidos a la red urbana (km).",
-                "Aumento anual en el n\u00famero de usuarios de bicicletas en \u00e1reas urbanas.",
-                "Reducci\u00f3n estimada en las emisiones de CO\u2082 equivalente por el cambio al ciclismo."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0026",
-        "actionName": "Vehicle Emissions",
-        "actionPriority": 14,
-        "explanation": "The action to address vehicle emissions in Campo Grande is crucial due to the significant contribution of transportation to the city's overall emissions. With transportation emissions accounting for a large portion of the total emissions, reducing vehicle emissions can substantially lower the city's carbon footprint. Additionally, improving air quality by reducing vehicle emissions can have positive impacts on public health, which is a key concern given the high risk of heatwaves and diseases. Prioritizing this action aligns with the city's need to mitigate climate change impacts and enhance the quality of life for its residents.",
-        "action": {
-            "ActionID": "c40_0026",
-            "ActionName": "Emisiones de Veh\u00edculos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Las estrategias de reducci\u00f3n de \"Vehicle Emissions\" se centran en minimizar el impacto ambiental de todo tipo de veh\u00edculos. La implementaci\u00f3n de tecnolog\u00edas m\u00e1s limpias y la promoci\u00f3n de combustibles alternativos contribuyen a reducir las emisiones, fomentando un transporte sostenible y ecol\u00f3gico.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Las estrategias de reducci\u00f3n de \"Emisiones de Veh\u00edculos\" promueven inherentemente la equidad y la inclusi\u00f3n al abordar los impactos ambientales que afectan desproporcionadamente a las comunidades vulnerables y desatendidas. Estas comunidades a menudo experimentan niveles m\u00e1s altos de contaminaci\u00f3n del aire y problemas de salud relacionados debido a la proximidad a \u00e1reas de alto tr\u00e1fico y zonas industriales. Al implementar tecnolog\u00edas m\u00e1s limpias y promover combustibles alternativos, la acci\u00f3n beneficia directamente a estas poblaciones al mejorar la calidad del aire y reducir los riesgos para la salud.\n\nAdem\u00e1s, el enfoque en el transporte sostenible y ecol\u00f3gico puede mejorar el acceso a opciones de transporte asequibles y eficientes para las comunidades desatendidas, que pueden carecer de un transporte p\u00fablico confiable. Esta inclusividad asegura que todos los miembros de la comunidad, independientemente de su estatus socioecon\u00f3mico, puedan beneficiarse de un aire m\u00e1s limpio y mejores resultados de salud p\u00fablica. En general, la acci\u00f3n reconoce y aborda las necesidades espec\u00edficas de las poblaciones vulnerables, fomentando un enfoque m\u00e1s equitativo hacia la acci\u00f3n clim\u00e1tica.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo y disponibilidad de tecnolog\u00edas de veh\u00edculos m\u00e1s limpias",
-                "Infraestructura para la distribuci\u00f3n de combustibles alternativos",
-                "Pol\u00edticas y regulaciones gubernamentales que apoyan la reducci\u00f3n de emisiones",
-                "Conciencia p\u00fablica y aceptaci\u00f3n de opciones de transporte ecol\u00f3gicas",
-                "Inversi\u00f3n en investigaci\u00f3n y desarrollo para soluciones de transporte sostenible"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de emisiones de veh\u00edculos (CO2, NOx, PM)",
-                "Porcentaje de veh\u00edculos que utilizan combustibles alternativos",
-                "N\u00famero de veh\u00edculos el\u00e9ctricos en circulaci\u00f3n",
-                "Mejoras en la eficiencia del combustible (millas por gal\u00f3n)",
-                "Tasa de adopci\u00f3n de tecnolog\u00edas m\u00e1s limpias",
-                "Reducci\u00f3n en el consumo de combustibles f\u00f3siles",
-                "Tasas de uso del transporte p\u00fablico",
-                "Mejoras en el \u00edndice de calidad del aire",
-                "Porcentaje de zonas de bajas emisiones establecidas",
-                "Inversi\u00f3n en infraestructura de transporte sostenible"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 15,
-        "explanation": "Encouraging local agroecological production and short supply chains is crucial for Campo Grande due to its vulnerability to droughts and floods, which significantly impact food security. By promoting local production, the city can reduce its dependency on external food sources, enhancing resilience against climate-related disruptions. Additionally, this action supports the local economy and reduces transportation emissions, contributing to overall sustainability goals. Given the city's very low-income levels, this initiative can also provide economic opportunities and improve access to fresh, affordable produce for the community.",
-        "action": {
-            "ActionID": "icare_0132",
-            "ActionName": "Fomentar la Producci\u00f3n Agroecol\u00f3gica Local y las Cadenas de Suministro Cortas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Apoyar pr\u00e1cticas agr\u00edcolas locales y sostenibles y reducir las emisiones asociadas con el transporte de alimentos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Incentivos para pr\u00e1cticas agr\u00edcolas sostenibles y desarrollo de redes locales de distribuci\u00f3n de alimentos.",
-                "Alianzas con productores e inversi\u00f3n en infraestructura para apoyar los mercados locales.",
-                "Pol\u00edticas para priorizar m\u00e9todos de transporte de bajas emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de productores que se adhieren a pr\u00e1cticas agroecol\u00f3gicas locales.",
-                "Porcentaje de alimentos consumidos en la ciudad provenientes de cadenas cortas.",
-                "Reducci\u00f3n de emisiones asociadas con el transporte de alimentos (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 16,
-        "explanation": "Strengthening mechanisms for deforestation control in Campo Grande is crucial due to the city's location in a grassland/savanna biome, which is susceptible to land use changes. Deforestation can exacerbate climate change impacts, such as droughts and biodiversity loss, which are significant risks for the region. By enhancing deforestation control, the city can help preserve its natural environment, mitigate emissions from land use changes, and protect its biodiversity. This action also supports sustainable development and resilience against climate-related hazards.",
-        "action": {
-            "ActionID": "icare_0134",
-            "ActionName": "Fortalecer los Mecanismos para el Control de la Deforestaci\u00f3n",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Mejorar la supervisi\u00f3n y la aplicaci\u00f3n de la ley para prevenir la deforestaci\u00f3n ilegal y promover el uso sostenible de la tierra.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Fuerte marco legal, tecnolog\u00edas de monitoreo avanzadas (sat\u00e9lites y drones), y desarrollo de capacidades para las autoridades locales.",
-                "Colaboraci\u00f3n con las comunidades locales y financiaci\u00f3n adecuada para los esfuerzos de aplicaci\u00f3n.",
-                "Transparencia y responsabilidad en los informes para garantizar una implementaci\u00f3n efectiva."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total monitoreada para la deforestaci\u00f3n (hect\u00e1reas/a\u00f1o).",
-                "Reducci\u00f3n en la tasa anual de deforestaci\u00f3n (%).",
-                "Cantidad de emisiones evitadas al reducir la deforestaci\u00f3n (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0085",
-        "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 17,
-        "explanation": "Promoting the adoption of agroecological pest control in Campo Grande is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which can severely impact food security. By implementing sustainable pest control methods, the city can enhance its agricultural resilience, ensuring a stable food supply even in adverse conditions. Additionally, agroecological practices can help reduce the environmental impact of agriculture, contributing to lower emissions and improved biodiversity. This action aligns with the need to address the socio-economic challenges faced by the region, particularly in supporting low-income communities reliant on agriculture.",
-        "action": {
-            "ActionID": "icare_0085",
-            "ActionName": "Promover la Adopci\u00f3n del Control de Plagas Agroecol\u00f3gico",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar m\u00e9todos de control de plagas que sean agroecol\u00f3gicos, como el uso de depredadores naturales y plantas repelentes, para reducir la dependencia de pesticidas qu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de programas educativos para informar a los agricultores sobre m\u00e9todos de control de plagas agroecol\u00f3gicos y sus beneficios.",
-                "Provisi\u00f3n de acceso a recursos o materiales para implementar m\u00e9todos de control de plagas naturales, como la introducci\u00f3n de insectos beneficiosos o el cultivo de plantas repelentes.",
-                "Creaci\u00f3n de incentivos o redes de apoyo para fomentar la transici\u00f3n de los pesticidas qu\u00edmicos hacia alternativas sostenibles."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento en las tasas de productividad en \u00e1reas que adoptan el control de plagas agroecol\u00f3gico (%).",
-                "N\u00famero de campa\u00f1as educativas realizadas sobre el control sostenible de plagas.",
-                "Impacto en los costos totales de producci\u00f3n debido a la adopci\u00f3n de pr\u00e1cticas agroecol\u00f3gicas (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 18,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Campo Grande due to its significant risk to food security from droughts and floods. By supporting local agroecological practices, the city can enhance its resilience to these climate hazards, ensuring a more stable and sustainable food supply. Additionally, this action can stimulate the local economy, providing economic benefits to local farmers and reducing dependency on external food sources. Furthermore, promoting agroecological products aligns with environmental sustainability goals, potentially reducing emissions associated with transportation and industrial agriculture.",
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Priorizar la Adquisici\u00f3n de Productos Agroecol\u00f3gicos de Producci\u00f3n Local en Compras P\u00fablicas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Centrarse en comprar alimentos sostenibles y producidos localmente para las instituciones p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de pol\u00edticas de adquisici\u00f3n e identificaci\u00f3n de proveedores locales confiables.",
-                "Alianzas con productores y asignaci\u00f3n de fondos para programas de adquisici\u00f3n sostenible.",
-                "Establecimiento de sistemas de monitoreo para garantizar el cumplimiento de los criterios de sostenibilidad."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje del volumen total de compras p\u00fablicas provenientes de productores agroecol\u00f3gicos locales.",
-                "Cantidad de emisiones de CO\u2082 evitadas debido a la reducci\u00f3n de la distancia de transporte (tCO\u2082e).",
-                "N\u00famero de productores agroecol\u00f3gicos beneficiados por las compras p\u00fablicas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 19,
-        "explanation": "Supporting the implementation of ecological fiscal incentives in Campo Grande is crucial due to the city's significant environmental challenges. With high emissions from transportation and land use, these incentives can encourage sustainable practices and reduce the overall carbon footprint. Additionally, the city faces severe risks from climate hazards like droughts and floods, which threaten water resources and food security. By promoting ecological fiscal policies, Campo Grande can enhance its resilience to these climate impacts and foster a more sustainable urban environment.",
-        "action": {
-            "ActionID": "icare_0136",
-            "ActionName": "Apoyar la Implementaci\u00f3n de Incentivos Fiscales Ecol\u00f3gicos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar la aplicaci\u00f3n de impuestos ecol\u00f3gicos e incentivos para promover la conservaci\u00f3n ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establecer un marco regulatorio claro con tasas impositivas justas e incentivos para la sostenibilidad.",
-                "Implementar sistemas de monitoreo efectivos para rastrear el cumplimiento y medir el impacto.",
-                "Promover la concienciaci\u00f3n p\u00fablica y fomentar la colaboraci\u00f3n entre gobiernos, empresas y comunidades."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de municipios que han adoptado incentivos fiscales ambientales.",
-                "Porcentaje de ingresos fiscales gastados en pr\u00e1cticas sostenibles.",
-                "Superficie o n\u00famero de propiedades que se benefician de pr\u00e1cticas de conservaci\u00f3n como resultado de los incentivos."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0126",
-        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
-        "actionPriority": 20,
-        "explanation": "The implementation of green fuel supply infrastructure for aircraft in Campo Grande is a significant step towards reducing transportation emissions, which are a major contributor to the city's total emissions. Given the city's high transportation emissions, transitioning to biofuels or green hydrogen can substantially lower the carbon footprint of air travel. Additionally, this action aligns with global trends towards sustainable aviation, potentially positioning Campo Grande as a leader in green aviation technology. By investing in this infrastructure, the city can also stimulate economic growth and create new job opportunities in the green energy sector.",
-        "action": {
-            "ActionID": "icare_0126",
-            "ActionName": "Implementaci\u00f3n de infraestructura de suministro de combustibles verdes para aeronaves, como biocombustibles o hidr\u00f3geno verde.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "aviation"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta acci\u00f3n tiene como objetivo promover la sostenibilidad en los aeropuertos mediante la implementaci\u00f3n de infraestructura para abastecer a las aeronaves con combustibles de bajo carbono. El uso de biocombustibles o hidr\u00f3geno verde puede reducir significativamente las emisiones de GEI en el sector de la aviaci\u00f3n. Adem\u00e1s, la transici\u00f3n a estas fuentes de energ\u00eda m\u00e1s limpias contribuir\u00e1 a alcanzar los objetivos de descarbonizaci\u00f3n en el sector del transporte, al tiempo que se mantiene la eficiencia operativa en los aeropuertos y se minimiza su impacto ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollar infraestructura para abastecer aviones con combustibles bajos en carbono como biocombustibles o hidr\u00f3geno verde.",
-                "Asegurar la disponibilidad de fuentes de combustible sostenibles y la tecnolog\u00eda necesaria para las operaciones de abastecimiento.",
-                "Monitorear y evaluar el impacto ambiental y la eficiencia operativa de la transici\u00f3n a combustibles bajos en carbono."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de aeropuertos con infraestructura de biocombustible o hidr\u00f3geno verde.",
-                "Cantidad de combustible verde consumido por el sector de la aviaci\u00f3n (litros/a\u00f1o).",
-                "Reducci\u00f3n de emisiones de CO\u2082 de la aviaci\u00f3n mediante el uso de combustibles alternativos (tCO\u2082e/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0139",
+    "actionName": "Implementation of urban toll.",
+    "actionPriority": 1,
+    "explanation": "La implementación de un peaje urbano en Campo Grande es una prioridad debido a las altas emisiones del sector transporte en la ciudad, las cuales contribuyen significativamente a su huella de carbono total. Al introducir un peaje, la ciudad puede gestionar de manera efectiva la congestión del tráfico, fomentando el uso del transporte público y reduciendo las emisiones de los vehículos. Esta medida es especialmente importante dado que la baja densidad poblacional de la ciudad puede llevar a una mayor dependencia de los vehículos particulares. Además, la reducción de las emisiones del transporte está alineada con los objetivos ambientales más amplios de la ciudad y puede ayudar a mitigar los impactos de los peligros relacionados con el cambio climático, como las olas de calor y las inundaciones.",
+    "action": {
+      "ActionID": "icare_0139",
+      "ActionName": "Implementación de peaje urbano.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Establecimiento de un cargo por congestión y/o rotación de matrículas para vehículos ligeros en áreas saturadas y en horarios saturados",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Establecer un marco legal claro e invertir en tecnología para el monitoreo y la aplicación (por ejemplo, cámaras, sensores).",
+        "Lanzar campañas de concienciación y asegurar la disponibilidad de transporte público eficiente o soluciones de movilidad alternativas.",
+        "Colaborar con los gobiernos locales y las agencias de transporte, y establecer sistemas para monitorear y evaluar la efectividad de la política."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de emisiones de CO₂ del transporte por carretera urbano (tCO₂e/año).",
+        "Ingresos generados por la implementación del cargo por congestión urbana (R$)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 2,
+    "explanation": "La implementación de programas de transporte público gratuito durante las horas pico en Campo Grande es una acción estratégica para abordar las altas emisiones del sector transporte en la ciudad, las cuales representan una contribución significativa a sus emisiones totales. Al fomentar el uso del transporte público, la ciudad puede reducir la dependencia de vehículos particulares, disminuyendo así las emisiones y mejorando la calidad del aire. Además, esta iniciativa puede aliviar la congestión vehicular durante las horas pico, mejorando la eficiencia general de la red de transporte de la ciudad. Asimismo, ofrecer transporte público gratuito también puede beneficiar a los residentes de bajos ingresos, alineándose con las necesidades socioeconómicas de la ciudad.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementación de programas de transporte público gratuito durante las horas pico para reducir el uso de vehículos individuales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar el uso del transporte público ofreciendo servicios gratuitos durante las horas pico para trabajadores y estudiantes. Esta medida reduce la congestión urbana, disminuye el número de vehículos individuales en la carretera y, en consecuencia, reduce las emisiones de gases de efecto invernadero asociadas con el transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Asignación de fondos para subsidiar servicios de transporte público gratuito durante las horas pico.",
+        "Desarrollo de políticas para garantizar la sostenibilidad y eficiencia de los sistemas de transporte público ante el aumento de la demanda.",
+        "Coordinación con empleadores e instituciones educativas para optimizar los horarios de las horas pico y promover la iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en los niveles de contaminación del aire durante las horas pico (concentración de PM2.5/PM10).",
+        "Número de vehículos privados retirados de las carreteras durante las horas pico.",
+        "Tasa de satisfacción pública con la iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0094",
+    "actionName": "Adoption of biomethane in public fleets.",
+    "actionPriority": 3,
+    "explanation": "La adopción de biometano en las flotas públicas de Campo Grande es una acción significativa debido a las altas emisiones del sector transporte en la ciudad, las cuales son un importante contribuyente a su huella de carbono total. Al hacer la transición al biometano, la ciudad puede reducir su dependencia de los combustibles fósiles, disminuyendo así las emisiones de gases de efecto invernadero y mejorando la calidad del aire. Además, esta acción contribuye a la seguridad energética al diversificar las fuentes de energía, lo cual es crucial dada la vulnerabilidad de la ciudad a interrupciones energéticas causadas por fenómenos climáticos como sequías y olas de calor. La implementación de biometano en las flotas públicas también está alineada con los objetivos de desarrollo sostenible, promoviendo un entorno urbano más limpio y resiliente.",
+    "action": {
+      "ActionID": "icare_0094",
+      "ActionName": "Adopción de biometano en flotas públicas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar biometano producido a partir de residuos urbanos y agroindustriales para alimentar autobuses y camiones públicos, reduciendo las emisiones de gases de efecto invernadero en las flotas municipales.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de infraestructura para la producción, procesamiento y distribución de biometano a partir de residuos urbanos y agroindustriales.",
+        "Adaptación o adquisición de autobuses y camiones públicos capaces de utilizar biometano como fuente de combustible.",
+        "Establecimiento de políticas e incentivos financieros para apoyar la producción de biometano y su integración en las flotas municipales."
+      ],
+      "KeyPerformanceIndicators": [
+        "Ahorro de costos en la operación de la flota debido al uso de biometano (USD/año).",
+        "Aumento en la capacidad de producción de biometano (%).",
+        "Porcentaje de biometano obtenido localmente versus importado."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0044",
+    "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+    "actionPriority": 4,
+    "explanation": "Ampliar la infraestructura ciclista y construir senderos peatonales en Campo Grande es fundamental debido a las altas emisiones del sector transporte en la ciudad, que contribuyen significativamente a sus emisiones totales. Al promover el uso de la bicicleta y el caminar, la ciudad puede reducir la dependencia de los vehículos motorizados, disminuyendo así las emisiones y mejorando la calidad del aire. Además, crear infraestructura resiliente frente a amenazas climáticas responde a la vulnerabilidad de la ciudad ante peligros como inundaciones y olas de calor, mejorando la seguridad pública y la accesibilidad. Esta acción también favorece la salud pública al incentivar la actividad física y ofrecer opciones de transporte más seguras y sostenibles.",
+    "action": {
+      "ActionID": "icare_0044",
+      "ActionName": "Expandir la infraestructura para bicicletas y construir paseos públicos y aceras accesibles, priorizando medidas resilientes a las amenazas climáticas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "El objetivo principal de esta acción es promover la movilidad activa, garantizando la seguridad, comodidad y prioridad del movimiento peatonal, de personas con discapacidades (o movilidad reducida), y de vehículos y equipos impulsados por humanos, como bicicletas y patinetes.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversiones en infraestructura para pasarelas peatonales seguras y accesibles, carriles para bicicletas e instalaciones para personas con discapacidades",
+        "Marcos de políticas y regulaciones para priorizar la movilidad activa y establecer estándares de seguridad para peatones y vehículos no motorizados",
+        "Campañas de concienciación pública para promover la movilidad activa y educar a los ciudadanos sobre los beneficios de caminar, andar en bicicleta y usar otros medios de transporte impulsados por humanos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Kilómetros de nuevos carriles bici y senderos peatonales construidos anualmente.",
+        "Aumento en el uso diario de la infraestructura para ciclistas y peatones (%).",
+        "Reducción en las emisiones del transporte urbano (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0121",
+    "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+    "actionPriority": 5,
+    "explanation": "La acción de incentivar los programas de bicicletas compartidas, especialmente con bicicletas eléctricas, es crucial para Campo Grande debido a sus altas emisiones de transporte. Al promover métodos alternativos de transporte, la ciudad puede reducir significativamente su huella de carbono y mejorar la calidad del aire. Además, las bicicletas eléctricas ofrecen un modo de transporte sostenible y accesible que puede aliviar la congestión del tráfico y proporcionar una opción de estilo de vida más saludable para los residentes. Esta iniciativa está alineada con la necesidad de la ciudad de abordar los desafíos ambientales mientras mejora la movilidad urbana.",
+    "action": {
+      "ActionID": "icare_0121",
+      "ActionName": "Incentivo para crear programas de bicicletas compartidas en áreas urbanas, con un enfoque en bicicletas eléctricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta acción fomenta el establecimiento de sistemas de bicicletas compartidas en las ciudades, promoviendo específicamente el uso de bicicletas eléctricas. Estos sistemas permiten a los residentes alquilar bicicletas eléctricas para viajes cortos, reduciendo la dependencia de los automóviles para el transporte urbano. Al integrar bicicletas eléctricas, las ciudades pueden reducir aún más las emisiones de gases de efecto invernadero, aliviar la congestión del tráfico y promover un modo de transporte más saludable y sostenible tanto para áreas urbanas como rurales. Esta iniciativa también apoya la igualdad de movilidad, ya que hace que las bicicletas sean más accesibles para un rango más amplio de personas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Establecimiento de sistemas de bicicletas compartidas con un enfoque en bicicletas eléctricas para reducir la dependencia del automóvil.",
+        "Integración de bicicletas eléctricas para reducir las emisiones de gases de efecto invernadero, aliviar la congestión del tráfico y promover el transporte sostenible.",
+        "Promoción de la igualdad de movilidad haciendo que las bicicletas eléctricas sean accesibles para una población más amplia."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de bicicletas eléctricas disponibles en programas de bicicletas compartidas.",
+        "Aumento anual en usuarios de bicicletas compartidas.",
+        "Reducción estimada en emisiones equivalentes de CO₂ por la adopción de bicicletas eléctricas compartidas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0068",
+    "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+    "actionPriority": 6,
+    "explanation": "Desplegar sistemas de transporte bajo demanda con flotas 100% eléctricas en Campo Grande es una medida estratégica para abordar las altas emisiones del sector transporte en la ciudad, las cuales son un contribuyente significativo a sus emisiones totales. Esta acción puede ayudar a reducir la huella de carbono y mejorar la calidad del aire, beneficiando la salud pública. Además, las flotas eléctricas pueden ofrecer una alternativa sostenible a los vehículos tradicionales, alineándose con las tendencias globales hacia soluciones energéticas más limpias. La implementación de este sistema también puede mejorar la movilidad y la accesibilidad para los residentes, especialmente en áreas con opciones de transporte público insuficientes.",
+    "action": {
+      "ActionID": "icare_0068",
+      "ActionName": "Desplegar sistemas de transporte bajo demanda con flotas 100% eléctricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Servicios de transporte colectivo bajo demanda, basados en aplicaciones, optimizan el uso de vehículos eléctricos, reduciendo las emisiones por pasajero.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desarrollo de plataformas digitales y aplicaciones para gestionar eficientemente servicios de transporte colectivo bajo demanda.",
+        "Expansión de flotas de vehículos eléctricos adaptadas para soluciones de transporte compartido.",
+        "Implementación de políticas e incentivos para fomentar la adopción y el uso de servicios de transporte eléctrico compartido."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de usuarios activos del sistema de flota eléctrica bajo demanda.",
+        "Porcentaje de demanda de transporte urbano satisfecho por sistemas bajo demanda.",
+        "Reducción en los niveles de contaminación acústica en áreas urbanas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0090",
+    "actionName": "Adoption of electric drones for last-mile deliveries.",
+    "actionPriority": 7,
+    "explanation": "La adopción de drones eléctricos para entregas de última milla en Campo Grande es una medida estratégica para reducir las emisiones del transporte, que constituyen una parte significativa de las emisiones totales de la ciudad. Al utilizar drones eléctricos, la ciudad puede disminuir la dependencia de los vehículos de reparto tradicionales, reduciendo así el consumo de combustibles fósiles y la contaminación del aire. Esta acción también está alineada con la necesidad de la ciudad de abordar las preocupaciones medioambientales, al tiempo que mejora la eficiencia de las entregas en una zona urbana de rápido crecimiento. Además, fomenta la innovación y el avance tecnológico, posicionando a Campo Grande como una ciudad visionaria en términos de logística urbana sostenible.",
+    "action": {
+      "ActionID": "icare_0090",
+      "ActionName": "Adopción de drones eléctricos para entregas de última milla.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "off-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Reemplazar los vehículos tradicionales con drones eléctricos para entregas de corta distancia en centros urbanos, reduciendo emisiones y congestión de tráfico.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de regulaciones del espacio aéreo urbano para garantizar la operación segura y eficiente de drones de entrega.",
+        "Inversión en infraestructura de carga y mantenimiento para apoyar una flota de drones eléctricos.",
+        "Colaboración con empresas de logística para integrar drones en redes de entrega de última milla."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción del tiempo de entrega en comparación con los métodos tradicionales (minutos).",
+        "Aumento en la satisfacción del cliente con las entregas mediante drones (%).",
+        "Reducción de la congestión del tráfico causada por vehículos de entrega (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0130",
+    "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+    "actionPriority": 8,
+    "explanation": "Realizar acciones de Asistencia Técnica y Extensión Rural (ATER) en Campo Grande es fundamental debido a la vulnerabilidad de la ciudad frente a peligros climáticos como sequías e inundaciones, que afectan significativamente la seguridad alimentaria. Al brindar apoyo técnico y educación a las comunidades rurales, estas acciones pueden fortalecer la resiliencia y productividad agrícola, garantizando un suministro alimentario estable. Además, las iniciativas de ATER pueden ayudar a mitigar los desafíos socioeconómicos que enfrentan las poblaciones de bajos ingresos, promoviendo el desarrollo sostenible y mejorando la calidad de vida en la región. Esta acción está alineada con la necesidad de abordar el alto riesgo de sequías e inundaciones, que representan amenazas críticas para la infraestructura y la salud pública de la ciudad.",
+    "action": {
+      "ActionID": "icare_0130",
+      "ActionName": "Realizar Acciones de Asistencia Técnica y Extensión Rural (ATER)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Proporcionar apoyo técnico y capacitación a los productores rurales para la producción agrícola sostenible.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidad de personal técnico calificado y programas de formación adaptados.",
+        "Alianzas con instituciones de investigación agrícola y asignación de recursos para el desarrollo de capacidades.",
+        "Compromiso con los productores rurales para asegurar su participación activa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de productores beneficiados con asistencia técnica rural (% del total).",
+        "Porcentaje de participantes que adoptan prácticas resilientes al clima.",
+        "Vulnerabilidad reducida de las propiedades al riesgo climático (%)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0057",
+    "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+    "actionPriority": 9,
+    "explanation": "La expansión de los sistemas de transporte masivo sobre rieles en Campo Grande es una acción crucial debido a las altas emisiones del sector transporte en la ciudad, las cuales contribuyen significativamente a sus emisiones totales. Al mejorar la infraestructura del transporte público, la ciudad puede reducir la dependencia de los vehículos privados, disminuyendo así las emisiones y mejorando la calidad del aire. Además, un sistema de transporte masivo mejorado puede proporcionar un acceso más equitativo al transporte para los residentes de bajos ingresos, en consonancia con las necesidades socioeconómicas de la ciudad. Esta acción también fortalece la resiliencia de la ciudad frente a los riesgos climáticos al reducir la huella de carbono y promover un desarrollo urbano sostenible.",
+    "action": {
+      "ActionID": "icare_0057",
+      "ActionName": "Expansión de los sistemas de transporte masivo sobre rieles (metros, LRTs y monorraíles).",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "railways"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estos sistemas ofrecen alta capacidad y bajas emisiones, cruciales para ciudades con alta densidad de población.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en el desarrollo y expansión de infraestructuras de transporte público de alta capacidad, como autobuses eléctricos y sistemas de metro.",
+        "Implementación de políticas e incentivos para fomentar el uso del transporte público sobre los vehículos privados.",
+        "Integración de fuentes de energía renovable para alimentar estos sistemas, reduciendo aún más las emisiones."
+      ],
+      "KeyPerformanceIndicators": [
+        "Longitud de las nuevas líneas de tránsito construidas (km/año).",
+        "Reducción en la congestión del tráfico vial (%).",
+        "Reducción en el uso de vehículos privados (número de viajes evitados/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0050",
+    "actionName": "Implement Agroforestry Systems",
+    "actionPriority": 10,
+    "explanation": "La implementación de sistemas agroforestales en Campo Grande es una acción crucial debido a la vulnerabilidad de la ciudad a las sequías, las cuales afectan significativamente los recursos hídricos y la seguridad alimentaria. La agroforestería puede mejorar la retención de humedad en el suelo y aumentar la biodiversidad, ayudando a mitigar los efectos de las sequías. Además, este enfoque puede contribuir a la reducción de las emisiones derivadas del uso del suelo, que representan una parte significativa del total de emisiones de la ciudad. Al integrar árboles en los paisajes agrícolas, los sistemas agroforestales también pueden apoyar los medios de vida locales y mejorar la resiliencia frente a los riesgos relacionados con el clima.",
+    "action": {
+      "ActionID": "icare_0050",
+      "ActionName": "Implementar Sistemas Agroforestales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover sistemas agroforestales integrando árboles en el cultivo de alimentos y pastos, aumentando la biodiversidad y la captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Provisión de apoyo técnico y orientación a los agricultores sobre el diseño e implementación de sistemas agroforestales.",
+        "Desarrollo de incentivos financieros o subsidios para hacer la agroforestería más atractiva económicamente.",
+        "Creación de políticas que integren prácticas agroforestales en la planificación del uso del suelo agrícola y los sistemas de tenencia de la tierra."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de tierras agrícolas convertidas en sistemas agroforestales (%).",
+        "Número de nuevos proyectos agroforestales implementados.",
+        "Aumento en la captura de carbono en sistemas agroforestales (toneladas de CO₂e/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0129",
+    "actionName": "Facilitate Technology Transfer for Conservation Practices",
+    "actionPriority": 11,
+    "explanation": "Facilitar la transferencia de tecnología para prácticas de conservación en Campo Grande es crucial debido a la vulnerabilidad de la ciudad frente a peligros ambientales como sequías e inundaciones. Estos riesgos representan amenazas significativas para los recursos hídricos, la seguridad alimentaria y la salud pública, lo que hace esencial la adopción de técnicas avanzadas de conservación. Al transferir tecnología, la ciudad puede aumentar su resiliencia frente a estos impactos climáticos, asegurando una gestión sostenible de los recursos naturales. Además, la mejora de las prácticas de conservación puede ayudar a mitigar las emisiones derivadas del uso del suelo, contribuyendo a la reducción general de la huella de carbono de la ciudad.",
+    "action": {
+      "ActionID": "icare_0129",
+      "ActionName": "Facilitar la Transferencia de Tecnología para Prácticas de Conservación",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover la adopción de prácticas agrícolas sostenibles mediante la capacitación, proyectos piloto y demostraciones tecnológicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Provisión de programas de capacitación y establecimiento de proyectos piloto para mostrar prácticas sostenibles.",
+        "Alianzas con instituciones de investigación para el desarrollo de tecnología e incentivos financieros para fomentar la adopción.",
+        "Acceso a asistencia técnica para una implementación exitosa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de tecnologías de conservación transferidas y aplicadas en las granjas.",
+        "Porcentaje de productores capacitados para implementar prácticas de conservación.",
+        "Reducción en la degradación del suelo o aumento en la cobertura vegetal (hectáreas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0128",
+    "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+    "actionPriority": 12,
+    "explanation": "Establecer programas municipales de Pago por Servicios Ambientales (PSA) en Campo Grande es crucial debido a los importantes desafíos ambientales que enfrenta la ciudad. La región está expuesta a altos riesgos de sequías y olas de calor, lo que afecta los recursos hídricos, la seguridad alimentaria y la salud pública. La implementación de PSA puede incentivar a los propietarios de tierras a conservar y restaurar los ecosistemas, aumentando así la resiliencia de la ciudad frente a estos peligros climáticos. Además, los programas de PSA pueden contribuir a la reducción de emisiones derivadas del uso del suelo, que representan una fuente significativa de las emisiones totales de la ciudad, apoyando así objetivos ambientales y de sostenibilidad más amplios.",
+    "action": {
+      "ActionID": "icare_0128",
+      "ActionName": "Establecer Programas Municipales de Pago por Servicios Ambientales (PES)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas que paguen a los propietarios de tierras por mantener o mejorar las condiciones ambientales en sus propiedades.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Creación de mecanismos de financiación y criterios de elegibilidad claros con indicadores de rendimiento.",
+        "Alianzas con organizaciones ambientales y campañas de concienciación para fomentar la participación.",
+        "Integración con marcos legales para garantizar la sostenibilidad del programa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de contratos activos de Pago por Servicios Ambientales (PES) firmados.",
+        "Área total bajo prácticas de conservación o restauración incentivadas (hectáreas).",
+        "Cantidad de carbono secuestrado o emisiones evitadas a través de acciones de PES (tCO₂e/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0118",
+    "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+    "actionPriority": 13,
+    "explanation": "Promover el uso de bicicletas en Campo Grande es fundamental debido a las altas emisiones del sector transporte en la ciudad, las cuales contribuyen significativamente a sus emisiones totales. Al ampliar la infraestructura para bicicletas y aumentar la concienciación, la ciudad puede reducir su dependencia de los vehículos motorizados, disminuyendo así la contaminación del aire y mejorando la salud pública. Además, esta acción respalda la movilidad urbana sostenible, que es esencial en una ciudad con una población en crecimiento y opciones limitadas de transporte público. Fomentar el ciclismo también puede mejorar la calidad de vida al reducir la congestión del tráfico y promover un estilo de vida más saludable.",
+    "action": {
+      "ActionID": "icare_0118",
+      "ActionName": "Promover el uso de bicicletas como un modo de transporte regular mediante la expansión de la infraestructura y estrategias de concienciación y comunicación.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar la adopción de bicicletas como un modo de transporte regular mediante la expansión de la infraestructura para ciclistas, como carriles bici dedicados, instalaciones de estacionamiento y estaciones de reparación. Además, implementar campañas de concienciación y estrategias de comunicación para resaltar los beneficios ambientales, de salud y económicos del ciclismo, con el objetivo de aumentar la participación pública y hacer del ciclismo una opción de transporte viable y sostenible para el desplazamiento diario.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expandir la infraestructura para bicicletas, incluyendo carriles exclusivos para bicicletas, instalaciones de estacionamiento y estaciones de reparación.",
+        "Implementar campañas de concienciación para resaltar los beneficios ambientales, de salud y económicos del ciclismo.",
+        "Promover la participación pública a través de estrategias de comunicación, haciendo del ciclismo una opción viable y sostenible para el desplazamiento diario."
+      ],
+      "KeyPerformanceIndicators": [
+        "Longitud de los nuevos carriles bici añadidos a la red urbana (km).",
+        "Aumento anual en el número de usuarios de bicicletas en áreas urbanas.",
+        "Reducción estimada en las emisiones de CO₂ equivalente por el cambio al ciclismo."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "c40_0026",
+    "actionName": "Vehicle Emissions",
+    "actionPriority": 14,
+    "explanation": "La acción para abordar las emisiones de vehículos en Campo Grande es crucial debido a la significativa contribución del transporte a las emisiones totales de la ciudad. Dado que las emisiones del transporte representan una gran parte del total, reducir las emisiones de los vehículos puede disminuir sustancialmente la huella de carbono de la ciudad. Además, mejorar la calidad del aire mediante la reducción de las emisiones vehiculares puede tener impactos positivos en la salud pública, lo cual es una preocupación clave dado el alto riesgo de olas de calor y enfermedades. Priorizar esta acción está alineado con la necesidad de la ciudad de mitigar los impactos del cambio climático y mejorar la calidad de vida de sus habitantes.",
+    "action": {
+      "ActionID": "c40_0026",
+      "ActionName": "Emisiones de Vehículos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Las estrategias de reducción de \"Vehicle Emissions\" se centran en minimizar el impacto ambiental de todo tipo de vehículos. La implementación de tecnologías más limpias y la promoción de combustibles alternativos contribuyen a reducir las emisiones, fomentando un transporte sostenible y ecológico.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Las estrategias de reducción de \"Emisiones de Vehículos\" promueven inherentemente la equidad y la inclusión al abordar los impactos ambientales que afectan desproporcionadamente a las comunidades vulnerables y desatendidas. Estas comunidades a menudo experimentan niveles más altos de contaminación del aire y problemas de salud relacionados debido a la proximidad a áreas de alto tráfico y zonas industriales. Al implementar tecnologías más limpias y promover combustibles alternativos, la acción beneficia directamente a estas poblaciones al mejorar la calidad del aire y reducir los riesgos para la salud.\n\nAdemás, el enfoque en el transporte sostenible y ecológico puede mejorar el acceso a opciones de transporte asequibles y eficientes para las comunidades desatendidas, que pueden carecer de un transporte público confiable. Esta inclusividad asegura que todos los miembros de la comunidad, independientemente de su estatus socioeconómico, puedan beneficiarse de un aire más limpio y mejores resultados de salud pública. En general, la acción reconoce y aborda las necesidades específicas de las poblaciones vulnerables, fomentando un enfoque más equitativo hacia la acción climática.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo y disponibilidad de tecnologías de vehículos más limpias",
+        "Infraestructura para la distribución de combustibles alternativos",
+        "Políticas y regulaciones gubernamentales que apoyan la reducción de emisiones",
+        "Conciencia pública y aceptación de opciones de transporte ecológicas",
+        "Inversión en investigación y desarrollo para soluciones de transporte sostenible"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de emisiones de vehículos (CO2, NOx, PM)",
+        "Porcentaje de vehículos que utilizan combustibles alternativos",
+        "Número de vehículos eléctricos en circulación",
+        "Mejoras en la eficiencia del combustible (millas por galón)",
+        "Tasa de adopción de tecnologías más limpias",
+        "Reducción en el consumo de combustibles fósiles",
+        "Tasas de uso del transporte público",
+        "Mejoras en el índice de calidad del aire",
+        "Porcentaje de zonas de bajas emisiones establecidas",
+        "Inversión en infraestructura de transporte sostenible"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0132",
+    "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+    "actionPriority": 15,
+    "explanation": "Fomentar la producción agroecológica local y las cadenas cortas de suministro es crucial para Campo Grande debido a su vulnerabilidad a las sequías e inundaciones, que afectan significativamente la seguridad alimentaria. Al promover la producción local, la ciudad puede reducir su dependencia de fuentes externas de alimentos, aumentando su resiliencia frente a las perturbaciones relacionadas con el clima. Además, esta acción apoya la economía local y reduce las emisiones del transporte, contribuyendo a los objetivos generales de sostenibilidad. Dado el muy bajo nivel de ingresos de la ciudad, esta iniciativa también puede ofrecer oportunidades económicas y mejorar el acceso a productos frescos y asequibles para la comunidad.",
+    "action": {
+      "ActionID": "icare_0132",
+      "ActionName": "Fomentar la Producción Agroecológica Local y las Cadenas de Suministro Cortas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoyar prácticas agrícolas locales y sostenibles y reducir las emisiones asociadas con el transporte de alimentos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Incentivos para prácticas agrícolas sostenibles y desarrollo de redes locales de distribución de alimentos.",
+        "Alianzas con productores e inversión en infraestructura para apoyar los mercados locales.",
+        "Políticas para priorizar métodos de transporte de bajas emisiones."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de productores que se adhieren a prácticas agroecológicas locales.",
+        "Porcentaje de alimentos consumidos en la ciudad provenientes de cadenas cortas.",
+        "Reducción de emisiones asociadas con el transporte de alimentos (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0134",
+    "actionName": "Strengthen Mechanisms for Deforestation Control",
+    "actionPriority": 16,
+    "explanation": "El fortalecimiento de los mecanismos para el control de la deforestación en Campo Grande es crucial debido a la ubicación de la ciudad en un bioma de pastizales/sabana, que es susceptible a cambios en el uso del suelo. La deforestación puede agravar los impactos del cambio climático, como las sequías y la pérdida de biodiversidad, que representan riesgos significativos para la región. Al mejorar el control de la deforestación, la ciudad puede ayudar a preservar su entorno natural, mitigar las emisiones derivadas de los cambios en el uso del suelo y proteger su biodiversidad. Esta acción también respalda el desarrollo sostenible y la resiliencia frente a los peligros relacionados con el clima.",
+    "action": {
+      "ActionID": "icare_0134",
+      "ActionName": "Fortalecer los Mecanismos para el Control de la Deforestación",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Mejorar la supervisión y la aplicación de la ley para prevenir la deforestación ilegal y promover el uso sostenible de la tierra.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fuerte marco legal, tecnologías de monitoreo avanzadas (satélites y drones), y desarrollo de capacidades para las autoridades locales.",
+        "Colaboración con las comunidades locales y financiación adecuada para los esfuerzos de aplicación.",
+        "Transparencia y responsabilidad en los informes para garantizar una implementación efectiva."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total monitoreada para la deforestación (hectáreas/año).",
+        "Reducción en la tasa anual de deforestación (%).",
+        "Cantidad de emisiones evitadas al reducir la deforestación (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0085",
+    "actionName": "Promote the Adoption of Agroecological Pest Control",
+    "actionPriority": 17,
+    "explanation": "Promover la adopción del control agroecológico de plagas en Campo Grande es crucial debido a la vulnerabilidad de la ciudad frente a peligros relacionados con el clima, como sequías e inundaciones, que pueden afectar gravemente la seguridad alimentaria. Al implementar métodos sostenibles de control de plagas, la ciudad puede fortalecer su resiliencia agrícola, asegurando un suministro estable de alimentos incluso en condiciones adversas. Además, las prácticas agroecológicas pueden ayudar a reducir el impacto ambiental de la agricultura, contribuyendo a menores emisiones y a una mayor biodiversidad. Esta acción está alineada con la necesidad de abordar los desafíos socioeconómicos que enfrenta la región, especialmente en el apoyo a las comunidades de bajos ingresos que dependen de la agricultura.",
+    "action": {
+      "ActionID": "icare_0085",
+      "ActionName": "Promover la Adopción del Control de Plagas Agroecológico",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar métodos de control de plagas que sean agroecológicos, como el uso de depredadores naturales y plantas repelentes, para reducir la dependencia de pesticidas químicos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de programas educativos para informar a los agricultores sobre métodos de control de plagas agroecológicos y sus beneficios.",
+        "Provisión de acceso a recursos o materiales para implementar métodos de control de plagas naturales, como la introducción de insectos beneficiosos o el cultivo de plantas repelentes.",
+        "Creación de incentivos o redes de apoyo para fomentar la transición de los pesticidas químicos hacia alternativas sostenibles."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento en las tasas de productividad en áreas que adoptan el control de plagas agroecológico (%).",
+        "Número de campañas educativas realizadas sobre el control sostenible de plagas.",
+        "Impacto en los costos totales de producción debido a la adopción de prácticas agroecológicas (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 18,
+    "explanation": "Priorizar la adquisición de productos agroecológicos de producción local en las compras públicas es fundamental para Campo Grande debido al importante riesgo que representan las sequías e inundaciones para la seguridad alimentaria. Al apoyar las prácticas agroecológicas locales, la ciudad puede aumentar su resiliencia frente a estos peligros climáticos, garantizando un suministro de alimentos más estable y sostenible. Además, esta acción puede estimular la economía local, generando beneficios económicos para los agricultores locales y reduciendo la dependencia de fuentes externas de alimentos. Asimismo, la promoción de productos agroecológicos está alineada con los objetivos de sostenibilidad ambiental, ya que puede reducir las emisiones asociadas al transporte y a la agricultura industrial.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar la Adquisición de Productos Agroecológicos de Producción Local en Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Centrarse en comprar alimentos sostenibles y producidos localmente para las instituciones públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de políticas de adquisición e identificación de proveedores locales confiables.",
+        "Alianzas con productores y asignación de fondos para programas de adquisición sostenible.",
+        "Establecimiento de sistemas de monitoreo para garantizar el cumplimiento de los criterios de sostenibilidad."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje del volumen total de compras públicas provenientes de productores agroecológicos locales.",
+        "Cantidad de emisiones de CO₂ evitadas debido a la reducción de la distancia de transporte (tCO₂e).",
+        "Número de productores agroecológicos beneficiados por las compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0136",
+    "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+    "actionPriority": 19,
+    "explanation": "Apoyar la implementación de incentivos fiscales ecológicos en Campo Grande es crucial debido a los importantes desafíos ambientales de la ciudad. Con altas emisiones provenientes del transporte y el uso del suelo, estos incentivos pueden fomentar prácticas sostenibles y reducir la huella de carbono total. Además, la ciudad enfrenta graves riesgos por amenazas climáticas como sequías e inundaciones, que ponen en peligro los recursos hídricos y la seguridad alimentaria. Al promover políticas fiscales ecológicas, Campo Grande puede aumentar su resiliencia frente a estos impactos climáticos y fomentar un entorno urbano más sostenible.",
+    "action": {
+      "ActionID": "icare_0136",
+      "ActionName": "Apoyar la Implementación de Incentivos Fiscales Ecológicos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar la aplicación de impuestos ecológicos e incentivos para promover la conservación ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Establecer un marco regulatorio claro con tasas impositivas justas e incentivos para la sostenibilidad.",
+        "Implementar sistemas de monitoreo efectivos para rastrear el cumplimiento y medir el impacto.",
+        "Promover la concienciación pública y fomentar la colaboración entre gobiernos, empresas y comunidades."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de municipios que han adoptado incentivos fiscales ambientales.",
+        "Porcentaje de ingresos fiscales gastados en prácticas sostenibles.",
+        "Superficie o número de propiedades que se benefician de prácticas de conservación como resultado de los incentivos."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGR",
+    "cityName": "Campo Grande",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0126",
+    "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
+    "actionPriority": 20,
+    "explanation": "La implementación de infraestructura para el suministro de combustibles verdes para aeronaves en Campo Grande es un paso significativo hacia la reducción de las emisiones del transporte, que constituyen uno de los principales contribuyentes a las emisiones totales de la ciudad. Dada la alta proporción de emisiones provenientes del transporte en la ciudad, la transición a biocombustibles o hidrógeno verde puede reducir sustancialmente la huella de carbono de los viajes aéreos. Además, esta acción está alineada con las tendencias globales hacia una aviación sostenible, lo que podría posicionar a Campo Grande como un líder en tecnología de aviación ecológica. Al invertir en esta infraestructura, la ciudad también puede estimular el crecimiento económico y crear nuevas oportunidades de empleo en el sector de la energía verde.",
+    "action": {
+      "ActionID": "icare_0126",
+      "ActionName": "Implementación de infraestructura de suministro de combustibles verdes para aeronaves, como biocombustibles o hidrógeno verde.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "aviation"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta acción tiene como objetivo promover la sostenibilidad en los aeropuertos mediante la implementación de infraestructura para abastecer a las aeronaves con combustibles de bajo carbono. El uso de biocombustibles o hidrógeno verde puede reducir significativamente las emisiones de GEI en el sector de la aviación. Además, la transición a estas fuentes de energía más limpias contribuirá a alcanzar los objetivos de descarbonización en el sector del transporte, al tiempo que se mantiene la eficiencia operativa en los aeropuertos y se minimiza su impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollar infraestructura para abastecer aviones con combustibles bajos en carbono como biocombustibles o hidrógeno verde.",
+        "Asegurar la disponibilidad de fuentes de combustible sostenibles y la tecnología necesaria para las operaciones de abastecimiento.",
+        "Monitorear y evaluar el impacto ambiental y la eficiencia operativa de la transición a combustibles bajos en carbono."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de aeropuertos con infraestructura de biocombustible o hidrógeno verde.",
+        "Cantidad de combustible verde consumido por el sector de la aviación (litros/año).",
+        "Reducción de emisiones de CO₂ de la aviación mediante el uso de combustibles alternativos (tCO₂e/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
 ]

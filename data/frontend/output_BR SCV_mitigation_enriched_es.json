@@ -1,1261 +1,1261 @@
 [
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 1,
-        "explanation": "Implementing agroforestry systems in S\u00e3o Crist\u00f3v\u00e3o is a high priority due to the city's tropical rainforest biome, which is well-suited for such sustainable agricultural practices. Agroforestry can enhance biodiversity, improve soil health, and increase resilience against climate impacts like droughts and floods, which are significant risks for the region. Additionally, this action can contribute to reducing land use emissions, which are currently a major component of the city's total emissions. By integrating trees with crops and livestock, agroforestry can also support local food security and provide economic benefits to the community.",
-        "action": {
-            "ActionID": "icare_0050",
-            "ActionName": "Implementar Sistemas Agroforestales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover sistemas agroforestales integrando \u00e1rboles en el cultivo de alimentos y pastos, aumentando la biodiversidad y la captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Provisi\u00f3n de apoyo t\u00e9cnico y orientaci\u00f3n a los agricultores sobre el dise\u00f1o e implementaci\u00f3n de sistemas agroforestales.",
-                "Desarrollo de incentivos financieros o subsidios para hacer la agroforester\u00eda m\u00e1s atractiva econ\u00f3micamente.",
-                "Creaci\u00f3n de pol\u00edticas que integren pr\u00e1cticas agroforestales en la planificaci\u00f3n del uso del suelo agr\u00edcola y los sistemas de tenencia de la tierra."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de tierras agr\u00edcolas convertidas en sistemas agroforestales (%).",
-                "N\u00famero de nuevos proyectos agroforestales implementados.",
-                "Aumento en la captura de carbono en sistemas agroforestales (toneladas de CO\u2082e/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 2,
-        "explanation": "Promoting urban reforestation and green corridors in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the city's tropical rainforest biome, which naturally supports rich biodiversity. This action can help mitigate the impacts of heatwaves and improve public health by reducing urban heat island effects. Additionally, green corridors can enhance the city's resilience against floods by improving water absorption and reducing runoff. Given the moderate risk of inadequate sanitation, increasing green spaces can also contribute to better environmental quality and public well-being.",
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promover la Reforestaci\u00f3n Urbana y los Corredores Verdes",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aumentar la cobertura arb\u00f3rea urbana para mitigar el efecto de isla de calor urbano y mejorar la biodiversidad.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identificaci\u00f3n de \u00e1reas prioritarias y selecci\u00f3n de especies nativas y resilientes al clima para la plantaci\u00f3n de \u00e1rboles.",
-                "Alianzas con organizaciones locales y viveros, y asignaci\u00f3n de recursos para la plantaci\u00f3n y el mantenimiento.",
-                "Participaci\u00f3n comunitaria para garantizar el cuidado y apoyo a largo plazo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento en la cobertura de dosel arb\u00f3reo urbano (%)",
-                "Longitud total de corredores verdes creados o restaurados (kil\u00f3metros)",
-                "Reducci\u00f3n en las temperaturas del efecto de isla de calor urbano (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 3,
-        "explanation": "Strengthening mechanisms for deforestation control in S\u00e3o Crist\u00f3v\u00e3o is crucial due to its location in a tropical rainforest biome. This area is particularly vulnerable to the impacts of deforestation, which can exacerbate climate change effects and threaten biodiversity. By enhancing deforestation control, the city can help preserve its natural environment, which is vital for maintaining ecological balance and supporting local livelihoods. Additionally, controlling deforestation can mitigate land use emissions, which are a significant component of the city's total emissions, thereby contributing to broader climate action goals.",
-        "action": {
-            "ActionID": "icare_0134",
-            "ActionName": "Fortalecer los Mecanismos para el Control de la Deforestaci\u00f3n",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Mejorar la supervisi\u00f3n y la aplicaci\u00f3n de la ley para prevenir la deforestaci\u00f3n ilegal y promover el uso sostenible de la tierra.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Fuerte marco legal, tecnolog\u00edas de monitoreo avanzadas (sat\u00e9lites y drones), y desarrollo de capacidades para las autoridades locales.",
-                "Colaboraci\u00f3n con las comunidades locales y financiaci\u00f3n adecuada para los esfuerzos de aplicaci\u00f3n.",
-                "Transparencia y responsabilidad en los informes para garantizar una implementaci\u00f3n efectiva."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total monitoreada para la deforestaci\u00f3n (hect\u00e1reas/a\u00f1o).",
-                "Reducci\u00f3n en la tasa anual de deforestaci\u00f3n (%).",
-                "Cantidad de emisiones evitadas al reducir la deforestaci\u00f3n (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0128",
-        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 4,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in S\u00e3o Crist\u00f3v\u00e3o is a strategic action to enhance environmental conservation efforts. Given the city's tropical rainforest biome, PES can incentivize landowners to maintain and restore natural ecosystems, which is crucial for biodiversity preservation and climate resilience. Additionally, PES programs can help mitigate the impacts of climate hazards such as droughts and floods by promoting sustainable land use practices. This action aligns with the city's need to address high emissions from land use and improve overall environmental health.",
-        "action": {
-            "ActionID": "icare_0128",
-            "ActionName": "Establecer Programas Municipales de Pago por Servicios Ambientales (PES)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar programas que paguen a los propietarios de tierras por mantener o mejorar las condiciones ambientales en sus propiedades.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Creaci\u00f3n de mecanismos de financiaci\u00f3n y criterios de elegibilidad claros con indicadores de rendimiento.",
-                "Alianzas con organizaciones ambientales y campa\u00f1as de concienciaci\u00f3n para fomentar la participaci\u00f3n.",
-                "Integraci\u00f3n con marcos legales para garantizar la sostenibilidad del programa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de contratos activos de Pago por Servicios Ambientales (PES) firmados.",
-                "\u00c1rea total bajo pr\u00e1cticas de conservaci\u00f3n o restauraci\u00f3n incentivadas (hect\u00e1reas).",
-                "Cantidad de carbono secuestrado o emisiones evitadas a trav\u00e9s de acciones de PES (tCO\u2082e/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 5,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions is crucial for S\u00e3o Crist\u00f3v\u00e3o due to its moderate low-income population and the significant impact of climate hazards on food security. The city faces high risks from floods and droughts, which can severely affect agricultural productivity and food availability. By implementing ATER actions, the city can enhance the resilience of its agricultural sector, improve food security, and support the livelihoods of its rural population. Additionally, these actions can help mitigate the socio-economic impacts of climate change, ensuring sustainable development in the region.",
-        "action": {
-            "ActionID": "icare_0130",
-            "ActionName": "Realizar Acciones de Asistencia T\u00e9cnica y Extensi\u00f3n Rural (ATER)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Proporcionar apoyo t\u00e9cnico y capacitaci\u00f3n a los productores rurales para la producci\u00f3n agr\u00edcola sostenible.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidad de personal t\u00e9cnico calificado y programas de formaci\u00f3n adaptados.",
-                "Alianzas con instituciones de investigaci\u00f3n agr\u00edcola y asignaci\u00f3n de recursos para el desarrollo de capacidades.",
-                "Compromiso con los productores rurales para asegurar su participaci\u00f3n activa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de productores beneficiados con asistencia t\u00e9cnica rural (% del total).",
-                "Porcentaje de participantes que adoptan pr\u00e1cticas resilientes al clima.",
-                "Vulnerabilidad reducida de las propiedades al riesgo clim\u00e1tico (%)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 6,
-        "explanation": "Facilitating technology transfer for conservation practices in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the city's vulnerability to environmental hazards such as floods and landslides. These hazards pose significant risks to public health and infrastructure, making it essential to adopt advanced conservation techniques. By transferring technology, the city can enhance its resilience against these threats, ensuring sustainable development and protection of its natural resources. Additionally, improved conservation practices can help mitigate emissions from land use, which is a major contributor to the city's total emissions.",
-        "action": {
-            "ActionID": "icare_0129",
-            "ActionName": "Facilitar la Transferencia de Tecnolog\u00eda para Pr\u00e1cticas de Conservaci\u00f3n",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover la adopci\u00f3n de pr\u00e1cticas agr\u00edcolas sostenibles mediante la capacitaci\u00f3n, proyectos piloto y demostraciones tecnol\u00f3gicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Provisi\u00f3n de programas de capacitaci\u00f3n y establecimiento de proyectos piloto para mostrar pr\u00e1cticas sostenibles.",
-                "Alianzas con instituciones de investigaci\u00f3n para el desarrollo de tecnolog\u00eda e incentivos financieros para fomentar la adopci\u00f3n.",
-                "Acceso a asistencia t\u00e9cnica para una implementaci\u00f3n exitosa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de tecnolog\u00edas de conservaci\u00f3n transferidas y aplicadas en las granjas.",
-                "Porcentaje de productores capacitados para implementar pr\u00e1cticas de conservaci\u00f3n.",
-                "Reducci\u00f3n en la degradaci\u00f3n del suelo o aumento en la cobertura vegetal (hect\u00e1reas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 7,
-        "explanation": "Promoting sustainable agricultural practices in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which directly impact food security. By adopting sustainable methods, the city can enhance its resilience against these hazards, ensuring a stable food supply for its population. Additionally, sustainable agriculture can help reduce land use emissions, which are a significant contributor to the city's total emissions. This action also supports the socio-economic development of the region by potentially increasing agricultural productivity and providing more stable income opportunities for local farmers.",
-        "action": {
-            "ActionID": "icare_0102",
-            "ActionName": "Promover Pr\u00e1cticas Agr\u00edcolas Sostenibles",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar pr\u00e1cticas agr\u00edcolas que reduzcan las emisiones de gases de efecto invernadero, como el uso reducido de fertilizantes y agroqu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de programas educativos y recursos para promover pr\u00e1cticas agr\u00edcolas sostenibles entre los agricultores.",
-                "Implementaci\u00f3n de pol\u00edticas que incentiven la reducci\u00f3n del uso de fertilizantes y agroqu\u00edmicos, como subsidios para insumos org\u00e1nicos o t\u00e9cnicas de cultivo sostenibles.",
-                "Colaboraci\u00f3n con organizaciones agr\u00edcolas para proporcionar apoyo t\u00e9cnico y orientaci\u00f3n sobre pr\u00e1cticas que reduzcan las emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de tierras agr\u00edcolas que adoptan pr\u00e1cticas sostenibles (% del total de tierras agr\u00edcolas).",
-                "Aumento en el rendimiento de cultivos por hect\u00e1rea (toneladas/hect\u00e1rea) debido a m\u00e9todos sostenibles.",
-                "Reducci\u00f3n en el uso de agua para la agricultura (litros o m\u00b3/hect\u00e1rea/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 8,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for S\u00e3o Crist\u00f3v\u00e3o due to its moderate low-income population and the need to enhance food security. By supporting local agroecological producers, the city can reduce its carbon footprint associated with transportation emissions and promote sustainable agricultural practices. This action also helps to strengthen the local economy, providing more stable income opportunities for residents. Additionally, it aligns with the city's need to address food security risks exacerbated by climate hazards such as floods and droughts.",
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Priorizar la Adquisici\u00f3n de Productos Agroecol\u00f3gicos de Producci\u00f3n Local en Compras P\u00fablicas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Centrarse en comprar alimentos sostenibles y producidos localmente para las instituciones p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de pol\u00edticas de adquisici\u00f3n e identificaci\u00f3n de proveedores locales confiables.",
-                "Alianzas con productores y asignaci\u00f3n de fondos para programas de adquisici\u00f3n sostenible.",
-                "Establecimiento de sistemas de monitoreo para garantizar el cumplimiento de los criterios de sostenibilidad."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje del volumen total de compras p\u00fablicas provenientes de productores agroecol\u00f3gicos locales.",
-                "Cantidad de emisiones de CO\u2082 evitadas debido a la reducci\u00f3n de la distancia de transporte (tCO\u2082e).",
-                "N\u00famero de productores agroecol\u00f3gicos beneficiados por las compras p\u00fablicas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 9,
-        "explanation": "Encouraging local agroecological production and short supply chains is crucial for S\u00e3o Crist\u00f3v\u00e3o due to its moderate risk of food insecurity exacerbated by climate hazards such as floods and droughts. By promoting local agriculture, the city can enhance its resilience against these risks, ensuring a stable food supply even during adverse conditions. Additionally, this action supports the local economy by creating jobs and reducing dependency on external food sources, which is vital for a city with moderate low-income levels. Furthermore, agroecological practices can help reduce emissions from transportation and waste, contributing to the city's overall sustainability goals.",
-        "action": {
-            "ActionID": "icare_0132",
-            "ActionName": "Fomentar la Producci\u00f3n Agroecol\u00f3gica Local y las Cadenas de Suministro Cortas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Apoyar pr\u00e1cticas agr\u00edcolas locales y sostenibles y reducir las emisiones asociadas con el transporte de alimentos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Incentivos para pr\u00e1cticas agr\u00edcolas sostenibles y desarrollo de redes locales de distribuci\u00f3n de alimentos.",
-                "Alianzas con productores e inversi\u00f3n en infraestructura para apoyar los mercados locales.",
-                "Pol\u00edticas para priorizar m\u00e9todos de transporte de bajas emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de productores que se adhieren a pr\u00e1cticas agroecol\u00f3gicas locales.",
-                "Porcentaje de alimentos consumidos en la ciudad provenientes de cadenas cortas.",
-                "Reducci\u00f3n de emisiones asociadas con el transporte de alimentos (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 10,
-        "explanation": "Supporting agroecological certification programs in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which directly impact food security. By promoting sustainable agricultural practices, these programs can enhance resilience against these hazards, ensuring a stable food supply. Additionally, agroecological practices can help reduce emissions from land use, which is a significant contributor to the city's total emissions. This action aligns with the need to address socio-economic factors by potentially providing economic opportunities for local farmers, thereby supporting the moderate low-income population.",
-        "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Apoyar los Programas de Certificaci\u00f3n Agroecol\u00f3gica",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar la certificaci\u00f3n de productos agroecol\u00f3gicos que cumplan con criterios de sostenibilidad y tengan bajo impacto ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de est\u00e1ndares de certificaci\u00f3n claros y accesibles para productos agroecol\u00f3gicos que enfatizan la sostenibilidad y el bajo impacto ambiental.",
-                "Apoyo a los agricultores y productores para cumplir con los requisitos de certificaci\u00f3n a trav\u00e9s de capacitaci\u00f3n, asistencia financiera o orientaci\u00f3n t\u00e9cnica.",
-                "Creaci\u00f3n de estrategias de marketing y asociaciones para aumentar la visibilidad y la demanda de productos agroecol\u00f3gicos certificados en los mercados locales y globales."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de agricultores o productores que obtienen certificaciones agroecol\u00f3gicas.",
-                "Porcentaje de productos agr\u00edcolas certificados en el mercado (%).",
-                "Reducci\u00f3n en el uso de insumos sint\u00e9ticos (por ejemplo, fertilizantes, pesticidas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0085",
-        "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 11,
-        "explanation": "Promoting the adoption of agroecological pest control in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which can severely impact food security. By implementing sustainable pest control methods, the city can enhance its agricultural resilience, ensuring a stable food supply even in adverse conditions. Additionally, agroecological practices can help reduce the environmental impact of agriculture, aligning with the city's need to manage its emissions and protect its tropical rainforest biome. This action supports the socio-economic stability of the region by potentially lowering costs for farmers and improving crop yields.",
-        "action": {
-            "ActionID": "icare_0085",
-            "ActionName": "Promover la Adopci\u00f3n del Control de Plagas Agroecol\u00f3gico",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar m\u00e9todos de control de plagas que sean agroecol\u00f3gicos, como el uso de depredadores naturales y plantas repelentes, para reducir la dependencia de pesticidas qu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de programas educativos para informar a los agricultores sobre m\u00e9todos de control de plagas agroecol\u00f3gicos y sus beneficios.",
-                "Provisi\u00f3n de acceso a recursos o materiales para implementar m\u00e9todos de control de plagas naturales, como la introducci\u00f3n de insectos beneficiosos o el cultivo de plantas repelentes.",
-                "Creaci\u00f3n de incentivos o redes de apoyo para fomentar la transici\u00f3n de los pesticidas qu\u00edmicos hacia alternativas sostenibles."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento en las tasas de productividad en \u00e1reas que adoptan el control de plagas agroecol\u00f3gico (%).",
-                "N\u00famero de campa\u00f1as educativas realizadas sobre el control sostenible de plagas.",
-                "Impacto en los costos totales de producci\u00f3n debido a la adopci\u00f3n de pr\u00e1cticas agroecol\u00f3gicas (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 12,
-        "explanation": "Supporting regenerative agriculture practices in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which directly impact food security. By promoting these practices, the city can enhance soil health, increase biodiversity, and improve water retention, making the agricultural sector more resilient to climate impacts. Additionally, regenerative agriculture can help reduce emissions from land use, which is a significant contributor to the city's total emissions. This action aligns with the need to address socio-economic factors by potentially providing more sustainable livelihoods for local farmers.",
-        "action": {
-            "ActionID": "icare_0100",
-            "ActionName": "Apoyar las Pr\u00e1cticas de Agricultura Regenerativa",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Apoyar pr\u00e1cticas agr\u00edcolas regenerativas que se centren en restaurar la salud del suelo y reducir las emisiones de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de programas de capacitaci\u00f3n y recursos para educar a los agricultores sobre t\u00e9cnicas agr\u00edcolas regenerativas, como el cultivo de cobertura y la reducci\u00f3n de la labranza.",
-                "Implementaci\u00f3n de incentivos financieros o subsidios para apoyar la adopci\u00f3n de pr\u00e1cticas regenerativas.",
-                "Colaboraci\u00f3n con instituciones de investigaci\u00f3n agr\u00edcola para monitorear y documentar la efectividad de las pr\u00e1cticas regenerativas en la captura de carbono y la mejora de la salud del suelo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento en los niveles de carbono org\u00e1nico del suelo (toneladas/hect\u00e1rea).",
-                "Reducci\u00f3n en el uso de agua por hect\u00e1rea en la producci\u00f3n agr\u00edcola (%).",
-                "N\u00famero de proyectos piloto de agricultura regenerativa implementados."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 13,
-        "explanation": "Creating incentives for agroforestry practices in livestock systems is crucial for S\u00e3o Crist\u00f3v\u00e3o due to its tropical rainforest biome, which can benefit significantly from sustainable land use practices. Agroforestry can help reduce land use emissions, which are currently a major contributor to the city's total emissions. Additionally, integrating trees into livestock systems can improve biodiversity and soil health, mitigating some of the environmental risks associated with droughts and heatwaves. This action also aligns with the need to enhance food security and resilience against climate-related hazards, such as floods and landslides, which pose significant risks to the region.",
-        "action": {
-            "ActionID": "icare_0084",
-            "ActionName": "Crear incentivos para pr\u00e1cticas de agroforester\u00eda en sistemas ganaderos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Crear incentivos financieros y t\u00e9cnicos para integrar pr\u00e1cticas de agroforester\u00eda en los sistemas de ganader\u00eda, promoviendo la captura de carbono, la protecci\u00f3n del suelo y la mejora de la biodiversidad.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de programas de incentivos financieros, como subsidios o exenciones fiscales, para apoyar a los agricultores en la integraci\u00f3n de la agroforester\u00eda con los sistemas de ganader\u00eda.",
-                "Provisi\u00f3n de asistencia t\u00e9cnica y capacitaci\u00f3n a los agricultores sobre las mejores pr\u00e1cticas para la integraci\u00f3n de la agroforester\u00eda en las operaciones ganaderas.",
-                "Colaboraci\u00f3n con organizaciones agr\u00edcolas y ambientales para monitorear y evaluar los impactos de las pr\u00e1cticas de agroforester\u00eda en la captura de carbono, la salud del suelo y la biodiversidad."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de incentivos financieros proporcionados para integrar la agroforester\u00eda en los sistemas de ganader\u00eda.",
-                "Aumento en la calidad del suelo y la cobertura vegetal en propiedades gestionadas (%).",
-                "Crecimiento en la biodiversidad en \u00e1reas de agroforester\u00eda (% de especies identificadas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 14,
-        "explanation": "Supporting the implementation of ecological fiscal incentives in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the city's significant environmental challenges. The city faces high emissions from waste and land use, which contribute to its total emissions. By promoting ecological fiscal incentives, the city can encourage sustainable practices and reduce its environmental footprint. Additionally, these incentives can help address the moderate socio-economic challenges by potentially creating green jobs and improving public services. This action aligns with the need to mitigate risks associated with climate hazards such as floods and landslides, which pose a high threat to public health and infrastructure.",
-        "action": {
-            "ActionID": "icare_0136",
-            "ActionName": "Apoyar la Implementaci\u00f3n de Incentivos Fiscales Ecol\u00f3gicos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar la aplicaci\u00f3n de impuestos ecol\u00f3gicos e incentivos para promover la conservaci\u00f3n ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establecer un marco regulatorio claro con tasas impositivas justas e incentivos para la sostenibilidad.",
-                "Implementar sistemas de monitoreo efectivos para rastrear el cumplimiento y medir el impacto.",
-                "Promover la concienciaci\u00f3n p\u00fablica y fomentar la colaboraci\u00f3n entre gobiernos, empresas y comunidades."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de municipios que han adoptado incentivos fiscales ambientales.",
-                "Porcentaje de ingresos fiscales gastados en pr\u00e1cticas sostenibles.",
-                "Superficie o n\u00famero de propiedades que se benefician de pr\u00e1cticas de conservaci\u00f3n como resultado de los incentivos."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 15,
-        "explanation": "Promoting organic farming in S\u00e3o Crist\u00f3v\u00e3o is a strategic action due to its potential to enhance food security, which is at high risk from floods. Organic farming practices can improve soil health and water retention, making crops more resilient to extreme weather events. Additionally, this approach can reduce dependency on chemical fertilizers and pesticides, which aligns with the city's need to manage its environmental footprint. By fostering organic farming, S\u00e3o Crist\u00f3v\u00e3o can also support local economies and provide healthier food options for its residents.",
-        "action": {
-            "ActionID": "icare_0096",
-            "ActionName": "Promover la Agricultura Org\u00e1nica",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar la adopci\u00f3n de pr\u00e1cticas de agricultura org\u00e1nica que eviten el uso de productos qu\u00edmicos y contribuyan a la salud del suelo y la captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Provisi\u00f3n de incentivos financieros, subsidios o subvenciones para apoyar la transici\u00f3n a pr\u00e1cticas de agricultura org\u00e1nica.",
-                "Desarrollo de redes de capacitaci\u00f3n y apoyo para educar a los agricultores sobre m\u00e9todos de agricultura org\u00e1nica y sus beneficios.",
-                "Establecimiento de sistemas de certificaci\u00f3n y estrategias de acceso al mercado para asegurar la viabilidad econ\u00f3mica de los productos org\u00e1nicos."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de tierras agr\u00edcolas bajo pr\u00e1cticas de agricultura org\u00e1nica (%).",
-                "Aumento en el contenido de carbono org\u00e1nico del suelo (toneladas de carbono por hect\u00e1rea).",
-                "Reducci\u00f3n en el uso de fertilizantes qu\u00edmicos y pesticidas (kilogramos/hect\u00e1rea/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 16,
-        "explanation": "Encouraging renewable energy policies at the municipal level in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the city's significant stationary energy emissions. Transitioning to renewable energy sources can help reduce these emissions, contributing to a cleaner environment and improved air quality. Additionally, renewable energy can enhance energy security, which is particularly important given the city's vulnerability to energy disruptions caused by climate hazards like droughts and heatwaves. Implementing these policies can also stimulate local economic growth by creating green jobs and attracting investments in sustainable technologies.",
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Fomentar pol\u00edticas de energ\u00eda renovable a nivel municipal",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Abogar por e implementar pol\u00edticas que prioricen el desarrollo e integraci\u00f3n de sistemas de energ\u00eda renovable en las operaciones y planificaci\u00f3n del gobierno local.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Voluntad pol\u00edtica y liderazgo para priorizar la energ\u00eda renovable en las pol\u00edticas y procesos de planificaci\u00f3n del gobierno local",
-                "Desarrollo de pol\u00edticas claras y marcos regulatorios que faciliten la integraci\u00f3n de sistemas de energ\u00eda renovable en las operaciones gubernamentales",
-                "Disponibilidad de financiamiento o mecanismos financieros para apoyar la transici\u00f3n a la energ\u00eda renovable en la infraestructura y operaciones municipales"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de proyectos de energ\u00eda renovable aprobados o iniciados anualmente a nivel municipal.",
-                "Porcentaje de la demanda energ\u00e9tica municipal cubierta por fuentes renovables (%).",
-                "Reducci\u00f3n de las emisiones de carbono municipales debido a la adopci\u00f3n de energ\u00eda renovable (toneladas de CO\u2082e/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0101",
-        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
-        "actionPriority": 17,
-        "explanation": "Encouraging the use of low-emission agricultural machinery in S\u00e3o Crist\u00f3v\u00e3o is important due to the city's significant land use emissions. By adopting machinery that produces fewer emissions, the city can reduce its overall environmental impact, particularly in the agricultural sector. This action aligns with the need to address climate change and improve air quality, which is crucial for public health and the sustainability of local ecosystems. Additionally, promoting low-emission technologies can lead to long-term economic benefits by reducing fuel costs and enhancing the resilience of the agricultural sector against climate-related risks.",
-        "action": {
-            "ActionID": "icare_0101",
-            "ActionName": "Fomentar el uso de maquinaria agr\u00edcola de bajas emisiones",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover el uso de maquinaria agr\u00edcola de bajas emisiones de carbono, como tractores y equipos impulsados por biocombustibles o energ\u00eda solar.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Establecimiento de programas de financiaci\u00f3n o incentivos para que los agricultores compren maquinaria agr\u00edcola de bajas emisiones de carbono.",
-                "Desarrollo de asociaciones con fabricantes de maquinaria para crear y distribuir soluciones de equipos sostenibles.",
-                "Implementaci\u00f3n de programas de capacitaci\u00f3n y apoyo para ayudar a los agricultores a integrar y mantener maquinaria agr\u00edcola de bajas emisiones de carbono."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de emisiones de maquinaria agr\u00edcola (toneladas de CO\u2082e/a\u00f1o).",
-                "N\u00famero de subsidios o incentivos proporcionados para maquinaria de bajas emisiones.",
-                "Porcentaje de agricultores capacitados para operar maquinaria de bajas emisiones."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0127",
-        "actionName": "Accelerate Environmental Regularization of Rural Properties",
-        "actionPriority": 18,
-        "explanation": "Accelerating the environmental regularization of rural properties in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the significant land use emissions, which are the highest among all emission sources in the city. This action can help mitigate the impact of these emissions by ensuring that rural properties adhere to environmental standards, thus preserving the tropical rainforest biome. Additionally, regularization can enhance biodiversity conservation and reduce the risk of landslides and floods, which are significant hazards in the region. By prioritizing this action, S\u00e3o Crist\u00f3v\u00e3o can improve its resilience to climate change impacts and promote sustainable land management practices.",
-        "action": {
-            "ActionID": "icare_0127",
-            "ActionName": "Acelerar la Regularizaci\u00f3n Ambiental de Propiedades Rurales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar programas para registrar propiedades en el Registro Ambiental Rural (CAR) y adherirse a los compromisos de restauraci\u00f3n ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Acceso a plataformas digitales y capacitaci\u00f3n t\u00e9cnica para los procesos de registro y restauraci\u00f3n de propiedades.",
-                "Incentivos financieros y asociaciones con agencias ambientales para apoyar la implementaci\u00f3n.",
-                "Mecanismos de monitoreo y cumplimiento para asegurar el cumplimiento de los compromisos de restauraci\u00f3n."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de propiedades rurales con Registro Ambiental Rural (CAR) regularizado.",
-                "\u00c1rea total de vegetaci\u00f3n nativa protegida o restaurada en propiedades regularizadas (hect\u00e1reas).",
-                "Reducci\u00f3n anual de emisiones de gases de efecto invernadero (tCO\u2082e) debido a la regularizaci\u00f3n."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0052",
-        "actionName": "Develop projects for renewable energy and waste reuse",
-        "actionPriority": 19,
-        "explanation": "Developing projects for renewable energy and waste reuse in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the city's significant emissions from stationary energy and waste. With a total emissions figure of 261,454.483, focusing on renewable energy can help reduce the city's carbon footprint and mitigate climate change impacts. Additionally, waste reuse projects can address the moderate issue of inadequate sanitation, improving public health and environmental quality. This action aligns with the city's need to enhance energy security and manage waste sustainably, contributing to a more resilient and sustainable urban environment.",
-        "action": {
-            "ActionID": "icare_0052",
-            "ActionName": "Desarrollar proyectos para energ\u00eda renovable y reutilizaci\u00f3n de residuos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta acci\u00f3n tiene como objetivo desarrollar e implementar proyectos de energ\u00eda renovable, incluyendo: un biodigestor para el tratamiento de residuos org\u00e1nicos y una planta de energ\u00eda solar.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "60-79",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo e implementaci\u00f3n de proyectos de energ\u00eda renovable.",
-                "Instalaci\u00f3n de un biodigestor para el tratamiento de residuos org\u00e1nicos.",
-                "Establecimiento de una planta de energ\u00eda solar para generar energ\u00eda limpia."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de proyectos de energ\u00eda renovable y reutilizaci\u00f3n de residuos implementados.",
-                "Cantidad de residuos reutilizados o reciclados (toneladas/a\u00f1o).",
-                "Reducci\u00f3n en los costos de energ\u00eda para los municipios participantes (USD)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "ipcc_0061",
-        "actionName": "Soil Carbon Management in Croplands and Grasslands",
-        "actionPriority": 20,
-        "explanation": "Soil Carbon Management in Croplands and Grasslands is a crucial action for S\u00e3o Crist\u00f3v\u00e3o due to its potential to enhance carbon sequestration and improve soil health. Given the city's tropical rainforest biome, managing soil carbon can help mitigate emissions from land use, which is a significant contributor to the city's total emissions. Additionally, improving soil health can increase agricultural productivity, which is vital for food security, especially in a region facing risks from droughts and floods. This action also supports biodiversity by maintaining healthy ecosystems, which are essential for resilience against climate impacts.",
-        "action": {
-            "ActionID": "ipcc_0061",
-            "ActionName": "Gesti\u00f3n del Carbono del Suelo en Tierras de Cultivo y Pastizales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementaci\u00f3n de pr\u00e1cticas de manejo sostenible del suelo en tierras de cultivo y pastizales para mejorar el carbono org\u00e1nico del suelo. Las pr\u00e1cticas incluyen la mejora del manejo de cultivos y nutrientes, la reducci\u00f3n de la labranza, la retenci\u00f3n de residuos, el manejo del agua y el arroz, la aplicaci\u00f3n de biochar, la mejora de variedades de pasto, el manejo del pastoreo de ganado y el manejo del fuego. Estas actividades tienen como objetivo aumentar la materia org\u00e1nica del suelo, mitigar las emisiones de GEI y proporcionar co-beneficios para la biodiversidad, la provisi\u00f3n de agua y la seguridad alimentaria.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promueve la inclusi\u00f3n de peque\u00f1os agricultores y comunidades con recursos limitados al proporcionar pr\u00e1cticas rentables y adaptables regionalmente que mejoran la productividad agr\u00edcola y la resiliencia al cambio clim\u00e1tico.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "El \u00e9xito depende de la disponibilidad de recursos para el monitoreo y la verificaci\u00f3n",
-                "adaptaci\u00f3n regional de pr\u00e1cticas",
-                "abordar barreras como la saturaci\u00f3n del suelo y problemas de permanencia"
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento del carbono org\u00e1nico del suelo",
-                "reducci\u00f3n de emisiones de GEI",
-                "mejora en la productividad agr\u00edcola",
-                "mejoras en la biodiversidad"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0050",
+    "actionName": "Implement Agroforestry Systems",
+    "actionPriority": 1,
+    "explanation": "La implementación de sistemas agroforestales en São Cristóvão es una alta prioridad debido al bioma de selva tropical de la ciudad, que es muy adecuado para este tipo de prácticas agrícolas sostenibles. La agroforestería puede aumentar la biodiversidad, mejorar la salud del suelo y aumentar la resiliencia frente a impactos climáticos como sequías e inundaciones, que representan riesgos significativos para la región. Además, esta acción puede contribuir a la reducción de las emisiones derivadas del uso del suelo, que actualmente constituyen una parte importante del total de emisiones de la ciudad. Al integrar árboles con cultivos y ganado, la agroforestería también puede apoyar la seguridad alimentaria local y proporcionar beneficios económicos a la comunidad.",
+    "action": {
+      "ActionID": "icare_0050",
+      "ActionName": "Implementar Sistemas Agroforestales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover sistemas agroforestales integrando árboles en el cultivo de alimentos y pastos, aumentando la biodiversidad y la captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Provisión de apoyo técnico y orientación a los agricultores sobre el diseño e implementación de sistemas agroforestales.",
+        "Desarrollo de incentivos financieros o subsidios para hacer la agroforestería más atractiva económicamente.",
+        "Creación de políticas que integren prácticas agroforestales en la planificación del uso del suelo agrícola y los sistemas de tenencia de la tierra."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de tierras agrícolas convertidas en sistemas agroforestales (%).",
+        "Número de nuevos proyectos agroforestales implementados.",
+        "Aumento en la captura de carbono en sistemas agroforestales (toneladas de CO₂e/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0133",
+    "actionName": "Promote Urban Reforestation and Green Corridors",
+    "actionPriority": 2,
+    "explanation": "Promover la reforestación urbana y los corredores verdes en São Cristóvão es fundamental debido al bioma de selva tropical de la ciudad, que naturalmente alberga una rica biodiversidad. Esta acción puede ayudar a mitigar los impactos de las olas de calor y mejorar la salud pública al reducir los efectos de las islas de calor urbanas. Además, los corredores verdes pueden aumentar la resiliencia de la ciudad frente a inundaciones al mejorar la absorción de agua y reducir la escorrentía. Dado el riesgo moderado de saneamiento inadecuado, aumentar los espacios verdes también puede contribuir a una mejor calidad ambiental y al bienestar público.",
+    "action": {
+      "ActionID": "icare_0133",
+      "ActionName": "Promover la Reforestación Urbana y los Corredores Verdes",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aumentar la cobertura arbórea urbana para mitigar el efecto de isla de calor urbano y mejorar la biodiversidad.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Identificación de áreas prioritarias y selección de especies nativas y resilientes al clima para la plantación de árboles.",
+        "Alianzas con organizaciones locales y viveros, y asignación de recursos para la plantación y el mantenimiento.",
+        "Participación comunitaria para garantizar el cuidado y apoyo a largo plazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento en la cobertura de dosel arbóreo urbano (%)",
+        "Longitud total de corredores verdes creados o restaurados (kilómetros)",
+        "Reducción en las temperaturas del efecto de isla de calor urbano (°C)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0134",
+    "actionName": "Strengthen Mechanisms for Deforestation Control",
+    "actionPriority": 3,
+    "explanation": "El fortalecimiento de los mecanismos para el control de la deforestación en São Cristóvão es crucial debido a su ubicación en un bioma de selva tropical. Esta área es particularmente vulnerable a los impactos de la deforestación, que pueden agravar los efectos del cambio climático y amenazar la biodiversidad. Al mejorar el control de la deforestación, la ciudad puede ayudar a preservar su entorno natural, lo cual es vital para mantener el equilibrio ecológico y apoyar los medios de vida locales. Además, controlar la deforestación puede mitigar las emisiones derivadas del uso del suelo, que constituyen un componente significativo de las emisiones totales de la ciudad, contribuyendo así a los objetivos más amplios de acción climática.",
+    "action": {
+      "ActionID": "icare_0134",
+      "ActionName": "Fortalecer los Mecanismos para el Control de la Deforestación",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Mejorar la supervisión y la aplicación de la ley para prevenir la deforestación ilegal y promover el uso sostenible de la tierra.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fuerte marco legal, tecnologías de monitoreo avanzadas (satélites y drones), y desarrollo de capacidades para las autoridades locales.",
+        "Colaboración con las comunidades locales y financiación adecuada para los esfuerzos de aplicación.",
+        "Transparencia y responsabilidad en los informes para garantizar una implementación efectiva."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total monitoreada para la deforestación (hectáreas/año).",
+        "Reducción en la tasa anual de deforestación (%).",
+        "Cantidad de emisiones evitadas al reducir la deforestación (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0128",
+    "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+    "actionPriority": 4,
+    "explanation": "Establecer programas municipales de Pago por Servicios Ambientales (PSA) en São Cristóvão es una acción estratégica para fortalecer los esfuerzos de conservación ambiental. Dado el bioma de selva tropical de la ciudad, el PSA puede incentivar a los propietarios de tierras a mantener y restaurar los ecosistemas naturales, lo cual es crucial para la preservación de la biodiversidad y la resiliencia climática. Además, los programas de PSA pueden ayudar a mitigar los impactos de amenazas climáticas como sequías e inundaciones, promoviendo prácticas sostenibles de uso del suelo. Esta acción está alineada con la necesidad de la ciudad de abordar las altas emisiones derivadas del uso del suelo y mejorar la salud ambiental en general.",
+    "action": {
+      "ActionID": "icare_0128",
+      "ActionName": "Establecer Programas Municipales de Pago por Servicios Ambientales (PES)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas que paguen a los propietarios de tierras por mantener o mejorar las condiciones ambientales en sus propiedades.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Creación de mecanismos de financiación y criterios de elegibilidad claros con indicadores de rendimiento.",
+        "Alianzas con organizaciones ambientales y campañas de concienciación para fomentar la participación.",
+        "Integración con marcos legales para garantizar la sostenibilidad del programa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de contratos activos de Pago por Servicios Ambientales (PES) firmados.",
+        "Área total bajo prácticas de conservación o restauración incentivadas (hectáreas).",
+        "Cantidad de carbono secuestrado o emisiones evitadas a través de acciones de PES (tCO₂e/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0130",
+    "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+    "actionPriority": 5,
+    "explanation": "Realizar acciones de Asistencia Técnica y Extensión Rural (ATER) es fundamental para São Cristóvão debido a su población de ingresos moderadamente bajos y al impacto significativo de los riesgos climáticos en la seguridad alimentaria. La ciudad enfrenta altos riesgos de inundaciones y sequías, que pueden afectar gravemente la productividad agrícola y la disponibilidad de alimentos. Al implementar acciones de ATER, la ciudad puede fortalecer la resiliencia de su sector agrícola, mejorar la seguridad alimentaria y apoyar los medios de vida de su población rural. Además, estas acciones pueden ayudar a mitigar los impactos socioeconómicos del cambio climático, garantizando un desarrollo sostenible en la región.",
+    "action": {
+      "ActionID": "icare_0130",
+      "ActionName": "Realizar Acciones de Asistencia Técnica y Extensión Rural (ATER)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Proporcionar apoyo técnico y capacitación a los productores rurales para la producción agrícola sostenible.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidad de personal técnico calificado y programas de formación adaptados.",
+        "Alianzas con instituciones de investigación agrícola y asignación de recursos para el desarrollo de capacidades.",
+        "Compromiso con los productores rurales para asegurar su participación activa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de productores beneficiados con asistencia técnica rural (% del total).",
+        "Porcentaje de participantes que adoptan prácticas resilientes al clima.",
+        "Vulnerabilidad reducida de las propiedades al riesgo climático (%)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0129",
+    "actionName": "Facilitate Technology Transfer for Conservation Practices",
+    "actionPriority": 6,
+    "explanation": "Facilitar la transferencia de tecnología para las prácticas de conservación en São Cristóvão es crucial debido a la vulnerabilidad de la ciudad frente a peligros ambientales como inundaciones y deslizamientos de tierra. Estos riesgos representan amenazas significativas para la salud pública y la infraestructura, lo que hace esencial la adopción de técnicas avanzadas de conservación. Al transferir tecnología, la ciudad puede aumentar su resiliencia frente a estas amenazas, asegurando un desarrollo sostenible y la protección de sus recursos naturales. Además, la mejora de las prácticas de conservación puede ayudar a mitigar las emisiones derivadas del uso del suelo, que constituyen una de las principales fuentes de emisiones totales de la ciudad.",
+    "action": {
+      "ActionID": "icare_0129",
+      "ActionName": "Facilitar la Transferencia de Tecnología para Prácticas de Conservación",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover la adopción de prácticas agrícolas sostenibles mediante la capacitación, proyectos piloto y demostraciones tecnológicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Provisión de programas de capacitación y establecimiento de proyectos piloto para mostrar prácticas sostenibles.",
+        "Alianzas con instituciones de investigación para el desarrollo de tecnología e incentivos financieros para fomentar la adopción.",
+        "Acceso a asistencia técnica para una implementación exitosa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de tecnologías de conservación transferidas y aplicadas en las granjas.",
+        "Porcentaje de productores capacitados para implementar prácticas de conservación.",
+        "Reducción en la degradación del suelo o aumento en la cobertura vegetal (hectáreas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0102",
+    "actionName": "Promote Sustainable Agricultural Practices",
+    "actionPriority": 7,
+    "explanation": "Promover prácticas agrícolas sostenibles en São Cristóvão es fundamental debido a la vulnerabilidad de la ciudad frente a peligros relacionados con el clima, como sequías e inundaciones, que afectan directamente la seguridad alimentaria. Al adoptar métodos sostenibles, la ciudad puede aumentar su resiliencia ante estos riesgos, garantizando un suministro de alimentos estable para su población. Además, la agricultura sostenible puede ayudar a reducir las emisiones derivadas del uso del suelo, que constituyen una parte significativa de las emisiones totales de la ciudad. Esta acción también apoya el desarrollo socioeconómico de la región al aumentar potencialmente la productividad agrícola y ofrecer oportunidades de ingresos más estables para los agricultores locales.",
+    "action": {
+      "ActionID": "icare_0102",
+      "ActionName": "Promover Prácticas Agrícolas Sostenibles",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar prácticas agrícolas que reduzcan las emisiones de gases de efecto invernadero, como el uso reducido de fertilizantes y agroquímicos.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desarrollo de programas educativos y recursos para promover prácticas agrícolas sostenibles entre los agricultores.",
+        "Implementación de políticas que incentiven la reducción del uso de fertilizantes y agroquímicos, como subsidios para insumos orgánicos o técnicas de cultivo sostenibles.",
+        "Colaboración con organizaciones agrícolas para proporcionar apoyo técnico y orientación sobre prácticas que reduzcan las emisiones."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de tierras agrícolas que adoptan prácticas sostenibles (% del total de tierras agrícolas).",
+        "Aumento en el rendimiento de cultivos por hectárea (toneladas/hectárea) debido a métodos sostenibles.",
+        "Reducción en el uso de agua para la agricultura (litros o m³/hectárea/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 8,
+    "explanation": "Priorizar la adquisición de productos agroecológicos de producción local en las compras públicas es fundamental para São Cristóvão debido a su población de ingresos moderadamente bajos y la necesidad de mejorar la seguridad alimentaria. Al apoyar a los productores agroecológicos locales, la ciudad puede reducir su huella de carbono asociada a las emisiones del transporte y promover prácticas agrícolas sostenibles. Esta acción también contribuye a fortalecer la economía local, proporcionando oportunidades de ingresos más estables para los residentes. Además, está alineada con la necesidad de la ciudad de abordar los riesgos para la seguridad alimentaria que se ven agravados por amenazas climáticas como inundaciones y sequías.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar la Adquisición de Productos Agroecológicos de Producción Local en Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Centrarse en comprar alimentos sostenibles y producidos localmente para las instituciones públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de políticas de adquisición e identificación de proveedores locales confiables.",
+        "Alianzas con productores y asignación de fondos para programas de adquisición sostenible.",
+        "Establecimiento de sistemas de monitoreo para garantizar el cumplimiento de los criterios de sostenibilidad."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje del volumen total de compras públicas provenientes de productores agroecológicos locales.",
+        "Cantidad de emisiones de CO₂ evitadas debido a la reducción de la distancia de transporte (tCO₂e).",
+        "Número de productores agroecológicos beneficiados por las compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0132",
+    "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+    "actionPriority": 9,
+    "explanation": "Fomentar la producción agroecológica local y las cadenas cortas de suministro es crucial para São Cristóvão debido a su riesgo moderado de inseguridad alimentaria, agravado por peligros climáticos como inundaciones y sequías. Al promover la agricultura local, la ciudad puede aumentar su resiliencia frente a estos riesgos, garantizando un suministro estable de alimentos incluso durante condiciones adversas. Además, esta acción apoya la economía local al crear empleos y reducir la dependencia de fuentes externas de alimentos, lo cual es vital para una ciudad con niveles moderados de bajos ingresos. Asimismo, las prácticas agroecológicas pueden ayudar a reducir las emisiones derivadas del transporte y los residuos, contribuyendo a los objetivos generales de sostenibilidad de la ciudad.",
+    "action": {
+      "ActionID": "icare_0132",
+      "ActionName": "Fomentar la Producción Agroecológica Local y las Cadenas de Suministro Cortas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoyar prácticas agrícolas locales y sostenibles y reducir las emisiones asociadas con el transporte de alimentos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Incentivos para prácticas agrícolas sostenibles y desarrollo de redes locales de distribución de alimentos.",
+        "Alianzas con productores e inversión en infraestructura para apoyar los mercados locales.",
+        "Políticas para priorizar métodos de transporte de bajas emisiones."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de productores que se adhieren a prácticas agroecológicas locales.",
+        "Porcentaje de alimentos consumidos en la ciudad provenientes de cadenas cortas.",
+        "Reducción de emisiones asociadas con el transporte de alimentos (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0099",
+    "actionName": "Support Agroecological Certification Programs",
+    "actionPriority": 10,
+    "explanation": "Apoyar los programas de certificación agroecológica en São Cristóvão es fundamental debido a la vulnerabilidad de la ciudad frente a peligros climáticos como sequías e inundaciones, que afectan directamente la seguridad alimentaria. Al promover prácticas agrícolas sostenibles, estos programas pueden aumentar la resiliencia ante estos riesgos, garantizando un suministro de alimentos estable. Además, las prácticas agroecológicas pueden ayudar a reducir las emisiones derivadas del uso del suelo, que constituyen una parte significativa de las emisiones totales de la ciudad. Esta acción está alineada con la necesidad de abordar factores socioeconómicos, ya que puede ofrecer oportunidades económicas para los agricultores locales, apoyando así a la población de ingresos moderados y bajos.",
+    "action": {
+      "ActionID": "icare_0099",
+      "ActionName": "Apoyar los Programas de Certificación Agroecológica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar la certificación de productos agroecológicos que cumplan con criterios de sostenibilidad y tengan bajo impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de estándares de certificación claros y accesibles para productos agroecológicos que enfatizan la sostenibilidad y el bajo impacto ambiental.",
+        "Apoyo a los agricultores y productores para cumplir con los requisitos de certificación a través de capacitación, asistencia financiera o orientación técnica.",
+        "Creación de estrategias de marketing y asociaciones para aumentar la visibilidad y la demanda de productos agroecológicos certificados en los mercados locales y globales."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de agricultores o productores que obtienen certificaciones agroecológicas.",
+        "Porcentaje de productos agrícolas certificados en el mercado (%).",
+        "Reducción en el uso de insumos sintéticos (por ejemplo, fertilizantes, pesticidas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0085",
+    "actionName": "Promote the Adoption of Agroecological Pest Control",
+    "actionPriority": 11,
+    "explanation": "Promover la adopción del control agroecológico de plagas en São Cristóvão es crucial debido a la vulnerabilidad de la ciudad frente a peligros relacionados con el clima, como sequías e inundaciones, que pueden afectar gravemente la seguridad alimentaria. Al implementar métodos sostenibles de control de plagas, la ciudad puede fortalecer su resiliencia agrícola, asegurando un suministro estable de alimentos incluso en condiciones adversas. Además, las prácticas agroecológicas pueden ayudar a reducir el impacto ambiental de la agricultura, en consonancia con la necesidad de la ciudad de gestionar sus emisiones y proteger su bioma de selva tropical. Esta acción respalda la estabilidad socioeconómica de la región al potencialmente reducir los costos para los agricultores y mejorar los rendimientos de los cultivos.",
+    "action": {
+      "ActionID": "icare_0085",
+      "ActionName": "Promover la Adopción del Control de Plagas Agroecológico",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar métodos de control de plagas que sean agroecológicos, como el uso de depredadores naturales y plantas repelentes, para reducir la dependencia de pesticidas químicos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de programas educativos para informar a los agricultores sobre métodos de control de plagas agroecológicos y sus beneficios.",
+        "Provisión de acceso a recursos o materiales para implementar métodos de control de plagas naturales, como la introducción de insectos beneficiosos o el cultivo de plantas repelentes.",
+        "Creación de incentivos o redes de apoyo para fomentar la transición de los pesticidas químicos hacia alternativas sostenibles."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento en las tasas de productividad en áreas que adoptan el control de plagas agroecológico (%).",
+        "Número de campañas educativas realizadas sobre el control sostenible de plagas.",
+        "Impacto en los costos totales de producción debido a la adopción de prácticas agroecológicas (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0100",
+    "actionName": "Support Regenerative Agriculture Practices",
+    "actionPriority": 12,
+    "explanation": "Apoyar las prácticas de agricultura regenerativa en São Cristóvão es crucial debido a la vulnerabilidad de la ciudad frente a peligros relacionados con el clima, como sequías e inundaciones, que afectan directamente la seguridad alimentaria. Al promover estas prácticas, la ciudad puede mejorar la salud del suelo, aumentar la biodiversidad y mejorar la retención de agua, haciendo que el sector agrícola sea más resiliente ante los impactos climáticos. Además, la agricultura regenerativa puede ayudar a reducir las emisiones derivadas del uso del suelo, que constituyen una parte significativa de las emisiones totales de la ciudad. Esta acción está alineada con la necesidad de abordar factores socioeconómicos, ya que puede ofrecer medios de vida más sostenibles para los agricultores locales.",
+    "action": {
+      "ActionID": "icare_0100",
+      "ActionName": "Apoyar las Prácticas de Agricultura Regenerativa",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoyar prácticas agrícolas regenerativas que se centren en restaurar la salud del suelo y reducir las emisiones de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desarrollo de programas de capacitación y recursos para educar a los agricultores sobre técnicas agrícolas regenerativas, como el cultivo de cobertura y la reducción de la labranza.",
+        "Implementación de incentivos financieros o subsidios para apoyar la adopción de prácticas regenerativas.",
+        "Colaboración con instituciones de investigación agrícola para monitorear y documentar la efectividad de las prácticas regenerativas en la captura de carbono y la mejora de la salud del suelo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento en los niveles de carbono orgánico del suelo (toneladas/hectárea).",
+        "Reducción en el uso de agua por hectárea en la producción agrícola (%).",
+        "Número de proyectos piloto de agricultura regenerativa implementados."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0084",
+    "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+    "actionPriority": 13,
+    "explanation": "Crear incentivos para las prácticas de agroforestería en los sistemas ganaderos es crucial para São Cristóvão debido a su bioma de selva tropical, que puede beneficiarse significativamente de prácticas sostenibles de uso del suelo. La agroforestería puede ayudar a reducir las emisiones derivadas del uso del suelo, que actualmente son un importante contribuyente a las emisiones totales de la ciudad. Además, la integración de árboles en los sistemas ganaderos puede mejorar la biodiversidad y la salud del suelo, mitigando algunos de los riesgos ambientales asociados con las sequías y las olas de calor. Esta acción también está alineada con la necesidad de fortalecer la seguridad alimentaria y la resiliencia frente a peligros relacionados con el clima, como inundaciones y deslizamientos de tierra, que representan riesgos significativos para la región.",
+    "action": {
+      "ActionID": "icare_0084",
+      "ActionName": "Crear incentivos para prácticas de agroforestería en sistemas ganaderos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Crear incentivos financieros y técnicos para integrar prácticas de agroforestería en los sistemas de ganadería, promoviendo la captura de carbono, la protección del suelo y la mejora de la biodiversidad.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desarrollo de programas de incentivos financieros, como subsidios o exenciones fiscales, para apoyar a los agricultores en la integración de la agroforestería con los sistemas de ganadería.",
+        "Provisión de asistencia técnica y capacitación a los agricultores sobre las mejores prácticas para la integración de la agroforestería en las operaciones ganaderas.",
+        "Colaboración con organizaciones agrícolas y ambientales para monitorear y evaluar los impactos de las prácticas de agroforestería en la captura de carbono, la salud del suelo y la biodiversidad."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de incentivos financieros proporcionados para integrar la agroforestería en los sistemas de ganadería.",
+        "Aumento en la calidad del suelo y la cobertura vegetal en propiedades gestionadas (%).",
+        "Crecimiento en la biodiversidad en áreas de agroforestería (% de especies identificadas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0136",
+    "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+    "actionPriority": 14,
+    "explanation": "Apoyar la implementación de incentivos fiscales ecológicos en São Cristóvão es crucial debido a los importantes desafíos ambientales de la ciudad. La ciudad enfrenta altas emisiones provenientes de los residuos y el uso del suelo, que contribuyen a su volumen total de emisiones. Al promover incentivos fiscales ecológicos, la ciudad puede fomentar prácticas sostenibles y reducir su huella ambiental. Además, estos incentivos pueden ayudar a abordar los desafíos socioeconómicos moderados al potencialmente crear empleos verdes y mejorar los servicios públicos. Esta acción está alineada con la necesidad de mitigar los riesgos asociados a peligros climáticos como inundaciones y deslizamientos de tierra, que representan una alta amenaza para la salud pública y la infraestructura.",
+    "action": {
+      "ActionID": "icare_0136",
+      "ActionName": "Apoyar la Implementación de Incentivos Fiscales Ecológicos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar la aplicación de impuestos ecológicos e incentivos para promover la conservación ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Establecer un marco regulatorio claro con tasas impositivas justas e incentivos para la sostenibilidad.",
+        "Implementar sistemas de monitoreo efectivos para rastrear el cumplimiento y medir el impacto.",
+        "Promover la concienciación pública y fomentar la colaboración entre gobiernos, empresas y comunidades."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de municipios que han adoptado incentivos fiscales ambientales.",
+        "Porcentaje de ingresos fiscales gastados en prácticas sostenibles.",
+        "Superficie o número de propiedades que se benefician de prácticas de conservación como resultado de los incentivos."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0096",
+    "actionName": "Promote Organic Farming",
+    "actionPriority": 15,
+    "explanation": "Promover la agricultura orgánica en São Cristóvão es una acción estratégica debido a su potencial para mejorar la seguridad alimentaria, la cual está en alto riesgo por las inundaciones. Las prácticas de agricultura orgánica pueden mejorar la salud del suelo y la retención de agua, haciendo que los cultivos sean más resilientes frente a eventos climáticos extremos. Además, este enfoque puede reducir la dependencia de fertilizantes y pesticidas químicos, lo que está en línea con la necesidad de la ciudad de gestionar su huella ambiental. Al fomentar la agricultura orgánica, São Cristóvão también puede apoyar las economías locales y ofrecer opciones de alimentos más saludables para sus habitantes.",
+    "action": {
+      "ActionID": "icare_0096",
+      "ActionName": "Promover la Agricultura Orgánica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar la adopción de prácticas de agricultura orgánica que eviten el uso de productos químicos y contribuyan a la salud del suelo y la captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Provisión de incentivos financieros, subsidios o subvenciones para apoyar la transición a prácticas de agricultura orgánica.",
+        "Desarrollo de redes de capacitación y apoyo para educar a los agricultores sobre métodos de agricultura orgánica y sus beneficios.",
+        "Establecimiento de sistemas de certificación y estrategias de acceso al mercado para asegurar la viabilidad económica de los productos orgánicos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de tierras agrícolas bajo prácticas de agricultura orgánica (%).",
+        "Aumento en el contenido de carbono orgánico del suelo (toneladas de carbono por hectárea).",
+        "Reducción en el uso de fertilizantes químicos y pesticidas (kilogramos/hectárea/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 16,
+    "explanation": "Fomentar políticas de energía renovable a nivel municipal en São Cristóvão es crucial debido a las significativas emisiones de energía estacionaria de la ciudad. La transición hacia fuentes de energía renovable puede ayudar a reducir estas emisiones, contribuyendo a un entorno más limpio y a una mejor calidad del aire. Además, la energía renovable puede mejorar la seguridad energética, lo cual es especialmente importante dada la vulnerabilidad de la ciudad a interrupciones energéticas causadas por riesgos climáticos como sequías y olas de calor. La implementación de estas políticas también puede estimular el crecimiento económico local mediante la creación de empleos verdes y la atracción de inversiones en tecnologías sostenibles.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Fomentar políticas de energía renovable a nivel municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Abogar por e implementar políticas que prioricen el desarrollo e integración de sistemas de energía renovable en las operaciones y planificación del gobierno local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Voluntad política y liderazgo para priorizar la energía renovable en las políticas y procesos de planificación del gobierno local",
+        "Desarrollo de políticas claras y marcos regulatorios que faciliten la integración de sistemas de energía renovable en las operaciones gubernamentales",
+        "Disponibilidad de financiamiento o mecanismos financieros para apoyar la transición a la energía renovable en la infraestructura y operaciones municipales"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de proyectos de energía renovable aprobados o iniciados anualmente a nivel municipal.",
+        "Porcentaje de la demanda energética municipal cubierta por fuentes renovables (%).",
+        "Reducción de las emisiones de carbono municipales debido a la adopción de energía renovable (toneladas de CO₂e/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0101",
+    "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+    "actionPriority": 17,
+    "explanation": "Fomentar el uso de maquinaria agrícola de bajas emisiones en São Cristóvão es importante debido a las significativas emisiones derivadas del uso del suelo en la ciudad. Al adoptar maquinaria que produce menos emisiones, la ciudad puede reducir su impacto ambiental general, especialmente en el sector agrícola. Esta acción está alineada con la necesidad de abordar el cambio climático y mejorar la calidad del aire, lo cual es crucial para la salud pública y la sostenibilidad de los ecosistemas locales. Además, promover tecnologías de bajas emisiones puede generar beneficios económicos a largo plazo al reducir los costos de combustible y aumentar la resiliencia del sector agrícola frente a los riesgos relacionados con el clima.",
+    "action": {
+      "ActionID": "icare_0101",
+      "ActionName": "Fomentar el uso de maquinaria agrícola de bajas emisiones",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover el uso de maquinaria agrícola de bajas emisiones de carbono, como tractores y equipos impulsados por biocombustibles o energía solar.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Establecimiento de programas de financiación o incentivos para que los agricultores compren maquinaria agrícola de bajas emisiones de carbono.",
+        "Desarrollo de asociaciones con fabricantes de maquinaria para crear y distribuir soluciones de equipos sostenibles.",
+        "Implementación de programas de capacitación y apoyo para ayudar a los agricultores a integrar y mantener maquinaria agrícola de bajas emisiones de carbono."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de emisiones de maquinaria agrícola (toneladas de CO₂e/año).",
+        "Número de subsidios o incentivos proporcionados para maquinaria de bajas emisiones.",
+        "Porcentaje de agricultores capacitados para operar maquinaria de bajas emisiones."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0127",
+    "actionName": "Accelerate Environmental Regularization of Rural Properties",
+    "actionPriority": 18,
+    "explanation": "Acelerar la regularización ambiental de las propiedades rurales en São Cristóvão es crucial debido a las significativas emisiones derivadas del uso del suelo, que son las más altas entre todas las fuentes de emisión en la ciudad. Esta acción puede ayudar a mitigar el impacto de dichas emisiones al garantizar que las propiedades rurales cumplan con las normas ambientales, preservando así el bioma de selva tropical. Además, la regularización puede mejorar la conservación de la biodiversidad y reducir el riesgo de deslizamientos de tierra e inundaciones, que son peligros significativos en la región. Al priorizar esta acción, São Cristóvão puede mejorar su resiliencia ante los impactos del cambio climático y promover prácticas sostenibles de gestión del suelo.",
+    "action": {
+      "ActionID": "icare_0127",
+      "ActionName": "Acelerar la Regularización Ambiental de Propiedades Rurales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas para registrar propiedades en el Registro Ambiental Rural (CAR) y adherirse a los compromisos de restauración ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Acceso a plataformas digitales y capacitación técnica para los procesos de registro y restauración de propiedades.",
+        "Incentivos financieros y asociaciones con agencias ambientales para apoyar la implementación.",
+        "Mecanismos de monitoreo y cumplimiento para asegurar el cumplimiento de los compromisos de restauración."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de propiedades rurales con Registro Ambiental Rural (CAR) regularizado.",
+        "Área total de vegetación nativa protegida o restaurada en propiedades regularizadas (hectáreas).",
+        "Reducción anual de emisiones de gases de efecto invernadero (tCO₂e) debido a la regularización."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "icare_0052",
+    "actionName": "Develop projects for renewable energy and waste reuse",
+    "actionPriority": 19,
+    "explanation": "Desarrollar proyectos de energía renovable y reutilización de residuos en São Cristóvão es crucial debido a las importantes emisiones de la ciudad provenientes de la energía estacionaria y los residuos. Con un total de emisiones de 261,454.483, enfocarse en la energía renovable puede ayudar a reducir la huella de carbono de la ciudad y mitigar los impactos del cambio climático. Además, los proyectos de reutilización de residuos pueden abordar el problema moderado de saneamiento inadecuado, mejorando la salud pública y la calidad ambiental. Esta acción está alineada con la necesidad de la ciudad de fortalecer la seguridad energética y gestionar los residuos de manera sostenible, contribuyendo a un entorno urbano más resiliente y sostenible.",
+    "action": {
+      "ActionID": "icare_0052",
+      "ActionName": "Desarrollar proyectos para energía renovable y reutilización de residuos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta acción tiene como objetivo desarrollar e implementar proyectos de energía renovable, incluyendo: un biodigestor para el tratamiento de residuos orgánicos y una planta de energía solar.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "60-79",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo e implementación de proyectos de energía renovable.",
+        "Instalación de un biodigestor para el tratamiento de residuos orgánicos.",
+        "Establecimiento de una planta de energía solar para generar energía limpia."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de proyectos de energía renovable y reutilización de residuos implementados.",
+        "Cantidad de residuos reutilizados o reciclados (toneladas/año).",
+        "Reducción en los costos de energía para los municipios participantes (USD)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SCV",
+    "cityName": "São Cristóvão",
+    "region": "SE",
+    "regionName": "Sergipe",
+    "actionId": "ipcc_0061",
+    "actionName": "Soil Carbon Management in Croplands and Grasslands",
+    "actionPriority": 20,
+    "explanation": "La gestión del carbono en suelos de tierras de cultivo y pastizales es una acción crucial para São Cristóvão debido a su potencial para aumentar la captura de carbono y mejorar la salud del suelo. Dado el bioma de selva tropical de la ciudad, el manejo del carbono en el suelo puede ayudar a mitigar las emisiones derivadas del uso del suelo, que constituyen una parte significativa de las emisiones totales de la ciudad. Además, mejorar la salud del suelo puede incrementar la productividad agrícola, lo cual es vital para la seguridad alimentaria, especialmente en una región que enfrenta riesgos de sequías e inundaciones. Esta acción también apoya la biodiversidad al mantener ecosistemas saludables, que son esenciales para la resiliencia frente a los impactos del cambio climático.",
+    "action": {
+      "ActionID": "ipcc_0061",
+      "ActionName": "Gestión del Carbono del Suelo en Tierras de Cultivo y Pastizales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementación de prácticas de manejo sostenible del suelo en tierras de cultivo y pastizales para mejorar el carbono orgánico del suelo. Las prácticas incluyen la mejora del manejo de cultivos y nutrientes, la reducción de la labranza, la retención de residuos, el manejo del agua y el arroz, la aplicación de biochar, la mejora de variedades de pasto, el manejo del pastoreo de ganado y el manejo del fuego. Estas actividades tienen como objetivo aumentar la materia orgánica del suelo, mitigar las emisiones de GEI y proporcionar co-beneficios para la biodiversidad, la provisión de agua y la seguridad alimentaria.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Promueve la inclusión de pequeños agricultores y comunidades con recursos limitados al proporcionar prácticas rentables y adaptables regionalmente que mejoran la productividad agrícola y la resiliencia al cambio climático.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "El éxito depende de la disponibilidad de recursos para el monitoreo y la verificación",
+        "adaptación regional de prácticas",
+        "abordar barreras como la saturación del suelo y problemas de permanencia"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento del carbono orgánico del suelo",
+        "reducción de emisiones de GEI",
+        "mejora en la productividad agrícola",
+        "mejoras en la biodiversidad"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
 ]

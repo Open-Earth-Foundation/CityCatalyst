@@ -1,1259 +1,1259 @@
 [
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 1,
-        "explanation": "Encouraging renewable energy policies at the municipal level in S\u00e3o Jo\u00e3o de Meriti is crucial due to the city's high population density and significant stationary energy emissions. Transitioning to renewable energy sources can help reduce the city's total emissions, which are currently over half a million metric tons. Additionally, promoting renewable energy can enhance energy security, which is vital given the city's vulnerability to climate hazards like droughts and heatwaves. Implementing these policies can also contribute to improving public health by reducing air pollution and mitigating the impacts of climate change.",
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Incentivar pol\u00edticas de energia renov\u00e1vel a n\u00edvel municipal",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Defender e implementar pol\u00edticas que priorizem o desenvolvimento e a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nas opera\u00e7\u00f5es e no planejamento do governo local.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Vontade pol\u00edtica e lideran\u00e7a para priorizar a energia renov\u00e1vel nas pol\u00edticas e processos de planejamento do governo local",
-                "Desenvolvimento de pol\u00edticas claras e estruturas regulat\u00f3rias que facilitem a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nas opera\u00e7\u00f5es governamentais",
-                "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transi\u00e7\u00e3o para a energia renov\u00e1vel na infraestrutura e opera\u00e7\u00f5es municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de projetos de energia renov\u00e1vel aprovados ou iniciados anualmente a n\u00edvel municipal.",
-                "Percentagem da demanda de energia municipal atendida por fontes renov\u00e1veis (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de carbono municipais devido \u00e0 ado\u00e7\u00e3o de energia renov\u00e1vel (toneladas de CO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 2,
-        "explanation": "Integrating renewables into municipal water systems in S\u00e3o Jo\u00e3o de Meriti is a crucial step towards sustainable development. The city faces significant challenges with water resources, particularly due to the risk of droughts, which can be mitigated by ensuring a reliable and sustainable energy supply for water systems. By using renewable energy, the city can reduce its stationary energy emissions, contributing to a decrease in overall greenhouse gas emissions. This action not only supports environmental goals but also enhances the resilience of water infrastructure, ensuring consistent access to water for the population.",
-        "action": {
-            "ActionID": "icare_0024",
-            "ActionName": "Integrar energias renov\u00e1veis nos sistemas municipais de \u00e1gua",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, para impulsionar sistemas de tratamento, bombeamento e distribui\u00e7\u00e3o de \u00e1gua, reduzindo custos de energia e emiss\u00f5es.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, em sistemas de tratamento e distribui\u00e7\u00e3o de \u00e1gua",
-                "Expertise t\u00e9cnica e infraestrutura para adaptar sistemas existentes com solu\u00e7\u00f5es de energia renov\u00e1vel ou projetar novas instala\u00e7\u00f5es alimentadas por energias renov\u00e1veis",
-                "Apoio pol\u00edtico e regulat\u00f3rio para incentivar o uso de energia limpa em sistemas de \u00e1gua e garantir sua integra\u00e7\u00e3o nas redes de energia municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de sistemas municipais de \u00e1gua alimentados por energias renov\u00e1veis.",
-                "Redu\u00e7\u00e3o no consumo de energia de fontes n\u00e3o renov\u00e1veis (kWh/ano).",
-                "Emiss\u00f5es de GEE evitadas (toneladas de CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 3,
-        "explanation": "Promoting community solar farms in S\u00e3o Jo\u00e3o de Meriti is a strategic action to address the city's high stationary energy emissions. With a dense population and limited land area, community solar projects can efficiently utilize available space to generate renewable energy. This initiative can also help reduce the city's reliance on non-renewable energy sources, contributing to lower overall emissions. Additionally, community solar farms can provide economic benefits by lowering energy costs for residents, particularly in a city with very low-income levels.",
-        "action": {
-            "ActionID": "icare_0038",
-            "ActionName": "Promover fazendas solares comunit\u00e1rias",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Desenvolver e incentivar a ado\u00e7\u00e3o de projetos de energia solar compartilhada, permitindo que as comunidades se beneficiem coletivamente de energia limpa e renov\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de pol\u00edticas e estruturas regulat\u00f3rias para apoiar projetos de energia solar compartilhada baseados na comunidade e garantir o acesso equitativo \u00e0 energia limpa",
-                "Disponibilidade de mecanismos financeiros ou incentivos para ajudar as comunidades a investir e manter sistemas de energia solar compartilhada",
-                "Colabora\u00e7\u00e3o entre governos locais, fornecedores de energia e organiza\u00e7\u00f5es comunit\u00e1rias para projetar e implementar projetos de energia solar compartilhada de forma eficaz"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de resid\u00eancias atendidas por projetos solares comunit\u00e1rios.",
-                "Emiss\u00f5es de GEE evitadas atrav\u00e9s da produ\u00e7\u00e3o de energia solar (toneladas de CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0033",
-        "actionName": "Install biodigesters in rural properties",
-        "actionPriority": 4,
-        "explanation": "Installing biodigesters in rural properties in S\u00e3o Jo\u00e3o de Meriti can significantly reduce waste emissions, which are a notable contributor to the city's total emissions. Although the city is highly urbanized, any rural areas can benefit from this technology by converting organic waste into biogas, thus providing a renewable energy source. This action also aligns with the city's need to improve energy security and reduce reliance on traditional energy sources, which is crucial given the socio-economic challenges faced by the population. Additionally, biodigesters can help mitigate the impact of inadequate sanitation services by managing waste more effectively.",
-        "action": {
-            "ActionID": "icare_0033",
-            "ActionName": "Instalar biodigestores em propriedades rurais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Equipar fazendas e propriedades rurais com biodigestores para converter res\u00edduos org\u00e2nicos em biog\u00e1s e fertilizantes ricos em nutrientes, fornecendo uma fonte de energia sustent\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento ou subs\u00eddios para apoiar a instala\u00e7\u00e3o de biodigestores em fazendas e propriedades rurais",
-                "Acesso a expertise t\u00e9cnica para o design, instala\u00e7\u00e3o e manuten\u00e7\u00e3o de biodigestores",
-                "Desenvolvimento de um quadro regulat\u00f3rio de apoio que incentive o uso de biog\u00e1s e sistemas de gest\u00e3o de res\u00edduos org\u00e2nicos na agricultura rural"
-            ],
-            "KeyPerformanceIndicators": [
-                "Volume de biog\u00e1s gerado (m\u00b3/ano).",
-                "Emiss\u00f5es de GEE evitadas pela substitui\u00e7\u00e3o de combust\u00edveis f\u00f3sseis (toneladas de CO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0011",
-        "actionName": "Provide tax incentives for renewable energy in residential projects",
-        "actionPriority": 5,
-        "explanation": "Providing tax incentives for renewable energy in residential projects is crucial for S\u00e3o Jo\u00e3o de Meriti due to its high population density and significant stationary energy emissions. Encouraging the adoption of renewable energy can help reduce the city's overall emissions, which are currently substantial. Additionally, this action can alleviate some of the socio-economic challenges by potentially lowering energy costs for residents, thereby improving their quality of life. Given the city's vulnerability to climate-related hazards, such as heatwaves and floods, promoting sustainable energy solutions is a proactive step towards enhancing resilience and sustainability.",
-        "action": {
-            "ActionID": "icare_0011",
-            "ActionName": "Fornecer incentivos fiscais para energia renov\u00e1vel em projetos residenciais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar os propriet\u00e1rios de im\u00f3veis a adotarem energia solar, e\u00f3lica e outras fontes de energia limpa.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidade de incentivos financeiros, subs\u00eddios ou cr\u00e9ditos fiscais para incentivar os propriet\u00e1rios a instalar sistemas de energia solar, e\u00f3lica e outras energias limpas",
-                "Acesso a informa\u00e7\u00f5es e recursos educacionais para ajudar os propriet\u00e1rios a entender os benef\u00edcios, custos e processos de instala\u00e7\u00e3o de sistemas de energia limpa",
-                "Desenvolvimento de regulamentos e pol\u00edticas de apoio que facilitem a instala\u00e7\u00e3o de tecnologias de energia renov\u00e1vel em \u00e1reas residenciais"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de resid\u00eancias beneficiadas por incentivos fiscais para a ado\u00e7\u00e3o de energia renov\u00e1vel.",
-                "Aumento anual nas instala\u00e7\u00f5es de energia renov\u00e1vel em projetos residenciais.",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es de CO\u2082 equivalente devido \u00e0 ado\u00e7\u00e3o de energia renov\u00e1vel."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0040",
-        "actionName": "Adopt solar-powered street lighting in rural areas",
-        "actionPriority": 6,
-        "explanation": "Adopting solar-powered street lighting in rural areas of S\u00e3o Jo\u00e3o de Meriti can significantly reduce the city's stationary energy emissions, which are currently a major contributor to its total emissions. This action aligns with the city's need to improve energy efficiency and sustainability, especially given the high population density and the associated demand for energy. Additionally, solar-powered lighting can enhance public safety and security in rural areas, which may lack adequate infrastructure. By reducing reliance on traditional energy sources, this initiative also supports the city's efforts to mitigate the impacts of climate change, such as heatwaves and droughts, which pose significant risks to public health and infrastructure.",
-        "action": {
-            "ActionID": "icare_0040",
-            "ActionName": "Adotar ilumina\u00e7\u00e3o p\u00fablica solar em \u00e1reas rurais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Instalar postes de ilumina\u00e7\u00e3o p\u00fablica movidos a energia solar para melhorar a seguran\u00e7a e acessibilidade em comunidades rurais, ao mesmo tempo que reduz os custos de energia e o impacto ambiental.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a instala\u00e7\u00e3o de postes de ilumina\u00e7\u00e3o p\u00fablica solar em comunidades rurais",
-                "Acesso a expertise t\u00e9cnica para projetar, instalar e manter sistemas de ilumina\u00e7\u00e3o p\u00fablica solar",
-                "Colabora\u00e7\u00e3o com governos locais e comunidades para garantir a integra\u00e7\u00e3o de postes de ilumina\u00e7\u00e3o solar na infraestrutura existente e nos planos de energia"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de postes de ilumina\u00e7\u00e3o p\u00fablica alimentados por energia solar.",
-                "Redu\u00e7\u00e3o anual no consumo de eletricidade (kWh).",
-                "Emiss\u00f5es de GEE evitadas (toneladas de CO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0097",
-        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
-        "actionPriority": 7,
-        "explanation": "Supporting distributed energy generation in residences and businesses is crucial for S\u00e3o Jo\u00e3o de Meriti due to its high population density and significant stationary energy emissions. By promoting local energy generation, the city can reduce its reliance on centralized power sources, which can help lower emissions and improve energy security. Additionally, this action can empower residents and businesses to become more energy independent, potentially reducing energy costs and increasing resilience against power outages. Given the city's socio-economic challenges, such initiatives can also stimulate local economic growth and job creation.",
-        "action": {
-            "ActionID": "icare_0097",
-            "ActionName": "Apoiar a Gera\u00e7\u00e3o de Energia Distribu\u00edda em Resid\u00eancias e Neg\u00f3cios",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Facilitar o uso de pain\u00e9is solares e outras tecnologias de energia renov\u00e1vel em resid\u00eancias e edif\u00edcios comerciais.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Fornecer incentivos financeiros, regulamenta\u00e7\u00f5es claras de instala\u00e7\u00e3o e acesso a tecnologias acess\u00edveis para pain\u00e9is solares.",
-                "Lan\u00e7ar campanhas de conscientiza\u00e7\u00e3o p\u00fablica e oferecer treinamento para propriet\u00e1rios de resid\u00eancias e empresas.",
-                "Incentivar a ado\u00e7\u00e3o de tecnologias de energia renov\u00e1vel para promover economias de energia a longo prazo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Capacidade instalada de gera\u00e7\u00e3o de energia distribu\u00edda (MW).",
-                "Percentual de resid\u00eancias e empresas gerando sua pr\u00f3pria energia (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de CO\u2082 atrav\u00e9s da gera\u00e7\u00e3o distribu\u00edda (tCO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0029",
-        "actionName": "Adopt policies for fossil fuel-free buildings",
-        "actionPriority": 8,
-        "explanation": "Adopting policies for fossil fuel-free buildings in S\u00e3o Jo\u00e3o de Meriti is crucial due to the city's high population density and significant stationary energy emissions. Transitioning to cleaner energy sources in buildings can substantially reduce the city's overall emissions, contributing to improved air quality and public health. Additionally, as the city faces risks from heatwaves and other climate-related hazards, reducing reliance on fossil fuels can enhance energy security and resilience against these impacts. Implementing such policies aligns with global sustainability goals and can position the city as a leader in climate action within the region.",
-        "action": {
-            "ActionID": "icare_0029",
-            "ActionName": "Adotar pol\u00edticas para edif\u00edcios sem combust\u00edveis f\u00f3sseis",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Impor regulamentos que exijam que novas constru\u00e7\u00f5es utilizem sistemas de energia renov\u00e1vel, designs eficientes em termos de energia e tecnologias de emiss\u00e3o zero.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de c\u00f3digos de constru\u00e7\u00e3o e estruturas regulat\u00f3rias que exijam a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel e designs energeticamente eficientes em novas constru\u00e7\u00f5es",
-                "Disponibilidade de incentivos ou apoio para que os desenvolvedores cumpram as regulamenta\u00e7\u00f5es e adotem tecnologias de emiss\u00e3o zero",
-                "Expertise t\u00e9cnica e recursos para garantir a implementa\u00e7\u00e3o adequada e o monitoramento de sistemas de energia renov\u00e1vel e designs energeticamente eficientes em projetos de constru\u00e7\u00e3o"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de edif\u00edcios em transi\u00e7\u00e3o para fontes de energia renov\u00e1vel.",
-                "Redu\u00e7\u00e3o total no uso de combust\u00edveis f\u00f3sseis para aquecimento/resfriamento (m\u00b3 ou litros).",
-                "Diminui\u00e7\u00e3o nas emiss\u00f5es de GEE relacionadas a edif\u00edcios (toneladas de CO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0105",
-        "actionName": "Reduce technical losses in energy distribution networks",
-        "actionPriority": 9,
-        "explanation": "Reducing technical losses in energy distribution networks is crucial for S\u00e3o Jo\u00e3o de Meriti due to its high population density and significant stationary energy emissions. By improving the efficiency of energy distribution, the city can lower its overall emissions, contributing to a cleaner environment. Additionally, this action can help mitigate the risk of energy insecurity, which is a concern given the city's vulnerability to droughts. Implementing this measure can also lead to cost savings for both the energy providers and consumers, enhancing the socio-economic conditions in a low-income area.",
-        "action": {
-            "ActionID": "icare_0105",
-            "ActionName": "Reduzir perdas t\u00e9cnicas nas redes de distribui\u00e7\u00e3o de energia",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_industries"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Atualizar e manter a infraestrutura el\u00e9trica para minimizar a perda de energia durante a transmiss\u00e3o e distribui\u00e7\u00e3o, melhorando a efici\u00eancia geral da rede.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento para investir na moderniza\u00e7\u00e3o da infraestrutura el\u00e9trica e na atualiza\u00e7\u00e3o das redes de transmiss\u00e3o e distribui\u00e7\u00e3o",
-                "Acesso a expertise t\u00e9cnica para implementar atualiza\u00e7\u00f5es que reduzam perdas de energia e melhorem a efici\u00eancia da rede",
-                "Estruturas pol\u00edticas e regulat\u00f3rias para garantir a manuten\u00e7\u00e3o cont\u00ednua e a integra\u00e7\u00e3o de tecnologias energeticamente eficientes na infraestrutura da rede"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentual de redu\u00e7\u00e3o nas perdas t\u00e9cnicas em rela\u00e7\u00e3o \u00e0 linha de base (%).",
-                "Economia de energia alcan\u00e7ada anualmente (kWh).",
-                "Emiss\u00f5es de GEE evitadas atrav\u00e9s da redu\u00e7\u00e3o de perdas de energia (toneladas de CO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 10,
-        "explanation": "Creating credit lines for residential and community wind energy projects in S\u00e3o Jo\u00e3o de Meriti is a strategic action to address the city's high stationary energy emissions. With a population density of over 12,000 people per square kilometer, the demand for energy is significant, and transitioning to renewable sources can help reduce the carbon footprint. Additionally, the city's tropical rainforest biome offers potential for harnessing wind energy, which can be a sustainable alternative to traditional energy sources. This initiative not only supports environmental goals but also empowers local communities by providing them with access to cleaner energy solutions.",
-        "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Criar linhas de cr\u00e9dito para projetos de energia e\u00f3lica residencial e comunit\u00e1ria",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estabelecer programas de financiamento acess\u00edveis para apoiar o desenvolvimento e a ado\u00e7\u00e3o de sistemas de energia e\u00f3lica em resid\u00eancias e projetos comunit\u00e1rios, possibilitando uma transi\u00e7\u00e3o para fontes de energia mais limpas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de programas financeiros, subs\u00eddios ou subven\u00e7\u00f5es para tornar os sistemas de energia e\u00f3lica acess\u00edveis para resid\u00eancias e projetos comunit\u00e1rios",
-                "Acesso a expertise t\u00e9cnica e recursos para orientar a instala\u00e7\u00e3o e manuten\u00e7\u00e3o de sistemas de energia e\u00f3lica em ambientes residenciais e comunit\u00e1rios",
-                "Apoio pol\u00edtico e regulat\u00f3rio para incentivar a ado\u00e7\u00e3o de energia e\u00f3lica, incluindo processos de licenciamento simplificados e incentivos para projetos de energia limpa"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de projetos de energia e\u00f3lica financiados anualmente.",
-                "Capacidade instalada de sistemas de energia e\u00f3lica de projetos apoiados por cr\u00e9dito (MW).",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es equivalentes de CO\u2082 pela ado\u00e7\u00e3o de energia e\u00f3lica."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0020",
-        "actionName": "Promote sustainable construction practices and encourage green technologies in public, residential, commercial, industrial, and service buildings.",
-        "actionPriority": 11,
-        "explanation": "Promoting sustainable construction practices and encouraging green technologies in S\u00e3o Jo\u00e3o de Meriti is crucial due to the city's high population density and significant emissions from stationary energy sources. Implementing green building technologies can help reduce energy consumption and emissions, contributing to a healthier urban environment. Additionally, sustainable construction can improve resilience against climate-related hazards such as heatwaves and floods, which pose significant risks to public health and infrastructure. This action aligns with the city's need to address its socio-economic challenges by potentially creating jobs and reducing energy costs for residents.",
-        "action": {
-            "ActionID": "icare_0020",
-            "ActionName": "Promover pr\u00e1ticas de constru\u00e7\u00e3o sustent\u00e1vel e incentivar tecnologias verdes em edif\u00edcios p\u00fablicos, residenciais, comerciais, industriais e de servi\u00e7os.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta a\u00e7\u00e3o busca aumentar a participa\u00e7\u00e3o de fontes de energia renov\u00e1veis na matriz energ\u00e9tica da cidade, com foco em edif\u00edcios residenciais, comerciais, industriais e de servi\u00e7os.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de incentivos e subs\u00eddios para incentivar a ado\u00e7\u00e3o de tecnologias de energia renov\u00e1vel em edif\u00edcios",
-                "Desenvolvimento de um quadro regulat\u00f3rio de apoio para a instala\u00e7\u00e3o e integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nos setores residencial, comercial e industrial",
-                "Investimento na infraestrutura necess\u00e1ria para apoiar a gera\u00e7\u00e3o e distribui\u00e7\u00e3o de energia renov\u00e1vel dentro da cidade"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de empregos criados nos setores da economia circular.",
-                "Aumento na porcentagem de materiais reutilizados ou reciclados na cidade.",
-                "Redu\u00e7\u00e3o anual nas emiss\u00f5es de CO\u2082 equivalente provenientes de iniciativas de economia circular."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0046",
-        "actionName": "Make efforts to promote socioeconomic development and improve the quality of life in the city from the perspective of a circular economy and zero carbon emissions.",
-        "actionPriority": 12,
-        "explanation": "Promoting socioeconomic development in S\u00e3o Jo\u00e3o de Meriti is crucial due to its very low-income levels, which can significantly impact the quality of life for its residents. By focusing on a circular economy and zero carbon emissions, the city can address its high emissions from stationary energy and transportation, contributing to a more sustainable environment. This action also aligns with the need to mitigate risks associated with climate change impacts, such as heatwaves and floods, which pose significant threats to public health and infrastructure. Implementing this strategy can lead to long-term economic resilience and environmental sustainability, benefiting the community as a whole.",
-        "action": {
-            "ActionID": "icare_0046",
-            "ActionName": "Esforce-se para promover o desenvolvimento socioecon\u00f4mico e melhorar a qualidade de vida na cidade a partir da perspectiva de uma economia circular e emiss\u00f5es zero de carbono.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "commercial_and_institutional_buildings_and_facilities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "O governo da cidade deve empreender a\u00e7\u00f5es pol\u00edticas consistentes com sua capacidade econ\u00f4mica e os desafios que enfrenta para apoiar o desenvolvimento de uma nova economia sustent\u00e1vel com emiss\u00f5es de carbono zero, que proteja as condi\u00e7\u00f5es de trabalho, o empreendedorismo e a vitalidade econ\u00f4mica da cidade.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Vontade pol\u00edtica e lideran\u00e7a: Um governo local comprometido disposto a priorizar o desenvolvimento sustent\u00e1vel e a neutralidade de carbono.",
-                "Capacidade econ\u00f4mica e recursos: Recursos financeiros suficientes para investir em iniciativas verdes e infraestrutura sustent\u00e1vel.",
-                "Colabora\u00e7\u00e3o com as partes interessadas: Envolver-se com empresas, sindicatos e empreendedores para alinhar estrat\u00e9gias e garantir que a transi\u00e7\u00e3o econ\u00f4mica seja inclusiva e equitativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentual de redu\u00e7\u00e3o nas emiss\u00f5es municipais de carbono per capita (%).",
-                "N\u00famero de iniciativas de economia circular implementadas anualmente (por exemplo, programas de reciclagem, projetos de convers\u00e3o de res\u00edduos em energia).",
-                "Aumento no n\u00famero de empregos verdes criados por meio de iniciativas de economia circular e de carbono zero (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0043",
-        "actionName": "Integrate geothermal energy for heating where feasible",
-        "actionPriority": 13,
-        "explanation": "Integrating geothermal energy for heating in S\u00e3o Jo\u00e3o de Meriti could significantly reduce stationary energy emissions, which are currently a major contributor to the city's total emissions. Given the city's tropical rainforest biome, geothermal energy could provide a sustainable and reliable source of heating, reducing reliance on fossil fuels. Although the action is ranked with a lower priority, its implementation could contribute to long-term energy security and help mitigate the impacts of climate change. Additionally, this action aligns with global trends towards renewable energy adoption, potentially positioning the city as a leader in sustainable practices.",
-        "action": {
-            "ActionID": "icare_0043",
-            "ActionName": "Integrar energia geot\u00e9rmica para aquecimento onde for vi\u00e1vel",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Utilizar bombas de calor geot\u00e9rmicas e sistemas geot\u00e9rmicos de uso direto para fornecer solu\u00e7\u00f5es de aquecimento sustent\u00e1veis e eficientes em locais adequados.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Disponibilidade de expertise t\u00e9cnica e recursos para avaliar a viabilidade e instalar bombas de calor geot\u00e9rmicas e sistemas de uso direto em locais adequados",
-                "Acesso a financiamento ou incentivos para apoiar a ado\u00e7\u00e3o de solu\u00e7\u00f5es de aquecimento geot\u00e9rmico em instala\u00e7\u00f5es residenciais, comerciais ou p\u00fablicas",
-                "Desenvolvimento de estruturas regulat\u00f3rias para orientar a instala\u00e7\u00e3o e garantir a integra\u00e7\u00e3o adequada dos sistemas geot\u00e9rmicos na infraestrutura energ\u00e9tica local"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de sistemas de aquecimento na cidade alimentados por energia geot\u00e9rmica (%).",
-                "Redu\u00e7\u00e3o anual no consumo de combust\u00edveis f\u00f3sseis para aquecimento (litros ou toneladas de CO\u2082e evitadas).",
-                "Economia de custos para residentes ou empresas que utilizam energia geot\u00e9rmica em compara\u00e7\u00e3o com m\u00e9todos de aquecimento tradicionais (USD/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 14,
-        "explanation": "Creating financing programs for local renewable energy projects in S\u00e3o Jo\u00e3o de Meriti is crucial due to the city's high population density and significant stationary energy emissions. By promoting renewable energy, the city can reduce its carbon footprint and improve air quality, which is vital for public health. Additionally, such programs can stimulate local economic growth by creating jobs and fostering innovation in the energy sector. This action aligns with the city's need to address climate change impacts, such as heatwaves and public health risks, by transitioning to more sustainable energy sources.",
-        "action": {
-            "ActionID": "icare_0027",
-            "ActionName": "Criar programas de financiamento para projetos locais de energia renov\u00e1vel",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_industries"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estabelecer mecanismos de financiamento, como subs\u00eddios e empr\u00e9stimos a juros baixos, para apoiar o desenvolvimento de iniciativas de energia renov\u00e1vel em pequena escala nas comunidades.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de mecanismos financeiros acess\u00edveis, incluindo subs\u00eddios e empr\u00e9stimos a juros baixos, para apoiar projetos de energia renov\u00e1vel em pequena escala nas comunidades",
-                "Colabora\u00e7\u00e3o com institui\u00e7\u00f5es financeiras e governos locais para garantir a distribui\u00e7\u00e3o e gest\u00e3o eficaz dos fundos para iniciativas de energia renov\u00e1vel",
-                "Diretrizes claras e apoio para organiza\u00e7\u00f5es comunit\u00e1rias e empresas locais acessarem financiamento e implementarem com sucesso projetos de energia renov\u00e1vel"
-            ],
-            "KeyPerformanceIndicators": [
-                "Total de fundos alocados para projetos de energia renov\u00e1vel (USD).",
-                "N\u00famero de projetos financiados anualmente.",
-                "Aumento na capacidade de energia renov\u00e1vel instalada (MW)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0026",
-        "actionName": "Offer time-of-use tariffs for electricity consumption",
-        "actionPriority": 15,
-        "explanation": "Offering time-of-use tariffs for electricity consumption in S\u00e3o Jo\u00e3o de Meriti can help manage energy demand more effectively. This action encourages residents to use electricity during off-peak hours, which can reduce the strain on the energy grid and lower emissions associated with peak energy production. Given the city's high population density and significant stationary energy emissions, this initiative could lead to more efficient energy use and cost savings for residents. Additionally, it aligns with efforts to improve energy security, which is crucial in a region facing climate-related risks such as heatwaves and droughts.",
-        "action": {
-            "ActionID": "icare_0026",
-            "ActionName": "Oferecer tarifas de uso por tempo para o consumo de eletricidade",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_industries"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Introduzir estruturas de pre\u00e7os que incentivem o uso de energia durante as horas de menor demanda, ajudando a equilibrar a demanda da rede e a reduzir os custos de energia para os consumidores.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de modelos de precifica\u00e7\u00e3o, como tarifas por hor\u00e1rio de uso, para incentivar o consumo de energia durante as horas de menor demanda",
-                "Colabora\u00e7\u00e3o com empresas de servi\u00e7os p\u00fablicos para implementar e comunicar efetivamente as novas estruturas de precifica\u00e7\u00e3o aos consumidores",
-                "Apoio regulat\u00f3rio para garantir que as estruturas de precifica\u00e7\u00e3o estejam alinhadas com os objetivos de gest\u00e3o da rede e incentivem o uso de energia sem prejudicar popula\u00e7\u00f5es vulner\u00e1veis"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de lares inscritos em programas de tarifa por hor\u00e1rio de uso.",
-                "Redu\u00e7\u00e3o na demanda de eletricidade no hor\u00e1rio de pico (%).",
-                "Redu\u00e7\u00e3o anual nas emiss\u00f5es de GEE devido ao uso otimizado de energia (toneladas de CO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0010",
-        "actionName": "Promote Net-Zero and Green Building Certifications",
-        "actionPriority": 16,
-        "explanation": "Promoting Net-Zero and Green Building Certifications in S\u00e3o Jo\u00e3o de Meriti is crucial due to the city's high population density and significant stationary energy emissions. Implementing these certifications can lead to more energy-efficient buildings, reducing the overall carbon footprint and helping to mitigate climate change impacts. Additionally, as the city faces risks from heatwaves and public health hazards, green buildings can provide better insulation and air quality, improving residents' health and comfort. This action aligns with the city's need to address its environmental challenges while promoting sustainable urban development.",
-        "action": {
-            "ActionID": "icare_0010",
-            "ActionName": "Promover Certifica\u00e7\u00f5es de Edif\u00edcios Verdes e Net-Zero",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta a\u00e7\u00e3o foca em promover edif\u00edcios sustent\u00e1veis apoiando metas de energia l\u00edquida zero e incentivando certifica\u00e7\u00f5es de constru\u00e7\u00e3o verde, como LEED. O objetivo \u00e9 incentivar a constru\u00e7\u00e3o e renova\u00e7\u00e3o de edif\u00edcios que produzam tanta energia quanto consomem, reduzindo seu impacto ambiental. Esta iniciativa tamb\u00e9m promove a ado\u00e7\u00e3o de pr\u00e1ticas e tecnologias sustent\u00e1veis, garantindo efici\u00eancia energ\u00e9tica a longo prazo e responsabilidade ambiental em infraestruturas residenciais, comerciais e p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de incentivos financeiros, subs\u00eddios ou cr\u00e9ditos fiscais para incentivar os propriet\u00e1rios a instalar sistemas de energia solar, e\u00f3lica e outras energias limpas",
-                "Acesso a informa\u00e7\u00f5es e recursos educacionais para ajudar os propriet\u00e1rios a entender os benef\u00edcios, custos e processos de instala\u00e7\u00e3o de sistemas de energia limpa",
-                "Desenvolvimento de regulamentos e pol\u00edticas de apoio que facilitem a instala\u00e7\u00e3o de tecnologias de energia renov\u00e1vel em \u00e1reas residenciais"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de edif\u00edcios certificados como edif\u00edcios de energia zero ou edif\u00edcios verdes anualmente.",
-                "Redu\u00e7\u00e3o no consumo de energia e \u00e1gua em edif\u00edcios certificados (kWh/ano, m\u00b3/ano).",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es equivalentes de CO\u2082 a partir de pr\u00e1ticas de constru\u00e7\u00e3o verde."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 17,
-        "explanation": "The implementation of free public transportation programs during peak hours in S\u00e3o Jo\u00e3o de Meriti is a strategic action to address the city's high population density and significant transportation emissions. By encouraging the use of public transport, this initiative aims to reduce the reliance on individual vehicles, thereby decreasing traffic congestion and lowering emissions. This action is particularly important given the city's socio-economic context, where many residents may benefit from cost-free transportation options. Additionally, reducing vehicle emissions can contribute to improved air quality and public health, which is crucial in a city facing high risks from heatwaves and diseases.",
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementa\u00e7\u00e3o de programas de transporte p\u00fablico gratuito durante os hor\u00e1rios de pico para reduzir o uso de ve\u00edculos individuais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar o uso do transporte p\u00fablico oferecendo servi\u00e7os gratuitos durante os hor\u00e1rios de pico para trabalhadores e estudantes. Esta medida reduz a congest\u00e3o urbana, diminui o n\u00famero de ve\u00edculos individuais nas estradas e, consequentemente, reduz as emiss\u00f5es de gases de efeito estufa associadas ao transporte privado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Aloca\u00e7\u00e3o de financiamento para subsidiar servi\u00e7os de transporte p\u00fablico gratuito durante as horas de pico.",
-                "Desenvolvimento de pol\u00edticas para garantir a sustentabilidade e efici\u00eancia dos sistemas de transporte p\u00fablico diante do aumento da demanda.",
-                "Coordena\u00e7\u00e3o com empregadores e institui\u00e7\u00f5es educacionais para otimizar os hor\u00e1rios de pico e promover a iniciativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nos n\u00edveis de polui\u00e7\u00e3o do ar durante as horas de pico (concentra\u00e7\u00e3o de PM2.5/PM10).",
-                "N\u00famero de ve\u00edculos particulares removidos das estradas durante as horas de pico.",
-                "Taxa de satisfa\u00e7\u00e3o p\u00fablica com a iniciativa de transporte gratuito (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0022",
-        "actionName": "Set municipal energy efficiency targets",
-        "actionPriority": 18,
-        "explanation": "Setting municipal energy efficiency targets in S\u00e3o Jo\u00e3o de Meriti is crucial due to the city's high population density and significant stationary energy emissions. By improving energy efficiency, the city can reduce its overall emissions, which are currently over half a million metric tons. This action can also help mitigate the impact of heatwaves, which pose a high risk to public health, by reducing the energy demand for cooling. Additionally, enhancing energy efficiency aligns with the city's need to address socio-economic challenges, as it can lead to cost savings for residents and improve their quality of life.",
-        "action": {
-            "ActionID": "icare_0022",
-            "ActionName": "Definir metas de efici\u00eancia energ\u00e9tica municipal",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Definir metas mensur\u00e1veis para economia de energia nas opera\u00e7\u00f5es e infraestruturas municipais, promovendo responsabilidade e progresso em dire\u00e7\u00e3o aos objetivos de sustentabilidade.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de metas claras e mensur\u00e1veis de economia de energia para opera\u00e7\u00f5es e infraestrutura municipais",
-                "Acesso a dados e ferramentas para rastrear e avaliar o consumo de energia em diferentes setores municipais",
-                "Compromisso de pol\u00edticas e lideran\u00e7a para integrar metas de economia de energia no planejamento, or\u00e7amento e opera\u00e7\u00f5es municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "Progresso anual em dire\u00e7\u00e3o ao cumprimento das metas municipais de efici\u00eancia energ\u00e9tica (%).",
-                "Redu\u00e7\u00e3o no consumo de energia municipal (kWh/ano).",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es equivalentes de CO\u2082 a partir dos esfor\u00e7os de efici\u00eancia energ\u00e9tica municipal."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 19,
-        "explanation": "The adoption of biomethane in public fleets in S\u00e3o Jo\u00e3o de Meriti is a significant action due to the city's high population density and the associated transportation emissions. By transitioning to biomethane, the city can reduce its transportation emissions, which currently contribute significantly to the overall emissions profile. This action also aligns with the need to improve air quality and public health, as the city faces high risks from heatwaves and diseases. Furthermore, utilizing biomethane supports sustainable energy practices, which is crucial given the city's socio-economic challenges and the need for cost-effective solutions.",
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Ado\u00e7\u00e3o de biometano em frotas p\u00fablicas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Utilizar biometano produzido a partir de res\u00edduos urbanos e agroindustriais para abastecer \u00f4nibus e caminh\u00f5es p\u00fablicos, reduzindo as emiss\u00f5es de gases de efeito estufa nas frotas municipais",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de infraestrutura para a produ\u00e7\u00e3o, processamento e distribui\u00e7\u00e3o de biometano a partir de res\u00edduos urbanos e agroindustriais.",
-                "Retrofit ou aquisi\u00e7\u00e3o de \u00f4nibus e caminh\u00f5es p\u00fablicos capazes de usar biometano como fonte de combust\u00edvel.",
-                "Estabelecimento de pol\u00edticas e incentivos financeiros para apoiar a produ\u00e7\u00e3o de biometano e sua integra\u00e7\u00e3o nas frotas municipais."
-            ],
-            "KeyPerformanceIndicators": [
-                "Economia de custos na opera\u00e7\u00e3o da frota devido ao uso de biometano (USD/ano).",
-                "Aumento na capacidade de produ\u00e7\u00e3o de biometano (%).",
-                "Percentagem de biometano obtido localmente versus importado."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 20,
-        "explanation": "The implementation of an urban toll in S\u00e3o Jo\u00e3o de Meriti could help manage the high population density and reduce transportation emissions, which are significant contributors to the city's total emissions. By discouraging excessive use of private vehicles, the toll could promote the use of public transportation, thereby reducing traffic congestion and improving air quality. Additionally, the revenue generated from the toll could be reinvested into improving public transportation infrastructure, further enhancing the city's sustainability efforts. This action aligns with the need to address the city's environmental challenges, particularly in reducing emissions and improving public health.",
-        "action": {
-            "ActionID": "icare_0139",
-            "ActionName": "Implementa\u00e7\u00e3o de ped\u00e1gio urbano.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estabelecimento de uma taxa de congestionamento e/ou rod\u00edzio de placas para ve\u00edculos leves em \u00e1reas saturadas e em hor\u00e1rios saturados",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecer um quadro legal claro e investir em tecnologia para monitoramento e fiscaliza\u00e7\u00e3o (por exemplo, c\u00e2meras, sensores).",
-                "Lan\u00e7ar campanhas de conscientiza\u00e7\u00e3o e garantir a disponibilidade de transporte p\u00fablico eficiente ou solu\u00e7\u00f5es alternativas de mobilidade.",
-                "Colaborar com governos locais e ag\u00eancias de transporte, e estabelecer sistemas para monitorar e avaliar a efic\u00e1cia da pol\u00edtica."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o das emiss\u00f5es de CO\u2082 do transporte rodovi\u00e1rio urbano (tCO\u2082e/ano).",
-                "Receita gerada pela implementa\u00e7\u00e3o da taxa de congestionamento urbano (R$)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 1,
+    "explanation": "Incentivar políticas de energia renovável em nível municipal em São João de Meriti é fundamental devido à alta densidade populacional da cidade e às significativas emissões de energia estacionária. A transição para fontes de energia renovável pode ajudar a reduzir as emissões totais da cidade, que atualmente ultrapassam meio milhão de toneladas métricas. Além disso, promover a energia renovável pode aumentar a segurança energética, o que é vital considerando a vulnerabilidade da cidade a riscos climáticos como secas e ondas de calor. A implementação dessas políticas também pode contribuir para a melhoria da saúde pública, ao reduzir a poluição do ar e mitigar os impactos das mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Incentivar políticas de energia renovável a nível municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Defender e implementar políticas que priorizem o desenvolvimento e a integração de sistemas de energia renovável nas operações e no planejamento do governo local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e liderança para priorizar a energia renovável nas políticas e processos de planejamento do governo local",
+        "Desenvolvimento de políticas claras e estruturas regulatórias que facilitem a integração de sistemas de energia renovável nas operações governamentais",
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transição para a energia renovável na infraestrutura e operações municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia renovável aprovados ou iniciados anualmente a nível municipal.",
+        "Percentagem da demanda de energia municipal atendida por fontes renováveis (%).",
+        "Redução nas emissões de carbono municipais devido à adoção de energia renovável (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 2,
+    "explanation": "Integrar fontes de energia renovável aos sistemas municipais de água em São João de Meriti é um passo crucial para o desenvolvimento sustentável. A cidade enfrenta desafios significativos relacionados aos recursos hídricos, especialmente devido ao risco de secas, que podem ser mitigados ao garantir um fornecimento de energia confiável e sustentável para os sistemas de água. Ao utilizar energia renovável, a cidade pode reduzir suas emissões de energia estacionária, contribuindo para a diminuição geral das emissões de gases de efeito estufa. Essa ação não só apoia os objetivos ambientais, como também aumenta a resiliência da infraestrutura hídrica, garantindo o acesso consistente à água para a população.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energias renováveis nos sistemas municipais de água",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fontes de energia renovável, como energia solar ou eólica, para impulsionar sistemas de tratamento, bombeamento e distribuição de água, reduzindo custos de energia e emissões.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renovável, como energia solar ou eólica, em sistemas de tratamento e distribuição de água",
+        "Expertise técnica e infraestrutura para adaptar sistemas existentes com soluções de energia renovável ou projetar novas instalações alimentadas por energias renováveis",
+        "Apoio político e regulatório para incentivar o uso de energia limpa em sistemas de água e garantir sua integração nas redes de energia municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de sistemas municipais de água alimentados por energias renováveis.",
+        "Redução no consumo de energia de fontes não renováveis (kWh/ano).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0038",
+    "actionName": "Promote community solar farms",
+    "actionPriority": 3,
+    "explanation": "Promover fazendas solares comunitárias em São João de Meriti é uma ação estratégica para enfrentar as altas emissões de energia estacionária da cidade. Com uma população densa e área de terra limitada, projetos solares comunitários podem utilizar o espaço disponível de forma eficiente para gerar energia renovável. Essa iniciativa também pode ajudar a reduzir a dependência da cidade de fontes de energia não renováveis, contribuindo para a diminuição das emissões totais. Além disso, as fazendas solares comunitárias podem proporcionar benefícios econômicos ao reduzir os custos de energia para os moradores, especialmente em uma cidade com níveis de renda muito baixos.",
+    "action": {
+      "ActionID": "icare_0038",
+      "ActionName": "Promover fazendas solares comunitárias",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Desenvolver e incentivar a adoção de projetos de energia solar compartilhada, permitindo que as comunidades se beneficiem coletivamente de energia limpa e renovável.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas e estruturas regulatórias para apoiar projetos de energia solar compartilhada baseados na comunidade e garantir o acesso equitativo à energia limpa",
+        "Disponibilidade de mecanismos financeiros ou incentivos para ajudar as comunidades a investir e manter sistemas de energia solar compartilhada",
+        "Colaboração entre governos locais, fornecedores de energia e organizações comunitárias para projetar e implementar projetos de energia solar compartilhada de forma eficaz"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de residências atendidas por projetos solares comunitários.",
+        "Emissões de GEE evitadas através da produção de energia solar (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0033",
+    "actionName": "Install biodigesters in rural properties",
+    "actionPriority": 4,
+    "explanation": "A instalação de biodigestores em propriedades rurais em São João de Meriti pode reduzir significativamente as emissões de resíduos, que são um contribuinte notável para o total de emissões da cidade. Embora o município seja altamente urbanizado, quaisquer áreas rurais podem se beneficiar dessa tecnologia ao converter resíduos orgânicos em biogás, proporcionando assim uma fonte de energia renovável. Essa ação também está alinhada com a necessidade da cidade de melhorar a segurança energética e reduzir a dependência de fontes tradicionais de energia, o que é crucial diante dos desafios socioeconômicos enfrentados pela população. Além disso, os biodigestores podem ajudar a mitigar o impacto dos serviços de saneamento inadequados, ao gerenciar os resíduos de forma mais eficaz.",
+    "action": {
+      "ActionID": "icare_0033",
+      "ActionName": "Instalar biodigestores em propriedades rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Equipar fazendas e propriedades rurais com biodigestores para converter resíduos orgânicos em biogás e fertilizantes ricos em nutrientes, fornecendo uma fonte de energia sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou subsídios para apoiar a instalação de biodigestores em fazendas e propriedades rurais",
+        "Acesso a expertise técnica para o design, instalação e manutenção de biodigestores",
+        "Desenvolvimento de um quadro regulatório de apoio que incentive o uso de biogás e sistemas de gestão de resíduos orgânicos na agricultura rural"
+      ],
+      "KeyPerformanceIndicators": [
+        "Volume de biogás gerado (m³/ano).",
+        "Emissões de GEE evitadas pela substituição de combustíveis fósseis (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0011",
+    "actionName": "Provide tax incentives for renewable energy in residential projects",
+    "actionPriority": 5,
+    "explanation": "Conceder incentivos fiscais para energias renováveis em projetos residenciais é fundamental para São João de Meriti devido à sua alta densidade populacional e às significativas emissões de energia estacionária. Incentivar a adoção de energia renovável pode ajudar a reduzir as emissões totais da cidade, que atualmente são substanciais. Além disso, essa medida pode aliviar alguns dos desafios socioeconômicos ao possibilitar a redução dos custos de energia para os moradores, melhorando assim sua qualidade de vida. Dada a vulnerabilidade da cidade a riscos climáticos, como ondas de calor e inundações, promover soluções energéticas sustentáveis é um passo proativo para aumentar a resiliência e a sustentabilidade.",
+    "action": {
+      "ActionID": "icare_0011",
+      "ActionName": "Fornecer incentivos fiscais para energia renovável em projetos residenciais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar os proprietários de imóveis a adotarem energia solar, eólica e outras fontes de energia limpa.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de incentivos financeiros, subsídios ou créditos fiscais para incentivar os proprietários a instalar sistemas de energia solar, eólica e outras energias limpas",
+        "Acesso a informações e recursos educacionais para ajudar os proprietários a entender os benefícios, custos e processos de instalação de sistemas de energia limpa",
+        "Desenvolvimento de regulamentos e políticas de apoio que facilitem a instalação de tecnologias de energia renovável em áreas residenciais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de residências beneficiadas por incentivos fiscais para a adoção de energia renovável.",
+        "Aumento anual nas instalações de energia renovável em projetos residenciais.",
+        "Redução estimada nas emissões de CO₂ equivalente devido à adoção de energia renovável."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0040",
+    "actionName": "Adopt solar-powered street lighting in rural areas",
+    "actionPriority": 6,
+    "explanation": "A adoção de iluminação pública alimentada por energia solar em áreas rurais de São João de Meriti pode reduzir significativamente as emissões de energia estacionária da cidade, que atualmente são um dos principais contribuintes para o total de emissões. Essa ação está alinhada com a necessidade do município de melhorar a eficiência energética e a sustentabilidade, especialmente considerando a alta densidade populacional e a demanda associada por energia. Além disso, a iluminação movida a energia solar pode aumentar a segurança pública em áreas rurais, que podem carecer de infraestrutura adequada. Ao reduzir a dependência de fontes tradicionais de energia, essa iniciativa também apoia os esforços da cidade para mitigar os impactos das mudanças climáticas, como ondas de calor e secas, que representam riscos significativos para a saúde pública e a infraestrutura.",
+    "action": {
+      "ActionID": "icare_0040",
+      "ActionName": "Adotar iluminação pública solar em áreas rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Instalar postes de iluminação pública movidos a energia solar para melhorar a segurança e acessibilidade em comunidades rurais, ao mesmo tempo que reduz os custos de energia e o impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a instalação de postes de iluminação pública solar em comunidades rurais",
+        "Acesso a expertise técnica para projetar, instalar e manter sistemas de iluminação pública solar",
+        "Colaboração com governos locais e comunidades para garantir a integração de postes de iluminação solar na infraestrutura existente e nos planos de energia"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de postes de iluminação pública alimentados por energia solar.",
+        "Redução anual no consumo de eletricidade (kWh).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0097",
+    "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+    "actionPriority": 7,
+    "explanation": "Apoiar a geração distribuída de energia em residências e empresas é fundamental para São João de Meriti devido à sua alta densidade populacional e às significativas emissões de energia estacionária. Ao promover a geração local de energia, a cidade pode reduzir sua dependência de fontes centralizadas de eletricidade, o que pode ajudar a diminuir as emissões e melhorar a segurança energética. Além disso, essa ação pode capacitar moradores e empresas a se tornarem mais independentes em relação à energia, potencialmente reduzindo custos e aumentando a resiliência diante de quedas de energia. Diante dos desafios socioeconômicos do município, tais iniciativas também podem estimular o crescimento econômico local e a criação de empregos.",
+    "action": {
+      "ActionID": "icare_0097",
+      "ActionName": "Apoiar a Geração de Energia Distribuída em Residências e Negócios",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Facilitar o uso de painéis solares e outras tecnologias de energia renovável em residências e edifícios comerciais.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecer incentivos financeiros, regulamentações claras de instalação e acesso a tecnologias acessíveis para painéis solares.",
+        "Lançar campanhas de conscientização pública e oferecer treinamento para proprietários de residências e empresas.",
+        "Incentivar a adoção de tecnologias de energia renovável para promover economias de energia a longo prazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Capacidade instalada de geração de energia distribuída (MW).",
+        "Percentual de residências e empresas gerando sua própria energia (%).",
+        "Redução nas emissões de CO₂ através da geração distribuída (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0029",
+    "actionName": "Adopt policies for fossil fuel-free buildings",
+    "actionPriority": 8,
+    "explanation": "A adoção de políticas para edifícios livres de combustíveis fósseis em São João de Meriti é crucial devido à alta densidade populacional da cidade e às significativas emissões de energia estacionária. A transição para fontes de energia mais limpas nos edifícios pode reduzir substancialmente as emissões totais da cidade, contribuindo para a melhoria da qualidade do ar e da saúde pública. Além disso, como a cidade enfrenta riscos de ondas de calor e outros perigos relacionados ao clima, a redução da dependência de combustíveis fósseis pode aumentar a segurança energética e a resiliência diante desses impactos. A implementação dessas políticas está alinhada com os objetivos globais de sustentabilidade e pode posicionar a cidade como líder em ação climática na região.",
+    "action": {
+      "ActionID": "icare_0029",
+      "ActionName": "Adotar políticas para edifícios sem combustíveis fósseis",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Impor regulamentos que exijam que novas construções utilizem sistemas de energia renovável, designs eficientes em termos de energia e tecnologias de emissão zero.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de códigos de construção e estruturas regulatórias que exijam a integração de sistemas de energia renovável e designs energeticamente eficientes em novas construções",
+        "Disponibilidade de incentivos ou apoio para que os desenvolvedores cumpram as regulamentações e adotem tecnologias de emissão zero",
+        "Expertise técnica e recursos para garantir a implementação adequada e o monitoramento de sistemas de energia renovável e designs energeticamente eficientes em projetos de construção"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de edifícios em transição para fontes de energia renovável.",
+        "Redução total no uso de combustíveis fósseis para aquecimento/resfriamento (m³ ou litros).",
+        "Diminuição nas emissões de GEE relacionadas a edifícios (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0105",
+    "actionName": "Reduce technical losses in energy distribution networks",
+    "actionPriority": 9,
+    "explanation": "Reduzir as perdas técnicas nas redes de distribuição de energia é fundamental para São João de Meriti devido à sua alta densidade populacional e às significativas emissões estacionárias de energia. Ao melhorar a eficiência da distribuição de energia, a cidade pode reduzir suas emissões totais, contribuindo para um ambiente mais limpo. Além disso, essa ação pode ajudar a mitigar o risco de insegurança energética, uma preocupação considerando a vulnerabilidade da cidade a períodos de seca. A implementação dessa medida também pode gerar economia de custos tanto para os fornecedores de energia quanto para os consumidores, melhorando as condições socioeconômicas em uma área de baixa renda.",
+    "action": {
+      "ActionID": "icare_0105",
+      "ActionName": "Reduzir perdas técnicas nas redes de distribuição de energia",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_industries"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Atualizar e manter a infraestrutura elétrica para minimizar a perda de energia durante a transmissão e distribuição, melhorando a eficiência geral da rede.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento para investir na modernização da infraestrutura elétrica e na atualização das redes de transmissão e distribuição",
+        "Acesso a expertise técnica para implementar atualizações que reduzam perdas de energia e melhorem a eficiência da rede",
+        "Estruturas políticas e regulatórias para garantir a manutenção contínua e a integração de tecnologias energeticamente eficientes na infraestrutura da rede"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentual de redução nas perdas técnicas em relação à linha de base (%).",
+        "Economia de energia alcançada anualmente (kWh).",
+        "Emissões de GEE evitadas através da redução de perdas de energia (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0005",
+    "actionName": "Create credit lines for residential and community wind energy projects",
+    "actionPriority": 10,
+    "explanation": "Criar linhas de crédito para projetos de energia eólica residencial e comunitária em São João de Meriti é uma ação estratégica para enfrentar as altas emissões estacionárias de energia da cidade. Com uma densidade populacional superior a 12.000 pessoas por quilômetro quadrado, a demanda por energia é significativa, e a transição para fontes renováveis pode ajudar a reduzir a pegada de carbono. Além disso, o bioma de floresta tropical da cidade oferece potencial para a geração de energia eólica, que pode ser uma alternativa sustentável às fontes tradicionais de energia. Essa iniciativa não só apoia os objetivos ambientais, mas também fortalece as comunidades locais ao proporcionar acesso a soluções energéticas mais limpas.",
+    "action": {
+      "ActionID": "icare_0005",
+      "ActionName": "Criar linhas de crédito para projetos de energia eólica residencial e comunitária",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecer programas de financiamento acessíveis para apoiar o desenvolvimento e a adoção de sistemas de energia eólica em residências e projetos comunitários, possibilitando uma transição para fontes de energia mais limpas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 2,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de programas financeiros, subsídios ou subvenções para tornar os sistemas de energia eólica acessíveis para residências e projetos comunitários",
+        "Acesso a expertise técnica e recursos para orientar a instalação e manutenção de sistemas de energia eólica em ambientes residenciais e comunitários",
+        "Apoio político e regulatório para incentivar a adoção de energia eólica, incluindo processos de licenciamento simplificados e incentivos para projetos de energia limpa"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia eólica financiados anualmente.",
+        "Capacidade instalada de sistemas de energia eólica de projetos apoiados por crédito (MW).",
+        "Redução estimada nas emissões equivalentes de CO₂ pela adoção de energia eólica."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0020",
+    "actionName": "Promote sustainable construction practices and encourage green technologies in public, residential, commercial, industrial, and service buildings.",
+    "actionPriority": 11,
+    "explanation": "Promover práticas de construção sustentável e incentivar tecnologias verdes em São João de Meriti é fundamental devido à alta densidade populacional da cidade e às significativas emissões provenientes de fontes estacionárias de energia. A implementação de tecnologias de construção verde pode ajudar a reduzir o consumo de energia e as emissões, contribuindo para um ambiente urbano mais saudável. Além disso, a construção sustentável pode aumentar a resiliência contra riscos climáticos, como ondas de calor e inundações, que representam ameaças significativas à saúde pública e à infraestrutura. Essa ação está alinhada com a necessidade da cidade de enfrentar seus desafios socioeconômicos, podendo criar empregos e reduzir os custos de energia para os moradores.",
+    "action": {
+      "ActionID": "icare_0020",
+      "ActionName": "Promover práticas de construção sustentável e incentivar tecnologias verdes em edifícios públicos, residenciais, comerciais, industriais e de serviços.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação busca aumentar a participação de fontes de energia renováveis na matriz energética da cidade, com foco em edifícios residenciais, comerciais, industriais e de serviços.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de incentivos e subsídios para incentivar a adoção de tecnologias de energia renovável em edifícios",
+        "Desenvolvimento de um quadro regulatório de apoio para a instalação e integração de sistemas de energia renovável nos setores residencial, comercial e industrial",
+        "Investimento na infraestrutura necessária para apoiar a geração e distribuição de energia renovável dentro da cidade"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de empregos criados nos setores da economia circular.",
+        "Aumento na porcentagem de materiais reutilizados ou reciclados na cidade.",
+        "Redução anual nas emissões de CO₂ equivalente provenientes de iniciativas de economia circular."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0046",
+    "actionName": "Make efforts to promote socioeconomic development and improve the quality of life in the city from the perspective of a circular economy and zero carbon emissions.",
+    "actionPriority": 12,
+    "explanation": "Promover o desenvolvimento socioeconômico em São João de Meriti é fundamental devido aos seus níveis de renda muito baixos, que podem impactar significativamente a qualidade de vida dos seus moradores. Ao focar em uma economia circular e em emissões zero de carbono, a cidade pode enfrentar suas altas emissões provenientes de energia estacionária e transporte, contribuindo para um ambiente mais sustentável. Essa ação também está alinhada com a necessidade de mitigar riscos associados aos impactos das mudanças climáticas, como ondas de calor e inundações, que representam ameaças significativas à saúde pública e à infraestrutura. A implementação dessa estratégia pode levar à resiliência econômica de longo prazo e à sustentabilidade ambiental, beneficiando toda a comunidade.",
+    "action": {
+      "ActionID": "icare_0046",
+      "ActionName": "Esforce-se para promover o desenvolvimento socioeconômico e melhorar a qualidade de vida na cidade a partir da perspectiva de uma economia circular e emissões zero de carbono.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "commercial_and_institutional_buildings_and_facilities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "O governo da cidade deve empreender ações políticas consistentes com sua capacidade econômica e os desafios que enfrenta para apoiar o desenvolvimento de uma nova economia sustentável com emissões de carbono zero, que proteja as condições de trabalho, o empreendedorismo e a vitalidade econômica da cidade.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Vontade política e liderança: Um governo local comprometido disposto a priorizar o desenvolvimento sustentável e a neutralidade de carbono.",
+        "Capacidade econômica e recursos: Recursos financeiros suficientes para investir em iniciativas verdes e infraestrutura sustentável.",
+        "Colaboração com as partes interessadas: Envolver-se com empresas, sindicatos e empreendedores para alinhar estratégias e garantir que a transição econômica seja inclusiva e equitativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentual de redução nas emissões municipais de carbono per capita (%).",
+        "Número de iniciativas de economia circular implementadas anualmente (por exemplo, programas de reciclagem, projetos de conversão de resíduos em energia).",
+        "Aumento no número de empregos verdes criados por meio de iniciativas de economia circular e de carbono zero (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0043",
+    "actionName": "Integrate geothermal energy for heating where feasible",
+    "actionPriority": 13,
+    "explanation": "Integrar a energia geotérmica para aquecimento em São João de Meriti poderia reduzir significativamente as emissões de energia estacionária, que atualmente são um dos principais contribuintes para o total de emissões da cidade. Considerando o bioma de floresta tropical da cidade, a energia geotérmica poderia fornecer uma fonte de aquecimento sustentável e confiável, reduzindo a dependência de combustíveis fósseis. Embora a ação esteja classificada com prioridade menor, sua implementação poderia contribuir para a segurança energética a longo prazo e ajudar a mitigar os impactos das mudanças climáticas. Além disso, essa ação está alinhada com as tendências globais de adoção de energias renováveis, podendo posicionar a cidade como referência em práticas sustentáveis.",
+    "action": {
+      "ActionID": "icare_0043",
+      "ActionName": "Integrar energia geotérmica para aquecimento onde for viável",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar bombas de calor geotérmicas e sistemas geotérmicos de uso direto para fornecer soluções de aquecimento sustentáveis e eficientes em locais adequados.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Disponibilidade de expertise técnica e recursos para avaliar a viabilidade e instalar bombas de calor geotérmicas e sistemas de uso direto em locais adequados",
+        "Acesso a financiamento ou incentivos para apoiar a adoção de soluções de aquecimento geotérmico em instalações residenciais, comerciais ou públicas",
+        "Desenvolvimento de estruturas regulatórias para orientar a instalação e garantir a integração adequada dos sistemas geotérmicos na infraestrutura energética local"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de sistemas de aquecimento na cidade alimentados por energia geotérmica (%).",
+        "Redução anual no consumo de combustíveis fósseis para aquecimento (litros ou toneladas de CO₂e evitadas).",
+        "Economia de custos para residentes ou empresas que utilizam energia geotérmica em comparação com métodos de aquecimento tradicionais (USD/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0027",
+    "actionName": "Create financing programs for local renewable energy projects",
+    "actionPriority": 14,
+    "explanation": "Criar programas de financiamento para projetos locais de energia renovável em São João de Meriti é fundamental devido à alta densidade populacional da cidade e às significativas emissões de energia estacionária. Ao promover a energia renovável, a cidade pode reduzir sua pegada de carbono e melhorar a qualidade do ar, o que é vital para a saúde pública. Além disso, esses programas podem estimular o crescimento econômico local, gerando empregos e fomentando a inovação no setor energético. Essa ação está alinhada com a necessidade da cidade de enfrentar os impactos das mudanças climáticas, como ondas de calor e riscos à saúde pública, por meio da transição para fontes de energia mais sustentáveis.",
+    "action": {
+      "ActionID": "icare_0027",
+      "ActionName": "Criar programas de financiamento para projetos locais de energia renovável",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_industries"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecer mecanismos de financiamento, como subsídios e empréstimos a juros baixos, para apoiar o desenvolvimento de iniciativas de energia renovável em pequena escala nas comunidades.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de mecanismos financeiros acessíveis, incluindo subsídios e empréstimos a juros baixos, para apoiar projetos de energia renovável em pequena escala nas comunidades",
+        "Colaboração com instituições financeiras e governos locais para garantir a distribuição e gestão eficaz dos fundos para iniciativas de energia renovável",
+        "Diretrizes claras e apoio para organizações comunitárias e empresas locais acessarem financiamento e implementarem com sucesso projetos de energia renovável"
+      ],
+      "KeyPerformanceIndicators": [
+        "Total de fundos alocados para projetos de energia renovável (USD).",
+        "Número de projetos financiados anualmente.",
+        "Aumento na capacidade de energia renovável instalada (MW)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0026",
+    "actionName": "Offer time-of-use tariffs for electricity consumption",
+    "actionPriority": 15,
+    "explanation": "Oferecer tarifas de energia elétrica diferenciadas por horário de uso em São João de Meriti pode ajudar a gerenciar a demanda de energia de forma mais eficaz. Essa ação incentiva os moradores a utilizarem eletricidade durante os horários de menor pico, o que pode reduzir a sobrecarga na rede elétrica e diminuir as emissões associadas à produção de energia nos horários de maior demanda. Dada a alta densidade populacional da cidade e as significativas emissões de energia estacionária, essa iniciativa pode resultar em um uso mais eficiente da energia e em economia de custos para os residentes. Além disso, está alinhada com os esforços para melhorar a segurança energética, o que é fundamental em uma região que enfrenta riscos climáticos, como ondas de calor e secas.",
+    "action": {
+      "ActionID": "icare_0026",
+      "ActionName": "Oferecer tarifas de uso por tempo para o consumo de eletricidade",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_industries"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Introduzir estruturas de preços que incentivem o uso de energia durante as horas de menor demanda, ajudando a equilibrar a demanda da rede e a reduzir os custos de energia para os consumidores.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de modelos de precificação, como tarifas por horário de uso, para incentivar o consumo de energia durante as horas de menor demanda",
+        "Colaboração com empresas de serviços públicos para implementar e comunicar efetivamente as novas estruturas de precificação aos consumidores",
+        "Apoio regulatório para garantir que as estruturas de precificação estejam alinhadas com os objetivos de gestão da rede e incentivem o uso de energia sem prejudicar populações vulneráveis"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de lares inscritos em programas de tarifa por horário de uso.",
+        "Redução na demanda de eletricidade no horário de pico (%).",
+        "Redução anual nas emissões de GEE devido ao uso otimizado de energia (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0010",
+    "actionName": "Promote Net-Zero and Green Building Certifications",
+    "actionPriority": 16,
+    "explanation": "Promover certificações Net-Zero e de Edificações Verdes em São João de Meriti é fundamental devido à alta densidade populacional da cidade e às significativas emissões de energia estacionária. A implementação dessas certificações pode resultar em edifícios mais eficientes em termos energéticos, reduzindo a pegada de carbono total e ajudando a mitigar os impactos das mudanças climáticas. Além disso, como a cidade enfrenta riscos de ondas de calor e ameaças à saúde pública, edifícios verdes podem oferecer melhor isolamento térmico e qualidade do ar, melhorando a saúde e o conforto dos moradores. Essa ação está alinhada com a necessidade do município de enfrentar seus desafios ambientais enquanto promove o desenvolvimento urbano sustentável.",
+    "action": {
+      "ActionID": "icare_0010",
+      "ActionName": "Promover Certificações de Edifícios Verdes e Net-Zero",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação foca em promover edifícios sustentáveis apoiando metas de energia líquida zero e incentivando certificações de construção verde, como LEED. O objetivo é incentivar a construção e renovação de edifícios que produzam tanta energia quanto consomem, reduzindo seu impacto ambiental. Esta iniciativa também promove a adoção de práticas e tecnologias sustentáveis, garantindo eficiência energética a longo prazo e responsabilidade ambiental em infraestruturas residenciais, comerciais e públicas.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de incentivos financeiros, subsídios ou créditos fiscais para incentivar os proprietários a instalar sistemas de energia solar, eólica e outras energias limpas",
+        "Acesso a informações e recursos educacionais para ajudar os proprietários a entender os benefícios, custos e processos de instalação de sistemas de energia limpa",
+        "Desenvolvimento de regulamentos e políticas de apoio que facilitem a instalação de tecnologias de energia renovável em áreas residenciais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de edifícios certificados como edifícios de energia zero ou edifícios verdes anualmente.",
+        "Redução no consumo de energia e água em edifícios certificados (kWh/ano, m³/ano).",
+        "Redução estimada nas emissões equivalentes de CO₂ a partir de práticas de construção verde."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 17,
+    "explanation": "A implementação de programas de transporte público gratuito durante os horários de pico em São João de Meriti é uma ação estratégica para enfrentar a alta densidade populacional da cidade e as significativas emissões provenientes do transporte. Ao incentivar o uso do transporte público, essa iniciativa busca reduzir a dependência de veículos individuais, diminuindo assim os congestionamentos e as emissões. Essa ação é especialmente importante considerando o contexto socioeconômico da cidade, onde muitos moradores podem se beneficiar de opções de transporte sem custo. Além disso, a redução das emissões de veículos pode contribuir para a melhoria da qualidade do ar e da saúde pública, o que é fundamental em uma cidade que enfrenta altos riscos de ondas de calor e doenças.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementação de programas de transporte público gratuito durante os horários de pico para reduzir o uso de veículos individuais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar o uso do transporte público oferecendo serviços gratuitos durante os horários de pico para trabalhadores e estudantes. Esta medida reduz a congestão urbana, diminui o número de veículos individuais nas estradas e, consequentemente, reduz as emissões de gases de efeito estufa associadas ao transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Alocação de financiamento para subsidiar serviços de transporte público gratuito durante as horas de pico.",
+        "Desenvolvimento de políticas para garantir a sustentabilidade e eficiência dos sistemas de transporte público diante do aumento da demanda.",
+        "Coordenação com empregadores e instituições educacionais para otimizar os horários de pico e promover a iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nos níveis de poluição do ar durante as horas de pico (concentração de PM2.5/PM10).",
+        "Número de veículos particulares removidos das estradas durante as horas de pico.",
+        "Taxa de satisfação pública com a iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0022",
+    "actionName": "Set municipal energy efficiency targets",
+    "actionPriority": 18,
+    "explanation": "Estabelecer metas municipais de eficiência energética em São João de Meriti é fundamental devido à alta densidade populacional da cidade e às significativas emissões de energia estacionária. Ao melhorar a eficiência energética, a cidade pode reduzir suas emissões totais, que atualmente ultrapassam meio milhão de toneladas métricas. Essa ação também pode ajudar a mitigar o impacto das ondas de calor, que representam um alto risco para a saúde pública, ao reduzir a demanda de energia para resfriamento. Além disso, aprimorar a eficiência energética está alinhado com a necessidade da cidade de enfrentar desafios socioeconômicos, pois pode gerar economia de custos para os moradores e melhorar sua qualidade de vida.",
+    "action": {
+      "ActionID": "icare_0022",
+      "ActionName": "Definir metas de eficiência energética municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Definir metas mensuráveis para economia de energia nas operações e infraestruturas municipais, promovendo responsabilidade e progresso em direção aos objetivos de sustentabilidade.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de metas claras e mensuráveis de economia de energia para operações e infraestrutura municipais",
+        "Acesso a dados e ferramentas para rastrear e avaliar o consumo de energia em diferentes setores municipais",
+        "Compromisso de políticas e liderança para integrar metas de economia de energia no planejamento, orçamento e operações municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Progresso anual em direção ao cumprimento das metas municipais de eficiência energética (%).",
+        "Redução no consumo de energia municipal (kWh/ano).",
+        "Redução estimada nas emissões equivalentes de CO₂ a partir dos esforços de eficiência energética municipal."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0094",
+    "actionName": "Adoption of biomethane in public fleets.",
+    "actionPriority": 19,
+    "explanation": "A adoção do biometano nas frotas públicas de São João de Meriti é uma ação significativa devido à alta densidade populacional da cidade e às emissões associadas ao transporte. Ao fazer a transição para o biometano, a cidade pode reduzir as emissões do setor de transporte, que atualmente contribuem de forma significativa para o perfil geral de emissões. Essa ação também está alinhada com a necessidade de melhorar a qualidade do ar e a saúde pública, já que a cidade enfrenta altos riscos de ondas de calor e doenças. Além disso, a utilização do biometano apoia práticas energéticas sustentáveis, o que é fundamental diante dos desafios socioeconômicos da cidade e da necessidade de soluções economicamente viáveis.",
+    "action": {
+      "ActionID": "icare_0094",
+      "ActionName": "Adoção de biometano em frotas públicas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar biometano produzido a partir de resíduos urbanos e agroindustriais para abastecer ônibus e caminhões públicos, reduzindo as emissões de gases de efeito estufa nas frotas municipais",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de infraestrutura para a produção, processamento e distribuição de biometano a partir de resíduos urbanos e agroindustriais.",
+        "Retrofit ou aquisição de ônibus e caminhões públicos capazes de usar biometano como fonte de combustível.",
+        "Estabelecimento de políticas e incentivos financeiros para apoiar a produção de biometano e sua integração nas frotas municipais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Economia de custos na operação da frota devido ao uso de biometano (USD/ano).",
+        "Aumento na capacidade de produção de biometano (%).",
+        "Percentagem de biometano obtido localmente versus importado."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR SJM",
+    "cityName": "São João de Meriti",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0139",
+    "actionName": "Implementation of urban toll.",
+    "actionPriority": 20,
+    "explanation": "A implementação de um pedágio urbano em São João de Meriti poderia ajudar a gerenciar a alta densidade populacional e reduzir as emissões do transporte, que são contribuintes significativos para o total de emissões da cidade. Ao desencorajar o uso excessivo de veículos particulares, o pedágio poderia promover o uso do transporte público, reduzindo assim os congestionamentos e melhorando a qualidade do ar. Além disso, a receita gerada pelo pedágio poderia ser reinvestida na melhoria da infraestrutura do transporte público, fortalecendo ainda mais os esforços de sustentabilidade da cidade. Essa ação está alinhada com a necessidade de enfrentar os desafios ambientais do município, especialmente na redução das emissões e na melhoria da saúde pública.",
+    "action": {
+      "ActionID": "icare_0139",
+      "ActionName": "Implementação de pedágio urbano.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecimento de uma taxa de congestionamento e/ou rodízio de placas para veículos leves em áreas saturadas e em horários saturados",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro legal claro e investir em tecnologia para monitoramento e fiscalização (por exemplo, câmeras, sensores).",
+        "Lançar campanhas de conscientização e garantir a disponibilidade de transporte público eficiente ou soluções alternativas de mobilidade.",
+        "Colaborar com governos locais e agências de transporte, e estabelecer sistemas para monitorar e avaliar a eficácia da política."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução das emissões de CO₂ do transporte rodoviário urbano (tCO₂e/ano).",
+        "Receita gerada pela implementação da taxa de congestionamento urbano (R$)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
 ]

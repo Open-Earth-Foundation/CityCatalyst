@@ -1,1266 +1,1266 @@
 [
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 1,
-        "explanation": "The implementation of an urban toll in Contagem is a priority due to the high transportation emissions, which are a significant contributor to the city's total emissions. By introducing a toll, the city can effectively manage traffic congestion, encouraging the use of public transportation and reducing vehicle emissions. This action is crucial in addressing the environmental impact of transportation, which is currently the largest source of emissions in the city. Additionally, reducing traffic congestion can improve air quality and public health, aligning with the city's goals to mitigate climate risks and enhance the quality of life for its residents.",
-        "action": {
-            "ActionID": "icare_0139",
-            "ActionName": "Implementaci\u00f3n de peaje urbano.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Establecimiento de un cargo por congesti\u00f3n y/o rotaci\u00f3n de matr\u00edculas para veh\u00edculos ligeros en \u00e1reas saturadas y en horarios saturados",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establecer un marco legal claro e invertir en tecnolog\u00eda para el monitoreo y la aplicaci\u00f3n (por ejemplo, c\u00e1maras, sensores).",
-                "Lanzar campa\u00f1as de concienciaci\u00f3n y asegurar la disponibilidad de transporte p\u00fablico eficiente o soluciones de movilidad alternativas.",
-                "Colaborar con los gobiernos locales y las agencias de transporte, y establecer sistemas para monitorear y evaluar la efectividad de la pol\u00edtica."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de emisiones de CO\u2082 del transporte por carretera urbano (tCO\u2082e/a\u00f1o).",
-                "Ingresos generados por la implementaci\u00f3n del cargo por congesti\u00f3n urbana (R$)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2,
-        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Contagem due to its high transportation emissions. Encouraging the use of bikes can significantly reduce the reliance on motor vehicles, thereby lowering emissions and improving air quality. Additionally, promoting electric bikes can make cycling more accessible to a broader range of people, including those who may find traditional biking challenging due to the city's elevation. This initiative also aligns with the city's need to address public health concerns related to air pollution and sedentary lifestyles.",
-        "action": {
-            "ActionID": "icare_0121",
-            "ActionName": "Incentivo para crear programas de bicicletas compartidas en \u00e1reas urbanas, con un enfoque en bicicletas el\u00e9ctricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta acci\u00f3n fomenta el establecimiento de sistemas de bicicletas compartidas en las ciudades, promoviendo espec\u00edficamente el uso de bicicletas el\u00e9ctricas. Estos sistemas permiten a los residentes alquilar bicicletas el\u00e9ctricas para viajes cortos, reduciendo la dependencia de los autom\u00f3viles para el transporte urbano. Al integrar bicicletas el\u00e9ctricas, las ciudades pueden reducir a\u00fan m\u00e1s las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover un modo de transporte m\u00e1s saludable y sostenible tanto para \u00e1reas urbanas como rurales. Esta iniciativa tambi\u00e9n apoya la igualdad de movilidad, ya que hace que las bicicletas sean m\u00e1s accesibles para un rango m\u00e1s amplio de personas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establecimiento de sistemas de bicicletas compartidas con un enfoque en bicicletas el\u00e9ctricas para reducir la dependencia del autom\u00f3vil.",
-                "Integraci\u00f3n de bicicletas el\u00e9ctricas para reducir las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover el transporte sostenible.",
-                "Promoci\u00f3n de la igualdad de movilidad haciendo que las bicicletas el\u00e9ctricas sean accesibles para una poblaci\u00f3n m\u00e1s amplia."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de bicicletas el\u00e9ctricas disponibles en programas de bicicletas compartidas.",
-                "Aumento anual en usuarios de bicicletas compartidas.",
-                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de bicicletas el\u00e9ctricas compartidas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 3,
-        "explanation": "The adoption of biomethane in public fleets is a significant action for Contagem due to its potential to reduce transportation emissions, which are currently the highest among the city's emission sources. By transitioning to biomethane, the city can decrease its reliance on fossil fuels, thereby lowering its carbon footprint and contributing to cleaner air quality. Additionally, this action aligns with the city's need to address climate risks, such as heatwaves and public health impacts, by promoting sustainable energy solutions. Implementing biomethane in public transportation can also serve as a model for other sectors, encouraging broader adoption of renewable energy sources.",
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Adopci\u00f3n de biometano en flotas p\u00fablicas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Utilizar biometano producido a partir de residuos urbanos y agroindustriales para alimentar autobuses y camiones p\u00fablicos, reduciendo las emisiones de gases de efecto invernadero en las flotas municipales.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de infraestructura para la producci\u00f3n, procesamiento y distribuci\u00f3n de biometano a partir de residuos urbanos y agroindustriales.",
-                "Adaptaci\u00f3n o adquisici\u00f3n de autobuses y camiones p\u00fablicos capaces de utilizar biometano como fuente de combustible.",
-                "Establecimiento de pol\u00edticas e incentivos financieros para apoyar la producci\u00f3n de biometano y su integraci\u00f3n en las flotas municipales."
-            ],
-            "KeyPerformanceIndicators": [
-                "Ahorro de costos en la operaci\u00f3n de la flota debido al uso de biometano (USD/a\u00f1o).",
-                "Aumento en la capacidad de producci\u00f3n de biometano (%).",
-                "Porcentaje de biometano obtenido localmente versus importado."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4,
-        "explanation": "The implementation of free public transportation programs during peak hours in Contagem is a strategic action to address the high transportation emissions, which are a significant contributor to the city's total emissions. By encouraging the use of public transport, the city can reduce the reliance on individual vehicles, thereby decreasing traffic congestion and air pollution. This initiative also aligns with the city's socio-economic context, as it can provide financial relief to residents with very low income, enhancing their mobility and access to opportunities. Additionally, reducing vehicle emissions can contribute to better public health outcomes by improving air quality, which is crucial given the city's vulnerability to public health impacts from environmental hazards.",
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementaci\u00f3n de programas de transporte p\u00fablico gratuito durante las horas pico para reducir el uso de veh\u00edculos individuales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar el uso del transporte p\u00fablico ofreciendo servicios gratuitos durante las horas pico para trabajadores y estudiantes. Esta medida reduce la congesti\u00f3n urbana, disminuye el n\u00famero de veh\u00edculos individuales en la carretera y, en consecuencia, reduce las emisiones de gases de efecto invernadero asociadas con el transporte privado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Asignaci\u00f3n de fondos para subsidiar servicios de transporte p\u00fablico gratuito durante las horas pico.",
-                "Desarrollo de pol\u00edticas para garantizar la sostenibilidad y eficiencia de los sistemas de transporte p\u00fablico ante el aumento de la demanda.",
-                "Coordinaci\u00f3n con empleadores e instituciones educativas para optimizar los horarios de las horas pico y promover la iniciativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en los niveles de contaminaci\u00f3n del aire durante las horas pico (concentraci\u00f3n de PM2.5/PM10).",
-                "N\u00famero de veh\u00edculos privados retirados de las carreteras durante las horas pico.",
-                "Tasa de satisfacci\u00f3n p\u00fablica con la iniciativa de transporte gratuito (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 5,
-        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Contagem is a high priority due to the city's significant transportation emissions, which are the largest contributor to its total emissions. By transitioning to electric vehicles, the city can substantially reduce its carbon footprint and improve air quality. Additionally, the implementation of on-demand systems can enhance public transport efficiency, providing better service to residents and potentially reducing the reliance on private vehicles. This action aligns with the city's need to address environmental concerns while improving public health and infrastructure resilience.",
-        "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Desplegar sistemas de transporte bajo demanda con flotas 100% el\u00e9ctricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Servicios de transporte colectivo bajo demanda, basados en aplicaciones, optimizan el uso de veh\u00edculos el\u00e9ctricos, reduciendo las emisiones por pasajero.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de plataformas digitales y aplicaciones para gestionar eficientemente servicios de transporte colectivo bajo demanda.",
-                "Expansi\u00f3n de flotas de veh\u00edculos el\u00e9ctricos adaptadas para soluciones de transporte compartido.",
-                "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar la adopci\u00f3n y el uso de servicios de transporte el\u00e9ctrico compartido."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de usuarios activos del sistema de flota el\u00e9ctrica bajo demanda.",
-                "Porcentaje de demanda de transporte urbano satisfecho por sistemas bajo demanda.",
-                "Reducci\u00f3n en los niveles de contaminaci\u00f3n ac\u00fastica en \u00e1reas urbanas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 6,
-        "explanation": "Encouraging renewable energy policies at the municipal level in Contagem is crucial due to the city's high stationary energy emissions, which contribute significantly to its total emissions. By promoting renewable energy, the city can reduce its carbon footprint and mitigate the impacts of climate change. Additionally, renewable energy initiatives can enhance energy security, which is vital given the city's vulnerability to droughts that can affect energy resources. Implementing these policies can also stimulate local economic growth and create jobs, aligning with the city's socio-economic development goals.",
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Fomentar pol\u00edticas de energ\u00eda renovable a nivel municipal",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Abogar por e implementar pol\u00edticas que prioricen el desarrollo e integraci\u00f3n de sistemas de energ\u00eda renovable en las operaciones y planificaci\u00f3n del gobierno local.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Voluntad pol\u00edtica y liderazgo para priorizar la energ\u00eda renovable en las pol\u00edticas y procesos de planificaci\u00f3n del gobierno local",
-                "Desarrollo de pol\u00edticas claras y marcos regulatorios que faciliten la integraci\u00f3n de sistemas de energ\u00eda renovable en las operaciones gubernamentales",
-                "Disponibilidad de financiamiento o mecanismos financieros para apoyar la transici\u00f3n a la energ\u00eda renovable en la infraestructura y operaciones municipales"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de proyectos de energ\u00eda renovable aprobados o iniciados anualmente a nivel municipal.",
-                "Porcentaje de la demanda energ\u00e9tica municipal cubierta por fuentes renovables (%).",
-                "Reducci\u00f3n de las emisiones de carbono municipales debido a la adopci\u00f3n de energ\u00eda renovable (toneladas de CO\u2082e/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 7,
-        "explanation": "Expanding cycling infrastructure and building public walkways in Contagem is crucial due to the city's high population density, which can lead to traffic congestion and increased emissions. By promoting cycling and walking, the city can reduce transportation emissions, which are currently a significant contributor to its total emissions. Additionally, creating infrastructure that is resilient to climate threats is vital, given the city's high risk of floods and heatwaves, which can impact public health and infrastructure. This action not only addresses environmental concerns but also enhances the quality of life for residents by providing safer and more sustainable transportation options.",
-        "action": {
-            "ActionID": "icare_0044",
-            "ActionName": "Expandir la infraestructura para bicicletas y construir paseos p\u00fablicos y aceras accesibles, priorizando medidas resilientes a las amenazas clim\u00e1ticas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "El objetivo principal de esta acci\u00f3n es promover la movilidad activa, garantizando la seguridad, comodidad y prioridad del movimiento peatonal, de personas con discapacidades (o movilidad reducida), y de veh\u00edculos y equipos impulsados por humanos, como bicicletas y patinetes.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversiones en infraestructura para pasarelas peatonales seguras y accesibles, carriles para bicicletas e instalaciones para personas con discapacidades",
-                "Marcos de pol\u00edticas y regulaciones para priorizar la movilidad activa y establecer est\u00e1ndares de seguridad para peatones y veh\u00edculos no motorizados",
-                "Campa\u00f1as de concienciaci\u00f3n p\u00fablica para promover la movilidad activa y educar a los ciudadanos sobre los beneficios de caminar, andar en bicicleta y usar otros medios de transporte impulsados por humanos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Kil\u00f3metros de nuevos carriles bici y senderos peatonales construidos anualmente.",
-                "Aumento en el uso diario de la infraestructura para ciclistas y peatones (%).",
-                "Reducci\u00f3n en las emisiones del transporte urbano (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "c40_0026",
-        "actionName": "Vehicle Emissions",
-        "actionPriority": 8,
-        "explanation": "The action to address vehicle emissions in Contagem is a priority due to the significant contribution of transportation to the city's total emissions. With transportation emissions accounting for a large portion of the city's overall emissions, reducing vehicle emissions can substantially lower the city's carbon footprint. Additionally, improving air quality by reducing vehicle emissions can have positive impacts on public health, which is crucial given the city's vulnerability to public health risks from climate-related hazards. Implementing this action aligns with the city's need to mitigate environmental impacts and enhance the quality of life for its residents.",
-        "action": {
-            "ActionID": "c40_0026",
-            "ActionName": "Emisiones de Veh\u00edculos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Las estrategias de reducci\u00f3n de \"Vehicle Emissions\" se centran en minimizar el impacto ambiental de todo tipo de veh\u00edculos. La implementaci\u00f3n de tecnolog\u00edas m\u00e1s limpias y la promoci\u00f3n de combustibles alternativos contribuyen a reducir las emisiones, fomentando un transporte sostenible y ecol\u00f3gico.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Las estrategias de reducci\u00f3n de \"Emisiones de Veh\u00edculos\" promueven inherentemente la equidad y la inclusi\u00f3n al abordar los impactos ambientales que afectan desproporcionadamente a las comunidades vulnerables y desatendidas. Estas comunidades a menudo experimentan niveles m\u00e1s altos de contaminaci\u00f3n del aire y problemas de salud relacionados debido a la proximidad a \u00e1reas de alto tr\u00e1fico y zonas industriales. Al implementar tecnolog\u00edas m\u00e1s limpias y promover combustibles alternativos, la acci\u00f3n beneficia directamente a estas poblaciones al mejorar la calidad del aire y reducir los riesgos para la salud.\n\nAdem\u00e1s, el enfoque en el transporte sostenible y ecol\u00f3gico puede mejorar el acceso a opciones de transporte asequibles y eficientes para las comunidades desatendidas, que pueden carecer de un transporte p\u00fablico confiable. Esta inclusividad asegura que todos los miembros de la comunidad, independientemente de su estatus socioecon\u00f3mico, puedan beneficiarse de un aire m\u00e1s limpio y mejores resultados de salud p\u00fablica. En general, la acci\u00f3n reconoce y aborda las necesidades espec\u00edficas de las poblaciones vulnerables, fomentando un enfoque m\u00e1s equitativo hacia la acci\u00f3n clim\u00e1tica.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo y disponibilidad de tecnolog\u00edas de veh\u00edculos m\u00e1s limpias",
-                "Infraestructura para la distribuci\u00f3n de combustibles alternativos",
-                "Pol\u00edticas y regulaciones gubernamentales que apoyan la reducci\u00f3n de emisiones",
-                "Conciencia p\u00fablica y aceptaci\u00f3n de opciones de transporte ecol\u00f3gicas",
-                "Inversi\u00f3n en investigaci\u00f3n y desarrollo para soluciones de transporte sostenible"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de emisiones de veh\u00edculos (CO2, NOx, PM)",
-                "Porcentaje de veh\u00edculos que utilizan combustibles alternativos",
-                "N\u00famero de veh\u00edculos el\u00e9ctricos en circulaci\u00f3n",
-                "Mejoras en la eficiencia del combustible (millas por gal\u00f3n)",
-                "Tasa de adopci\u00f3n de tecnolog\u00edas m\u00e1s limpias",
-                "Reducci\u00f3n en el consumo de combustibles f\u00f3siles",
-                "Tasas de uso del transporte p\u00fablico",
-                "Mejoras en el \u00edndice de calidad del aire",
-                "Porcentaje de zonas de bajas emisiones establecidas",
-                "Inversi\u00f3n en infraestructura de transporte sostenible"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 9,
-        "explanation": "The adoption of electric drones for last-mile deliveries in Contagem is a strategic move to reduce transportation emissions, which are currently a significant contributor to the city's total emissions. By utilizing electric drones, the city can decrease reliance on traditional delivery vehicles, thereby lowering carbon emissions and improving air quality. This action also aligns with the city's need to address infrastructure challenges posed by climate hazards such as floods and landslides, as drones can operate in areas where ground transportation might be disrupted. Furthermore, this initiative supports the city's efforts to enhance energy efficiency and sustainability in its logistics operations.",
-        "action": {
-            "ActionID": "icare_0090",
-            "ActionName": "Adopci\u00f3n de drones el\u00e9ctricos para entregas de \u00faltima milla.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "off-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Reemplazar los veh\u00edculos tradicionales con drones el\u00e9ctricos para entregas de corta distancia en centros urbanos, reduciendo emisiones y congesti\u00f3n de tr\u00e1fico.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de regulaciones del espacio a\u00e9reo urbano para garantizar la operaci\u00f3n segura y eficiente de drones de entrega.",
-                "Inversi\u00f3n en infraestructura de carga y mantenimiento para apoyar una flota de drones el\u00e9ctricos.",
-                "Colaboraci\u00f3n con empresas de log\u00edstica para integrar drones en redes de entrega de \u00faltima milla."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n del tiempo de entrega en comparaci\u00f3n con los m\u00e9todos tradicionales (minutos).",
-                "Aumento en la satisfacci\u00f3n del cliente con las entregas mediante drones (%).",
-                "Reducci\u00f3n de la congesti\u00f3n del tr\u00e1fico causada por veh\u00edculos de entrega (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 10,
-        "explanation": "The expansion of mass transit systems on rails, such as metros, LRTs, and monorails, is crucial for Contagem due to its high population density and significant transportation emissions. By improving public transportation infrastructure, the city can reduce reliance on personal vehicles, thereby decreasing transportation emissions, which are currently a major contributor to the city's total emissions. Additionally, enhanced mass transit options can improve accessibility and mobility for residents, particularly benefiting those in low-income areas. This action also aligns with the need to mitigate risks associated with infrastructure vulnerabilities, as identified in the city's climate risk assessment.",
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expansi\u00f3n de los sistemas de transporte masivo sobre rieles (metros, LRTs y monorra\u00edles).",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estos sistemas ofrecen alta capacidad y bajas emisiones, cruciales para ciudades con alta densidad de poblaci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en el desarrollo y expansi\u00f3n de infraestructuras de transporte p\u00fablico de alta capacidad, como autobuses el\u00e9ctricos y sistemas de metro.",
-                "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar el uso del transporte p\u00fablico sobre los veh\u00edculos privados.",
-                "Integraci\u00f3n de fuentes de energ\u00eda renovable para alimentar estos sistemas, reduciendo a\u00fan m\u00e1s las emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "Longitud de las nuevas l\u00edneas de tr\u00e1nsito construidas (km/a\u00f1o).",
-                "Reducci\u00f3n en la congesti\u00f3n del tr\u00e1fico vial (%).",
-                "Reducci\u00f3n en el uso de veh\u00edculos privados (n\u00famero de viajes evitados/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 11,
-        "explanation": "Promoting the use of bicycles in Contagem is crucial due to the city's high population density, which can lead to traffic congestion and increased transportation emissions. By expanding bicycle infrastructure, the city can reduce its transportation emissions, which are currently a significant contributor to its total emissions. Additionally, encouraging cycling can improve public health by promoting physical activity and reducing air pollution. This action also aligns with the city's need to address public health risks associated with heatwaves and other climate-related hazards.",
-        "action": {
-            "ActionID": "icare_0118",
-            "ActionName": "Promover el uso de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura y estrategias de concienciaci\u00f3n y comunicaci\u00f3n.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar la adopci\u00f3n de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura para ciclistas, como carriles bici dedicados, instalaciones de estacionamiento y estaciones de reparaci\u00f3n. Adem\u00e1s, implementar campa\u00f1as de concienciaci\u00f3n y estrategias de comunicaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo, con el objetivo de aumentar la participaci\u00f3n p\u00fablica y hacer del ciclismo una opci\u00f3n de transporte viable y sostenible para el desplazamiento diario.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expandir la infraestructura para bicicletas, incluyendo carriles exclusivos para bicicletas, instalaciones de estacionamiento y estaciones de reparaci\u00f3n.",
-                "Implementar campa\u00f1as de concienciaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo.",
-                "Promover la participaci\u00f3n p\u00fablica a trav\u00e9s de estrategias de comunicaci\u00f3n, haciendo del ciclismo una opci\u00f3n viable y sostenible para el desplazamiento diario."
-            ],
-            "KeyPerformanceIndicators": [
-                "Longitud de los nuevos carriles bici a\u00f1adidos a la red urbana (km).",
-                "Aumento anual en el n\u00famero de usuarios de bicicletas en \u00e1reas urbanas.",
-                "Reducci\u00f3n estimada en las emisiones de CO\u2082 equivalente por el cambio al ciclismo."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 12,
-        "explanation": "Integrating renewables into municipal water systems in Contagem is a strategic action due to the city's high risk of droughts impacting water resources. By utilizing renewable energy, the city can ensure a more sustainable and reliable water supply, reducing dependency on traditional energy sources that may be affected by climate hazards. This action also aligns with the city's need to lower its stationary energy emissions, contributing to overall emission reduction goals. Furthermore, enhancing the resilience of water systems through renewable integration can mitigate the socio-economic impacts of water scarcity on the population.",
-        "action": {
-            "ActionID": "icare_0024",
-            "ActionName": "Integrar energ\u00edas renovables en los sistemas de agua municipales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar fuentes de energ\u00eda renovable, como la solar o la e\u00f3lica, para impulsar los sistemas de tratamiento, bombeo y distribuci\u00f3n de agua, reduciendo los costos de energ\u00eda y las emisiones.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de financiaci\u00f3n o incentivos financieros para integrar fuentes de energ\u00eda renovable como la solar o la e\u00f3lica en los sistemas de tratamiento y distribuci\u00f3n de agua",
-                "Experiencia t\u00e9cnica e infraestructura para adaptar los sistemas existentes con soluciones de energ\u00eda renovable o dise\u00f1ar nuevas instalaciones alimentadas por energ\u00edas renovables",
-                "Apoyo pol\u00edtico y regulatorio para fomentar el uso de energ\u00eda limpia en los sistemas de agua y asegurar su integraci\u00f3n en las redes energ\u00e9ticas municipales"
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de sistemas de agua municipales alimentados por energ\u00edas renovables.",
-                "Reducci\u00f3n en el consumo de energ\u00eda de fuentes no renovables (kWh/a\u00f1o).",
-                "Emisiones de GEI evitadas (toneladas de CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0021",
-        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
-        "actionPriority": 13,
-        "explanation": "Encouraging and promoting sustainable and rational use of individual motorized transportation in Contagem is crucial due to the high transportation emissions, which are a significant contributor to the city's total emissions. By focusing on this action, the city can address a major source of pollution, thereby improving air quality and reducing its carbon footprint. Additionally, promoting sustainable transportation can alleviate traffic congestion, enhance public health, and contribute to a more livable urban environment. This action aligns with the city's need to mitigate climate risks and improve overall quality of life for its residents.",
-        "action": {
-            "ActionID": "icare_0021",
-            "ActionName": "Fomentar y promover medidas para el uso sostenible y racional del transporte motorizado individual",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "El objetivo de esta acci\u00f3n es racionalizar el uso del transporte motorizado individual, reduciendo su participaci\u00f3n en la matriz de movilidad. Tambi\u00e9n es importante regular los servicios de transporte privado basados en aplicaciones, con el objetivo de proporcionar un servicio de calidad integrado con la movilidad general de la ciudad.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de pol\u00edticas y regulaciones para reducir el uso del transporte motorizado individual y fomentar modos de transporte alternativos",
-                "Integraci\u00f3n de servicios de transporte privado basados en aplicaciones con el sistema de transporte p\u00fablico de la ciudad para una movilidad sin interrupciones",
-                "Inversi\u00f3n en infraestructura de transporte p\u00fablico para ofrecer alternativas accesibles, confiables y de alta calidad al uso de autom\u00f3viles privados"
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de reducci\u00f3n en el uso de veh\u00edculos privados en la ciudad (%).",
-                "Aumento anual en el uso del transporte p\u00fablico (%).",
-                "Reducci\u00f3n en las emisiones equivalentes de CO\u2082 por la disminuci\u00f3n del transporte motorizado (toneladas/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 14,
-        "explanation": "Increasing the attractiveness of the municipal bus system in Contagem is crucial due to the high transportation emissions, which are a significant contributor to the city's total emissions. By promoting public transport, the city can reduce its carbon footprint and improve air quality, benefiting public health. Additionally, enhancing the bus system can provide a more reliable and efficient transportation option for residents, particularly those with very low income, improving their access to essential services and opportunities. This action also aligns with the need to address infrastructure vulnerabilities, as a robust public transport system can mitigate the impact of hazards like floods and landslides on mobility.",
-        "action": {
-            "ActionID": "icare_0117",
-            "ActionName": "Aumentar el atractivo del sistema de autobuses municipales para promover este modo de transporte.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aumentar la calidad de la prestaci\u00f3n del servicio de transporte, con el objetivo de cambiar el modo de transporte de los pasajeros del transporte motorizado privado al transporte p\u00fablico, reduciendo as\u00ed las emisiones generadas por coches y motocicletas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Mejorar la calidad de los servicios de transporte p\u00fablico para atraer pasajeros del transporte motorizado privado.",
-                "Implementar pol\u00edticas e infraestructuras que apoyen y mejoren la eficiencia de los sistemas de transporte p\u00fablico.",
-                "Promover la concienciaci\u00f3n sobre los beneficios ambientales del transporte p\u00fablico para fomentar un cambio modal y reducir las emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento anual en el n\u00famero de pasajeros que utilizan el sistema de autobuses municipales.",
-                "Porcentaje de rutas de autob\u00fas con mejor fiabilidad en el tiempo de viaje.",
-                "Reducci\u00f3n estimada en las emisiones equivalentes de CO\u2082 debido al aumento del uso del transporte p\u00fablico."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 15,
-        "explanation": "The development of micro-logistics hubs to encourage the use of electric cargo bikes in Contagem is a strategic action to reduce transportation emissions, which are currently a significant contributor to the city's total emissions. By promoting electric cargo bikes, the city can decrease reliance on traditional fossil fuel-powered vehicles, thus lowering air pollution and improving urban air quality. Additionally, this initiative supports sustainable urban mobility, which is crucial given the city's high population density. Encouraging the use of electric cargo bikes also aligns with global trends towards greener logistics solutions, potentially enhancing the city's reputation as a forward-thinking and environmentally conscious urban area.",
-        "action": {
-            "ActionID": "icare_0092",
-            "ActionName": "Desarrollo de micro-centros log\u00edsticos para fomentar el uso de bicicletas de carga el\u00e9ctricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Crear centros log\u00edsticos a peque\u00f1a escala en barrios urbanos para facilitar las entregas utilizando bicicletas de carga el\u00e9ctricas, mientras se implementan incentivos fiscales o subsidios para que las empresas adopten estas bicicletas como modo de transporte, reduciendo las emisiones y mejorando la eficiencia de las entregas en \u00e1reas densamente pobladas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Identificaci\u00f3n y desarrollo de ubicaciones adecuadas para centros log\u00edsticos a peque\u00f1a escala dentro de los vecindarios urbanos.",
-                "Provisi\u00f3n de incentivos fiscales, subsidios o subvenciones para alentar a las empresas a hacer la transici\u00f3n a bicicletas de carga el\u00e9ctricas.",
-                "Establecimiento de asociaciones con empresas de log\u00edstica para garantizar la integraci\u00f3n y eficiencia en las operaciones de entrega utilizando estos centros."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en la distancia recorrida por veh\u00edculos de entrega tradicionales (km/a\u00f1o).",
-                "Aumento en la eficiencia operativa de los centros log\u00edsticos (%).",
-                "N\u00famero de empresas que utilizan micro-centros log\u00edsticos para entregas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 16,
-        "explanation": "Promoting community solar farms in Contagem is a strategic action to address the city's high stationary energy emissions, which contribute significantly to its total emissions. By harnessing solar energy, the city can reduce its reliance on fossil fuels, thereby decreasing its carbon footprint and improving air quality. Additionally, solar farms can provide a sustainable energy source that is resilient to the impacts of climate change, such as droughts and heatwaves, which are significant risks for the region. This initiative also has the potential to create local jobs and stimulate economic growth, aligning with the city's socio-economic development goals.",
-        "action": {
-            "ActionID": "icare_0038",
-            "ActionName": "Promover granjas solares comunitarias",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Desarrollar y fomentar la adopci\u00f3n de proyectos solares compartidos, permitiendo que las comunidades se beneficien colectivamente de energ\u00eda limpia y renovable.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de pol\u00edticas y marcos regulatorios para apoyar proyectos de energ\u00eda solar compartida basados en la comunidad y garantizar el acceso equitativo a la energ\u00eda limpia",
-                "Disponibilidad de mecanismos financieros o incentivos para ayudar a las comunidades a invertir en y mantener sistemas de energ\u00eda solar compartida",
-                "Colaboraci\u00f3n entre gobiernos locales, proveedores de energ\u00eda y organizaciones comunitarias para dise\u00f1ar e implementar proyectos de energ\u00eda solar compartida de manera efectiva"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de hogares atendidos por proyectos solares comunitarios.",
-                "Emisiones de GEI evitadas mediante la producci\u00f3n de energ\u00eda solar (toneladas de CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0060",
-        "actionName": "Introduction of modular and automated collective transport systems.",
-        "actionPriority": 17,
-        "explanation": "The introduction of modular and automated collective transport systems in Contagem is a significant priority due to the high transportation emissions, which are a major contributor to the city's total emissions. By implementing this action, the city can reduce its carbon footprint and improve air quality, benefiting public health. Additionally, enhancing public transport infrastructure can alleviate traffic congestion, making the city more livable and accessible for its residents. This action also aligns with the need to address climate risks, as improved transport systems can help mitigate the impacts of extreme weather events on mobility.",
-        "action": {
-            "ActionID": "icare_0060",
-            "ActionName": "Introducci\u00f3n de sistemas de transporte colectivo modulares y automatizados.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Los sistemas automatizados y modulares se adaptan a la demanda en tiempo real, optimizando el uso de energ\u00eda y reduciendo las emisiones.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en el desarrollo y despliegue de sistemas automatizados y modulares capaces de ajustar la demanda de energ\u00eda en tiempo real.",
-                "Integraci\u00f3n de tecnolog\u00edas de redes inteligentes y plataformas de gesti\u00f3n energ\u00e9tica para optimizar el uso de fuentes de energ\u00eda renovable.",
-                "Colaboraci\u00f3n con industrias y proveedores de servicios para incorporar estos sistemas en la infraestructura existente, asegurando eficiencia y reducci\u00f3n de emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "Tiempo de espera promedio para los pasajeros que utilizan los nuevos sistemas (minutos).",
-                "Consumo de energ\u00eda por kil\u00f3metro por pasajero (kWh/pasajero-km).",
-                "Tasa de satisfacci\u00f3n p\u00fablica con los sistemas de transporte modulares (%)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0126",
-        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
-        "actionPriority": 18,
-        "explanation": "The implementation of green fuel supply infrastructure for aircraft in Contagem is a strategic action to address the city's high transportation emissions, which are a significant contributor to its total emissions profile. By transitioning to biofuels or green hydrogen, the city can reduce its carbon footprint and improve air quality. This action also aligns with global trends towards sustainable aviation, potentially positioning Contagem as a leader in green technology adoption. Furthermore, investing in green infrastructure can stimulate local economic growth and create new job opportunities in the renewable energy sector.",
-        "action": {
-            "ActionID": "icare_0126",
-            "ActionName": "Implementaci\u00f3n de infraestructura de suministro de combustibles verdes para aeronaves, como biocombustibles o hidr\u00f3geno verde.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "aviation"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta acci\u00f3n tiene como objetivo promover la sostenibilidad en los aeropuertos mediante la implementaci\u00f3n de infraestructura para abastecer a las aeronaves con combustibles de bajo carbono. El uso de biocombustibles o hidr\u00f3geno verde puede reducir significativamente las emisiones de GEI en el sector de la aviaci\u00f3n. Adem\u00e1s, la transici\u00f3n a estas fuentes de energ\u00eda m\u00e1s limpias contribuir\u00e1 a alcanzar los objetivos de descarbonizaci\u00f3n en el sector del transporte, al tiempo que se mantiene la eficiencia operativa en los aeropuertos y se minimiza su impacto ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollar infraestructura para abastecer aviones con combustibles bajos en carbono como biocombustibles o hidr\u00f3geno verde.",
-                "Asegurar la disponibilidad de fuentes de combustible sostenibles y la tecnolog\u00eda necesaria para las operaciones de abastecimiento.",
-                "Monitorear y evaluar el impacto ambiental y la eficiencia operativa de la transici\u00f3n a combustibles bajos en carbono."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de aeropuertos con infraestructura de biocombustible o hidr\u00f3geno verde.",
-                "Cantidad de combustible verde consumido por el sector de la aviaci\u00f3n (litros/a\u00f1o).",
-                "Reducci\u00f3n de emisiones de CO\u2082 de la aviaci\u00f3n mediante el uso de combustibles alternativos (tCO\u2082e/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 19,
-        "explanation": "The implementation of prioritized routes for sustainable vehicles in Contagem is crucial due to the city's high transportation emissions, which are a significant contributor to its total emissions. By promoting the use of sustainable vehicles, this action can help reduce the carbon footprint and improve air quality in the city. Additionally, given the city's dense population, efficient and sustainable transportation options are essential to manage traffic congestion and enhance the quality of life for residents. This initiative aligns with the city's need to address environmental challenges while supporting economic growth and public health.",
-        "action": {
-            "ActionID": "icare_0091",
-            "ActionName": "Implementaci\u00f3n de rutas priorizadas para veh\u00edculos sostenibles.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Crear carriles prioritarios para veh\u00edculos el\u00e9ctricos, h\u00edbridos y de bajas emisiones en los centros urbanos para fomentar su adopci\u00f3n y reducir la contaminaci\u00f3n en \u00e1reas de alto tr\u00e1fico.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Implementaci\u00f3n de sistemas de gesti\u00f3n del tr\u00e1fico para hacer cumplir y monitorear el uso de carriles prioritarios.",
-                "Desarrollo de se\u00f1alizaci\u00f3n clara y campa\u00f1as de concienciaci\u00f3n p\u00fablica para informar a los conductores sobre la elegibilidad y el uso de los carriles.",
-                "Establecimiento de marcos regulatorios que incentiven la adopci\u00f3n de veh\u00edculos de bajas emisiones para la elegibilidad en carriles prioritarios."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de veh\u00edculos sostenibles utilizando rutas prioritarias.",
-                "Aumento en la eficiencia de entrega de bienes transportados a trav\u00e9s de rutas prioritarias (%).",
-                "Tasa de aceptaci\u00f3n p\u00fablica de rutas prioritarias para veh\u00edculos sostenibles (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0033",
-        "actionName": "Install biodigesters in rural properties",
-        "actionPriority": 20,
-        "explanation": "Installing biodigesters in rural properties in Contagem is a strategic action to address waste emissions, which are a significant component of the city's total emissions. Biodigesters can convert organic waste into biogas, providing a renewable energy source and reducing reliance on traditional energy sources. This action also supports the reduction of methane emissions from waste, contributing to overall greenhouse gas reduction efforts. Additionally, it can improve waste management practices in rural areas, aligning with the city's sustainability goals.",
-        "action": {
-            "ActionID": "icare_0033",
-            "ActionName": "Instalar biodigestores en propiedades rurales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Equipar granjas y propiedades rurales con biodigestores para convertir los desechos org\u00e1nicos en biog\u00e1s y fertilizantes ricos en nutrientes, proporcionando una fuente de energ\u00eda sostenible.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidad de financiaci\u00f3n o subsidios para apoyar la instalaci\u00f3n de biodigestores en granjas y propiedades rurales",
-                "Acceso a experiencia t\u00e9cnica para el dise\u00f1o, instalaci\u00f3n y mantenimiento de biodigestores",
-                "Desarrollo de un marco regulatorio de apoyo que fomente el uso de biog\u00e1s y sistemas de gesti\u00f3n de residuos org\u00e1nicos en la agricultura rural"
-            ],
-            "KeyPerformanceIndicators": [
-                "Volumen de biog\u00e1s generado (m\u00b3/a\u00f1o).",
-                "Emisiones de GEI evitadas al reemplazar combustibles f\u00f3siles (toneladas de CO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0139",
+    "actionName": "Implementation of urban toll.",
+    "actionPriority": 1,
+    "explanation": "La implementación de un peaje urbano en Contagem es una prioridad debido a las altas emisiones del transporte, que constituyen un aporte significativo a las emisiones totales de la ciudad. Al introducir un peaje, la ciudad puede gestionar de manera efectiva la congestión del tráfico, fomentando el uso del transporte público y reduciendo las emisiones de vehículos. Esta acción es crucial para abordar el impacto ambiental del transporte, que actualmente es la mayor fuente de emisiones en la ciudad. Además, la reducción de la congestión vehicular puede mejorar la calidad del aire y la salud pública, alineándose con los objetivos de la ciudad de mitigar los riesgos climáticos y mejorar la calidad de vida de sus habitantes.",
+    "action": {
+      "ActionID": "icare_0139",
+      "ActionName": "Implementación de peaje urbano.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Establecimiento de un cargo por congestión y/o rotación de matrículas para vehículos ligeros en áreas saturadas y en horarios saturados",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Establecer un marco legal claro e invertir en tecnología para el monitoreo y la aplicación (por ejemplo, cámaras, sensores).",
+        "Lanzar campañas de concienciación y asegurar la disponibilidad de transporte público eficiente o soluciones de movilidad alternativas.",
+        "Colaborar con los gobiernos locales y las agencias de transporte, y establecer sistemas para monitorear y evaluar la efectividad de la política."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de emisiones de CO₂ del transporte por carretera urbano (tCO₂e/año).",
+        "Ingresos generados por la implementación del cargo por congestión urbana (R$)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0121",
+    "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+    "actionPriority": 2,
+    "explanation": "La acción de incentivar los programas de bicicletas compartidas, especialmente con bicicletas eléctricas, es crucial para Contagem debido a sus altas emisiones de transporte. Fomentar el uso de bicicletas puede reducir significativamente la dependencia de los vehículos motorizados, disminuyendo así las emisiones y mejorando la calidad del aire. Además, promover las bicicletas eléctricas puede hacer que el ciclismo sea más accesible para un mayor número de personas, incluyendo aquellas que pueden encontrar difícil el uso de bicicletas tradicionales debido a la elevación de la ciudad. Esta iniciativa también está alineada con la necesidad de la ciudad de abordar problemas de salud pública relacionados con la contaminación del aire y los estilos de vida sedentarios.",
+    "action": {
+      "ActionID": "icare_0121",
+      "ActionName": "Incentivo para crear programas de bicicletas compartidas en áreas urbanas, con un enfoque en bicicletas eléctricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta acción fomenta el establecimiento de sistemas de bicicletas compartidas en las ciudades, promoviendo específicamente el uso de bicicletas eléctricas. Estos sistemas permiten a los residentes alquilar bicicletas eléctricas para viajes cortos, reduciendo la dependencia de los automóviles para el transporte urbano. Al integrar bicicletas eléctricas, las ciudades pueden reducir aún más las emisiones de gases de efecto invernadero, aliviar la congestión del tráfico y promover un modo de transporte más saludable y sostenible tanto para áreas urbanas como rurales. Esta iniciativa también apoya la igualdad de movilidad, ya que hace que las bicicletas sean más accesibles para un rango más amplio de personas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Establecimiento de sistemas de bicicletas compartidas con un enfoque en bicicletas eléctricas para reducir la dependencia del automóvil.",
+        "Integración de bicicletas eléctricas para reducir las emisiones de gases de efecto invernadero, aliviar la congestión del tráfico y promover el transporte sostenible.",
+        "Promoción de la igualdad de movilidad haciendo que las bicicletas eléctricas sean accesibles para una población más amplia."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de bicicletas eléctricas disponibles en programas de bicicletas compartidas.",
+        "Aumento anual en usuarios de bicicletas compartidas.",
+        "Reducción estimada en emisiones equivalentes de CO₂ por la adopción de bicicletas eléctricas compartidas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0094",
+    "actionName": "Adoption of biomethane in public fleets.",
+    "actionPriority": 3,
+    "explanation": "La adopción de biometano en las flotas públicas es una acción significativa para Contagem debido a su potencial para reducir las emisiones del transporte, que actualmente son las más altas entre las fuentes de emisión de la ciudad. Al hacer la transición al biometano, la ciudad puede disminuir su dependencia de los combustibles fósiles, reduciendo así su huella de carbono y contribuyendo a una mejor calidad del aire. Además, esta acción está alineada con la necesidad de la ciudad de abordar los riesgos climáticos, como las olas de calor y los impactos en la salud pública, mediante la promoción de soluciones energéticas sostenibles. La implementación del biometano en el transporte público también puede servir como modelo para otros sectores, fomentando una adopción más amplia de fuentes de energía renovable.",
+    "action": {
+      "ActionID": "icare_0094",
+      "ActionName": "Adopción de biometano en flotas públicas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar biometano producido a partir de residuos urbanos y agroindustriales para alimentar autobuses y camiones públicos, reduciendo las emisiones de gases de efecto invernadero en las flotas municipales.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de infraestructura para la producción, procesamiento y distribución de biometano a partir de residuos urbanos y agroindustriales.",
+        "Adaptación o adquisición de autobuses y camiones públicos capaces de utilizar biometano como fuente de combustible.",
+        "Establecimiento de políticas e incentivos financieros para apoyar la producción de biometano y su integración en las flotas municipales."
+      ],
+      "KeyPerformanceIndicators": [
+        "Ahorro de costos en la operación de la flota debido al uso de biometano (USD/año).",
+        "Aumento en la capacidad de producción de biometano (%).",
+        "Porcentaje de biometano obtenido localmente versus importado."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 4,
+    "explanation": "La implementación de programas de transporte público gratuito durante las horas pico en Contagem es una acción estratégica para abordar las altas emisiones del sector transporte, que constituyen una contribución significativa a las emisiones totales de la ciudad. Al fomentar el uso del transporte público, la ciudad puede reducir la dependencia de vehículos individuales, disminuyendo así la congestión del tráfico y la contaminación del aire. Esta iniciativa también se alinea con el contexto socioeconómico de la ciudad, ya que puede proporcionar alivio financiero a los residentes de muy bajos ingresos, mejorando su movilidad y acceso a oportunidades. Además, la reducción de las emisiones de vehículos puede contribuir a mejores resultados en la salud pública al mejorar la calidad del aire, lo cual es crucial dada la vulnerabilidad de la ciudad a los impactos en la salud pública derivados de riesgos ambientales.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementación de programas de transporte público gratuito durante las horas pico para reducir el uso de vehículos individuales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar el uso del transporte público ofreciendo servicios gratuitos durante las horas pico para trabajadores y estudiantes. Esta medida reduce la congestión urbana, disminuye el número de vehículos individuales en la carretera y, en consecuencia, reduce las emisiones de gases de efecto invernadero asociadas con el transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Asignación de fondos para subsidiar servicios de transporte público gratuito durante las horas pico.",
+        "Desarrollo de políticas para garantizar la sostenibilidad y eficiencia de los sistemas de transporte público ante el aumento de la demanda.",
+        "Coordinación con empleadores e instituciones educativas para optimizar los horarios de las horas pico y promover la iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en los niveles de contaminación del aire durante las horas pico (concentración de PM2.5/PM10).",
+        "Número de vehículos privados retirados de las carreteras durante las horas pico.",
+        "Tasa de satisfacción pública con la iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0068",
+    "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+    "actionPriority": 5,
+    "explanation": "Desplegar sistemas de transporte bajo demanda con flotas 100% eléctricas en Contagem es una alta prioridad debido a las significativas emisiones del sector transporte en la ciudad, que constituyen la mayor fuente de sus emisiones totales. Al hacer la transición a vehículos eléctricos, la ciudad puede reducir sustancialmente su huella de carbono y mejorar la calidad del aire. Además, la implementación de sistemas bajo demanda puede aumentar la eficiencia del transporte público, ofreciendo un mejor servicio a los residentes y potencialmente reduciendo la dependencia de vehículos privados. Esta acción está alineada con la necesidad de la ciudad de abordar preocupaciones medioambientales, al mismo tiempo que mejora la salud pública y la resiliencia de la infraestructura.",
+    "action": {
+      "ActionID": "icare_0068",
+      "ActionName": "Desplegar sistemas de transporte bajo demanda con flotas 100% eléctricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Servicios de transporte colectivo bajo demanda, basados en aplicaciones, optimizan el uso de vehículos eléctricos, reduciendo las emisiones por pasajero.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desarrollo de plataformas digitales y aplicaciones para gestionar eficientemente servicios de transporte colectivo bajo demanda.",
+        "Expansión de flotas de vehículos eléctricos adaptadas para soluciones de transporte compartido.",
+        "Implementación de políticas e incentivos para fomentar la adopción y el uso de servicios de transporte eléctrico compartido."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de usuarios activos del sistema de flota eléctrica bajo demanda.",
+        "Porcentaje de demanda de transporte urbano satisfecho por sistemas bajo demanda.",
+        "Reducción en los niveles de contaminación acústica en áreas urbanas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 6,
+    "explanation": "Fomentar políticas de energía renovable a nivel municipal en Contagem es crucial debido a las altas emisiones de energía estacionaria de la ciudad, las cuales contribuyen significativamente a sus emisiones totales. Al promover la energía renovable, la ciudad puede reducir su huella de carbono y mitigar los impactos del cambio climático. Además, las iniciativas de energía renovable pueden mejorar la seguridad energética, lo cual es vital dada la vulnerabilidad de la ciudad a las sequías que pueden afectar los recursos energéticos. Implementar estas políticas también puede estimular el crecimiento económico local y crear empleos, alineándose con los objetivos de desarrollo socioeconómico de la ciudad.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Fomentar políticas de energía renovable a nivel municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Abogar por e implementar políticas que prioricen el desarrollo e integración de sistemas de energía renovable en las operaciones y planificación del gobierno local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Voluntad política y liderazgo para priorizar la energía renovable en las políticas y procesos de planificación del gobierno local",
+        "Desarrollo de políticas claras y marcos regulatorios que faciliten la integración de sistemas de energía renovable en las operaciones gubernamentales",
+        "Disponibilidad de financiamiento o mecanismos financieros para apoyar la transición a la energía renovable en la infraestructura y operaciones municipales"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de proyectos de energía renovable aprobados o iniciados anualmente a nivel municipal.",
+        "Porcentaje de la demanda energética municipal cubierta por fuentes renovables (%).",
+        "Reducción de las emisiones de carbono municipales debido a la adopción de energía renovable (toneladas de CO₂e/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0044",
+    "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+    "actionPriority": 7,
+    "explanation": "Ampliar la infraestructura para bicicletas y construir senderos públicos en Contagem es crucial debido a la alta densidad de población de la ciudad, lo que puede provocar congestión vehicular y un aumento de las emisiones. Al promover el uso de la bicicleta y el caminar, la ciudad puede reducir las emisiones del transporte, que actualmente representan una parte significativa de sus emisiones totales. Además, crear infraestructura resiliente frente a amenazas climáticas es vital, dado el alto riesgo de inundaciones y olas de calor en la ciudad, las cuales pueden afectar la salud pública y la infraestructura. Esta acción no solo aborda preocupaciones medioambientales, sino que también mejora la calidad de vida de los residentes al ofrecer opciones de transporte más seguras y sostenibles.",
+    "action": {
+      "ActionID": "icare_0044",
+      "ActionName": "Expandir la infraestructura para bicicletas y construir paseos públicos y aceras accesibles, priorizando medidas resilientes a las amenazas climáticas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "El objetivo principal de esta acción es promover la movilidad activa, garantizando la seguridad, comodidad y prioridad del movimiento peatonal, de personas con discapacidades (o movilidad reducida), y de vehículos y equipos impulsados por humanos, como bicicletas y patinetes.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversiones en infraestructura para pasarelas peatonales seguras y accesibles, carriles para bicicletas e instalaciones para personas con discapacidades",
+        "Marcos de políticas y regulaciones para priorizar la movilidad activa y establecer estándares de seguridad para peatones y vehículos no motorizados",
+        "Campañas de concienciación pública para promover la movilidad activa y educar a los ciudadanos sobre los beneficios de caminar, andar en bicicleta y usar otros medios de transporte impulsados por humanos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Kilómetros de nuevos carriles bici y senderos peatonales construidos anualmente.",
+        "Aumento en el uso diario de la infraestructura para ciclistas y peatones (%).",
+        "Reducción en las emisiones del transporte urbano (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "c40_0026",
+    "actionName": "Vehicle Emissions",
+    "actionPriority": 8,
+    "explanation": "La acción para abordar las emisiones de vehículos en Contagem es una prioridad debido a la significativa contribución del transporte a las emisiones totales de la ciudad. Dado que las emisiones del transporte representan una gran parte de las emisiones generales de la ciudad, reducir las emisiones de los vehículos puede disminuir sustancialmente la huella de carbono de la ciudad. Además, mejorar la calidad del aire mediante la reducción de las emisiones vehiculares puede tener impactos positivos en la salud pública, lo cual es crucial dada la vulnerabilidad de la ciudad a los riesgos para la salud pública derivados de peligros relacionados con el clima. Implementar esta acción está alineado con la necesidad de la ciudad de mitigar los impactos ambientales y mejorar la calidad de vida de sus habitantes.",
+    "action": {
+      "ActionID": "c40_0026",
+      "ActionName": "Emisiones de Vehículos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Las estrategias de reducción de \"Vehicle Emissions\" se centran en minimizar el impacto ambiental de todo tipo de vehículos. La implementación de tecnologías más limpias y la promoción de combustibles alternativos contribuyen a reducir las emisiones, fomentando un transporte sostenible y ecológico.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Las estrategias de reducción de \"Emisiones de Vehículos\" promueven inherentemente la equidad y la inclusión al abordar los impactos ambientales que afectan desproporcionadamente a las comunidades vulnerables y desatendidas. Estas comunidades a menudo experimentan niveles más altos de contaminación del aire y problemas de salud relacionados debido a la proximidad a áreas de alto tráfico y zonas industriales. Al implementar tecnologías más limpias y promover combustibles alternativos, la acción beneficia directamente a estas poblaciones al mejorar la calidad del aire y reducir los riesgos para la salud.\n\nAdemás, el enfoque en el transporte sostenible y ecológico puede mejorar el acceso a opciones de transporte asequibles y eficientes para las comunidades desatendidas, que pueden carecer de un transporte público confiable. Esta inclusividad asegura que todos los miembros de la comunidad, independientemente de su estatus socioeconómico, puedan beneficiarse de un aire más limpio y mejores resultados de salud pública. En general, la acción reconoce y aborda las necesidades específicas de las poblaciones vulnerables, fomentando un enfoque más equitativo hacia la acción climática.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo y disponibilidad de tecnologías de vehículos más limpias",
+        "Infraestructura para la distribución de combustibles alternativos",
+        "Políticas y regulaciones gubernamentales que apoyan la reducción de emisiones",
+        "Conciencia pública y aceptación de opciones de transporte ecológicas",
+        "Inversión en investigación y desarrollo para soluciones de transporte sostenible"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de emisiones de vehículos (CO2, NOx, PM)",
+        "Porcentaje de vehículos que utilizan combustibles alternativos",
+        "Número de vehículos eléctricos en circulación",
+        "Mejoras en la eficiencia del combustible (millas por galón)",
+        "Tasa de adopción de tecnologías más limpias",
+        "Reducción en el consumo de combustibles fósiles",
+        "Tasas de uso del transporte público",
+        "Mejoras en el índice de calidad del aire",
+        "Porcentaje de zonas de bajas emisiones establecidas",
+        "Inversión en infraestructura de transporte sostenible"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0090",
+    "actionName": "Adoption of electric drones for last-mile deliveries.",
+    "actionPriority": 9,
+    "explanation": "La adopción de drones eléctricos para entregas de última milla en Contagem es una medida estratégica para reducir las emisiones del transporte, que actualmente representan una contribución significativa a las emisiones totales de la ciudad. Al utilizar drones eléctricos, la ciudad puede disminuir la dependencia de vehículos de entrega tradicionales, reduciendo así las emisiones de carbono y mejorando la calidad del aire. Esta acción también está alineada con la necesidad de la ciudad de abordar los desafíos de infraestructura provocados por riesgos climáticos como inundaciones y deslizamientos de tierra, ya que los drones pueden operar en áreas donde el transporte terrestre podría verse interrumpido. Además, esta iniciativa respalda los esfuerzos de la ciudad para mejorar la eficiencia energética y la sostenibilidad en sus operaciones logísticas.",
+    "action": {
+      "ActionID": "icare_0090",
+      "ActionName": "Adopción de drones eléctricos para entregas de última milla.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "off-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Reemplazar los vehículos tradicionales con drones eléctricos para entregas de corta distancia en centros urbanos, reduciendo emisiones y congestión de tráfico.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de regulaciones del espacio aéreo urbano para garantizar la operación segura y eficiente de drones de entrega.",
+        "Inversión en infraestructura de carga y mantenimiento para apoyar una flota de drones eléctricos.",
+        "Colaboración con empresas de logística para integrar drones en redes de entrega de última milla."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción del tiempo de entrega en comparación con los métodos tradicionales (minutos).",
+        "Aumento en la satisfacción del cliente con las entregas mediante drones (%).",
+        "Reducción de la congestión del tráfico causada por vehículos de entrega (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0057",
+    "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+    "actionPriority": 10,
+    "explanation": "La expansión de los sistemas de transporte masivo sobre rieles, como metros, trenes ligeros (LRT) y monorraíles, es crucial para Contagem debido a su alta densidad poblacional y a las significativas emisiones del sector transporte. Al mejorar la infraestructura de transporte público, la ciudad puede reducir la dependencia de los vehículos particulares, disminuyendo así las emisiones del transporte, que actualmente constituyen uno de los principales contribuyentes a las emisiones totales de la ciudad. Además, la mejora de las opciones de transporte masivo puede aumentar la accesibilidad y la movilidad para los residentes, beneficiando especialmente a quienes viven en zonas de bajos ingresos. Esta acción también está alineada con la necesidad de mitigar los riesgos asociados a las vulnerabilidades de la infraestructura, tal como se identificó en la evaluación de riesgos climáticos de la ciudad.",
+    "action": {
+      "ActionID": "icare_0057",
+      "ActionName": "Expansión de los sistemas de transporte masivo sobre rieles (metros, LRTs y monorraíles).",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "railways"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estos sistemas ofrecen alta capacidad y bajas emisiones, cruciales para ciudades con alta densidad de población.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en el desarrollo y expansión de infraestructuras de transporte público de alta capacidad, como autobuses eléctricos y sistemas de metro.",
+        "Implementación de políticas e incentivos para fomentar el uso del transporte público sobre los vehículos privados.",
+        "Integración de fuentes de energía renovable para alimentar estos sistemas, reduciendo aún más las emisiones."
+      ],
+      "KeyPerformanceIndicators": [
+        "Longitud de las nuevas líneas de tránsito construidas (km/año).",
+        "Reducción en la congestión del tráfico vial (%).",
+        "Reducción en el uso de vehículos privados (número de viajes evitados/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0118",
+    "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+    "actionPriority": 11,
+    "explanation": "Promover el uso de bicicletas en Contagem es fundamental debido a la alta densidad de población de la ciudad, lo que puede provocar congestión vehicular y un aumento en las emisiones del transporte. Al expandir la infraestructura para bicicletas, la ciudad puede reducir sus emisiones de transporte, que actualmente representan una parte significativa de sus emisiones totales. Además, fomentar el ciclismo puede mejorar la salud pública al promover la actividad física y reducir la contaminación del aire. Esta acción también está alineada con la necesidad de la ciudad de abordar los riesgos para la salud pública asociados con las olas de calor y otros peligros relacionados con el clima.",
+    "action": {
+      "ActionID": "icare_0118",
+      "ActionName": "Promover el uso de bicicletas como un modo de transporte regular mediante la expansión de la infraestructura y estrategias de concienciación y comunicación.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar la adopción de bicicletas como un modo de transporte regular mediante la expansión de la infraestructura para ciclistas, como carriles bici dedicados, instalaciones de estacionamiento y estaciones de reparación. Además, implementar campañas de concienciación y estrategias de comunicación para resaltar los beneficios ambientales, de salud y económicos del ciclismo, con el objetivo de aumentar la participación pública y hacer del ciclismo una opción de transporte viable y sostenible para el desplazamiento diario.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expandir la infraestructura para bicicletas, incluyendo carriles exclusivos para bicicletas, instalaciones de estacionamiento y estaciones de reparación.",
+        "Implementar campañas de concienciación para resaltar los beneficios ambientales, de salud y económicos del ciclismo.",
+        "Promover la participación pública a través de estrategias de comunicación, haciendo del ciclismo una opción viable y sostenible para el desplazamiento diario."
+      ],
+      "KeyPerformanceIndicators": [
+        "Longitud de los nuevos carriles bici añadidos a la red urbana (km).",
+        "Aumento anual en el número de usuarios de bicicletas en áreas urbanas.",
+        "Reducción estimada en las emisiones de CO₂ equivalente por el cambio al ciclismo."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 12,
+    "explanation": "Integrar energías renovables en los sistemas municipales de agua en Contagem es una acción estratégica debido al alto riesgo de sequías que afectan los recursos hídricos de la ciudad. Al utilizar energía renovable, la ciudad puede garantizar un suministro de agua más sostenible y confiable, reduciendo la dependencia de fuentes de energía tradicionales que pueden verse afectadas por riesgos climáticos. Esta acción también está alineada con la necesidad de la ciudad de reducir sus emisiones de energía estacionaria, contribuyendo a los objetivos generales de reducción de emisiones. Además, fortalecer la resiliencia de los sistemas de agua mediante la integración de energías renovables puede mitigar los impactos socioeconómicos de la escasez de agua en la población.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energías renovables en los sistemas de agua municipales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fuentes de energía renovable, como la solar o la eólica, para impulsar los sistemas de tratamiento, bombeo y distribución de agua, reduciendo los costos de energía y las emisiones.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de financiación o incentivos financieros para integrar fuentes de energía renovable como la solar o la eólica en los sistemas de tratamiento y distribución de agua",
+        "Experiencia técnica e infraestructura para adaptar los sistemas existentes con soluciones de energía renovable o diseñar nuevas instalaciones alimentadas por energías renovables",
+        "Apoyo político y regulatorio para fomentar el uso de energía limpia en los sistemas de agua y asegurar su integración en las redes energéticas municipales"
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de sistemas de agua municipales alimentados por energías renovables.",
+        "Reducción en el consumo de energía de fuentes no renovables (kWh/año).",
+        "Emisiones de GEI evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0021",
+    "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
+    "actionPriority": 13,
+    "explanation": "Fomentar y promover el uso sostenible y racional del transporte motorizado individual en Contagem es fundamental debido a las altas emisiones del sector transporte, que constituyen una parte significativa de las emisiones totales de la ciudad. Al centrarse en esta acción, la ciudad puede abordar una de las principales fuentes de contaminación, mejorando así la calidad del aire y reduciendo su huella de carbono. Además, promover el transporte sostenible puede aliviar la congestión del tráfico, mejorar la salud pública y contribuir a un entorno urbano más habitable. Esta acción está alineada con la necesidad de la ciudad de mitigar los riesgos climáticos y mejorar la calidad de vida de sus habitantes.",
+    "action": {
+      "ActionID": "icare_0021",
+      "ActionName": "Fomentar y promover medidas para el uso sostenible y racional del transporte motorizado individual",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "El objetivo de esta acción es racionalizar el uso del transporte motorizado individual, reduciendo su participación en la matriz de movilidad. También es importante regular los servicios de transporte privado basados en aplicaciones, con el objetivo de proporcionar un servicio de calidad integrado con la movilidad general de la ciudad.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desarrollo de políticas y regulaciones para reducir el uso del transporte motorizado individual y fomentar modos de transporte alternativos",
+        "Integración de servicios de transporte privado basados en aplicaciones con el sistema de transporte público de la ciudad para una movilidad sin interrupciones",
+        "Inversión en infraestructura de transporte público para ofrecer alternativas accesibles, confiables y de alta calidad al uso de automóviles privados"
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de reducción en el uso de vehículos privados en la ciudad (%).",
+        "Aumento anual en el uso del transporte público (%).",
+        "Reducción en las emisiones equivalentes de CO₂ por la disminución del transporte motorizado (toneladas/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0117",
+    "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+    "actionPriority": 14,
+    "explanation": "Aumentar la atractividad del sistema de autobuses municipales en Contagem es crucial debido a las altas emisiones del transporte, que son un contribuyente significativo a las emisiones totales de la ciudad. Al promover el transporte público, la ciudad puede reducir su huella de carbono y mejorar la calidad del aire, beneficiando así la salud pública. Además, mejorar el sistema de autobuses puede ofrecer una opción de transporte más confiable y eficiente para los residentes, especialmente para aquellos con ingresos muy bajos, mejorando su acceso a servicios esenciales y oportunidades. Esta acción también está alineada con la necesidad de abordar las vulnerabilidades de la infraestructura, ya que un sistema de transporte público robusto puede mitigar el impacto de amenazas como inundaciones y deslizamientos de tierra en la movilidad.",
+    "action": {
+      "ActionID": "icare_0117",
+      "ActionName": "Aumentar el atractivo del sistema de autobuses municipales para promover este modo de transporte.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aumentar la calidad de la prestación del servicio de transporte, con el objetivo de cambiar el modo de transporte de los pasajeros del transporte motorizado privado al transporte público, reduciendo así las emisiones generadas por coches y motocicletas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Mejorar la calidad de los servicios de transporte público para atraer pasajeros del transporte motorizado privado.",
+        "Implementar políticas e infraestructuras que apoyen y mejoren la eficiencia de los sistemas de transporte público.",
+        "Promover la concienciación sobre los beneficios ambientales del transporte público para fomentar un cambio modal y reducir las emisiones."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento anual en el número de pasajeros que utilizan el sistema de autobuses municipales.",
+        "Porcentaje de rutas de autobús con mejor fiabilidad en el tiempo de viaje.",
+        "Reducción estimada en las emisiones equivalentes de CO₂ debido al aumento del uso del transporte público."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0092",
+    "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+    "actionPriority": 15,
+    "explanation": "El desarrollo de microcentros logísticos para fomentar el uso de bicicletas de carga eléctricas en Contagem es una acción estratégica para reducir las emisiones del transporte, que actualmente representan una contribución significativa a las emisiones totales de la ciudad. Al promover las bicicletas de carga eléctricas, la ciudad puede disminuir la dependencia de los vehículos tradicionales impulsados por combustibles fósiles, reduciendo así la contaminación del aire y mejorando la calidad del aire urbano. Además, esta iniciativa apoya la movilidad urbana sostenible, lo cual es crucial dada la alta densidad poblacional de la ciudad. Fomentar el uso de bicicletas de carga eléctricas también está en línea con las tendencias globales hacia soluciones logísticas más ecológicas, lo que podría mejorar la reputación de la ciudad como un área urbana innovadora y consciente del medio ambiente.",
+    "action": {
+      "ActionID": "icare_0092",
+      "ActionName": "Desarrollo de micro-centros logísticos para fomentar el uso de bicicletas de carga eléctricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Crear centros logísticos a pequeña escala en barrios urbanos para facilitar las entregas utilizando bicicletas de carga eléctricas, mientras se implementan incentivos fiscales o subsidios para que las empresas adopten estas bicicletas como modo de transporte, reduciendo las emisiones y mejorando la eficiencia de las entregas en áreas densamente pobladas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "20-39",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Identificación y desarrollo de ubicaciones adecuadas para centros logísticos a pequeña escala dentro de los vecindarios urbanos.",
+        "Provisión de incentivos fiscales, subsidios o subvenciones para alentar a las empresas a hacer la transición a bicicletas de carga eléctricas.",
+        "Establecimiento de asociaciones con empresas de logística para garantizar la integración y eficiencia en las operaciones de entrega utilizando estos centros."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en la distancia recorrida por vehículos de entrega tradicionales (km/año).",
+        "Aumento en la eficiencia operativa de los centros logísticos (%).",
+        "Número de empresas que utilizan micro-centros logísticos para entregas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0038",
+    "actionName": "Promote community solar farms",
+    "actionPriority": 16,
+    "explanation": "Promover las granjas solares comunitarias en Contagem es una acción estratégica para abordar las altas emisiones de energía estacionaria de la ciudad, las cuales contribuyen significativamente a sus emisiones totales. Al aprovechar la energía solar, la ciudad puede reducir su dependencia de los combustibles fósiles, disminuyendo así su huella de carbono y mejorando la calidad del aire. Además, las granjas solares pueden proporcionar una fuente de energía sostenible que es resiliente frente a los impactos del cambio climático, como las sequías y las olas de calor, que representan riesgos importantes para la región. Esta iniciativa también tiene el potencial de crear empleos locales y estimular el crecimiento económico, alineándose con los objetivos de desarrollo socioeconómico de la ciudad.",
+    "action": {
+      "ActionID": "icare_0038",
+      "ActionName": "Promover granjas solares comunitarias",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Desarrollar y fomentar la adopción de proyectos solares compartidos, permitiendo que las comunidades se beneficien colectivamente de energía limpia y renovable.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desarrollo de políticas y marcos regulatorios para apoyar proyectos de energía solar compartida basados en la comunidad y garantizar el acceso equitativo a la energía limpia",
+        "Disponibilidad de mecanismos financieros o incentivos para ayudar a las comunidades a invertir en y mantener sistemas de energía solar compartida",
+        "Colaboración entre gobiernos locales, proveedores de energía y organizaciones comunitarias para diseñar e implementar proyectos de energía solar compartida de manera efectiva"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de hogares atendidos por proyectos solares comunitarios.",
+        "Emisiones de GEI evitadas mediante la producción de energía solar (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0060",
+    "actionName": "Introduction of modular and automated collective transport systems.",
+    "actionPriority": 17,
+    "explanation": "La introducción de sistemas de transporte colectivo modulares y automatizados en Contagem es una prioridad significativa debido a las altas emisiones del sector transporte, que constituyen uno de los principales contribuyentes a las emisiones totales de la ciudad. Al implementar esta acción, la ciudad puede reducir su huella de carbono y mejorar la calidad del aire, beneficiando así la salud pública. Además, el fortalecimiento de la infraestructura de transporte público puede aliviar la congestión vehicular, haciendo que la ciudad sea más habitable y accesible para sus residentes. Esta acción también está alineada con la necesidad de abordar los riesgos climáticos, ya que la mejora de los sistemas de transporte puede ayudar a mitigar los impactos de eventos climáticos extremos sobre la movilidad.",
+    "action": {
+      "ActionID": "icare_0060",
+      "ActionName": "Introducción de sistemas de transporte colectivo modulares y automatizados.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Los sistemas automatizados y modulares se adaptan a la demanda en tiempo real, optimizando el uso de energía y reduciendo las emisiones.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en el desarrollo y despliegue de sistemas automatizados y modulares capaces de ajustar la demanda de energía en tiempo real.",
+        "Integración de tecnologías de redes inteligentes y plataformas de gestión energética para optimizar el uso de fuentes de energía renovable.",
+        "Colaboración con industrias y proveedores de servicios para incorporar estos sistemas en la infraestructura existente, asegurando eficiencia y reducción de emisiones."
+      ],
+      "KeyPerformanceIndicators": [
+        "Tiempo de espera promedio para los pasajeros que utilizan los nuevos sistemas (minutos).",
+        "Consumo de energía por kilómetro por pasajero (kWh/pasajero-km).",
+        "Tasa de satisfacción pública con los sistemas de transporte modulares (%)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0126",
+    "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
+    "actionPriority": 18,
+    "explanation": "La implementación de infraestructura para el suministro de combustibles verdes para aeronaves en Contagem es una acción estratégica para abordar las altas emisiones del sector transporte en la ciudad, las cuales representan una contribución significativa a su perfil total de emisiones. Al hacer la transición hacia biocombustibles o hidrógeno verde, la ciudad puede reducir su huella de carbono y mejorar la calidad del aire. Esta acción también está alineada con las tendencias globales hacia una aviación sostenible, lo que podría posicionar a Contagem como líder en la adopción de tecnologías verdes. Además, invertir en infraestructura verde puede estimular el crecimiento económico local y crear nuevas oportunidades de empleo en el sector de energías renovables.",
+    "action": {
+      "ActionID": "icare_0126",
+      "ActionName": "Implementación de infraestructura de suministro de combustibles verdes para aeronaves, como biocombustibles o hidrógeno verde.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "aviation"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta acción tiene como objetivo promover la sostenibilidad en los aeropuertos mediante la implementación de infraestructura para abastecer a las aeronaves con combustibles de bajo carbono. El uso de biocombustibles o hidrógeno verde puede reducir significativamente las emisiones de GEI en el sector de la aviación. Además, la transición a estas fuentes de energía más limpias contribuirá a alcanzar los objetivos de descarbonización en el sector del transporte, al tiempo que se mantiene la eficiencia operativa en los aeropuertos y se minimiza su impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollar infraestructura para abastecer aviones con combustibles bajos en carbono como biocombustibles o hidrógeno verde.",
+        "Asegurar la disponibilidad de fuentes de combustible sostenibles y la tecnología necesaria para las operaciones de abastecimiento.",
+        "Monitorear y evaluar el impacto ambiental y la eficiencia operativa de la transición a combustibles bajos en carbono."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de aeropuertos con infraestructura de biocombustible o hidrógeno verde.",
+        "Cantidad de combustible verde consumido por el sector de la aviación (litros/año).",
+        "Reducción de emisiones de CO₂ de la aviación mediante el uso de combustibles alternativos (tCO₂e/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0091",
+    "actionName": "Implementation of prioritized routes for sustainable vehicles.",
+    "actionPriority": 19,
+    "explanation": "La implementación de rutas prioritarias para vehículos sostenibles en Contagem es crucial debido a las altas emisiones del sector transporte en la ciudad, las cuales representan una contribución significativa a sus emisiones totales. Al promover el uso de vehículos sostenibles, esta acción puede ayudar a reducir la huella de carbono y mejorar la calidad del aire en la ciudad. Además, dado que la ciudad tiene una alta densidad de población, contar con opciones de transporte eficientes y sostenibles es esencial para gestionar la congestión del tráfico y mejorar la calidad de vida de los residentes. Esta iniciativa está alineada con la necesidad de la ciudad de abordar los desafíos ambientales, al mismo tiempo que apoya el crecimiento económico y la salud pública.",
+    "action": {
+      "ActionID": "icare_0091",
+      "ActionName": "Implementación de rutas priorizadas para vehículos sostenibles.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Crear carriles prioritarios para vehículos eléctricos, híbridos y de bajas emisiones en los centros urbanos para fomentar su adopción y reducir la contaminación en áreas de alto tráfico.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Implementación de sistemas de gestión del tráfico para hacer cumplir y monitorear el uso de carriles prioritarios.",
+        "Desarrollo de señalización clara y campañas de concienciación pública para informar a los conductores sobre la elegibilidad y el uso de los carriles.",
+        "Establecimiento de marcos regulatorios que incentiven la adopción de vehículos de bajas emisiones para la elegibilidad en carriles prioritarios."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de vehículos sostenibles utilizando rutas prioritarias.",
+        "Aumento en la eficiencia de entrega de bienes transportados a través de rutas prioritarias (%).",
+        "Tasa de aceptación pública de rutas prioritarias para vehículos sostenibles (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0033",
+    "actionName": "Install biodigesters in rural properties",
+    "actionPriority": 20,
+    "explanation": "La instalación de biodigestores en propiedades rurales de Contagem es una acción estratégica para abordar las emisiones de residuos, que constituyen un componente significativo del total de emisiones de la ciudad. Los biodigestores pueden convertir los residuos orgánicos en biogás, proporcionando una fuente de energía renovable y reduciendo la dependencia de fuentes de energía tradicionales. Esta acción también contribuye a la reducción de las emisiones de metano provenientes de los residuos, apoyando los esfuerzos generales de disminución de gases de efecto invernadero. Además, puede mejorar las prácticas de gestión de residuos en las zonas rurales, alineándose con los objetivos de sostenibilidad de la ciudad.",
+    "action": {
+      "ActionID": "icare_0033",
+      "ActionName": "Instalar biodigestores en propiedades rurales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Equipar granjas y propiedades rurales con biodigestores para convertir los desechos orgánicos en biogás y fertilizantes ricos en nutrientes, proporcionando una fuente de energía sostenible.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidad de financiación o subsidios para apoyar la instalación de biodigestores en granjas y propiedades rurales",
+        "Acceso a experiencia técnica para el diseño, instalación y mantenimiento de biodigestores",
+        "Desarrollo de un marco regulatorio de apoyo que fomente el uso de biogás y sistemas de gestión de residuos orgánicos en la agricultura rural"
+      ],
+      "KeyPerformanceIndicators": [
+        "Volumen de biogás generado (m³/año).",
+        "Emisiones de GEI evitadas al reemplazar combustibles fósiles (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
 ]

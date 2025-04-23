@@ -1,1304 +1,1304 @@
 [
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "The development of a Climate Action Plan is crucial for Miranda due to its significant environmental challenges. The city faces high emissions, particularly from land use, which contribute to its total emissions of over 1.1 million tons. Additionally, Miranda is at risk from various climate hazards, including droughts and heatwaves, which threaten water resources, food security, and public health. By prioritizing a Climate Action Plan, the city can strategically address these risks and work towards reducing emissions, thereby enhancing resilience and sustainability.",
-        "action": {
-            "ActionID": "icare_0176",
-            "ActionName": "Desarrollo del Plan de Acci\u00f3n Clim\u00e1tica",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "storms",
-                "sea-level-rise",
-                "wildfires",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Un plan integral que describe las estrategias y acciones de una ciudad para mitigar las emisiones de gases de efecto invernadero y adaptarse a los impactos del cambio clim\u00e1tico, que t\u00edpicamente incluye una evaluaci\u00f3n de los riesgos y vulnerabilidades clim\u00e1ticas de la ciudad, el establecimiento de objetivos de reducci\u00f3n de emisiones y la implementaci\u00f3n de acciones en varios sectores como energ\u00eda, transporte, gesti\u00f3n de residuos y planificaci\u00f3n urbana.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Voluntad pol\u00edtica y compromiso del gobierno",
-                "Participaci\u00f3n y colaboraci\u00f3n de las partes interesadas",
-                "Financiaci\u00f3n y recursos para la implementaci\u00f3n"
-            ],
-            "KeyPerformanceIndicators": [
-                "Objetivos de reducci\u00f3n de emisiones de gases de efecto invernadero.",
-                "N\u00famero de acciones de adaptaci\u00f3n al clima implementadas.",
-                "Inversi\u00f3n en proyectos de mitigaci\u00f3n y adaptaci\u00f3n al clima."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "storms": "medium",
-                "sea-level-rise": "medium",
-                "wildfires": "medium",
-                "floods": "medium",
-                "landslides": "medium",
-                "diseases": "medium",
-                "heatwaves": "medium",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 2,
-        "explanation": "The action to develop diagnostics and restore areas of Special Social Interest Zones (ZEIS) is crucial for Miranda due to its moderate socio-economic challenges and inadequate sanitation services. By focusing on ZEIS, the city can address these socio-economic disparities and improve living conditions for its residents. Additionally, restoring these areas can help mitigate the impacts of environmental hazards such as floods and landslides, which pose significant risks to infrastructure and public health. This action aligns with the city's need to enhance resilience against climate-related risks and improve overall quality of life.",
-        "action": {
-            "ActionID": "icare_0151",
-            "ActionName": "Desarrollar diagn\u00f3sticos y restaurar \u00e1reas de Zonas de Inter\u00e9s Social Especial (ZEIS)",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "sea-level-rise",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Prioridad a las \u00e1reas ZEIS en acciones de mejora de vivienda y la aplicaci\u00f3n de recursos del Fondo de Urbanizaci\u00f3n, con la implementaci\u00f3n de infraestructura urbana que considere la adaptaci\u00f3n clim\u00e1tica en estos espacios. Uso de Soluciones basadas en la Naturaleza (NbS) en la adaptaci\u00f3n del saneamiento ambiental y las infraestructuras verdes y azules que potencian el ocio, la cultura, la agricultura urbana y actividades para fortalecer las asociaciones comunitarias.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de financiamiento del Fondo de Urbanizaci\u00f3n y otros mecanismos financieros para apoyar mejoras en la vivienda e infraestructura urbana en \u00e1reas ZEIS",
-                "Colaboraci\u00f3n entre urbanistas, expertos ambientales y comunidades locales para dise\u00f1ar e implementar soluciones basadas en la naturaleza (NbS) para la infraestructura urbana",
-                "Marcos de pol\u00edticas y regulaciones que integren medidas de adaptaci\u00f3n al clima en la planificaci\u00f3n urbana, asegurando que las inversiones prioricen la sostenibilidad ambiental y la comunidad"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de \u00e1reas ZEIS diagnosticadas y restauradas.",
-                "Porcentaje de residentes beneficiados por las \u00e1reas restauradas (%).",
-                "Inversiones p\u00fablicas asignadas a las \u00e1reas ZEIS (monto en moneda)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "sea-level-rise": "medium",
-                "floods": "medium",
-                "landslides": "low",
-                "diseases": "medium",
-                "heatwaves": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 3,
-        "explanation": "The implementation of urban gardens in Miranda is a significant action due to its potential to enhance food security, which is a key concern given the city's vulnerability to droughts. Urban gardens can provide a sustainable source of fresh produce, reducing reliance on external food supplies and mitigating the impact of food shortages. Additionally, these gardens can improve local biodiversity and contribute to community well-being by creating green spaces. This action also aligns with the city's socio-economic context, offering opportunities for community engagement and education on sustainable practices.",
-        "action": {
-            "ActionID": "icare_0156",
-            "ActionName": "Implementaci\u00f3n de huertos urbanos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Identificar y evaluar la viabilidad de \u00e1reas adecuadas para la instalaci\u00f3n de huertos urbanos y asegurar que los sitios elegidos cumplan con las expectativas de la comunidad.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Asegurar la disponibilidad de mapas detallados de uso del suelo y datos de planificaci\u00f3n urbana.",
-                "Involucrarse con las comunidades locales para comprender sus necesidades y expectativas.",
-                "Evaluar la calidad del suelo, la disponibilidad de agua y formar asociaciones para apoyar el establecimiento y mantenimiento de jardines."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de huertos urbanos creados.",
-                "Cantidad de alimentos producidos localmente (kg/a\u00f1o).",
-                "N\u00famero de beneficiarios directos."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "landslides": "low",
-                "floods": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 4,
-        "explanation": "The recovery and preservation of green areas in Miranda is crucial due to the city's location in a grassland/savanna biome, which is sensitive to environmental changes. Green areas play a vital role in maintaining biodiversity and providing natural buffers against climate hazards such as droughts and heatwaves, which are significant risks for the city. Additionally, enhancing green spaces can improve public health by reducing heat stress and improving air quality. This action also supports the city's efforts to mitigate emissions, as green areas can act as carbon sinks, helping to offset some of the high land use emissions.",
-        "action": {
-            "ActionID": "icare_0175",
-            "ActionName": "Recuperaci\u00f3n y preservaci\u00f3n de \u00e1reas verdes",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Rehabilitaci\u00f3n y protecci\u00f3n de los espacios verdes existentes, como parques, bosques y humedales, y expansi\u00f3n de \u00e1reas verdes mediante la plantaci\u00f3n de \u00e1rboles y vegetaci\u00f3n en \u00e1reas urbanas y periurbanas. Estas \u00e1reas proporcionan soluciones naturales para la gesti\u00f3n de los recursos h\u00eddricos, la reducci\u00f3n del estr\u00e9s t\u00e9rmico, la mejora de la calidad del aire y el aumento de la biodiversidad.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de terrenos adecuados para espacios verdes",
-                "Acceso a recursos h\u00eddricos para riego"
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea de espacios verdes creados o restaurados.",
-                "\u00cdndices de biodiversidad en \u00e1reas verdes.",
-                "Participaci\u00f3n comunitaria en actividades de espacios verdes."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "floods": "high",
-                "wildfires": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 5,
-        "explanation": "Strengthening programs for control and conservation of protected areas is crucial for Miranda due to its significant land use emissions, which are the highest among all emission sources. The city's biome, grassland/savanna, is sensitive to changes and requires careful management to maintain biodiversity and ecosystem services. Additionally, the risk of droughts impacting water resources and biodiversity highlights the need for robust conservation efforts to mitigate these risks. By prioritizing this action, Miranda can enhance its resilience against environmental hazards and contribute to the preservation of its natural heritage.",
-        "action": {
-            "ActionID": "icare_0162",
-            "ActionName": "Fortalecer los programas de control y conservaci\u00f3n de \u00e1reas protegidas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves",
-                "diseases"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta acci\u00f3n se centra en implementar una serie de estrategias integradas para mejorar la conservaci\u00f3n ambiental y maximizar sus beneficios, como la expansi\u00f3n de \u00e1reas protegidas, el desarrollo de planes de manejo para unidades de conservaci\u00f3n y la capacitaci\u00f3n de gu\u00edas de ecoturismo para fortalecer el turismo sostenible.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expansi\u00f3n de \u00e1reas protegidas para mejorar la conservaci\u00f3n ambiental.",
-                "Desarrollo de planes de manejo para unidades de conservaci\u00f3n.",
-                "Capacitaci\u00f3n de gu\u00edas de ecoturismo para promover el turismo sostenible."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de aumento en el \u00e1rea de regiones protegidas (%).",
-                "Reducci\u00f3n en las tasas de deforestaci\u00f3n en \u00e1reas protegidas anualmente (%).",
-                "N\u00famero de programas de conservaci\u00f3n fortalecidos anualmente."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "floods": "high",
-                "landslides": "high",
-                "heatwaves": "medium",
-                "diseases": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 6,
-        "explanation": "Encouraging sustainable land use practices in Miranda is crucial due to the significant land use emissions, which are the highest among all emission sources in the city. The region's grassland and savanna biome is particularly sensitive to unsustainable practices, which can exacerbate emissions and degrade the environment. By promoting sustainable land use, the city can mitigate its environmental impact and enhance the resilience of its ecosystems. Additionally, sustainable practices can help address the moderate socio-economic challenges by potentially providing more stable and sustainable livelihoods for the local population.",
-        "action": {
-            "ActionID": "icare_0149",
-            "ActionName": "Fomentar pr\u00e1cticas sostenibles de uso de la tierra",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Promover m\u00e9todos que garanticen la conservaci\u00f3n y salud del suelo, preservando la biodiversidad, reduciendo la erosi\u00f3n y minimizando los impactos ambientales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Proporcionar acceso a conocimientos t\u00e9cnicos y capacitaci\u00f3n sobre pr\u00e1cticas de manejo sostenible del suelo.",
-                "Ofrecer incentivos financieros y formar asociaciones con instituciones de investigaci\u00f3n y agricultores locales.",
-                "Desarrollar sistemas de monitoreo para la salud del suelo y la biodiversidad, e implementar pol\u00edticas para el control de la erosi\u00f3n."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de \u00e1rea de tierra gestionada bajo pr\u00e1cticas de uso sostenible de la tierra (%)",
-                "Reducci\u00f3n en las tasas de deforestaci\u00f3n o degradaci\u00f3n de la tierra (%)",
-                "Aumento en los indicadores de biodiversidad en tierras gestionadas (por ejemplo, conteo de especies, calidad del h\u00e1bitat)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "medium",
-                "landslides": "high",
-                "floods": "medium",
-                "wildfires": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 7,
-        "explanation": "Establishing a plan for preparation and emergency response measures in Miranda is crucial due to the city's vulnerability to extreme weather events. The city faces significant risks from hazards such as droughts, heatwaves, and floods, which can severely impact infrastructure and public health. By having a robust emergency response plan, Miranda can mitigate the adverse effects of these events, ensuring the safety and well-being of its residents. Additionally, such a plan would enhance the city's resilience, allowing for quicker recovery and reduced long-term damage from climate-related incidents.",
-        "action": {
-            "ActionID": "icare_0169",
-            "ActionName": "Establecer un Plan de Preparaci\u00f3n y Medidas de Respuesta de Emergencia en caso de eventos clim\u00e1ticos extremos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta acci\u00f3n se centra en preparar al municipio para responder a eventos extremos, con el objetivo de proporcionar una respuesta r\u00e1pida que minimice los impactos en la poblaci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de un plan integral de respuesta a emergencias que incluya la coordinaci\u00f3n entre las autoridades locales, los servicios de emergencia y las organizaciones comunitarias",
-                "Inversi\u00f3n en sistemas de alerta temprana e infraestructura para garantizar respuestas oportunas y efectivas a eventos extremos",
-                "Capacitaci\u00f3n y desarrollo de capacidades para los respondedores locales y las comunidades para mejorar la preparaci\u00f3n y la resiliencia ante eventos extremos"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de asociaciones de respuesta de emergencia establecidas.",
-                "Tiempo promedio de respuesta durante eventos clim\u00e1ticos extremos (horas).",
-                "Porcentaje de reducci\u00f3n en v\u00edctimas y da\u00f1os durante eventos clim\u00e1ticos extremos anualmente (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "high",
-                "diseases": "medium",
-                "landslides": "high",
-                "floods": "high",
-                "wildfires": "high",
-                "sea-level-rise": "low",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0152",
-        "actionName": "Recovery of degraded areas",
-        "actionPriority": 8,
-        "explanation": "The action 'Recovery of degraded areas' is crucial for Miranda due to its significant land use emissions, which are the highest among all emission sources in the city. Restoring degraded areas can help sequester carbon, thereby reducing the overall carbon footprint of the city. Additionally, this action can enhance biodiversity and improve the resilience of local ecosystems, which are currently threatened by droughts and heatwaves. By prioritizing this action, Miranda can also address issues related to food security and water resources, which are impacted by environmental degradation.",
-        "action": {
-            "ActionID": "icare_0152",
-            "ActionName": "Recuperaci\u00f3n de \u00e1reas degradadas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Restaurar los ecosistemas da\u00f1ados por actividades humanas mediante la replantaci\u00f3n de vegetaci\u00f3n nativa, la restauraci\u00f3n del suelo, la eliminaci\u00f3n de especies invasoras y la implementaci\u00f3n de t\u00e9cnicas de gesti\u00f3n sostenible.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Desarrollar un plan de restauraci\u00f3n claro y asegurar financiamiento para la gesti\u00f3n a largo plazo.",
-                "Asegurar el acceso a especies de plantas nativas y proporcionar capacitaci\u00f3n en pr\u00e1cticas sostenibles.",
-                "Eliminar especies invasoras y colaborar con las comunidades locales para una restauraci\u00f3n exitosa del ecosistema."
-            ],
-            "KeyPerformanceIndicators": [
-                "Hect\u00e1reas de tierra degradada restauradas anualmente",
-                "Aumento en la cobertura vegetal (%) en \u00e1reas restauradas",
-                "N\u00famero de comunidades locales involucradas en proyectos de restauraci\u00f3n"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "landslides": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 9,
-        "explanation": "Implementing a disaster early warning system in Miranda is crucial due to the city's vulnerability to various natural hazards, such as droughts, heatwaves, and floods. These hazards pose significant risks to infrastructure, public health, and food security, making early warnings essential for timely response and mitigation. Given the moderate population size and the socio-economic factors, an effective early warning system can help minimize the impact of these hazards on the community. Additionally, the city's low population density and large area make it important to have a robust communication system to ensure that warnings reach all residents promptly.",
-        "action": {
-            "ActionID": "ipcc_0095",
-            "ActionName": "Alerta temprana de desastres",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "droughts",
-                "storms"
-            ],
-            "Sector": [
-                "public_health",
-                "biodiversity",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Establecer y mantener sistemas de alerta temprana para desastres, incluidos las olas de calor marinas, brotes de plagas y olas de calor. Estos sistemas implican la difusi\u00f3n oportuna de informaci\u00f3n a individuos, comunidades y servicios de emergencia, permitiendo medidas proactivas para mitigar riesgos. Los Planes de Acci\u00f3n contra el Calor (HAPs) son parte de estos sistemas e incluyen estrategias detalladas como la planificaci\u00f3n urbana con soluciones basadas en la naturaleza (por ejemplo, espacios verde-azules, materiales frescos), campa\u00f1as de concienciaci\u00f3n p\u00fablica y medidas espec\u00edficas para grupos vulnerables (por ejemplo, ancianos, ni\u00f1os, trabajadores al aire libre). Las acciones cr\u00edticas tambi\u00e9n incluyen la evaluaci\u00f3n de la efectividad del sistema despu\u00e9s del desastre, el intercambio de lecciones y mejoras para una mejor preparaci\u00f3n en eventos futuros.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Se centra en abordar las vulnerabilidades entre los grupos de bajos ingresos, personas mayores, mujeres embarazadas, ni\u00f1os y trabajadores al aire libre mediante la incorporaci\u00f3n de comunicaci\u00f3n dirigida, acceso a \u00e1reas frescas e intervenciones de salud espec\u00edficas. Promueve la equidad involucrando a las comunidades marginadas en la planificaci\u00f3n y asegurando el acceso a los recursos necesarios.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Coordinaci\u00f3n entre los servicios de emergencia y las agencias de salud",
-                "Inversi\u00f3n en planificaci\u00f3n urbana y soluciones basadas en la naturaleza",
-                "Educaci\u00f3n comunitaria y campa\u00f1as de concienciaci\u00f3n p\u00fablica",
-                "Infraestructura tecnol\u00f3gica para sistemas de alerta temprana"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de las tasas de mortalidad relacionadas con las olas de calor",
-                "Puntualidad de las advertencias",
-                "Niveles de concienciaci\u00f3n p\u00fablica",
-                "Adopci\u00f3n comunitaria de medidas de protecci\u00f3n"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "droughts": "medium",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 10,
-        "explanation": "Improving access to health care in Miranda is crucial due to the city's vulnerability to various climate-related hazards, such as heatwaves and diseases, which pose significant risks to public health. The moderate level of inadequate sanitation further exacerbates health challenges, making it essential to enhance healthcare services to prevent and manage potential outbreaks. Additionally, the city's low population density and moderate socio-economic status may limit residents' ability to access necessary medical care, highlighting the need for improved healthcare infrastructure and services. Addressing these issues will help build resilience against climate impacts and improve overall community well-being.",
-        "action": {
-            "ActionID": "ipcc_0094",
-            "ActionName": "Acceso a la atenci\u00f3n m\u00e9dica",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "droughts"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mejorar el acceso a los servicios de atenci\u00f3n m\u00e9dica, incluidos los servicios de salud y nutrici\u00f3n, agua limpia, saneamiento y recursos de salud mental culturalmente apropiados. Ampliar las capacidades de telemedicina permite una entrega eficiente de servicios de salud, particularmente para poblaciones remotas y desatendidas. Fortalecer los sistemas b\u00e1sicos de salud p\u00fablica y la preparaci\u00f3n para desastres puede reducir r\u00e1pidamente la vulnerabilidad a los riesgos de salud relacionados con el clima.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promueve el acceso equitativo a la atenci\u00f3n m\u00e9dica para grupos marginados y vulnerables, incluidas las poblaciones sin hogar, las comunidades remotas y aquellos afectados por desigualdades en la vivienda.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en tecnolog\u00edas de telemedicina",
-                "Fortalecimiento de la gobernanza de los sistemas de salud p\u00fablica",
-                "Desarrollo de capacidades para los trabajadores de la salud",
-                "Mejoras en la infraestructura de las instalaciones de salud"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de la mortalidad relacionada con el clima",
-                "Mayor acceso a la telemedicina",
-                "N\u00famero de programas de salud adaptados culturalmente implementados",
-                "Mejora de los indicadores de acceso al agua y saneamiento"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "floods": "high",
-                "droughts": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 11,
-        "explanation": "Improving food storage and distribution is crucial for Miranda due to its vulnerability to droughts, which pose a significant risk to food security. With a moderate low-income population, enhancing food systems can help ensure consistent access to food, reducing the impact of supply disruptions. Additionally, better food storage can minimize waste emissions, contributing to a reduction in the city's overall emissions. This action supports the resilience of the local community by safeguarding food availability during climate-related events.",
-        "action": {
-            "ActionID": "ipcc_0097",
-            "ActionName": "Mejoras en el almacenamiento/distribuci\u00f3n de alimentos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms",
-                "heatwaves"
-            ],
-            "Sector": [
-                "food_security",
-                "road_infrastructure"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mejorar los sistemas de almacenamiento y distribuci\u00f3n de alimentos mediante la mejora de la infraestructura de transporte, la optimizaci\u00f3n de las redes comerciales y el acortamiento de las cadenas de suministro para garantizar la disponibilidad local de alimentos y la resiliencia ante los impactos clim\u00e1ticos. Esta acci\u00f3n tambi\u00e9n incluye aumentar la capacidad de las instalaciones de almacenamiento de alimentos locales para reducir las p\u00e9rdidas post-cosecha, abordar las ineficiencias en la log\u00edstica y reforzar la infraestructura para productos perecederos. Su objetivo es mejorar la seguridad alimentaria y reducir la vulnerabilidad a eventos extremos, interrupciones e impactos en cascada, especialmente durante pandemias y otras crisis.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Apoya el acceso equitativo a alimentos para poblaciones marginadas y vulnerables al priorizar la producci\u00f3n local de alimentos y mejorar los sistemas de distribuci\u00f3n que llegan a \u00e1reas desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en infraestructura",
-                "Incentivos pol\u00edticos para la producci\u00f3n local de alimentos",
-                "Colaboraci\u00f3n con los sectores de log\u00edstica y comercio",
-                "Tecnolog\u00eda para la optimizaci\u00f3n de la cadena de suministro"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de p\u00e9rdidas post-cosecha",
-                "Aumento de la disponibilidad de alimentos locales",
-                "Mejora de la eficiencia del transporte para la distribuci\u00f3n de alimentos",
-                "Acortamiento de las cadenas de suministro"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "storms": "high",
-                "heatwaves": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0180",
-        "actionName": "Implement permeable pavements and increase green areas in roadways",
-        "actionPriority": 12,
-        "explanation": "Implementing permeable pavements and increasing green areas in roadways is crucial for Miranda due to its vulnerability to floods and landslides. The city's infrastructure is at significant risk from these hazards, and enhancing the permeability of surfaces can help manage stormwater more effectively, reducing flood risks. Additionally, increasing green areas can improve urban biodiversity and provide cooling effects, which are beneficial in mitigating the impacts of heatwaves. This action aligns with the need to enhance the city's resilience to climate-related hazards, making it a strategic priority.",
-        "action": {
-            "ActionID": "icare_0180",
-            "ActionName": "Implementar pavimentos permeables y aumentar las \u00e1reas verdes en las v\u00edas p\u00fablicas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Incrementar las \u00e1reas permeables y semi-permeables en edificios y espacios p\u00fablicos bajo la administraci\u00f3n de la Ciudad, con la adopci\u00f3n de soluciones basadas en la naturaleza (NbS). En \u00e1reas con limitaciones de espacio, la acci\u00f3n incluye an\u00e1lisis de viabilidad para implementar pavimentos permeables y aumentar las \u00e1reas verdes en las v\u00edas. Entre las soluciones de construcci\u00f3n tradicionales, se encuentran caracter\u00edsticas como bordillos y canaletas con desag\u00fces pluviales, as\u00ed como soluciones a mayor escala como estanques de retenci\u00f3n. Las soluciones basadas en la naturaleza incluyen la plantaci\u00f3n de \u00e1rboles urbanos, techos verdes, cisternas de agua de lluvia, bio-swales, y m\u00e1s.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Expansi\u00f3n de \u00e1reas permeables y semi-permeables en edificios administrados por la ciudad y espacios p\u00fablicos.",
-                "Adopci\u00f3n de soluciones basadas en la naturaleza (NbS) como la plantaci\u00f3n de \u00e1rboles urbanos, techos verdes, cisternas de agua de lluvia y bio-swales.",
-                "An\u00e1lisis de viabilidad para pavimentos permeables y aumento de \u00e1reas verdes en carreteras, junto con soluciones tradicionales de gesti\u00f3n de aguas pluviales como bordillos, canaletas y estanques de retenci\u00f3n."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en la escorrent\u00eda de agua superficial durante eventos de lluvia (%).",
-                "Disminuci\u00f3n en la ocurrencia de inundaciones en \u00e1reas modificadas.",
-                "Porcentaje de espacios p\u00fablicos que cumplen con las nuevas regulaciones de superficies permeables."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "floods": "high",
-                "landslides": "medium",
-                "heatwaves": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0157",
-        "actionName": "Maintenance and Revitalization of Riparian Forests",
-        "actionPriority": 13,
-        "explanation": "The maintenance and revitalization of riparian forests in Miranda is crucial due to the city's significant land use emissions, which are the highest among its emission sources. Riparian forests play a vital role in stabilizing soil and reducing erosion, which can help mitigate the risk of landslides\u2014a notable hazard for the city's infrastructure. Additionally, these forests contribute to biodiversity conservation, which is important given the city's vulnerability to droughts and heatwaves that threaten local ecosystems. By enhancing riparian zones, the city can improve water quality and availability, addressing moderate issues with sanitation and supporting overall environmental resilience.",
-        "action": {
-            "ActionID": "icare_0157",
-            "ActionName": "Mantenimiento y Revitalizaci\u00f3n de Bosques Ribere\u00f1os",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "landslides",
-                "floods",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mapeo y evaluaci\u00f3n de bosques ribere\u00f1os degradados, desarrollo de planes de revitalizaci\u00f3n con la plantaci\u00f3n de especies nativas, control de especies invasoras, medidas de contenci\u00f3n de la erosi\u00f3n y evaluaciones peri\u00f3dicas de los impactos en las condiciones ambientales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Asegurar la disponibilidad de datos geoespaciales y el mapeo previo de \u00e1reas degradadas.",
-                "Formar asociaciones con viveros locales y proporcionar equipo y mano de obra calificada para el control de especies invasoras.",
-                "Asegurar recursos financieros y establecer un sistema de monitoreo para evaluar los impactos ambientales."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total de bosques ribere\u00f1os restaurados (ha).",
-                "N\u00famero de proyectos implementados.",
-                "Reducci\u00f3n de la erosi\u00f3n y sedimentaci\u00f3n de cuerpos de agua (toneladas/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "medium",
-                "landslides": "high",
-                "floods": "high",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 14,
-        "explanation": "The action of relocating and restoring vulnerable areas in Miranda is crucial due to the city's exposure to various environmental hazards. With significant risks from droughts, heatwaves, and floods impacting infrastructure and public health, addressing these vulnerabilities is essential for the city's resilience. The low population density and moderate income levels suggest that targeted interventions can have a substantial impact on improving living conditions. Additionally, environmental restoration can help mitigate emissions and enhance biodiversity, contributing to long-term sustainability.",
-        "action": {
-            "ActionID": "icare_0181",
-            "ActionName": "Reubicaci\u00f3n y Restauraci\u00f3n Ambiental en \u00c1reas Vulnerables",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Un proyecto integral que aborda la vulnerabilidad socioambiental de un asentamiento informal. Incluye la reubicaci\u00f3n de residentes de \u00e1reas propensas a inundaciones, la restauraci\u00f3n del medio ambiente y la provisi\u00f3n de infraestructura y servicios sociales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Financiamiento adecuado",
-                "Coordinaci\u00f3n interinstitucional",
-                "Seguridad de tenencia de la tierra"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de hogares reubicados.",
-                "Progreso de la restauraci\u00f3n ambiental.",
-                "Reducci\u00f3n del riesgo de inundaci\u00f3n."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "landslides": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 15,
-        "explanation": "Farm and fishery improvements are crucial for Miranda due to its significant land use emissions and the moderate risk to food security from droughts and floods. Enhancing agricultural practices can help reduce emissions and improve resilience against climate impacts. Additionally, these improvements can support the local economy by increasing productivity and sustainability in the agricultural sector. Given the city's moderate socio-economic status, such actions can also contribute to better livelihoods for the community.",
-        "action": {
-            "ActionID": "ipcc_0096",
-            "ActionName": "Mejoras en granjas/pesquer\u00edas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementar una serie de estrategias para adaptar granjas y pesquer\u00edas a los impactos clim\u00e1ticos. Esto incluye cambiar el equipo de pesca o la potencia de los barcos, adoptar nuevas variedades de cultivos o ajustar los calendarios de siembra, mejorar los sistemas de riego, integrar sistemas de cultivos y ganado, reubicar el ganado con una mejor gesti\u00f3n de pastizales y adoptar sistemas agroecol\u00f3gicos y de agroforester\u00eda. Innovaciones tecnol\u00f3gicas como la agricultura inteligente y medidas financieras como los subsidios apoyan estas adaptaciones.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Garantiza el acceso a recursos para agricultores y pescadores marginados, promueve opciones diversas de sustento y fortalece la resiliencia en comunidades desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Apoyo pol\u00edtico para la agricultura y pesca resilientes al clima",
-                "Acceso a financiamiento y subsidios",
-                "Capacitaci\u00f3n para adoptar nuevas pr\u00e1cticas",
-                "Mejora de la infraestructura de mercado"
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento de la productividad agr\u00edcola y pesquera",
-                "Tasa de adopci\u00f3n de sistemas integrados",
-                "Reducci\u00f3n de p\u00e9rdidas de rendimiento relacionadas con el clima"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "floods": "medium",
-                "wildfires": "low",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 16,
-        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for Miranda due to its potential impact on food security. The city faces risks from droughts and floods, which can disrupt food supply and increase vulnerability. By encouraging sustainable dietary practices and minimizing food waste, the city can enhance its resilience against these climate hazards. Additionally, reducing food waste can contribute to lowering overall emissions, aligning with the city's need to address its significant land use emissions. This action supports both environmental sustainability and socio-economic stability in the region.",
-        "action": {
-            "ActionID": "ipcc_0098",
-            "ActionName": "Cambio de comportamiento en dietas y desperdicio de alimentos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Reducir la p\u00e9rdida y el desperdicio de alimentos mediante la mejora de las pr\u00e1cticas de producci\u00f3n, distribuci\u00f3n y consumo de alimentos. Las acciones incluyen mejorar las t\u00e9cnicas agr\u00edcolas, adoptar tecnolog\u00edas de ahorro de agua, implementar soluciones de almacenamiento de bajo costo y promover dietas basadas en plantas. Los responsables de pol\u00edticas pueden fomentar estos comportamientos con pol\u00edticas de precios adecuadas, iniciativas de agricultura sostenible y apoyo a grupos desfavorecidos. La acci\u00f3n enfatiza el cambio hacia dietas m\u00e1s saludables, la reducci\u00f3n del consumo excesivo y el apoyo a los sistemas alimentarios locales para mitigar las emisiones de gases de efecto invernadero y garantizar la seguridad alimentaria ante el cambio clim\u00e1tico.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promueve el acceso a alimentos asequibles y saludables para comunidades vulnerables, empoderando a mujeres, j\u00f3venes y grupos socialmente desfavorecidos. Fomenta la participaci\u00f3n equitativa en pr\u00e1cticas agr\u00edcolas sostenibles y redes alimentarias locales.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Educaci\u00f3n y formaci\u00f3n para agricultores",
-                "Acceso a insumos agr\u00edcolas sostenibles",
-                "Apoyo pol\u00edtico para pr\u00e1cticas sostenibles",
-                "Infraestructura tecnol\u00f3gica para almacenamiento y procesamiento"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en los porcentajes de p\u00e9rdida y desperdicio de alimentos",
-                "Aumento en la adopci\u00f3n de dietas basadas en plantas",
-                "Mejora en los indicadores de seguridad alimentaria",
-                "Reducci\u00f3n de emisiones de GEI de los sistemas alimentarios"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "medium",
-                "floods": "medium",
-                "wildfires": "low"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 17,
-        "explanation": "Implementing social safety nets in Miranda is crucial due to the moderate level of low-income residents who may be vulnerable to economic shocks. The city faces significant risks from climate-related hazards such as droughts and heatwaves, which can exacerbate socio-economic challenges. By establishing robust social safety nets, the city can enhance resilience and provide support to its most vulnerable populations during times of crisis. This action is particularly important given the potential impacts on food security and public health, ensuring that residents have access to essential resources and services.",
-        "action": {
-            "ActionID": "ipcc_0092",
-            "ActionName": "Redes de seguridad social",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "public_health"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Las redes de seguridad social abarcan mecanismos de protecci\u00f3n social adaptativa para reducir la inseguridad alimentaria y la malnutrici\u00f3n, especialmente para las poblaciones vulnerables. Estos incluyen transferencias de efectivo, programas de alimentaci\u00f3n escolar, iniciativas de trabajo p\u00fablico, compensaci\u00f3n por desempleo, reformas agrarias, esquemas de cr\u00e9dito y seguros. Los enfoques integrados combinan evaluaciones de riesgos clim\u00e1ticos con la reducci\u00f3n del riesgo de desastres, la educaci\u00f3n y la equidad social para mejorar la resiliencia ante las tensiones clim\u00e1ticas.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Mejora el estatus social y los derechos de los grupos marginados, protege a las poblaciones vulnerables, reduce las desigualdades y promueve la educaci\u00f3n y la equidad de g\u00e9nero.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integraci\u00f3n del clima y el riesgo de desastres en la protecci\u00f3n social",
-                "programas educativos",
-                "coordinaci\u00f3n con iniciativas de medios de vida sostenibles e inclusi\u00f3n financiera"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en las tasas de malnutrici\u00f3n",
-                "Aumento en el acceso a la educaci\u00f3n para grupos vulnerables",
-                "Participaci\u00f3n en programas de protecci\u00f3n social"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "floods": "medium",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 18,
-        "explanation": "Ecosystem-based adaptation is crucial for Miranda due to its location in a grassland/savanna biome, which is sensitive to climate change impacts such as droughts and heatwaves. These hazards pose significant risks to biodiversity and water resources, which are vital for the city's ecological balance and agricultural activities. Implementing ecosystem-based strategies can enhance the resilience of natural systems, thereby supporting food security and reducing vulnerability to climate-related hazards. Additionally, such adaptation measures can provide co-benefits, including improved public health and infrastructure resilience, by mitigating the effects of extreme weather events.",
-        "action": {
-            "ActionID": "ipcc_0086",
-            "ActionName": "Adaptaci\u00f3n basada en ecosistemas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "storms",
-                "sea-level-rise",
-                "heatwaves",
-                "floods"
-            ],
-            "Sector": [
-                "biodiversity",
-                "geo-hydrological_disasters",
-                "water_resources",
-                "public_health"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Restaurar y gestionar de manera sostenible los ecosistemas marinos, costeros, urbanos, fluviales y de humedales para proteger contra peligros clim\u00e1ticos como marejadas cicl\u00f3nicas, inundaciones y olas de calor. Los esfuerzos incluyen agroecolog\u00eda, vegetaci\u00f3n costera y marina y arrecifes, corredores de vegetaci\u00f3n, restauraci\u00f3n de h\u00e1bitats de manglares, espacios verdes urbanos para reducir las temperaturas. Estas acciones mejoran la biodiversidad, almacenan carbono, mejoran la calidad del agua y proporcionan co-beneficios socioecon\u00f3micos y culturales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Apoya a las comunidades vulnerables mejorando la resiliencia clim\u00e1tica, promoviendo el acceso equitativo a los servicios ecosist\u00e9micos y creando oportunidades de sustento, especialmente para las poblaciones marginadas y desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Participaci\u00f3n comunitaria",
-                "Apoyo regulatorio",
-                "Inversi\u00f3n financiera",
-                "Planificaci\u00f3n urbana",
-                "Vegetaci\u00f3n resiliente al clima",
-                "Evaluaciones de biodiversidad",
-                "Gesti\u00f3n de cuencas",
-                "Planificaci\u00f3n aguas arriba",
-                "Financiaci\u00f3n sostenible"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de da\u00f1os por marejadas cicl\u00f3nicas",
-                "Tasas de secuestro de carbono",
-                "Aumento de la biodiversidad",
-                "Reducci\u00f3n de la temperatura en \u00e1reas urbanas",
-                "Mejora de la calidad del agua",
-                "Acceso a espacios verdes por comunidades desatendidas",
-                "Reducci\u00f3n de eventos de inundaci\u00f3n",
-                "Mejora de la salud del ecosistema"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "storms": "high",
-                "sea-level-rise": "high",
-                "heatwaves": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 19,
-        "explanation": "Implementing building codes in Miranda is crucial due to the high risk of infrastructure damage from natural hazards such as heatwaves and landslides. The city faces significant threats from these events, which can severely impact public safety and economic stability. By enforcing stringent building codes, Miranda can enhance the resilience of its infrastructure, reducing the potential for damage and ensuring the safety of its residents. Additionally, improved building standards can contribute to energy efficiency, aligning with the city's need to manage its stationary energy emissions effectively.",
-        "action": {
-            "ActionID": "ipcc_0088",
-            "ActionName": "C\u00f3digos de construcci\u00f3n",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides"
-            ],
-            "Sector": [
-                "road_infrastructure",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "El desarrollo e implementaci\u00f3n de c\u00f3digos de construcci\u00f3n y regulaciones de dise\u00f1o arquitect\u00f3nico dirigidos a integrar par\u00e1metros de adaptaci\u00f3n clim\u00e1tica. Estos c\u00f3digos est\u00e1n enfocados en reducir riesgos de peligros inducidos por el clima, como inundaciones y deslizamientos de tierra. Tambi\u00e9n apoyan el desarrollo urbano resiliente al clima al guiar el uso del suelo, las pr\u00e1cticas de construcci\u00f3n y los est\u00e1ndares de infraestructura. La iniciativa fomenta la planificaci\u00f3n urbana estrat\u00e9gica a largo plazo para coordinar inversiones p\u00fablicas y privadas en adaptaci\u00f3n, incluyendo la creaci\u00f3n de zonas seguras y la transformaci\u00f3n de asentamientos precarios. Asegura que la nueva infraestructura sea resiliente a los riesgos clim\u00e1ticos y que los espacios urbanos sean seguros y sostenibles para las poblaciones actuales y futuras.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promueve la planificaci\u00f3n urbana inclusiva abordando los riesgos en asentamientos informales y precarios e integrando eco-parques y eco-jardines para poblaciones vulnerables.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integraci\u00f3n con evaluaciones locales de riesgo clim\u00e1tico",
-                "Colaboraci\u00f3n estrat\u00e9gica entre urbanistas y autoridades municipales"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de incidentes de inundaciones urbanas",
-                "Mayor disponibilidad de viviendas seguras en \u00e1reas de riesgo",
-                "Tasa de implementaci\u00f3n de eco-parques y eco-jardines en \u00e1reas vulnerables"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "floods": "high",
-                "landslides": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 20,
-        "explanation": "Creating the Municipal Climate Change Forum in Miranda is a crucial step towards addressing the city's environmental challenges. With significant emissions from land use and stationary energy, the forum can facilitate discussions and strategies to reduce these emissions effectively. Additionally, the city faces various climate risks such as droughts and heatwaves, which impact water resources, food security, and public health. Establishing a dedicated forum will enable stakeholders to collaborate on adaptive measures and enhance the city's resilience to these climate hazards.",
-        "action": {
-            "ActionID": "icare_0148",
-            "ActionName": "Crear el Foro Municipal de Cambio Clim\u00e1tico",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "diseases",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Creaci\u00f3n de un Foro Municipal de Cambio Clim\u00e1tico con la participaci\u00f3n de l\u00edderes comunitarios, cient\u00edficos, colectivos, institutos de investigaci\u00f3n, ONG y miembros de la administraci\u00f3n municipal y estatal. El Foro servir\u00e1 como referencia para acciones relacionadas con el Cambio Clim\u00e1tico, con el objetivo de monitorear futuras pol\u00edticas sobre el tema en el municipio, estimular el di\u00e1logo y crear una red de discusiones sobre la crisis clim\u00e1tica.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Participaci\u00f3n de diversos actores, incluidos l\u00edderes comunitarios, cient\u00edficos, ONG y autoridades locales, para establecer y mantener el Foro.",
-                "Asignaci\u00f3n de recursos para facilitar reuniones, talleres y eventos regulares para que el Foro permanezca activo e impactante.",
-                "Desarrollo de un marco claro y directrices para que el Foro monitoree y gu\u00ede las pol\u00edticas e iniciativas de cambio clim\u00e1tico dentro del municipio."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de partes interesadas clave participando activamente en el foro.",
-                "N\u00famero de pol\u00edticas o acciones relacionadas con el clima propuestas a trav\u00e9s del foro.",
-                "Participaci\u00f3n p\u00fablica en iniciativas del foro (medida por la asistencia a eventos o encuestas)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "diseases": "medium",
-                "heatwaves": "medium",
-                "landslides": "low",
-                "floods": "medium",
-                "wildfires": "medium",
-                "sea-level-rise": "medium",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0176",
+    "actionName": "Development of Climate Action Plan",
+    "actionPriority": 1,
+    "explanation": "El desarrollo de un Plan de Acción Climática es crucial para Miranda debido a sus importantes desafíos ambientales. La ciudad enfrenta altas emisiones, especialmente provenientes del uso del suelo, que contribuyen a un total de más de 1.1 millones de toneladas. Además, Miranda está en riesgo por diversos peligros climáticos, incluyendo sequías y olas de calor, que amenazan los recursos hídricos, la seguridad alimentaria y la salud pública. Al priorizar un Plan de Acción Climática, la ciudad puede abordar estratégicamente estos riesgos y trabajar para reducir las emisiones, fortaleciendo así su resiliencia y sostenibilidad.",
+    "action": {
+      "ActionID": "icare_0176",
+      "ActionName": "Desarrollo del Plan de Acción Climática",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "wildfires",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Un plan integral que describe las estrategias y acciones de una ciudad para mitigar las emisiones de gases de efecto invernadero y adaptarse a los impactos del cambio climático, que típicamente incluye una evaluación de los riesgos y vulnerabilidades climáticas de la ciudad, el establecimiento de objetivos de reducción de emisiones y la implementación de acciones en varios sectores como energía, transporte, gestión de residuos y planificación urbana.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Voluntad política y compromiso del gobierno",
+        "Participación y colaboración de las partes interesadas",
+        "Financiación y recursos para la implementación"
+      ],
+      "KeyPerformanceIndicators": [
+        "Objetivos de reducción de emisiones de gases de efecto invernadero.",
+        "Número de acciones de adaptación al clima implementadas.",
+        "Inversión en proyectos de mitigación y adaptación al clima."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "medium",
+        "sea-level-rise": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "landslides": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "droughts": "medium"
+      },
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0151",
+    "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+    "actionPriority": 2,
+    "explanation": "La acción de desarrollar diagnósticos y restaurar las áreas de Zonas Especiales de Interés Social (ZEIS) es crucial para Miranda debido a sus desafíos socioeconómicos moderados y la insuficiencia de servicios de saneamiento. Al enfocarse en las ZEIS, la ciudad puede abordar estas disparidades socioeconómicas y mejorar las condiciones de vida de sus habitantes. Además, la restauración de estas áreas puede ayudar a mitigar los impactos de riesgos ambientales como inundaciones y deslizamientos de tierra, que representan amenazas significativas para la infraestructura y la salud pública. Esta acción está alineada con la necesidad de la ciudad de fortalecer su resiliencia frente a riesgos relacionados con el clima y mejorar la calidad de vida en general.",
+    "action": {
+      "ActionID": "icare_0151",
+      "ActionName": "Desarrollar diagnósticos y restaurar áreas de Zonas de Interés Social Especial (ZEIS)",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "sea-level-rise",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Prioridad a las áreas ZEIS en acciones de mejora de vivienda y la aplicación de recursos del Fondo de Urbanización, con la implementación de infraestructura urbana que considere la adaptación climática en estos espacios. Uso de Soluciones basadas en la Naturaleza (NbS) en la adaptación del saneamiento ambiental y las infraestructuras verdes y azules que potencian el ocio, la cultura, la agricultura urbana y actividades para fortalecer las asociaciones comunitarias.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de financiamiento del Fondo de Urbanización y otros mecanismos financieros para apoyar mejoras en la vivienda e infraestructura urbana en áreas ZEIS",
+        "Colaboración entre urbanistas, expertos ambientales y comunidades locales para diseñar e implementar soluciones basadas en la naturaleza (NbS) para la infraestructura urbana",
+        "Marcos de políticas y regulaciones que integren medidas de adaptación al clima en la planificación urbana, asegurando que las inversiones prioricen la sostenibilidad ambiental y la comunidad"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de áreas ZEIS diagnosticadas y restauradas.",
+        "Porcentaje de residentes beneficiados por las áreas restauradas (%).",
+        "Inversiones públicas asignadas a las áreas ZEIS (monto en moneda)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "sea-level-rise": "medium",
+        "floods": "medium",
+        "landslides": "low",
+        "diseases": "medium",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0156",
+    "actionName": "Implementation of urban gardens",
+    "actionPriority": 3,
+    "explanation": "La implementación de huertos urbanos en Miranda es una acción significativa debido a su potencial para mejorar la seguridad alimentaria, que es una preocupación clave dada la vulnerabilidad de la ciudad a las sequías. Los huertos urbanos pueden proporcionar una fuente sostenible de productos frescos, reduciendo la dependencia de suministros alimentarios externos y mitigando el impacto de la escasez de alimentos. Además, estos huertos pueden mejorar la biodiversidad local y contribuir al bienestar de la comunidad al crear espacios verdes. Esta acción también se alinea con el contexto socioeconómico de la ciudad, ofreciendo oportunidades para la participación comunitaria y la educación sobre prácticas sostenibles.",
+    "action": {
+      "ActionID": "icare_0156",
+      "ActionName": "Implementación de huertos urbanos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Identificar y evaluar la viabilidad de áreas adecuadas para la instalación de huertos urbanos y asegurar que los sitios elegidos cumplan con las expectativas de la comunidad.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Asegurar la disponibilidad de mapas detallados de uso del suelo y datos de planificación urbana.",
+        "Involucrarse con las comunidades locales para comprender sus necesidades y expectativas.",
+        "Evaluar la calidad del suelo, la disponibilidad de agua y formar asociaciones para apoyar el establecimiento y mantenimiento de jardines."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de huertos urbanos creados.",
+        "Cantidad de alimentos producidos localmente (kg/año).",
+        "Número de beneficiarios directos."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "landslides": "low",
+        "floods": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0175",
+    "actionName": "Recovery and preservation of green areas",
+    "actionPriority": 4,
+    "explanation": "La recuperación y preservación de las áreas verdes en Miranda es crucial debido a la ubicación de la ciudad en un bioma de pastizales/sabana, el cual es sensible a los cambios ambientales. Las áreas verdes desempeñan un papel vital en el mantenimiento de la biodiversidad y en la provisión de barreras naturales contra peligros climáticos como sequías y olas de calor, que representan riesgos significativos para la ciudad. Además, la mejora de los espacios verdes puede contribuir a la salud pública al reducir el estrés térmico y mejorar la calidad del aire. Esta acción también respalda los esfuerzos de la ciudad para mitigar las emisiones, ya que las áreas verdes pueden actuar como sumideros de carbono, ayudando a compensar parte de las altas emisiones derivadas del uso del suelo.",
+    "action": {
+      "ActionID": "icare_0175",
+      "ActionName": "Recuperación y preservación de áreas verdes",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Rehabilitación y protección de los espacios verdes existentes, como parques, bosques y humedales, y expansión de áreas verdes mediante la plantación de árboles y vegetación en áreas urbanas y periurbanas. Estas áreas proporcionan soluciones naturales para la gestión de los recursos hídricos, la reducción del estrés térmico, la mejora de la calidad del aire y el aumento de la biodiversidad.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de terrenos adecuados para espacios verdes",
+        "Acceso a recursos hídricos para riego"
+      ],
+      "KeyPerformanceIndicators": [
+        "Área de espacios verdes creados o restaurados.",
+        "Índices de biodiversidad en áreas verdes.",
+        "Participación comunitaria en actividades de espacios verdes."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0162",
+    "actionName": "Strengthen programs for control and conservation of protected areas",
+    "actionPriority": 5,
+    "explanation": "El fortalecimiento de los programas para el control y la conservación de las áreas protegidas es crucial para Miranda debido a sus significativas emisiones por uso del suelo, que son las más altas entre todas las fuentes de emisión. El bioma de la ciudad, compuesto por pastizales y sabanas, es sensible a los cambios y requiere una gestión cuidadosa para mantener la biodiversidad y los servicios ecosistémicos. Además, el riesgo de sequías que afectan los recursos hídricos y la biodiversidad resalta la necesidad de esfuerzos de conservación sólidos para mitigar estos riesgos. Al priorizar esta acción, Miranda puede aumentar su resiliencia frente a los peligros ambientales y contribuir a la preservación de su patrimonio natural.",
+    "action": {
+      "ActionID": "icare_0162",
+      "ActionName": "Fortalecer los programas de control y conservación de áreas protegidas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves",
+        "diseases"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en implementar una serie de estrategias integradas para mejorar la conservación ambiental y maximizar sus beneficios, como la expansión de áreas protegidas, el desarrollo de planes de manejo para unidades de conservación y la capacitación de guías de ecoturismo para fortalecer el turismo sostenible.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expansión de áreas protegidas para mejorar la conservación ambiental.",
+        "Desarrollo de planes de manejo para unidades de conservación.",
+        "Capacitación de guías de ecoturismo para promover el turismo sostenible."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de aumento en el área de regiones protegidas (%).",
+        "Reducción en las tasas de deforestación en áreas protegidas anualmente (%).",
+        "Número de programas de conservación fortalecidos anualmente."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high",
+        "heatwaves": "medium",
+        "diseases": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0149",
+    "actionName": "Encourage sustainable land use practices",
+    "actionPriority": 6,
+    "explanation": "Fomentar prácticas sostenibles de uso del suelo en Miranda es crucial debido a las significativas emisiones derivadas del uso del suelo, que son las más altas entre todas las fuentes de emisiones en la ciudad. El bioma de pastizales y sabanas de la región es particularmente sensible a las prácticas no sostenibles, las cuales pueden aumentar las emisiones y degradar el medio ambiente. Al promover un uso sostenible del suelo, la ciudad puede mitigar su impacto ambiental y fortalecer la resiliencia de sus ecosistemas. Además, las prácticas sostenibles pueden ayudar a abordar los desafíos socioeconómicos moderados al ofrecer medios de vida más estables y sostenibles para la población local.",
+    "action": {
+      "ActionID": "icare_0149",
+      "ActionName": "Fomentar prácticas sostenibles de uso de la tierra",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Promover métodos que garanticen la conservación y salud del suelo, preservando la biodiversidad, reduciendo la erosión y minimizando los impactos ambientales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Proporcionar acceso a conocimientos técnicos y capacitación sobre prácticas de manejo sostenible del suelo.",
+        "Ofrecer incentivos financieros y formar asociaciones con instituciones de investigación y agricultores locales.",
+        "Desarrollar sistemas de monitoreo para la salud del suelo y la biodiversidad, e implementar políticas para el control de la erosión."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de área de tierra gestionada bajo prácticas de uso sostenible de la tierra (%)",
+        "Reducción en las tasas de deforestación o degradación de la tierra (%)",
+        "Aumento en los indicadores de biodiversidad en tierras gestionadas (por ejemplo, conteo de especies, calidad del hábitat)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "medium",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0169",
+    "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+    "actionPriority": 7,
+    "explanation": "Establecer un plan de preparación y medidas de respuesta ante emergencias en Miranda es crucial debido a la vulnerabilidad de la ciudad frente a eventos climáticos extremos. La ciudad enfrenta riesgos significativos por amenazas como sequías, olas de calor e inundaciones, las cuales pueden afectar gravemente la infraestructura y la salud pública. Al contar con un plan de respuesta ante emergencias sólido, Miranda puede mitigar los efectos adversos de estos eventos, garantizando la seguridad y el bienestar de sus habitantes. Además, dicho plan aumentaría la resiliencia de la ciudad, permitiendo una recuperación más rápida y una reducción de los daños a largo plazo causados por incidentes relacionados con el clima.",
+    "action": {
+      "ActionID": "icare_0169",
+      "ActionName": "Establecer un Plan de Preparación y Medidas de Respuesta de Emergencia en caso de eventos climáticos extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en preparar al municipio para responder a eventos extremos, con el objetivo de proporcionar una respuesta rápida que minimice los impactos en la población.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de un plan integral de respuesta a emergencias que incluya la coordinación entre las autoridades locales, los servicios de emergencia y las organizaciones comunitarias",
+        "Inversión en sistemas de alerta temprana e infraestructura para garantizar respuestas oportunas y efectivas a eventos extremos",
+        "Capacitación y desarrollo de capacidades para los respondedores locales y las comunidades para mejorar la preparación y la resiliencia ante eventos extremos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de asociaciones de respuesta de emergencia establecidas.",
+        "Tiempo promedio de respuesta durante eventos climáticos extremos (horas).",
+        "Porcentaje de reducción en víctimas y daños durante eventos climáticos extremos anualmente (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "wildfires": "high",
+        "sea-level-rise": "low",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0152",
+    "actionName": "Recovery of degraded areas",
+    "actionPriority": 8,
+    "explanation": "La acción de ‘Recuperación de áreas degradadas’ es crucial para Miranda debido a sus significativas emisiones por uso del suelo, que son las más altas entre todas las fuentes de emisión de la ciudad. Restaurar las áreas degradadas puede ayudar a secuestrar carbono, reduciendo así la huella de carbono total de la ciudad. Además, esta acción puede mejorar la biodiversidad y aumentar la resiliencia de los ecosistemas locales, que actualmente se ven amenazados por sequías y olas de calor. Al priorizar esta acción, Miranda también puede abordar problemas relacionados con la seguridad alimentaria y los recursos hídricos, los cuales se ven afectados por la degradación ambiental.",
+    "action": {
+      "ActionID": "icare_0152",
+      "ActionName": "Recuperación de áreas degradadas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar los ecosistemas dañados por actividades humanas mediante la replantación de vegetación nativa, la restauración del suelo, la eliminación de especies invasoras y la implementación de técnicas de gestión sostenible.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Desarrollar un plan de restauración claro y asegurar financiamiento para la gestión a largo plazo.",
+        "Asegurar el acceso a especies de plantas nativas y proporcionar capacitación en prácticas sostenibles.",
+        "Eliminar especies invasoras y colaborar con las comunidades locales para una restauración exitosa del ecosistema."
+      ],
+      "KeyPerformanceIndicators": [
+        "Hectáreas de tierra degradada restauradas anualmente",
+        "Aumento en la cobertura vegetal (%) en áreas restauradas",
+        "Número de comunidades locales involucradas en proyectos de restauración"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0095",
+    "actionName": "Disaster early warning",
+    "actionPriority": 9,
+    "explanation": "Implementar un sistema de alerta temprana de desastres en Miranda es crucial debido a la vulnerabilidad de la ciudad frente a diversos peligros naturales, como sequías, olas de calor e inundaciones. Estos peligros representan riesgos significativos para la infraestructura, la salud pública y la seguridad alimentaria, por lo que las alertas tempranas son esenciales para una respuesta oportuna y la mitigación de daños. Dada la población moderada y los factores socioeconómicos, un sistema de alerta temprana eficaz puede ayudar a minimizar el impacto de estos peligros en la comunidad. Además, la baja densidad poblacional y la gran extensión de la ciudad hacen que sea importante contar con un sistema de comunicación robusto para asegurar que las alertas lleguen a todos los residentes de manera oportuna.",
+    "action": {
+      "ActionID": "ipcc_0095",
+      "ActionName": "Alerta temprana de desastres",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "droughts",
+        "storms"
+      ],
+      "Sector": [
+        "public_health",
+        "biodiversity",
+        "geo-hydrological_disasters"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Establecer y mantener sistemas de alerta temprana para desastres, incluidos las olas de calor marinas, brotes de plagas y olas de calor. Estos sistemas implican la difusión oportuna de información a individuos, comunidades y servicios de emergencia, permitiendo medidas proactivas para mitigar riesgos. Los Planes de Acción contra el Calor (HAPs) son parte de estos sistemas e incluyen estrategias detalladas como la planificación urbana con soluciones basadas en la naturaleza (por ejemplo, espacios verde-azules, materiales frescos), campañas de concienciación pública y medidas específicas para grupos vulnerables (por ejemplo, ancianos, niños, trabajadores al aire libre). Las acciones críticas también incluyen la evaluación de la efectividad del sistema después del desastre, el intercambio de lecciones y mejoras para una mejor preparación en eventos futuros.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Se centra en abordar las vulnerabilidades entre los grupos de bajos ingresos, personas mayores, mujeres embarazadas, niños y trabajadores al aire libre mediante la incorporación de comunicación dirigida, acceso a áreas frescas e intervenciones de salud específicas. Promueve la equidad involucrando a las comunidades marginadas en la planificación y asegurando el acceso a los recursos necesarios.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Coordinación entre los servicios de emergencia y las agencias de salud",
+        "Inversión en planificación urbana y soluciones basadas en la naturaleza",
+        "Educación comunitaria y campañas de concienciación pública",
+        "Infraestructura tecnológica para sistemas de alerta temprana"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de las tasas de mortalidad relacionadas con las olas de calor",
+        "Puntualidad de las advertencias",
+        "Niveles de concienciación pública",
+        "Adopción comunitaria de medidas de protección"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "droughts": "medium",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0094",
+    "actionName": "Access to health care",
+    "actionPriority": 10,
+    "explanation": "Mejorar el acceso a la atención médica en Miranda es crucial debido a la vulnerabilidad de la ciudad frente a diversos peligros relacionados con el clima, como las olas de calor y las enfermedades, que representan riesgos significativos para la salud pública. El nivel moderado de saneamiento inadecuado agrava aún más los desafíos sanitarios, lo que hace esencial fortalecer los servicios de salud para prevenir y gestionar posibles brotes. Además, la baja densidad de población de la ciudad y su nivel socioeconómico moderado pueden limitar la capacidad de los residentes para acceder a la atención médica necesaria, lo que resalta la necesidad de mejorar la infraestructura y los servicios de salud. Abordar estos problemas ayudará a fortalecer la resiliencia frente a los impactos climáticos y a mejorar el bienestar general de la comunidad.",
+    "action": {
+      "ActionID": "ipcc_0094",
+      "ActionName": "Acceso a la atención médica",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "droughts"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar el acceso a los servicios de atención médica, incluidos los servicios de salud y nutrición, agua limpia, saneamiento y recursos de salud mental culturalmente apropiados. Ampliar las capacidades de telemedicina permite una entrega eficiente de servicios de salud, particularmente para poblaciones remotas y desatendidas. Fortalecer los sistemas básicos de salud pública y la preparación para desastres puede reducir rápidamente la vulnerabilidad a los riesgos de salud relacionados con el clima.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promueve el acceso equitativo a la atención médica para grupos marginados y vulnerables, incluidas las poblaciones sin hogar, las comunidades remotas y aquellos afectados por desigualdades en la vivienda.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en tecnologías de telemedicina",
+        "Fortalecimiento de la gobernanza de los sistemas de salud pública",
+        "Desarrollo de capacidades para los trabajadores de la salud",
+        "Mejoras en la infraestructura de las instalaciones de salud"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de la mortalidad relacionada con el clima",
+        "Mayor acceso a la telemedicina",
+        "Número de programas de salud adaptados culturalmente implementados",
+        "Mejora de los indicadores de acceso al agua y saneamiento"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "droughts": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0097",
+    "actionName": "Food storage/distribution improvements",
+    "actionPriority": 11,
+    "explanation": "Mejorar el almacenamiento y la distribución de alimentos es crucial para Miranda debido a su vulnerabilidad a las sequías, las cuales representan un riesgo significativo para la seguridad alimentaria. Con una población de ingresos moderados a bajos, fortalecer los sistemas alimentarios puede ayudar a garantizar un acceso constante a los alimentos, reduciendo el impacto de las interrupciones en el suministro. Además, un mejor almacenamiento de alimentos puede minimizar las emisiones derivadas de los desperdicios, contribuyendo a la reducción de las emisiones totales de la ciudad. Esta acción apoya la resiliencia de la comunidad local al proteger la disponibilidad de alimentos durante eventos relacionados con el clima.",
+    "action": {
+      "ActionID": "ipcc_0097",
+      "ActionName": "Mejoras en el almacenamiento/distribución de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms",
+        "heatwaves"
+      ],
+      "Sector": [
+        "food_security",
+        "road_infrastructure"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar los sistemas de almacenamiento y distribución de alimentos mediante la mejora de la infraestructura de transporte, la optimización de las redes comerciales y el acortamiento de las cadenas de suministro para garantizar la disponibilidad local de alimentos y la resiliencia ante los impactos climáticos. Esta acción también incluye aumentar la capacidad de las instalaciones de almacenamiento de alimentos locales para reducir las pérdidas post-cosecha, abordar las ineficiencias en la logística y reforzar la infraestructura para productos perecederos. Su objetivo es mejorar la seguridad alimentaria y reducir la vulnerabilidad a eventos extremos, interrupciones e impactos en cascada, especialmente durante pandemias y otras crisis.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Apoya el acceso equitativo a alimentos para poblaciones marginadas y vulnerables al priorizar la producción local de alimentos y mejorar los sistemas de distribución que llegan a áreas desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en infraestructura",
+        "Incentivos políticos para la producción local de alimentos",
+        "Colaboración con los sectores de logística y comercio",
+        "Tecnología para la optimización de la cadena de suministro"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de pérdidas post-cosecha",
+        "Aumento de la disponibilidad de alimentos locales",
+        "Mejora de la eficiencia del transporte para la distribución de alimentos",
+        "Acortamiento de las cadenas de suministro"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0180",
+    "actionName": "Implement permeable pavements and increase green areas in roadways",
+    "actionPriority": 12,
+    "explanation": "La implementación de pavimentos permeables y el aumento de áreas verdes en las vías es crucial para Miranda debido a su vulnerabilidad a inundaciones y deslizamientos de tierra. La infraestructura de la ciudad está en riesgo significativo por estos peligros, y mejorar la permeabilidad de las superficies puede ayudar a gestionar las aguas pluviales de manera más efectiva, reduciendo el riesgo de inundaciones. Además, incrementar las áreas verdes puede mejorar la biodiversidad urbana y proporcionar efectos de enfriamiento, lo cual es beneficioso para mitigar los impactos de las olas de calor. Esta acción está alineada con la necesidad de fortalecer la resiliencia de la ciudad frente a los peligros relacionados con el clima, convirtiéndola en una prioridad estratégica.",
+    "action": {
+      "ActionID": "icare_0180",
+      "ActionName": "Implementar pavimentos permeables y aumentar las áreas verdes en las vías públicas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Incrementar las áreas permeables y semi-permeables en edificios y espacios públicos bajo la administración de la Ciudad, con la adopción de soluciones basadas en la naturaleza (NbS). En áreas con limitaciones de espacio, la acción incluye análisis de viabilidad para implementar pavimentos permeables y aumentar las áreas verdes en las vías. Entre las soluciones de construcción tradicionales, se encuentran características como bordillos y canaletas con desagües pluviales, así como soluciones a mayor escala como estanques de retención. Las soluciones basadas en la naturaleza incluyen la plantación de árboles urbanos, techos verdes, cisternas de agua de lluvia, bio-swales, y más.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Expansión de áreas permeables y semi-permeables en edificios administrados por la ciudad y espacios públicos.",
+        "Adopción de soluciones basadas en la naturaleza (NbS) como la plantación de árboles urbanos, techos verdes, cisternas de agua de lluvia y bio-swales.",
+        "Análisis de viabilidad para pavimentos permeables y aumento de áreas verdes en carreteras, junto con soluciones tradicionales de gestión de aguas pluviales como bordillos, canaletas y estanques de retención."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en la escorrentía de agua superficial durante eventos de lluvia (%).",
+        "Disminución en la ocurrencia de inundaciones en áreas modificadas.",
+        "Porcentaje de espacios públicos que cumplen con las nuevas regulaciones de superficies permeables."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "medium",
+        "heatwaves": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0157",
+    "actionName": "Maintenance and Revitalization of Riparian Forests",
+    "actionPriority": 13,
+    "explanation": "El mantenimiento y la revitalización de los bosques ribereños en Miranda son cruciales debido a las significativas emisiones derivadas del uso del suelo en la ciudad, que representan la fuente más alta entre sus emisiones. Los bosques ribereños desempeñan un papel vital en la estabilización del suelo y la reducción de la erosión, lo que puede ayudar a mitigar el riesgo de deslizamientos de tierra, un peligro notable para la infraestructura de la ciudad. Además, estos bosques contribuyen a la conservación de la biodiversidad, lo cual es importante dada la vulnerabilidad de la ciudad a las sequías y olas de calor que amenazan los ecosistemas locales. Al mejorar las zonas ribereñas, la ciudad puede mejorar la calidad y disponibilidad del agua, abordando problemas moderados de saneamiento y apoyando la resiliencia ambiental en general.",
+    "action": {
+      "ActionID": "icare_0157",
+      "ActionName": "Mantenimiento y Revitalización de Bosques Ribereños",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mapeo y evaluación de bosques ribereños degradados, desarrollo de planes de revitalización con la plantación de especies nativas, control de especies invasoras, medidas de contención de la erosión y evaluaciones periódicas de los impactos en las condiciones ambientales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Asegurar la disponibilidad de datos geoespaciales y el mapeo previo de áreas degradadas.",
+        "Formar asociaciones con viveros locales y proporcionar equipo y mano de obra calificada para el control de especies invasoras.",
+        "Asegurar recursos financieros y establecer un sistema de monitoreo para evaluar los impactos ambientales."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total de bosques ribereños restaurados (ha).",
+        "Número de proyectos implementados.",
+        "Reducción de la erosión y sedimentación de cuerpos de agua (toneladas/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0181",
+    "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+    "actionPriority": 14,
+    "explanation": "La acción de reubicar y restaurar las áreas vulnerables en Miranda es crucial debido a la exposición de la ciudad a diversos peligros ambientales. Con riesgos significativos de sequías, olas de calor e inundaciones que afectan la infraestructura y la salud pública, abordar estas vulnerabilidades es esencial para la resiliencia de la ciudad. La baja densidad poblacional y los niveles de ingresos moderados sugieren que las intervenciones focalizadas pueden tener un impacto sustancial en la mejora de las condiciones de vida. Además, la restauración ambiental puede ayudar a mitigar las emisiones y a mejorar la biodiversidad, contribuyendo a la sostenibilidad a largo plazo.",
+    "action": {
+      "ActionID": "icare_0181",
+      "ActionName": "Reubicación y Restauración Ambiental en Áreas Vulnerables",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Un proyecto integral que aborda la vulnerabilidad socioambiental de un asentamiento informal. Incluye la reubicación de residentes de áreas propensas a inundaciones, la restauración del medio ambiente y la provisión de infraestructura y servicios sociales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamiento adecuado",
+        "Coordinación interinstitucional",
+        "Seguridad de tenencia de la tierra"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de hogares reubicados.",
+        "Progreso de la restauración ambiental.",
+        "Reducción del riesgo de inundación."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0096",
+    "actionName": "Farm/fishery improvements",
+    "actionPriority": 15,
+    "explanation": "Las mejoras en la agricultura y la pesca son cruciales para Miranda debido a sus significativas emisiones derivadas del uso de la tierra y al riesgo moderado que enfrentan la seguridad alimentaria por sequías e inundaciones. Mejorar las prácticas agrícolas puede ayudar a reducir las emisiones y aumentar la resiliencia frente a los impactos climáticos. Además, estas mejoras pueden apoyar la economía local al incrementar la productividad y la sostenibilidad en el sector agrícola. Dado el estatus socioeconómico moderado de la ciudad, estas acciones también pueden contribuir a mejorar los medios de vida de la comunidad.",
+    "action": {
+      "ActionID": "ipcc_0096",
+      "ActionName": "Mejoras en granjas/pesquerías",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementar una serie de estrategias para adaptar granjas y pesquerías a los impactos climáticos. Esto incluye cambiar el equipo de pesca o la potencia de los barcos, adoptar nuevas variedades de cultivos o ajustar los calendarios de siembra, mejorar los sistemas de riego, integrar sistemas de cultivos y ganado, reubicar el ganado con una mejor gestión de pastizales y adoptar sistemas agroecológicos y de agroforestería. Innovaciones tecnológicas como la agricultura inteligente y medidas financieras como los subsidios apoyan estas adaptaciones.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garantiza el acceso a recursos para agricultores y pescadores marginados, promueve opciones diversas de sustento y fortalece la resiliencia en comunidades desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Apoyo político para la agricultura y pesca resilientes al clima",
+        "Acceso a financiamiento y subsidios",
+        "Capacitación para adoptar nuevas prácticas",
+        "Mejora de la infraestructura de mercado"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento de la productividad agrícola y pesquera",
+        "Tasa de adopción de sistemas integrados",
+        "Reducción de pérdidas de rendimiento relacionadas con el clima"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "wildfires": "low",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0098",
+    "actionName": "Behaviour change in diets and food waste",
+    "actionPriority": 16,
+    "explanation": "La promoción del cambio de comportamiento en las dietas y la reducción del desperdicio de alimentos es crucial para Miranda debido a su potencial impacto en la seguridad alimentaria. La ciudad enfrenta riesgos de sequías e inundaciones, que pueden interrumpir el suministro de alimentos y aumentar la vulnerabilidad. Al fomentar prácticas dietéticas sostenibles y minimizar el desperdicio de alimentos, la ciudad puede fortalecer su resiliencia frente a estos peligros climáticos. Además, reducir el desperdicio de alimentos puede contribuir a disminuir las emisiones totales, en línea con la necesidad de la ciudad de abordar sus significativas emisiones derivadas del uso del suelo. Esta acción respalda tanto la sostenibilidad ambiental como la estabilidad socioeconómica en la región.",
+    "action": {
+      "ActionID": "ipcc_0098",
+      "ActionName": "Cambio de comportamiento en dietas y desperdicio de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Reducir la pérdida y el desperdicio de alimentos mediante la mejora de las prácticas de producción, distribución y consumo de alimentos. Las acciones incluyen mejorar las técnicas agrícolas, adoptar tecnologías de ahorro de agua, implementar soluciones de almacenamiento de bajo costo y promover dietas basadas en plantas. Los responsables de políticas pueden fomentar estos comportamientos con políticas de precios adecuadas, iniciativas de agricultura sostenible y apoyo a grupos desfavorecidos. La acción enfatiza el cambio hacia dietas más saludables, la reducción del consumo excesivo y el apoyo a los sistemas alimentarios locales para mitigar las emisiones de gases de efecto invernadero y garantizar la seguridad alimentaria ante el cambio climático.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promueve el acceso a alimentos asequibles y saludables para comunidades vulnerables, empoderando a mujeres, jóvenes y grupos socialmente desfavorecidos. Fomenta la participación equitativa en prácticas agrícolas sostenibles y redes alimentarias locales.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Educación y formación para agricultores",
+        "Acceso a insumos agrícolas sostenibles",
+        "Apoyo político para prácticas sostenibles",
+        "Infraestructura tecnológica para almacenamiento y procesamiento"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en los porcentajes de pérdida y desperdicio de alimentos",
+        "Aumento en la adopción de dietas basadas en plantas",
+        "Mejora en los indicadores de seguridad alimentaria",
+        "Reducción de emisiones de GEI de los sistemas alimentarios"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "medium",
+        "floods": "medium",
+        "wildfires": "low"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0092",
+    "actionName": "Social safety nets",
+    "actionPriority": 17,
+    "explanation": "La implementación de redes de protección social en Miranda es crucial debido al nivel moderado de residentes de bajos ingresos que pueden ser vulnerables a choques económicos. La ciudad enfrenta riesgos significativos por peligros relacionados con el clima, como sequías y olas de calor, que pueden agravar los desafíos socioeconómicos. Al establecer redes de protección social sólidas, la ciudad puede fortalecer su resiliencia y brindar apoyo a sus poblaciones más vulnerables durante tiempos de crisis. Esta acción es especialmente importante dado el posible impacto en la seguridad alimentaria y la salud pública, asegurando que los residentes tengan acceso a recursos y servicios esenciales.",
+    "action": {
+      "ActionID": "ipcc_0092",
+      "ActionName": "Redes de seguridad social",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Las redes de seguridad social abarcan mecanismos de protección social adaptativa para reducir la inseguridad alimentaria y la malnutrición, especialmente para las poblaciones vulnerables. Estos incluyen transferencias de efectivo, programas de alimentación escolar, iniciativas de trabajo público, compensación por desempleo, reformas agrarias, esquemas de crédito y seguros. Los enfoques integrados combinan evaluaciones de riesgos climáticos con la reducción del riesgo de desastres, la educación y la equidad social para mejorar la resiliencia ante las tensiones climáticas.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Mejora el estatus social y los derechos de los grupos marginados, protege a las poblaciones vulnerables, reduce las desigualdades y promueve la educación y la equidad de género.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Integración del clima y el riesgo de desastres en la protección social",
+        "programas educativos",
+        "coordinación con iniciativas de medios de vida sostenibles e inclusión financiera"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en las tasas de malnutrición",
+        "Aumento en el acceso a la educación para grupos vulnerables",
+        "Participación en programas de protección social"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0086",
+    "actionName": "Ecosystem-based adaptation",
+    "actionPriority": 18,
+    "explanation": "La adaptación basada en los ecosistemas es crucial para Miranda debido a su ubicación en un bioma de pastizales/sabana, el cual es sensible a los impactos del cambio climático, como sequías y olas de calor. Estos peligros representan riesgos significativos para la biodiversidad y los recursos hídricos, que son vitales para el equilibrio ecológico de la ciudad y las actividades agrícolas. La implementación de estrategias basadas en los ecosistemas puede aumentar la resiliencia de los sistemas naturales, apoyando así la seguridad alimentaria y reduciendo la vulnerabilidad ante los peligros relacionados con el clima. Además, este tipo de medidas de adaptación puede proporcionar co-beneficios, como la mejora de la salud pública y la resiliencia de la infraestructura, al mitigar los efectos de los eventos climáticos extremos.",
+    "action": {
+      "ActionID": "ipcc_0086",
+      "ActionName": "Adaptación basada en ecosistemas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "heatwaves",
+        "floods"
+      ],
+      "Sector": [
+        "biodiversity",
+        "geo-hydrological_disasters",
+        "water_resources",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar y gestionar de manera sostenible los ecosistemas marinos, costeros, urbanos, fluviales y de humedales para proteger contra peligros climáticos como marejadas ciclónicas, inundaciones y olas de calor. Los esfuerzos incluyen agroecología, vegetación costera y marina y arrecifes, corredores de vegetación, restauración de hábitats de manglares, espacios verdes urbanos para reducir las temperaturas. Estas acciones mejoran la biodiversidad, almacenan carbono, mejoran la calidad del agua y proporcionan co-beneficios socioeconómicos y culturales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": "Apoya a las comunidades vulnerables mejorando la resiliencia climática, promoviendo el acceso equitativo a los servicios ecosistémicos y creando oportunidades de sustento, especialmente para las poblaciones marginadas y desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Participación comunitaria",
+        "Apoyo regulatorio",
+        "Inversión financiera",
+        "Planificación urbana",
+        "Vegetación resiliente al clima",
+        "Evaluaciones de biodiversidad",
+        "Gestión de cuencas",
+        "Planificación aguas arriba",
+        "Financiación sostenible"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de daños por marejadas ciclónicas",
+        "Tasas de secuestro de carbono",
+        "Aumento de la biodiversidad",
+        "Reducción de la temperatura en áreas urbanas",
+        "Mejora de la calidad del agua",
+        "Acceso a espacios verdes por comunidades desatendidas",
+        "Reducción de eventos de inundación",
+        "Mejora de la salud del ecosistema"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "high",
+        "sea-level-rise": "high",
+        "heatwaves": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0088",
+    "actionName": "Building codes",
+    "actionPriority": 19,
+    "explanation": "La implementación de códigos de construcción en Miranda es crucial debido al alto riesgo de daños en la infraestructura causados por peligros naturales como olas de calor y deslizamientos de tierra. La ciudad enfrenta amenazas significativas por estos eventos, que pueden afectar gravemente la seguridad pública y la estabilidad económica. Al hacer cumplir códigos de construcción estrictos, Miranda puede aumentar la resiliencia de su infraestructura, reduciendo el potencial de daños y garantizando la seguridad de sus residentes. Además, la mejora de los estándares de construcción puede contribuir a la eficiencia energética, alineándose con la necesidad de la ciudad de gestionar eficazmente sus emisiones de energía estacionaria.",
+    "action": {
+      "ActionID": "ipcc_0088",
+      "ActionName": "Códigos de construcción",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides"
+      ],
+      "Sector": [
+        "road_infrastructure",
+        "geo-hydrological_disasters"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "El desarrollo e implementación de códigos de construcción y regulaciones de diseño arquitectónico dirigidos a integrar parámetros de adaptación climática. Estos códigos están enfocados en reducir riesgos de peligros inducidos por el clima, como inundaciones y deslizamientos de tierra. También apoyan el desarrollo urbano resiliente al clima al guiar el uso del suelo, las prácticas de construcción y los estándares de infraestructura. La iniciativa fomenta la planificación urbana estratégica a largo plazo para coordinar inversiones públicas y privadas en adaptación, incluyendo la creación de zonas seguras y la transformación de asentamientos precarios. Asegura que la nueva infraestructura sea resiliente a los riesgos climáticos y que los espacios urbanos sean seguros y sostenibles para las poblaciones actuales y futuras.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": "Promueve la planificación urbana inclusiva abordando los riesgos en asentamientos informales y precarios e integrando eco-parques y eco-jardines para poblaciones vulnerables.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Integración con evaluaciones locales de riesgo climático",
+        "Colaboración estratégica entre urbanistas y autoridades municipales"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de incidentes de inundaciones urbanas",
+        "Mayor disponibilidad de viviendas seguras en áreas de riesgo",
+        "Tasa de implementación de eco-parques y eco-jardines en áreas vulnerables"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MRD",
+    "cityName": "Miranda",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0148",
+    "actionName": "Create the Municipal Climate Change Forum",
+    "actionPriority": 20,
+    "explanation": "La creación del Foro Municipal sobre Cambio Climático en Miranda es un paso crucial para abordar los desafíos ambientales de la ciudad. Con emisiones significativas provenientes del uso del suelo y de la energía estacionaria, el foro puede facilitar discusiones y estrategias para reducir estas emisiones de manera efectiva. Además, la ciudad enfrenta diversos riesgos climáticos, como sequías y olas de calor, que afectan los recursos hídricos, la seguridad alimentaria y la salud pública. Establecer un foro dedicado permitirá que las partes interesadas colaboren en medidas de adaptación y refuercen la resiliencia de la ciudad frente a estos peligros climáticos.",
+    "action": {
+      "ActionID": "icare_0148",
+      "ActionName": "Crear el Foro Municipal de Cambio Climático",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "diseases",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Creación de un Foro Municipal de Cambio Climático con la participación de líderes comunitarios, científicos, colectivos, institutos de investigación, ONG y miembros de la administración municipal y estatal. El Foro servirá como referencia para acciones relacionadas con el Cambio Climático, con el objetivo de monitorear futuras políticas sobre el tema en el municipio, estimular el diálogo y crear una red de discusiones sobre la crisis climática.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Participación de diversos actores, incluidos líderes comunitarios, científicos, ONG y autoridades locales, para establecer y mantener el Foro.",
+        "Asignación de recursos para facilitar reuniones, talleres y eventos regulares para que el Foro permanezca activo e impactante.",
+        "Desarrollo de un marco claro y directrices para que el Foro monitoree y guíe las políticas e iniciativas de cambio climático dentro del municipio."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de partes interesadas clave participando activamente en el foro.",
+        "Número de políticas o acciones relacionadas con el clima propuestas a través del foro.",
+        "Participación pública en iniciativas del foro (medida por la asistencia a eventos o encuestas)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "landslides": "low",
+        "floods": "medium",
+        "wildfires": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  }
 ]

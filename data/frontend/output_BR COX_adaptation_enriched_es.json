@@ -1,1313 +1,1313 @@
 [
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "The development of a Climate Action Plan is crucial for Coxim due to its significant environmental challenges, including high land use emissions and vulnerability to droughts and heatwaves. With a low population density and a predominantly grassland/savanna biome, the city faces unique risks that require tailored strategies to mitigate climate impacts. Additionally, the moderate level of inadequate sanitation highlights the need for comprehensive planning to improve public health and infrastructure resilience. By prioritizing this action, Coxim can effectively address its environmental vulnerabilities and enhance its sustainability efforts.",
-        "action": {
-            "ActionID": "icare_0176",
-            "ActionName": "Desarrollo del Plan de Acci\u00f3n Clim\u00e1tica",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "storms",
-                "sea-level-rise",
-                "wildfires",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Un plan integral que describe las estrategias y acciones de una ciudad para mitigar las emisiones de gases de efecto invernadero y adaptarse a los impactos del cambio clim\u00e1tico, que t\u00edpicamente incluye una evaluaci\u00f3n de los riesgos y vulnerabilidades clim\u00e1ticas de la ciudad, el establecimiento de objetivos de reducci\u00f3n de emisiones y la implementaci\u00f3n de acciones en varios sectores como energ\u00eda, transporte, gesti\u00f3n de residuos y planificaci\u00f3n urbana.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Voluntad pol\u00edtica y compromiso del gobierno",
-                "Participaci\u00f3n y colaboraci\u00f3n de las partes interesadas",
-                "Financiaci\u00f3n y recursos para la implementaci\u00f3n"
-            ],
-            "KeyPerformanceIndicators": [
-                "Objetivos de reducci\u00f3n de emisiones de gases de efecto invernadero.",
-                "N\u00famero de acciones de adaptaci\u00f3n al clima implementadas.",
-                "Inversi\u00f3n en proyectos de mitigaci\u00f3n y adaptaci\u00f3n al clima."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "storms": "medium",
-                "sea-level-rise": "medium",
-                "wildfires": "medium",
-                "floods": "medium",
-                "landslides": "medium",
-                "diseases": "medium",
-                "heatwaves": "medium",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 2,
-        "explanation": "Farm and fishery improvements are crucial for Coxim due to its significant reliance on agriculture and fisheries, which are vulnerable to climate impacts like droughts. Enhancing these sectors can help mitigate the risks to food security, which is a key concern given the city's exposure to droughts. Additionally, improving these areas can support the local economy and livelihoods, especially in a region with low-income levels. By prioritizing this action, Coxim can build resilience against climate-related hazards and ensure sustainable development.",
-        "action": {
-            "ActionID": "ipcc_0096",
-            "ActionName": "Mejoras en granjas/pesquer\u00edas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementar una serie de estrategias para adaptar granjas y pesquer\u00edas a los impactos clim\u00e1ticos. Esto incluye cambiar el equipo de pesca o la potencia de los barcos, adoptar nuevas variedades de cultivos o ajustar los calendarios de siembra, mejorar los sistemas de riego, integrar sistemas de cultivos y ganado, reubicar el ganado con una mejor gesti\u00f3n de pastizales y adoptar sistemas agroecol\u00f3gicos y de agroforester\u00eda. Innovaciones tecnol\u00f3gicas como la agricultura inteligente y medidas financieras como los subsidios apoyan estas adaptaciones.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Garantiza el acceso a recursos para agricultores y pescadores marginados, promueve opciones diversas de sustento y fortalece la resiliencia en comunidades desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Apoyo pol\u00edtico para la agricultura y pesca resilientes al clima",
-                "Acceso a financiamiento y subsidios",
-                "Capacitaci\u00f3n para adoptar nuevas pr\u00e1cticas",
-                "Mejora de la infraestructura de mercado"
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento de la productividad agr\u00edcola y pesquera",
-                "Tasa de adopci\u00f3n de sistemas integrados",
-                "Reducci\u00f3n de p\u00e9rdidas de rendimiento relacionadas con el clima"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "floods": "medium",
-                "wildfires": "low",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 3,
-        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Coxim is crucial due to the city's socio-economic context. With a low-income population and moderate inadequate sanitation, improving these areas can significantly enhance living conditions. Additionally, addressing these zones can help mitigate the impacts of environmental hazards such as droughts and heatwaves, which pose risks to public health and biodiversity. By focusing on ZEIS, the city can promote sustainable development and resilience against climate-related challenges.",
-        "action": {
-            "ActionID": "icare_0151",
-            "ActionName": "Desarrollar diagn\u00f3sticos y restaurar \u00e1reas de Zonas de Inter\u00e9s Social Especial (ZEIS)",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "sea-level-rise",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Prioridad a las \u00e1reas ZEIS en acciones de mejora de vivienda y la aplicaci\u00f3n de recursos del Fondo de Urbanizaci\u00f3n, con la implementaci\u00f3n de infraestructura urbana que considere la adaptaci\u00f3n clim\u00e1tica en estos espacios. Uso de Soluciones basadas en la Naturaleza (NbS) en la adaptaci\u00f3n del saneamiento ambiental y las infraestructuras verdes y azules que potencian el ocio, la cultura, la agricultura urbana y actividades para fortalecer las asociaciones comunitarias.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de financiamiento del Fondo de Urbanizaci\u00f3n y otros mecanismos financieros para apoyar mejoras en la vivienda e infraestructura urbana en \u00e1reas ZEIS",
-                "Colaboraci\u00f3n entre urbanistas, expertos ambientales y comunidades locales para dise\u00f1ar e implementar soluciones basadas en la naturaleza (NbS) para la infraestructura urbana",
-                "Marcos de pol\u00edticas y regulaciones que integren medidas de adaptaci\u00f3n al clima en la planificaci\u00f3n urbana, asegurando que las inversiones prioricen la sostenibilidad ambiental y la comunidad"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de \u00e1reas ZEIS diagnosticadas y restauradas.",
-                "Porcentaje de residentes beneficiados por las \u00e1reas restauradas (%).",
-                "Inversiones p\u00fablicas asignadas a las \u00e1reas ZEIS (monto en moneda)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "sea-level-rise": "medium",
-                "floods": "medium",
-                "landslides": "low",
-                "diseases": "medium",
-                "heatwaves": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 4,
-        "explanation": "Improving access to health care in Coxim is crucial due to the moderate risk of public health impacts from heatwaves and diseases. The city's low-income status may exacerbate health vulnerabilities, making it essential to enhance healthcare services. Additionally, addressing healthcare access can help mitigate the effects of climate-related health risks, ensuring the community is better prepared for future challenges. Prioritizing this action can lead to improved overall well-being and resilience of the population.",
-        "action": {
-            "ActionID": "ipcc_0094",
-            "ActionName": "Acceso a la atenci\u00f3n m\u00e9dica",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "droughts"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mejorar el acceso a los servicios de atenci\u00f3n m\u00e9dica, incluidos los servicios de salud y nutrici\u00f3n, agua limpia, saneamiento y recursos de salud mental culturalmente apropiados. Ampliar las capacidades de telemedicina permite una entrega eficiente de servicios de salud, particularmente para poblaciones remotas y desatendidas. Fortalecer los sistemas b\u00e1sicos de salud p\u00fablica y la preparaci\u00f3n para desastres puede reducir r\u00e1pidamente la vulnerabilidad a los riesgos de salud relacionados con el clima.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promueve el acceso equitativo a la atenci\u00f3n m\u00e9dica para grupos marginados y vulnerables, incluidas las poblaciones sin hogar, las comunidades remotas y aquellos afectados por desigualdades en la vivienda.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en tecnolog\u00edas de telemedicina",
-                "Fortalecimiento de la gobernanza de los sistemas de salud p\u00fablica",
-                "Desarrollo de capacidades para los trabajadores de la salud",
-                "Mejoras en la infraestructura de las instalaciones de salud"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de la mortalidad relacionada con el clima",
-                "Mayor acceso a la telemedicina",
-                "N\u00famero de programas de salud adaptados culturalmente implementados",
-                "Mejora de los indicadores de acceso al agua y saneamiento"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "floods": "high",
-                "droughts": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 5,
-        "explanation": "Establishing a plan for preparation and emergency response measures in Coxim is crucial due to the city's vulnerability to extreme weather events such as droughts and heatwaves. The region's low population density and moderate access to sanitation services can exacerbate the impact of these events, making it essential to have a robust response plan. Additionally, the high emissions from land use and transportation suggest that the city is already facing environmental challenges, which could be compounded by extreme weather. Implementing this action will help mitigate risks to public health, infrastructure, and biodiversity, ensuring the community is better prepared for future climate-related incidents.",
-        "action": {
-            "ActionID": "icare_0169",
-            "ActionName": "Establecer un Plan de Preparaci\u00f3n y Medidas de Respuesta de Emergencia en caso de eventos clim\u00e1ticos extremos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta acci\u00f3n se centra en preparar al municipio para responder a eventos extremos, con el objetivo de proporcionar una respuesta r\u00e1pida que minimice los impactos en la poblaci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de un plan integral de respuesta a emergencias que incluya la coordinaci\u00f3n entre las autoridades locales, los servicios de emergencia y las organizaciones comunitarias",
-                "Inversi\u00f3n en sistemas de alerta temprana e infraestructura para garantizar respuestas oportunas y efectivas a eventos extremos",
-                "Capacitaci\u00f3n y desarrollo de capacidades para los respondedores locales y las comunidades para mejorar la preparaci\u00f3n y la resiliencia ante eventos extremos"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de asociaciones de respuesta de emergencia establecidas.",
-                "Tiempo promedio de respuesta durante eventos clim\u00e1ticos extremos (horas).",
-                "Porcentaje de reducci\u00f3n en v\u00edctimas y da\u00f1os durante eventos clim\u00e1ticos extremos anualmente (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "high",
-                "diseases": "medium",
-                "landslides": "high",
-                "floods": "high",
-                "wildfires": "high",
-                "sea-level-rise": "low",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 6,
-        "explanation": "Implementing a disaster early warning system in Coxim is crucial due to the city's vulnerability to various climate hazards, such as droughts and heatwaves. These hazards pose significant risks to water resources, food security, and public health, making timely warnings essential for mitigating their impacts. Additionally, the city's low population density and moderate access to sanitation services highlight the need for effective communication and preparedness strategies to protect its residents. By prioritizing early warning systems, Coxim can enhance its resilience and reduce the potential damage from climate-related disasters.",
-        "action": {
-            "ActionID": "ipcc_0095",
-            "ActionName": "Alerta temprana de desastres",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "droughts",
-                "storms"
-            ],
-            "Sector": [
-                "public_health",
-                "biodiversity",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Establecer y mantener sistemas de alerta temprana para desastres, incluidos las olas de calor marinas, brotes de plagas y olas de calor. Estos sistemas implican la difusi\u00f3n oportuna de informaci\u00f3n a individuos, comunidades y servicios de emergencia, permitiendo medidas proactivas para mitigar riesgos. Los Planes de Acci\u00f3n contra el Calor (HAPs) son parte de estos sistemas e incluyen estrategias detalladas como la planificaci\u00f3n urbana con soluciones basadas en la naturaleza (por ejemplo, espacios verde-azules, materiales frescos), campa\u00f1as de concienciaci\u00f3n p\u00fablica y medidas espec\u00edficas para grupos vulnerables (por ejemplo, ancianos, ni\u00f1os, trabajadores al aire libre). Las acciones cr\u00edticas tambi\u00e9n incluyen la evaluaci\u00f3n de la efectividad del sistema despu\u00e9s del desastre, el intercambio de lecciones y mejoras para una mejor preparaci\u00f3n en eventos futuros.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Se centra en abordar las vulnerabilidades entre los grupos de bajos ingresos, personas mayores, mujeres embarazadas, ni\u00f1os y trabajadores al aire libre mediante la incorporaci\u00f3n de comunicaci\u00f3n dirigida, acceso a \u00e1reas frescas e intervenciones de salud espec\u00edficas. Promueve la equidad involucrando a las comunidades marginadas en la planificaci\u00f3n y asegurando el acceso a los recursos necesarios.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Coordinaci\u00f3n entre los servicios de emergencia y las agencias de salud",
-                "Inversi\u00f3n en planificaci\u00f3n urbana y soluciones basadas en la naturaleza",
-                "Educaci\u00f3n comunitaria y campa\u00f1as de concienciaci\u00f3n p\u00fablica",
-                "Infraestructura tecnol\u00f3gica para sistemas de alerta temprana"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de las tasas de mortalidad relacionadas con las olas de calor",
-                "Puntualidad de las advertencias",
-                "Niveles de concienciaci\u00f3n p\u00fablica",
-                "Adopci\u00f3n comunitaria de medidas de protecci\u00f3n"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "droughts": "medium",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 7,
-        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Coxim is crucial due to the city's vulnerability to droughts, which significantly impact water resources and biodiversity. The system will provide real-time data, enabling better management of water resources and early warning for drought conditions. This action is particularly important given the city's low population density and large area, which can make traditional monitoring methods less effective. Additionally, improved water management can help mitigate the moderate risk of inadequate sanitation, enhancing public health and overall quality of life.",
-        "action": {
-            "ActionID": "icare_0164",
-            "ActionName": "Sistema de Monitoreo Hidrol\u00f3gico con Estaciones de Telemetr\u00eda",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementaci\u00f3n de un sistema de monitoreo hidrol\u00f3gico con estaciones de telemetr\u00eda para monitorear la lluvia, los niveles de agua y las variables meteorol\u00f3gicas en tiempo real.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Equipamiento e infraestructura",
-                "Sistema robusto de gesti\u00f3n de datos",
-                "Coordinaci\u00f3n institucional"
-            ],
-            "KeyPerformanceIndicators": [
-                "Puntualidad de los datos",
-                "Rentabilidad",
-                "Efectividad de mitigaci\u00f3n"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 8,
-        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for Coxim due to its potential impact on food security and environmental sustainability. Given the city's vulnerability to droughts, which significantly affect food security, encouraging dietary changes can help mitigate these risks by promoting more sustainable food consumption patterns. Additionally, reducing food waste can lower emissions associated with waste management, contributing to the overall reduction of the city's total emissions. This action aligns with the need to address both environmental and socio-economic challenges in the region.",
-        "action": {
-            "ActionID": "ipcc_0098",
-            "ActionName": "Cambio de comportamiento en dietas y desperdicio de alimentos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Reducir la p\u00e9rdida y el desperdicio de alimentos mediante la mejora de las pr\u00e1cticas de producci\u00f3n, distribuci\u00f3n y consumo de alimentos. Las acciones incluyen mejorar las t\u00e9cnicas agr\u00edcolas, adoptar tecnolog\u00edas de ahorro de agua, implementar soluciones de almacenamiento de bajo costo y promover dietas basadas en plantas. Los responsables de pol\u00edticas pueden fomentar estos comportamientos con pol\u00edticas de precios adecuadas, iniciativas de agricultura sostenible y apoyo a grupos desfavorecidos. La acci\u00f3n enfatiza el cambio hacia dietas m\u00e1s saludables, la reducci\u00f3n del consumo excesivo y el apoyo a los sistemas alimentarios locales para mitigar las emisiones de gases de efecto invernadero y garantizar la seguridad alimentaria ante el cambio clim\u00e1tico.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promueve el acceso a alimentos asequibles y saludables para comunidades vulnerables, empoderando a mujeres, j\u00f3venes y grupos socialmente desfavorecidos. Fomenta la participaci\u00f3n equitativa en pr\u00e1cticas agr\u00edcolas sostenibles y redes alimentarias locales.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Educaci\u00f3n y formaci\u00f3n para agricultores",
-                "Acceso a insumos agr\u00edcolas sostenibles",
-                "Apoyo pol\u00edtico para pr\u00e1cticas sostenibles",
-                "Infraestructura tecnol\u00f3gica para almacenamiento y procesamiento"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en los porcentajes de p\u00e9rdida y desperdicio de alimentos",
-                "Aumento en la adopci\u00f3n de dietas basadas en plantas",
-                "Mejora en los indicadores de seguridad alimentaria",
-                "Reducci\u00f3n de emisiones de GEI de los sistemas alimentarios"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "medium",
-                "floods": "medium",
-                "wildfires": "low"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 9,
-        "explanation": "Improving food storage and distribution is crucial for Coxim due to its vulnerability to droughts, which pose a significant risk to food security. Enhancing these systems can help mitigate the impact of droughts by ensuring a stable food supply even during adverse conditions. Additionally, better food distribution can support the local economy and improve the resilience of the community against climate-related disruptions. This action aligns with the need to address the socio-economic challenges faced by the region, particularly in maintaining food security.",
-        "action": {
-            "ActionID": "ipcc_0097",
-            "ActionName": "Mejoras en el almacenamiento/distribuci\u00f3n de alimentos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms",
-                "heatwaves"
-            ],
-            "Sector": [
-                "food_security",
-                "road_infrastructure"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mejorar los sistemas de almacenamiento y distribuci\u00f3n de alimentos mediante la mejora de la infraestructura de transporte, la optimizaci\u00f3n de las redes comerciales y el acortamiento de las cadenas de suministro para garantizar la disponibilidad local de alimentos y la resiliencia ante los impactos clim\u00e1ticos. Esta acci\u00f3n tambi\u00e9n incluye aumentar la capacidad de las instalaciones de almacenamiento de alimentos locales para reducir las p\u00e9rdidas post-cosecha, abordar las ineficiencias en la log\u00edstica y reforzar la infraestructura para productos perecederos. Su objetivo es mejorar la seguridad alimentaria y reducir la vulnerabilidad a eventos extremos, interrupciones e impactos en cascada, especialmente durante pandemias y otras crisis.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Apoya el acceso equitativo a alimentos para poblaciones marginadas y vulnerables al priorizar la producci\u00f3n local de alimentos y mejorar los sistemas de distribuci\u00f3n que llegan a \u00e1reas desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en infraestructura",
-                "Incentivos pol\u00edticos para la producci\u00f3n local de alimentos",
-                "Colaboraci\u00f3n con los sectores de log\u00edstica y comercio",
-                "Tecnolog\u00eda para la optimizaci\u00f3n de la cadena de suministro"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de p\u00e9rdidas post-cosecha",
-                "Aumento de la disponibilidad de alimentos locales",
-                "Mejora de la eficiencia del transporte para la distribuci\u00f3n de alimentos",
-                "Acortamiento de las cadenas de suministro"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "storms": "high",
-                "heatwaves": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 10,
-        "explanation": "Implementing social safety nets in Coxim is crucial due to the city's socio-economic context. With a low-income population, these safety nets can provide essential support to vulnerable groups, enhancing their resilience against economic shocks and environmental hazards. Given the moderate risk of inadequate sanitation and the potential impacts of climate-related hazards like droughts and heatwaves, social safety nets can help mitigate these risks by ensuring access to basic needs and services. This action is a priority to improve the overall well-being and stability of the community in the face of environmental and economic challenges.",
-        "action": {
-            "ActionID": "ipcc_0092",
-            "ActionName": "Redes de seguridad social",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "public_health"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Las redes de seguridad social abarcan mecanismos de protecci\u00f3n social adaptativa para reducir la inseguridad alimentaria y la malnutrici\u00f3n, especialmente para las poblaciones vulnerables. Estos incluyen transferencias de efectivo, programas de alimentaci\u00f3n escolar, iniciativas de trabajo p\u00fablico, compensaci\u00f3n por desempleo, reformas agrarias, esquemas de cr\u00e9dito y seguros. Los enfoques integrados combinan evaluaciones de riesgos clim\u00e1ticos con la reducci\u00f3n del riesgo de desastres, la educaci\u00f3n y la equidad social para mejorar la resiliencia ante las tensiones clim\u00e1ticas.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Mejora el estatus social y los derechos de los grupos marginados, protege a las poblaciones vulnerables, reduce las desigualdades y promueve la educaci\u00f3n y la equidad de g\u00e9nero.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integraci\u00f3n del clima y el riesgo de desastres en la protecci\u00f3n social",
-                "programas educativos",
-                "coordinaci\u00f3n con iniciativas de medios de vida sostenibles e inclusi\u00f3n financiera"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en las tasas de malnutrici\u00f3n",
-                "Aumento en el acceso a la educaci\u00f3n para grupos vulnerables",
-                "Participaci\u00f3n en programas de protecci\u00f3n social"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "floods": "medium",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0152",
-        "actionName": "Recovery of degraded areas",
-        "actionPriority": 11,
-        "explanation": "The recovery of degraded areas in Coxim is crucial due to the significant land use emissions, which are the highest among all emission sources in the city. Restoring these areas can help sequester carbon, thereby reducing the overall carbon footprint of the region. Additionally, improving land conditions can enhance biodiversity, which is currently at risk from droughts and heatwaves. This action also supports the resilience of local ecosystems, which are vital for maintaining water resources and food security in the face of climate change.",
-        "action": {
-            "ActionID": "icare_0152",
-            "ActionName": "Recuperaci\u00f3n de \u00e1reas degradadas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Restaurar los ecosistemas da\u00f1ados por actividades humanas mediante la replantaci\u00f3n de vegetaci\u00f3n nativa, la restauraci\u00f3n del suelo, la eliminaci\u00f3n de especies invasoras y la implementaci\u00f3n de t\u00e9cnicas de gesti\u00f3n sostenible.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Desarrollar un plan de restauraci\u00f3n claro y asegurar financiamiento para la gesti\u00f3n a largo plazo.",
-                "Asegurar el acceso a especies de plantas nativas y proporcionar capacitaci\u00f3n en pr\u00e1cticas sostenibles.",
-                "Eliminar especies invasoras y colaborar con las comunidades locales para una restauraci\u00f3n exitosa del ecosistema."
-            ],
-            "KeyPerformanceIndicators": [
-                "Hect\u00e1reas de tierra degradada restauradas anualmente",
-                "Aumento en la cobertura vegetal (%) en \u00e1reas restauradas",
-                "N\u00famero de comunidades locales involucradas en proyectos de restauraci\u00f3n"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "landslides": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 12,
-        "explanation": "Encouraging sustainable land use practices in Coxim is crucial due to the significant land use emissions, which are the highest among all emission sources in the city. The region's grassland/savanna biome is particularly sensitive to unsustainable practices, which can exacerbate emissions and degrade biodiversity. By promoting sustainable land use, Coxim can mitigate its environmental impact and enhance resilience against climate-related hazards such as droughts, which pose a high risk to biodiversity. This action aligns with the city's need to address its largest source of emissions and protect its natural resources.",
-        "action": {
-            "ActionID": "icare_0149",
-            "ActionName": "Fomentar pr\u00e1cticas sostenibles de uso de la tierra",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Promover m\u00e9todos que garanticen la conservaci\u00f3n y salud del suelo, preservando la biodiversidad, reduciendo la erosi\u00f3n y minimizando los impactos ambientales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Proporcionar acceso a conocimientos t\u00e9cnicos y capacitaci\u00f3n sobre pr\u00e1cticas de manejo sostenible del suelo.",
-                "Ofrecer incentivos financieros y formar asociaciones con instituciones de investigaci\u00f3n y agricultores locales.",
-                "Desarrollar sistemas de monitoreo para la salud del suelo y la biodiversidad, e implementar pol\u00edticas para el control de la erosi\u00f3n."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de \u00e1rea de tierra gestionada bajo pr\u00e1cticas de uso sostenible de la tierra (%)",
-                "Reducci\u00f3n en las tasas de deforestaci\u00f3n o degradaci\u00f3n de la tierra (%)",
-                "Aumento en los indicadores de biodiversidad en tierras gestionadas (por ejemplo, conteo de especies, calidad del h\u00e1bitat)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "medium",
-                "landslides": "high",
-                "floods": "medium",
-                "wildfires": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 13,
-        "explanation": "The implementation of urban gardens in Coxim is a strategic action to enhance food security, especially given the city's vulnerability to droughts. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the impact of food shortages. Additionally, these gardens can improve local biodiversity and offer green spaces that contribute to the community's well-being. By promoting local food production, this action also supports the city's socio-economic development, particularly in a region with low-income levels.",
-        "action": {
-            "ActionID": "icare_0156",
-            "ActionName": "Implementaci\u00f3n de huertos urbanos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Identificar y evaluar la viabilidad de \u00e1reas adecuadas para la instalaci\u00f3n de huertos urbanos y asegurar que los sitios elegidos cumplan con las expectativas de la comunidad.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Asegurar la disponibilidad de mapas detallados de uso del suelo y datos de planificaci\u00f3n urbana.",
-                "Involucrarse con las comunidades locales para comprender sus necesidades y expectativas.",
-                "Evaluar la calidad del suelo, la disponibilidad de agua y formar asociaciones para apoyar el establecimiento y mantenimiento de jardines."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de huertos urbanos creados.",
-                "Cantidad de alimentos producidos localmente (kg/a\u00f1o).",
-                "N\u00famero de beneficiarios directos."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "landslides": "low",
-                "floods": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 14,
-        "explanation": "Improving the availability of health infrastructure in Coxim is crucial due to the city's vulnerability to public health risks from heatwaves and diseases. The region's low-income status may exacerbate the impact of health-related hazards, making it essential to enhance healthcare facilities to better serve the population. Additionally, with moderate inadequate sanitation access, strengthening health infrastructure can help mitigate potential health crises and improve overall community resilience.",
-        "action": {
-            "ActionID": "ipcc_0093",
-            "ActionName": "Disponibilidad de infraestructura sanitaria",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "sea-level-rise",
-                "diseases"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Garantizar el acceso a infraestructura de agua potable segura, proteger los servicios de salud y mejorar los sistemas de saneamiento para mitigar los impactos clim\u00e1ticos. Esto incluye desarrollar medidas adaptativas para la seguridad del agua frente a sequ\u00edas, inundaciones y el aumento del nivel del mar. Fortalecer la resiliencia de la infraestructura asegura un acceso equitativo a los servicios de salud, reduce los riesgos de contaminaci\u00f3n y aborda los impactos de los peligros inducidos por el clima.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Mejora el acceso a recursos cr\u00edticos de salud y agua para comunidades vulnerables y desatendidas, mitigando las inequidades causadas por los impactos clim\u00e1ticos.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Financiamiento adecuado",
-                "inversiones tecnol\u00f3gicas en infraestructura de salud y agua",
-                "gobernanza efectiva y coordinaci\u00f3n intersectorial"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de enfermedades transmitidas por el agua",
-                "mejor acceso a agua potable",
-                "n\u00famero de instalaciones de salud resilientes desarrolladas"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "sea-level-rise": "high",
-                "diseases": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 15,
-        "explanation": "Creating the Municipal Climate Change Forum in Coxim is a crucial step towards addressing the city's environmental challenges. With significant emissions from land use and transportation, a dedicated forum can facilitate discussions and strategies to mitigate these impacts. Additionally, the forum can serve as a platform for engaging local stakeholders, including residents and businesses, in climate action initiatives. Given the city's vulnerability to droughts and heatwaves, the forum can also prioritize adaptive measures to enhance resilience. Overall, this action supports a collaborative approach to climate governance, essential for sustainable development in Coxim.",
-        "action": {
-            "ActionID": "icare_0148",
-            "ActionName": "Crear el Foro Municipal de Cambio Clim\u00e1tico",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "diseases",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Creaci\u00f3n de un Foro Municipal de Cambio Clim\u00e1tico con la participaci\u00f3n de l\u00edderes comunitarios, cient\u00edficos, colectivos, institutos de investigaci\u00f3n, ONG y miembros de la administraci\u00f3n municipal y estatal. El Foro servir\u00e1 como referencia para acciones relacionadas con el Cambio Clim\u00e1tico, con el objetivo de monitorear futuras pol\u00edticas sobre el tema en el municipio, estimular el di\u00e1logo y crear una red de discusiones sobre la crisis clim\u00e1tica.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Participaci\u00f3n de diversos actores, incluidos l\u00edderes comunitarios, cient\u00edficos, ONG y autoridades locales, para establecer y mantener el Foro.",
-                "Asignaci\u00f3n de recursos para facilitar reuniones, talleres y eventos regulares para que el Foro permanezca activo e impactante.",
-                "Desarrollo de un marco claro y directrices para que el Foro monitoree y gu\u00ede las pol\u00edticas e iniciativas de cambio clim\u00e1tico dentro del municipio."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de partes interesadas clave participando activamente en el foro.",
-                "N\u00famero de pol\u00edticas o acciones relacionadas con el clima propuestas a trav\u00e9s del foro.",
-                "Participaci\u00f3n p\u00fablica en iniciativas del foro (medida por la asistencia a eventos o encuestas)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "diseases": "medium",
-                "heatwaves": "medium",
-                "landslides": "low",
-                "floods": "medium",
-                "wildfires": "medium",
-                "sea-level-rise": "medium",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 16,
-        "explanation": "The recovery and preservation of green areas in Coxim is crucial due to the city's location in a grassland/savanna biome, which is sensitive to environmental changes. This action can help mitigate the high land use emissions, which are a significant contributor to the city's total emissions. Additionally, preserving green areas can enhance biodiversity, which is at risk from both droughts and heatwaves. By focusing on this action, Coxim can improve its resilience against climate-related hazards and support the well-being of its residents.",
-        "action": {
-            "ActionID": "icare_0175",
-            "ActionName": "Recuperaci\u00f3n y preservaci\u00f3n de \u00e1reas verdes",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Rehabilitaci\u00f3n y protecci\u00f3n de los espacios verdes existentes, como parques, bosques y humedales, y expansi\u00f3n de \u00e1reas verdes mediante la plantaci\u00f3n de \u00e1rboles y vegetaci\u00f3n en \u00e1reas urbanas y periurbanas. Estas \u00e1reas proporcionan soluciones naturales para la gesti\u00f3n de los recursos h\u00eddricos, la reducci\u00f3n del estr\u00e9s t\u00e9rmico, la mejora de la calidad del aire y el aumento de la biodiversidad.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de terrenos adecuados para espacios verdes",
-                "Acceso a recursos h\u00eddricos para riego"
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea de espacios verdes creados o restaurados.",
-                "\u00cdndices de biodiversidad en \u00e1reas verdes.",
-                "Participaci\u00f3n comunitaria en actividades de espacios verdes."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "floods": "high",
-                "wildfires": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 17,
-        "explanation": "Strengthening programs for control and conservation of protected areas in Coxim is crucial due to the city's significant land use emissions, which are the highest among its emission sources. The region's biome, grassland/savanna, is sensitive to changes and requires careful management to maintain biodiversity and ecological balance. Additionally, the city faces high risks to biodiversity from droughts and heatwaves, making conservation efforts vital to mitigate these impacts. By prioritizing this action, Coxim can enhance its resilience against environmental hazards and contribute to the preservation of its natural resources.",
-        "action": {
-            "ActionID": "icare_0162",
-            "ActionName": "Fortalecer los programas de control y conservaci\u00f3n de \u00e1reas protegidas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves",
-                "diseases"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta acci\u00f3n se centra en implementar una serie de estrategias integradas para mejorar la conservaci\u00f3n ambiental y maximizar sus beneficios, como la expansi\u00f3n de \u00e1reas protegidas, el desarrollo de planes de manejo para unidades de conservaci\u00f3n y la capacitaci\u00f3n de gu\u00edas de ecoturismo para fortalecer el turismo sostenible.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expansi\u00f3n de \u00e1reas protegidas para mejorar la conservaci\u00f3n ambiental.",
-                "Desarrollo de planes de manejo para unidades de conservaci\u00f3n.",
-                "Capacitaci\u00f3n de gu\u00edas de ecoturismo para promover el turismo sostenible."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de aumento en el \u00e1rea de regiones protegidas (%).",
-                "Reducci\u00f3n en las tasas de deforestaci\u00f3n en \u00e1reas protegidas anualmente (%).",
-                "N\u00famero de programas de conservaci\u00f3n fortalecidos anualmente."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "floods": "high",
-                "landslides": "high",
-                "heatwaves": "medium",
-                "diseases": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0150",
-        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
-        "actionPriority": 18,
-        "explanation": "Implementing a Loss Reduction and Control Program to promote water security is crucial for Coxim due to its vulnerability to droughts, which significantly impact water resources. The city's low population density and large area make efficient water management essential to ensure sustainable access for all residents. Additionally, improving water security can help mitigate the moderate risk of inadequate sanitation, enhancing public health and overall quality of life. This action aligns with the need to address key climate risks and supports the long-term resilience of the municipality.",
-        "action": {
-            "ActionID": "icare_0150",
-            "ActionName": "Implementar el Programa de Reducci\u00f3n y Control de P\u00e9rdidas promoviendo la seguridad h\u00eddrica para el municipio",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Asegurar la disponibilidad de agua en cantidad y calidad suficientes para la poblaci\u00f3n de la ciudad. Implementar el Programa de Reducci\u00f3n y Control de P\u00e9rdidas, que tiene como objetivo reducir el consumo de agua per c\u00e1pita, junto con la reducci\u00f3n de p\u00e9rdidas f\u00edsicas. Realizar estudios, regular y facilitar la reutilizaci\u00f3n de agua para fines no potables, e implementar equipos para el uso de agua de lluvia.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de financiamiento y experiencia t\u00e9cnica para implementar sistemas de reducci\u00f3n de p\u00e9rdidas de agua, incluyendo mejoras en la infraestructura y tecnolog\u00edas de monitoreo",
-                "Desarrollo de marcos regulatorios para apoyar la reutilizaci\u00f3n de agua para fines no potables y sistemas de recolecci\u00f3n de agua de lluvia tanto en entornos residenciales como comerciales",
-                "Colaboraci\u00f3n entre gobiernos locales, empresas de servicios p\u00fablicos y comunidades para asegurar una gesti\u00f3n eficiente del agua y aumentar la conciencia sobre pr\u00e1cticas de conservaci\u00f3n del agua"
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de reducci\u00f3n de p\u00e9rdidas en el sistema de suministro de agua.",
-                "\u00cdndice de reducci\u00f3n del consumo de agua per c\u00e1pita (litros).",
-                "N\u00famero de nuevas fuentes de suministro de agua implementadas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "diseases": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 19,
-        "explanation": "The action of water capture and storage is crucial for Coxim due to its vulnerability to droughts, which significantly impact water resources. With a low population density and a large area, efficient water management is essential to ensure sustainable access to water for the community. Additionally, improving water capture and storage can help mitigate the effects of climate change, particularly in a region where droughts pose a high risk to biodiversity and food security. Implementing this action can enhance resilience against water scarcity and support the socio-economic stability of the region.",
-        "action": {
-            "ActionID": "ipcc_0099",
-            "ActionName": "Captura/almacenamiento de agua",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "water_resources",
-                "food_security",
-                "energy_security",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementar soluciones de captaci\u00f3n y almacenamiento de agua, como estanques agr\u00edcolas, revitalizaci\u00f3n de cuerpos de agua, jardines de lluvia, bioswales, estanques de retenci\u00f3n y tanques de almacenamiento de agua. Estas medidas tienen como objetivo mitigar los impactos inducidos por el clima mejorando la gesti\u00f3n del agua, reduciendo la escorrent\u00eda de aguas pluviales, mejorando la calidad del agua y apoyando la agricultura y la producci\u00f3n de energ\u00eda bajo escenarios clim\u00e1ticos cambiantes. Los embalses y presas de usos m\u00faltiples proporcionan beneficios adicionales al abordar la escasez de agua y gestionar los riesgos asociados con los peligros naturales.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Garantiza el acceso al agua para comunidades desatendidas, apoya medios de vida sostenibles en regiones con escasez de agua y promueve la distribuci\u00f3n equitativa de recursos a trav\u00e9s de procesos de toma de decisiones inclusivos.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en infraestructura verde",
-                "participaci\u00f3n comunitaria",
-                "apoyo pol\u00edtico para la gesti\u00f3n de recursos h\u00eddricos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de la escorrent\u00eda de aguas pluviales",
-                "aumento de la capacidad de almacenamiento de agua",
-                "mejora en la calidad del agua",
-                "estabilidad en los rendimientos agr\u00edcolas"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 20,
-        "explanation": "Ecosystem-based adaptation is crucial for Coxim due to its significant land use emissions and the vulnerability of its biodiversity to droughts and heatwaves. The city's biome, primarily grassland and savanna, can benefit from strategies that enhance natural resilience and biodiversity. Implementing this action can help mitigate the impacts of climate change by preserving and restoring natural habitats, which in turn supports water resources and food security. Given the high risk to biodiversity, this approach is essential for maintaining ecological balance and supporting the community's long-term sustainability.",
-        "action": {
-            "ActionID": "ipcc_0086",
-            "ActionName": "Adaptaci\u00f3n basada en ecosistemas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "storms",
-                "sea-level-rise",
-                "heatwaves",
-                "floods"
-            ],
-            "Sector": [
-                "biodiversity",
-                "geo-hydrological_disasters",
-                "water_resources",
-                "public_health"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Restaurar y gestionar de manera sostenible los ecosistemas marinos, costeros, urbanos, fluviales y de humedales para proteger contra peligros clim\u00e1ticos como marejadas cicl\u00f3nicas, inundaciones y olas de calor. Los esfuerzos incluyen agroecolog\u00eda, vegetaci\u00f3n costera y marina y arrecifes, corredores de vegetaci\u00f3n, restauraci\u00f3n de h\u00e1bitats de manglares, espacios verdes urbanos para reducir las temperaturas. Estas acciones mejoran la biodiversidad, almacenan carbono, mejoran la calidad del agua y proporcionan co-beneficios socioecon\u00f3micos y culturales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Apoya a las comunidades vulnerables mejorando la resiliencia clim\u00e1tica, promoviendo el acceso equitativo a los servicios ecosist\u00e9micos y creando oportunidades de sustento, especialmente para las poblaciones marginadas y desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Participaci\u00f3n comunitaria",
-                "Apoyo regulatorio",
-                "Inversi\u00f3n financiera",
-                "Planificaci\u00f3n urbana",
-                "Vegetaci\u00f3n resiliente al clima",
-                "Evaluaciones de biodiversidad",
-                "Gesti\u00f3n de cuencas",
-                "Planificaci\u00f3n aguas arriba",
-                "Financiaci\u00f3n sostenible"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de da\u00f1os por marejadas cicl\u00f3nicas",
-                "Tasas de secuestro de carbono",
-                "Aumento de la biodiversidad",
-                "Reducci\u00f3n de la temperatura en \u00e1reas urbanas",
-                "Mejora de la calidad del agua",
-                "Acceso a espacios verdes por comunidades desatendidas",
-                "Reducci\u00f3n de eventos de inundaci\u00f3n",
-                "Mejora de la salud del ecosistema"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "storms": "high",
-                "sea-level-rise": "high",
-                "heatwaves": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0176",
+    "actionName": "Development of Climate Action Plan",
+    "actionPriority": 1,
+    "explanation": "El desarrollo de un Plan de Acción Climática es crucial para Coxim debido a sus importantes desafíos ambientales, que incluyen altas emisiones por uso del suelo y vulnerabilidad a sequías y olas de calor. Con una baja densidad poblacional y un bioma predominantemente de pastizales/sabana, la ciudad enfrenta riesgos únicos que requieren estrategias adaptadas para mitigar los impactos climáticos. Además, el nivel moderado de saneamiento inadecuado resalta la necesidad de una planificación integral para mejorar la salud pública y la resiliencia de la infraestructura. Al priorizar esta acción, Coxim puede abordar eficazmente sus vulnerabilidades ambientales y fortalecer sus esfuerzos de sostenibilidad.",
+    "action": {
+      "ActionID": "icare_0176",
+      "ActionName": "Desarrollo del Plan de Acción Climática",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "wildfires",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Un plan integral que describe las estrategias y acciones de una ciudad para mitigar las emisiones de gases de efecto invernadero y adaptarse a los impactos del cambio climático, que típicamente incluye una evaluación de los riesgos y vulnerabilidades climáticas de la ciudad, el establecimiento de objetivos de reducción de emisiones y la implementación de acciones en varios sectores como energía, transporte, gestión de residuos y planificación urbana.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Voluntad política y compromiso del gobierno",
+        "Participación y colaboración de las partes interesadas",
+        "Financiación y recursos para la implementación"
+      ],
+      "KeyPerformanceIndicators": [
+        "Objetivos de reducción de emisiones de gases de efecto invernadero.",
+        "Número de acciones de adaptación al clima implementadas.",
+        "Inversión en proyectos de mitigación y adaptación al clima."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "medium",
+        "sea-level-rise": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "landslides": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "droughts": "medium"
+      },
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0096",
+    "actionName": "Farm/fishery improvements",
+    "actionPriority": 2,
+    "explanation": "Las mejoras en la agricultura y la pesca son cruciales para Coxim debido a su significativa dependencia de estos sectores, los cuales son vulnerables a los impactos climáticos como las sequías. Fortalecer estos sectores puede ayudar a mitigar los riesgos para la seguridad alimentaria, que es una preocupación clave dada la exposición de la ciudad a las sequías. Además, mejorar estas áreas puede apoyar la economía local y los medios de vida, especialmente en una región con bajos niveles de ingresos. Al priorizar esta acción, Coxim puede aumentar su resiliencia frente a los peligros relacionados con el clima y garantizar un desarrollo sostenible.",
+    "action": {
+      "ActionID": "ipcc_0096",
+      "ActionName": "Mejoras en granjas/pesquerías",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementar una serie de estrategias para adaptar granjas y pesquerías a los impactos climáticos. Esto incluye cambiar el equipo de pesca o la potencia de los barcos, adoptar nuevas variedades de cultivos o ajustar los calendarios de siembra, mejorar los sistemas de riego, integrar sistemas de cultivos y ganado, reubicar el ganado con una mejor gestión de pastizales y adoptar sistemas agroecológicos y de agroforestería. Innovaciones tecnológicas como la agricultura inteligente y medidas financieras como los subsidios apoyan estas adaptaciones.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garantiza el acceso a recursos para agricultores y pescadores marginados, promueve opciones diversas de sustento y fortalece la resiliencia en comunidades desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Apoyo político para la agricultura y pesca resilientes al clima",
+        "Acceso a financiamiento y subsidios",
+        "Capacitación para adoptar nuevas prácticas",
+        "Mejora de la infraestructura de mercado"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento de la productividad agrícola y pesquera",
+        "Tasa de adopción de sistemas integrados",
+        "Reducción de pérdidas de rendimiento relacionadas con el clima"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "wildfires": "low",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0151",
+    "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+    "actionPriority": 3,
+    "explanation": "Desarrollar diagnósticos y restaurar las áreas de Zonas Especiales de Interés Social (ZEIS) en Coxim es crucial debido al contexto socioeconómico de la ciudad. Con una población de bajos ingresos y un saneamiento moderadamente inadecuado, mejorar estas áreas puede mejorar significativamente las condiciones de vida. Además, atender estas zonas puede ayudar a mitigar los impactos de peligros ambientales como sequías y olas de calor, que representan riesgos para la salud pública y la biodiversidad. Al enfocarse en las ZEIS, la ciudad puede promover el desarrollo sostenible y la resiliencia frente a los desafíos relacionados con el clima.",
+    "action": {
+      "ActionID": "icare_0151",
+      "ActionName": "Desarrollar diagnósticos y restaurar áreas de Zonas de Interés Social Especial (ZEIS)",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "sea-level-rise",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Prioridad a las áreas ZEIS en acciones de mejora de vivienda y la aplicación de recursos del Fondo de Urbanización, con la implementación de infraestructura urbana que considere la adaptación climática en estos espacios. Uso de Soluciones basadas en la Naturaleza (NbS) en la adaptación del saneamiento ambiental y las infraestructuras verdes y azules que potencian el ocio, la cultura, la agricultura urbana y actividades para fortalecer las asociaciones comunitarias.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de financiamiento del Fondo de Urbanización y otros mecanismos financieros para apoyar mejoras en la vivienda e infraestructura urbana en áreas ZEIS",
+        "Colaboración entre urbanistas, expertos ambientales y comunidades locales para diseñar e implementar soluciones basadas en la naturaleza (NbS) para la infraestructura urbana",
+        "Marcos de políticas y regulaciones que integren medidas de adaptación al clima en la planificación urbana, asegurando que las inversiones prioricen la sostenibilidad ambiental y la comunidad"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de áreas ZEIS diagnosticadas y restauradas.",
+        "Porcentaje de residentes beneficiados por las áreas restauradas (%).",
+        "Inversiones públicas asignadas a las áreas ZEIS (monto en moneda)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "sea-level-rise": "medium",
+        "floods": "medium",
+        "landslides": "low",
+        "diseases": "medium",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0094",
+    "actionName": "Access to health care",
+    "actionPriority": 4,
+    "explanation": "Mejorar el acceso a la atención médica en Coxim es crucial debido al riesgo moderado de impactos en la salud pública por olas de calor y enfermedades. La condición de bajos ingresos de la ciudad puede agravar las vulnerabilidades de salud, lo que hace esencial fortalecer los servicios de salud. Además, abordar el acceso a la atención médica puede ayudar a mitigar los efectos de los riesgos para la salud relacionados con el clima, asegurando que la comunidad esté mejor preparada para futuros desafíos. Priorizar esta acción puede conducir a una mejora en el bienestar general y la resiliencia de la población.",
+    "action": {
+      "ActionID": "ipcc_0094",
+      "ActionName": "Acceso a la atención médica",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "droughts"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar el acceso a los servicios de atención médica, incluidos los servicios de salud y nutrición, agua limpia, saneamiento y recursos de salud mental culturalmente apropiados. Ampliar las capacidades de telemedicina permite una entrega eficiente de servicios de salud, particularmente para poblaciones remotas y desatendidas. Fortalecer los sistemas básicos de salud pública y la preparación para desastres puede reducir rápidamente la vulnerabilidad a los riesgos de salud relacionados con el clima.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promueve el acceso equitativo a la atención médica para grupos marginados y vulnerables, incluidas las poblaciones sin hogar, las comunidades remotas y aquellos afectados por desigualdades en la vivienda.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en tecnologías de telemedicina",
+        "Fortalecimiento de la gobernanza de los sistemas de salud pública",
+        "Desarrollo de capacidades para los trabajadores de la salud",
+        "Mejoras en la infraestructura de las instalaciones de salud"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de la mortalidad relacionada con el clima",
+        "Mayor acceso a la telemedicina",
+        "Número de programas de salud adaptados culturalmente implementados",
+        "Mejora de los indicadores de acceso al agua y saneamiento"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "droughts": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0169",
+    "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+    "actionPriority": 5,
+    "explanation": "Establecer un plan de preparación y medidas de respuesta ante emergencias en Coxim es crucial debido a la vulnerabilidad de la ciudad frente a eventos climáticos extremos como sequías y olas de calor. La baja densidad de población de la región y el acceso moderado a los servicios de saneamiento pueden agravar el impacto de estos eventos, lo que hace esencial contar con un plan de respuesta sólido. Además, las altas emisiones derivadas del uso del suelo y el transporte sugieren que la ciudad ya enfrenta desafíos ambientales, los cuales podrían verse agravados por fenómenos climáticos extremos. Implementar esta acción ayudará a mitigar los riesgos para la salud pública, la infraestructura y la biodiversidad, asegurando que la comunidad esté mejor preparada para futuros incidentes relacionados con el clima.",
+    "action": {
+      "ActionID": "icare_0169",
+      "ActionName": "Establecer un Plan de Preparación y Medidas de Respuesta de Emergencia en caso de eventos climáticos extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en preparar al municipio para responder a eventos extremos, con el objetivo de proporcionar una respuesta rápida que minimice los impactos en la población.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de un plan integral de respuesta a emergencias que incluya la coordinación entre las autoridades locales, los servicios de emergencia y las organizaciones comunitarias",
+        "Inversión en sistemas de alerta temprana e infraestructura para garantizar respuestas oportunas y efectivas a eventos extremos",
+        "Capacitación y desarrollo de capacidades para los respondedores locales y las comunidades para mejorar la preparación y la resiliencia ante eventos extremos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de asociaciones de respuesta de emergencia establecidas.",
+        "Tiempo promedio de respuesta durante eventos climáticos extremos (horas).",
+        "Porcentaje de reducción en víctimas y daños durante eventos climáticos extremos anualmente (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "wildfires": "high",
+        "sea-level-rise": "low",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0095",
+    "actionName": "Disaster early warning",
+    "actionPriority": 6,
+    "explanation": "Implementar un sistema de alerta temprana de desastres en Coxim es crucial debido a la vulnerabilidad de la ciudad frente a diversos peligros climáticos, como sequías y olas de calor. Estos peligros representan riesgos significativos para los recursos hídricos, la seguridad alimentaria y la salud pública, por lo que las alertas oportunas son esenciales para mitigar sus impactos. Además, la baja densidad de población de la ciudad y el acceso moderado a los servicios de saneamiento resaltan la necesidad de estrategias efectivas de comunicación y preparación para proteger a sus habitantes. Al priorizar los sistemas de alerta temprana, Coxim puede fortalecer su resiliencia y reducir los posibles daños causados por desastres relacionados con el clima.",
+    "action": {
+      "ActionID": "ipcc_0095",
+      "ActionName": "Alerta temprana de desastres",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "droughts",
+        "storms"
+      ],
+      "Sector": [
+        "public_health",
+        "biodiversity",
+        "geo-hydrological_disasters"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Establecer y mantener sistemas de alerta temprana para desastres, incluidos las olas de calor marinas, brotes de plagas y olas de calor. Estos sistemas implican la difusión oportuna de información a individuos, comunidades y servicios de emergencia, permitiendo medidas proactivas para mitigar riesgos. Los Planes de Acción contra el Calor (HAPs) son parte de estos sistemas e incluyen estrategias detalladas como la planificación urbana con soluciones basadas en la naturaleza (por ejemplo, espacios verde-azules, materiales frescos), campañas de concienciación pública y medidas específicas para grupos vulnerables (por ejemplo, ancianos, niños, trabajadores al aire libre). Las acciones críticas también incluyen la evaluación de la efectividad del sistema después del desastre, el intercambio de lecciones y mejoras para una mejor preparación en eventos futuros.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Se centra en abordar las vulnerabilidades entre los grupos de bajos ingresos, personas mayores, mujeres embarazadas, niños y trabajadores al aire libre mediante la incorporación de comunicación dirigida, acceso a áreas frescas e intervenciones de salud específicas. Promueve la equidad involucrando a las comunidades marginadas en la planificación y asegurando el acceso a los recursos necesarios.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Coordinación entre los servicios de emergencia y las agencias de salud",
+        "Inversión en planificación urbana y soluciones basadas en la naturaleza",
+        "Educación comunitaria y campañas de concienciación pública",
+        "Infraestructura tecnológica para sistemas de alerta temprana"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de las tasas de mortalidad relacionadas con las olas de calor",
+        "Puntualidad de las advertencias",
+        "Niveles de concienciación pública",
+        "Adopción comunitaria de medidas de protección"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "droughts": "medium",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0164",
+    "actionName": "Hydrological Monitoring System with Telemetry Stations",
+    "actionPriority": 7,
+    "explanation": "La implementación de un sistema de monitoreo hidrológico con estaciones de telemetría en Coxim es crucial debido a la vulnerabilidad de la ciudad a las sequías, las cuales afectan significativamente los recursos hídricos y la biodiversidad. El sistema proporcionará datos en tiempo real, lo que permitirá una mejor gestión de los recursos hídricos y una alerta temprana ante condiciones de sequía. Esta acción es especialmente importante considerando la baja densidad poblacional y la gran extensión del municipio, factores que pueden hacer que los métodos tradicionales de monitoreo sean menos efectivos. Además, una mejor gestión del agua puede ayudar a mitigar el riesgo moderado de saneamiento inadecuado, mejorando la salud pública y la calidad de vida en general.",
+    "action": {
+      "ActionID": "icare_0164",
+      "ActionName": "Sistema de Monitoreo Hidrológico con Estaciones de Telemetría",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementación de un sistema de monitoreo hidrológico con estaciones de telemetría para monitorear la lluvia, los niveles de agua y las variables meteorológicas en tiempo real.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Equipamiento e infraestructura",
+        "Sistema robusto de gestión de datos",
+        "Coordinación institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Puntualidad de los datos",
+        "Rentabilidad",
+        "Efectividad de mitigación"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0098",
+    "actionName": "Behaviour change in diets and food waste",
+    "actionPriority": 8,
+    "explanation": "La promoción del cambio de comportamiento en las dietas y la reducción del desperdicio de alimentos es crucial para Coxim debido a su potencial impacto en la seguridad alimentaria y la sostenibilidad ambiental. Dada la vulnerabilidad de la ciudad a las sequías, que afectan significativamente la seguridad alimentaria, fomentar cambios en la dieta puede ayudar a mitigar estos riesgos al promover patrones de consumo de alimentos más sostenibles. Además, reducir el desperdicio de alimentos puede disminuir las emisiones asociadas con la gestión de residuos, contribuyendo a la reducción general de las emisiones totales de la ciudad. Esta acción está alineada con la necesidad de abordar tanto los desafíos ambientales como los socioeconómicos de la región.",
+    "action": {
+      "ActionID": "ipcc_0098",
+      "ActionName": "Cambio de comportamiento en dietas y desperdicio de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Reducir la pérdida y el desperdicio de alimentos mediante la mejora de las prácticas de producción, distribución y consumo de alimentos. Las acciones incluyen mejorar las técnicas agrícolas, adoptar tecnologías de ahorro de agua, implementar soluciones de almacenamiento de bajo costo y promover dietas basadas en plantas. Los responsables de políticas pueden fomentar estos comportamientos con políticas de precios adecuadas, iniciativas de agricultura sostenible y apoyo a grupos desfavorecidos. La acción enfatiza el cambio hacia dietas más saludables, la reducción del consumo excesivo y el apoyo a los sistemas alimentarios locales para mitigar las emisiones de gases de efecto invernadero y garantizar la seguridad alimentaria ante el cambio climático.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promueve el acceso a alimentos asequibles y saludables para comunidades vulnerables, empoderando a mujeres, jóvenes y grupos socialmente desfavorecidos. Fomenta la participación equitativa en prácticas agrícolas sostenibles y redes alimentarias locales.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Educación y formación para agricultores",
+        "Acceso a insumos agrícolas sostenibles",
+        "Apoyo político para prácticas sostenibles",
+        "Infraestructura tecnológica para almacenamiento y procesamiento"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en los porcentajes de pérdida y desperdicio de alimentos",
+        "Aumento en la adopción de dietas basadas en plantas",
+        "Mejora en los indicadores de seguridad alimentaria",
+        "Reducción de emisiones de GEI de los sistemas alimentarios"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "medium",
+        "floods": "medium",
+        "wildfires": "low"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0097",
+    "actionName": "Food storage/distribution improvements",
+    "actionPriority": 9,
+    "explanation": "Mejorar el almacenamiento y la distribución de alimentos es crucial para Coxim debido a su vulnerabilidad a las sequías, las cuales representan un riesgo significativo para la seguridad alimentaria. Fortalecer estos sistemas puede ayudar a mitigar el impacto de las sequías al garantizar un suministro estable de alimentos incluso durante condiciones adversas. Además, una mejor distribución de alimentos puede apoyar la economía local y aumentar la resiliencia de la comunidad frente a las perturbaciones relacionadas con el clima. Esta acción está alineada con la necesidad de abordar los desafíos socioeconómicos que enfrenta la región, especialmente en lo que respecta al mantenimiento de la seguridad alimentaria.",
+    "action": {
+      "ActionID": "ipcc_0097",
+      "ActionName": "Mejoras en el almacenamiento/distribución de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms",
+        "heatwaves"
+      ],
+      "Sector": [
+        "food_security",
+        "road_infrastructure"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar los sistemas de almacenamiento y distribución de alimentos mediante la mejora de la infraestructura de transporte, la optimización de las redes comerciales y el acortamiento de las cadenas de suministro para garantizar la disponibilidad local de alimentos y la resiliencia ante los impactos climáticos. Esta acción también incluye aumentar la capacidad de las instalaciones de almacenamiento de alimentos locales para reducir las pérdidas post-cosecha, abordar las ineficiencias en la logística y reforzar la infraestructura para productos perecederos. Su objetivo es mejorar la seguridad alimentaria y reducir la vulnerabilidad a eventos extremos, interrupciones e impactos en cascada, especialmente durante pandemias y otras crisis.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Apoya el acceso equitativo a alimentos para poblaciones marginadas y vulnerables al priorizar la producción local de alimentos y mejorar los sistemas de distribución que llegan a áreas desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en infraestructura",
+        "Incentivos políticos para la producción local de alimentos",
+        "Colaboración con los sectores de logística y comercio",
+        "Tecnología para la optimización de la cadena de suministro"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de pérdidas post-cosecha",
+        "Aumento de la disponibilidad de alimentos locales",
+        "Mejora de la eficiencia del transporte para la distribución de alimentos",
+        "Acortamiento de las cadenas de suministro"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0092",
+    "actionName": "Social safety nets",
+    "actionPriority": 10,
+    "explanation": "Implementar redes de protección social en Coxim es fundamental debido al contexto socioeconómico de la ciudad. Con una población de bajos ingresos, estas redes pueden brindar apoyo esencial a los grupos vulnerables, aumentando su resiliencia frente a choques económicos y riesgos ambientales. Dado el riesgo moderado de saneamiento inadecuado y los posibles impactos de peligros relacionados con el clima, como sequías y olas de calor, las redes de protección social pueden ayudar a mitigar estos riesgos al garantizar el acceso a necesidades y servicios básicos. Esta acción es una prioridad para mejorar el bienestar general y la estabilidad de la comunidad frente a los desafíos ambientales y económicos.",
+    "action": {
+      "ActionID": "ipcc_0092",
+      "ActionName": "Redes de seguridad social",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Las redes de seguridad social abarcan mecanismos de protección social adaptativa para reducir la inseguridad alimentaria y la malnutrición, especialmente para las poblaciones vulnerables. Estos incluyen transferencias de efectivo, programas de alimentación escolar, iniciativas de trabajo público, compensación por desempleo, reformas agrarias, esquemas de crédito y seguros. Los enfoques integrados combinan evaluaciones de riesgos climáticos con la reducción del riesgo de desastres, la educación y la equidad social para mejorar la resiliencia ante las tensiones climáticas.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Mejora el estatus social y los derechos de los grupos marginados, protege a las poblaciones vulnerables, reduce las desigualdades y promueve la educación y la equidad de género.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Integración del clima y el riesgo de desastres en la protección social",
+        "programas educativos",
+        "coordinación con iniciativas de medios de vida sostenibles e inclusión financiera"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en las tasas de malnutrición",
+        "Aumento en el acceso a la educación para grupos vulnerables",
+        "Participación en programas de protección social"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0152",
+    "actionName": "Recovery of degraded areas",
+    "actionPriority": 11,
+    "explanation": "La recuperación de las áreas degradadas en Coxim es crucial debido a las significativas emisiones derivadas del uso del suelo, que son las más altas entre todas las fuentes de emisión en la ciudad. Restaurar estas áreas puede ayudar a secuestrar carbono, reduciendo así la huella de carbono total de la región. Además, mejorar las condiciones del suelo puede aumentar la biodiversidad, que actualmente está en riesgo debido a las sequías y las olas de calor. Esta acción también fortalece la resiliencia de los ecosistemas locales, los cuales son vitales para mantener los recursos hídricos y la seguridad alimentaria frente al cambio climático.",
+    "action": {
+      "ActionID": "icare_0152",
+      "ActionName": "Recuperación de áreas degradadas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar los ecosistemas dañados por actividades humanas mediante la replantación de vegetación nativa, la restauración del suelo, la eliminación de especies invasoras y la implementación de técnicas de gestión sostenible.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Desarrollar un plan de restauración claro y asegurar financiamiento para la gestión a largo plazo.",
+        "Asegurar el acceso a especies de plantas nativas y proporcionar capacitación en prácticas sostenibles.",
+        "Eliminar especies invasoras y colaborar con las comunidades locales para una restauración exitosa del ecosistema."
+      ],
+      "KeyPerformanceIndicators": [
+        "Hectáreas de tierra degradada restauradas anualmente",
+        "Aumento en la cobertura vegetal (%) en áreas restauradas",
+        "Número de comunidades locales involucradas en proyectos de restauración"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0149",
+    "actionName": "Encourage sustainable land use practices",
+    "actionPriority": 12,
+    "explanation": "Fomentar prácticas sostenibles de uso del suelo en Coxim es crucial debido a las significativas emisiones derivadas del uso del suelo, que representan la fuente más alta de emisiones en la ciudad. El bioma de pastizales/sabana de la región es particularmente sensible a prácticas no sostenibles, las cuales pueden aumentar las emisiones y degradar la biodiversidad. Al promover el uso sostenible del suelo, Coxim puede mitigar su impacto ambiental y fortalecer su resiliencia frente a riesgos climáticos como las sequías, que representan una amenaza considerable para la biodiversidad. Esta acción está alineada con la necesidad de la ciudad de abordar su principal fuente de emisiones y proteger sus recursos naturales.",
+    "action": {
+      "ActionID": "icare_0149",
+      "ActionName": "Fomentar prácticas sostenibles de uso de la tierra",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Promover métodos que garanticen la conservación y salud del suelo, preservando la biodiversidad, reduciendo la erosión y minimizando los impactos ambientales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Proporcionar acceso a conocimientos técnicos y capacitación sobre prácticas de manejo sostenible del suelo.",
+        "Ofrecer incentivos financieros y formar asociaciones con instituciones de investigación y agricultores locales.",
+        "Desarrollar sistemas de monitoreo para la salud del suelo y la biodiversidad, e implementar políticas para el control de la erosión."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de área de tierra gestionada bajo prácticas de uso sostenible de la tierra (%)",
+        "Reducción en las tasas de deforestación o degradación de la tierra (%)",
+        "Aumento en los indicadores de biodiversidad en tierras gestionadas (por ejemplo, conteo de especies, calidad del hábitat)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "medium",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0156",
+    "actionName": "Implementation of urban gardens",
+    "actionPriority": 13,
+    "explanation": "La implementación de huertos urbanos en Coxim es una acción estratégica para mejorar la seguridad alimentaria, especialmente dada la vulnerabilidad de la ciudad a las sequías. Los huertos urbanos pueden proporcionar una fuente sostenible de productos frescos, reduciendo la dependencia de suministros alimentarios externos y mitigando el impacto de la escasez de alimentos. Además, estos huertos pueden mejorar la biodiversidad local y ofrecer espacios verdes que contribuyen al bienestar de la comunidad. Al promover la producción local de alimentos, esta acción también apoya el desarrollo socioeconómico de la ciudad, particularmente en una región con bajos niveles de ingresos.",
+    "action": {
+      "ActionID": "icare_0156",
+      "ActionName": "Implementación de huertos urbanos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Identificar y evaluar la viabilidad de áreas adecuadas para la instalación de huertos urbanos y asegurar que los sitios elegidos cumplan con las expectativas de la comunidad.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Asegurar la disponibilidad de mapas detallados de uso del suelo y datos de planificación urbana.",
+        "Involucrarse con las comunidades locales para comprender sus necesidades y expectativas.",
+        "Evaluar la calidad del suelo, la disponibilidad de agua y formar asociaciones para apoyar el establecimiento y mantenimiento de jardines."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de huertos urbanos creados.",
+        "Cantidad de alimentos producidos localmente (kg/año).",
+        "Número de beneficiarios directos."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "landslides": "low",
+        "floods": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0093",
+    "actionName": "Availability of health infrastructure",
+    "actionPriority": 14,
+    "explanation": "Mejorar la disponibilidad de infraestructura de salud en Coxim es crucial debido a la vulnerabilidad de la ciudad a riesgos de salud pública provocados por olas de calor y enfermedades. La condición de bajos ingresos de la región puede agravar el impacto de los peligros relacionados con la salud, lo que hace esencial fortalecer las instalaciones sanitarias para atender mejor a la población. Además, dado el acceso moderadamente inadecuado al saneamiento, reforzar la infraestructura de salud puede ayudar a mitigar posibles crisis sanitarias y mejorar la resiliencia general de la comunidad.",
+    "action": {
+      "ActionID": "ipcc_0093",
+      "ActionName": "Disponibilidad de infraestructura sanitaria",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "sea-level-rise",
+        "diseases"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Garantizar el acceso a infraestructura de agua potable segura, proteger los servicios de salud y mejorar los sistemas de saneamiento para mitigar los impactos climáticos. Esto incluye desarrollar medidas adaptativas para la seguridad del agua frente a sequías, inundaciones y el aumento del nivel del mar. Fortalecer la resiliencia de la infraestructura asegura un acceso equitativo a los servicios de salud, reduce los riesgos de contaminación y aborda los impactos de los peligros inducidos por el clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Mejora el acceso a recursos críticos de salud y agua para comunidades vulnerables y desatendidas, mitigando las inequidades causadas por los impactos climáticos.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamiento adecuado",
+        "inversiones tecnológicas en infraestructura de salud y agua",
+        "gobernanza efectiva y coordinación intersectorial"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de enfermedades transmitidas por el agua",
+        "mejor acceso a agua potable",
+        "número de instalaciones de salud resilientes desarrolladas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "sea-level-rise": "high",
+        "diseases": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0148",
+    "actionName": "Create the Municipal Climate Change Forum",
+    "actionPriority": 15,
+    "explanation": "La creación del Foro Municipal de Cambio Climático en Coxim es un paso crucial para abordar los desafíos ambientales de la ciudad. Con emisiones significativas provenientes del uso del suelo y el transporte, un foro dedicado puede facilitar discusiones y estrategias para mitigar estos impactos. Además, el foro puede servir como una plataforma para involucrar a los actores locales, incluidos los residentes y las empresas, en iniciativas de acción climática. Dada la vulnerabilidad de la ciudad a las sequías y las olas de calor, el foro también puede priorizar medidas de adaptación para mejorar la resiliencia. En general, esta acción respalda un enfoque colaborativo de la gobernanza climática, esencial para el desarrollo sostenible en Coxim.",
+    "action": {
+      "ActionID": "icare_0148",
+      "ActionName": "Crear el Foro Municipal de Cambio Climático",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "diseases",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Creación de un Foro Municipal de Cambio Climático con la participación de líderes comunitarios, científicos, colectivos, institutos de investigación, ONG y miembros de la administración municipal y estatal. El Foro servirá como referencia para acciones relacionadas con el Cambio Climático, con el objetivo de monitorear futuras políticas sobre el tema en el municipio, estimular el diálogo y crear una red de discusiones sobre la crisis climática.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Participación de diversos actores, incluidos líderes comunitarios, científicos, ONG y autoridades locales, para establecer y mantener el Foro.",
+        "Asignación de recursos para facilitar reuniones, talleres y eventos regulares para que el Foro permanezca activo e impactante.",
+        "Desarrollo de un marco claro y directrices para que el Foro monitoree y guíe las políticas e iniciativas de cambio climático dentro del municipio."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de partes interesadas clave participando activamente en el foro.",
+        "Número de políticas o acciones relacionadas con el clima propuestas a través del foro.",
+        "Participación pública en iniciativas del foro (medida por la asistencia a eventos o encuestas)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "landslides": "low",
+        "floods": "medium",
+        "wildfires": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0175",
+    "actionName": "Recovery and preservation of green areas",
+    "actionPriority": 16,
+    "explanation": "La recuperación y preservación de las áreas verdes en Coxim es crucial debido a la ubicación de la ciudad en un bioma de pastizal/sabana, el cual es sensible a los cambios ambientales. Esta acción puede ayudar a mitigar las altas emisiones derivadas del uso del suelo, que constituyen una parte significativa de las emisiones totales de la ciudad. Además, la preservación de las áreas verdes puede mejorar la biodiversidad, la cual está en riesgo tanto por las sequías como por las olas de calor. Al enfocarse en esta acción, Coxim puede aumentar su resiliencia frente a los peligros relacionados con el clima y apoyar el bienestar de sus habitantes.",
+    "action": {
+      "ActionID": "icare_0175",
+      "ActionName": "Recuperación y preservación de áreas verdes",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Rehabilitación y protección de los espacios verdes existentes, como parques, bosques y humedales, y expansión de áreas verdes mediante la plantación de árboles y vegetación en áreas urbanas y periurbanas. Estas áreas proporcionan soluciones naturales para la gestión de los recursos hídricos, la reducción del estrés térmico, la mejora de la calidad del aire y el aumento de la biodiversidad.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de terrenos adecuados para espacios verdes",
+        "Acceso a recursos hídricos para riego"
+      ],
+      "KeyPerformanceIndicators": [
+        "Área de espacios verdes creados o restaurados.",
+        "Índices de biodiversidad en áreas verdes.",
+        "Participación comunitaria en actividades de espacios verdes."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0162",
+    "actionName": "Strengthen programs for control and conservation of protected areas",
+    "actionPriority": 17,
+    "explanation": "El fortalecimiento de los programas para el control y la conservación de las áreas protegidas en Coxim es crucial debido a las significativas emisiones por uso del suelo en la ciudad, que representan la mayor fuente de emisiones. El bioma de la región, compuesto por pastizales y sabanas, es sensible a los cambios y requiere una gestión cuidadosa para mantener la biodiversidad y el equilibrio ecológico. Además, la ciudad enfrenta altos riesgos para la biodiversidad debido a sequías y olas de calor, lo que hace que los esfuerzos de conservación sean vitales para mitigar estos impactos. Al priorizar esta acción, Coxim puede aumentar su resiliencia frente a los peligros ambientales y contribuir a la preservación de sus recursos naturales.",
+    "action": {
+      "ActionID": "icare_0162",
+      "ActionName": "Fortalecer los programas de control y conservación de áreas protegidas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves",
+        "diseases"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en implementar una serie de estrategias integradas para mejorar la conservación ambiental y maximizar sus beneficios, como la expansión de áreas protegidas, el desarrollo de planes de manejo para unidades de conservación y la capacitación de guías de ecoturismo para fortalecer el turismo sostenible.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expansión de áreas protegidas para mejorar la conservación ambiental.",
+        "Desarrollo de planes de manejo para unidades de conservación.",
+        "Capacitación de guías de ecoturismo para promover el turismo sostenible."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de aumento en el área de regiones protegidas (%).",
+        "Reducción en las tasas de deforestación en áreas protegidas anualmente (%).",
+        "Número de programas de conservación fortalecidos anualmente."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high",
+        "heatwaves": "medium",
+        "diseases": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "icare_0150",
+    "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+    "actionPriority": 18,
+    "explanation": "Implementar un Programa de Reducción y Control de Pérdidas para promover la seguridad hídrica es crucial para Coxim debido a su vulnerabilidad a las sequías, que afectan significativamente los recursos hídricos. La baja densidad poblacional y la gran extensión del municipio hacen que la gestión eficiente del agua sea esencial para garantizar el acceso sostenible a todos los habitantes. Además, mejorar la seguridad hídrica puede ayudar a mitigar el riesgo moderado de saneamiento inadecuado, mejorando la salud pública y la calidad de vida en general. Esta acción está alineada con la necesidad de abordar los principales riesgos climáticos y respalda la resiliencia a largo plazo del municipio.",
+    "action": {
+      "ActionID": "icare_0150",
+      "ActionName": "Implementar el Programa de Reducción y Control de Pérdidas promoviendo la seguridad hídrica para el municipio",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Asegurar la disponibilidad de agua en cantidad y calidad suficientes para la población de la ciudad. Implementar el Programa de Reducción y Control de Pérdidas, que tiene como objetivo reducir el consumo de agua per cápita, junto con la reducción de pérdidas físicas. Realizar estudios, regular y facilitar la reutilización de agua para fines no potables, e implementar equipos para el uso de agua de lluvia.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de financiamiento y experiencia técnica para implementar sistemas de reducción de pérdidas de agua, incluyendo mejoras en la infraestructura y tecnologías de monitoreo",
+        "Desarrollo de marcos regulatorios para apoyar la reutilización de agua para fines no potables y sistemas de recolección de agua de lluvia tanto en entornos residenciales como comerciales",
+        "Colaboración entre gobiernos locales, empresas de servicios públicos y comunidades para asegurar una gestión eficiente del agua y aumentar la conciencia sobre prácticas de conservación del agua"
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de reducción de pérdidas en el sistema de suministro de agua.",
+        "Índice de reducción del consumo de agua per cápita (litros).",
+        "Número de nuevas fuentes de suministro de agua implementadas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "diseases": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0099",
+    "actionName": "Water capture/storage",
+    "actionPriority": 19,
+    "explanation": "La acción de captación y almacenamiento de agua es crucial para Coxim debido a su vulnerabilidad a las sequías, las cuales afectan significativamente los recursos hídricos. Con una baja densidad de población y una gran extensión territorial, una gestión eficiente del agua es esencial para garantizar un acceso sostenible al recurso para la comunidad. Además, mejorar la captación y el almacenamiento de agua puede ayudar a mitigar los efectos del cambio climático, especialmente en una región donde las sequías representan un alto riesgo para la biodiversidad y la seguridad alimentaria. Implementar esta acción puede aumentar la resiliencia frente a la escasez de agua y apoyar la estabilidad socioeconómica de la región.",
+    "action": {
+      "ActionID": "ipcc_0099",
+      "ActionName": "Captura/almacenamiento de agua",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms"
+      ],
+      "Sector": [
+        "water_resources",
+        "food_security",
+        "energy_security",
+        "geo-hydrological_disasters"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementar soluciones de captación y almacenamiento de agua, como estanques agrícolas, revitalización de cuerpos de agua, jardines de lluvia, bioswales, estanques de retención y tanques de almacenamiento de agua. Estas medidas tienen como objetivo mitigar los impactos inducidos por el clima mejorando la gestión del agua, reduciendo la escorrentía de aguas pluviales, mejorando la calidad del agua y apoyando la agricultura y la producción de energía bajo escenarios climáticos cambiantes. Los embalses y presas de usos múltiples proporcionan beneficios adicionales al abordar la escasez de agua y gestionar los riesgos asociados con los peligros naturales.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garantiza el acceso al agua para comunidades desatendidas, apoya medios de vida sostenibles en regiones con escasez de agua y promueve la distribución equitativa de recursos a través de procesos de toma de decisiones inclusivos.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en infraestructura verde",
+        "participación comunitaria",
+        "apoyo político para la gestión de recursos hídricos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de la escorrentía de aguas pluviales",
+        "aumento de la capacidad de almacenamiento de agua",
+        "mejora en la calidad del agua",
+        "estabilidad en los rendimientos agrícolas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR COX",
+    "cityName": "Coxim",
+    "region": "MS",
+    "regionName": "Mato Grosso do Sul",
+    "actionId": "ipcc_0086",
+    "actionName": "Ecosystem-based adaptation",
+    "actionPriority": 20,
+    "explanation": "La adaptación basada en los ecosistemas es crucial para Coxim debido a sus significativas emisiones derivadas del uso del suelo y la vulnerabilidad de su biodiversidad frente a sequías y olas de calor. El bioma de la ciudad, compuesto principalmente por pastizales y sabanas, puede beneficiarse de estrategias que fortalezcan la resiliencia natural y la biodiversidad. Implementar esta acción puede ayudar a mitigar los impactos del cambio climático mediante la preservación y restauración de hábitats naturales, lo que a su vez respalda los recursos hídricos y la seguridad alimentaria. Dado el alto riesgo para la biodiversidad, este enfoque es esencial para mantener el equilibrio ecológico y apoyar la sostenibilidad a largo plazo de la comunidad.",
+    "action": {
+      "ActionID": "ipcc_0086",
+      "ActionName": "Adaptación basada en ecosistemas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "heatwaves",
+        "floods"
+      ],
+      "Sector": [
+        "biodiversity",
+        "geo-hydrological_disasters",
+        "water_resources",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar y gestionar de manera sostenible los ecosistemas marinos, costeros, urbanos, fluviales y de humedales para proteger contra peligros climáticos como marejadas ciclónicas, inundaciones y olas de calor. Los esfuerzos incluyen agroecología, vegetación costera y marina y arrecifes, corredores de vegetación, restauración de hábitats de manglares, espacios verdes urbanos para reducir las temperaturas. Estas acciones mejoran la biodiversidad, almacenan carbono, mejoran la calidad del agua y proporcionan co-beneficios socioeconómicos y culturales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": "Apoya a las comunidades vulnerables mejorando la resiliencia climática, promoviendo el acceso equitativo a los servicios ecosistémicos y creando oportunidades de sustento, especialmente para las poblaciones marginadas y desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Participación comunitaria",
+        "Apoyo regulatorio",
+        "Inversión financiera",
+        "Planificación urbana",
+        "Vegetación resiliente al clima",
+        "Evaluaciones de biodiversidad",
+        "Gestión de cuencas",
+        "Planificación aguas arriba",
+        "Financiación sostenible"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de daños por marejadas ciclónicas",
+        "Tasas de secuestro de carbono",
+        "Aumento de la biodiversidad",
+        "Reducción de la temperatura en áreas urbanas",
+        "Mejora de la calidad del agua",
+        "Acceso a espacios verdes por comunidades desatendidas",
+        "Reducción de eventos de inundación",
+        "Mejora de la salud del ecosistema"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "high",
+        "sea-level-rise": "high",
+        "heatwaves": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  }
 ]

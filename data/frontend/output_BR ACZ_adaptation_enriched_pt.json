@@ -1,1314 +1,1314 @@
 [
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "For the city of Aracruz, establishing a comprehensive Climate Action Plan unifies diverse sectors under one cohesive strategy to reduce emissions and address climate risks. This plan provides a clear framework for long-term resource allocation and adaptation measures. It lays the groundwork for coordinated actions that enhance overall resilience and sustainability.",
-        "action": {
-            "ActionID": "icare_0176",
-            "ActionName": "Desenvolvimento do Plano de A\u00e7\u00e3o Clim\u00e1tica",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "storms",
-                "sea-level-rise",
-                "wildfires",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Um plano abrangente que descreve as estrat\u00e9gias e a\u00e7\u00f5es de uma cidade para mitigar as emiss\u00f5es de gases de efeito estufa e se adaptar aos impactos das mudan\u00e7as clim\u00e1ticas, que normalmente inclui uma avalia\u00e7\u00e3o dos riscos e vulnerabilidades clim\u00e1ticas da cidade, defini\u00e7\u00e3o de metas de redu\u00e7\u00e3o de emiss\u00f5es e implementa\u00e7\u00e3o de a\u00e7\u00f5es em v\u00e1rios setores, como energia, transporte, gest\u00e3o de res\u00edduos e planejamento urbano.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Vontade pol\u00edtica e compromisso do governo",
-                "Envolvimento e colabora\u00e7\u00e3o das partes interessadas",
-                "Financiamento e recursos para implementa\u00e7\u00e3o"
-            ],
-            "KeyPerformanceIndicators": [
-                "Metas de redu\u00e7\u00e3o de emiss\u00f5es de gases de efeito estufa.",
-                "N\u00famero de a\u00e7\u00f5es de adapta\u00e7\u00e3o clim\u00e1tica implementadas.",
-                "Investimento em projetos de mitiga\u00e7\u00e3o e adapta\u00e7\u00e3o clim\u00e1tica."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "storms": "medium",
-                "sea-level-rise": "medium",
-                "wildfires": "medium",
-                "floods": "medium",
-                "landslides": "medium",
-                "diseases": "medium",
-                "heatwaves": "medium",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 2,
-        "explanation": "For Aracruz, improving access to health care ensures residents receive timely treatment during extreme weather events. Enhanced medical services reduce the impact of climate-related illnesses and emergencies. This strengthens the city's overall capacity to cope with environmental stresses while safeguarding public well-being.",
-        "action": {
-            "ActionID": "ipcc_0094",
-            "ActionName": "Acesso aos cuidados de sa\u00fade",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "droughts"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Melhorar o acesso aos servi\u00e7os de sa\u00fade, incluindo servi\u00e7os de sa\u00fade e nutri\u00e7\u00e3o, \u00e1gua limpa, saneamento e recursos de sa\u00fade mental culturalmente apropriados. A expans\u00e3o das capacidades de telemedicina permite uma entrega eficiente de servi\u00e7os de sa\u00fade, especialmente para popula\u00e7\u00f5es remotas e carentes. Fortalecer os sistemas b\u00e1sicos de sa\u00fade p\u00fablica e a prepara\u00e7\u00e3o para desastres pode reduzir rapidamente a vulnerabilidade aos riscos de sa\u00fade relacionados ao clima.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promove o acesso equitativo aos cuidados de sa\u00fade para grupos marginalizados e vulner\u00e1veis, incluindo popula\u00e7\u00f5es sem-teto, comunidades remotas e aqueles afetados por desigualdades habitacionais.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimento em tecnologias de telemedicina",
-                "Governan\u00e7a fortalecida dos sistemas de sa\u00fade p\u00fablica",
-                "Capacita\u00e7\u00e3o para trabalhadores da sa\u00fade",
-                "Melhorias na infraestrutura das instala\u00e7\u00f5es de sa\u00fade"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o na mortalidade relacionada ao clima",
-                "Aumento no acesso \u00e0 telemedicina",
-                "N\u00famero de programas de sa\u00fade adaptados culturalmente implementados",
-                "Melhoria nas m\u00e9tricas de acesso \u00e0 \u00e1gua e saneamento"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "floods": "high",
-                "droughts": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 3,
-        "explanation": "For Aracruz, thoroughly assessing and upgrading vulnerable neighborhoods improves living conditions and lowers risks from floods or heatwaves. Targeted interventions in these areas ensure that the most at-risk communities are better protected. This approach enhances social equity and builds stronger, more resilient local infrastructure.",
-        "action": {
-            "ActionID": "icare_0151",
-            "ActionName": "Desenvolver diagn\u00f3sticos e restaurar \u00e1reas de Zonas Especiais de Interesse Social (ZEIS)",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "sea-level-rise",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Prioridade para \u00e1reas ZEIS nas a\u00e7\u00f5es de melhoria habitacional e na aplica\u00e7\u00e3o de recursos do Fundo de Urbaniza\u00e7\u00e3o, com a implementa\u00e7\u00e3o de infraestrutura urbana que considere a adapta\u00e7\u00e3o clim\u00e1tica nesses espa\u00e7os. Uso de Solu\u00e7\u00f5es Baseadas na Natureza (NbS) na adapta\u00e7\u00e3o do saneamento ambiental e infraestruturas verdes e azuis que potencializem o lazer, a cultura, a agricultura urbana e atividades para fortalecer associa\u00e7\u00f5es comunit\u00e1rias.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento do Fundo de Urbaniza\u00e7\u00e3o e de outros mecanismos financeiros para apoiar melhorias habitacionais e infraestrutura urbana em \u00e1reas ZEIS",
-                "Colabora\u00e7\u00e3o entre planejadores urbanos, especialistas ambientais e comunidades locais para projetar e implementar solu\u00e7\u00f5es baseadas na natureza (NbS) para infraestrutura urbana",
-                "Pol\u00edticas e estruturas regulat\u00f3rias que integrem medidas de adapta\u00e7\u00e3o clim\u00e1tica no planejamento urbano, garantindo que os investimentos priorizem a sustentabilidade ambiental e a comunidade"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de \u00e1reas ZEIS diagnosticadas e restauradas.",
-                "Percentual de residentes beneficiados por \u00e1reas restauradas (%).",
-                "Investimentos p\u00fablicos alocados para \u00e1reas ZEIS (valor em moeda)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "sea-level-rise": "medium",
-                "floods": "medium",
-                "landslides": "low",
-                "diseases": "medium",
-                "heatwaves": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 4,
-        "explanation": "For Aracruz, expanding the network of hospitals and clinics improves emergency preparedness and routine care. Enhanced health infrastructure provides critical support during disasters and extreme weather conditions. This preparedness underpins community resilience and ensures prompt response to climate-induced health issues.",
-        "action": {
-            "ActionID": "ipcc_0093",
-            "ActionName": "Disponibilidade de infraestrutura de sa\u00fade",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "sea-level-rise",
-                "diseases"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Garantir o acesso a infraestrutura de \u00e1gua pot\u00e1vel segura, proteger os servi\u00e7os de sa\u00fade e melhorar os sistemas de saneamento para mitigar os impactos clim\u00e1ticos. Isso inclui desenvolver medidas adaptativas para a seguran\u00e7a h\u00eddrica contra secas, inunda\u00e7\u00f5es e eleva\u00e7\u00e3o do n\u00edvel do mar. Fortalecer a resili\u00eancia da infraestrutura garante acesso equitativo aos servi\u00e7os de sa\u00fade, reduz os riscos de contamina\u00e7\u00e3o e aborda os impactos dos perigos induzidos pelo clima.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Melhora o acesso a recursos cr\u00edticos de sa\u00fade e \u00e1gua para comunidades vulner\u00e1veis e desatendidas, mitigando as desigualdades causadas pelos impactos clim\u00e1ticos.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Financiamento adequado",
-                "investimentos tecnol\u00f3gicos em infraestrutura de sa\u00fade e \u00e1gua",
-                "governan\u00e7a eficaz e coordena\u00e7\u00e3o intersetorial"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o de doen\u00e7as transmitidas pela \u00e1gua",
-                "melhor acesso a \u00e1gua pot\u00e1vel",
-                "n\u00famero de instala\u00e7\u00f5es de sa\u00fade resilientes desenvolvidas"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "sea-level-rise": "high",
-                "diseases": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 5,
-        "explanation": "For Aracruz, reinforcing food storage and distribution systems stabilizes supply chains during climate disruptions. Reliable cold storage and efficient logistics help prevent spoilage, ensuring that communities have steady access to essential supplies. This stability is key to maintaining public health and supporting local agricultural sectors.",
-        "action": {
-            "ActionID": "ipcc_0097",
-            "ActionName": "Melhorias no armazenamento/distribui\u00e7\u00e3o de alimentos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms",
-                "heatwaves"
-            ],
-            "Sector": [
-                "food_security",
-                "road_infrastructure"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Aprimorar os sistemas de armazenamento e distribui\u00e7\u00e3o de alimentos melhorando a infraestrutura de transporte, otimizando redes de com\u00e9rcio e encurtando cadeias de suprimento para garantir a disponibilidade local de alimentos e resili\u00eancia aos impactos clim\u00e1ticos. Esta a\u00e7\u00e3o tamb\u00e9m inclui aumentar a capacidade das instala\u00e7\u00f5es locais de armazenamento de alimentos para reduzir perdas p\u00f3s-colheita, abordar inefici\u00eancias na log\u00edstica e refor\u00e7ar a infraestrutura para produtos perec\u00edveis. O objetivo \u00e9 melhorar a seguran\u00e7a alimentar e reduzir a vulnerabilidade a eventos extremos, interrup\u00e7\u00f5es e impactos em cascata, especialmente durante pandemias e outras crises.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Apoia o acesso equitativo a alimentos para popula\u00e7\u00f5es marginalizadas e vulner\u00e1veis, priorizando a produ\u00e7\u00e3o local de alimentos e melhorando os sistemas de distribui\u00e7\u00e3o que alcan\u00e7am \u00e1reas desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimento em infraestrutura",
-                "Incentivos pol\u00edticos para a produ\u00e7\u00e3o local de alimentos",
-                "Colabora\u00e7\u00e3o com os setores de log\u00edstica e com\u00e9rcio",
-                "Tecnologia para otimiza\u00e7\u00e3o da cadeia de suprimentos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o das perdas p\u00f3s-colheita",
-                "Aumento da disponibilidade de alimentos locais",
-                "Melhoria da efici\u00eancia do transporte para distribui\u00e7\u00e3o de alimentos",
-                "Cadeias de abastecimento encurtadas"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "storms": "high",
-                "heatwaves": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 6,
-        "explanation": "For Aracruz, a robust emergency response plan organizes rescue and relief efforts when severe weather strikes. This proactive strategy minimizes chaos and reduces damage by ensuring that services are mobilized efficiently. Clear response procedures help protect lives and maintain civic stability during climatic emergencies.",
-        "action": {
-            "ActionID": "icare_0169",
-            "ActionName": "Estabelecer um Plano de Prepara\u00e7\u00e3o e Medidas de Resposta a Emerg\u00eancias em caso de eventos clim\u00e1ticos extremos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta a\u00e7\u00e3o foca em preparar o munic\u00edpio para responder a eventos extremos, visando fornecer uma resposta r\u00e1pida que minimize os impactos na popula\u00e7\u00e3o.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de um plano abrangente de resposta a emerg\u00eancias que inclua a coordena\u00e7\u00e3o entre as autoridades locais, servi\u00e7os de emerg\u00eancia e organiza\u00e7\u00f5es comunit\u00e1rias",
-                "Investimento em sistemas de alerta precoce e infraestrutura para garantir respostas oportunas e eficazes a eventos extremos",
-                "Treinamento e capacita\u00e7\u00e3o para socorristas locais e comunidades para melhorar a prepara\u00e7\u00e3o e resili\u00eancia a eventos extremos"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de parcerias de resposta a emerg\u00eancias estabelecidas.",
-                "Tempo m\u00e9dio de resposta durante eventos clim\u00e1ticos extremos (horas).",
-                "Percentual de redu\u00e7\u00e3o de v\u00edtimas e danos durante eventos clim\u00e1ticos extremos anualmente (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "high",
-                "diseases": "medium",
-                "landslides": "high",
-                "floods": "high",
-                "wildfires": "high",
-                "sea-level-rise": "low",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 7,
-        "explanation": "For Aracruz, enhancing the management of protected natural areas safeguards local biodiversity, water quality, and carbon sinks. These ecosystems naturally mitigate flood risks and stabilize the local climate. Conserving these resources ensures long-term environmental benefits for the community.",
-        "action": {
-            "ActionID": "icare_0162",
-            "ActionName": "Fortalecer programas de controle e conserva\u00e7\u00e3o de \u00e1reas protegidas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves",
-                "diseases"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta a\u00e7\u00e3o foca na implementa\u00e7\u00e3o de uma s\u00e9rie de estrat\u00e9gias integradas para melhorar a conserva\u00e7\u00e3o ambiental e maximizar seus benef\u00edcios, como a expans\u00e3o de \u00e1reas protegidas, o desenvolvimento de planos de manejo para unidades de conserva\u00e7\u00e3o e o treinamento de guias de ecoturismo para fortalecer o turismo sustent\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expans\u00e3o de \u00e1reas protegidas para melhorar a conserva\u00e7\u00e3o ambiental.",
-                "Desenvolvimento de planos de manejo para unidades de conserva\u00e7\u00e3o.",
-                "Treinamento de guias de ecoturismo para promover o turismo sustent\u00e1vel."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentual de aumento na \u00e1rea de regi\u00f5es protegidas (%).",
-                "Redu\u00e7\u00e3o nas taxas de desmatamento em \u00e1reas protegidas anualmente (%).",
-                "N\u00famero de programas de conserva\u00e7\u00e3o fortalecidos anualmente."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "floods": "high",
-                "landslides": "high",
-                "heatwaves": "medium",
-                "diseases": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0152",
-        "actionName": "Recovery of degraded areas",
-        "actionPriority": 8,
-        "explanation": "For Aracruz, rehabilitating degraded lands restores essential ecosystem functions such as water retention and erosion control. These efforts create a healthier environment that can better withstand extreme weather events. Restored areas also contribute to regional sustainability by improving the quality of agricultural lands.",
-        "action": {
-            "ActionID": "icare_0152",
-            "ActionName": "Recupera\u00e7\u00e3o de \u00e1reas degradadas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Restaurar ecossistemas danificados por atividades humanas atrav\u00e9s do replantio de vegeta\u00e7\u00e3o nativa, restaura\u00e7\u00e3o do solo, elimina\u00e7\u00e3o de esp\u00e9cies invasoras e implementa\u00e7\u00e3o de t\u00e9cnicas de manejo sustent\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Desenvolver um plano de restaura\u00e7\u00e3o claro e garantir financiamento para a gest\u00e3o a longo prazo.",
-                "Assegurar o acesso a esp\u00e9cies de plantas nativas e fornecer treinamento em pr\u00e1ticas sustent\u00e1veis.",
-                "Remover esp\u00e9cies invasoras e colaborar com as comunidades locais para uma restaura\u00e7\u00e3o bem-sucedida do ecossistema."
-            ],
-            "KeyPerformanceIndicators": [
-                "Hectares de terras degradadas restauradas anualmente",
-                "Aumento na cobertura vegetal (%) em \u00e1reas restauradas",
-                "N\u00famero de comunidades locais envolvidas em projetos de restaura\u00e7\u00e3o"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "landslides": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 9,
-        "explanation": "For Aracruz, real-time monitoring of water levels using telemetry stations enables early detection of flooding and droughts. Quick alerts allow for timely evacuations and resource management, reducing damage and saving lives. This data-driven approach supports proactive water and disaster management strategies.",
-        "action": {
-            "ActionID": "icare_0164",
-            "ActionName": "Sistema de Monitoramento Hidrol\u00f3gico com Esta\u00e7\u00f5es de Telemetria",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementa\u00e7\u00e3o de um sistema de monitoramento hidrol\u00f3gico com esta\u00e7\u00f5es de telemetria para monitorar a precipita\u00e7\u00e3o, os n\u00edveis de \u00e1gua e as vari\u00e1veis meteorol\u00f3gicas em tempo real.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Equipamento e infraestrutura",
-                "Sistema robusto de gest\u00e3o de dados",
-                "Coordena\u00e7\u00e3o institucional"
-            ],
-            "KeyPerformanceIndicators": [
-                "Pontualidade dos dados",
-                "Custo-benef\u00edcio",
-                "Efic\u00e1cia da mitiga\u00e7\u00e3o"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 10,
-        "explanation": "For Aracruz, a dedicated climate change forum facilitates dialogue among government, businesses, and community members. This collaborative platform ensures that climate policies reflect local needs and harness diverse expertise. It plays a crucial role in shaping effective and inclusive adaptation strategies.",
-        "action": {
-            "ActionID": "icare_0148",
-            "ActionName": "Criar o F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "diseases",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Cria\u00e7\u00e3o de um F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas com a participa\u00e7\u00e3o de l\u00edderes comunit\u00e1rios, cientistas, coletivos, institutos de pesquisa, ONGs e membros da administra\u00e7\u00e3o municipal e estadual. O F\u00f3rum servir\u00e1 como refer\u00eancia para a\u00e7\u00f5es relacionadas \u00e0s Mudan\u00e7as Clim\u00e1ticas, com o objetivo de monitorar pol\u00edticas futuras sobre o assunto no munic\u00edpio, estimular o di\u00e1logo e criar uma rede de discuss\u00f5es sobre a crise clim\u00e1tica.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Engajamento de diversas partes interessadas, incluindo l\u00edderes comunit\u00e1rios, cientistas, ONGs e autoridades locais, para estabelecer e sustentar o F\u00f3rum.",
-                "Aloca\u00e7\u00e3o de recursos para facilitar reuni\u00f5es regulares, workshops e eventos para que o F\u00f3rum permane\u00e7a ativo e impactante.",
-                "Desenvolvimento de uma estrutura clara e diretrizes para o F\u00f3rum monitorar e orientar pol\u00edticas e iniciativas de mudan\u00e7a clim\u00e1tica dentro do munic\u00edpio."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de partes interessadas chave participando ativamente no f\u00f3rum.",
-                "N\u00famero de pol\u00edticas ou a\u00e7\u00f5es relacionadas ao clima propostas atrav\u00e9s do f\u00f3rum.",
-                "Envolvimento p\u00fablico nas iniciativas do f\u00f3rum (medido pela participa\u00e7\u00e3o em eventos ou pesquisas)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "diseases": "medium",
-                "heatwaves": "medium",
-                "landslides": "low",
-                "floods": "medium",
-                "wildfires": "medium",
-                "sea-level-rise": "medium",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0145",
-        "actionName": "Strengthen the healthcare network to attend to climate victims",
-        "actionPriority": 11,
-        "explanation": "For Aracruz, bolstering healthcare infrastructure ensures prompt medical support during extreme events such as floods or heatwaves. Enhanced clinics and emergency services reduce the risk of severe health impacts among residents. This focus on public health strengthens community resilience in the face of climate challenges.",
-        "action": {
-            "ActionID": "icare_0145",
-            "ActionName": "Fortalecer a rede de sa\u00fade para atender \u00e0s v\u00edtimas do clima",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "storms",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Melhorar a infraestrutura das unidades de sa\u00fade para atender pessoas que necessitam de cuidados m\u00e9dicos devido a impactos associados a riscos clim\u00e1ticos (v\u00edtimas do clima), como aquelas afetadas por ondas de calor ou inunda\u00e7\u00f5es, especialmente em \u00e1reas mais vulner\u00e1veis. Desenvolver planos de a\u00e7\u00e3o para preparar a rede de sa\u00fade para situa\u00e7\u00f5es extremas relacionadas ao clima.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Investimento na renova\u00e7\u00e3o e expans\u00e3o das instala\u00e7\u00f5es de sa\u00fade, garantindo que estejam equipadas para lidar com os impactos na sa\u00fade relacionados ao clima, especialmente em \u00e1reas vulner\u00e1veis.",
-                "Desenvolvimento de planos de a\u00e7\u00e3o e programas de treinamento para profissionais de sa\u00fade responderem a eventos clim\u00e1ticos extremos, como ondas de calor e inunda\u00e7\u00f5es.",
-                "Colabora\u00e7\u00e3o com autoridades locais, equipes de resposta a emerg\u00eancias e especialistas em clima para criar uma estrutura abrangente para preparar a rede de sa\u00fade para os riscos clim\u00e1ticos."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de instala\u00e7\u00f5es de sa\u00fade atualizadas para emerg\u00eancias relacionadas ao clima.",
-                "Aumento no percentual de profissionais de sa\u00fade treinados para resposta a emerg\u00eancias clim\u00e1ticas (%).",
-                "N\u00famero de les\u00f5es relacionadas ao clima tratadas com sucesso.",
-                "."
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "diseases": "medium",
-                "landslides": "medium",
-                "floods": "high",
-                "storms": "high",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 12,
-        "explanation": "For Aracruz, enhancing agricultural and fishery practices boosts food security and resilience against climate extremes. Modern practices reduce water use and energy consumption while improving productivity. These improvements stabilize local economies and support sustainable livelihoods.",
-        "action": {
-            "ActionID": "ipcc_0096",
-            "ActionName": "Melhorias na fazenda/pesqueira",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementar uma variedade de estrat\u00e9gias para adaptar fazendas e pescarias aos impactos clim\u00e1ticos. Isso inclui mudar o equipamento de pesca ou a pot\u00eancia dos barcos, adotar novas variedades de culturas ou ajustar os cronogramas de plantio, melhorar os esquemas de irriga\u00e7\u00e3o, integrar sistemas de cultivo e pecu\u00e1ria, realocar o gado com manejo de pastagens melhorado e adotar sistemas agroecol\u00f3gicos e agroflorestais. Inova\u00e7\u00f5es tecnol\u00f3gicas como a agricultura inteligente e medidas financeiras como subs\u00eddios apoiam essas adapta\u00e7\u00f5es.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Garante o acesso a recursos para agricultores e pescadores marginalizados, promove op\u00e7\u00f5es diversificadas de subsist\u00eancia e fortalece a resili\u00eancia em comunidades desfavorecidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Apoio pol\u00edtico para agricultura e pesca resilientes ao clima",
-                "Acesso a financiamento e subs\u00eddios",
-                "Treinamento para ado\u00e7\u00e3o de novas pr\u00e1ticas",
-                "Infraestrutura de mercado melhorada"
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento na produtividade agr\u00edcola e pesqueira",
-                "Taxa de ado\u00e7\u00e3o de sistemas integrados",
-                "Redu\u00e7\u00e3o nas perdas de rendimento relacionadas ao clima"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "floods": "medium",
-                "wildfires": "low",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 13,
-        "explanation": "For Aracruz, restoring and protecting green spaces contributes to natural cooling and flood mitigation. Healthy vegetation absorbs rainwater and reduces the heat island effect, making urban areas more livable. These efforts also enhance recreational opportunities and support local biodiversity.",
-        "action": {
-            "ActionID": "icare_0175",
-            "ActionName": "Recupera\u00e7\u00e3o e preserva\u00e7\u00e3o de \u00e1reas verdes",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Reabilita\u00e7\u00e3o e prote\u00e7\u00e3o de espa\u00e7os verdes existentes, como parques, florestas e zonas h\u00famidas, e expans\u00e3o de \u00e1reas verdes atrav\u00e9s do plantio de \u00e1rvores e vegeta\u00e7\u00e3o em \u00e1reas urbanas e periurbanas. Estas \u00e1reas oferecem solu\u00e7\u00f5es naturais para a gest\u00e3o dos recursos h\u00eddricos, redu\u00e7\u00e3o do estresse t\u00e9rmico, melhoria da qualidade do ar e aumento da biodiversidade.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de terrenos adequados para espa\u00e7os verdes",
-                "Acesso a recursos h\u00eddricos para irriga\u00e7\u00e3o"
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea de espa\u00e7os verdes criados ou restaurados.",
-                "\u00cdndices de biodiversidade em \u00e1reas verdes.",
-                "Envolvimento da comunidade em atividades de espa\u00e7os verdes."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "floods": "high",
-                "wildfires": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 14,
-        "explanation": "For Aracruz, robust social safety systems provide essential support during climate-induced crises, such as floods or heatwaves. These programs ensure that vulnerable populations have access to food, shelter, and medical care when needed. By mitigating the social impact of extreme events, they help maintain community stability.",
-        "action": {
-            "ActionID": "ipcc_0092",
-            "ActionName": "Redes de prote\u00e7\u00e3o social",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "public_health"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "As redes de seguran\u00e7a social englobam mecanismos de prote\u00e7\u00e3o social adaptativa para reduzir a inseguran\u00e7a alimentar e a desnutri\u00e7\u00e3o, especialmente para popula\u00e7\u00f5es vulner\u00e1veis. Estes incluem transfer\u00eancias de dinheiro, programas de alimenta\u00e7\u00e3o escolar, iniciativas de trabalho p\u00fablico, compensa\u00e7\u00e3o de desemprego, reformas agr\u00e1rias, esquemas de cr\u00e9dito e seguros. Abordagens integradas combinam avalia\u00e7\u00f5es de risco clim\u00e1tico com redu\u00e7\u00e3o de risco de desastres, educa\u00e7\u00e3o e equidade social para aumentar a resili\u00eancia aos estresses clim\u00e1ticos.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Aumenta o status social e os direitos de grupos marginalizados, protege popula\u00e7\u00f5es vulner\u00e1veis, reduz desigualdades e promove a educa\u00e7\u00e3o e a equidade de g\u00eanero.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integra\u00e7\u00e3o do clima e risco de desastres na prote\u00e7\u00e3o social",
-                "programas educacionais",
-                "coordena\u00e7\u00e3o com iniciativas de meios de subsist\u00eancia sustent\u00e1veis e inclus\u00e3o financeira"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nas taxas de desnutri\u00e7\u00e3o",
-                "Aumento no acesso \u00e0 educa\u00e7\u00e3o para grupos vulner\u00e1veis",
-                "Participa\u00e7\u00e3o em programas de prote\u00e7\u00e3o social"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "floods": "medium",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 15,
-        "explanation": "For Aracruz, relocating communities from high-risk zones minimizes repeated losses from floods or landslides. Restoring these areas revitalizes natural defenses and improves ecological function. This proactive measure protects lives while ensuring long-term environmental sustainability.",
-        "action": {
-            "ActionID": "icare_0181",
-            "ActionName": "Reloca\u00e7\u00e3o e Restaura\u00e7\u00e3o Ambiental em \u00c1reas Vulner\u00e1veis",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Um projeto abrangente que aborda a vulnerabilidade socioambiental de um assentamento informal. Inclui a realoca\u00e7\u00e3o de residentes de \u00e1reas propensas a inunda\u00e7\u00f5es, a restaura\u00e7\u00e3o do meio ambiente e o fornecimento de infraestrutura e servi\u00e7os sociais.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Financiamento adequado",
-                "Coordena\u00e7\u00e3o interag\u00eancias",
-                "Seguran\u00e7a da posse da terra"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de fam\u00edlias realocadas.",
-                "Progresso da restaura\u00e7\u00e3o ambiental.",
-                "Redu\u00e7\u00e3o do risco de inunda\u00e7\u00f5es."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "landslides": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 16,
-        "explanation": "For Aracruz, promoting shifts in dietary habits and reducing food waste lessen pressure on agricultural systems. These changes help cut emissions and lower resource demands while promoting healthier lifestyles. Widespread adoption of sustainable food practices ultimately contributes to broader climate goals.",
-        "action": {
-            "ActionID": "ipcc_0098",
-            "ActionName": "Mudan\u00e7a de comportamento em dietas e desperd\u00edcio de alimentos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Reduzir a perda e o desperd\u00edcio de alimentos por meio de pr\u00e1ticas aprimoradas de produ\u00e7\u00e3o, distribui\u00e7\u00e3o e consumo de alimentos. As a\u00e7\u00f5es incluem o aprimoramento de t\u00e9cnicas agr\u00edcolas, a ado\u00e7\u00e3o de tecnologias de economia de \u00e1gua, a implementa\u00e7\u00e3o de solu\u00e7\u00f5es de armazenamento de baixo custo e a promo\u00e7\u00e3o de dietas \u00e0 base de plantas. Os formuladores de pol\u00edticas podem incentivar esses comportamentos com pol\u00edticas de pre\u00e7os adequadas, iniciativas de agricultura sustent\u00e1vel e apoio a grupos desfavorecidos. A a\u00e7\u00e3o enfatiza a mudan\u00e7a para dietas mais saud\u00e1veis, a redu\u00e7\u00e3o do consumo excessivo e o apoio a sistemas alimentares locais para mitigar as emiss\u00f5es de gases de efeito estufa e garantir a seguran\u00e7a alimentar sob as mudan\u00e7as clim\u00e1ticas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promove o acesso a alimentos saud\u00e1veis e acess\u00edveis para comunidades vulner\u00e1veis, capacitando mulheres, jovens e grupos socialmente desfavorecidos. Incentiva a participa\u00e7\u00e3o equitativa em pr\u00e1ticas agr\u00edcolas sustent\u00e1veis e redes alimentares locais.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Educa\u00e7\u00e3o e treinamento para agricultores",
-                "Acesso a insumos agr\u00edcolas sustent\u00e1veis",
-                "Apoio pol\u00edtico para pr\u00e1ticas sustent\u00e1veis",
-                "Infraestrutura tecnol\u00f3gica para armazenamento e processamento"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nas porcentagens de perda e desperd\u00edcio de alimentos",
-                "Aumento na ado\u00e7\u00e3o de dietas \u00e0 base de plantas",
-                "Melhoria nos indicadores de seguran\u00e7a alimentar",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de GEE dos sistemas alimentares"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "medium",
-                "floods": "medium",
-                "wildfires": "low"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 17,
-        "explanation": "For Aracruz, implementing sustainable land use guidelines helps balance urban growth with natural resource preservation. Smart zoning and farming techniques reduce ecological degradation and lower flood risks. This alignment of development with environmental conservation fosters long-term community resilience.",
-        "action": {
-            "ActionID": "icare_0149",
-            "ActionName": "Incentivar pr\u00e1ticas sustent\u00e1veis de uso da terra",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Promover m\u00e9todos que garantam a conserva\u00e7\u00e3o e a sa\u00fade do solo, preservando a biodiversidade, reduzindo a eros\u00e3o e minimizando os impactos ambientais.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Fornecer acesso a conhecimento t\u00e9cnico e treinamento em pr\u00e1ticas de manejo sustent\u00e1vel do solo.",
-                "Oferecer incentivos financeiros e formar parcerias com institui\u00e7\u00f5es de pesquisa e agricultores locais.",
-                "Desenvolver sistemas de monitoramento para a sa\u00fade do solo e biodiversidade, e implementar pol\u00edticas para controle da eros\u00e3o."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem da \u00e1rea de terra gerida sob pr\u00e1ticas de uso sustent\u00e1vel da terra (%)",
-                "Redu\u00e7\u00e3o nas taxas de desmatamento ou degrada\u00e7\u00e3o da terra (%)",
-                "Aumento nos indicadores de biodiversidade em terras geridas (por exemplo, contagem de esp\u00e9cies, qualidade do habitat)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "medium",
-                "landslides": "high",
-                "floods": "medium",
-                "wildfires": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 18,
-        "explanation": "For Aracruz, converting vacant urban spaces into gardens improves local food security and moderates urban heat. These gardens also offer community gathering spaces that promote well-being and environmental awareness. By reducing heat and managing stormwater, urban gardens enhance overall urban resilience.",
-        "action": {
-            "ActionID": "icare_0156",
-            "ActionName": "Implementa\u00e7\u00e3o de hortas urbanas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Identificar e avaliar a viabilidade de \u00e1reas adequadas para a instala\u00e7\u00e3o de hortas urbanas e garantir que os locais escolhidos atendam \u00e0s expectativas da comunidade.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Garantir a disponibilidade de mapas detalhados de uso do solo e dados de planejamento urbano.",
-                "Envolver-se com as comunidades locais para entender suas necessidades e expectativas.",
-                "Avaliar a qualidade do solo, a disponibilidade de \u00e1gua e formar parcerias para apoiar o estabelecimento e a manuten\u00e7\u00e3o de jardins."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de hortas urbanas criadas.",
-                "Quantidade de alimentos produzidos localmente (kg/ano).",
-                "N\u00famero de benefici\u00e1rios diretos."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "landslides": "low",
-                "floods": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 19,
-        "explanation": "For Aracruz, harnessing natural processes through ecosystem-based adaptation\u2014such as wetland and forest restoration\u2014helps buffer against climate extremes. These ecosystems naturally store carbon, regulate water flow, and cool urban areas. This cost-effective method reduces the need for heavy infrastructure while promoting biodiversity.",
-        "action": {
-            "ActionID": "ipcc_0086",
-            "ActionName": "Adapta\u00e7\u00e3o baseada em ecossistemas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "storms",
-                "sea-level-rise",
-                "heatwaves",
-                "floods"
-            ],
-            "Sector": [
-                "biodiversity",
-                "geo-hydrological_disasters",
-                "water_resources",
-                "public_health"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Restaurar e gerir de forma sustent\u00e1vel os ecossistemas marinhos, costeiros, urbanos, fluviais e de zonas h\u00famidas para proteger contra perigos clim\u00e1ticos, como tempestades, inunda\u00e7\u00f5es e ondas de calor. Os esfor\u00e7os incluem agroecologia, vegeta\u00e7\u00e3o costeira e marinha e recifes, corredores de vegeta\u00e7\u00e3o, restaura\u00e7\u00e3o de habitats de manguezais, espa\u00e7os verdes urbanos para reduzir as temperaturas. Estas a\u00e7\u00f5es melhoram a biodiversidade, armazenam carbono, melhoram a qualidade da \u00e1gua e proporcionam co-benef\u00edcios socioecon\u00f4micos e culturais.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Apoia comunidades vulner\u00e1veis ao melhorar a resili\u00eancia clim\u00e1tica, promover o acesso equitativo aos servi\u00e7os ecossist\u00eamicos e criar oportunidades de subsist\u00eancia, especialmente para popula\u00e7\u00f5es marginalizadas e desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Engajamento comunit\u00e1rio",
-                "Apoio regulat\u00f3rio",
-                "Investimento financeiro",
-                "Planejamento urbano",
-                "Vegeta\u00e7\u00e3o resiliente ao clima",
-                "Avalia\u00e7\u00f5es de biodiversidade",
-                "Gest\u00e3o de bacias hidrogr\u00e1ficas",
-                "Planejamento a montante",
-                "Financiamento sustent\u00e1vel"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o de danos causados por mar\u00e9s de tempestade",
-                "Taxas de sequestro de carbono",
-                "Aumento da biodiversidade",
-                "Redu\u00e7\u00e3o da temperatura em \u00e1reas urbanas",
-                "Melhoria da qualidade da \u00e1gua",
-                "Acesso a espa\u00e7os verdes por comunidades carentes",
-                "Redu\u00e7\u00e3o de eventos de inunda\u00e7\u00e3o",
-                "Melhoria da sa\u00fade dos ecossistemas"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "storms": "high",
-                "sea-level-rise": "high",
-                "heatwaves": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 20,
-        "explanation": "For Aracruz, investing in water capture and storage systems ensures a reliable supply during droughts or peak demand periods. By collecting rainwater and maintaining reservoirs, the city reduces dependency on external water sources. This resilience measure supports agriculture and public consumption, stabilizing the region\u2019s water resources.",
-        "action": {
-            "ActionID": "ipcc_0099",
-            "ActionName": "Captura/armazenamento de \u00e1gua",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "water_resources",
-                "food_security",
-                "energy_security",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementa\u00e7\u00e3o de solu\u00e7\u00f5es de capta\u00e7\u00e3o e armazenamento de \u00e1gua, como a\u00e7udes em fazendas, revitaliza\u00e7\u00e3o de corpos d'\u00e1gua, jardins de chuva, bioswales, lagoas de reten\u00e7\u00e3o e tanques de armazenamento de \u00e1gua. Essas medidas visam mitigar os impactos induzidos pelo clima, melhorando a gest\u00e3o da \u00e1gua, reduzindo o escoamento de \u00e1guas pluviais, melhorando a qualidade da \u00e1gua e apoiando a agricultura e a produ\u00e7\u00e3o de energia em cen\u00e1rios clim\u00e1ticos em mudan\u00e7a. Reservat\u00f3rios de \u00e1gua e barragens multiuso oferecem benef\u00edcios adicionais ao abordar a escassez de \u00e1gua e gerenciar riscos associados a desastres naturais.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Garante o acesso \u00e0 \u00e1gua para comunidades carentes, apoia meios de subsist\u00eancia sustent\u00e1veis em regi\u00f5es com escassez de \u00e1gua e promove a distribui\u00e7\u00e3o equitativa de recursos por meio de processos de tomada de decis\u00e3o inclusivos.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimento em infraestrutura verde",
-                "engajamento comunit\u00e1rio",
-                "apoio pol\u00edtico para a gest\u00e3o de recursos h\u00eddricos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o no escoamento de \u00e1guas pluviais",
-                "aumento na capacidade de armazenamento de \u00e1gua",
-                "melhoria na qualidade da \u00e1gua",
-                "estabilidade nos rendimentos agr\u00edcolas"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0176",
+    "actionName": "Development of Climate Action Plan",
+    "actionPriority": 1,
+    "explanation": "Para a cidade de Aracruz, estabelecer um Plano de Ação Climática abrangente unifica diversos setores sob uma estratégia coesa para reduzir emissões e enfrentar riscos climáticos. Esse plano fornece uma estrutura clara para a alocação de recursos a longo prazo e para medidas de adaptação. Ele estabelece as bases para ações coordenadas que aumentam a resiliência e a sustentabilidade como um todo.",
+    "action": {
+      "ActionID": "icare_0176",
+      "ActionName": "Desenvolvimento do Plano de Ação Climática",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "wildfires",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Um plano abrangente que descreve as estratégias e ações de uma cidade para mitigar as emissões de gases de efeito estufa e se adaptar aos impactos das mudanças climáticas, que normalmente inclui uma avaliação dos riscos e vulnerabilidades climáticas da cidade, definição de metas de redução de emissões e implementação de ações em vários setores, como energia, transporte, gestão de resíduos e planejamento urbano.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e compromisso do governo",
+        "Envolvimento e colaboração das partes interessadas",
+        "Financiamento e recursos para implementação"
+      ],
+      "KeyPerformanceIndicators": [
+        "Metas de redução de emissões de gases de efeito estufa.",
+        "Número de ações de adaptação climática implementadas.",
+        "Investimento em projetos de mitigação e adaptação climática."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "medium",
+        "sea-level-rise": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "landslides": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "droughts": "medium"
+      },
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "ipcc_0094",
+    "actionName": "Access to health care",
+    "actionPriority": 2,
+    "explanation": "Para Aracruz, melhorar o acesso à assistência médica garante que os moradores recebam tratamento em tempo hábil durante eventos climáticos extremos. Serviços médicos aprimorados reduzem o impacto de doenças e emergências relacionadas ao clima. Isso fortalece a capacidade geral da cidade de lidar com pressões ambientais, ao mesmo tempo em que protege o bem-estar público.",
+    "action": {
+      "ActionID": "ipcc_0094",
+      "ActionName": "Acesso aos cuidados de saúde",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "droughts"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Melhorar o acesso aos serviços de saúde, incluindo serviços de saúde e nutrição, água limpa, saneamento e recursos de saúde mental culturalmente apropriados. A expansão das capacidades de telemedicina permite uma entrega eficiente de serviços de saúde, especialmente para populações remotas e carentes. Fortalecer os sistemas básicos de saúde pública e a preparação para desastres pode reduzir rapidamente a vulnerabilidade aos riscos de saúde relacionados ao clima.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promove o acesso equitativo aos cuidados de saúde para grupos marginalizados e vulneráveis, incluindo populações sem-teto, comunidades remotas e aqueles afetados por desigualdades habitacionais.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento em tecnologias de telemedicina",
+        "Governança fortalecida dos sistemas de saúde pública",
+        "Capacitação para trabalhadores da saúde",
+        "Melhorias na infraestrutura das instalações de saúde"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução na mortalidade relacionada ao clima",
+        "Aumento no acesso à telemedicina",
+        "Número de programas de saúde adaptados culturalmente implementados",
+        "Melhoria nas métricas de acesso à água e saneamento"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "droughts": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0151",
+    "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+    "actionPriority": 3,
+    "explanation": "Para Aracruz, avaliar minuciosamente e aprimorar bairros vulneráveis melhora as condições de vida e reduz os riscos de enchentes ou ondas de calor. Intervenções direcionadas nessas áreas garantem que as comunidades mais expostas estejam melhor protegidas. Essa abordagem promove a equidade social e fortalece a infraestrutura local, tornando-a mais forte e resiliente.",
+    "action": {
+      "ActionID": "icare_0151",
+      "ActionName": "Desenvolver diagnósticos e restaurar áreas de Zonas Especiais de Interesse Social (ZEIS)",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "sea-level-rise",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Prioridade para áreas ZEIS nas ações de melhoria habitacional e na aplicação de recursos do Fundo de Urbanização, com a implementação de infraestrutura urbana que considere a adaptação climática nesses espaços. Uso de Soluções Baseadas na Natureza (NbS) na adaptação do saneamento ambiental e infraestruturas verdes e azuis que potencializem o lazer, a cultura, a agricultura urbana e atividades para fortalecer associações comunitárias.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento do Fundo de Urbanização e de outros mecanismos financeiros para apoiar melhorias habitacionais e infraestrutura urbana em áreas ZEIS",
+        "Colaboração entre planejadores urbanos, especialistas ambientais e comunidades locais para projetar e implementar soluções baseadas na natureza (NbS) para infraestrutura urbana",
+        "Políticas e estruturas regulatórias que integrem medidas de adaptação climática no planejamento urbano, garantindo que os investimentos priorizem a sustentabilidade ambiental e a comunidade"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de áreas ZEIS diagnosticadas e restauradas.",
+        "Percentual de residentes beneficiados por áreas restauradas (%).",
+        "Investimentos públicos alocados para áreas ZEIS (valor em moeda)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "sea-level-rise": "medium",
+        "floods": "medium",
+        "landslides": "low",
+        "diseases": "medium",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "ipcc_0093",
+    "actionName": "Availability of health infrastructure",
+    "actionPriority": 4,
+    "explanation": "Para Aracruz, expandir a rede de hospitais e clínicas melhora a preparação para emergências e o atendimento de rotina. A infraestrutura de saúde aprimorada oferece suporte fundamental durante desastres e condições climáticas extremas. Essa preparação fortalece a resiliência da comunidade e garante uma resposta rápida a problemas de saúde causados pelas mudanças climáticas.",
+    "action": {
+      "ActionID": "ipcc_0093",
+      "ActionName": "Disponibilidade de infraestrutura de saúde",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "sea-level-rise",
+        "diseases"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Garantir o acesso a infraestrutura de água potável segura, proteger os serviços de saúde e melhorar os sistemas de saneamento para mitigar os impactos climáticos. Isso inclui desenvolver medidas adaptativas para a segurança hídrica contra secas, inundações e elevação do nível do mar. Fortalecer a resiliência da infraestrutura garante acesso equitativo aos serviços de saúde, reduz os riscos de contaminação e aborda os impactos dos perigos induzidos pelo clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Melhora o acesso a recursos críticos de saúde e água para comunidades vulneráveis e desatendidas, mitigando as desigualdades causadas pelos impactos climáticos.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamento adequado",
+        "investimentos tecnológicos em infraestrutura de saúde e água",
+        "governança eficaz e coordenação intersetorial"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução de doenças transmitidas pela água",
+        "melhor acesso a água potável",
+        "número de instalações de saúde resilientes desenvolvidas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "sea-level-rise": "high",
+        "diseases": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "ipcc_0097",
+    "actionName": "Food storage/distribution improvements",
+    "actionPriority": 5,
+    "explanation": "Para Aracruz, reforçar os sistemas de armazenamento e distribuição de alimentos estabiliza as cadeias de suprimentos durante as perturbações climáticas. O armazenamento refrigerado confiável e a logística eficiente ajudam a evitar o desperdício, garantindo que as comunidades tenham acesso contínuo a suprimentos essenciais. Essa estabilidade é fundamental para manter a saúde pública e apoiar os setores agrícolas locais.",
+    "action": {
+      "ActionID": "ipcc_0097",
+      "ActionName": "Melhorias no armazenamento/distribuição de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms",
+        "heatwaves"
+      ],
+      "Sector": [
+        "food_security",
+        "road_infrastructure"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Aprimorar os sistemas de armazenamento e distribuição de alimentos melhorando a infraestrutura de transporte, otimizando redes de comércio e encurtando cadeias de suprimento para garantir a disponibilidade local de alimentos e resiliência aos impactos climáticos. Esta ação também inclui aumentar a capacidade das instalações locais de armazenamento de alimentos para reduzir perdas pós-colheita, abordar ineficiências na logística e reforçar a infraestrutura para produtos perecíveis. O objetivo é melhorar a segurança alimentar e reduzir a vulnerabilidade a eventos extremos, interrupções e impactos em cascata, especialmente durante pandemias e outras crises.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Apoia o acesso equitativo a alimentos para populações marginalizadas e vulneráveis, priorizando a produção local de alimentos e melhorando os sistemas de distribuição que alcançam áreas desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento em infraestrutura",
+        "Incentivos políticos para a produção local de alimentos",
+        "Colaboração com os setores de logística e comércio",
+        "Tecnologia para otimização da cadeia de suprimentos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução das perdas pós-colheita",
+        "Aumento da disponibilidade de alimentos locais",
+        "Melhoria da eficiência do transporte para distribuição de alimentos",
+        "Cadeias de abastecimento encurtadas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0169",
+    "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+    "actionPriority": 6,
+    "explanation": "Para Aracruz, um plano robusto de resposta a emergências organiza os esforços de resgate e assistência quando ocorrem eventos climáticos severos. Essa estratégia proativa minimiza o caos e reduz os danos ao garantir que os serviços sejam mobilizados de forma eficiente. Procedimentos claros de resposta ajudam a proteger vidas e a manter a estabilidade cívica durante emergências climáticas.",
+    "action": {
+      "ActionID": "icare_0169",
+      "ActionName": "Estabelecer um Plano de Preparação e Medidas de Resposta a Emergências em caso de eventos climáticos extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta ação foca em preparar o município para responder a eventos extremos, visando fornecer uma resposta rápida que minimize os impactos na população.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de um plano abrangente de resposta a emergências que inclua a coordenação entre as autoridades locais, serviços de emergência e organizações comunitárias",
+        "Investimento em sistemas de alerta precoce e infraestrutura para garantir respostas oportunas e eficazes a eventos extremos",
+        "Treinamento e capacitação para socorristas locais e comunidades para melhorar a preparação e resiliência a eventos extremos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de parcerias de resposta a emergências estabelecidas.",
+        "Tempo médio de resposta durante eventos climáticos extremos (horas).",
+        "Percentual de redução de vítimas e danos durante eventos climáticos extremos anualmente (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "wildfires": "high",
+        "sea-level-rise": "low",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0162",
+    "actionName": "Strengthen programs for control and conservation of protected areas",
+    "actionPriority": 7,
+    "explanation": "Para Aracruz, aprimorar a gestão das áreas naturais protegidas salvaguarda a biodiversidade local, a qualidade da água e os sumidouros de carbono. Esses ecossistemas mitigam naturalmente os riscos de enchentes e estabilizam o clima local. A conservação desses recursos garante benefícios ambientais de longo prazo para a comunidade.",
+    "action": {
+      "ActionID": "icare_0162",
+      "ActionName": "Fortalecer programas de controle e conservação de áreas protegidas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves",
+        "diseases"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta ação foca na implementação de uma série de estratégias integradas para melhorar a conservação ambiental e maximizar seus benefícios, como a expansão de áreas protegidas, o desenvolvimento de planos de manejo para unidades de conservação e o treinamento de guias de ecoturismo para fortalecer o turismo sustentável.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expansão de áreas protegidas para melhorar a conservação ambiental.",
+        "Desenvolvimento de planos de manejo para unidades de conservação.",
+        "Treinamento de guias de ecoturismo para promover o turismo sustentável."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentual de aumento na área de regiões protegidas (%).",
+        "Redução nas taxas de desmatamento em áreas protegidas anualmente (%).",
+        "Número de programas de conservação fortalecidos anualmente."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high",
+        "heatwaves": "medium",
+        "diseases": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0152",
+    "actionName": "Recovery of degraded areas",
+    "actionPriority": 8,
+    "explanation": "Para a Aracruz, a recuperação de terras degradadas restaura funções essenciais do ecossistema, como a retenção de água e o controle da erosão. Esses esforços criam um ambiente mais saudável, capaz de suportar melhor eventos climáticos extremos. As áreas restauradas também contribuem para a sustentabilidade regional ao melhorar a qualidade das terras agrícolas.",
+    "action": {
+      "ActionID": "icare_0152",
+      "ActionName": "Recuperação de áreas degradadas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar ecossistemas danificados por atividades humanas através do replantio de vegetação nativa, restauração do solo, eliminação de espécies invasoras e implementação de técnicas de manejo sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Desenvolver um plano de restauração claro e garantir financiamento para a gestão a longo prazo.",
+        "Assegurar o acesso a espécies de plantas nativas e fornecer treinamento em práticas sustentáveis.",
+        "Remover espécies invasoras e colaborar com as comunidades locais para uma restauração bem-sucedida do ecossistema."
+      ],
+      "KeyPerformanceIndicators": [
+        "Hectares de terras degradadas restauradas anualmente",
+        "Aumento na cobertura vegetal (%) em áreas restauradas",
+        "Número de comunidades locais envolvidas em projetos de restauração"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0164",
+    "actionName": "Hydrological Monitoring System with Telemetry Stations",
+    "actionPriority": 9,
+    "explanation": "Para Aracruz, o monitoramento em tempo real dos níveis de água por meio de estações de telemetria permite a detecção precoce de enchentes e secas. Alertas rápidos possibilitam evacuações oportunas e uma gestão eficiente dos recursos, reduzindo danos e salvando vidas. Essa abordagem baseada em dados apoia estratégias proativas de gestão hídrica e de desastres.",
+    "action": {
+      "ActionID": "icare_0164",
+      "ActionName": "Sistema de Monitoramento Hidrológico com Estações de Telemetria",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementação de um sistema de monitoramento hidrológico com estações de telemetria para monitorar a precipitação, os níveis de água e as variáveis meteorológicas em tempo real.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Equipamento e infraestrutura",
+        "Sistema robusto de gestão de dados",
+        "Coordenação institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Pontualidade dos dados",
+        "Custo-benefício",
+        "Eficácia da mitigação"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0148",
+    "actionName": "Create the Municipal Climate Change Forum",
+    "actionPriority": 10,
+    "explanation": "Para Aracruz, um fórum dedicado às mudanças climáticas facilita o diálogo entre governo, empresas e membros da comunidade. Essa plataforma colaborativa garante que as políticas climáticas reflitam as necessidades locais e aproveitem diferentes expertises. Ela desempenha um papel crucial na formulação de estratégias de adaptação eficazes e inclusivas.",
+    "action": {
+      "ActionID": "icare_0148",
+      "ActionName": "Criar o Fórum Municipal de Mudanças Climáticas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "diseases",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Criação de um Fórum Municipal de Mudanças Climáticas com a participação de líderes comunitários, cientistas, coletivos, institutos de pesquisa, ONGs e membros da administração municipal e estadual. O Fórum servirá como referência para ações relacionadas às Mudanças Climáticas, com o objetivo de monitorar políticas futuras sobre o assunto no município, estimular o diálogo e criar uma rede de discussões sobre a crise climática.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Engajamento de diversas partes interessadas, incluindo líderes comunitários, cientistas, ONGs e autoridades locais, para estabelecer e sustentar o Fórum.",
+        "Alocação de recursos para facilitar reuniões regulares, workshops e eventos para que o Fórum permaneça ativo e impactante.",
+        "Desenvolvimento de uma estrutura clara e diretrizes para o Fórum monitorar e orientar políticas e iniciativas de mudança climática dentro do município."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de partes interessadas chave participando ativamente no fórum.",
+        "Número de políticas ou ações relacionadas ao clima propostas através do fórum.",
+        "Envolvimento público nas iniciativas do fórum (medido pela participação em eventos ou pesquisas)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "landslides": "low",
+        "floods": "medium",
+        "wildfires": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0145",
+    "actionName": "Strengthen the healthcare network to attend to climate victims",
+    "actionPriority": 11,
+    "explanation": "Para Aracruz, fortalecer a infraestrutura de saúde garante apoio médico rápido durante eventos extremos, como enchentes ou ondas de calor. Clínicas aprimoradas e serviços de emergência reduzem o risco de impactos graves à saúde entre os moradores. Esse foco na saúde pública fortalece a resiliência da comunidade diante dos desafios climáticos.",
+    "action": {
+      "ActionID": "icare_0145",
+      "ActionName": "Fortalecer a rede de saúde para atender às vítimas do clima",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "storms",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Melhorar a infraestrutura das unidades de saúde para atender pessoas que necessitam de cuidados médicos devido a impactos associados a riscos climáticos (vítimas do clima), como aquelas afetadas por ondas de calor ou inundações, especialmente em áreas mais vulneráveis. Desenvolver planos de ação para preparar a rede de saúde para situações extremas relacionadas ao clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Investimento na renovação e expansão das instalações de saúde, garantindo que estejam equipadas para lidar com os impactos na saúde relacionados ao clima, especialmente em áreas vulneráveis.",
+        "Desenvolvimento de planos de ação e programas de treinamento para profissionais de saúde responderem a eventos climáticos extremos, como ondas de calor e inundações.",
+        "Colaboração com autoridades locais, equipes de resposta a emergências e especialistas em clima para criar uma estrutura abrangente para preparar a rede de saúde para os riscos climáticos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de instalações de saúde atualizadas para emergências relacionadas ao clima.",
+        "Aumento no percentual de profissionais de saúde treinados para resposta a emergências climáticas (%).",
+        "Número de lesões relacionadas ao clima tratadas com sucesso.",
+        "."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "medium",
+        "floods": "high",
+        "storms": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "ipcc_0096",
+    "actionName": "Farm/fishery improvements",
+    "actionPriority": 12,
+    "explanation": "Para Aracruz, aprimorar as práticas agrícolas e pesqueiras aumenta a segurança alimentar e a resiliência diante de extremos climáticos. Práticas modernas reduzem o uso de água e o consumo de energia, ao mesmo tempo em que melhoram a produtividade. Essas melhorias estabilizam as economias locais e apoiam meios de subsistência sustentáveis.",
+    "action": {
+      "ActionID": "ipcc_0096",
+      "ActionName": "Melhorias na fazenda/pesqueira",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementar uma variedade de estratégias para adaptar fazendas e pescarias aos impactos climáticos. Isso inclui mudar o equipamento de pesca ou a potência dos barcos, adotar novas variedades de culturas ou ajustar os cronogramas de plantio, melhorar os esquemas de irrigação, integrar sistemas de cultivo e pecuária, realocar o gado com manejo de pastagens melhorado e adotar sistemas agroecológicos e agroflorestais. Inovações tecnológicas como a agricultura inteligente e medidas financeiras como subsídios apoiam essas adaptações.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garante o acesso a recursos para agricultores e pescadores marginalizados, promove opções diversificadas de subsistência e fortalece a resiliência em comunidades desfavorecidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Apoio político para agricultura e pesca resilientes ao clima",
+        "Acesso a financiamento e subsídios",
+        "Treinamento para adoção de novas práticas",
+        "Infraestrutura de mercado melhorada"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento na produtividade agrícola e pesqueira",
+        "Taxa de adoção de sistemas integrados",
+        "Redução nas perdas de rendimento relacionadas ao clima"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "wildfires": "low",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0175",
+    "actionName": "Recovery and preservation of green areas",
+    "actionPriority": 13,
+    "explanation": "Para Aracruz, restaurar e proteger áreas verdes contribui para o resfriamento natural e a mitigação de enchentes. A vegetação saudável absorve a água da chuva e reduz o efeito de ilha de calor, tornando as áreas urbanas mais habitáveis. Esses esforços também ampliam as oportunidades de lazer e apoiam a biodiversidade local.",
+    "action": {
+      "ActionID": "icare_0175",
+      "ActionName": "Recuperação e preservação de áreas verdes",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Reabilitação e proteção de espaços verdes existentes, como parques, florestas e zonas húmidas, e expansão de áreas verdes através do plantio de árvores e vegetação em áreas urbanas e periurbanas. Estas áreas oferecem soluções naturais para a gestão dos recursos hídricos, redução do estresse térmico, melhoria da qualidade do ar e aumento da biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de terrenos adequados para espaços verdes",
+        "Acesso a recursos hídricos para irrigação"
+      ],
+      "KeyPerformanceIndicators": [
+        "Área de espaços verdes criados ou restaurados.",
+        "Índices de biodiversidade em áreas verdes.",
+        "Envolvimento da comunidade em atividades de espaços verdes."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "ipcc_0092",
+    "actionName": "Social safety nets",
+    "actionPriority": 14,
+    "explanation": "Para Aracruz, sistemas robustos de proteção social oferecem apoio essencial durante crises provocadas pelo clima, como enchentes ou ondas de calor. Esses programas garantem que as populações vulneráveis tenham acesso a alimentos, abrigo e cuidados médicos quando necessário. Ao mitigar o impacto social de eventos extremos, eles ajudam a manter a estabilidade da comunidade.",
+    "action": {
+      "ActionID": "ipcc_0092",
+      "ActionName": "Redes de proteção social",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "As redes de segurança social englobam mecanismos de proteção social adaptativa para reduzir a insegurança alimentar e a desnutrição, especialmente para populações vulneráveis. Estes incluem transferências de dinheiro, programas de alimentação escolar, iniciativas de trabalho público, compensação de desemprego, reformas agrárias, esquemas de crédito e seguros. Abordagens integradas combinam avaliações de risco climático com redução de risco de desastres, educação e equidade social para aumentar a resiliência aos estresses climáticos.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Aumenta o status social e os direitos de grupos marginalizados, protege populações vulneráveis, reduz desigualdades e promove a educação e a equidade de gênero.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Integração do clima e risco de desastres na proteção social",
+        "programas educacionais",
+        "coordenação com iniciativas de meios de subsistência sustentáveis e inclusão financeira"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas taxas de desnutrição",
+        "Aumento no acesso à educação para grupos vulneráveis",
+        "Participação em programas de proteção social"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0181",
+    "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+    "actionPriority": 15,
+    "explanation": "Para Aracruz, realocar comunidades de zonas de alto risco minimiza perdas recorrentes causadas por enchentes ou deslizamentos de terra. A restauração dessas áreas revitaliza as defesas naturais e melhora a função ecológica. Essa medida proativa protege vidas e garante a sustentabilidade ambiental a longo prazo.",
+    "action": {
+      "ActionID": "icare_0181",
+      "ActionName": "Relocação e Restauração Ambiental em Áreas Vulneráveis",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Um projeto abrangente que aborda a vulnerabilidade socioambiental de um assentamento informal. Inclui a realocação de residentes de áreas propensas a inundações, a restauração do meio ambiente e o fornecimento de infraestrutura e serviços sociais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamento adequado",
+        "Coordenação interagências",
+        "Segurança da posse da terra"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de famílias realocadas.",
+        "Progresso da restauração ambiental.",
+        "Redução do risco de inundações."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "ipcc_0098",
+    "actionName": "Behaviour change in diets and food waste",
+    "actionPriority": 16,
+    "explanation": "Para Aracruz, promover mudanças nos hábitos alimentares e reduzir o desperdício de alimentos diminui a pressão sobre os sistemas agrícolas. Essas mudanças ajudam a reduzir as emissões e a diminuir a demanda por recursos, ao mesmo tempo em que promovem estilos de vida mais saudáveis. A adoção generalizada de práticas alimentares sustentáveis contribui, em última análise, para objetivos climáticos mais amplos.",
+    "action": {
+      "ActionID": "ipcc_0098",
+      "ActionName": "Mudança de comportamento em dietas e desperdício de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Reduzir a perda e o desperdício de alimentos por meio de práticas aprimoradas de produção, distribuição e consumo de alimentos. As ações incluem o aprimoramento de técnicas agrícolas, a adoção de tecnologias de economia de água, a implementação de soluções de armazenamento de baixo custo e a promoção de dietas à base de plantas. Os formuladores de políticas podem incentivar esses comportamentos com políticas de preços adequadas, iniciativas de agricultura sustentável e apoio a grupos desfavorecidos. A ação enfatiza a mudança para dietas mais saudáveis, a redução do consumo excessivo e o apoio a sistemas alimentares locais para mitigar as emissões de gases de efeito estufa e garantir a segurança alimentar sob as mudanças climáticas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promove o acesso a alimentos saudáveis e acessíveis para comunidades vulneráveis, capacitando mulheres, jovens e grupos socialmente desfavorecidos. Incentiva a participação equitativa em práticas agrícolas sustentáveis e redes alimentares locais.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Educação e treinamento para agricultores",
+        "Acesso a insumos agrícolas sustentáveis",
+        "Apoio político para práticas sustentáveis",
+        "Infraestrutura tecnológica para armazenamento e processamento"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas porcentagens de perda e desperdício de alimentos",
+        "Aumento na adoção de dietas à base de plantas",
+        "Melhoria nos indicadores de segurança alimentar",
+        "Redução nas emissões de GEE dos sistemas alimentares"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "medium",
+        "floods": "medium",
+        "wildfires": "low"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0149",
+    "actionName": "Encourage sustainable land use practices",
+    "actionPriority": 17,
+    "explanation": "Para Aracruz, implementar diretrizes sustentáveis de uso do solo ajuda a equilibrar o crescimento urbano com a preservação dos recursos naturais. Técnicas inteligentes de zoneamento e agricultura reduzem a degradação ecológica e diminuem os riscos de enchentes. Esse alinhamento do desenvolvimento com a conservação ambiental promove a resiliência comunitária a longo prazo.",
+    "action": {
+      "ActionID": "icare_0149",
+      "ActionName": "Incentivar práticas sustentáveis de uso da terra",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Promover métodos que garantam a conservação e a saúde do solo, preservando a biodiversidade, reduzindo a erosão e minimizando os impactos ambientais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecer acesso a conhecimento técnico e treinamento em práticas de manejo sustentável do solo.",
+        "Oferecer incentivos financeiros e formar parcerias com instituições de pesquisa e agricultores locais.",
+        "Desenvolver sistemas de monitoramento para a saúde do solo e biodiversidade, e implementar políticas para controle da erosão."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem da área de terra gerida sob práticas de uso sustentável da terra (%)",
+        "Redução nas taxas de desmatamento ou degradação da terra (%)",
+        "Aumento nos indicadores de biodiversidade em terras geridas (por exemplo, contagem de espécies, qualidade do habitat)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "medium",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0156",
+    "actionName": "Implementation of urban gardens",
+    "actionPriority": 18,
+    "explanation": "Para Aracruz, transformar espaços urbanos vazios em jardins melhora a segurança alimentar local e modera o calor urbano. Esses jardins também oferecem espaços de convivência comunitária que promovem o bem-estar e a conscientização ambiental. Ao reduzir o calor e gerenciar a água da chuva, os jardins urbanos aumentam a resiliência geral da cidade.",
+    "action": {
+      "ActionID": "icare_0156",
+      "ActionName": "Implementação de hortas urbanas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Identificar e avaliar a viabilidade de áreas adequadas para a instalação de hortas urbanas e garantir que os locais escolhidos atendam às expectativas da comunidade.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Garantir a disponibilidade de mapas detalhados de uso do solo e dados de planejamento urbano.",
+        "Envolver-se com as comunidades locais para entender suas necessidades e expectativas.",
+        "Avaliar a qualidade do solo, a disponibilidade de água e formar parcerias para apoiar o estabelecimento e a manutenção de jardins."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de hortas urbanas criadas.",
+        "Quantidade de alimentos produzidos localmente (kg/ano).",
+        "Número de beneficiários diretos."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "landslides": "low",
+        "floods": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "ipcc_0086",
+    "actionName": "Ecosystem-based adaptation",
+    "actionPriority": 19,
+    "explanation": "Para Aracruz, aproveitar processos naturais por meio da adaptação baseada em ecossistemas—como a restauração de áreas úmidas e florestas—ajuda a proteger contra extremos climáticos. Esses ecossistemas armazenam carbono naturalmente, regulam o fluxo de água e resfriam áreas urbanas. Esse método econômico reduz a necessidade de infraestrutura pesada enquanto promove a biodiversidade.",
+    "action": {
+      "ActionID": "ipcc_0086",
+      "ActionName": "Adaptação baseada em ecossistemas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "heatwaves",
+        "floods"
+      ],
+      "Sector": [
+        "biodiversity",
+        "geo-hydrological_disasters",
+        "water_resources",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar e gerir de forma sustentável os ecossistemas marinhos, costeiros, urbanos, fluviais e de zonas húmidas para proteger contra perigos climáticos, como tempestades, inundações e ondas de calor. Os esforços incluem agroecologia, vegetação costeira e marinha e recifes, corredores de vegetação, restauração de habitats de manguezais, espaços verdes urbanos para reduzir as temperaturas. Estas ações melhoram a biodiversidade, armazenam carbono, melhoram a qualidade da água e proporcionam co-benefícios socioeconômicos e culturais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": "Apoia comunidades vulneráveis ao melhorar a resiliência climática, promover o acesso equitativo aos serviços ecossistêmicos e criar oportunidades de subsistência, especialmente para populações marginalizadas e desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Engajamento comunitário",
+        "Apoio regulatório",
+        "Investimento financeiro",
+        "Planejamento urbano",
+        "Vegetação resiliente ao clima",
+        "Avaliações de biodiversidade",
+        "Gestão de bacias hidrográficas",
+        "Planejamento a montante",
+        "Financiamento sustentável"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução de danos causados por marés de tempestade",
+        "Taxas de sequestro de carbono",
+        "Aumento da biodiversidade",
+        "Redução da temperatura em áreas urbanas",
+        "Melhoria da qualidade da água",
+        "Acesso a espaços verdes por comunidades carentes",
+        "Redução de eventos de inundação",
+        "Melhoria da saúde dos ecossistemas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "high",
+        "sea-level-rise": "high",
+        "heatwaves": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR ACZ",
+    "cityName": "Aracruz",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "ipcc_0099",
+    "actionName": "Water capture/storage",
+    "actionPriority": 20,
+    "explanation": "Para Aracruz, investir em sistemas de captação e armazenamento de água garante um abastecimento confiável durante períodos de seca ou de alta demanda. Ao coletar água da chuva e manter reservatórios, o município reduz a dependência de fontes externas de água. Essa medida de resiliência apoia a agricultura e o consumo público, estabilizando os recursos hídricos da região.",
+    "action": {
+      "ActionID": "ipcc_0099",
+      "ActionName": "Captura/armazenamento de água",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms"
+      ],
+      "Sector": [
+        "water_resources",
+        "food_security",
+        "energy_security",
+        "geo-hydrological_disasters"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementação de soluções de captação e armazenamento de água, como açudes em fazendas, revitalização de corpos d'água, jardins de chuva, bioswales, lagoas de retenção e tanques de armazenamento de água. Essas medidas visam mitigar os impactos induzidos pelo clima, melhorando a gestão da água, reduzindo o escoamento de águas pluviais, melhorando a qualidade da água e apoiando a agricultura e a produção de energia em cenários climáticos em mudança. Reservatórios de água e barragens multiuso oferecem benefícios adicionais ao abordar a escassez de água e gerenciar riscos associados a desastres naturais.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garante o acesso à água para comunidades carentes, apoia meios de subsistência sustentáveis em regiões com escassez de água e promove a distribuição equitativa de recursos por meio de processos de tomada de decisão inclusivos.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento em infraestrutura verde",
+        "engajamento comunitário",
+        "apoio político para a gestão de recursos hídricos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução no escoamento de águas pluviais",
+        "aumento na capacidade de armazenamento de água",
+        "melhoria na qualidade da água",
+        "estabilidade nos rendimentos agrícolas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  }
 ]

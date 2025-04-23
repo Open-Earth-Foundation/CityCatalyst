@@ -1,1283 +1,1283 @@
 [
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "c40_0035",
-        "actionName": "Waste Efficiency",
-        "actionPriority": 1,
-        "explanation": "The 'Waste Efficiency' action is a priority for Petr\u00f3polis due to the city's significant waste emissions, which are the largest contributor to its total emissions profile. Addressing waste efficiency can substantially reduce these emissions, thereby improving the city's overall environmental impact. Additionally, enhancing waste management practices can lead to better public health outcomes, as it reduces the risk of disease spread and improves sanitation. Given the city's vulnerability to climate-related hazards, such as floods and landslides, efficient waste management can also mitigate the impact of these events by preventing waste-related blockages in drainage systems.",
-        "action": {
-            "ActionID": "c40_0035",
-            "ActionName": "Eficiencia en el manejo de residuos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Las iniciativas de \"Eficiencia de Residuos\" tienen como objetivo mejorar la eficiencia de los procesos de recolecci\u00f3n de residuos, reduciendo el consumo de recursos y minimizando el impacto ambiental. Esto incluye la optimizaci\u00f3n de los sistemas de gesti\u00f3n de residuos para mejorar la eficiencia energ\u00e9tica y promover pr\u00e1cticas sostenibles de eliminaci\u00f3n de residuos.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Las iniciativas de \"Eficiencia de Residuos\" promueven la equidad y la inclusi\u00f3n al centrarse en comunidades desatendidas que a menudo soportan la carga de sistemas de gesti\u00f3n de residuos ineficientes. Al optimizar los procesos de recolecci\u00f3n de residuos, estas iniciativas pueden reducir la carga ambiental sobre las poblaciones vulnerables, que pueden vivir en \u00e1reas desproporcionadamente afectadas por los residuos y la contaminaci\u00f3n.\n\nAdem\u00e1s, mejorar la eficiencia energ\u00e9tica en la gesti\u00f3n de residuos puede generar ahorros de costos, que pueden reinvertirse en servicios comunitarios o infraestructuras que beneficien a los vecindarios de bajos ingresos. La promoci\u00f3n de pr\u00e1cticas sostenibles de eliminaci\u00f3n de residuos tambi\u00e9n asegura que todos los miembros de la comunidad, independientemente de su estatus socioecon\u00f3mico, tengan acceso a opciones ambientalmente responsables, fomentando un sentido de responsabilidad compartida e inclusi\u00f3n en los esfuerzos de acci\u00f3n clim\u00e1tica.\n\nEn general, estas iniciativas reconocen los desaf\u00edos \u00fanicos que enfrentan las comunidades desatendidas y tienen como objetivo crear un sistema de gesti\u00f3n de residuos m\u00e1s equitativo que beneficie a todos los residentes.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "80-100",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Infraestructura y tecnolog\u00eda efectiva para la gesti\u00f3n de residuos",
-                "Colaboraci\u00f3n con gobiernos locales y autoridades de gesti\u00f3n de residuos",
-                "Concienciaci\u00f3n y educaci\u00f3n p\u00fablica sobre pr\u00e1cticas de eliminaci\u00f3n de residuos",
-                "Acceso a datos para monitorear y optimizar los procesos de recolecci\u00f3n de residuos",
-                "Inversi\u00f3n en instalaciones sostenibles de procesamiento de residuos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en los costos de recolecci\u00f3n de residuos",
-                "Porcentaje de disminuci\u00f3n de residuos enviados a vertederos",
-                "Aumento en las tasas de reciclaje",
-                "Consumo de energ\u00eda por tonelada de residuos recolectados",
-                "Reducci\u00f3n de emisiones de carbono de la gesti\u00f3n de residuos",
-                "Satisfacci\u00f3n del cliente con los servicios de recolecci\u00f3n de residuos",
-                "Volumen de residuos procesados mediante m\u00e9todos sostenibles",
-                "Eficiencia operativa de las rutas de recolecci\u00f3n de residuos"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0052",
-        "actionName": "Develop projects for renewable energy and waste reuse",
-        "actionPriority": 2,
-        "explanation": "Developing projects for renewable energy and waste reuse in Petr\u00f3polis is crucial due to the city's high waste emissions, which are a significant contributor to its total emissions. By focusing on renewable energy, the city can reduce its reliance on fossil fuels, thereby decreasing stationary energy emissions. Additionally, waste reuse initiatives can help mitigate the environmental impact of waste emissions, which are currently the largest source of emissions in the city. These projects align with the city's need to address climate risks, such as floods and landslides, by promoting sustainable practices that enhance resilience.",
-        "action": {
-            "ActionID": "icare_0052",
-            "ActionName": "Desarrollar proyectos para energ\u00eda renovable y reutilizaci\u00f3n de residuos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta acci\u00f3n tiene como objetivo desarrollar e implementar proyectos de energ\u00eda renovable, incluyendo: un biodigestor para el tratamiento de residuos org\u00e1nicos y una planta de energ\u00eda solar.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "60-79",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo e implementaci\u00f3n de proyectos de energ\u00eda renovable.",
-                "Instalaci\u00f3n de un biodigestor para el tratamiento de residuos org\u00e1nicos.",
-                "Establecimiento de una planta de energ\u00eda solar para generar energ\u00eda limpia."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de proyectos de energ\u00eda renovable y reutilizaci\u00f3n de residuos implementados.",
-                "Cantidad de residuos reutilizados o reciclados (toneladas/a\u00f1o).",
-                "Reducci\u00f3n en los costos de energ\u00eda para los municipios participantes (USD)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "c40_0036",
-        "actionName": "Landfill Management",
-        "actionPriority": 3,
-        "explanation": "Landfill management is a critical action for Petr\u00f3polis due to the significant waste emissions contributing to the city's total emissions profile. With waste emissions being the largest source of emissions in the city, improving landfill management can substantially reduce greenhouse gas emissions. Additionally, effective landfill management can mitigate risks associated with public health and environmental degradation, which are crucial given the city's vulnerability to hazards like floods and landslides. Prioritizing this action aligns with the city's need to address its environmental impact and enhance resilience against climate-related risks.",
-        "action": {
-            "ActionID": "c40_0036",
-            "ActionName": "Gesti\u00f3n de Vertederos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Las estrategias de \"Gesti\u00f3n de Vertederos\" se centran en pr\u00e1cticas responsables y sostenibles de gesti\u00f3n de vertederos para minimizar la degradaci\u00f3n ambiental. Al adoptar t\u00e9cnicas de gesti\u00f3n efectivas, las ciudades buscan reducir la huella ecol\u00f3gica asociada con los sitios de vertederos y fomentar la reducci\u00f3n de residuos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Las estrategias de \"Gesti\u00f3n de Vertederos\" promueven la equidad y la inclusi\u00f3n al abordar los impactos ambientales de los sitios de vertederos, que a menudo afectan de manera desproporcionada a las comunidades vulnerables y desatendidas. Estas comunidades frecuentemente residen cerca de vertederos y son m\u00e1s susceptibles a los riesgos para la salud asociados con la contaminaci\u00f3n y la degradaci\u00f3n ambiental. Al implementar pr\u00e1cticas de vertederos responsables y sostenibles, la acci\u00f3n busca reducir estos impactos negativos, mejorando as\u00ed la calidad de vida de los residentes en estas \u00e1reas.\n\nAdem\u00e1s, las t\u00e9cnicas efectivas de reducci\u00f3n de residuos pueden crear oportunidades para la participaci\u00f3n y el compromiso comunitario, permitiendo que las poblaciones desatendidas tengan voz en las decisiones ambientales locales. Esta inclusi\u00f3n fomenta un sentido de pertenencia y empoderamiento entre los miembros de la comunidad, asegurando que sus necesidades y preocupaciones sean consideradas en la gesti\u00f3n de los sitios de vertederos. En general, la acci\u00f3n reconoce y busca mitigar las inequidades enfrentadas por las comunidades marginadas en relaci\u00f3n con la gesti\u00f3n de residuos y la salud ambiental.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "60-79",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Pr\u00e1cticas efectivas de segregaci\u00f3n de residuos para asegurar una correcta disposici\u00f3n y reciclaje",
-                "Inversi\u00f3n en tecnolog\u00eda para el tratamiento de residuos y monitoreo de vertederos",
-                "Participaci\u00f3n comunitaria y educaci\u00f3n sobre la reducci\u00f3n de residuos y el reciclaje",
-                "Marcos regulatorios y pol\u00edticas que apoyan pr\u00e1cticas sostenibles en vertederos",
-                "Colaboraci\u00f3n con gobiernos locales y organizaciones para compartir recursos y mejores pr\u00e1cticas"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n del volumen de residuos en vertederos",
-                "Porcentaje de residuos desviados de vertederos",
-                "Tasa de captura de gas de vertedero",
-                "Calidad del suelo y del agua alrededor de los sitios de vertederos",
-                "Frecuencia de inspecciones de vertederos",
-                "Niveles de concienciaci\u00f3n y participaci\u00f3n p\u00fablica",
-                "Ahorro de costos por pr\u00e1cticas mejoradas de gesti\u00f3n de vertederos",
-                "Cumplimiento de las regulaciones ambientales"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "c40_0040",
-        "actionName": "Volume-Based Collection",
-        "actionPriority": 4,
-        "explanation": "The action 'Volume-Based Collection' is a priority for Petr\u00f3polis due to its potential to significantly reduce waste emissions, which are currently the largest source of emissions in the city. Implementing this action can encourage waste reduction and recycling, thereby decreasing the overall waste emissions. Additionally, this approach can help address the moderate issue of inadequate water access by reducing the strain on waste management systems, potentially improving public health outcomes. Given the city's vulnerability to climate hazards like floods and landslides, reducing waste emissions can also contribute to broader environmental resilience.",
-        "action": {
-            "ActionID": "c40_0040",
-            "ActionName": "Recolecci\u00f3n Basada en Volumen",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Las pol\u00edticas de \"Recolecci\u00f3n Basada en Volumen\" incentivan la reducci\u00f3n de residuos al implementar tarifas o incentivos basados en la cantidad de residuos generados. Este enfoque anima a los residentes a minimizar la producci\u00f3n de residuos, contribuyendo a los objetivos generales de reducci\u00f3n de residuos.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Las pol\u00edticas de \"Recolecci\u00f3n Basada en Volumen\" promueven la equidad y la inclusi\u00f3n al:\n\n1. **Incentivar la Participaci\u00f3n**: Al vincular tarifas o incentivos con la cantidad de residuos generados, la pol\u00edtica anima a todos los residentes, incluidos aquellos de comunidades vulnerables o desatendidas, a participar activamente en los esfuerzos de reducci\u00f3n de residuos. Esto puede empoderar a estas comunidades para que se apropien de sus pr\u00e1cticas de gesti\u00f3n de residuos.\n\n2. **Alivio Financiero para Generadores de Bajo Volumen**: Los hogares que producen menos residuos, a menudo encontrados en comunidades desatendidas, pueden beneficiarse de tarifas m\u00e1s bajas, proporcion\u00e1ndoles alivio financiero y fomentando pr\u00e1cticas sostenibles sin imponer una carga desproporcionada.\n\n3. **Concienciaci\u00f3n y Educaci\u00f3n**: La implementaci\u00f3n de pol\u00edticas basadas en volumen a menudo incluye componentes educativos que informan a los residentes sobre estrategias de reducci\u00f3n de residuos. Esto puede beneficiar particularmente a las comunidades desatendidas al proporcionarles conocimientos y recursos para reducir eficazmente los residuos.\n\n4. **Participaci\u00f3n Comunitaria**: La pol\u00edtica puede fomentar la participaci\u00f3n comunitaria al involucrar a los residentes en discusiones sobre la gesti\u00f3n y reducci\u00f3n de residuos, asegurando que las voces de las poblaciones vulnerables sean escuchadas y consideradas en el proceso de toma de decisiones.\n\n5. **Asignaci\u00f3n Equitativa de Recursos**: Al centrarse en la reducci\u00f3n de residuos, la pol\u00edtica puede llevar a una asignaci\u00f3n m\u00e1s equitativa de recursos para los servicios de gesti\u00f3n de residuos, asegurando que las comunidades desatendidas reciban el apoyo e infraestructura adecuados para gestionar sus residuos de manera efectiva.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "80-100",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Programas efectivos de comunicaci\u00f3n y educaci\u00f3n para informar a los residentes sobre los beneficios de la reducci\u00f3n de residuos",
-                "Un sistema de medici\u00f3n de residuos confiable para rastrear con precisi\u00f3n el volumen de residuos generados",
-                "Apoyo del gobierno local y los responsables de pol\u00edticas para implementar y hacer cumplir las pol\u00edticas de recolecci\u00f3n basadas en el volumen",
-                "Disponibilidad de opciones alternativas de gesti\u00f3n de residuos, como instalaciones de reciclaje y compostaje",
-                "Participaci\u00f3n y compromiso de la comunidad para fomentar una cultura de sostenibilidad y reducci\u00f3n de residuos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en el total de residuos generados",
-                "Aumento en las tasas de reciclaje",
-                "Tasa de participaci\u00f3n en el programa de recolecci\u00f3n basado en volumen",
-                "Promedio de residuos por hogar",
-                "Ahorro de costos por la reducci\u00f3n en la eliminaci\u00f3n de residuos",
-                "Niveles de concienciaci\u00f3n y participaci\u00f3n p\u00fablica",
-                "Cambio en las tasas de compostaje"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0122",
-        "actionName": "Establish eco-parks.",
-        "actionPriority": 5,
-        "explanation": "Establishing eco-parks in Petr\u00f3polis is a priority due to the city's tropical rainforest biome, which supports rich biodiversity. Eco-parks can serve as a buffer against the impacts of climate change, such as heatwaves and floods, which pose significant risks to public health and infrastructure. Additionally, these parks can enhance the city's resilience by providing natural spaces that help manage water resources and reduce the urban heat island effect. Furthermore, eco-parks can promote environmental education and awareness, fostering a community that values and protects its natural surroundings.",
-        "action": {
-            "ActionID": "icare_0122",
-            "ActionName": "Establecer eco-parques.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Un eco-parque es una instalaci\u00f3n para el tratamiento mec\u00e1nico y biol\u00f3gico de residuos s\u00f3lidos urbanos, integrando diferentes tecnolog\u00edas para la segregaci\u00f3n y tratamiento de varias fracciones dentro de los residuos. Este tratamiento tiene como objetivo maximizar la recuperaci\u00f3n de residuos secos y org\u00e1nicos y reducir el volumen de residuos a ser enviados para su disposici\u00f3n final en vertederos, utilizando tecnolog\u00edas como la generaci\u00f3n de energ\u00eda, compostaje, recuperaci\u00f3n de reciclaje, disposici\u00f3n adecuada de residuos residuales y otros m\u00e9todos de tratamiento existentes disponibles en el mercado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "20-39",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Implementaci\u00f3n de eco-parques para el tratamiento mec\u00e1nico y biol\u00f3gico de residuos s\u00f3lidos urbanos.",
-                "Integraci\u00f3n de tecnolog\u00edas como generaci\u00f3n de energ\u00eda, compostaje, recuperaci\u00f3n de reciclaje y disposici\u00f3n adecuada de residuos residuales.",
-                "Maximizaci\u00f3n de la recuperaci\u00f3n de residuos secos y org\u00e1nicos para reducir los vol\u00famenes de disposici\u00f3n en vertederos."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total cubierta por eco-parques en la ciudad (hect\u00e1reas).",
-                "Aumento en el n\u00famero de visitantes a los eco-parques anualmente.",
-                "Mejora en los \u00edndices de biodiversidad local dentro de las \u00e1reas de los eco-parques."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0053",
-        "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
-        "actionPriority": 6,
-        "explanation": "Implementing a project to support cooperatives of recyclable material collectors in Petr\u00f3polis is crucial due to the city's significant waste emissions. With waste emissions being the largest contributor to the city's total emissions, enhancing recycling efforts can substantially reduce this environmental impact. Additionally, supporting cooperatives can improve socio-economic conditions by providing stable income opportunities for low-income residents. This action aligns with the city's need to address both environmental and social challenges, making it a strategic priority.",
-        "action": {
-            "ActionID": "icare_0053",
-            "ActionName": "Implementar un proyecto para apoyar a las cooperativas de recolectores de materiales reciclables",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "disposal_of_solid_waste_generated_in_the_city"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Medidas para mejorar las condiciones laborales y los ingresos en los procesos de clasificaci\u00f3n de residuos reciclables. Incluye capacitaci\u00f3n continua para los recolectores en tecnolog\u00eda, econom\u00eda, gesti\u00f3n empresarial y planificaci\u00f3n conceptual para la operaci\u00f3n y administraci\u00f3n de la Unidad de Clasificaci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "20-39",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Implementaci\u00f3n de medidas para mejorar las condiciones laborales y los ingresos para la clasificaci\u00f3n de residuos reciclables.",
-                "Capacitaci\u00f3n continua para los recolectores en tecnolog\u00eda, econom\u00eda, gesti\u00f3n empresarial y planificaci\u00f3n operativa.",
-                "Desarrollo de capacidades administrativas y operativas para la Unidad de Clasificaci\u00f3n."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de cooperativas apoyadas anualmente.",
-                "Aumento en los ingresos de los recolectores (%).",
-                "Volumen de materiales reciclables recolectados por cooperativas (toneladas/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 7,
-        "explanation": "Encouraging renewable energy policies at the municipal level in Petr\u00f3polis is crucial due to the city's significant stationary energy emissions. Transitioning to renewable energy sources can help reduce these emissions, contributing to a cleaner environment and mitigating climate change impacts. Additionally, promoting renewable energy can enhance energy security, which is vital given the city's vulnerability to droughts that can affect energy supply. Implementing these policies can also stimulate local economic growth by creating green jobs and fostering sustainable development.",
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Fomentar pol\u00edticas de energ\u00eda renovable a nivel municipal",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Abogar por e implementar pol\u00edticas que prioricen el desarrollo e integraci\u00f3n de sistemas de energ\u00eda renovable en las operaciones y planificaci\u00f3n del gobierno local.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Voluntad pol\u00edtica y liderazgo para priorizar la energ\u00eda renovable en las pol\u00edticas y procesos de planificaci\u00f3n del gobierno local",
-                "Desarrollo de pol\u00edticas claras y marcos regulatorios que faciliten la integraci\u00f3n de sistemas de energ\u00eda renovable en las operaciones gubernamentales",
-                "Disponibilidad de financiamiento o mecanismos financieros para apoyar la transici\u00f3n a la energ\u00eda renovable en la infraestructura y operaciones municipales"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de proyectos de energ\u00eda renovable aprobados o iniciados anualmente a nivel municipal.",
-                "Porcentaje de la demanda energ\u00e9tica municipal cubierta por fuentes renovables (%).",
-                "Reducci\u00f3n de las emisiones de carbono municipales debido a la adopci\u00f3n de energ\u00eda renovable (toneladas de CO\u2082e/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0017",
-        "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
-        "actionPriority": 8,
-        "explanation": "Optimizing the urban solid waste management system in Petr\u00f3polis is crucial due to the city's significant waste emissions, which are the highest among all emission sources. By expanding collection and reducing illegal disposal, the city can effectively lower its environmental impact and improve public health. Additionally, better waste management can mitigate risks associated with floods, which are a major hazard in the area, by preventing blockages in drainage systems. This action also aligns with the city's need to address socio-economic challenges, as improved waste management can create job opportunities and enhance living conditions.",
-        "action": {
-            "ActionID": "icare_0017",
-            "ActionName": "Optimizar el sistema de gesti\u00f3n de residuos s\u00f3lidos urbanos (RSU), con el objetivo de ampliar la recolecci\u00f3n y reducir la disposici\u00f3n ilegal.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "disposal_of_solid_waste_generated_in_the_city"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta acci\u00f3n se centra en optimizar el sistema de gesti\u00f3n de residuos s\u00f3lidos urbanos (RSU), cubriendo todas las etapas. Inicialmente, se revisar\u00e1 la planificaci\u00f3n e infraestructura de la recolecci\u00f3n selectiva de residuos en los barrios para alcanzar m\u00e1s \u00e1reas del municipio y mejorar el monitoreo de la disposici\u00f3n regular y los vertederos de residuos.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "20-39",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Inversi\u00f3n en infraestructura y log\u00edstica para expandir la cobertura de recolecci\u00f3n selectiva de residuos a m\u00e1s vecindarios",
-                "Sistemas de monitoreo y aplicaci\u00f3n fortalecidos para prevenir el vertido ilegal y asegurar la correcta disposici\u00f3n de residuos",
-                "Campa\u00f1as de concienciaci\u00f3n p\u00fablica para educar a los ciudadanos sobre la importancia de la separaci\u00f3n de residuos y los m\u00e9todos adecuados de disposici\u00f3n"
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de residuos s\u00f3lidos urbanos recolectados y procesados adecuadamente.",
-                "Reducci\u00f3n mensual en la cantidad de incidentes de disposici\u00f3n ilegal de residuos.",
-                "Reducci\u00f3n estimada en las emisiones de CO\u2082 equivalente a partir de pr\u00e1cticas mejoradas de gesti\u00f3n de residuos."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0080",
-        "actionName": "Avoiding, Minimising, and Recycling Waste",
-        "actionPriority": 9,
-        "explanation": "The action of avoiding, minimizing, and recycling waste is crucial for Petr\u00f3polis due to its significant waste emissions, which are the highest among all emission sources in the city. By focusing on waste management, the city can substantially reduce its total emissions, contributing to a cleaner environment and improved public health. Additionally, effective waste management can mitigate the risk of floods, which are a major hazard in the area, by preventing waste from clogging drainage systems. This action aligns with the city's need to address environmental challenges while promoting sustainable practices.",
-        "action": {
-            "ActionID": "ipcc_0080",
-            "ActionName": "Evitando, Minimizar y Reciclar Residuos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "disposal_of_solid_waste_generated_in_the_city"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementaci\u00f3n de los principios de la jerarqu\u00eda de residuos para reducir la generaci\u00f3n de residuos, mejorar la separaci\u00f3n en origen y aumentar el reciclaje y el compostaje. Promueve la gesti\u00f3n descentralizada de residuos, el compostaje dom\u00e9stico y enfoques de econom\u00eda circular para transformar los residuos en energ\u00eda o subproductos, minimizando al mismo tiempo las emisiones relacionadas con el transporte.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Apoya a los trabajadores informales en la gesti\u00f3n de residuos, proporciona oportunidades de empleo y reduce las desigualdades al integrar los sectores informales en los sistemas formales. Asegura el reparto de costos y la distribuci\u00f3n de beneficios entre las partes interesadas.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "40-59",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requiere capacidad institucional",
-                "gobernanza",
-                "coordinaci\u00f3n intersectorial",
-                "campa\u00f1as de concienciaci\u00f3n p\u00fablica",
-                "necesita infraestructura para el tratamiento descentralizado de residuos",
-                "pol\u00edticas para promover pr\u00e1cticas de econom\u00eda circular"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en la generaci\u00f3n de residuos per c\u00e1pita",
-                "aumento en las tasas de reciclaje y compostaje",
-                "reducci\u00f3n de emisiones de CH4 de los residuos",
-                "oportunidades de empleo creadas en la gesti\u00f3n de residuos"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 10,
-        "explanation": "Integrating renewables into municipal water systems in Petr\u00f3polis is a crucial action due to the city's moderate inadequate water access. By utilizing renewable energy sources, the city can enhance the reliability and sustainability of its water supply, which is essential given the high risk of droughts impacting water resources. This action also aligns with the city's need to reduce emissions, as it can help lower stationary energy emissions associated with water systems. Furthermore, improving water infrastructure with renewable energy can mitigate the impacts of climate hazards, such as droughts and floods, on public health and infrastructure.",
-        "action": {
-            "ActionID": "icare_0024",
-            "ActionName": "Integrar energ\u00edas renovables en los sistemas de agua municipales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar fuentes de energ\u00eda renovable, como la solar o la e\u00f3lica, para impulsar los sistemas de tratamiento, bombeo y distribuci\u00f3n de agua, reduciendo los costos de energ\u00eda y las emisiones.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de financiaci\u00f3n o incentivos financieros para integrar fuentes de energ\u00eda renovable como la solar o la e\u00f3lica en los sistemas de tratamiento y distribuci\u00f3n de agua",
-                "Experiencia t\u00e9cnica e infraestructura para adaptar los sistemas existentes con soluciones de energ\u00eda renovable o dise\u00f1ar nuevas instalaciones alimentadas por energ\u00edas renovables",
-                "Apoyo pol\u00edtico y regulatorio para fomentar el uso de energ\u00eda limpia en los sistemas de agua y asegurar su integraci\u00f3n en las redes energ\u00e9ticas municipales"
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de sistemas de agua municipales alimentados por energ\u00edas renovables.",
-                "Reducci\u00f3n en el consumo de energ\u00eda de fuentes no renovables (kWh/a\u00f1o).",
-                "Emisiones de GEI evitadas (toneladas de CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 11,
-        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Petr\u00f3polis due to its high transportation emissions. Encouraging the use of electric bikes can significantly reduce these emissions, contributing to a cleaner environment. Additionally, promoting bike-sharing can alleviate traffic congestion and improve public health by providing an alternative mode of transportation that encourages physical activity. Given the city's moderate risk of inadequate water access, reducing emissions can also help mitigate climate change impacts, which are linked to water resource challenges.",
-        "action": {
-            "ActionID": "icare_0121",
-            "ActionName": "Incentivo para crear programas de bicicletas compartidas en \u00e1reas urbanas, con un enfoque en bicicletas el\u00e9ctricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta acci\u00f3n fomenta el establecimiento de sistemas de bicicletas compartidas en las ciudades, promoviendo espec\u00edficamente el uso de bicicletas el\u00e9ctricas. Estos sistemas permiten a los residentes alquilar bicicletas el\u00e9ctricas para viajes cortos, reduciendo la dependencia de los autom\u00f3viles para el transporte urbano. Al integrar bicicletas el\u00e9ctricas, las ciudades pueden reducir a\u00fan m\u00e1s las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover un modo de transporte m\u00e1s saludable y sostenible tanto para \u00e1reas urbanas como rurales. Esta iniciativa tambi\u00e9n apoya la igualdad de movilidad, ya que hace que las bicicletas sean m\u00e1s accesibles para un rango m\u00e1s amplio de personas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establecimiento de sistemas de bicicletas compartidas con un enfoque en bicicletas el\u00e9ctricas para reducir la dependencia del autom\u00f3vil.",
-                "Integraci\u00f3n de bicicletas el\u00e9ctricas para reducir las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover el transporte sostenible.",
-                "Promoci\u00f3n de la igualdad de movilidad haciendo que las bicicletas el\u00e9ctricas sean accesibles para una poblaci\u00f3n m\u00e1s amplia."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de bicicletas el\u00e9ctricas disponibles en programas de bicicletas compartidas.",
-                "Aumento anual en usuarios de bicicletas compartidas.",
-                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de bicicletas el\u00e9ctricas compartidas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 12,
-        "explanation": "The adoption of biomethane in public fleets in Petr\u00f3polis is a significant step towards reducing transportation emissions, which currently contribute substantially to the city's overall emissions profile. By transitioning to biomethane, the city can decrease its reliance on fossil fuels, thereby lowering greenhouse gas emissions and improving air quality. This action is particularly important given the city's vulnerability to climate-related hazards such as floods and landslides, which are exacerbated by climate change. Additionally, using biomethane can enhance energy security by diversifying energy sources and promoting sustainable practices.",
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Adopci\u00f3n de biometano en flotas p\u00fablicas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Utilizar biometano producido a partir de residuos urbanos y agroindustriales para alimentar autobuses y camiones p\u00fablicos, reduciendo las emisiones de gases de efecto invernadero en las flotas municipales.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de infraestructura para la producci\u00f3n, procesamiento y distribuci\u00f3n de biometano a partir de residuos urbanos y agroindustriales.",
-                "Adaptaci\u00f3n o adquisici\u00f3n de autobuses y camiones p\u00fablicos capaces de utilizar biometano como fuente de combustible.",
-                "Establecimiento de pol\u00edticas e incentivos financieros para apoyar la producci\u00f3n de biometano y su integraci\u00f3n en las flotas municipales."
-            ],
-            "KeyPerformanceIndicators": [
-                "Ahorro de costos en la operaci\u00f3n de la flota debido al uso de biometano (USD/a\u00f1o).",
-                "Aumento en la capacidad de producci\u00f3n de biometano (%).",
-                "Porcentaje de biometano obtenido localmente versus importado."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "c40_0039",
-        "actionName": "Gas Management",
-        "actionPriority": 13,
-        "explanation": "Gas management is a critical action for Petr\u00f3polis due to its significant waste emissions, which are the largest contributor to the city's total emissions. Effective management of gas emissions can help reduce the environmental impact and improve air quality, which is essential for public health. Additionally, addressing gas emissions aligns with the city's need to mitigate risks associated with climate change, such as heatwaves and floods, which have high risk scores. Implementing this action can also support the city's efforts to enhance sustainability and resilience against environmental hazards.",
-        "action": {
-            "ActionID": "c40_0039",
-            "ActionName": "Gesti\u00f3n de Gases",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "La \"Gesti\u00f3n de Gases\" en los vertederos sanitarios implica capturar lixiviados y gestionar el gas de vertedero para mitigar los peligros ambientales. Implementar sistemas efectivos de gesti\u00f3n de gases contribuye a reducir las emisiones de gases de efecto invernadero y mejora la sostenibilidad general de la gesti\u00f3n de residuos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "La acci\u00f3n de \"Gesti\u00f3n de Gas\" en los vertederos sanitarios promueve la equidad y la inclusi\u00f3n al abordar los peligros ambientales que afectan desproporcionadamente a las comunidades vulnerables o desatendidas. Al capturar lixiviados y gestionar el gas de los vertederos, esta acci\u00f3n reduce las emisiones nocivas que pueden provocar problemas de salud, especialmente en los barrios de bajos ingresos que a menudo se encuentran cerca de los vertederos.\n\nAdem\u00e1s, los sistemas efectivos de gesti\u00f3n de gas contribuyen a mejorar la calidad del aire y la salud p\u00fablica, beneficiando a todos los miembros de la comunidad, especialmente a aquellos que pueden carecer de acceso a recursos de atenci\u00f3n m\u00e9dica. La implementaci\u00f3n de estos sistemas tambi\u00e9n puede crear oportunidades de empleo en el \u00e1rea local, proporcionando beneficios econ\u00f3micos a las poblaciones desatendidas. En general, esta acci\u00f3n clim\u00e1tica reconoce y aborda las necesidades espec\u00edficas de las comunidades vulnerables, asegurando que reciban las protecciones ambientales y de salud necesarias para condiciones de vida equitativas.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "60-79",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de tecnolog\u00eda para la captura de gas y gesti\u00f3n de lixiviados",
-                "Marcos regulatorios que apoyan las pr\u00e1cticas de gesti\u00f3n de gas de vertedero",
-                "Inversi\u00f3n en infraestructura para sistemas de gesti\u00f3n de gas efectivos",
-                "Capacitaci\u00f3n y experiencia del personal en operaciones de vertederos",
-                "Conciencia p\u00fablica y apoyo comunitario para iniciativas de gesti\u00f3n de vertederos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de emisiones de gases de efecto invernadero (equivalente de CO2)",
-                "Volumen de gas de vertedero capturado",
-                "Porcentaje de lixiviados tratados",
-                "Energ\u00eda generada a partir del gas de vertedero capturado",
-                "Ahorro de costos por sistemas de gesti\u00f3n de gas",
-                "Tasa de cumplimiento con las regulaciones ambientales",
-                "Reducci\u00f3n de quejas por olores",
-                "Aumento en la vida \u00fatil del vertedero"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 14,
-        "explanation": "The implementation of free public transportation programs during peak hours in Petr\u00f3polis is a strategic action to address the city's high transportation emissions, which contribute significantly to its total emissions. By encouraging the use of public transport, this initiative aims to reduce the reliance on individual vehicles, thereby decreasing traffic congestion and lowering emissions. Additionally, this action can improve air quality and public health, which are critical given the city's vulnerability to heatwaves and other climate-related hazards. Furthermore, providing free transportation can enhance accessibility for low-income residents, aligning with the city's socio-economic needs.",
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementaci\u00f3n de programas de transporte p\u00fablico gratuito durante las horas pico para reducir el uso de veh\u00edculos individuales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar el uso del transporte p\u00fablico ofreciendo servicios gratuitos durante las horas pico para trabajadores y estudiantes. Esta medida reduce la congesti\u00f3n urbana, disminuye el n\u00famero de veh\u00edculos individuales en la carretera y, en consecuencia, reduce las emisiones de gases de efecto invernadero asociadas con el transporte privado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Asignaci\u00f3n de fondos para subsidiar servicios de transporte p\u00fablico gratuito durante las horas pico.",
-                "Desarrollo de pol\u00edticas para garantizar la sostenibilidad y eficiencia de los sistemas de transporte p\u00fablico ante el aumento de la demanda.",
-                "Coordinaci\u00f3n con empleadores e instituciones educativas para optimizar los horarios de las horas pico y promover la iniciativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en los niveles de contaminaci\u00f3n del aire durante las horas pico (concentraci\u00f3n de PM2.5/PM10).",
-                "N\u00famero de veh\u00edculos privados retirados de las carreteras durante las horas pico.",
-                "Tasa de satisfacci\u00f3n p\u00fablica con la iniciativa de transporte gratuito (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 15,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Petr\u00f3polis due to its potential to enhance food security, which is at high risk from droughts and floods. This action supports local farmers, reduces dependency on external food sources, and promotes sustainable agricultural practices. Additionally, it can help mitigate the impact of climate-related hazards by fostering a resilient local food system. By focusing on agroecological products, the city can also contribute to biodiversity conservation and reduce its carbon footprint associated with food transportation.",
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Priorizar la Adquisici\u00f3n de Productos Agroecol\u00f3gicos de Producci\u00f3n Local en Compras P\u00fablicas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Centrarse en comprar alimentos sostenibles y producidos localmente para las instituciones p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de pol\u00edticas de adquisici\u00f3n e identificaci\u00f3n de proveedores locales confiables.",
-                "Alianzas con productores y asignaci\u00f3n de fondos para programas de adquisici\u00f3n sostenible.",
-                "Establecimiento de sistemas de monitoreo para garantizar el cumplimiento de los criterios de sostenibilidad."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje del volumen total de compras p\u00fablicas provenientes de productores agroecol\u00f3gicos locales.",
-                "Cantidad de emisiones de CO\u2082 evitadas debido a la reducci\u00f3n de la distancia de transporte (tCO\u2082e).",
-                "N\u00famero de productores agroecol\u00f3gicos beneficiados por las compras p\u00fablicas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 16,
-        "explanation": "Encouraging local agroecological production and short supply chains in Petr\u00f3polis is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. By promoting local agriculture, the city can enhance its resilience against these risks, ensuring a more stable and sustainable food supply. Additionally, this action supports the local economy and reduces dependency on external food sources, which can be disrupted by extreme weather events. Furthermore, agroecological practices contribute to biodiversity conservation and soil health, aligning with the city's need to address environmental challenges.",
-        "action": {
-            "ActionID": "icare_0132",
-            "ActionName": "Fomentar la Producci\u00f3n Agroecol\u00f3gica Local y las Cadenas de Suministro Cortas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Apoyar pr\u00e1cticas agr\u00edcolas locales y sostenibles y reducir las emisiones asociadas con el transporte de alimentos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Incentivos para pr\u00e1cticas agr\u00edcolas sostenibles y desarrollo de redes locales de distribuci\u00f3n de alimentos.",
-                "Alianzas con productores e inversi\u00f3n en infraestructura para apoyar los mercados locales.",
-                "Pol\u00edticas para priorizar m\u00e9todos de transporte de bajas emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de productores que se adhieren a pr\u00e1cticas agroecol\u00f3gicas locales.",
-                "Porcentaje de alimentos consumidos en la ciudad provenientes de cadenas cortas.",
-                "Reducci\u00f3n de emisiones asociadas con el transporte de alimentos (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0085",
-        "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 17,
-        "explanation": "Promoting the adoption of agroecological pest control in Petr\u00f3polis is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which can severely impact food security. By adopting sustainable pest control methods, the city can enhance its agricultural resilience, ensuring a stable food supply even in adverse conditions. Additionally, agroecological practices can help preserve the biodiversity of the tropical rainforest biome, which is essential for maintaining ecological balance and supporting local livelihoods. This action aligns with the need to address socio-economic challenges, as it can provide low-income communities with more sustainable and cost-effective agricultural solutions.",
-        "action": {
-            "ActionID": "icare_0085",
-            "ActionName": "Promover la Adopci\u00f3n del Control de Plagas Agroecol\u00f3gico",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar m\u00e9todos de control de plagas que sean agroecol\u00f3gicos, como el uso de depredadores naturales y plantas repelentes, para reducir la dependencia de pesticidas qu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de programas educativos para informar a los agricultores sobre m\u00e9todos de control de plagas agroecol\u00f3gicos y sus beneficios.",
-                "Provisi\u00f3n de acceso a recursos o materiales para implementar m\u00e9todos de control de plagas naturales, como la introducci\u00f3n de insectos beneficiosos o el cultivo de plantas repelentes.",
-                "Creaci\u00f3n de incentivos o redes de apoyo para fomentar la transici\u00f3n de los pesticidas qu\u00edmicos hacia alternativas sostenibles."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento en las tasas de productividad en \u00e1reas que adoptan el control de plagas agroecol\u00f3gico (%).",
-                "N\u00famero de campa\u00f1as educativas realizadas sobre el control sostenible de plagas.",
-                "Impacto en los costos totales de producci\u00f3n debido a la adopci\u00f3n de pr\u00e1cticas agroecol\u00f3gicas (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 18,
-        "explanation": "Supporting agroecological certification programs in Petr\u00f3polis is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which directly impact food security. By promoting sustainable agricultural practices, these programs can enhance resilience against these risks, ensuring a stable food supply. Additionally, agroecological practices can contribute to reducing emissions from land use, aligning with the city's need to address its significant total emissions. This action also supports the socio-economic development of the region by potentially increasing income for local farmers through access to new markets.",
-        "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Apoyar los Programas de Certificaci\u00f3n Agroecol\u00f3gica",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar la certificaci\u00f3n de productos agroecol\u00f3gicos que cumplan con criterios de sostenibilidad y tengan bajo impacto ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de est\u00e1ndares de certificaci\u00f3n claros y accesibles para productos agroecol\u00f3gicos que enfatizan la sostenibilidad y el bajo impacto ambiental.",
-                "Apoyo a los agricultores y productores para cumplir con los requisitos de certificaci\u00f3n a trav\u00e9s de capacitaci\u00f3n, asistencia financiera o orientaci\u00f3n t\u00e9cnica.",
-                "Creaci\u00f3n de estrategias de marketing y asociaciones para aumentar la visibilidad y la demanda de productos agroecol\u00f3gicos certificados en los mercados locales y globales."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de agricultores o productores que obtienen certificaciones agroecol\u00f3gicas.",
-                "Porcentaje de productos agr\u00edcolas certificados en el mercado (%).",
-                "Reducci\u00f3n en el uso de insumos sint\u00e9ticos (por ejemplo, fertilizantes, pesticidas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0119",
-        "actionName": "Maximize composting processes.",
-        "actionPriority": 19,
-        "explanation": "Maximizing composting processes in Petr\u00f3polis is a crucial action due to the city's significant waste emissions, which are the highest among all emission sources. By enhancing composting, the city can effectively reduce the volume of organic waste sent to landfills, thereby decreasing methane emissions, a potent greenhouse gas. Additionally, composting can improve soil health and support local agriculture, which is vital for food security, especially given the city's vulnerability to droughts and floods. This action aligns with sustainable waste management practices and contributes to mitigating climate change impacts.",
-        "action": {
-            "ActionID": "icare_0119",
-            "ActionName": "Maximizar los procesos de compostaje.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "biological_treatment_of_waste_generated_in_the_city"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "La acci\u00f3n tiene como objetivo aumentar la cantidad de residuos org\u00e1nicos tratados mediante procesos de compostaje, precediendo la biodigesti\u00f3n siempre que sea posible, y produciendo compost que pueda ser utilizado para actividades relacionadas con la plantaci\u00f3n y el mantenimiento de \u00e1reas verdes p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "20-39",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Expansi\u00f3n de los procesos de compostaje para tratar los residuos org\u00e1nicos, con la biodigesti\u00f3n como un paso preliminar cuando sea posible.",
-                "Producci\u00f3n de compost para su uso en la plantaci\u00f3n y mantenimiento de \u00e1reas verdes p\u00fablicas.",
-                "Desarrollo de infraestructura y sistemas para apoyar el aumento del tratamiento de residuos org\u00e1nicos."
-            ],
-            "KeyPerformanceIndicators": [
-                "La cantidad mensual de residuos org\u00e1nicos desviados a instalaciones de compostaje se mide en toneladas.",
-                "Tambi\u00e9n se registra el porcentaje de hogares y empresas que participan en programas de compostaje.",
-                "La reducci\u00f3n estimada de emisiones de metano por la descomposici\u00f3n de residuos org\u00e1nicos en vertederos es un indicador clave del impacto ambiental."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 20,
-        "explanation": "The adoption of electric drones for last-mile deliveries in Petr\u00f3polis is a strategic move to reduce transportation emissions, which currently contribute significantly to the city's total emissions. By utilizing electric drones, the city can decrease reliance on traditional delivery vehicles, thus lowering carbon emissions and improving air quality. Additionally, this action can enhance delivery efficiency and reduce traffic congestion, which is beneficial given the city's population density. Implementing this technology aligns with the city's need to address environmental challenges while promoting sustainable urban development.",
-        "action": {
-            "ActionID": "icare_0090",
-            "ActionName": "Adopci\u00f3n de drones el\u00e9ctricos para entregas de \u00faltima milla.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "off-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Reemplazar los veh\u00edculos tradicionales con drones el\u00e9ctricos para entregas de corta distancia en centros urbanos, reduciendo emisiones y congesti\u00f3n de tr\u00e1fico.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de regulaciones del espacio a\u00e9reo urbano para garantizar la operaci\u00f3n segura y eficiente de drones de entrega.",
-                "Inversi\u00f3n en infraestructura de carga y mantenimiento para apoyar una flota de drones el\u00e9ctricos.",
-                "Colaboraci\u00f3n con empresas de log\u00edstica para integrar drones en redes de entrega de \u00faltima milla."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n del tiempo de entrega en comparaci\u00f3n con los m\u00e9todos tradicionales (minutos).",
-                "Aumento en la satisfacci\u00f3n del cliente con las entregas mediante drones (%).",
-                "Reducci\u00f3n de la congesti\u00f3n del tr\u00e1fico causada por veh\u00edculos de entrega (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "c40_0035",
+    "actionName": "Waste Efficiency",
+    "actionPriority": 1,
+    "explanation": "La acción de ‘Eficiencia en la Gestión de Residuos’ es una prioridad para Petrópolis debido a las significativas emisiones de residuos de la ciudad, que constituyen el mayor aporte a su perfil total de emisiones. Abordar la eficiencia en la gestión de residuos puede reducir sustancialmente estas emisiones, mejorando así el impacto ambiental general de la ciudad. Además, el fortalecimiento de las prácticas de gestión de residuos puede generar mejores resultados en la salud pública, ya que disminuye el riesgo de propagación de enfermedades y mejora la sanidad. Dada la vulnerabilidad de la ciudad a peligros relacionados con el clima, como inundaciones y deslizamientos de tierra, una gestión eficiente de los residuos también puede mitigar el impacto de estos eventos al prevenir obstrucciones en los sistemas de drenaje causadas por residuos.",
+    "action": {
+      "ActionID": "c40_0035",
+      "ActionName": "Eficiencia en el manejo de residuos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "all"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Las iniciativas de \"Eficiencia de Residuos\" tienen como objetivo mejorar la eficiencia de los procesos de recolección de residuos, reduciendo el consumo de recursos y minimizando el impacto ambiental. Esto incluye la optimización de los sistemas de gestión de residuos para mejorar la eficiencia energética y promover prácticas sostenibles de eliminación de residuos.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Las iniciativas de \"Eficiencia de Residuos\" promueven la equidad y la inclusión al centrarse en comunidades desatendidas que a menudo soportan la carga de sistemas de gestión de residuos ineficientes. Al optimizar los procesos de recolección de residuos, estas iniciativas pueden reducir la carga ambiental sobre las poblaciones vulnerables, que pueden vivir en áreas desproporcionadamente afectadas por los residuos y la contaminación.\n\nAdemás, mejorar la eficiencia energética en la gestión de residuos puede generar ahorros de costos, que pueden reinvertirse en servicios comunitarios o infraestructuras que beneficien a los vecindarios de bajos ingresos. La promoción de prácticas sostenibles de eliminación de residuos también asegura que todos los miembros de la comunidad, independientemente de su estatus socioeconómico, tengan acceso a opciones ambientalmente responsables, fomentando un sentido de responsabilidad compartida e inclusión en los esfuerzos de acción climática.\n\nEn general, estas iniciativas reconocen los desafíos únicos que enfrentan las comunidades desatendidas y tienen como objetivo crear un sistema de gestión de residuos más equitativo que beneficie a todos los residentes.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "80-100",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Infraestructura y tecnología efectiva para la gestión de residuos",
+        "Colaboración con gobiernos locales y autoridades de gestión de residuos",
+        "Concienciación y educación pública sobre prácticas de eliminación de residuos",
+        "Acceso a datos para monitorear y optimizar los procesos de recolección de residuos",
+        "Inversión en instalaciones sostenibles de procesamiento de residuos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en los costos de recolección de residuos",
+        "Porcentaje de disminución de residuos enviados a vertederos",
+        "Aumento en las tasas de reciclaje",
+        "Consumo de energía por tonelada de residuos recolectados",
+        "Reducción de emisiones de carbono de la gestión de residuos",
+        "Satisfacción del cliente con los servicios de recolección de residuos",
+        "Volumen de residuos procesados mediante métodos sostenibles",
+        "Eficiencia operativa de las rutas de recolección de residuos"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0052",
+    "actionName": "Develop projects for renewable energy and waste reuse",
+    "actionPriority": 2,
+    "explanation": "Desarrollar proyectos de energía renovable y reutilización de residuos en Petrópolis es fundamental debido a las altas emisiones de residuos de la ciudad, que constituyen una parte significativa de sus emisiones totales. Al enfocarse en la energía renovable, la ciudad puede reducir su dependencia de los combustibles fósiles, disminuyendo así las emisiones de energía estacionaria. Además, las iniciativas de reutilización de residuos pueden ayudar a mitigar el impacto ambiental de las emisiones de residuos, que actualmente son la principal fuente de emisiones en la ciudad. Estos proyectos están alineados con la necesidad de la ciudad de abordar los riesgos climáticos, como inundaciones y deslizamientos de tierra, promoviendo prácticas sostenibles que aumenten la resiliencia.",
+    "action": {
+      "ActionID": "icare_0052",
+      "ActionName": "Desarrollar proyectos para energía renovable y reutilización de residuos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta acción tiene como objetivo desarrollar e implementar proyectos de energía renovable, incluyendo: un biodigestor para el tratamiento de residuos orgánicos y una planta de energía solar.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "60-79",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo e implementación de proyectos de energía renovable.",
+        "Instalación de un biodigestor para el tratamiento de residuos orgánicos.",
+        "Establecimiento de una planta de energía solar para generar energía limpia."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de proyectos de energía renovable y reutilización de residuos implementados.",
+        "Cantidad de residuos reutilizados o reciclados (toneladas/año).",
+        "Reducción en los costos de energía para los municipios participantes (USD)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "c40_0036",
+    "actionName": "Landfill Management",
+    "actionPriority": 3,
+    "explanation": "La gestión de vertederos es una acción fundamental para Petrópolis debido a las significativas emisiones de residuos que contribuyen al perfil total de emisiones de la ciudad. Dado que las emisiones provenientes de los residuos constituyen la mayor fuente de emisiones en la ciudad, mejorar la gestión de los vertederos puede reducir sustancialmente las emisiones de gases de efecto invernadero. Además, una gestión eficaz de los vertederos puede mitigar los riesgos asociados con la salud pública y la degradación ambiental, lo cual es crucial dada la vulnerabilidad de la ciudad a peligros como inundaciones y deslizamientos de tierra. Priorizar esta acción está alineado con la necesidad de la ciudad de abordar su impacto ambiental y fortalecer su resiliencia frente a los riesgos relacionados con el clima.",
+    "action": {
+      "ActionID": "c40_0036",
+      "ActionName": "Gestión de Vertederos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "all"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Las estrategias de \"Gestión de Vertederos\" se centran en prácticas responsables y sostenibles de gestión de vertederos para minimizar la degradación ambiental. Al adoptar técnicas de gestión efectivas, las ciudades buscan reducir la huella ecológica asociada con los sitios de vertederos y fomentar la reducción de residuos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Las estrategias de \"Gestión de Vertederos\" promueven la equidad y la inclusión al abordar los impactos ambientales de los sitios de vertederos, que a menudo afectan de manera desproporcionada a las comunidades vulnerables y desatendidas. Estas comunidades frecuentemente residen cerca de vertederos y son más susceptibles a los riesgos para la salud asociados con la contaminación y la degradación ambiental. Al implementar prácticas de vertederos responsables y sostenibles, la acción busca reducir estos impactos negativos, mejorando así la calidad de vida de los residentes en estas áreas.\n\nAdemás, las técnicas efectivas de reducción de residuos pueden crear oportunidades para la participación y el compromiso comunitario, permitiendo que las poblaciones desatendidas tengan voz en las decisiones ambientales locales. Esta inclusión fomenta un sentido de pertenencia y empoderamiento entre los miembros de la comunidad, asegurando que sus necesidades y preocupaciones sean consideradas en la gestión de los sitios de vertederos. En general, la acción reconoce y busca mitigar las inequidades enfrentadas por las comunidades marginadas en relación con la gestión de residuos y la salud ambiental.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "60-79",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Prácticas efectivas de segregación de residuos para asegurar una correcta disposición y reciclaje",
+        "Inversión en tecnología para el tratamiento de residuos y monitoreo de vertederos",
+        "Participación comunitaria y educación sobre la reducción de residuos y el reciclaje",
+        "Marcos regulatorios y políticas que apoyan prácticas sostenibles en vertederos",
+        "Colaboración con gobiernos locales y organizaciones para compartir recursos y mejores prácticas"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción del volumen de residuos en vertederos",
+        "Porcentaje de residuos desviados de vertederos",
+        "Tasa de captura de gas de vertedero",
+        "Calidad del suelo y del agua alrededor de los sitios de vertederos",
+        "Frecuencia de inspecciones de vertederos",
+        "Niveles de concienciación y participación pública",
+        "Ahorro de costos por prácticas mejoradas de gestión de vertederos",
+        "Cumplimiento de las regulaciones ambientales"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "c40_0040",
+    "actionName": "Volume-Based Collection",
+    "actionPriority": 4,
+    "explanation": "La acción \"Recolección Basada en Volumen\" es una prioridad para Petrópolis debido a su potencial para reducir significativamente las emisiones de residuos, que actualmente constituyen la mayor fuente de emisiones en la ciudad. Implementar esta acción puede incentivar la reducción y el reciclaje de residuos, disminuyendo así las emisiones totales de desechos. Además, este enfoque puede ayudar a abordar el problema moderado del acceso inadecuado al agua al reducir la presión sobre los sistemas de gestión de residuos, lo que podría mejorar los resultados de salud pública. Dada la vulnerabilidad de la ciudad a peligros climáticos como inundaciones y deslizamientos de tierra, la reducción de las emisiones de residuos también puede contribuir a una mayor resiliencia ambiental.",
+    "action": {
+      "ActionID": "c40_0040",
+      "ActionName": "Recolección Basada en Volumen",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "all"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Las políticas de \"Recolección Basada en Volumen\" incentivan la reducción de residuos al implementar tarifas o incentivos basados en la cantidad de residuos generados. Este enfoque anima a los residentes a minimizar la producción de residuos, contribuyendo a los objetivos generales de reducción de residuos.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Las políticas de \"Recolección Basada en Volumen\" promueven la equidad y la inclusión al:\n\n1. **Incentivar la Participación**: Al vincular tarifas o incentivos con la cantidad de residuos generados, la política anima a todos los residentes, incluidos aquellos de comunidades vulnerables o desatendidas, a participar activamente en los esfuerzos de reducción de residuos. Esto puede empoderar a estas comunidades para que se apropien de sus prácticas de gestión de residuos.\n\n2. **Alivio Financiero para Generadores de Bajo Volumen**: Los hogares que producen menos residuos, a menudo encontrados en comunidades desatendidas, pueden beneficiarse de tarifas más bajas, proporcionándoles alivio financiero y fomentando prácticas sostenibles sin imponer una carga desproporcionada.\n\n3. **Concienciación y Educación**: La implementación de políticas basadas en volumen a menudo incluye componentes educativos que informan a los residentes sobre estrategias de reducción de residuos. Esto puede beneficiar particularmente a las comunidades desatendidas al proporcionarles conocimientos y recursos para reducir eficazmente los residuos.\n\n4. **Participación Comunitaria**: La política puede fomentar la participación comunitaria al involucrar a los residentes en discusiones sobre la gestión y reducción de residuos, asegurando que las voces de las poblaciones vulnerables sean escuchadas y consideradas en el proceso de toma de decisiones.\n\n5. **Asignación Equitativa de Recursos**: Al centrarse en la reducción de residuos, la política puede llevar a una asignación más equitativa de recursos para los servicios de gestión de residuos, asegurando que las comunidades desatendidas reciban el apoyo e infraestructura adecuados para gestionar sus residuos de manera efectiva.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "80-100",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Programas efectivos de comunicación y educación para informar a los residentes sobre los beneficios de la reducción de residuos",
+        "Un sistema de medición de residuos confiable para rastrear con precisión el volumen de residuos generados",
+        "Apoyo del gobierno local y los responsables de políticas para implementar y hacer cumplir las políticas de recolección basadas en el volumen",
+        "Disponibilidad de opciones alternativas de gestión de residuos, como instalaciones de reciclaje y compostaje",
+        "Participación y compromiso de la comunidad para fomentar una cultura de sostenibilidad y reducción de residuos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en el total de residuos generados",
+        "Aumento en las tasas de reciclaje",
+        "Tasa de participación en el programa de recolección basado en volumen",
+        "Promedio de residuos por hogar",
+        "Ahorro de costos por la reducción en la eliminación de residuos",
+        "Niveles de concienciación y participación pública",
+        "Cambio en las tasas de compostaje"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0122",
+    "actionName": "Establish eco-parks.",
+    "actionPriority": 5,
+    "explanation": "Establecer eco-parques en Petrópolis es una prioridad debido al bioma de selva tropical de la ciudad, que alberga una rica biodiversidad. Los eco-parques pueden servir como una barrera contra los impactos del cambio climático, como las olas de calor y las inundaciones, que representan riesgos significativos para la salud pública y la infraestructura. Además, estos parques pueden aumentar la resiliencia de la ciudad al proporcionar espacios naturales que ayudan a gestionar los recursos hídricos y a reducir el efecto de isla de calor urbana. Asimismo, los eco-parques pueden promover la educación y la conciencia ambiental, fomentando una comunidad que valore y proteja su entorno natural.",
+    "action": {
+      "ActionID": "icare_0122",
+      "ActionName": "Establecer eco-parques.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Un eco-parque es una instalación para el tratamiento mecánico y biológico de residuos sólidos urbanos, integrando diferentes tecnologías para la segregación y tratamiento de varias fracciones dentro de los residuos. Este tratamiento tiene como objetivo maximizar la recuperación de residuos secos y orgánicos y reducir el volumen de residuos a ser enviados para su disposición final en vertederos, utilizando tecnologías como la generación de energía, compostaje, recuperación de reciclaje, disposición adecuada de residuos residuales y otros métodos de tratamiento existentes disponibles en el mercado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "20-39",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Implementación de eco-parques para el tratamiento mecánico y biológico de residuos sólidos urbanos.",
+        "Integración de tecnologías como generación de energía, compostaje, recuperación de reciclaje y disposición adecuada de residuos residuales.",
+        "Maximización de la recuperación de residuos secos y orgánicos para reducir los volúmenes de disposición en vertederos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total cubierta por eco-parques en la ciudad (hectáreas).",
+        "Aumento en el número de visitantes a los eco-parques anualmente.",
+        "Mejora en los índices de biodiversidad local dentro de las áreas de los eco-parques."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0053",
+    "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
+    "actionPriority": 6,
+    "explanation": "Implementar un proyecto para apoyar a las cooperativas de recolectores de materiales reciclables en Petrópolis es fundamental debido a las importantes emisiones de residuos de la ciudad. Dado que los residuos son el mayor contribuyente a las emisiones totales de la ciudad, fortalecer los esfuerzos de reciclaje puede reducir sustancialmente este impacto ambiental. Además, apoyar a las cooperativas puede mejorar las condiciones socioeconómicas al proporcionar oportunidades de ingresos estables para los residentes de bajos recursos. Esta acción está alineada con la necesidad de la ciudad de abordar tanto los desafíos ambientales como sociales, lo que la convierte en una prioridad estratégica.",
+    "action": {
+      "ActionID": "icare_0053",
+      "ActionName": "Implementar un proyecto para apoyar a las cooperativas de recolectores de materiales reciclables",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "disposal_of_solid_waste_generated_in_the_city"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Medidas para mejorar las condiciones laborales y los ingresos en los procesos de clasificación de residuos reciclables. Incluye capacitación continua para los recolectores en tecnología, economía, gestión empresarial y planificación conceptual para la operación y administración de la Unidad de Clasificación.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "20-39",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Implementación de medidas para mejorar las condiciones laborales y los ingresos para la clasificación de residuos reciclables.",
+        "Capacitación continua para los recolectores en tecnología, economía, gestión empresarial y planificación operativa.",
+        "Desarrollo de capacidades administrativas y operativas para la Unidad de Clasificación."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de cooperativas apoyadas anualmente.",
+        "Aumento en los ingresos de los recolectores (%).",
+        "Volumen de materiales reciclables recolectados por cooperativas (toneladas/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 7,
+    "explanation": "Fomentar políticas de energía renovable a nivel municipal en Petrópolis es crucial debido a las significativas emisiones de energía estacionaria de la ciudad. La transición hacia fuentes de energía renovable puede ayudar a reducir estas emisiones, contribuyendo a un ambiente más limpio y mitigando los impactos del cambio climático. Además, promover la energía renovable puede mejorar la seguridad energética, lo cual es vital dada la vulnerabilidad de la ciudad a las sequías que pueden afectar el suministro de energía. La implementación de estas políticas también puede estimular el crecimiento económico local mediante la creación de empleos verdes y el fomento del desarrollo sostenible.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Fomentar políticas de energía renovable a nivel municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Abogar por e implementar políticas que prioricen el desarrollo e integración de sistemas de energía renovable en las operaciones y planificación del gobierno local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Voluntad política y liderazgo para priorizar la energía renovable en las políticas y procesos de planificación del gobierno local",
+        "Desarrollo de políticas claras y marcos regulatorios que faciliten la integración de sistemas de energía renovable en las operaciones gubernamentales",
+        "Disponibilidad de financiamiento o mecanismos financieros para apoyar la transición a la energía renovable en la infraestructura y operaciones municipales"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de proyectos de energía renovable aprobados o iniciados anualmente a nivel municipal.",
+        "Porcentaje de la demanda energética municipal cubierta por fuentes renovables (%).",
+        "Reducción de las emisiones de carbono municipales debido a la adopción de energía renovable (toneladas de CO₂e/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0017",
+    "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
+    "actionPriority": 8,
+    "explanation": "Optimizar el sistema de gestión de residuos sólidos urbanos en Petrópolis es fundamental debido a las importantes emisiones de desechos de la ciudad, que son las más altas entre todas las fuentes de emisión. Al ampliar la recolección y reducir la disposición ilegal, la ciudad puede disminuir de manera efectiva su impacto ambiental y mejorar la salud pública. Además, una mejor gestión de residuos puede mitigar los riesgos asociados con las inundaciones, que representan un peligro importante en la zona, al prevenir obstrucciones en los sistemas de drenaje. Esta acción también está alineada con la necesidad de la ciudad de abordar desafíos socioeconómicos, ya que una gestión de residuos mejorada puede generar oportunidades de empleo y mejorar las condiciones de vida.",
+    "action": {
+      "ActionID": "icare_0017",
+      "ActionName": "Optimizar el sistema de gestión de residuos sólidos urbanos (RSU), con el objetivo de ampliar la recolección y reducir la disposición ilegal.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "disposal_of_solid_waste_generated_in_the_city"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta acción se centra en optimizar el sistema de gestión de residuos sólidos urbanos (RSU), cubriendo todas las etapas. Inicialmente, se revisará la planificación e infraestructura de la recolección selectiva de residuos en los barrios para alcanzar más áreas del municipio y mejorar el monitoreo de la disposición regular y los vertederos de residuos.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "20-39",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Inversión en infraestructura y logística para expandir la cobertura de recolección selectiva de residuos a más vecindarios",
+        "Sistemas de monitoreo y aplicación fortalecidos para prevenir el vertido ilegal y asegurar la correcta disposición de residuos",
+        "Campañas de concienciación pública para educar a los ciudadanos sobre la importancia de la separación de residuos y los métodos adecuados de disposición"
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de residuos sólidos urbanos recolectados y procesados adecuadamente.",
+        "Reducción mensual en la cantidad de incidentes de disposición ilegal de residuos.",
+        "Reducción estimada en las emisiones de CO₂ equivalente a partir de prácticas mejoradas de gestión de residuos."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "ipcc_0080",
+    "actionName": "Avoiding, Minimising, and Recycling Waste",
+    "actionPriority": 9,
+    "explanation": "La acción de evitar, minimizar y reciclar residuos es crucial para Petrópolis debido a sus significativas emisiones de desechos, que son las más altas entre todas las fuentes de emisión de la ciudad. Al enfocarse en la gestión de residuos, la ciudad puede reducir sustancialmente sus emisiones totales, contribuyendo a un entorno más limpio y a una mejor salud pública. Además, una gestión eficaz de los residuos puede mitigar el riesgo de inundaciones, que representan un peligro importante en la zona, al evitar que los desechos obstruyan los sistemas de drenaje. Esta acción está alineada con la necesidad de la ciudad de enfrentar los desafíos ambientales mientras promueve prácticas sostenibles.",
+    "action": {
+      "ActionID": "ipcc_0080",
+      "ActionName": "Evitando, Minimizar y Reciclar Residuos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "disposal_of_solid_waste_generated_in_the_city"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementación de los principios de la jerarquía de residuos para reducir la generación de residuos, mejorar la separación en origen y aumentar el reciclaje y el compostaje. Promueve la gestión descentralizada de residuos, el compostaje doméstico y enfoques de economía circular para transformar los residuos en energía o subproductos, minimizando al mismo tiempo las emisiones relacionadas con el transporte.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": "Apoya a los trabajadores informales en la gestión de residuos, proporciona oportunidades de empleo y reduce las desigualdades al integrar los sectores informales en los sistemas formales. Asegura el reparto de costos y la distribución de beneficios entre las partes interesadas.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "40-59",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Requiere capacidad institucional",
+        "gobernanza",
+        "coordinación intersectorial",
+        "campañas de concienciación pública",
+        "necesita infraestructura para el tratamiento descentralizado de residuos",
+        "políticas para promover prácticas de economía circular"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en la generación de residuos per cápita",
+        "aumento en las tasas de reciclaje y compostaje",
+        "reducción de emisiones de CH4 de los residuos",
+        "oportunidades de empleo creadas en la gestión de residuos"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 10,
+    "explanation": "Integrar energías renovables en los sistemas municipales de agua en Petrópolis es una acción crucial debido al acceso moderadamente inadecuado al agua en la ciudad. Al utilizar fuentes de energía renovable, la ciudad puede mejorar la fiabilidad y sostenibilidad de su suministro de agua, lo cual es esencial dado el alto riesgo de sequías que afectan los recursos hídricos. Esta acción también está alineada con la necesidad de la ciudad de reducir las emisiones, ya que puede ayudar a disminuir las emisiones de energía estacionaria asociadas con los sistemas de agua. Además, mejorar la infraestructura hídrica con energía renovable puede mitigar los impactos de los peligros climáticos, como sequías e inundaciones, en la salud pública y la infraestructura.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energías renovables en los sistemas de agua municipales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fuentes de energía renovable, como la solar o la eólica, para impulsar los sistemas de tratamiento, bombeo y distribución de agua, reduciendo los costos de energía y las emisiones.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de financiación o incentivos financieros para integrar fuentes de energía renovable como la solar o la eólica en los sistemas de tratamiento y distribución de agua",
+        "Experiencia técnica e infraestructura para adaptar los sistemas existentes con soluciones de energía renovable o diseñar nuevas instalaciones alimentadas por energías renovables",
+        "Apoyo político y regulatorio para fomentar el uso de energía limpia en los sistemas de agua y asegurar su integración en las redes energéticas municipales"
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de sistemas de agua municipales alimentados por energías renovables.",
+        "Reducción en el consumo de energía de fuentes no renovables (kWh/año).",
+        "Emisiones de GEI evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0121",
+    "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+    "actionPriority": 11,
+    "explanation": "La acción de incentivar los programas de bicicletas compartidas, especialmente con bicicletas eléctricas, es crucial para Petrópolis debido a sus altas emisiones de transporte. Fomentar el uso de bicicletas eléctricas puede reducir significativamente estas emisiones, contribuyendo a un entorno más limpio. Además, promover el uso compartido de bicicletas puede aliviar la congestión del tráfico y mejorar la salud pública al ofrecer un modo de transporte alternativo que fomenta la actividad física. Dado el riesgo moderado de acceso inadecuado al agua en la ciudad, la reducción de emisiones también puede ayudar a mitigar los impactos del cambio climático, los cuales están relacionados con los desafíos en los recursos hídricos.",
+    "action": {
+      "ActionID": "icare_0121",
+      "ActionName": "Incentivo para crear programas de bicicletas compartidas en áreas urbanas, con un enfoque en bicicletas eléctricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta acción fomenta el establecimiento de sistemas de bicicletas compartidas en las ciudades, promoviendo específicamente el uso de bicicletas eléctricas. Estos sistemas permiten a los residentes alquilar bicicletas eléctricas para viajes cortos, reduciendo la dependencia de los automóviles para el transporte urbano. Al integrar bicicletas eléctricas, las ciudades pueden reducir aún más las emisiones de gases de efecto invernadero, aliviar la congestión del tráfico y promover un modo de transporte más saludable y sostenible tanto para áreas urbanas como rurales. Esta iniciativa también apoya la igualdad de movilidad, ya que hace que las bicicletas sean más accesibles para un rango más amplio de personas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Establecimiento de sistemas de bicicletas compartidas con un enfoque en bicicletas eléctricas para reducir la dependencia del automóvil.",
+        "Integración de bicicletas eléctricas para reducir las emisiones de gases de efecto invernadero, aliviar la congestión del tráfico y promover el transporte sostenible.",
+        "Promoción de la igualdad de movilidad haciendo que las bicicletas eléctricas sean accesibles para una población más amplia."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de bicicletas eléctricas disponibles en programas de bicicletas compartidas.",
+        "Aumento anual en usuarios de bicicletas compartidas.",
+        "Reducción estimada en emisiones equivalentes de CO₂ por la adopción de bicicletas eléctricas compartidas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0094",
+    "actionName": "Adoption of biomethane in public fleets.",
+    "actionPriority": 12,
+    "explanation": "La adopción de biometano en las flotas públicas de Petrópolis es un paso significativo hacia la reducción de las emisiones del transporte, que actualmente contribuyen de manera sustancial al perfil general de emisiones de la ciudad. Al hacer la transición al biometano, la ciudad puede disminuir su dependencia de los combustibles fósiles, reduciendo así las emisiones de gases de efecto invernadero y mejorando la calidad del aire. Esta acción es especialmente importante dada la vulnerabilidad de la ciudad a peligros relacionados con el clima, como inundaciones y deslizamientos de tierra, que se ven agravados por el cambio climático. Además, el uso de biometano puede mejorar la seguridad energética al diversificar las fuentes de energía y promover prácticas sostenibles.",
+    "action": {
+      "ActionID": "icare_0094",
+      "ActionName": "Adopción de biometano en flotas públicas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar biometano producido a partir de residuos urbanos y agroindustriales para alimentar autobuses y camiones públicos, reduciendo las emisiones de gases de efecto invernadero en las flotas municipales.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de infraestructura para la producción, procesamiento y distribución de biometano a partir de residuos urbanos y agroindustriales.",
+        "Adaptación o adquisición de autobuses y camiones públicos capaces de utilizar biometano como fuente de combustible.",
+        "Establecimiento de políticas e incentivos financieros para apoyar la producción de biometano y su integración en las flotas municipales."
+      ],
+      "KeyPerformanceIndicators": [
+        "Ahorro de costos en la operación de la flota debido al uso de biometano (USD/año).",
+        "Aumento en la capacidad de producción de biometano (%).",
+        "Porcentaje de biometano obtenido localmente versus importado."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "c40_0039",
+    "actionName": "Gas Management",
+    "actionPriority": 13,
+    "explanation": "La gestión de gases es una acción fundamental para Petrópolis debido a sus significativas emisiones de residuos, que constituyen la mayor fuente de emisiones totales de la ciudad. Una gestión eficaz de las emisiones de gases puede ayudar a reducir el impacto ambiental y mejorar la calidad del aire, lo cual es esencial para la salud pública. Además, abordar las emisiones de gases está alineado con la necesidad de la ciudad de mitigar los riesgos asociados al cambio climático, como las olas de calor e inundaciones, que presentan altos niveles de riesgo. Implementar esta acción también puede apoyar los esfuerzos de la ciudad para mejorar la sostenibilidad y la resiliencia frente a los peligros ambientales.",
+    "action": {
+      "ActionID": "c40_0039",
+      "ActionName": "Gestión de Gases",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "all"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "La \"Gestión de Gases\" en los vertederos sanitarios implica capturar lixiviados y gestionar el gas de vertedero para mitigar los peligros ambientales. Implementar sistemas efectivos de gestión de gases contribuye a reducir las emisiones de gases de efecto invernadero y mejora la sostenibilidad general de la gestión de residuos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "La acción de \"Gestión de Gas\" en los vertederos sanitarios promueve la equidad y la inclusión al abordar los peligros ambientales que afectan desproporcionadamente a las comunidades vulnerables o desatendidas. Al capturar lixiviados y gestionar el gas de los vertederos, esta acción reduce las emisiones nocivas que pueden provocar problemas de salud, especialmente en los barrios de bajos ingresos que a menudo se encuentran cerca de los vertederos.\n\nAdemás, los sistemas efectivos de gestión de gas contribuyen a mejorar la calidad del aire y la salud pública, beneficiando a todos los miembros de la comunidad, especialmente a aquellos que pueden carecer de acceso a recursos de atención médica. La implementación de estos sistemas también puede crear oportunidades de empleo en el área local, proporcionando beneficios económicos a las poblaciones desatendidas. En general, esta acción climática reconoce y aborda las necesidades específicas de las comunidades vulnerables, asegurando que reciban las protecciones ambientales y de salud necesarias para condiciones de vida equitativas.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "60-79",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de tecnología para la captura de gas y gestión de lixiviados",
+        "Marcos regulatorios que apoyan las prácticas de gestión de gas de vertedero",
+        "Inversión en infraestructura para sistemas de gestión de gas efectivos",
+        "Capacitación y experiencia del personal en operaciones de vertederos",
+        "Conciencia pública y apoyo comunitario para iniciativas de gestión de vertederos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de emisiones de gases de efecto invernadero (equivalente de CO2)",
+        "Volumen de gas de vertedero capturado",
+        "Porcentaje de lixiviados tratados",
+        "Energía generada a partir del gas de vertedero capturado",
+        "Ahorro de costos por sistemas de gestión de gas",
+        "Tasa de cumplimiento con las regulaciones ambientales",
+        "Reducción de quejas por olores",
+        "Aumento en la vida útil del vertedero"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 14,
+    "explanation": "La implementación de programas de transporte público gratuito durante las horas pico en Petrópolis es una acción estratégica para abordar las altas emisiones del sector transporte en la ciudad, las cuales contribuyen significativamente a sus emisiones totales. Al fomentar el uso del transporte público, esta iniciativa busca reducir la dependencia de los vehículos particulares, disminuyendo así la congestión vehicular y las emisiones. Además, esta medida puede mejorar la calidad del aire y la salud pública, aspectos fundamentales dada la vulnerabilidad de la ciudad a las olas de calor y otros riesgos relacionados con el clima. Asimismo, ofrecer transporte gratuito puede mejorar la accesibilidad para los residentes de bajos ingresos, en consonancia con las necesidades socioeconómicas de la ciudad.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementación de programas de transporte público gratuito durante las horas pico para reducir el uso de vehículos individuales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar el uso del transporte público ofreciendo servicios gratuitos durante las horas pico para trabajadores y estudiantes. Esta medida reduce la congestión urbana, disminuye el número de vehículos individuales en la carretera y, en consecuencia, reduce las emisiones de gases de efecto invernadero asociadas con el transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Asignación de fondos para subsidiar servicios de transporte público gratuito durante las horas pico.",
+        "Desarrollo de políticas para garantizar la sostenibilidad y eficiencia de los sistemas de transporte público ante el aumento de la demanda.",
+        "Coordinación con empleadores e instituciones educativas para optimizar los horarios de las horas pico y promover la iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en los niveles de contaminación del aire durante las horas pico (concentración de PM2.5/PM10).",
+        "Número de vehículos privados retirados de las carreteras durante las horas pico.",
+        "Tasa de satisfacción pública con la iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 15,
+    "explanation": "Priorizar la adquisición de productos agroecológicos de producción local en las compras públicas es fundamental para Petrópolis debido a su potencial para mejorar la seguridad alimentaria, la cual está en alto riesgo por sequías e inundaciones. Esta acción apoya a los agricultores locales, reduce la dependencia de fuentes externas de alimentos y promueve prácticas agrícolas sostenibles. Además, puede ayudar a mitigar el impacto de los peligros relacionados con el clima al fomentar un sistema alimentario local resiliente. Al enfocarse en productos agroecológicos, la ciudad también puede contribuir a la conservación de la biodiversidad y reducir su huella de carbono asociada al transporte de alimentos.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar la Adquisición de Productos Agroecológicos de Producción Local en Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Centrarse en comprar alimentos sostenibles y producidos localmente para las instituciones públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de políticas de adquisición e identificación de proveedores locales confiables.",
+        "Alianzas con productores y asignación de fondos para programas de adquisición sostenible.",
+        "Establecimiento de sistemas de monitoreo para garantizar el cumplimiento de los criterios de sostenibilidad."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje del volumen total de compras públicas provenientes de productores agroecológicos locales.",
+        "Cantidad de emisiones de CO₂ evitadas debido a la reducción de la distancia de transporte (tCO₂e).",
+        "Número de productores agroecológicos beneficiados por las compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0132",
+    "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+    "actionPriority": 16,
+    "explanation": "Fomentar la producción agroecológica local y las cadenas cortas de suministro en Petrópolis es crucial debido a la vulnerabilidad de la ciudad frente a peligros climáticos como sequías e inundaciones, que afectan significativamente la seguridad alimentaria. Al promover la agricultura local, la ciudad puede aumentar su resiliencia ante estos riesgos, asegurando un suministro de alimentos más estable y sostenible. Además, esta acción apoya la economía local y reduce la dependencia de fuentes externas de alimentos, las cuales pueden verse interrumpidas por eventos climáticos extremos. Asimismo, las prácticas agroecológicas contribuyen a la conservación de la biodiversidad y la salud del suelo, en consonancia con la necesidad de la ciudad de enfrentar los desafíos ambientales.",
+    "action": {
+      "ActionID": "icare_0132",
+      "ActionName": "Fomentar la Producción Agroecológica Local y las Cadenas de Suministro Cortas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoyar prácticas agrícolas locales y sostenibles y reducir las emisiones asociadas con el transporte de alimentos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Incentivos para prácticas agrícolas sostenibles y desarrollo de redes locales de distribución de alimentos.",
+        "Alianzas con productores e inversión en infraestructura para apoyar los mercados locales.",
+        "Políticas para priorizar métodos de transporte de bajas emisiones."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de productores que se adhieren a prácticas agroecológicas locales.",
+        "Porcentaje de alimentos consumidos en la ciudad provenientes de cadenas cortas.",
+        "Reducción de emisiones asociadas con el transporte de alimentos (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0085",
+    "actionName": "Promote the Adoption of Agroecological Pest Control",
+    "actionPriority": 17,
+    "explanation": "Promover la adopción del control agroecológico de plagas en Petrópolis es crucial debido a la vulnerabilidad de la ciudad frente a peligros climáticos como sequías e inundaciones, los cuales pueden afectar gravemente la seguridad alimentaria. Al adoptar métodos sostenibles de control de plagas, la ciudad puede fortalecer su resiliencia agrícola, garantizando un suministro estable de alimentos incluso en condiciones adversas. Además, las prácticas agroecológicas pueden ayudar a preservar la biodiversidad del bioma de selva tropical, lo cual es esencial para mantener el equilibrio ecológico y apoyar los medios de vida locales. Esta acción está alineada con la necesidad de abordar los desafíos socioeconómicos, ya que puede ofrecer a las comunidades de bajos ingresos soluciones agrícolas más sostenibles y rentables.",
+    "action": {
+      "ActionID": "icare_0085",
+      "ActionName": "Promover la Adopción del Control de Plagas Agroecológico",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar métodos de control de plagas que sean agroecológicos, como el uso de depredadores naturales y plantas repelentes, para reducir la dependencia de pesticidas químicos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de programas educativos para informar a los agricultores sobre métodos de control de plagas agroecológicos y sus beneficios.",
+        "Provisión de acceso a recursos o materiales para implementar métodos de control de plagas naturales, como la introducción de insectos beneficiosos o el cultivo de plantas repelentes.",
+        "Creación de incentivos o redes de apoyo para fomentar la transición de los pesticidas químicos hacia alternativas sostenibles."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento en las tasas de productividad en áreas que adoptan el control de plagas agroecológico (%).",
+        "Número de campañas educativas realizadas sobre el control sostenible de plagas.",
+        "Impacto en los costos totales de producción debido a la adopción de prácticas agroecológicas (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0099",
+    "actionName": "Support Agroecological Certification Programs",
+    "actionPriority": 18,
+    "explanation": "Apoyar los programas de certificación agroecológica en Petrópolis es fundamental debido a la vulnerabilidad de la ciudad frente a peligros climáticos como sequías e inundaciones, que afectan directamente la seguridad alimentaria. Al promover prácticas agrícolas sostenibles, estos programas pueden aumentar la resiliencia ante estos riesgos, garantizando un suministro de alimentos estable. Además, las prácticas agroecológicas pueden contribuir a la reducción de emisiones derivadas del uso del suelo, en línea con la necesidad de la ciudad de abordar sus significativas emisiones totales. Esta acción también respalda el desarrollo socioeconómico de la región al potencialmente aumentar los ingresos de los agricultores locales mediante el acceso a nuevos mercados.",
+    "action": {
+      "ActionID": "icare_0099",
+      "ActionName": "Apoyar los Programas de Certificación Agroecológica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar la certificación de productos agroecológicos que cumplan con criterios de sostenibilidad y tengan bajo impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de estándares de certificación claros y accesibles para productos agroecológicos que enfatizan la sostenibilidad y el bajo impacto ambiental.",
+        "Apoyo a los agricultores y productores para cumplir con los requisitos de certificación a través de capacitación, asistencia financiera o orientación técnica.",
+        "Creación de estrategias de marketing y asociaciones para aumentar la visibilidad y la demanda de productos agroecológicos certificados en los mercados locales y globales."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de agricultores o productores que obtienen certificaciones agroecológicas.",
+        "Porcentaje de productos agrícolas certificados en el mercado (%).",
+        "Reducción en el uso de insumos sintéticos (por ejemplo, fertilizantes, pesticidas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0119",
+    "actionName": "Maximize composting processes.",
+    "actionPriority": 19,
+    "explanation": "Maximizar los procesos de compostaje en Petrópolis es una acción crucial debido a las significativas emisiones de residuos de la ciudad, que son las más altas entre todas las fuentes de emisión. Al mejorar el compostaje, la ciudad puede reducir de manera efectiva el volumen de residuos orgánicos enviados a los vertederos, disminuyendo así las emisiones de metano, un potente gas de efecto invernadero. Además, el compostaje puede mejorar la salud del suelo y apoyar la agricultura local, lo cual es vital para la seguridad alimentaria, especialmente dada la vulnerabilidad de la ciudad a sequías e inundaciones. Esta acción está alineada con prácticas sostenibles de gestión de residuos y contribuye a mitigar los impactos del cambio climático.",
+    "action": {
+      "ActionID": "icare_0119",
+      "ActionName": "Maximizar los procesos de compostaje.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "biological_treatment_of_waste_generated_in_the_city"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "La acción tiene como objetivo aumentar la cantidad de residuos orgánicos tratados mediante procesos de compostaje, precediendo la biodigestión siempre que sea posible, y produciendo compost que pueda ser utilizado para actividades relacionadas con la plantación y el mantenimiento de áreas verdes públicas.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "20-39",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Expansión de los procesos de compostaje para tratar los residuos orgánicos, con la biodigestión como un paso preliminar cuando sea posible.",
+        "Producción de compost para su uso en la plantación y mantenimiento de áreas verdes públicas.",
+        "Desarrollo de infraestructura y sistemas para apoyar el aumento del tratamiento de residuos orgánicos."
+      ],
+      "KeyPerformanceIndicators": [
+        "La cantidad mensual de residuos orgánicos desviados a instalaciones de compostaje se mide en toneladas.",
+        "También se registra el porcentaje de hogares y empresas que participan en programas de compostaje.",
+        "La reducción estimada de emisiones de metano por la descomposición de residuos orgánicos en vertederos es un indicador clave del impacto ambiental."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PES",
+    "cityName": "Petrópolis",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0090",
+    "actionName": "Adoption of electric drones for last-mile deliveries.",
+    "actionPriority": 20,
+    "explanation": "La adopción de drones eléctricos para entregas de última milla en Petrópolis es una medida estratégica para reducir las emisiones del transporte, que actualmente contribuyen de manera significativa al total de emisiones de la ciudad. Al utilizar drones eléctricos, la ciudad puede disminuir la dependencia de los vehículos de reparto tradicionales, reduciendo así las emisiones de carbono y mejorando la calidad del aire. Además, esta acción puede aumentar la eficiencia de las entregas y reducir la congestión del tráfico, lo cual es beneficioso dada la densidad poblacional de la ciudad. La implementación de esta tecnología está alineada con la necesidad de la ciudad de abordar los desafíos ambientales y promover un desarrollo urbano sostenible.",
+    "action": {
+      "ActionID": "icare_0090",
+      "ActionName": "Adopción de drones eléctricos para entregas de última milla.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "off-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Reemplazar los vehículos tradicionales con drones eléctricos para entregas de corta distancia en centros urbanos, reduciendo emisiones y congestión de tráfico.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de regulaciones del espacio aéreo urbano para garantizar la operación segura y eficiente de drones de entrega.",
+        "Inversión en infraestructura de carga y mantenimiento para apoyar una flota de drones eléctricos.",
+        "Colaboración con empresas de logística para integrar drones en redes de entrega de última milla."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción del tiempo de entrega en comparación con los métodos tradicionales (minutos).",
+        "Aumento en la satisfacción del cliente con las entregas mediante drones (%).",
+        "Reducción de la congestión del tráfico causada por vehículos de entrega (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
 ]

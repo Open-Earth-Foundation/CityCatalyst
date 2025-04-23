@@ -1,1260 +1,1260 @@
 [
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 1,
-        "explanation": "Implementing agroforestry systems in Parintins is a high priority due to the city's location in the Amazon rainforest, where biodiversity and sustainable land use are critical. Agroforestry can help mitigate land use emissions, which are a significant contributor to the city's total emissions. Additionally, this approach can enhance food security by providing diverse and resilient food sources, which is crucial given the high risk of droughts affecting food availability. Furthermore, agroforestry supports the local economy by creating jobs and improving livelihoods, particularly in a region with high levels of low-income households.",
-        "action": {
-            "ActionID": "icare_0050",
-            "ActionName": "Implementar Sistemas Agroflorestais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover sistemas agroflorestais integrando \u00e1rvores na produ\u00e7\u00e3o de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Fornecimento de suporte t\u00e9cnico e orienta\u00e7\u00e3o aos agricultores sobre o design e implementa\u00e7\u00e3o de sistemas agroflorestais.",
-                "Desenvolvimento de incentivos financeiros ou subs\u00eddios para tornar a agrofloresta mais economicamente atraente.",
-                "Cria\u00e7\u00e3o de pol\u00edticas que integrem pr\u00e1ticas agroflorestais no planejamento do uso da terra agr\u00edcola e nos sistemas de posse de terra."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas convertidas em sistemas agroflorestais (%).",
-                "N\u00famero de novos projetos agroflorestais implementados.",
-                "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 2,
-        "explanation": "Strengthening mechanisms for deforestation control in Parintins is crucial due to its location in the Amazon rainforest, a vital global carbon sink. The city faces significant land use emissions, which are a major contributor to its total emissions profile. By enhancing deforestation control, Parintins can reduce these emissions and help preserve biodiversity, which is at risk from both droughts and heatwaves. Additionally, controlling deforestation can improve the resilience of local ecosystems, supporting food and water security in the face of climate change.",
-        "action": {
-            "ActionID": "icare_0134",
-            "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aprimorar o monitoramento e a fiscaliza\u00e7\u00e3o para prevenir o desmatamento ilegal e promover o uso sustent\u00e1vel da terra.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Forte estrutura legal, tecnologias de monitoramento avan\u00e7adas (sat\u00e9lites e drones) e capacita\u00e7\u00e3o para as autoridades locais.",
-                "Colabora\u00e7\u00e3o com comunidades locais e financiamento adequado para os esfor\u00e7os de fiscaliza\u00e7\u00e3o.",
-                "Transpar\u00eancia e responsabilidade na elabora\u00e7\u00e3o de relat\u00f3rios para garantir a implementa\u00e7\u00e3o eficaz."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total monitorada para desmatamento (hectares/ano).",
-                "Redu\u00e7\u00e3o na taxa anual de desmatamento (%).",
-                "Quantidade de emiss\u00f5es evitadas pela redu\u00e7\u00e3o do desmatamento (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 3,
-        "explanation": "Promoting urban reforestation and green corridors in Parintins is crucial due to its tropical rainforest biome, which is vital for maintaining biodiversity and ecological balance. The city faces significant environmental challenges, including high emissions from land use and waste, which can be mitigated by increasing green spaces. Additionally, reforestation can help combat the effects of heatwaves and improve public health by reducing urban heat islands. This action also supports the city's resilience against climate change impacts, such as droughts and floods, by enhancing natural water retention and soil stability.",
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aumentar a cobertura arb\u00f3rea urbana para mitigar o efeito de ilha de calor urbano e melhorar a biodiversidade.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identifica\u00e7\u00e3o de \u00e1reas priorit\u00e1rias e sele\u00e7\u00e3o de esp\u00e9cies nativas e resilientes ao clima para o plantio de \u00e1rvores.",
-                "Parcerias com organiza\u00e7\u00f5es locais e viveiros, e aloca\u00e7\u00e3o de recursos para plantio e manuten\u00e7\u00e3o.",
-                "Envolvimento da comunidade para garantir cuidado e apoio a longo prazo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento na cobertura de dossel arb\u00f3reo urbano (%)",
-                "Comprimento total de corredores verdes criados ou restaurados (quil\u00f4metros)",
-                "Redu\u00e7\u00e3o nas temperaturas do efeito de ilha de calor urbano (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0128",
-        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 4,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Parintins is crucial due to the city's location in the Amazon rainforest, which is a vital ecological area. The PES programs can incentivize local communities to engage in conservation efforts, helping to preserve biodiversity and mitigate the impacts of deforestation. Given the high risk of droughts and the significant land use emissions, these programs can also contribute to reducing emissions and enhancing water resource management. Additionally, PES can provide economic benefits to the local population, which faces high levels of low income, by creating sustainable livelihoods linked to environmental conservation.",
-        "action": {
-            "ActionID": "icare_0128",
-            "ActionName": "Estabelecer Programas Municipais de Pagamento por Servi\u00e7os Ambientais (PSA)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar programas que paguem aos propriet\u00e1rios de terras por manterem ou melhorarem as condi\u00e7\u00f5es ambientais em suas propriedades.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Cria\u00e7\u00e3o de mecanismos de financiamento e crit\u00e9rios de elegibilidade claros com indicadores de desempenho.",
-                "Parcerias com organiza\u00e7\u00f5es ambientais e campanhas de conscientiza\u00e7\u00e3o para incentivar a participa\u00e7\u00e3o.",
-                "Integra\u00e7\u00e3o com estruturas legais para garantir a sustentabilidade do programa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de contratos ativos de Pagamento por Servi\u00e7os Ambientais (PSA) assinados.",
-                "\u00c1rea total sob pr\u00e1ticas de conserva\u00e7\u00e3o ou restaura\u00e7\u00e3o incentivadas (hectares).",
-                "Quantidade de carbono sequestrado ou emiss\u00f5es evitadas por meio de a\u00e7\u00f5es de PSA (tCO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 5,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Parintins is crucial due to the high risk of droughts impacting food and energy security. The city's socio-economic factors, such as high levels of low income and inadequate sanitation, exacerbate the vulnerability of rural communities. By implementing ATER actions, the city can enhance agricultural productivity and resilience, thereby improving food security and livelihoods. Additionally, these actions can help mitigate the effects of climate change on local agriculture, ensuring sustainable development in the region.",
-        "action": {
-            "ActionID": "icare_0130",
-            "ActionName": "Conduzir A\u00e7\u00f5es de Assist\u00eancia T\u00e9cnica e Extens\u00e3o Rural (ATER)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fornecer suporte t\u00e9cnico e treinamento aos produtores rurais para a produ\u00e7\u00e3o agr\u00edcola sustent\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidade de pessoal t\u00e9cnico qualificado e programas de forma\u00e7\u00e3o personalizados.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa agr\u00edcola e aloca\u00e7\u00e3o de recursos para o desenvolvimento de capacidades.",
-                "Envolvimento com produtores rurais para garantir a participa\u00e7\u00e3o ativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de produtores beneficiados com assist\u00eancia t\u00e9cnica rural (% do total).",
-                "Percentual de participantes adotando pr\u00e1ticas resilientes ao clima.",
-                "Redu\u00e7\u00e3o da vulnerabilidade das propriedades ao risco clim\u00e1tico (%)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 6,
-        "explanation": "Facilitating technology transfer for conservation practices in Parintins is crucial due to the city's location in the Amazon rainforest, a region of immense biodiversity and ecological importance. The city faces significant environmental challenges, including high emissions from land use and waste, which can be mitigated through advanced conservation technologies. Additionally, the socio-economic context of high low-income levels and inadequate public services highlights the need for sustainable practices that can improve living conditions while preserving natural resources. By prioritizing this action, Parintins can enhance its resilience against climate risks such as droughts and floods, which threaten food and energy security.",
-        "action": {
-            "ActionID": "icare_0129",
-            "ActionName": "Facilitar a Transfer\u00eancia de Tecnologia para Pr\u00e1ticas de Conserva\u00e7\u00e3o",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover a ado\u00e7\u00e3o de pr\u00e1ticas agr\u00edcolas sustent\u00e1veis por meio de treinamento, projetos piloto e demonstra\u00e7\u00f5es de tecnologia.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar pr\u00e1ticas sustent\u00e1veis.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a ado\u00e7\u00e3o.",
-                "Acesso a assist\u00eancia t\u00e9cnica para implementa\u00e7\u00e3o bem-sucedida."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de tecnologias de conserva\u00e7\u00e3o transferidas e aplicadas em fazendas.",
-                "Percentual de produtores treinados para implementar pr\u00e1ticas de conserva\u00e7\u00e3o.",
-                "Redu\u00e7\u00e3o na degrada\u00e7\u00e3o do solo ou aumento na cobertura vegetal (hectares)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 7,
-        "explanation": "Promoting organic farming in Parintins is a crucial action due to the city's high risk of food insecurity, exacerbated by droughts and floods. Organic farming can enhance soil health and resilience, making it more adaptable to climate-related hazards. Additionally, it can provide sustainable livelihoods for the local population, which is predominantly low-income, by reducing dependency on expensive chemical inputs. This approach also aligns with preserving the biodiversity of the tropical rainforest biome, which is vital for maintaining ecological balance.",
-        "action": {
-            "ActionID": "icare_0096",
-            "ActionName": "Promover a Agricultura Org\u00e2nica",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar a ado\u00e7\u00e3o de pr\u00e1ticas de agricultura org\u00e2nica que evitem o uso de produtos qu\u00edmicos e contribuam para a sa\u00fade do solo e captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Fornecimento de incentivos financeiros, subs\u00eddios ou subs\u00eddios para apoiar a transi\u00e7\u00e3o para pr\u00e1ticas de agricultura org\u00e2nica.",
-                "Desenvolvimento de redes de treinamento e apoio para educar os agricultores sobre m\u00e9todos de agricultura org\u00e2nica e seus benef\u00edcios.",
-                "Estabelecimento de sistemas de certifica\u00e7\u00e3o e estrat\u00e9gias de acesso ao mercado para garantir a viabilidade econ\u00f4mica dos produtos org\u00e2nicos."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas sob pr\u00e1ticas de agricultura org\u00e2nica (%).",
-                "Aumento no teor de carbono org\u00e2nico do solo (toneladas de carbono por hectare).",
-                "Redu\u00e7\u00e3o no uso de fertilizantes qu\u00edmicos e pesticidas (quilogramas/hectare/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 8,
-        "explanation": "Promoting sustainable agricultural practices in Parintins is crucial due to the high risk of droughts impacting food security. The city is located in a tropical rainforest biome, which is sensitive to climate changes that can affect agricultural productivity. Additionally, with a high percentage of the population living in low-income conditions, ensuring food security through sustainable practices can help mitigate economic vulnerabilities. Implementing these practices can also contribute to reducing land use emissions, which are a significant part of the city's total emissions profile.",
-        "action": {
-            "ActionID": "icare_0102",
-            "ActionName": "Promover Pr\u00e1ticas Agr\u00edcolas Sustent\u00e1veis",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar pr\u00e1ticas agr\u00edcolas que reduzam as emiss\u00f5es de gases de efeito estufa, como o uso reduzido de fertilizantes e agroqu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de programas educacionais e recursos para promover pr\u00e1ticas agr\u00edcolas sustent\u00e1veis entre os agricultores.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas que incentivem a redu\u00e7\u00e3o do uso de fertilizantes e agroqu\u00edmicos, como subs\u00eddios para insumos org\u00e2nicos ou t\u00e9cnicas de cultivo sustent\u00e1vel.",
-                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas para fornecer suporte t\u00e9cnico e orienta\u00e7\u00e3o sobre pr\u00e1ticas de redu\u00e7\u00e3o de emiss\u00f5es."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas adotando pr\u00e1ticas sustent\u00e1veis (% do total de terras agr\u00edcolas).",
-                "Aumento no rendimento das colheitas por hectare (toneladas/hectare) devido a m\u00e9todos sustent\u00e1veis.",
-                "Redu\u00e7\u00e3o no uso de \u00e1gua para agricultura (litros ou m\u00b3/hectare/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 9,
-        "explanation": "Supporting regenerative agriculture practices in Parintins is crucial due to the high risk of droughts impacting food security. The city's tropical rainforest biome and high land use emissions suggest that sustainable land management can significantly reduce environmental impact. Additionally, with a high percentage of low-income residents, promoting regenerative agriculture can enhance local food production and economic resilience. This action aligns with the need to address socio-economic challenges while mitigating climate risks.",
-        "action": {
-            "ActionID": "icare_0100",
-            "ActionName": "Apoiar Pr\u00e1ticas de Agricultura Regenerativa",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Apoiar pr\u00e1ticas agr\u00edcolas regenerativas que se concentrem na restaura\u00e7\u00e3o da sa\u00fade do solo e na redu\u00e7\u00e3o das emiss\u00f5es de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de programas de treinamento e recursos para educar os agricultores sobre t\u00e9cnicas agr\u00edcolas regenerativas, como cobertura vegetal e redu\u00e7\u00e3o do preparo do solo.",
-                "Implementa\u00e7\u00e3o de incentivos financeiros ou subs\u00eddios para apoiar a ado\u00e7\u00e3o de pr\u00e1ticas regenerativas.",
-                "Colabora\u00e7\u00e3o com institui\u00e7\u00f5es de pesquisa agr\u00edcola para monitorar e documentar a efic\u00e1cia das pr\u00e1ticas regenerativas na captura de carbono e na melhoria da sa\u00fade do solo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento nos n\u00edveis de carbono org\u00e2nico do solo (toneladas/hectare).",
-                "Redu\u00e7\u00e3o no uso de \u00e1gua por hectare na produ\u00e7\u00e3o agr\u00edcola (%).",
-                "N\u00famero de projetos piloto de agricultura regenerativa implementados."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 10,
-        "explanation": "Creating incentives for agroforestry practices in livestock systems is crucial for Parintins due to its location in the Amazon rainforest, where deforestation and land use change are significant concerns. Agroforestry can help mitigate land use emissions, which are a major contributor to the city's total emissions. Additionally, integrating trees into livestock systems can improve biodiversity and enhance resilience against climate impacts such as droughts and floods, which are high-risk hazards for the region. This action also aligns with the socio-economic need to support low-income communities by potentially increasing agricultural productivity and sustainability.",
-        "action": {
-            "ActionID": "icare_0084",
-            "ActionName": "Criar Incentivos para Pr\u00e1ticas de Agroflorestas em Sistemas de Pecu\u00e1ria",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Criar incentivos financeiros e t\u00e9cnicos para integrar pr\u00e1ticas de agrofloresta\u00e7\u00e3o em sistemas de pecu\u00e1ria, promovendo a captura de carbono, prote\u00e7\u00e3o do solo e melhoria da biodiversidade.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de programas de incentivos financeiros, como subs\u00eddios ou isen\u00e7\u00f5es fiscais, para apoiar os agricultores na integra\u00e7\u00e3o da agrofloresta com sistemas de pecu\u00e1ria.",
-                "Fornecimento de assist\u00eancia t\u00e9cnica e treinamento aos agricultores sobre as melhores pr\u00e1ticas para a integra\u00e7\u00e3o da agrofloresta nas opera\u00e7\u00f5es de pecu\u00e1ria.",
-                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas e ambientais para monitorar e avaliar os impactos das pr\u00e1ticas agroflorestais na captura de carbono, sa\u00fade do solo e biodiversidade."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de incentivos financeiros fornecidos para integrar a agrofloresta em sistemas de pecu\u00e1ria.",
-                "Aumento na qualidade do solo e cobertura vegetal em propriedades manejadas (%).",
-                "Crescimento da biodiversidade em \u00e1reas de agrofloresta (% de esp\u00e9cies identificadas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0101",
-        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
-        "actionPriority": 11,
-        "explanation": "Encouraging the use of low-emission agricultural machinery in Parintins is crucial due to the city's significant land use emissions, which are the highest among its emission sources. By adopting cleaner technologies in agriculture, the city can reduce its carbon footprint and contribute to mitigating climate change impacts. Additionally, this action aligns with the need to address food security risks exacerbated by climate hazards such as droughts and floods. Implementing low-emission machinery can also improve the sustainability of local agricultural practices, supporting the socio-economic development of a region with high levels of low-income residents.",
-        "action": {
-            "ActionID": "icare_0101",
-            "ActionName": "Incentivar o Uso de M\u00e1quinas Agr\u00edcolas de Baixa Emiss\u00e3o",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover o uso de maquin\u00e1rio agr\u00edcola de baixo carbono, como tratores e equipamentos movidos a biocombust\u00edveis ou energia solar.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Estabelecimento de programas de financiamento ou incentivos para que os agricultores adquiram m\u00e1quinas agr\u00edcolas de baixo carbono.",
-                "Desenvolvimento de parcerias com fabricantes de m\u00e1quinas para criar e distribuir solu\u00e7\u00f5es de equipamentos sustent\u00e1veis.",
-                "Implementa\u00e7\u00e3o de programas de treinamento e apoio para ajudar os agricultores a integrar e manter m\u00e1quinas agr\u00edcolas de baixo carbono."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de m\u00e1quinas agr\u00edcolas (toneladas de CO\u2082e/ano).",
-                "N\u00famero de subs\u00eddios ou incentivos fornecidos para m\u00e1quinas de baixa emiss\u00e3o.",
-                "Percentual de agricultores treinados para operar m\u00e1quinas de baixa emiss\u00e3o."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0127",
-        "actionName": "Accelerate Environmental Regularization of Rural Properties",
-        "actionPriority": 12,
-        "explanation": "Accelerating the environmental regularization of rural properties in Parintins is crucial due to the high land use emissions, which are a significant contributor to the city's total emissions. This action can help mitigate the impact of deforestation and land degradation, which are prevalent in the Amazon region. By ensuring that rural properties comply with environmental regulations, the city can promote sustainable land use practices, thereby reducing emissions and preserving biodiversity. Additionally, this initiative can support the local economy by fostering sustainable agricultural practices, which are essential for food security in the face of climate change.",
-        "action": {
-            "ActionID": "icare_0127",
-            "ActionName": "Acelerar a Regulariza\u00e7\u00e3o Ambiental de Propriedades Rurais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar programas para registrar propriedades no Cadastro Ambiental Rural (CAR) e aderir aos compromissos de restaura\u00e7\u00e3o ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Acesso a plataformas digitais e treinamento t\u00e9cnico para processos de registro e restaura\u00e7\u00e3o de propriedades.",
-                "Incentivos financeiros e parcerias com ag\u00eancias ambientais para apoiar a implementa\u00e7\u00e3o.",
-                "Mecanismos de monitoramento e fiscaliza\u00e7\u00e3o para garantir o cumprimento dos compromissos de restaura\u00e7\u00e3o."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de propriedades rurais com Cadastro Ambiental Rural (CAR) regularizado.",
-                "\u00c1rea total de vegeta\u00e7\u00e3o nativa protegida ou restaurada em propriedades regularizadas (hectares).",
-                "Redu\u00e7\u00e3o anual nas emiss\u00f5es de gases de efeito estufa (tCO\u2082e) devido \u00e0 regulariza\u00e7\u00e3o."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 13,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Parintins due to its high risk of food insecurity, as indicated by the city's vulnerability to droughts and floods. This action supports local farmers, enhances food security, and reduces dependency on external food sources, which is vital given the socio-economic challenges faced by the population. Additionally, promoting agroecological practices can help mitigate environmental impacts and support biodiversity, aligning with the city's need to address its significant land use emissions. By focusing on local procurement, Parintins can strengthen its resilience against climate-related hazards and improve the well-being of its residents.",
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Priorizar a Aquisi\u00e7\u00e3o de Produtos Agroecol\u00f3gicos Produzidos Localmente em Compras P\u00fablicas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Concentre-se em comprar alimentos sustent\u00e1veis e produzidos localmente para institui\u00e7\u00f5es p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de pol\u00edticas de aquisi\u00e7\u00e3o e identifica\u00e7\u00e3o de fornecedores locais confi\u00e1veis.",
-                "Parcerias com produtores e aloca\u00e7\u00e3o de financiamento para programas de aquisi\u00e7\u00e3o sustent\u00e1vel.",
-                "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os crit\u00e9rios de sustentabilidade."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem do volume total de compras p\u00fablicas provenientes de produtores agroecol\u00f3gicos locais.",
-                "Quantidade de emiss\u00f5es de CO\u2082 evitadas devido \u00e0 redu\u00e7\u00e3o da dist\u00e2ncia de transporte (tCO\u2082e).",
-                "N\u00famero de produtores agroecol\u00f3gicos beneficiados pelas compras p\u00fablicas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 14,
-        "explanation": "Supporting the implementation of ecological fiscal incentives in Parintins is crucial due to the city's high vulnerability to environmental hazards such as droughts and floods. These incentives can encourage sustainable land use practices, which are essential given the significant land use emissions and the city's location in a tropical rainforest biome. Additionally, with high levels of low-income residents, ecological fiscal incentives can provide financial benefits that promote both environmental sustainability and economic resilience. This action aligns with the need to address inadequate sanitation and water access, which are critical socio-economic challenges in the region.",
-        "action": {
-            "ActionID": "icare_0136",
-            "ActionName": "Apoiar a Implementa\u00e7\u00e3o de Incentivos Fiscais Ecol\u00f3gicos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar a aplica\u00e7\u00e3o de impostos ecol\u00f3gicos e incentivos para promover a conserva\u00e7\u00e3o ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecer um quadro regulat\u00f3rio claro com taxas de impostos justas e incentivos para a sustentabilidade.",
-                "Implementar sistemas de monitoramento eficazes para rastrear a conformidade e medir o impacto.",
-                "Promover a conscientiza\u00e7\u00e3o p\u00fablica e fomentar a colabora\u00e7\u00e3o entre governos, empresas e comunidades."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de munic\u00edpios que adotaram incentivos fiscais ambientais.",
-                "Percentual da receita tribut\u00e1ria gasta em pr\u00e1ticas sustent\u00e1veis.",
-                "\u00c1rea ou n\u00famero de propriedades beneficiadas por pr\u00e1ticas de conserva\u00e7\u00e3o como resultado de incentivos."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 15,
-        "explanation": "Supporting agroecological certification programs in Parintins is crucial due to the city's high risk of food insecurity exacerbated by climate hazards such as droughts and floods. These programs can promote sustainable agricultural practices that enhance resilience against these environmental challenges. Additionally, given the high level of low-income residents, such initiatives can provide economic benefits by opening new markets and improving food quality and availability. This action aligns with the need to address socio-economic vulnerabilities while also contributing to the reduction of land use emissions.",
-        "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Apoiar Programas de Certifica\u00e7\u00e3o Agroecol\u00f3gica",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar a certifica\u00e7\u00e3o de produtos agroecol\u00f3gicos que atendam a crit\u00e9rios de sustentabilidade e tenham baixo impacto ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de padr\u00f5es de certifica\u00e7\u00e3o claros e acess\u00edveis para produtos agroecol\u00f3gicos que enfatizem a sustentabilidade e o baixo impacto ambiental.",
-                "Apoio a agricultores e produtores para atender aos requisitos de certifica\u00e7\u00e3o por meio de treinamento, assist\u00eancia financeira ou orienta\u00e7\u00e3o t\u00e9cnica.",
-                "Cria\u00e7\u00e3o de estrat\u00e9gias de marketing e parcerias para aumentar a visibilidade e a demanda por produtos agroecol\u00f3gicos certificados nos mercados locais e globais."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de agricultores ou produtores obtendo certifica\u00e7\u00f5es agroecol\u00f3gicas.",
-                "Percentual de produtos agr\u00edcolas certificados no mercado (%).",
-                "Redu\u00e7\u00e3o no uso de insumos sint\u00e9ticos (por exemplo, fertilizantes, pesticidas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0085",
-        "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 16,
-        "explanation": "Promoting the adoption of agroecological pest control in Parintins is crucial due to the city's high risk of food insecurity exacerbated by climate hazards such as droughts and floods. Agroecological methods can enhance resilience by improving soil health and biodiversity, which are vital in a tropical rainforest biome. Additionally, these practices can reduce dependency on chemical pesticides, aligning with sustainable development goals and potentially lowering emissions related to agricultural practices. This action supports the local economy by empowering smallholder farmers with sustainable techniques, which is essential given the high levels of low-income residents in the area.",
-        "action": {
-            "ActionID": "icare_0085",
-            "ActionName": "Promover a Ado\u00e7\u00e3o do Controle de Pragas Agroecol\u00f3gico",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar m\u00e9todos de controle de pragas que sejam agroecol\u00f3gicos, como o uso de predadores naturais e plantas repelentes, para reduzir a depend\u00eancia de pesticidas qu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de programas educacionais para informar os agricultores sobre m\u00e9todos de controle de pragas agroecol\u00f3gicos e seus benef\u00edcios.",
-                "Fornecimento de acesso a recursos ou materiais para implementar m\u00e9todos de controle de pragas naturais, como a introdu\u00e7\u00e3o de insetos ben\u00e9ficos ou o cultivo de plantas repelentes.",
-                "Cria\u00e7\u00e3o de incentivos ou redes de apoio para encorajar a transi\u00e7\u00e3o do uso de pesticidas qu\u00edmicos em favor de alternativas sustent\u00e1veis."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento nas taxas de produtividade em \u00e1reas que adotam controle agroecol\u00f3gico de pragas (%).",
-                "N\u00famero de campanhas educativas realizadas sobre controle sustent\u00e1vel de pragas.",
-                "Impacto nos custos totais de produ\u00e7\u00e3o devido \u00e0 ado\u00e7\u00e3o de pr\u00e1ticas agroecol\u00f3gicas (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0052",
-        "actionName": "Reduce Deforestation and Degradation",
-        "actionPriority": 17,
-        "explanation": "Reducing deforestation and degradation is crucial for Parintins, given its location in the Amazon rainforest, which is a vital carbon sink and biodiversity hotspot. The city faces significant land use emissions, which are the largest contributor to its total emissions, making this action a priority to mitigate climate change impacts. Additionally, preserving the forest can help maintain water resources and food security, which are at high risk due to droughts. By focusing on this action, Parintins can also protect its biodiversity and improve resilience against climate-related hazards.",
-        "action": {
-            "ActionID": "ipcc_0052",
-            "ActionName": "Reduzir o Desmatamento e a Degrada\u00e7\u00e3o",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Reduzir o desmatamento e a degrada\u00e7\u00e3o florestal conserva os reservat\u00f3rios de carbono na vegeta\u00e7\u00e3o e no solo das florestas, evitando a perda de cobertura arb\u00f3rea e dist\u00farbios. Isso envolve controlar os fatores que levam ao desmatamento, melhorar a governan\u00e7a florestal e apoiar a gest\u00e3o comunit\u00e1ria das florestas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promove a posse segura da terra, apoia a gest\u00e3o florestal comunit\u00e1ria e garante a participa\u00e7\u00e3o de grupos marginalizados e ind\u00edgenas nos processos de tomada de decis\u00e3o.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requer governan\u00e7a aprimorada",
-                "pol\u00edticas claras de posse de terra",
-                "financiamento para \u00e1reas protegidas",
-                "participa\u00e7\u00e3o da comunidade nos esfor\u00e7os de conserva\u00e7\u00e3o florestal"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nas taxas de desmatamento",
-                "aumento da cobertura florestal",
-                "a quantidade de emiss\u00f5es de GEE evitadas por ano"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "tropical_rainforest"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0061",
-        "actionName": "Soil Carbon Management in Croplands and Grasslands",
-        "actionPriority": 18,
-        "explanation": "Soil Carbon Management in Croplands and Grasslands is a crucial action for Parintins due to its potential to enhance carbon sequestration and improve soil health. Given the city's high land use emissions, this action can significantly contribute to reducing overall emissions by capturing carbon in the soil. Additionally, improving soil health can lead to better agricultural productivity, which is vital for food security, especially in a region facing high risks from droughts. Implementing this action can also support biodiversity by maintaining healthier ecosystems in croplands and grasslands.",
-        "action": {
-            "ActionID": "ipcc_0061",
-            "ActionName": "Gest\u00e3o de Carbono do Solo em Terras Agr\u00edcolas e Pastagens",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementa\u00e7\u00e3o de pr\u00e1ticas de manejo sustent\u00e1vel do solo em terras agr\u00edcolas e pastagens para aumentar o carbono org\u00e2nico do solo. As pr\u00e1ticas incluem manejo melhorado de culturas e nutrientes, redu\u00e7\u00e3o do preparo do solo, reten\u00e7\u00e3o de res\u00edduos, manejo de \u00e1gua e arroz, aplica\u00e7\u00e3o de biochar, melhoramento de variedades de gram\u00edneas, manejo de lota\u00e7\u00e3o de gado e manejo de inc\u00eandios. Essas atividades visam aumentar a mat\u00e9ria org\u00e2nica do solo, mitigar as emiss\u00f5es de GEE e proporcionar co-benef\u00edcios para a biodiversidade, fornecimento de \u00e1gua e seguran\u00e7a alimentar.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promove a inclus\u00e3o de pequenos agricultores e comunidades com recursos limitados, fornecendo pr\u00e1ticas econ\u00f4micas e adapt\u00e1veis regionalmente que melhoram a produtividade agr\u00edcola e a resili\u00eancia \u00e0s mudan\u00e7as clim\u00e1ticas.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "O sucesso depende da disponibilidade de recursos para monitoramento e verifica\u00e7\u00e3o",
-                "adapta\u00e7\u00e3o regional de pr\u00e1ticas",
-                "enfrentamento de barreiras como satura\u00e7\u00e3o do solo e quest\u00f5es de perman\u00eancia"
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento do carbono org\u00e2nico do solo",
-                "redu\u00e7\u00e3o nas emiss\u00f5es de GEE",
-                "melhoria na produtividade agr\u00edcola",
-                "melhorias na biodiversidade"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 19,
-        "explanation": "Encouraging local agroecological production and short supply chains in Parintins is crucial due to the high risk of food insecurity exacerbated by climate hazards such as droughts and floods. The city's socio-economic context, characterized by high levels of low income, makes it vulnerable to disruptions in food supply. By promoting local production, the city can enhance its resilience against these risks, ensuring a more stable and sustainable food supply. Additionally, this action supports the local economy and reduces dependency on external food sources, which is vital for a region with limited access to public services.",
-        "action": {
-            "ActionID": "icare_0132",
-            "ActionName": "Incentivar a Produ\u00e7\u00e3o Agroecol\u00f3gica Local e Cadeias Curtas de Abastecimento",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Apoiar pr\u00e1ticas agr\u00edcolas locais e sustent\u00e1veis e reduzir as emiss\u00f5es associadas ao transporte de alimentos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Incentivos para pr\u00e1ticas agr\u00edcolas sustent\u00e1veis e desenvolvimento de redes locais de distribui\u00e7\u00e3o de alimentos.",
-                "Parcerias com produtores e investimento em infraestrutura para apoiar mercados locais.",
-                "Pol\u00edticas para priorizar m\u00e9todos de transporte de baixa emiss\u00e3o."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de produtores aderindo a pr\u00e1ticas agroecol\u00f3gicas locais.",
-                "Percentual de alimentos consumidos na cidade provenientes de cadeias curtas.",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es associadas ao transporte de alimentos (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0053",
-        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
-        "actionPriority": 20,
-        "explanation": "Afforestation, reforestation, and forest ecosystem restoration are crucial for Parintins due to its location in the Amazon region, which is vital for global biodiversity and climate regulation. The city faces significant land use emissions, and restoring forests can help sequester carbon, reducing these emissions. Additionally, enhancing forest ecosystems can improve resilience against climate hazards such as droughts and heatwaves, which pose high risks to food and energy security. This action also supports biodiversity, which is threatened by both droughts and heatwaves, making it a strategic priority for the city's environmental and socio-economic stability.",
-        "action": {
-            "ActionID": "ipcc_0053",
-            "ActionName": "Aflorestamento, Reflorestamento e Restaura\u00e7\u00e3o de Ecossistemas Florestais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Atividades focadas na convers\u00e3o de terras em florestas, na restaura\u00e7\u00e3o de florestas degradadas e na prioriza\u00e7\u00e3o da integridade ecol\u00f3gica. O reflorestamento visa terras historicamente n\u00e3o florestadas, enquanto a refloresta\u00e7\u00e3o visa \u00e1reas anteriormente florestadas. Os esfor\u00e7os incluem o aumento da biodiversidade, a melhoria dos servi\u00e7os ecossist\u00eamicos e o aumento da captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Apoia os meios de subsist\u00eancia locais, promove a equidade no uso da terra e garante a participa\u00e7\u00e3o inclusiva das partes interessadas em programas de reflorestamento e restaura\u00e7\u00e3o.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requer financiamento para restaura\u00e7\u00e3o de terras",
-                "acesso a esp\u00e9cies adequadas para plantio",
-                "engajamento da comunidade local",
-                "sistemas de monitoramento para integridade do ecossistema e sequestro de carbono"
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea de terra reflorestada ou florestada",
-                "taxas de sequestro de carbono",
-                "melhoria nos \u00edndices de biodiversidade",
-                "m\u00e9tricas de servi\u00e7os ecossist\u00eamicos, como regula\u00e7\u00e3o da \u00e1gua e qualidade do solo"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0050",
+    "actionName": "Implement Agroforestry Systems",
+    "actionPriority": 1,
+    "explanation": "A implementação de sistemas agroflorestais em Parintins é uma prioridade elevada devido à localização da cidade na floresta amazônica, onde a biodiversidade e o uso sustentável da terra são fundamentais. A agrofloresta pode ajudar a mitigar as emissões provenientes do uso da terra, que são um contribuinte significativo para o total de emissões da cidade. Além disso, essa abordagem pode fortalecer a segurança alimentar ao fornecer fontes de alimento diversificadas e resilientes, o que é crucial diante do alto risco de secas que afetam a disponibilidade de alimentos. Ademais, a agrofloresta apoia a economia local ao criar empregos e melhorar os meios de subsistência, especialmente em uma região com altos índices de famílias de baixa renda.",
+    "action": {
+      "ActionID": "icare_0050",
+      "ActionName": "Implementar Sistemas Agroflorestais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover sistemas agroflorestais integrando árvores na produção de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecimento de suporte técnico e orientação aos agricultores sobre o design e implementação de sistemas agroflorestais.",
+        "Desenvolvimento de incentivos financeiros ou subsídios para tornar a agrofloresta mais economicamente atraente.",
+        "Criação de políticas que integrem práticas agroflorestais no planejamento do uso da terra agrícola e nos sistemas de posse de terra."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas convertidas em sistemas agroflorestais (%).",
+        "Número de novos projetos agroflorestais implementados.",
+        "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0134",
+    "actionName": "Strengthen Mechanisms for Deforestation Control",
+    "actionPriority": 2,
+    "explanation": "O fortalecimento dos mecanismos de controle do desmatamento em Parintins é crucial devido à sua localização na Floresta Amazônica, um importante sumidouro global de carbono. A cidade enfrenta emissões significativas provenientes do uso da terra, que são um dos principais contribuintes para o seu perfil total de emissões. Ao aprimorar o controle do desmatamento, Parintins pode reduzir essas emissões e ajudar a preservar a biodiversidade, que está ameaçada tanto por secas quanto por ondas de calor. Além disso, o controle do desmatamento pode aumentar a resiliência dos ecossistemas locais, apoiando a segurança alimentar e hídrica diante das mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0134",
+      "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aprimorar o monitoramento e a fiscalização para prevenir o desmatamento ilegal e promover o uso sustentável da terra.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Forte estrutura legal, tecnologias de monitoramento avançadas (satélites e drones) e capacitação para as autoridades locais.",
+        "Colaboração com comunidades locais e financiamento adequado para os esforços de fiscalização.",
+        "Transparência e responsabilidade na elaboração de relatórios para garantir a implementação eficaz."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total monitorada para desmatamento (hectares/ano).",
+        "Redução na taxa anual de desmatamento (%).",
+        "Quantidade de emissões evitadas pela redução do desmatamento (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0133",
+    "actionName": "Promote Urban Reforestation and Green Corridors",
+    "actionPriority": 3,
+    "explanation": "Promover a reflorestação urbana e corredores verdes em Parintins é crucial devido ao seu bioma de floresta tropical, que é vital para a manutenção da biodiversidade e do equilíbrio ecológico. A cidade enfrenta desafios ambientais significativos, incluindo altas emissões provenientes do uso do solo e de resíduos, que podem ser mitigados com o aumento de áreas verdes. Além disso, a reflorestação pode ajudar a combater os efeitos das ondas de calor e melhorar a saúde pública ao reduzir as ilhas de calor urbanas. Essa ação também fortalece a resiliência da cidade frente aos impactos das mudanças climáticas, como secas e inundações, ao melhorar a retenção natural de água e a estabilidade do solo.",
+    "action": {
+      "ActionID": "icare_0133",
+      "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aumentar a cobertura arbórea urbana para mitigar o efeito de ilha de calor urbano e melhorar a biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Identificação de áreas prioritárias e seleção de espécies nativas e resilientes ao clima para o plantio de árvores.",
+        "Parcerias com organizações locais e viveiros, e alocação de recursos para plantio e manutenção.",
+        "Envolvimento da comunidade para garantir cuidado e apoio a longo prazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento na cobertura de dossel arbóreo urbano (%)",
+        "Comprimento total de corredores verdes criados ou restaurados (quilômetros)",
+        "Redução nas temperaturas do efeito de ilha de calor urbano (°C)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0128",
+    "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+    "actionPriority": 4,
+    "explanation": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA) em Parintins é fundamental devido à localização da cidade na floresta amazônica, uma área ecológica vital. Os programas de PSA podem incentivar as comunidades locais a se envolverem em esforços de conservação, ajudando a preservar a biodiversidade e a mitigar os impactos do desmatamento. Diante do alto risco de secas e das significativas emissões decorrentes do uso da terra, esses programas também podem contribuir para a redução das emissões e para o aprimoramento da gestão dos recursos hídricos. Além disso, o PSA pode proporcionar benefícios econômicos à população local, que enfrenta altos índices de baixa renda, ao criar meios de subsistência sustentáveis ligados à conservação ambiental.",
+    "action": {
+      "ActionID": "icare_0128",
+      "ActionName": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas que paguem aos proprietários de terras por manterem ou melhorarem as condições ambientais em suas propriedades.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Criação de mecanismos de financiamento e critérios de elegibilidade claros com indicadores de desempenho.",
+        "Parcerias com organizações ambientais e campanhas de conscientização para incentivar a participação.",
+        "Integração com estruturas legais para garantir a sustentabilidade do programa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de contratos ativos de Pagamento por Serviços Ambientais (PSA) assinados.",
+        "Área total sob práticas de conservação ou restauração incentivadas (hectares).",
+        "Quantidade de carbono sequestrado ou emissões evitadas por meio de ações de PSA (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0130",
+    "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+    "actionPriority": 5,
+    "explanation": "A realização de ações de Assistência Técnica e Extensão Rural (ATER) em Parintins é fundamental devido ao alto risco de secas que impactam a segurança alimentar e energética. Os fatores socioeconômicos da cidade, como altos índices de baixa renda e saneamento inadequado, agravam a vulnerabilidade das comunidades rurais. Ao implementar ações de ATER, o município pode aumentar a produtividade agrícola e a resiliência, melhorando assim a segurança alimentar e os meios de subsistência. Além disso, essas ações podem ajudar a mitigar os efeitos das mudanças climáticas na agricultura local, garantindo o desenvolvimento sustentável da região.",
+    "action": {
+      "ActionID": "icare_0130",
+      "ActionName": "Conduzir Ações de Assistência Técnica e Extensão Rural (ATER)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fornecer suporte técnico e treinamento aos produtores rurais para a produção agrícola sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de pessoal técnico qualificado e programas de formação personalizados.",
+        "Parcerias com instituições de pesquisa agrícola e alocação de recursos para o desenvolvimento de capacidades.",
+        "Envolvimento com produtores rurais para garantir a participação ativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de produtores beneficiados com assistência técnica rural (% do total).",
+        "Percentual de participantes adotando práticas resilientes ao clima.",
+        "Redução da vulnerabilidade das propriedades ao risco climático (%)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0129",
+    "actionName": "Facilitate Technology Transfer for Conservation Practices",
+    "actionPriority": 6,
+    "explanation": "Facilitar a transferência de tecnologia para práticas de conservação em Parintins é crucial devido à localização da cidade na floresta amazônica, uma região de imensa biodiversidade e importância ecológica. A cidade enfrenta desafios ambientais significativos, incluindo altas emissões provenientes do uso do solo e de resíduos, que podem ser mitigados por meio de tecnologias avançadas de conservação. Além disso, o contexto socioeconômico de altos índices de baixa renda e serviços públicos inadequados destaca a necessidade de práticas sustentáveis que possam melhorar as condições de vida ao mesmo tempo em que preservam os recursos naturais. Ao priorizar essa ação, Parintins pode aumentar sua resiliência frente a riscos climáticos, como secas e inundações, que ameaçam a segurança alimentar e energética.",
+    "action": {
+      "ActionID": "icare_0129",
+      "ActionName": "Facilitar a Transferência de Tecnologia para Práticas de Conservação",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover a adoção de práticas agrícolas sustentáveis por meio de treinamento, projetos piloto e demonstrações de tecnologia.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar práticas sustentáveis.",
+        "Parcerias com instituições de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a adoção.",
+        "Acesso a assistência técnica para implementação bem-sucedida."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de tecnologias de conservação transferidas e aplicadas em fazendas.",
+        "Percentual de produtores treinados para implementar práticas de conservação.",
+        "Redução na degradação do solo ou aumento na cobertura vegetal (hectares)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0096",
+    "actionName": "Promote Organic Farming",
+    "actionPriority": 7,
+    "explanation": "Promover a agricultura orgânica em Parintins é uma ação crucial devido ao alto risco de insegurança alimentar na cidade, agravado por secas e enchentes. A agricultura orgânica pode melhorar a saúde e a resiliência do solo, tornando-o mais adaptável a riscos relacionados ao clima. Além disso, pode proporcionar meios de subsistência sustentáveis para a população local, que é predominantemente de baixa renda, ao reduzir a dependência de insumos químicos caros. Essa abordagem também está alinhada com a preservação da biodiversidade do bioma de floresta tropical, que é vital para a manutenção do equilíbrio ecológico.",
+    "action": {
+      "ActionID": "icare_0096",
+      "ActionName": "Promover a Agricultura Orgânica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a adoção de práticas de agricultura orgânica que evitem o uso de produtos químicos e contribuam para a saúde do solo e captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecimento de incentivos financeiros, subsídios ou subsídios para apoiar a transição para práticas de agricultura orgânica.",
+        "Desenvolvimento de redes de treinamento e apoio para educar os agricultores sobre métodos de agricultura orgânica e seus benefícios.",
+        "Estabelecimento de sistemas de certificação e estratégias de acesso ao mercado para garantir a viabilidade econômica dos produtos orgânicos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas sob práticas de agricultura orgânica (%).",
+        "Aumento no teor de carbono orgânico do solo (toneladas de carbono por hectare).",
+        "Redução no uso de fertilizantes químicos e pesticidas (quilogramas/hectare/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0102",
+    "actionName": "Promote Sustainable Agricultural Practices",
+    "actionPriority": 8,
+    "explanation": "Promover práticas agrícolas sustentáveis em Parintins é fundamental devido ao alto risco de secas que impactam a segurança alimentar. A cidade está localizada em um bioma de floresta tropical, sensível às mudanças climáticas que podem afetar a produtividade agrícola. Além disso, com uma alta porcentagem da população vivendo em condições de baixa renda, garantir a segurança alimentar por meio de práticas sustentáveis pode ajudar a mitigar vulnerabilidades econômicas. A implementação dessas práticas também pode contribuir para a redução das emissões provenientes do uso da terra, que representam uma parte significativa do perfil total de emissões da cidade.",
+    "action": {
+      "ActionID": "icare_0102",
+      "ActionName": "Promover Práticas Agrícolas Sustentáveis",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar práticas agrícolas que reduzam as emissões de gases de efeito estufa, como o uso reduzido de fertilizantes e agroquímicos.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas educacionais e recursos para promover práticas agrícolas sustentáveis entre os agricultores.",
+        "Implementação de políticas que incentivem a redução do uso de fertilizantes e agroquímicos, como subsídios para insumos orgânicos ou técnicas de cultivo sustentável.",
+        "Colaboração com organizações agrícolas para fornecer suporte técnico e orientação sobre práticas de redução de emissões."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas adotando práticas sustentáveis (% do total de terras agrícolas).",
+        "Aumento no rendimento das colheitas por hectare (toneladas/hectare) devido a métodos sustentáveis.",
+        "Redução no uso de água para agricultura (litros ou m³/hectare/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0100",
+    "actionName": "Support Regenerative Agriculture Practices",
+    "actionPriority": 9,
+    "explanation": "Apoiar práticas de agricultura regenerativa em Parintins é fundamental devido ao alto risco de secas que afetam a segurança alimentar. O bioma de floresta tropical da cidade e as elevadas emissões decorrentes do uso da terra indicam que o manejo sustentável pode reduzir significativamente o impacto ambiental. Além disso, com uma alta porcentagem de moradores de baixa renda, a promoção da agricultura regenerativa pode fortalecer a produção local de alimentos e a resiliência econômica. Essa ação está alinhada com a necessidade de enfrentar desafios socioeconômicos ao mesmo tempo em que mitiga riscos climáticos.",
+    "action": {
+      "ActionID": "icare_0100",
+      "ActionName": "Apoiar Práticas de Agricultura Regenerativa",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoiar práticas agrícolas regenerativas que se concentrem na restauração da saúde do solo e na redução das emissões de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas de treinamento e recursos para educar os agricultores sobre técnicas agrícolas regenerativas, como cobertura vegetal e redução do preparo do solo.",
+        "Implementação de incentivos financeiros ou subsídios para apoiar a adoção de práticas regenerativas.",
+        "Colaboração com instituições de pesquisa agrícola para monitorar e documentar a eficácia das práticas regenerativas na captura de carbono e na melhoria da saúde do solo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento nos níveis de carbono orgânico do solo (toneladas/hectare).",
+        "Redução no uso de água por hectare na produção agrícola (%).",
+        "Número de projetos piloto de agricultura regenerativa implementados."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0084",
+    "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+    "actionPriority": 10,
+    "explanation": "Criar incentivos para práticas de agrofloresta em sistemas de pecuária é fundamental para Parintins devido à sua localização na floresta amazônica, onde o desmatamento e a mudança no uso da terra são preocupações significativas. A agrofloresta pode ajudar a mitigar as emissões provenientes do uso da terra, que são um dos principais contribuintes para o total de emissões do município. Além disso, a integração de árvores aos sistemas de pecuária pode melhorar a biodiversidade e aumentar a resiliência contra impactos climáticos, como secas e inundações, que são riscos elevados para a região. Essa ação também está alinhada com a necessidade socioeconômica de apoiar comunidades de baixa renda, ao potencialmente aumentar a produtividade agrícola e a sustentabilidade.",
+    "action": {
+      "ActionID": "icare_0084",
+      "ActionName": "Criar Incentivos para Práticas de Agroflorestas em Sistemas de Pecuária",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Criar incentivos financeiros e técnicos para integrar práticas de agroflorestação em sistemas de pecuária, promovendo a captura de carbono, proteção do solo e melhoria da biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas de incentivos financeiros, como subsídios ou isenções fiscais, para apoiar os agricultores na integração da agrofloresta com sistemas de pecuária.",
+        "Fornecimento de assistência técnica e treinamento aos agricultores sobre as melhores práticas para a integração da agrofloresta nas operações de pecuária.",
+        "Colaboração com organizações agrícolas e ambientais para monitorar e avaliar os impactos das práticas agroflorestais na captura de carbono, saúde do solo e biodiversidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de incentivos financeiros fornecidos para integrar a agrofloresta em sistemas de pecuária.",
+        "Aumento na qualidade do solo e cobertura vegetal em propriedades manejadas (%).",
+        "Crescimento da biodiversidade em áreas de agrofloresta (% de espécies identificadas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0101",
+    "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+    "actionPriority": 11,
+    "explanation": "Incentivar o uso de máquinas agrícolas de baixa emissão em Parintins é fundamental devido às significativas emissões provenientes do uso da terra na cidade, que representam a maior fonte de emissões locais. Ao adotar tecnologias mais limpas na agricultura, o município pode reduzir sua pegada de carbono e contribuir para a mitigação dos impactos das mudanças climáticas. Além disso, essa ação está alinhada com a necessidade de enfrentar os riscos à segurança alimentar, agravados por eventos climáticos como secas e inundações. A implementação de máquinas de baixa emissão também pode melhorar a sustentabilidade das práticas agrícolas locais, apoiando o desenvolvimento socioeconômico de uma região com altos índices de população de baixa renda.",
+    "action": {
+      "ActionID": "icare_0101",
+      "ActionName": "Incentivar o Uso de Máquinas Agrícolas de Baixa Emissão",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover o uso de maquinário agrícola de baixo carbono, como tratores e equipamentos movidos a biocombustíveis ou energia solar.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Estabelecimento de programas de financiamento ou incentivos para que os agricultores adquiram máquinas agrícolas de baixo carbono.",
+        "Desenvolvimento de parcerias com fabricantes de máquinas para criar e distribuir soluções de equipamentos sustentáveis.",
+        "Implementação de programas de treinamento e apoio para ajudar os agricultores a integrar e manter máquinas agrícolas de baixo carbono."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas emissões de máquinas agrícolas (toneladas de CO₂e/ano).",
+        "Número de subsídios ou incentivos fornecidos para máquinas de baixa emissão.",
+        "Percentual de agricultores treinados para operar máquinas de baixa emissão."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0127",
+    "actionName": "Accelerate Environmental Regularization of Rural Properties",
+    "actionPriority": 12,
+    "explanation": "Acelerar a regularização ambiental das propriedades rurais em Parintins é fundamental devido às altas emissões provenientes do uso da terra, que representam uma contribuição significativa para o total de emissões do município. Essa ação pode ajudar a mitigar o impacto do desmatamento e da degradação do solo, problemas prevalentes na região amazônica. Ao garantir que as propriedades rurais estejam em conformidade com as normas ambientais, o município pode promover práticas sustentáveis de uso da terra, reduzindo assim as emissões e preservando a biodiversidade. Além disso, essa iniciativa pode apoiar a economia local ao incentivar práticas agrícolas sustentáveis, que são essenciais para a segurança alimentar diante das mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0127",
+      "ActionName": "Acelerar a Regularização Ambiental de Propriedades Rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas para registrar propriedades no Cadastro Ambiental Rural (CAR) e aderir aos compromissos de restauração ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Acesso a plataformas digitais e treinamento técnico para processos de registro e restauração de propriedades.",
+        "Incentivos financeiros e parcerias com agências ambientais para apoiar a implementação.",
+        "Mecanismos de monitoramento e fiscalização para garantir o cumprimento dos compromissos de restauração."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de propriedades rurais com Cadastro Ambiental Rural (CAR) regularizado.",
+        "Área total de vegetação nativa protegida ou restaurada em propriedades regularizadas (hectares).",
+        "Redução anual nas emissões de gases de efeito estufa (tCO₂e) devido à regularização."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 13,
+    "explanation": "Priorizar a aquisição de produtos agroecológicos produzidos localmente nas compras públicas é fundamental para Parintins, devido ao seu alto risco de insegurança alimentar, como indicado pela vulnerabilidade da cidade a secas e enchentes. Essa ação apoia os agricultores locais, fortalece a segurança alimentar e reduz a dependência de fontes externas de alimentos, o que é vital diante dos desafios socioeconômicos enfrentados pela população. Além disso, a promoção de práticas agroecológicas pode ajudar a mitigar impactos ambientais e apoiar a biodiversidade, alinhando-se à necessidade da cidade de enfrentar suas significativas emissões relacionadas ao uso da terra. Ao focar na aquisição local, Parintins pode fortalecer sua resiliência frente a riscos climáticos e melhorar o bem-estar de seus habitantes.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar a Aquisição de Produtos Agroecológicos Produzidos Localmente em Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Concentre-se em comprar alimentos sustentáveis e produzidos localmente para instituições públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas de aquisição e identificação de fornecedores locais confiáveis.",
+        "Parcerias com produtores e alocação de financiamento para programas de aquisição sustentável.",
+        "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os critérios de sustentabilidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem do volume total de compras públicas provenientes de produtores agroecológicos locais.",
+        "Quantidade de emissões de CO₂ evitadas devido à redução da distância de transporte (tCO₂e).",
+        "Número de produtores agroecológicos beneficiados pelas compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0136",
+    "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+    "actionPriority": 14,
+    "explanation": "Apoiar a implementação de incentivos fiscais ecológicos em Parintins é fundamental devido à alta vulnerabilidade da cidade a riscos ambientais, como secas e enchentes. Esses incentivos podem estimular práticas sustentáveis de uso da terra, o que é essencial, considerando as significativas emissões relacionadas ao uso do solo e a localização da cidade em um bioma de floresta tropical. Além disso, com altos índices de moradores de baixa renda, os incentivos fiscais ecológicos podem proporcionar benefícios financeiros que promovem tanto a sustentabilidade ambiental quanto a resiliência econômica. Essa ação está alinhada com a necessidade de enfrentar a insuficiência de saneamento e o acesso à água, que são desafios socioeconômicos críticos na região.",
+    "action": {
+      "ActionID": "icare_0136",
+      "ActionName": "Apoiar a Implementação de Incentivos Fiscais Ecológicos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a aplicação de impostos ecológicos e incentivos para promover a conservação ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro regulatório claro com taxas de impostos justas e incentivos para a sustentabilidade.",
+        "Implementar sistemas de monitoramento eficazes para rastrear a conformidade e medir o impacto.",
+        "Promover a conscientização pública e fomentar a colaboração entre governos, empresas e comunidades."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de municípios que adotaram incentivos fiscais ambientais.",
+        "Percentual da receita tributária gasta em práticas sustentáveis.",
+        "Área ou número de propriedades beneficiadas por práticas de conservação como resultado de incentivos."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0099",
+    "actionName": "Support Agroecological Certification Programs",
+    "actionPriority": 15,
+    "explanation": "Apoiar programas de certificação agroecológica em Parintins é fundamental devido ao alto risco de insegurança alimentar na cidade, agravado por ameaças climáticas como secas e enchentes. Esses programas podem promover práticas agrícolas sustentáveis que aumentam a resiliência diante desses desafios ambientais. Além disso, considerando o elevado número de moradores de baixa renda, tais iniciativas podem trazer benefícios econômicos ao abrir novos mercados e melhorar a qualidade e a disponibilidade dos alimentos. Essa ação está alinhada com a necessidade de enfrentar vulnerabilidades socioeconômicas, ao mesmo tempo em que contribui para a redução das emissões decorrentes do uso da terra.",
+    "action": {
+      "ActionID": "icare_0099",
+      "ActionName": "Apoiar Programas de Certificação Agroecológica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a certificação de produtos agroecológicos que atendam a critérios de sustentabilidade e tenham baixo impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de padrões de certificação claros e acessíveis para produtos agroecológicos que enfatizem a sustentabilidade e o baixo impacto ambiental.",
+        "Apoio a agricultores e produtores para atender aos requisitos de certificação por meio de treinamento, assistência financeira ou orientação técnica.",
+        "Criação de estratégias de marketing e parcerias para aumentar a visibilidade e a demanda por produtos agroecológicos certificados nos mercados locais e globais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de agricultores ou produtores obtendo certificações agroecológicas.",
+        "Percentual de produtos agrícolas certificados no mercado (%).",
+        "Redução no uso de insumos sintéticos (por exemplo, fertilizantes, pesticidas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0085",
+    "actionName": "Promote the Adoption of Agroecological Pest Control",
+    "actionPriority": 16,
+    "explanation": "Promover a adoção do controle agroecológico de pragas em Parintins é crucial devido ao alto risco de insegurança alimentar na cidade, agravado por ameaças climáticas como secas e enchentes. Métodos agroecológicos podem aumentar a resiliência ao melhorar a saúde do solo e a biodiversidade, fatores essenciais em um bioma de floresta tropical. Além disso, essas práticas podem reduzir a dependência de pesticidas químicos, alinhando-se com os objetivos de desenvolvimento sustentável e potencialmente diminuindo as emissões relacionadas às práticas agrícolas. Essa ação apoia a economia local ao capacitar pequenos agricultores com técnicas sustentáveis, o que é fundamental considerando os altos índices de moradores de baixa renda na região.",
+    "action": {
+      "ActionID": "icare_0085",
+      "ActionName": "Promover a Adoção do Controle de Pragas Agroecológico",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar métodos de controle de pragas que sejam agroecológicos, como o uso de predadores naturais e plantas repelentes, para reduzir a dependência de pesticidas químicos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de programas educacionais para informar os agricultores sobre métodos de controle de pragas agroecológicos e seus benefícios.",
+        "Fornecimento de acesso a recursos ou materiais para implementar métodos de controle de pragas naturais, como a introdução de insetos benéficos ou o cultivo de plantas repelentes.",
+        "Criação de incentivos ou redes de apoio para encorajar a transição do uso de pesticidas químicos em favor de alternativas sustentáveis."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento nas taxas de produtividade em áreas que adotam controle agroecológico de pragas (%).",
+        "Número de campanhas educativas realizadas sobre controle sustentável de pragas.",
+        "Impacto nos custos totais de produção devido à adoção de práticas agroecológicas (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "ipcc_0052",
+    "actionName": "Reduce Deforestation and Degradation",
+    "actionPriority": 17,
+    "explanation": "Reduzir o desmatamento e a degradação é fundamental para Parintins, considerando sua localização na Floresta Amazônica, que é um importante sumidouro de carbono e um hotspot de biodiversidade. A cidade enfrenta emissões significativas relacionadas ao uso da terra, que são o maior contribuinte para suas emissões totais, tornando essa ação uma prioridade para mitigar os impactos das mudanças climáticas. Além disso, preservar a floresta pode ajudar a manter os recursos hídricos e a segurança alimentar, que estão sob alto risco devido às secas. Ao focar nessa ação, Parintins também pode proteger sua biodiversidade e aumentar a resiliência contra riscos relacionados ao clima.",
+    "action": {
+      "ActionID": "ipcc_0052",
+      "ActionName": "Reduzir o Desmatamento e a Degradação",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Reduzir o desmatamento e a degradação florestal conserva os reservatórios de carbono na vegetação e no solo das florestas, evitando a perda de cobertura arbórea e distúrbios. Isso envolve controlar os fatores que levam ao desmatamento, melhorar a governança florestal e apoiar a gestão comunitária das florestas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Promove a posse segura da terra, apoia a gestão florestal comunitária e garante a participação de grupos marginalizados e indígenas nos processos de tomada de decisão.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Requer governança aprimorada",
+        "políticas claras de posse de terra",
+        "financiamento para áreas protegidas",
+        "participação da comunidade nos esforços de conservação florestal"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas taxas de desmatamento",
+        "aumento da cobertura florestal",
+        "a quantidade de emissões de GEE evitadas por ano"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "tropical_rainforest"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "ipcc_0061",
+    "actionName": "Soil Carbon Management in Croplands and Grasslands",
+    "actionPriority": 18,
+    "explanation": "O manejo do carbono do solo em áreas agrícolas e pastagens é uma ação crucial para Parintins devido ao seu potencial de aumentar a captura de carbono e melhorar a saúde do solo. Considerando as altas emissões provenientes do uso da terra na cidade, essa ação pode contribuir significativamente para a redução das emissões totais ao capturar carbono no solo. Além disso, a melhoria da saúde do solo pode resultar em maior produtividade agrícola, o que é vital para a segurança alimentar, especialmente em uma região que enfrenta altos riscos de secas. A implementação dessa ação também pode apoiar a biodiversidade, mantendo ecossistemas mais saudáveis em áreas agrícolas e pastagens.",
+    "action": {
+      "ActionID": "ipcc_0061",
+      "ActionName": "Gestão de Carbono do Solo em Terras Agrícolas e Pastagens",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementação de práticas de manejo sustentável do solo em terras agrícolas e pastagens para aumentar o carbono orgânico do solo. As práticas incluem manejo melhorado de culturas e nutrientes, redução do preparo do solo, retenção de resíduos, manejo de água e arroz, aplicação de biochar, melhoramento de variedades de gramíneas, manejo de lotação de gado e manejo de incêndios. Essas atividades visam aumentar a matéria orgânica do solo, mitigar as emissões de GEE e proporcionar co-benefícios para a biodiversidade, fornecimento de água e segurança alimentar.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Promove a inclusão de pequenos agricultores e comunidades com recursos limitados, fornecendo práticas econômicas e adaptáveis regionalmente que melhoram a produtividade agrícola e a resiliência às mudanças climáticas.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "O sucesso depende da disponibilidade de recursos para monitoramento e verificação",
+        "adaptação regional de práticas",
+        "enfrentamento de barreiras como saturação do solo e questões de permanência"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento do carbono orgânico do solo",
+        "redução nas emissões de GEE",
+        "melhoria na produtividade agrícola",
+        "melhorias na biodiversidade"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0132",
+    "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+    "actionPriority": 19,
+    "explanation": "Incentivar a produção agroecológica local e cadeias curtas de abastecimento em Parintins é fundamental devido ao alto risco de insegurança alimentar agravado por eventos climáticos como secas e enchentes. O contexto socioeconômico da cidade, caracterizado por altos índices de baixa renda, a torna vulnerável a interrupções no fornecimento de alimentos. Ao promover a produção local, o município pode aumentar sua resiliência diante desses riscos, garantindo um abastecimento alimentar mais estável e sustentável. Além disso, essa ação fortalece a economia local e reduz a dependência de fontes externas de alimentos, o que é vital para uma região com acesso limitado a serviços públicos.",
+    "action": {
+      "ActionID": "icare_0132",
+      "ActionName": "Incentivar a Produção Agroecológica Local e Cadeias Curtas de Abastecimento",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoiar práticas agrícolas locais e sustentáveis e reduzir as emissões associadas ao transporte de alimentos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Incentivos para práticas agrícolas sustentáveis e desenvolvimento de redes locais de distribuição de alimentos.",
+        "Parcerias com produtores e investimento em infraestrutura para apoiar mercados locais.",
+        "Políticas para priorizar métodos de transporte de baixa emissão."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de produtores aderindo a práticas agroecológicas locais.",
+        "Percentual de alimentos consumidos na cidade provenientes de cadeias curtas.",
+        "Redução nas emissões associadas ao transporte de alimentos (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "ipcc_0053",
+    "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+    "actionPriority": 20,
+    "explanation": "A aforestação, a reflorestação e a restauração de ecossistemas florestais são cruciais para Parintins devido à sua localização na região amazônica, que é vital para a biodiversidade global e a regulação do clima. A cidade enfrenta emissões significativas decorrentes do uso da terra, e a restauração das florestas pode ajudar a sequestrar carbono, reduzindo essas emissões. Além disso, o fortalecimento dos ecossistemas florestais pode aumentar a resiliência contra riscos climáticos, como secas e ondas de calor, que representam grandes ameaças à segurança alimentar e energética. Essa ação também apoia a biodiversidade, que está ameaçada tanto pelas secas quanto pelas ondas de calor, tornando-se uma prioridade estratégica para a estabilidade ambiental e socioeconômica da cidade.",
+    "action": {
+      "ActionID": "ipcc_0053",
+      "ActionName": "Aflorestamento, Reflorestamento e Restauração de Ecossistemas Florestais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Atividades focadas na conversão de terras em florestas, na restauração de florestas degradadas e na priorização da integridade ecológica. O reflorestamento visa terras historicamente não florestadas, enquanto a reflorestação visa áreas anteriormente florestadas. Os esforços incluem o aumento da biodiversidade, a melhoria dos serviços ecossistêmicos e o aumento da captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Apoia os meios de subsistência locais, promove a equidade no uso da terra e garante a participação inclusiva das partes interessadas em programas de reflorestamento e restauração.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Requer financiamento para restauração de terras",
+        "acesso a espécies adequadas para plantio",
+        "engajamento da comunidade local",
+        "sistemas de monitoramento para integridade do ecossistema e sequestro de carbono"
+      ],
+      "KeyPerformanceIndicators": [
+        "Área de terra reflorestada ou florestada",
+        "taxas de sequestro de carbono",
+        "melhoria nos índices de biodiversidade",
+        "métricas de serviços ecossistêmicos, como regulação da água e qualidade do solo"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
 ]

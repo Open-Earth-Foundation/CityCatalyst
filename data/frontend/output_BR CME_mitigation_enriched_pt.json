@@ -1,1260 +1,1260 @@
 [
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 1,
-        "explanation": "Encouraging renewable energy policies at the municipal level in Camaragibe is crucial due to the city's high stationary energy emissions, which contribute significantly to its total emissions. By promoting renewable energy, the city can reduce its reliance on fossil fuels, thereby decreasing its carbon footprint and mitigating climate change impacts. Additionally, renewable energy initiatives can enhance energy security, which is vital given the city's vulnerability to droughts that can affect energy supply. Implementing these policies can also stimulate local economic growth by creating green jobs and fostering sustainable development.",
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Incentivar pol\u00edticas de energia renov\u00e1vel a n\u00edvel municipal",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Defender e implementar pol\u00edticas que priorizem o desenvolvimento e a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nas opera\u00e7\u00f5es e no planejamento do governo local.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Vontade pol\u00edtica e lideran\u00e7a para priorizar a energia renov\u00e1vel nas pol\u00edticas e processos de planejamento do governo local",
-                "Desenvolvimento de pol\u00edticas claras e estruturas regulat\u00f3rias que facilitem a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nas opera\u00e7\u00f5es governamentais",
-                "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transi\u00e7\u00e3o para a energia renov\u00e1vel na infraestrutura e opera\u00e7\u00f5es municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de projetos de energia renov\u00e1vel aprovados ou iniciados anualmente a n\u00edvel municipal.",
-                "Percentagem da demanda de energia municipal atendida por fontes renov\u00e1veis (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de carbono municipais devido \u00e0 ado\u00e7\u00e3o de energia renov\u00e1vel (toneladas de CO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 2,
-        "explanation": "Integrating renewables into municipal water systems in Camaragibe is a crucial step towards enhancing the city's resilience against climate change impacts. Given the high risk of droughts affecting water resources, utilizing renewable energy can ensure a more reliable and sustainable water supply. This action also addresses the city's high stationary energy emissions, contributing to a reduction in overall emissions. Furthermore, it aligns with the need to improve access to public services, particularly in areas with inadequate water access, thereby supporting the socio-economic development of the region.",
-        "action": {
-            "ActionID": "icare_0024",
-            "ActionName": "Integrar energias renov\u00e1veis nos sistemas municipais de \u00e1gua",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, para impulsionar sistemas de tratamento, bombeamento e distribui\u00e7\u00e3o de \u00e1gua, reduzindo custos de energia e emiss\u00f5es.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, em sistemas de tratamento e distribui\u00e7\u00e3o de \u00e1gua",
-                "Expertise t\u00e9cnica e infraestrutura para adaptar sistemas existentes com solu\u00e7\u00f5es de energia renov\u00e1vel ou projetar novas instala\u00e7\u00f5es alimentadas por energias renov\u00e1veis",
-                "Apoio pol\u00edtico e regulat\u00f3rio para incentivar o uso de energia limpa em sistemas de \u00e1gua e garantir sua integra\u00e7\u00e3o nas redes de energia municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de sistemas municipais de \u00e1gua alimentados por energias renov\u00e1veis.",
-                "Redu\u00e7\u00e3o no consumo de energia de fontes n\u00e3o renov\u00e1veis (kWh/ano).",
-                "Emiss\u00f5es de GEE evitadas (toneladas de CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 3,
-        "explanation": "Promoting community solar farms in Camaragibe is a strategic action to address the city's high stationary energy emissions. By harnessing solar energy, the city can reduce its reliance on traditional energy sources, thereby decreasing its overall carbon footprint. Additionally, solar farms can provide a sustainable and reliable energy source, which is crucial given the city's vulnerability to energy security risks due to climate hazards like droughts. This initiative also aligns with the city's need to improve access to public services, as it can potentially lower energy costs for low-income residents, enhancing their quality of life.",
-        "action": {
-            "ActionID": "icare_0038",
-            "ActionName": "Promover fazendas solares comunit\u00e1rias",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Desenvolver e incentivar a ado\u00e7\u00e3o de projetos de energia solar compartilhada, permitindo que as comunidades se beneficiem coletivamente de energia limpa e renov\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de pol\u00edticas e estruturas regulat\u00f3rias para apoiar projetos de energia solar compartilhada baseados na comunidade e garantir o acesso equitativo \u00e0 energia limpa",
-                "Disponibilidade de mecanismos financeiros ou incentivos para ajudar as comunidades a investir e manter sistemas de energia solar compartilhada",
-                "Colabora\u00e7\u00e3o entre governos locais, fornecedores de energia e organiza\u00e7\u00f5es comunit\u00e1rias para projetar e implementar projetos de energia solar compartilhada de forma eficaz"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de resid\u00eancias atendidas por projetos solares comunit\u00e1rios.",
-                "Emiss\u00f5es de GEE evitadas atrav\u00e9s da produ\u00e7\u00e3o de energia solar (toneladas de CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0033",
-        "actionName": "Install biodigesters in rural properties",
-        "actionPriority": 4,
-        "explanation": "Installing biodigesters in rural properties in Camaragibe is a strategic action due to the city's high population density and the need for sustainable waste management solutions. Biodigesters can help reduce waste emissions, which are a significant part of the city's total emissions profile. Additionally, they provide a renewable energy source, which can alleviate some of the energy security risks associated with droughts. This action also supports the socio-economic development of rural areas by providing an alternative energy source and improving sanitation conditions.",
-        "action": {
-            "ActionID": "icare_0033",
-            "ActionName": "Instalar biodigestores em propriedades rurais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Equipar fazendas e propriedades rurais com biodigestores para converter res\u00edduos org\u00e2nicos em biog\u00e1s e fertilizantes ricos em nutrientes, fornecendo uma fonte de energia sustent\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento ou subs\u00eddios para apoiar a instala\u00e7\u00e3o de biodigestores em fazendas e propriedades rurais",
-                "Acesso a expertise t\u00e9cnica para o design, instala\u00e7\u00e3o e manuten\u00e7\u00e3o de biodigestores",
-                "Desenvolvimento de um quadro regulat\u00f3rio de apoio que incentive o uso de biog\u00e1s e sistemas de gest\u00e3o de res\u00edduos org\u00e2nicos na agricultura rural"
-            ],
-            "KeyPerformanceIndicators": [
-                "Volume de biog\u00e1s gerado (m\u00b3/ano).",
-                "Emiss\u00f5es de GEE evitadas pela substitui\u00e7\u00e3o de combust\u00edveis f\u00f3sseis (toneladas de CO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0040",
-        "actionName": "Adopt solar-powered street lighting in rural areas",
-        "actionPriority": 5,
-        "explanation": "Adopting solar-powered street lighting in rural areas of Camaragibe is a strategic action due to the city's tropical rainforest biome, which provides ample sunlight for solar energy. This initiative can significantly reduce stationary energy emissions, which are currently a major contributor to the city's total emissions. Additionally, solar-powered lighting can improve public safety and accessibility in rural areas, which may currently lack adequate infrastructure. By reducing reliance on traditional energy sources, this action also supports energy security, a key concern given the city's vulnerability to droughts.",
-        "action": {
-            "ActionID": "icare_0040",
-            "ActionName": "Adotar ilumina\u00e7\u00e3o p\u00fablica solar em \u00e1reas rurais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Instalar postes de ilumina\u00e7\u00e3o p\u00fablica movidos a energia solar para melhorar a seguran\u00e7a e acessibilidade em comunidades rurais, ao mesmo tempo que reduz os custos de energia e o impacto ambiental.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a instala\u00e7\u00e3o de postes de ilumina\u00e7\u00e3o p\u00fablica solar em comunidades rurais",
-                "Acesso a expertise t\u00e9cnica para projetar, instalar e manter sistemas de ilumina\u00e7\u00e3o p\u00fablica solar",
-                "Colabora\u00e7\u00e3o com governos locais e comunidades para garantir a integra\u00e7\u00e3o de postes de ilumina\u00e7\u00e3o solar na infraestrutura existente e nos planos de energia"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de postes de ilumina\u00e7\u00e3o p\u00fablica alimentados por energia solar.",
-                "Redu\u00e7\u00e3o anual no consumo de eletricidade (kWh).",
-                "Emiss\u00f5es de GEE evitadas (toneladas de CO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0011",
-        "actionName": "Provide tax incentives for renewable energy in residential projects",
-        "actionPriority": 6,
-        "explanation": "Providing tax incentives for renewable energy in residential projects in Camaragibe is crucial due to the city's high stationary energy emissions. Encouraging the adoption of renewable energy can significantly reduce these emissions, contributing to a cleaner environment. Additionally, this action aligns with the city's need to improve energy security, especially in the face of climate risks such as droughts and heatwaves. By promoting renewable energy, the city can also enhance its resilience against these hazards, ensuring a more sustainable future for its residents.",
-        "action": {
-            "ActionID": "icare_0011",
-            "ActionName": "Fornecer incentivos fiscais para energia renov\u00e1vel em projetos residenciais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar os propriet\u00e1rios de im\u00f3veis a adotarem energia solar, e\u00f3lica e outras fontes de energia limpa.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidade de incentivos financeiros, subs\u00eddios ou cr\u00e9ditos fiscais para incentivar os propriet\u00e1rios a instalar sistemas de energia solar, e\u00f3lica e outras energias limpas",
-                "Acesso a informa\u00e7\u00f5es e recursos educacionais para ajudar os propriet\u00e1rios a entender os benef\u00edcios, custos e processos de instala\u00e7\u00e3o de sistemas de energia limpa",
-                "Desenvolvimento de regulamentos e pol\u00edticas de apoio que facilitem a instala\u00e7\u00e3o de tecnologias de energia renov\u00e1vel em \u00e1reas residenciais"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de resid\u00eancias beneficiadas por incentivos fiscais para a ado\u00e7\u00e3o de energia renov\u00e1vel.",
-                "Aumento anual nas instala\u00e7\u00f5es de energia renov\u00e1vel em projetos residenciais.",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es de CO\u2082 equivalente devido \u00e0 ado\u00e7\u00e3o de energia renov\u00e1vel."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0029",
-        "actionName": "Adopt policies for fossil fuel-free buildings",
-        "actionPriority": 7,
-        "explanation": "Adopting policies for fossil fuel-free buildings in Camaragibe is crucial due to the city's high stationary energy emissions, which contribute significantly to its total emissions. Transitioning to fossil fuel-free buildings can help reduce these emissions, aligning with global efforts to combat climate change. Additionally, such policies can improve air quality and public health, which is particularly important given the city's high risk of public health impacts from heatwaves and diseases. This action also supports energy security by promoting the use of renewable energy sources, which is vital in a region facing drought-related energy challenges.",
-        "action": {
-            "ActionID": "icare_0029",
-            "ActionName": "Adotar pol\u00edticas para edif\u00edcios sem combust\u00edveis f\u00f3sseis",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Impor regulamentos que exijam que novas constru\u00e7\u00f5es utilizem sistemas de energia renov\u00e1vel, designs eficientes em termos de energia e tecnologias de emiss\u00e3o zero.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de c\u00f3digos de constru\u00e7\u00e3o e estruturas regulat\u00f3rias que exijam a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel e designs energeticamente eficientes em novas constru\u00e7\u00f5es",
-                "Disponibilidade de incentivos ou apoio para que os desenvolvedores cumpram as regulamenta\u00e7\u00f5es e adotem tecnologias de emiss\u00e3o zero",
-                "Expertise t\u00e9cnica e recursos para garantir a implementa\u00e7\u00e3o adequada e o monitoramento de sistemas de energia renov\u00e1vel e designs energeticamente eficientes em projetos de constru\u00e7\u00e3o"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de edif\u00edcios em transi\u00e7\u00e3o para fontes de energia renov\u00e1vel.",
-                "Redu\u00e7\u00e3o total no uso de combust\u00edveis f\u00f3sseis para aquecimento/resfriamento (m\u00b3 ou litros).",
-                "Diminui\u00e7\u00e3o nas emiss\u00f5es de GEE relacionadas a edif\u00edcios (toneladas de CO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0105",
-        "actionName": "Reduce technical losses in energy distribution networks",
-        "actionPriority": 8,
-        "explanation": "Reducing technical losses in energy distribution networks is crucial for Camaragibe due to its significant stationary energy emissions. By improving the efficiency of energy distribution, the city can lower its overall emissions, contributing to a cleaner environment. Additionally, this action can enhance energy security, which is vital given the city's vulnerability to droughts affecting energy resources. Implementing this measure can also lead to cost savings and more reliable energy supply for residents, aligning with the city's socio-economic needs.",
-        "action": {
-            "ActionID": "icare_0105",
-            "ActionName": "Reduzir perdas t\u00e9cnicas nas redes de distribui\u00e7\u00e3o de energia",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_industries"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Atualizar e manter a infraestrutura el\u00e9trica para minimizar a perda de energia durante a transmiss\u00e3o e distribui\u00e7\u00e3o, melhorando a efici\u00eancia geral da rede.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento para investir na moderniza\u00e7\u00e3o da infraestrutura el\u00e9trica e na atualiza\u00e7\u00e3o das redes de transmiss\u00e3o e distribui\u00e7\u00e3o",
-                "Acesso a expertise t\u00e9cnica para implementar atualiza\u00e7\u00f5es que reduzam perdas de energia e melhorem a efici\u00eancia da rede",
-                "Estruturas pol\u00edticas e regulat\u00f3rias para garantir a manuten\u00e7\u00e3o cont\u00ednua e a integra\u00e7\u00e3o de tecnologias energeticamente eficientes na infraestrutura da rede"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentual de redu\u00e7\u00e3o nas perdas t\u00e9cnicas em rela\u00e7\u00e3o \u00e0 linha de base (%).",
-                "Economia de energia alcan\u00e7ada anualmente (kWh).",
-                "Emiss\u00f5es de GEE evitadas atrav\u00e9s da redu\u00e7\u00e3o de perdas de energia (toneladas de CO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0097",
-        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
-        "actionPriority": 9,
-        "explanation": "Supporting distributed energy generation in residences and businesses in Camaragibe is crucial due to the city's high stationary energy emissions. By promoting local energy production, the city can reduce its reliance on centralized power sources, which often contribute significantly to greenhouse gas emissions. This action also aligns with the need to enhance energy security, especially in a region prone to droughts that can impact energy supply. Furthermore, distributed energy systems can provide resilience against power outages, which is vital for maintaining public health and safety during extreme weather events.",
-        "action": {
-            "ActionID": "icare_0097",
-            "ActionName": "Apoiar a Gera\u00e7\u00e3o de Energia Distribu\u00edda em Resid\u00eancias e Neg\u00f3cios",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Facilitar o uso de pain\u00e9is solares e outras tecnologias de energia renov\u00e1vel em resid\u00eancias e edif\u00edcios comerciais.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Fornecer incentivos financeiros, regulamenta\u00e7\u00f5es claras de instala\u00e7\u00e3o e acesso a tecnologias acess\u00edveis para pain\u00e9is solares.",
-                "Lan\u00e7ar campanhas de conscientiza\u00e7\u00e3o p\u00fablica e oferecer treinamento para propriet\u00e1rios de resid\u00eancias e empresas.",
-                "Incentivar a ado\u00e7\u00e3o de tecnologias de energia renov\u00e1vel para promover economias de energia a longo prazo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Capacidade instalada de gera\u00e7\u00e3o de energia distribu\u00edda (MW).",
-                "Percentual de resid\u00eancias e empresas gerando sua pr\u00f3pria energia (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de CO\u2082 atrav\u00e9s da gera\u00e7\u00e3o distribu\u00edda (tCO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 10,
-        "explanation": "Creating credit lines for residential and community wind energy projects in Camaragibe is a strategic action to address the city's high stationary energy emissions. By promoting wind energy, the city can reduce its reliance on traditional energy sources, thereby decreasing its overall carbon footprint. Additionally, this initiative can empower local communities by providing them with sustainable energy solutions, which is crucial given the city's low-income socio-economic status. Furthermore, investing in renewable energy aligns with the city's need to enhance energy security, especially in the face of climate risks such as droughts and heatwaves.",
-        "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Criar linhas de cr\u00e9dito para projetos de energia e\u00f3lica residencial e comunit\u00e1ria",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estabelecer programas de financiamento acess\u00edveis para apoiar o desenvolvimento e a ado\u00e7\u00e3o de sistemas de energia e\u00f3lica em resid\u00eancias e projetos comunit\u00e1rios, possibilitando uma transi\u00e7\u00e3o para fontes de energia mais limpas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de programas financeiros, subs\u00eddios ou subven\u00e7\u00f5es para tornar os sistemas de energia e\u00f3lica acess\u00edveis para resid\u00eancias e projetos comunit\u00e1rios",
-                "Acesso a expertise t\u00e9cnica e recursos para orientar a instala\u00e7\u00e3o e manuten\u00e7\u00e3o de sistemas de energia e\u00f3lica em ambientes residenciais e comunit\u00e1rios",
-                "Apoio pol\u00edtico e regulat\u00f3rio para incentivar a ado\u00e7\u00e3o de energia e\u00f3lica, incluindo processos de licenciamento simplificados e incentivos para projetos de energia limpa"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de projetos de energia e\u00f3lica financiados anualmente.",
-                "Capacidade instalada de sistemas de energia e\u00f3lica de projetos apoiados por cr\u00e9dito (MW).",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es equivalentes de CO\u2082 pela ado\u00e7\u00e3o de energia e\u00f3lica."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 11,
-        "explanation": "Facilitating technology transfer for conservation practices in Camaragibe is crucial due to the city's tropical rainforest biome, which is highly sensitive to environmental changes. The city faces significant risks from droughts and heatwaves, impacting water resources, food security, and public health. By adopting advanced conservation technologies, Camaragibe can enhance its resilience against these climate hazards, ensuring sustainable management of its natural resources. This action supports the city's efforts to mitigate the adverse effects of climate change and protect its biodiversity.",
-        "action": {
-            "ActionID": "icare_0129",
-            "ActionName": "Facilitar a Transfer\u00eancia de Tecnologia para Pr\u00e1ticas de Conserva\u00e7\u00e3o",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover a ado\u00e7\u00e3o de pr\u00e1ticas agr\u00edcolas sustent\u00e1veis por meio de treinamento, projetos piloto e demonstra\u00e7\u00f5es de tecnologia.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar pr\u00e1ticas sustent\u00e1veis.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a ado\u00e7\u00e3o.",
-                "Acesso a assist\u00eancia t\u00e9cnica para implementa\u00e7\u00e3o bem-sucedida."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de tecnologias de conserva\u00e7\u00e3o transferidas e aplicadas em fazendas.",
-                "Percentual de produtores treinados para implementar pr\u00e1ticas de conserva\u00e7\u00e3o.",
-                "Redu\u00e7\u00e3o na degrada\u00e7\u00e3o do solo ou aumento na cobertura vegetal (hectares)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0043",
-        "actionName": "Integrate geothermal energy for heating where feasible",
-        "actionPriority": 12,
-        "explanation": "Integrating geothermal energy for heating in Camaragibe is a strategic action due to the city's high population density and the need for sustainable energy solutions. Although the city is located in a tropical rainforest biome, which typically has a warm climate, geothermal energy can provide a stable and renewable energy source that reduces reliance on traditional energy sources. This action can help lower stationary energy emissions, which are a significant part of the city's total emissions. Additionally, by diversifying energy sources, Camaragibe can enhance its energy security, making it more resilient to climate-related risks such as droughts and heatwaves.",
-        "action": {
-            "ActionID": "icare_0043",
-            "ActionName": "Integrar energia geot\u00e9rmica para aquecimento onde for vi\u00e1vel",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Utilizar bombas de calor geot\u00e9rmicas e sistemas geot\u00e9rmicos de uso direto para fornecer solu\u00e7\u00f5es de aquecimento sustent\u00e1veis e eficientes em locais adequados.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Disponibilidade de expertise t\u00e9cnica e recursos para avaliar a viabilidade e instalar bombas de calor geot\u00e9rmicas e sistemas de uso direto em locais adequados",
-                "Acesso a financiamento ou incentivos para apoiar a ado\u00e7\u00e3o de solu\u00e7\u00f5es de aquecimento geot\u00e9rmico em instala\u00e7\u00f5es residenciais, comerciais ou p\u00fablicas",
-                "Desenvolvimento de estruturas regulat\u00f3rias para orientar a instala\u00e7\u00e3o e garantir a integra\u00e7\u00e3o adequada dos sistemas geot\u00e9rmicos na infraestrutura energ\u00e9tica local"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de sistemas de aquecimento na cidade alimentados por energia geot\u00e9rmica (%).",
-                "Redu\u00e7\u00e3o anual no consumo de combust\u00edveis f\u00f3sseis para aquecimento (litros ou toneladas de CO\u2082e evitadas).",
-                "Economia de custos para residentes ou empresas que utilizam energia geot\u00e9rmica em compara\u00e7\u00e3o com m\u00e9todos de aquecimento tradicionais (USD/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0020",
-        "actionName": "Promote sustainable construction practices and encourage green technologies in public, residential, commercial, industrial, and service buildings.",
-        "actionPriority": 13,
-        "explanation": "Promoting sustainable construction practices and encouraging green technologies in Camaragibe is crucial due to the city's high population density and significant emissions from stationary energy sources. Implementing green building technologies can help reduce energy consumption and emissions, contributing to the city's overall sustainability goals. Additionally, sustainable construction can improve resilience against climate-related hazards such as heatwaves and floods, which pose significant risks to public health and infrastructure. By prioritizing this action, Camaragibe can enhance its environmental performance and improve the quality of life for its residents.",
-        "action": {
-            "ActionID": "icare_0020",
-            "ActionName": "Promover pr\u00e1ticas de constru\u00e7\u00e3o sustent\u00e1vel e incentivar tecnologias verdes em edif\u00edcios p\u00fablicos, residenciais, comerciais, industriais e de servi\u00e7os.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta a\u00e7\u00e3o busca aumentar a participa\u00e7\u00e3o de fontes de energia renov\u00e1veis na matriz energ\u00e9tica da cidade, com foco em edif\u00edcios residenciais, comerciais, industriais e de servi\u00e7os.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de incentivos e subs\u00eddios para incentivar a ado\u00e7\u00e3o de tecnologias de energia renov\u00e1vel em edif\u00edcios",
-                "Desenvolvimento de um quadro regulat\u00f3rio de apoio para a instala\u00e7\u00e3o e integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nos setores residencial, comercial e industrial",
-                "Investimento na infraestrutura necess\u00e1ria para apoiar a gera\u00e7\u00e3o e distribui\u00e7\u00e3o de energia renov\u00e1vel dentro da cidade"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de empregos criados nos setores da economia circular.",
-                "Aumento na porcentagem de materiais reutilizados ou reciclados na cidade.",
-                "Redu\u00e7\u00e3o anual nas emiss\u00f5es de CO\u2082 equivalente provenientes de iniciativas de economia circular."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0046",
-        "actionName": "Make efforts to promote socioeconomic development and improve the quality of life in the city from the perspective of a circular economy and zero carbon emissions.",
-        "actionPriority": 14,
-        "explanation": "Promoting socioeconomic development in Camaragibe through a circular economy and zero carbon emissions is crucial due to the city's low-income status and high population density. This approach can help address inadequate access to water and sanitation services by creating sustainable and efficient systems. Additionally, focusing on zero carbon emissions is vital given the city's significant stationary energy and waste emissions, which contribute to environmental degradation. By improving the quality of life through these measures, the city can also mitigate the risks associated with climate change impacts such as droughts and heatwaves, which threaten public health and food security.",
-        "action": {
-            "ActionID": "icare_0046",
-            "ActionName": "Esforce-se para promover o desenvolvimento socioecon\u00f4mico e melhorar a qualidade de vida na cidade a partir da perspectiva de uma economia circular e emiss\u00f5es zero de carbono.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "commercial_and_institutional_buildings_and_facilities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "O governo da cidade deve empreender a\u00e7\u00f5es pol\u00edticas consistentes com sua capacidade econ\u00f4mica e os desafios que enfrenta para apoiar o desenvolvimento de uma nova economia sustent\u00e1vel com emiss\u00f5es de carbono zero, que proteja as condi\u00e7\u00f5es de trabalho, o empreendedorismo e a vitalidade econ\u00f4mica da cidade.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Vontade pol\u00edtica e lideran\u00e7a: Um governo local comprometido disposto a priorizar o desenvolvimento sustent\u00e1vel e a neutralidade de carbono.",
-                "Capacidade econ\u00f4mica e recursos: Recursos financeiros suficientes para investir em iniciativas verdes e infraestrutura sustent\u00e1vel.",
-                "Colabora\u00e7\u00e3o com as partes interessadas: Envolver-se com empresas, sindicatos e empreendedores para alinhar estrat\u00e9gias e garantir que a transi\u00e7\u00e3o econ\u00f4mica seja inclusiva e equitativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentual de redu\u00e7\u00e3o nas emiss\u00f5es municipais de carbono per capita (%).",
-                "N\u00famero de iniciativas de economia circular implementadas anualmente (por exemplo, programas de reciclagem, projetos de convers\u00e3o de res\u00edduos em energia).",
-                "Aumento no n\u00famero de empregos verdes criados por meio de iniciativas de economia circular e de carbono zero (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0008",
-        "actionName": "Develop Smart Grids and Energy Storage Systems",
-        "actionPriority": 15,
-        "explanation": "Developing smart grids and energy storage systems in Camaragibe is crucial due to the city's high stationary energy emissions. By implementing these technologies, the city can enhance energy efficiency and reduce emissions, contributing to a more sustainable environment. Additionally, smart grids can improve energy security, which is vital given the city's vulnerability to droughts affecting energy resources. This action also aligns with the need to address public health risks associated with heatwaves, as efficient energy systems can help mitigate their impact.",
-        "action": {
-            "ActionID": "icare_0008",
-            "ActionName": "Desenvolver Redes Inteligentes e Sistemas de Armazenamento de Energia",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_industries"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta a\u00e7\u00e3o foca no desenvolvimento de redes inteligentes e sistemas de armazenamento de energia para otimizar a gest\u00e3o de energia e melhorar a integra\u00e7\u00e3o de fontes de energia renov\u00e1vel. As redes inteligentes permitem uma distribui\u00e7\u00e3o e uso mais eficientes da eletricidade, enquanto os sistemas de armazenamento de energia ajudam a armazenar o excesso de energia renov\u00e1vel para uso posterior. Juntos, eles garantem um fornecimento de energia est\u00e1vel, confi\u00e1vel e sustent\u00e1vel, permitindo que os munic\u00edpios gerenciem melhor a demanda de energia, reduzam a congest\u00e3o da rede e apoiem a transi\u00e7\u00e3o para energia limpa.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimento no desenvolvimento e implementa\u00e7\u00e3o de redes inteligentes e tecnologias de armazenamento de energia para melhorar a gest\u00e3o de energia",
-                "Expertise t\u00e9cnica e infraestrutura para integrar fontes de energia renov\u00e1vel na rede inteligente e garantir o armazenamento eficaz de energia",
-                "Estruturas pol\u00edticas e regulat\u00f3rias para apoiar a ado\u00e7\u00e3o generalizada de redes inteligentes e sistemas de armazenamento de energia, incluindo incentivos e padr\u00f5es de integra\u00e7\u00e3o de rede"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem da rede coberta por tecnologia de rede inteligente.",
-                "Capacidade instalada de sistemas de armazenamento de energia (MW ou MWh).",
-                "Redu\u00e7\u00e3o nas perdas de energia na rede (%)."
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0128",
-        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 16,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Camaragibe is crucial due to the city's tropical rainforest biome, which plays a significant role in maintaining biodiversity and ecological balance. The PES programs can incentivize local communities to engage in conservation efforts, which is vital given the high risk of droughts impacting water resources and biodiversity. Additionally, these programs can help mitigate the effects of climate change by promoting sustainable land use practices, thereby reducing emissions from land use and enhancing carbon sequestration. Implementing PES can also support socio-economic development by providing financial benefits to low-income communities, aligning with the city's need to address socio-economic challenges.",
-        "action": {
-            "ActionID": "icare_0128",
-            "ActionName": "Estabelecer Programas Municipais de Pagamento por Servi\u00e7os Ambientais (PSA)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementar programas que paguem aos propriet\u00e1rios de terras por manterem ou melhorarem as condi\u00e7\u00f5es ambientais em suas propriedades.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Cria\u00e7\u00e3o de mecanismos de financiamento e crit\u00e9rios de elegibilidade claros com indicadores de desempenho.",
-                "Parcerias com organiza\u00e7\u00f5es ambientais e campanhas de conscientiza\u00e7\u00e3o para incentivar a participa\u00e7\u00e3o.",
-                "Integra\u00e7\u00e3o com estruturas legais para garantir a sustentabilidade do programa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de contratos ativos de Pagamento por Servi\u00e7os Ambientais (PSA) assinados.",
-                "\u00c1rea total sob pr\u00e1ticas de conserva\u00e7\u00e3o ou restaura\u00e7\u00e3o incentivadas (hectares).",
-                "Quantidade de carbono sequestrado ou emiss\u00f5es evitadas por meio de a\u00e7\u00f5es de PSA (tCO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 17,
-        "explanation": "Creating financing programs for local renewable energy projects in Camaragibe is crucial due to the city's high stationary energy emissions. By promoting renewable energy, the city can significantly reduce its carbon footprint and improve air quality. Additionally, renewable energy projects can provide economic benefits by creating jobs and reducing energy costs for residents. This action aligns with the city's need to address energy security risks, particularly in the face of climate change impacts such as droughts and heatwaves. Overall, this initiative supports sustainable development and resilience in the community.",
-        "action": {
-            "ActionID": "icare_0027",
-            "ActionName": "Criar programas de financiamento para projetos locais de energia renov\u00e1vel",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_industries"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estabelecer mecanismos de financiamento, como subs\u00eddios e empr\u00e9stimos a juros baixos, para apoiar o desenvolvimento de iniciativas de energia renov\u00e1vel em pequena escala nas comunidades.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de mecanismos financeiros acess\u00edveis, incluindo subs\u00eddios e empr\u00e9stimos a juros baixos, para apoiar projetos de energia renov\u00e1vel em pequena escala nas comunidades",
-                "Colabora\u00e7\u00e3o com institui\u00e7\u00f5es financeiras e governos locais para garantir a distribui\u00e7\u00e3o e gest\u00e3o eficaz dos fundos para iniciativas de energia renov\u00e1vel",
-                "Diretrizes claras e apoio para organiza\u00e7\u00f5es comunit\u00e1rias e empresas locais acessarem financiamento e implementarem com sucesso projetos de energia renov\u00e1vel"
-            ],
-            "KeyPerformanceIndicators": [
-                "Total de fundos alocados para projetos de energia renov\u00e1vel (USD).",
-                "N\u00famero de projetos financiados anualmente.",
-                "Aumento na capacidade de energia renov\u00e1vel instalada (MW)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 18,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Camaragibe due to its significant risk to food security from floods and droughts. By supporting local agroecological practices, the city can enhance its resilience to these climate hazards, ensuring a more stable and sustainable food supply. Additionally, this action can stimulate the local economy, providing income opportunities for local farmers and reducing dependency on external food sources. This approach also aligns with the city's need to address socio-economic challenges, as it can help improve the livelihoods of low-income communities.",
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Priorizar a Aquisi\u00e7\u00e3o de Produtos Agroecol\u00f3gicos Produzidos Localmente em Compras P\u00fablicas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Concentre-se em comprar alimentos sustent\u00e1veis e produzidos localmente para institui\u00e7\u00f5es p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de pol\u00edticas de aquisi\u00e7\u00e3o e identifica\u00e7\u00e3o de fornecedores locais confi\u00e1veis.",
-                "Parcerias com produtores e aloca\u00e7\u00e3o de financiamento para programas de aquisi\u00e7\u00e3o sustent\u00e1vel.",
-                "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os crit\u00e9rios de sustentabilidade."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem do volume total de compras p\u00fablicas provenientes de produtores agroecol\u00f3gicos locais.",
-                "Quantidade de emiss\u00f5es de CO\u2082 evitadas devido \u00e0 redu\u00e7\u00e3o da dist\u00e2ncia de transporte (tCO\u2082e).",
-                "N\u00famero de produtores agroecol\u00f3gicos beneficiados pelas compras p\u00fablicas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 19,
-        "explanation": "The implementation of free public transportation programs during peak hours in Camaragibe is a strategic action to address the city's high transportation emissions. By encouraging the use of public transport, the city can significantly reduce the reliance on individual vehicles, which are a major source of emissions. This initiative not only aims to lower emissions but also to improve air quality and reduce traffic congestion, enhancing the overall quality of life for residents. Additionally, providing free transportation can be particularly beneficial for low-income residents, aligning with the city's socio-economic context.",
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementa\u00e7\u00e3o de programas de transporte p\u00fablico gratuito durante os hor\u00e1rios de pico para reduzir o uso de ve\u00edculos individuais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar o uso do transporte p\u00fablico oferecendo servi\u00e7os gratuitos durante os hor\u00e1rios de pico para trabalhadores e estudantes. Esta medida reduz a congest\u00e3o urbana, diminui o n\u00famero de ve\u00edculos individuais nas estradas e, consequentemente, reduz as emiss\u00f5es de gases de efeito estufa associadas ao transporte privado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Aloca\u00e7\u00e3o de financiamento para subsidiar servi\u00e7os de transporte p\u00fablico gratuito durante as horas de pico.",
-                "Desenvolvimento de pol\u00edticas para garantir a sustentabilidade e efici\u00eancia dos sistemas de transporte p\u00fablico diante do aumento da demanda.",
-                "Coordena\u00e7\u00e3o com empregadores e institui\u00e7\u00f5es educacionais para otimizar os hor\u00e1rios de pico e promover a iniciativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nos n\u00edveis de polui\u00e7\u00e3o do ar durante as horas de pico (concentra\u00e7\u00e3o de PM2.5/PM10).",
-                "N\u00famero de ve\u00edculos particulares removidos das estradas durante as horas de pico.",
-                "Taxa de satisfa\u00e7\u00e3o p\u00fablica com a iniciativa de transporte gratuito (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 20,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Camaragibe is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. By providing technical support and education to rural communities, these actions can enhance agricultural practices, improve resilience, and ensure sustainable food production. Additionally, ATER initiatives can help mitigate the effects of inadequate water access and sanitation, which are pressing issues in the region. Overall, these actions are vital for strengthening the socio-economic fabric of the community and ensuring long-term sustainability.",
-        "action": {
-            "ActionID": "icare_0130",
-            "ActionName": "Conduzir A\u00e7\u00f5es de Assist\u00eancia T\u00e9cnica e Extens\u00e3o Rural (ATER)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fornecer suporte t\u00e9cnico e treinamento aos produtores rurais para a produ\u00e7\u00e3o agr\u00edcola sustent\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidade de pessoal t\u00e9cnico qualificado e programas de forma\u00e7\u00e3o personalizados.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa agr\u00edcola e aloca\u00e7\u00e3o de recursos para o desenvolvimento de capacidades.",
-                "Envolvimento com produtores rurais para garantir a participa\u00e7\u00e3o ativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de produtores beneficiados com assist\u00eancia t\u00e9cnica rural (% do total).",
-                "Percentual de participantes adotando pr\u00e1ticas resilientes ao clima.",
-                "Redu\u00e7\u00e3o da vulnerabilidade das propriedades ao risco clim\u00e1tico (%)."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": null,
-            "biome": "none"
-        }
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 1,
+    "explanation": "Incentivar políticas de energia renovável em nível municipal em Camaragibe é crucial devido às altas emissões de energia estacionária da cidade, que contribuem significativamente para o total de suas emissões. Ao promover a energia renovável, a cidade pode reduzir sua dependência de combustíveis fósseis, diminuindo assim sua pegada de carbono e mitigando os impactos das mudanças climáticas. Além disso, iniciativas de energia renovável podem aumentar a segurança energética, o que é vital considerando a vulnerabilidade da cidade a secas que podem afetar o fornecimento de energia. A implementação dessas políticas também pode estimular o crescimento econômico local, criando empregos verdes e promovendo o desenvolvimento sustentável.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Incentivar políticas de energia renovável a nível municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Defender e implementar políticas que priorizem o desenvolvimento e a integração de sistemas de energia renovável nas operações e no planejamento do governo local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e liderança para priorizar a energia renovável nas políticas e processos de planejamento do governo local",
+        "Desenvolvimento de políticas claras e estruturas regulatórias que facilitem a integração de sistemas de energia renovável nas operações governamentais",
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transição para a energia renovável na infraestrutura e operações municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia renovável aprovados ou iniciados anualmente a nível municipal.",
+        "Percentagem da demanda de energia municipal atendida por fontes renováveis (%).",
+        "Redução nas emissões de carbono municipais devido à adoção de energia renovável (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 2,
+    "explanation": "Integrar fontes de energia renovável aos sistemas municipais de água em Camaragibe é um passo crucial para aumentar a resiliência da cidade diante dos impactos das mudanças climáticas. Diante do alto risco de secas que afetam os recursos hídricos, a utilização de energia renovável pode garantir um abastecimento de água mais confiável e sustentável. Essa ação também contribui para a redução das elevadas emissões estacionárias de energia da cidade, ajudando a diminuir as emissões totais. Além disso, está alinhada com a necessidade de melhorar o acesso aos serviços públicos, especialmente em áreas com acesso inadequado à água, apoiando assim o desenvolvimento socioeconômico da região.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energias renováveis nos sistemas municipais de água",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fontes de energia renovável, como energia solar ou eólica, para impulsionar sistemas de tratamento, bombeamento e distribuição de água, reduzindo custos de energia e emissões.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renovável, como energia solar ou eólica, em sistemas de tratamento e distribuição de água",
+        "Expertise técnica e infraestrutura para adaptar sistemas existentes com soluções de energia renovável ou projetar novas instalações alimentadas por energias renováveis",
+        "Apoio político e regulatório para incentivar o uso de energia limpa em sistemas de água e garantir sua integração nas redes de energia municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de sistemas municipais de água alimentados por energias renováveis.",
+        "Redução no consumo de energia de fontes não renováveis (kWh/ano).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0038",
+    "actionName": "Promote community solar farms",
+    "actionPriority": 3,
+    "explanation": "Promover fazendas solares comunitárias em Camaragibe é uma ação estratégica para enfrentar as altas emissões de energia estacionária da cidade. Ao aproveitar a energia solar, o município pode reduzir sua dependência de fontes tradicionais de energia, diminuindo assim sua pegada de carbono total. Além disso, as fazendas solares podem fornecer uma fonte de energia sustentável e confiável, o que é fundamental, considerando a vulnerabilidade da cidade a riscos de segurança energética devido a ameaças climáticas como as secas. Essa iniciativa também está alinhada com a necessidade de melhorar o acesso a serviços públicos, pois pode potencialmente reduzir os custos de energia para moradores de baixa renda, melhorando sua qualidade de vida.",
+    "action": {
+      "ActionID": "icare_0038",
+      "ActionName": "Promover fazendas solares comunitárias",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Desenvolver e incentivar a adoção de projetos de energia solar compartilhada, permitindo que as comunidades se beneficiem coletivamente de energia limpa e renovável.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas e estruturas regulatórias para apoiar projetos de energia solar compartilhada baseados na comunidade e garantir o acesso equitativo à energia limpa",
+        "Disponibilidade de mecanismos financeiros ou incentivos para ajudar as comunidades a investir e manter sistemas de energia solar compartilhada",
+        "Colaboração entre governos locais, fornecedores de energia e organizações comunitárias para projetar e implementar projetos de energia solar compartilhada de forma eficaz"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de residências atendidas por projetos solares comunitários.",
+        "Emissões de GEE evitadas através da produção de energia solar (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0033",
+    "actionName": "Install biodigesters in rural properties",
+    "actionPriority": 4,
+    "explanation": "A instalação de biodigestores em propriedades rurais de Camaragibe é uma ação estratégica devido à alta densidade populacional do município e à necessidade de soluções sustentáveis para o gerenciamento de resíduos. Os biodigestores podem ajudar a reduzir as emissões provenientes de resíduos, que representam uma parte significativa do perfil total de emissões da cidade. Além disso, eles fornecem uma fonte de energia renovável, o que pode aliviar alguns dos riscos à segurança energética associados às secas. Essa ação também contribui para o desenvolvimento socioeconômico das áreas rurais, ao oferecer uma fonte alternativa de energia e melhorar as condições de saneamento.",
+    "action": {
+      "ActionID": "icare_0033",
+      "ActionName": "Instalar biodigestores em propriedades rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Equipar fazendas e propriedades rurais com biodigestores para converter resíduos orgânicos em biogás e fertilizantes ricos em nutrientes, fornecendo uma fonte de energia sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou subsídios para apoiar a instalação de biodigestores em fazendas e propriedades rurais",
+        "Acesso a expertise técnica para o design, instalação e manutenção de biodigestores",
+        "Desenvolvimento de um quadro regulatório de apoio que incentive o uso de biogás e sistemas de gestão de resíduos orgânicos na agricultura rural"
+      ],
+      "KeyPerformanceIndicators": [
+        "Volume de biogás gerado (m³/ano).",
+        "Emissões de GEE evitadas pela substituição de combustíveis fósseis (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0040",
+    "actionName": "Adopt solar-powered street lighting in rural areas",
+    "actionPriority": 5,
+    "explanation": "A adoção de iluminação pública alimentada por energia solar em áreas rurais de Camaragibe é uma ação estratégica devido ao bioma de floresta tropical da cidade, que proporciona abundante luz solar para a geração de energia solar. Essa iniciativa pode reduzir significativamente as emissões de energia estacionária, que atualmente são um dos principais contribuintes para o total de emissões da cidade. Além disso, a iluminação solar pode melhorar a segurança pública e a acessibilidade em áreas rurais, que podem atualmente carecer de infraestrutura adequada. Ao reduzir a dependência de fontes tradicionais de energia, essa ação também contribui para a segurança energética, uma preocupação fundamental diante da vulnerabilidade da cidade a períodos de seca.",
+    "action": {
+      "ActionID": "icare_0040",
+      "ActionName": "Adotar iluminação pública solar em áreas rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Instalar postes de iluminação pública movidos a energia solar para melhorar a segurança e acessibilidade em comunidades rurais, ao mesmo tempo que reduz os custos de energia e o impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a instalação de postes de iluminação pública solar em comunidades rurais",
+        "Acesso a expertise técnica para projetar, instalar e manter sistemas de iluminação pública solar",
+        "Colaboração com governos locais e comunidades para garantir a integração de postes de iluminação solar na infraestrutura existente e nos planos de energia"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de postes de iluminação pública alimentados por energia solar.",
+        "Redução anual no consumo de eletricidade (kWh).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0011",
+    "actionName": "Provide tax incentives for renewable energy in residential projects",
+    "actionPriority": 6,
+    "explanation": "Conceder incentivos fiscais para energias renováveis em projetos residenciais em Camaragibe é fundamental devido às altas emissões de energia estacionária da cidade. Incentivar a adoção de energia renovável pode reduzir significativamente essas emissões, contribuindo para um ambiente mais limpo. Além disso, essa ação está alinhada com a necessidade da cidade de melhorar a segurança energética, especialmente diante de riscos climáticos como secas e ondas de calor. Ao promover a energia renovável, a cidade também pode aumentar sua resiliência frente a esses perigos, garantindo um futuro mais sustentável para seus habitantes.",
+    "action": {
+      "ActionID": "icare_0011",
+      "ActionName": "Fornecer incentivos fiscais para energia renovável em projetos residenciais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar os proprietários de imóveis a adotarem energia solar, eólica e outras fontes de energia limpa.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de incentivos financeiros, subsídios ou créditos fiscais para incentivar os proprietários a instalar sistemas de energia solar, eólica e outras energias limpas",
+        "Acesso a informações e recursos educacionais para ajudar os proprietários a entender os benefícios, custos e processos de instalação de sistemas de energia limpa",
+        "Desenvolvimento de regulamentos e políticas de apoio que facilitem a instalação de tecnologias de energia renovável em áreas residenciais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de residências beneficiadas por incentivos fiscais para a adoção de energia renovável.",
+        "Aumento anual nas instalações de energia renovável em projetos residenciais.",
+        "Redução estimada nas emissões de CO₂ equivalente devido à adoção de energia renovável."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0029",
+    "actionName": "Adopt policies for fossil fuel-free buildings",
+    "actionPriority": 7,
+    "explanation": "A adoção de políticas para edifícios livres de combustíveis fósseis em Camaragibe é crucial devido às altas emissões de energia estacionária da cidade, que contribuem significativamente para suas emissões totais. A transição para edifícios livres de combustíveis fósseis pode ajudar a reduzir essas emissões, alinhando-se aos esforços globais para combater as mudanças climáticas. Além disso, tais políticas podem melhorar a qualidade do ar e a saúde pública, o que é particularmente importante, considerando o alto risco de impactos à saúde pública decorrentes de ondas de calor e doenças na cidade. Essa ação também fortalece a segurança energética ao promover o uso de fontes de energia renovável, o que é vital em uma região que enfrenta desafios energéticos relacionados à seca.",
+    "action": {
+      "ActionID": "icare_0029",
+      "ActionName": "Adotar políticas para edifícios sem combustíveis fósseis",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Impor regulamentos que exijam que novas construções utilizem sistemas de energia renovável, designs eficientes em termos de energia e tecnologias de emissão zero.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de códigos de construção e estruturas regulatórias que exijam a integração de sistemas de energia renovável e designs energeticamente eficientes em novas construções",
+        "Disponibilidade de incentivos ou apoio para que os desenvolvedores cumpram as regulamentações e adotem tecnologias de emissão zero",
+        "Expertise técnica e recursos para garantir a implementação adequada e o monitoramento de sistemas de energia renovável e designs energeticamente eficientes em projetos de construção"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de edifícios em transição para fontes de energia renovável.",
+        "Redução total no uso de combustíveis fósseis para aquecimento/resfriamento (m³ ou litros).",
+        "Diminuição nas emissões de GEE relacionadas a edifícios (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0105",
+    "actionName": "Reduce technical losses in energy distribution networks",
+    "actionPriority": 8,
+    "explanation": "Reduzir as perdas técnicas nas redes de distribuição de energia é fundamental para Camaragibe devido às suas significativas emissões estacionárias de energia. Ao melhorar a eficiência da distribuição de energia, a cidade pode diminuir suas emissões totais, contribuindo para um ambiente mais limpo. Além disso, essa ação pode aumentar a segurança energética, o que é vital considerando a vulnerabilidade da cidade a secas que afetam os recursos energéticos. A implementação dessa medida também pode gerar economia de custos e um fornecimento de energia mais confiável para os moradores, alinhando-se às necessidades socioeconômicas da cidade.",
+    "action": {
+      "ActionID": "icare_0105",
+      "ActionName": "Reduzir perdas técnicas nas redes de distribuição de energia",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_industries"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Atualizar e manter a infraestrutura elétrica para minimizar a perda de energia durante a transmissão e distribuição, melhorando a eficiência geral da rede.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento para investir na modernização da infraestrutura elétrica e na atualização das redes de transmissão e distribuição",
+        "Acesso a expertise técnica para implementar atualizações que reduzam perdas de energia e melhorem a eficiência da rede",
+        "Estruturas políticas e regulatórias para garantir a manutenção contínua e a integração de tecnologias energeticamente eficientes na infraestrutura da rede"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentual de redução nas perdas técnicas em relação à linha de base (%).",
+        "Economia de energia alcançada anualmente (kWh).",
+        "Emissões de GEE evitadas através da redução de perdas de energia (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0097",
+    "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+    "actionPriority": 9,
+    "explanation": "Apoiar a geração distribuída de energia em residências e empresas em Camaragibe é fundamental devido às altas emissões estacionárias de energia da cidade. Ao promover a produção local de energia, o município pode reduzir sua dependência de fontes centralizadas de eletricidade, que frequentemente contribuem de forma significativa para as emissões de gases de efeito estufa. Essa ação também está alinhada com a necessidade de aumentar a segurança energética, especialmente em uma região propensa a secas que podem impactar o fornecimento de energia. Além disso, sistemas de energia distribuída podem proporcionar resiliência contra quedas de energia, o que é vital para manter a saúde pública e a segurança durante eventos climáticos extremos.",
+    "action": {
+      "ActionID": "icare_0097",
+      "ActionName": "Apoiar a Geração de Energia Distribuída em Residências e Negócios",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Facilitar o uso de painéis solares e outras tecnologias de energia renovável em residências e edifícios comerciais.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecer incentivos financeiros, regulamentações claras de instalação e acesso a tecnologias acessíveis para painéis solares.",
+        "Lançar campanhas de conscientização pública e oferecer treinamento para proprietários de residências e empresas.",
+        "Incentivar a adoção de tecnologias de energia renovável para promover economias de energia a longo prazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Capacidade instalada de geração de energia distribuída (MW).",
+        "Percentual de residências e empresas gerando sua própria energia (%).",
+        "Redução nas emissões de CO₂ através da geração distribuída (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0005",
+    "actionName": "Create credit lines for residential and community wind energy projects",
+    "actionPriority": 10,
+    "explanation": "A criação de linhas de crédito para projetos de energia eólica residenciais e comunitários em Camaragibe é uma ação estratégica para enfrentar as altas emissões estacionárias de energia da cidade. Ao promover a energia eólica, o município pode reduzir sua dependência de fontes tradicionais de energia, diminuindo assim sua pegada de carbono total. Além disso, essa iniciativa pode fortalecer as comunidades locais ao proporcionar soluções energéticas sustentáveis, o que é fundamental, considerando o perfil socioeconômico de baixa renda da cidade. Ademais, investir em energia renovável está alinhado com a necessidade do município de aumentar a segurança energética, especialmente diante de riscos climáticos como secas e ondas de calor.",
+    "action": {
+      "ActionID": "icare_0005",
+      "ActionName": "Criar linhas de crédito para projetos de energia eólica residencial e comunitária",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecer programas de financiamento acessíveis para apoiar o desenvolvimento e a adoção de sistemas de energia eólica em residências e projetos comunitários, possibilitando uma transição para fontes de energia mais limpas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 2,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de programas financeiros, subsídios ou subvenções para tornar os sistemas de energia eólica acessíveis para residências e projetos comunitários",
+        "Acesso a expertise técnica e recursos para orientar a instalação e manutenção de sistemas de energia eólica em ambientes residenciais e comunitários",
+        "Apoio político e regulatório para incentivar a adoção de energia eólica, incluindo processos de licenciamento simplificados e incentivos para projetos de energia limpa"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia eólica financiados anualmente.",
+        "Capacidade instalada de sistemas de energia eólica de projetos apoiados por crédito (MW).",
+        "Redução estimada nas emissões equivalentes de CO₂ pela adoção de energia eólica."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0129",
+    "actionName": "Facilitate Technology Transfer for Conservation Practices",
+    "actionPriority": 11,
+    "explanation": "Facilitar a transferência de tecnologia para práticas de conservação em Camaragibe é crucial devido ao bioma de floresta tropical da cidade, que é altamente sensível a mudanças ambientais. A cidade enfrenta riscos significativos de secas e ondas de calor, impactando os recursos hídricos, a segurança alimentar e a saúde pública. Ao adotar tecnologias avançadas de conservação, Camaragibe pode aumentar sua resiliência diante desses perigos climáticos, garantindo a gestão sustentável de seus recursos naturais. Essa ação apoia os esforços da cidade para mitigar os efeitos adversos das mudanças climáticas e proteger sua biodiversidade.",
+    "action": {
+      "ActionID": "icare_0129",
+      "ActionName": "Facilitar a Transferência de Tecnologia para Práticas de Conservação",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover a adoção de práticas agrícolas sustentáveis por meio de treinamento, projetos piloto e demonstrações de tecnologia.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar práticas sustentáveis.",
+        "Parcerias com instituições de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a adoção.",
+        "Acesso a assistência técnica para implementação bem-sucedida."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de tecnologias de conservação transferidas e aplicadas em fazendas.",
+        "Percentual de produtores treinados para implementar práticas de conservação.",
+        "Redução na degradação do solo ou aumento na cobertura vegetal (hectares)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0043",
+    "actionName": "Integrate geothermal energy for heating where feasible",
+    "actionPriority": 12,
+    "explanation": "Integrar a energia geotérmica para aquecimento em Camaragibe é uma ação estratégica devido à alta densidade populacional da cidade e à necessidade de soluções energéticas sustentáveis. Embora a cidade esteja localizada em um bioma de floresta tropical, que normalmente apresenta um clima quente, a energia geotérmica pode fornecer uma fonte de energia estável e renovável, reduzindo a dependência de fontes tradicionais. Essa ação pode ajudar a diminuir as emissões de energia estacionária, que representam uma parte significativa do total de emissões da cidade. Além disso, ao diversificar as fontes de energia, Camaragibe pode aumentar sua segurança energética, tornando-se mais resiliente a riscos relacionados ao clima, como secas e ondas de calor.",
+    "action": {
+      "ActionID": "icare_0043",
+      "ActionName": "Integrar energia geotérmica para aquecimento onde for viável",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar bombas de calor geotérmicas e sistemas geotérmicos de uso direto para fornecer soluções de aquecimento sustentáveis e eficientes em locais adequados.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Disponibilidade de expertise técnica e recursos para avaliar a viabilidade e instalar bombas de calor geotérmicas e sistemas de uso direto em locais adequados",
+        "Acesso a financiamento ou incentivos para apoiar a adoção de soluções de aquecimento geotérmico em instalações residenciais, comerciais ou públicas",
+        "Desenvolvimento de estruturas regulatórias para orientar a instalação e garantir a integração adequada dos sistemas geotérmicos na infraestrutura energética local"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de sistemas de aquecimento na cidade alimentados por energia geotérmica (%).",
+        "Redução anual no consumo de combustíveis fósseis para aquecimento (litros ou toneladas de CO₂e evitadas).",
+        "Economia de custos para residentes ou empresas que utilizam energia geotérmica em comparação com métodos de aquecimento tradicionais (USD/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0020",
+    "actionName": "Promote sustainable construction practices and encourage green technologies in public, residential, commercial, industrial, and service buildings.",
+    "actionPriority": 13,
+    "explanation": "Promover práticas de construção sustentável e incentivar tecnologias verdes em Camaragibe é fundamental devido à alta densidade populacional da cidade e às significativas emissões provenientes de fontes estacionárias de energia. A implementação de tecnologias de construção verde pode ajudar a reduzir o consumo de energia e as emissões, contribuindo para os objetivos gerais de sustentabilidade do município. Além disso, a construção sustentável pode aumentar a resiliência contra riscos climáticos, como ondas de calor e inundações, que representam ameaças significativas à saúde pública e à infraestrutura. Ao priorizar essa ação, Camaragibe pode aprimorar seu desempenho ambiental e melhorar a qualidade de vida de seus habitantes.",
+    "action": {
+      "ActionID": "icare_0020",
+      "ActionName": "Promover práticas de construção sustentável e incentivar tecnologias verdes em edifícios públicos, residenciais, comerciais, industriais e de serviços.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação busca aumentar a participação de fontes de energia renováveis na matriz energética da cidade, com foco em edifícios residenciais, comerciais, industriais e de serviços.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de incentivos e subsídios para incentivar a adoção de tecnologias de energia renovável em edifícios",
+        "Desenvolvimento de um quadro regulatório de apoio para a instalação e integração de sistemas de energia renovável nos setores residencial, comercial e industrial",
+        "Investimento na infraestrutura necessária para apoiar a geração e distribuição de energia renovável dentro da cidade"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de empregos criados nos setores da economia circular.",
+        "Aumento na porcentagem de materiais reutilizados ou reciclados na cidade.",
+        "Redução anual nas emissões de CO₂ equivalente provenientes de iniciativas de economia circular."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0046",
+    "actionName": "Make efforts to promote socioeconomic development and improve the quality of life in the city from the perspective of a circular economy and zero carbon emissions.",
+    "actionPriority": 14,
+    "explanation": "Promover o desenvolvimento socioeconômico em Camaragibe por meio de uma economia circular e emissões zero de carbono é crucial devido à condição de baixa renda e à alta densidade populacional da cidade. Essa abordagem pode ajudar a enfrentar o acesso inadequado à água e aos serviços de saneamento, criando sistemas sustentáveis e eficientes. Além disso, o foco em emissões zero de carbono é fundamental, considerando as significativas emissões estacionárias de energia e resíduos da cidade, que contribuem para a degradação ambiental. Ao melhorar a qualidade de vida por meio dessas medidas, a cidade também pode mitigar os riscos associados aos impactos das mudanças climáticas, como secas e ondas de calor, que ameaçam a saúde pública e a segurança alimentar.",
+    "action": {
+      "ActionID": "icare_0046",
+      "ActionName": "Esforce-se para promover o desenvolvimento socioeconômico e melhorar a qualidade de vida na cidade a partir da perspectiva de uma economia circular e emissões zero de carbono.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "commercial_and_institutional_buildings_and_facilities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "O governo da cidade deve empreender ações políticas consistentes com sua capacidade econômica e os desafios que enfrenta para apoiar o desenvolvimento de uma nova economia sustentável com emissões de carbono zero, que proteja as condições de trabalho, o empreendedorismo e a vitalidade econômica da cidade.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Vontade política e liderança: Um governo local comprometido disposto a priorizar o desenvolvimento sustentável e a neutralidade de carbono.",
+        "Capacidade econômica e recursos: Recursos financeiros suficientes para investir em iniciativas verdes e infraestrutura sustentável.",
+        "Colaboração com as partes interessadas: Envolver-se com empresas, sindicatos e empreendedores para alinhar estratégias e garantir que a transição econômica seja inclusiva e equitativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentual de redução nas emissões municipais de carbono per capita (%).",
+        "Número de iniciativas de economia circular implementadas anualmente (por exemplo, programas de reciclagem, projetos de conversão de resíduos em energia).",
+        "Aumento no número de empregos verdes criados por meio de iniciativas de economia circular e de carbono zero (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0008",
+    "actionName": "Develop Smart Grids and Energy Storage Systems",
+    "actionPriority": 15,
+    "explanation": "Desenvolver redes inteligentes e sistemas de armazenamento de energia em Camaragibe é fundamental devido às altas emissões estacionárias de energia da cidade. Ao implementar essas tecnologias, a cidade pode aumentar a eficiência energética e reduzir as emissões, contribuindo para um ambiente mais sustentável. Além disso, as redes inteligentes podem melhorar a segurança energética, o que é vital considerando a vulnerabilidade da cidade a secas que afetam os recursos energéticos. Essa ação também está alinhada com a necessidade de enfrentar os riscos à saúde pública associados às ondas de calor, já que sistemas energéticos eficientes podem ajudar a mitigar seu impacto.",
+    "action": {
+      "ActionID": "icare_0008",
+      "ActionName": "Desenvolver Redes Inteligentes e Sistemas de Armazenamento de Energia",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_industries"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação foca no desenvolvimento de redes inteligentes e sistemas de armazenamento de energia para otimizar a gestão de energia e melhorar a integração de fontes de energia renovável. As redes inteligentes permitem uma distribuição e uso mais eficientes da eletricidade, enquanto os sistemas de armazenamento de energia ajudam a armazenar o excesso de energia renovável para uso posterior. Juntos, eles garantem um fornecimento de energia estável, confiável e sustentável, permitindo que os municípios gerenciem melhor a demanda de energia, reduzam a congestão da rede e apoiem a transição para energia limpa.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento no desenvolvimento e implementação de redes inteligentes e tecnologias de armazenamento de energia para melhorar a gestão de energia",
+        "Expertise técnica e infraestrutura para integrar fontes de energia renovável na rede inteligente e garantir o armazenamento eficaz de energia",
+        "Estruturas políticas e regulatórias para apoiar a adoção generalizada de redes inteligentes e sistemas de armazenamento de energia, incluindo incentivos e padrões de integração de rede"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem da rede coberta por tecnologia de rede inteligente.",
+        "Capacidade instalada de sistemas de armazenamento de energia (MW ou MWh).",
+        "Redução nas perdas de energia na rede (%)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0128",
+    "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+    "actionPriority": 16,
+    "explanation": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA) em Camaragibe é fundamental devido ao bioma de floresta tropical da cidade, que desempenha um papel significativo na manutenção da biodiversidade e do equilíbrio ecológico. Os programas de PSA podem incentivar as comunidades locais a se envolverem em esforços de conservação, o que é vital, considerando o alto risco de secas que afetam os recursos hídricos e a biodiversidade. Além disso, esses programas podem ajudar a mitigar os efeitos das mudanças climáticas ao promover práticas sustentáveis de uso da terra, reduzindo assim as emissões provenientes do uso do solo e aumentando a captura de carbono. A implementação do PSA também pode apoiar o desenvolvimento socioeconômico ao proporcionar benefícios financeiros para comunidades de baixa renda, alinhando-se com a necessidade da cidade de enfrentar desafios socioeconômicos.",
+    "action": {
+      "ActionID": "icare_0128",
+      "ActionName": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas que paguem aos proprietários de terras por manterem ou melhorarem as condições ambientais em suas propriedades.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Criação de mecanismos de financiamento e critérios de elegibilidade claros com indicadores de desempenho.",
+        "Parcerias com organizações ambientais e campanhas de conscientização para incentivar a participação.",
+        "Integração com estruturas legais para garantir a sustentabilidade do programa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de contratos ativos de Pagamento por Serviços Ambientais (PSA) assinados.",
+        "Área total sob práticas de conservação ou restauração incentivadas (hectares).",
+        "Quantidade de carbono sequestrado ou emissões evitadas por meio de ações de PSA (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0027",
+    "actionName": "Create financing programs for local renewable energy projects",
+    "actionPriority": 17,
+    "explanation": "Criar programas de financiamento para projetos locais de energia renovável em Camaragibe é fundamental devido às altas emissões de energia estacionária da cidade. Ao promover a energia renovável, o município pode reduzir significativamente sua pegada de carbono e melhorar a qualidade do ar. Além disso, projetos de energia renovável podem trazer benefícios econômicos, gerando empregos e reduzindo os custos de energia para os moradores. Essa ação está alinhada com a necessidade da cidade de enfrentar riscos à segurança energética, especialmente diante dos impactos das mudanças climáticas, como secas e ondas de calor. De modo geral, essa iniciativa apoia o desenvolvimento sustentável e a resiliência da comunidade.",
+    "action": {
+      "ActionID": "icare_0027",
+      "ActionName": "Criar programas de financiamento para projetos locais de energia renovável",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_industries"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecer mecanismos de financiamento, como subsídios e empréstimos a juros baixos, para apoiar o desenvolvimento de iniciativas de energia renovável em pequena escala nas comunidades.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de mecanismos financeiros acessíveis, incluindo subsídios e empréstimos a juros baixos, para apoiar projetos de energia renovável em pequena escala nas comunidades",
+        "Colaboração com instituições financeiras e governos locais para garantir a distribuição e gestão eficaz dos fundos para iniciativas de energia renovável",
+        "Diretrizes claras e apoio para organizações comunitárias e empresas locais acessarem financiamento e implementarem com sucesso projetos de energia renovável"
+      ],
+      "KeyPerformanceIndicators": [
+        "Total de fundos alocados para projetos de energia renovável (USD).",
+        "Número de projetos financiados anualmente.",
+        "Aumento na capacidade de energia renovável instalada (MW)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 18,
+    "explanation": "Priorizar a aquisição de produtos agroecológicos produzidos localmente nas compras públicas é fundamental para Camaragibe devido ao seu risco significativo à segurança alimentar causado por enchentes e secas. Ao apoiar práticas agroecológicas locais, a cidade pode aumentar sua resiliência a esses riscos climáticos, garantindo um abastecimento alimentar mais estável e sustentável. Além disso, essa ação pode estimular a economia local, proporcionando oportunidades de renda para os agricultores locais e reduzindo a dependência de fontes externas de alimentos. Essa abordagem também está alinhada com a necessidade da cidade de enfrentar desafios socioeconômicos, pois pode contribuir para a melhoria das condições de vida das comunidades de baixa renda.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar a Aquisição de Produtos Agroecológicos Produzidos Localmente em Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Concentre-se em comprar alimentos sustentáveis e produzidos localmente para instituições públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas de aquisição e identificação de fornecedores locais confiáveis.",
+        "Parcerias com produtores e alocação de financiamento para programas de aquisição sustentável.",
+        "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os critérios de sustentabilidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem do volume total de compras públicas provenientes de produtores agroecológicos locais.",
+        "Quantidade de emissões de CO₂ evitadas devido à redução da distância de transporte (tCO₂e).",
+        "Número de produtores agroecológicos beneficiados pelas compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 19,
+    "explanation": "A implementação de programas de transporte público gratuito durante os horários de pico em Camaragibe é uma ação estratégica para enfrentar as altas emissões de transporte da cidade. Ao incentivar o uso do transporte público, a cidade pode reduzir significativamente a dependência de veículos individuais, que são uma das principais fontes de emissões. Essa iniciativa não visa apenas diminuir as emissões, mas também melhorar a qualidade do ar e reduzir a congestão do tráfego, elevando a qualidade de vida dos moradores. Além disso, oferecer transporte gratuito pode ser especialmente benéfico para os residentes de baixa renda, alinhando-se ao contexto socioeconômico da cidade.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementação de programas de transporte público gratuito durante os horários de pico para reduzir o uso de veículos individuais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar o uso do transporte público oferecendo serviços gratuitos durante os horários de pico para trabalhadores e estudantes. Esta medida reduz a congestão urbana, diminui o número de veículos individuais nas estradas e, consequentemente, reduz as emissões de gases de efeito estufa associadas ao transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Alocação de financiamento para subsidiar serviços de transporte público gratuito durante as horas de pico.",
+        "Desenvolvimento de políticas para garantir a sustentabilidade e eficiência dos sistemas de transporte público diante do aumento da demanda.",
+        "Coordenação com empregadores e instituições educacionais para otimizar os horários de pico e promover a iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nos níveis de poluição do ar durante as horas de pico (concentração de PM2.5/PM10).",
+        "Número de veículos particulares removidos das estradas durante as horas de pico.",
+        "Taxa de satisfação pública com a iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CME",
+    "cityName": "Camaragibe",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0130",
+    "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+    "actionPriority": 20,
+    "explanation": "A realização de ações de Assistência Técnica e Extensão Rural (ATER) em Camaragibe é fundamental devido à vulnerabilidade da cidade a riscos climáticos, como secas e inundações, que impactam significativamente a segurança alimentar. Ao fornecer apoio técnico e educação às comunidades rurais, essas ações podem aprimorar as práticas agrícolas, aumentar a resiliência e garantir uma produção de alimentos sustentável. Além disso, as iniciativas de ATER podem ajudar a mitigar os efeitos do acesso inadequado à água e ao saneamento, que são questões urgentes na região. De modo geral, essas ações são essenciais para fortalecer o tecido socioeconômico da comunidade e garantir a sustentabilidade a longo prazo.",
+    "action": {
+      "ActionID": "icare_0130",
+      "ActionName": "Conduzir Ações de Assistência Técnica e Extensão Rural (ATER)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fornecer suporte técnico e treinamento aos produtores rurais para a produção agrícola sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de pessoal técnico qualificado e programas de formação personalizados.",
+        "Parcerias com instituições de pesquisa agrícola e alocação de recursos para o desenvolvimento de capacidades.",
+        "Envolvimento com produtores rurais para garantir a participação ativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de produtores beneficiados com assistência técnica rural (% do total).",
+        "Percentual de participantes adotando práticas resilientes ao clima.",
+        "Redução da vulnerabilidade das propriedades ao risco climático (%)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
 ]

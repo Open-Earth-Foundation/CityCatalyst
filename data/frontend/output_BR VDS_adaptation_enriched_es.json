@@ -1,1300 +1,1300 @@
 [
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 1,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, having a formal emergency response plan helps coordinate evacuations and rescue when storms or floods hit. This approach minimizes confusion and property damage by clearly defining roles and resources. Preparedness of this kind makes recovery faster and the city more resilient.",
-        "action": {
-            "ActionID": "icare_0169",
-            "ActionName": "Establecer un Plan de Preparaci\u00f3n y Medidas de Respuesta de Emergencia en caso de eventos clim\u00e1ticos extremos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta acci\u00f3n se centra en preparar al municipio para responder a eventos extremos, con el objetivo de proporcionar una respuesta r\u00e1pida que minimice los impactos en la poblaci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de un plan integral de respuesta a emergencias que incluya la coordinaci\u00f3n entre las autoridades locales, los servicios de emergencia y las organizaciones comunitarias",
-                "Inversi\u00f3n en sistemas de alerta temprana e infraestructura para garantizar respuestas oportunas y efectivas a eventos extremos",
-                "Capacitaci\u00f3n y desarrollo de capacidades para los respondedores locales y las comunidades para mejorar la preparaci\u00f3n y la resiliencia ante eventos extremos"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de asociaciones de respuesta de emergencia establecidas.",
-                "Tiempo promedio de respuesta durante eventos clim\u00e1ticos extremos (horas).",
-                "Porcentaje de reducci\u00f3n en v\u00edctimas y da\u00f1os durante eventos clim\u00e1ticos extremos anualmente (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "high",
-                "diseases": "medium",
-                "landslides": "high",
-                "floods": "high",
-                "wildfires": "high",
-                "sea-level-rise": "low",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 2,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, creating a unified Climate Action Plan sets measurable goals and strategies to address emissions and local vulnerabilities. By identifying climate risks early, resources can be allocated efficiently. This plan also provides direction for cross-sector collaboration, guiding the city toward more sustainable growth.",
-        "action": {
-            "ActionID": "icare_0176",
-            "ActionName": "Desarrollo del Plan de Acci\u00f3n Clim\u00e1tica",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "storms",
-                "sea-level-rise",
-                "wildfires",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Un plan integral que describe las estrategias y acciones de una ciudad para mitigar las emisiones de gases de efecto invernadero y adaptarse a los impactos del cambio clim\u00e1tico, que t\u00edpicamente incluye una evaluaci\u00f3n de los riesgos y vulnerabilidades clim\u00e1ticas de la ciudad, el establecimiento de objetivos de reducci\u00f3n de emisiones y la implementaci\u00f3n de acciones en varios sectores como energ\u00eda, transporte, gesti\u00f3n de residuos y planificaci\u00f3n urbana.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Voluntad pol\u00edtica y compromiso del gobierno",
-                "Participaci\u00f3n y colaboraci\u00f3n de las partes interesadas",
-                "Financiaci\u00f3n y recursos para la implementaci\u00f3n"
-            ],
-            "KeyPerformanceIndicators": [
-                "Objetivos de reducci\u00f3n de emisiones de gases de efecto invernadero.",
-                "N\u00famero de acciones de adaptaci\u00f3n al clima implementadas.",
-                "Inversi\u00f3n en proyectos de mitigaci\u00f3n y adaptaci\u00f3n al clima."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "storms": "medium",
-                "sea-level-rise": "medium",
-                "wildfires": "medium",
-                "floods": "medium",
-                "landslides": "medium",
-                "diseases": "medium",
-                "heatwaves": "medium",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 3,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, preserving key ecosystems ensures clean air, consistent water flow, and carbon storage. By keeping forests intact, the city mitigates the effects of extreme weather, supports biodiversity, and sustains crucial ecological services. Reinforcing protective measures fosters a healthier environment and bolsters climate resilience.",
-        "action": {
-            "ActionID": "icare_0162",
-            "ActionName": "Fortalecer los programas de control y conservaci\u00f3n de \u00e1reas protegidas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves",
-                "diseases"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta acci\u00f3n se centra en implementar una serie de estrategias integradas para mejorar la conservaci\u00f3n ambiental y maximizar sus beneficios, como la expansi\u00f3n de \u00e1reas protegidas, el desarrollo de planes de manejo para unidades de conservaci\u00f3n y la capacitaci\u00f3n de gu\u00edas de ecoturismo para fortalecer el turismo sostenible.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expansi\u00f3n de \u00e1reas protegidas para mejorar la conservaci\u00f3n ambiental.",
-                "Desarrollo de planes de manejo para unidades de conservaci\u00f3n.",
-                "Capacitaci\u00f3n de gu\u00edas de ecoturismo para promover el turismo sostenible."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de aumento en el \u00e1rea de regiones protegidas (%).",
-                "Reducci\u00f3n en las tasas de deforestaci\u00f3n en \u00e1reas protegidas anualmente (%).",
-                "N\u00famero de programas de conservaci\u00f3n fortalecidos anualmente."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "floods": "high",
-                "landslides": "high",
-                "heatwaves": "medium",
-                "diseases": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0152",
-        "actionName": "Recovery of degraded areas",
-        "actionPriority": 4,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, restoring damaged lands improves soil stability, boosts carbon absorption, and revitalizes vegetation. These efforts can also prevent flooding by improving natural water retention and reducing erosion. Over time, such rehabilitated landscapes become more resilient and contribute to local livelihoods.",
-        "action": {
-            "ActionID": "icare_0152",
-            "ActionName": "Recuperaci\u00f3n de \u00e1reas degradadas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Restaurar los ecosistemas da\u00f1ados por actividades humanas mediante la replantaci\u00f3n de vegetaci\u00f3n nativa, la restauraci\u00f3n del suelo, la eliminaci\u00f3n de especies invasoras y la implementaci\u00f3n de t\u00e9cnicas de gesti\u00f3n sostenible.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Desarrollar un plan de restauraci\u00f3n claro y asegurar financiamiento para la gesti\u00f3n a largo plazo.",
-                "Asegurar el acceso a especies de plantas nativas y proporcionar capacitaci\u00f3n en pr\u00e1cticas sostenibles.",
-                "Eliminar especies invasoras y colaborar con las comunidades locales para una restauraci\u00f3n exitosa del ecosistema."
-            ],
-            "KeyPerformanceIndicators": [
-                "Hect\u00e1reas de tierra degradada restauradas anualmente",
-                "Aumento en la cobertura vegetal (%) en \u00e1reas restauradas",
-                "N\u00famero de comunidades locales involucradas en proyectos de restauraci\u00f3n"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "landslides": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 5,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, ensuring robust food storage and transport helps maintain supply chains when storms or heatwaves occur. With upgraded facilities, spoilage is reduced, and essential goods remain available during emergencies. This measure greatly contributes to food security and community well-being in uncertain times.",
-        "action": {
-            "ActionID": "ipcc_0097",
-            "ActionName": "Mejoras en el almacenamiento/distribuci\u00f3n de alimentos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms",
-                "heatwaves"
-            ],
-            "Sector": [
-                "food_security",
-                "road_infrastructure"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mejorar los sistemas de almacenamiento y distribuci\u00f3n de alimentos mediante la mejora de la infraestructura de transporte, la optimizaci\u00f3n de las redes comerciales y el acortamiento de las cadenas de suministro para garantizar la disponibilidad local de alimentos y la resiliencia ante los impactos clim\u00e1ticos. Esta acci\u00f3n tambi\u00e9n incluye aumentar la capacidad de las instalaciones de almacenamiento de alimentos locales para reducir las p\u00e9rdidas post-cosecha, abordar las ineficiencias en la log\u00edstica y reforzar la infraestructura para productos perecederos. Su objetivo es mejorar la seguridad alimentaria y reducir la vulnerabilidad a eventos extremos, interrupciones e impactos en cascada, especialmente durante pandemias y otras crisis.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Apoya el acceso equitativo a alimentos para poblaciones marginadas y vulnerables al priorizar la producci\u00f3n local de alimentos y mejorar los sistemas de distribuci\u00f3n que llegan a \u00e1reas desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en infraestructura",
-                "Incentivos pol\u00edticos para la producci\u00f3n local de alimentos",
-                "Colaboraci\u00f3n con los sectores de log\u00edstica y comercio",
-                "Tecnolog\u00eda para la optimizaci\u00f3n de la cadena de suministro"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de p\u00e9rdidas post-cosecha",
-                "Aumento de la disponibilidad de alimentos locales",
-                "Mejora de la eficiencia del transporte para la distribuci\u00f3n de alimentos",
-                "Acortamiento de las cadenas de suministro"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "storms": "high",
-                "heatwaves": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 6,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, expanding medical coverage is critical to meeting health demands intensified by climate-related issues like heatstroke or waterborne diseases. Improving clinics and emergency services curbs fatalities and speeds recovery during crises. Overall, better health infrastructure strengthens the city\u2019s capacity to cope with emerging climate stresses.",
-        "action": {
-            "ActionID": "ipcc_0094",
-            "ActionName": "Acceso a la atenci\u00f3n m\u00e9dica",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "droughts"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mejorar el acceso a los servicios de atenci\u00f3n m\u00e9dica, incluidos los servicios de salud y nutrici\u00f3n, agua limpia, saneamiento y recursos de salud mental culturalmente apropiados. Ampliar las capacidades de telemedicina permite una entrega eficiente de servicios de salud, particularmente para poblaciones remotas y desatendidas. Fortalecer los sistemas b\u00e1sicos de salud p\u00fablica y la preparaci\u00f3n para desastres puede reducir r\u00e1pidamente la vulnerabilidad a los riesgos de salud relacionados con el clima.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promueve el acceso equitativo a la atenci\u00f3n m\u00e9dica para grupos marginados y vulnerables, incluidas las poblaciones sin hogar, las comunidades remotas y aquellos afectados por desigualdades en la vivienda.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en tecnolog\u00edas de telemedicina",
-                "Fortalecimiento de la gobernanza de los sistemas de salud p\u00fablica",
-                "Desarrollo de capacidades para los trabajadores de la salud",
-                "Mejoras en la infraestructura de las instalaciones de salud"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de la mortalidad relacionada con el clima",
-                "Mayor acceso a la telemedicina",
-                "N\u00famero de programas de salud adaptados culturalmente implementados",
-                "Mejora de los indicadores de acceso al agua y saneamiento"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "floods": "high",
-                "droughts": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 7,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, mapping and improving ZEIS neighborhoods prevents vulnerabilities from worsening under severe weather. Reinforced housing and infrastructure make these areas safer and healthier. By enhancing living conditions for at-risk communities, the city promotes equitable resilience and a more robust urban fabric.",
-        "action": {
-            "ActionID": "icare_0151",
-            "ActionName": "Desarrollar diagn\u00f3sticos y restaurar \u00e1reas de Zonas de Inter\u00e9s Social Especial (ZEIS)",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "sea-level-rise",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Prioridad a las \u00e1reas ZEIS en acciones de mejora de vivienda y la aplicaci\u00f3n de recursos del Fondo de Urbanizaci\u00f3n, con la implementaci\u00f3n de infraestructura urbana que considere la adaptaci\u00f3n clim\u00e1tica en estos espacios. Uso de Soluciones basadas en la Naturaleza (NbS) en la adaptaci\u00f3n del saneamiento ambiental y las infraestructuras verdes y azules que potencian el ocio, la cultura, la agricultura urbana y actividades para fortalecer las asociaciones comunitarias.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de financiamiento del Fondo de Urbanizaci\u00f3n y otros mecanismos financieros para apoyar mejoras en la vivienda e infraestructura urbana en \u00e1reas ZEIS",
-                "Colaboraci\u00f3n entre urbanistas, expertos ambientales y comunidades locales para dise\u00f1ar e implementar soluciones basadas en la naturaleza (NbS) para la infraestructura urbana",
-                "Marcos de pol\u00edticas y regulaciones que integren medidas de adaptaci\u00f3n al clima en la planificaci\u00f3n urbana, asegurando que las inversiones prioricen la sostenibilidad ambiental y la comunidad"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de \u00e1reas ZEIS diagnosticadas y restauradas.",
-                "Porcentaje de residentes beneficiados por las \u00e1reas restauradas (%).",
-                "Inversiones p\u00fablicas asignadas a las \u00e1reas ZEIS (monto en moneda)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "sea-level-rise": "medium",
-                "floods": "medium",
-                "landslides": "low",
-                "diseases": "medium",
-                "heatwaves": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0145",
-        "actionName": "Strengthen the healthcare network to attend to climate victims",
-        "actionPriority": 8,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, improving hospitals and clinics ensures that residents receive rapid care during climate-related emergencies like floods or heatwaves. This action lowers injury rates, saves lives, and reduces longer-term health burdens. By prioritizing medical resilience, the city reinforces its ability to protect public health under changing conditions.",
-        "action": {
-            "ActionID": "icare_0145",
-            "ActionName": "Fortalecer la red de atenci\u00f3n m\u00e9dica para atender a las v\u00edctimas del clima",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "storms",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mejorar la infraestructura de las unidades de salud para asistir a las personas que requieren atenci\u00f3n m\u00e9dica debido a impactos asociados con riesgos clim\u00e1ticos (v\u00edctimas del clima), como aquellos afectados por olas de calor o inundaciones, especialmente en \u00e1reas m\u00e1s vulnerables. Desarrollar planes de acci\u00f3n para preparar la red de salud para situaciones extremas relacionadas con el clima.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en la renovaci\u00f3n y expansi\u00f3n de las instalaciones de salud, asegurando que est\u00e9n equipadas para manejar los impactos en la salud relacionados con el clima, especialmente en \u00e1reas vulnerables.",
-                "Desarrollo de planes de acci\u00f3n y programas de capacitaci\u00f3n para profesionales de la salud para responder a eventos clim\u00e1ticos extremos como olas de calor e inundaciones.",
-                "Colaboraci\u00f3n con autoridades locales, equipos de respuesta a emergencias y expertos en clima para crear un marco integral para preparar la red de salud ante los riesgos clim\u00e1ticos."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de instalaciones de salud mejoradas para emergencias relacionadas con el clima.",
-                "Aumento en el personal de salud capacitado en respuesta a emergencias clim\u00e1ticas (%).",
-                "N\u00famero de lesiones relacionadas con el clima tratadas con \u00e9xito. |||"
-            ],
-            "PowersAndMandates": [
-                "national"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "diseases": "medium",
-                "landslides": "medium",
-                "floods": "high",
-                "storms": "high",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0157",
-        "actionName": "Maintenance and Revitalization of Riparian Forests",
-        "actionPriority": 9,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, preserving forests along rivers and streams secures natural flood control and improves water quality. These buffers limit soil erosion and moderate flow during heavy rainfall. Rejuvenating riparian zones also sustains local habitats, reinforcing the city\u2019s environmental resilience.",
-        "action": {
-            "ActionID": "icare_0157",
-            "ActionName": "Mantenimiento y Revitalizaci\u00f3n de Bosques Ribere\u00f1os",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "landslides",
-                "floods",
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Mapeo y evaluaci\u00f3n de bosques ribere\u00f1os degradados, desarrollo de planes de revitalizaci\u00f3n con la plantaci\u00f3n de especies nativas, control de especies invasoras, medidas de contenci\u00f3n de la erosi\u00f3n y evaluaciones peri\u00f3dicas de los impactos en las condiciones ambientales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Asegurar la disponibilidad de datos geoespaciales y el mapeo previo de \u00e1reas degradadas.",
-                "Formar asociaciones con viveros locales y proporcionar equipo y mano de obra calificada para el control de especies invasoras.",
-                "Asegurar recursos financieros y establecer un sistema de monitoreo para evaluar los impactos ambientales."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total de bosques ribere\u00f1os restaurados (ha).",
-                "N\u00famero de proyectos implementados.",
-                "Reducci\u00f3n de la erosi\u00f3n y sedimentaci\u00f3n de cuerpos de agua (toneladas/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "medium",
-                "landslides": "high",
-                "floods": "high",
-                "droughts": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 10,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, adopting sustainable land-use guidelines keeps development in balance with nature, reducing erosion and maintaining water sources. This measured approach also preserves habitats, mitigating heat and flood extremes. By guiding how land is used, the city protects essential resources for future growth and stability.",
-        "action": {
-            "ActionID": "icare_0149",
-            "ActionName": "Fomentar pr\u00e1cticas sostenibles de uso de la tierra",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Promover m\u00e9todos que garanticen la conservaci\u00f3n y salud del suelo, preservando la biodiversidad, reduciendo la erosi\u00f3n y minimizando los impactos ambientales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Proporcionar acceso a conocimientos t\u00e9cnicos y capacitaci\u00f3n sobre pr\u00e1cticas de manejo sostenible del suelo.",
-                "Ofrecer incentivos financieros y formar asociaciones con instituciones de investigaci\u00f3n y agricultores locales.",
-                "Desarrollar sistemas de monitoreo para la salud del suelo y la biodiversidad, e implementar pol\u00edticas para el control de la erosi\u00f3n."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de \u00e1rea de tierra gestionada bajo pr\u00e1cticas de uso sostenible de la tierra (%)",
-                "Reducci\u00f3n en las tasas de deforestaci\u00f3n o degradaci\u00f3n de la tierra (%)",
-                "Aumento en los indicadores de biodiversidad en tierras gestionadas (por ejemplo, conteo de especies, calidad del h\u00e1bitat)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "medium",
-                "landslides": "high",
-                "floods": "medium",
-                "wildfires": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 11,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, upgrading agricultural and fishery methods boosts yields while reducing environmental stress. Modern techniques in water management and crop rotation help producers cope with unpredictable climate patterns. This step secures local food supplies and supports the livelihoods of rural families.",
-        "action": {
-            "ActionID": "ipcc_0096",
-            "ActionName": "Mejoras en granjas/pesquer\u00edas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementar una serie de estrategias para adaptar granjas y pesquer\u00edas a los impactos clim\u00e1ticos. Esto incluye cambiar el equipo de pesca o la potencia de los barcos, adoptar nuevas variedades de cultivos o ajustar los calendarios de siembra, mejorar los sistemas de riego, integrar sistemas de cultivos y ganado, reubicar el ganado con una mejor gesti\u00f3n de pastizales y adoptar sistemas agroecol\u00f3gicos y de agroforester\u00eda. Innovaciones tecnol\u00f3gicas como la agricultura inteligente y medidas financieras como los subsidios apoyan estas adaptaciones.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Garantiza el acceso a recursos para agricultores y pescadores marginados, promueve opciones diversas de sustento y fortalece la resiliencia en comunidades desatendidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Apoyo pol\u00edtico para la agricultura y pesca resilientes al clima",
-                "Acceso a financiamiento y subsidios",
-                "Capacitaci\u00f3n para adoptar nuevas pr\u00e1cticas",
-                "Mejora de la infraestructura de mercado"
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento de la productividad agr\u00edcola y pesquera",
-                "Tasa de adopci\u00f3n de sistemas integrados",
-                "Reducci\u00f3n de p\u00e9rdidas de rendimiento relacionadas con el clima"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "floods": "medium",
-                "wildfires": "low",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 12,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, more hospitals and clinics expand the city\u2019s capacity to tackle both routine health needs and climate-induced crises. This reduces travel time for patients and keeps the medical system functioning under duress. Better coverage is a cornerstone of a resilient urban environment that safeguards public well-being.",
-        "action": {
-            "ActionID": "ipcc_0093",
-            "ActionName": "Disponibilidad de infraestructura sanitaria",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "sea-level-rise",
-                "diseases"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Garantizar el acceso a infraestructura de agua potable segura, proteger los servicios de salud y mejorar los sistemas de saneamiento para mitigar los impactos clim\u00e1ticos. Esto incluye desarrollar medidas adaptativas para la seguridad del agua frente a sequ\u00edas, inundaciones y el aumento del nivel del mar. Fortalecer la resiliencia de la infraestructura asegura un acceso equitativo a los servicios de salud, reduce los riesgos de contaminaci\u00f3n y aborda los impactos de los peligros inducidos por el clima.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Mejora el acceso a recursos cr\u00edticos de salud y agua para comunidades vulnerables y desatendidas, mitigando las inequidades causadas por los impactos clim\u00e1ticos.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Financiamiento adecuado",
-                "inversiones tecnol\u00f3gicas en infraestructura de salud y agua",
-                "gobernanza efectiva y coordinaci\u00f3n intersectorial"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de enfermedades transmitidas por el agua",
-                "mejor acceso a agua potable",
-                "n\u00famero de instalaciones de salud resilientes desarrolladas"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "sea-level-rise": "high",
-                "diseases": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 13,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, strengthening welfare programs cushions economic and social shocks caused by floods, heatwaves, or other climate events. Timely assistance\u2014such as food aid or emergency housing\u2014reduces hardships and fosters a quicker return to stability. Such safety nets keep vulnerable groups from falling into deeper poverty during crises.",
-        "action": {
-            "ActionID": "ipcc_0092",
-            "ActionName": "Redes de seguridad social",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "public_health"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Las redes de seguridad social abarcan mecanismos de protecci\u00f3n social adaptativa para reducir la inseguridad alimentaria y la malnutrici\u00f3n, especialmente para las poblaciones vulnerables. Estos incluyen transferencias de efectivo, programas de alimentaci\u00f3n escolar, iniciativas de trabajo p\u00fablico, compensaci\u00f3n por desempleo, reformas agrarias, esquemas de cr\u00e9dito y seguros. Los enfoques integrados combinan evaluaciones de riesgos clim\u00e1ticos con la reducci\u00f3n del riesgo de desastres, la educaci\u00f3n y la equidad social para mejorar la resiliencia ante las tensiones clim\u00e1ticas.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Mejora el estatus social y los derechos de los grupos marginados, protege a las poblaciones vulnerables, reduce las desigualdades y promueve la educaci\u00f3n y la equidad de g\u00e9nero.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integraci\u00f3n del clima y el riesgo de desastres en la protecci\u00f3n social",
-                "programas educativos",
-                "coordinaci\u00f3n con iniciativas de medios de vida sostenibles e inclusi\u00f3n financiera"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en las tasas de malnutrici\u00f3n",
-                "Aumento en el acceso a la educaci\u00f3n para grupos vulnerables",
-                "Participaci\u00f3n en programas de protecci\u00f3n social"
-            ],
-            "PowersAndMandates": null,
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "heatwaves": "high",
-                "floods": "medium",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 14,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, convening a climate change forum unites public officials, community leaders, and businesses in collaborative planning. This shared space drives innovation in adaptation and emissions reduction. By pooling resources and expertise, the city crafts measures that address its unique climate challenges effectively.",
-        "action": {
-            "ActionID": "icare_0148",
-            "ActionName": "Crear el Foro Municipal de Cambio Clim\u00e1tico",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "diseases",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Creaci\u00f3n de un Foro Municipal de Cambio Clim\u00e1tico con la participaci\u00f3n de l\u00edderes comunitarios, cient\u00edficos, colectivos, institutos de investigaci\u00f3n, ONG y miembros de la administraci\u00f3n municipal y estatal. El Foro servir\u00e1 como referencia para acciones relacionadas con el Cambio Clim\u00e1tico, con el objetivo de monitorear futuras pol\u00edticas sobre el tema en el municipio, estimular el di\u00e1logo y crear una red de discusiones sobre la crisis clim\u00e1tica.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Participaci\u00f3n de diversos actores, incluidos l\u00edderes comunitarios, cient\u00edficos, ONG y autoridades locales, para establecer y mantener el Foro.",
-                "Asignaci\u00f3n de recursos para facilitar reuniones, talleres y eventos regulares para que el Foro permanezca activo e impactante.",
-                "Desarrollo de un marco claro y directrices para que el Foro monitoree y gu\u00ede las pol\u00edticas e iniciativas de cambio clim\u00e1tico dentro del municipio."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de partes interesadas clave participando activamente en el foro.",
-                "N\u00famero de pol\u00edticas o acciones relacionadas con el clima propuestas a trav\u00e9s del foro.",
-                "Participaci\u00f3n p\u00fablica en iniciativas del foro (medida por la asistencia a eventos o encuestas)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "diseases": "medium",
-                "heatwaves": "medium",
-                "landslides": "low",
-                "floods": "medium",
-                "wildfires": "medium",
-                "sea-level-rise": "medium",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 15,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, moving communities out of disaster-prone zones prevents frequent rebuilding costs and recurring crises. After relocation, restoring these areas\u2019 ecosystems further mitigates flood or erosion risks. This proactive effort guards residents and reclaims habitats for longer-term stability.",
-        "action": {
-            "ActionID": "icare_0181",
-            "ActionName": "Reubicaci\u00f3n y Restauraci\u00f3n Ambiental en \u00c1reas Vulnerables",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Un proyecto integral que aborda la vulnerabilidad socioambiental de un asentamiento informal. Incluye la reubicaci\u00f3n de residentes de \u00e1reas propensas a inundaciones, la restauraci\u00f3n del medio ambiente y la provisi\u00f3n de infraestructura y servicios sociales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Financiamiento adecuado",
-                "Coordinaci\u00f3n interinstitucional",
-                "Seguridad de tenencia de la tierra"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de hogares reubicados.",
-                "Progreso de la restauraci\u00f3n ambiental.",
-                "Reducci\u00f3n del riesgo de inundaci\u00f3n."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "landslides": "high",
-                "floods": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0144",
-        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
-        "actionPriority": 16,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, offering financial assistance during climate emergencies helps families and businesses recover quickly from losses. This support stabilizes local markets, preventing widespread economic fallout. By cushioning the impacts of disasters, the city fosters social resilience and a faster return to normalcy.",
-        "action": {
-            "ActionID": "icare_0144",
-            "ActionName": "Creaci\u00f3n de un Programa de Apoyo Financiero para Abordar Eventos Clim\u00e1ticos Extremos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "wildfires",
-                "floods",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Creaci\u00f3n de un programa para mitigar los efectos de las tragedias clim\u00e1ticas, incluyendo asistencia financiera a las familias afectadas y esfuerzos para asegurar recursos adicionales para la recuperaci\u00f3n y reconstrucci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Recursos financieros",
-                "Planes de respuesta de emergencia",
-                "Coordinaci\u00f3n institucional"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de personas asistidas",
-                "Rentabilidad",
-                "Resiliencia comunitaria"
-            ],
-            "PowersAndMandates": [
-                "state"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "medium",
-                "heatwaves": "medium",
-                "diseases": "medium",
-                "landslides": "medium",
-                "wildfires": "medium",
-                "floods": "medium",
-                "sea-level-rise": "medium",
-                "storms": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 17,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, introducing gardens in vacant city lots lowers local temperatures and offers fresh produce. Greenery also absorbs excess rain, easing strain on drainage systems. Neighborhood participation encourages greater environmental awareness and fosters community connections.",
-        "action": {
-            "ActionID": "icare_0156",
-            "ActionName": "Implementaci\u00f3n de huertos urbanos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Identificar y evaluar la viabilidad de \u00e1reas adecuadas para la instalaci\u00f3n de huertos urbanos y asegurar que los sitios elegidos cumplan con las expectativas de la comunidad.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Asegurar la disponibilidad de mapas detallados de uso del suelo y datos de planificaci\u00f3n urbana.",
-                "Involucrarse con las comunidades locales para comprender sus necesidades y expectativas.",
-                "Evaluar la calidad del suelo, la disponibilidad de agua y formar asociaciones para apoyar el establecimiento y mantenimiento de jardines."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de huertos urbanos creados.",
-                "Cantidad de alimentos producidos localmente (kg/a\u00f1o).",
-                "N\u00famero de beneficiarios directos."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "landslides": "low",
-                "floods": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 18,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, safeguarding and restoring forests or parks helps combat flooding and reduces heat. These habitats also support biodiversity and recreational activities for residents. Healthy green zones enhance local climate resilience while improving quality of life in the city.",
-        "action": {
-            "ActionID": "icare_0175",
-            "ActionName": "Recuperaci\u00f3n y preservaci\u00f3n de \u00e1reas verdes",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Rehabilitaci\u00f3n y protecci\u00f3n de los espacios verdes existentes, como parques, bosques y humedales, y expansi\u00f3n de \u00e1reas verdes mediante la plantaci\u00f3n de \u00e1rboles y vegetaci\u00f3n en \u00e1reas urbanas y periurbanas. Estas \u00e1reas proporcionan soluciones naturales para la gesti\u00f3n de los recursos h\u00eddricos, la reducci\u00f3n del estr\u00e9s t\u00e9rmico, la mejora de la calidad del aire y el aumento de la biodiversidad.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de terrenos adecuados para espacios verdes",
-                "Acceso a recursos h\u00eddricos para riego"
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea de espacios verdes creados o restaurados.",
-                "\u00cdndices de biodiversidad en \u00e1reas verdes.",
-                "Participaci\u00f3n comunitaria en actividades de espacios verdes."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "heatwaves": "high",
-                "floods": "high",
-                "wildfires": "medium"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 19,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, tracking water levels and flows in real time provides early flood or drought warnings. Quick alerts reduce damages and allow authorities to coordinate timely evacuations if needed. Over time, this data supports more accurate water management plans and better preparedness for changing weather patterns.",
-        "action": {
-            "ActionID": "icare_0164",
-            "ActionName": "Sistema de Monitoreo Hidrol\u00f3gico con Estaciones de Telemetr\u00eda",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementaci\u00f3n de un sistema de monitoreo hidrol\u00f3gico con estaciones de telemetr\u00eda para monitorear la lluvia, los niveles de agua y las variables meteorol\u00f3gicas en tiempo real.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Equipamiento e infraestructura",
-                "Sistema robusto de gesti\u00f3n de datos",
-                "Coordinaci\u00f3n institucional"
-            ],
-            "KeyPerformanceIndicators": [
-                "Puntualidad de los datos",
-                "Rentabilidad",
-                "Efectividad de mitigaci\u00f3n"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "droughts": "high",
-                "floods": "high",
-                "storms": "high"
-            },
-            "biome": "none"
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0180",
-        "actionName": "Implement permeable pavements and increase green areas in roadways",
-        "actionPriority": 20,
-        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, using permeable surfaces lets rainwater seep underground, preventing surface runoff and flash floods. Adding trees or flowerbeds along roads cools paved areas and improves local air quality. Together, these upgrades enhance road safety and reinforce the city\u2019s resilience to extreme rainfall.",
-        "action": {
-            "ActionID": "icare_0180",
-            "ActionName": "Implementar pavimentos permeables y aumentar las \u00e1reas verdes en las v\u00edas p\u00fablicas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Incrementar las \u00e1reas permeables y semi-permeables en edificios y espacios p\u00fablicos bajo la administraci\u00f3n de la Ciudad, con la adopci\u00f3n de soluciones basadas en la naturaleza (NbS). En \u00e1reas con limitaciones de espacio, la acci\u00f3n incluye an\u00e1lisis de viabilidad para implementar pavimentos permeables y aumentar las \u00e1reas verdes en las v\u00edas. Entre las soluciones de construcci\u00f3n tradicionales, se encuentran caracter\u00edsticas como bordillos y canaletas con desag\u00fces pluviales, as\u00ed como soluciones a mayor escala como estanques de retenci\u00f3n. Las soluciones basadas en la naturaleza incluyen la plantaci\u00f3n de \u00e1rboles urbanos, techos verdes, cisternas de agua de lluvia, bio-swales, y m\u00e1s.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Expansi\u00f3n de \u00e1reas permeables y semi-permeables en edificios administrados por la ciudad y espacios p\u00fablicos.",
-                "Adopci\u00f3n de soluciones basadas en la naturaleza (NbS) como la plantaci\u00f3n de \u00e1rboles urbanos, techos verdes, cisternas de agua de lluvia y bio-swales.",
-                "An\u00e1lisis de viabilidad para pavimentos permeables y aumento de \u00e1reas verdes en carreteras, junto con soluciones tradicionales de gesti\u00f3n de aguas pluviales como bordillos, canaletas y estanques de retenci\u00f3n."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en la escorrent\u00eda de agua superficial durante eventos de lluvia (%).",
-                "Disminuci\u00f3n en la ocurrencia de inundaciones en \u00e1reas modificadas.",
-                "Porcentaje de espacios p\u00fablicos que cumplen con las nuevas regulaciones de superficies permeables."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ],
-            "AdaptationEffectivenessPerHazard": {
-                "floods": "high",
-                "landslides": "medium",
-                "heatwaves": "medium"
-            },
-            "biome": "none"
-        }
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0169",
+    "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+    "actionPriority": 1,
+    "explanation": "Para Vitória de Santo Antão, contar con un plan formal de respuesta a emergencias ayuda a coordinar las evacuaciones y los rescates cuando ocurren tormentas o inundaciones. Este enfoque minimiza la confusión y los daños materiales al definir claramente los roles y los recursos. Este tipo de preparación permite una recuperación más rápida y hace que la ciudad sea más resiliente.",
+    "action": {
+      "ActionID": "icare_0169",
+      "ActionName": "Establecer un Plan de Preparación y Medidas de Respuesta de Emergencia en caso de eventos climáticos extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en preparar al municipio para responder a eventos extremos, con el objetivo de proporcionar una respuesta rápida que minimice los impactos en la población.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de un plan integral de respuesta a emergencias que incluya la coordinación entre las autoridades locales, los servicios de emergencia y las organizaciones comunitarias",
+        "Inversión en sistemas de alerta temprana e infraestructura para garantizar respuestas oportunas y efectivas a eventos extremos",
+        "Capacitación y desarrollo de capacidades para los respondedores locales y las comunidades para mejorar la preparación y la resiliencia ante eventos extremos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de asociaciones de respuesta de emergencia establecidas.",
+        "Tiempo promedio de respuesta durante eventos climáticos extremos (horas).",
+        "Porcentaje de reducción en víctimas y daños durante eventos climáticos extremos anualmente (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "wildfires": "high",
+        "sea-level-rise": "low",
+        "storms": "high"
+      },
+      "biome": "none"
     }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0176",
+    "actionName": "Development of Climate Action Plan",
+    "actionPriority": 2,
+    "explanation": "Para Vitória de Santo Antão, crear un Plan de Acción Climática unificado establece metas y estrategias medibles para abordar las emisiones y las vulnerabilidades locales. Al identificar los riesgos climáticos de manera temprana, los recursos pueden asignarse de forma eficiente. Este plan también proporciona una orientación para la colaboración entre sectores, guiando a la ciudad hacia un crecimiento más sostenible.",
+    "action": {
+      "ActionID": "icare_0176",
+      "ActionName": "Desarrollo del Plan de Acción Climática",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "wildfires",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Un plan integral que describe las estrategias y acciones de una ciudad para mitigar las emisiones de gases de efecto invernadero y adaptarse a los impactos del cambio climático, que típicamente incluye una evaluación de los riesgos y vulnerabilidades climáticas de la ciudad, el establecimiento de objetivos de reducción de emisiones y la implementación de acciones en varios sectores como energía, transporte, gestión de residuos y planificación urbana.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Voluntad política y compromiso del gobierno",
+        "Participación y colaboración de las partes interesadas",
+        "Financiación y recursos para la implementación"
+      ],
+      "KeyPerformanceIndicators": [
+        "Objetivos de reducción de emisiones de gases de efecto invernadero.",
+        "Número de acciones de adaptación al clima implementadas.",
+        "Inversión en proyectos de mitigación y adaptación al clima."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "medium",
+        "sea-level-rise": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "landslides": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0162",
+    "actionName": "Strengthen programs for control and conservation of protected areas",
+    "actionPriority": 3,
+    "explanation": "Para Vitória de Santo Antão, preservar los ecosistemas clave garantiza aire limpio, un flujo de agua constante y almacenamiento de carbono. Al mantener los bosques intactos, la ciudad mitiga los efectos de fenómenos climáticos extremos, apoya la biodiversidad y sostiene servicios ecológicos cruciales. Reforzar las medidas de protección fomenta un entorno más saludable y fortalece la resiliencia climática.",
+    "action": {
+      "ActionID": "icare_0162",
+      "ActionName": "Fortalecer los programas de control y conservación de áreas protegidas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves",
+        "diseases"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en implementar una serie de estrategias integradas para mejorar la conservación ambiental y maximizar sus beneficios, como la expansión de áreas protegidas, el desarrollo de planes de manejo para unidades de conservación y la capacitación de guías de ecoturismo para fortalecer el turismo sostenible.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expansión de áreas protegidas para mejorar la conservación ambiental.",
+        "Desarrollo de planes de manejo para unidades de conservación.",
+        "Capacitación de guías de ecoturismo para promover el turismo sostenible."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de aumento en el área de regiones protegidas (%).",
+        "Reducción en las tasas de deforestación en áreas protegidas anualmente (%).",
+        "Número de programas de conservación fortalecidos anualmente."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high",
+        "heatwaves": "medium",
+        "diseases": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0152",
+    "actionName": "Recovery of degraded areas",
+    "actionPriority": 4,
+    "explanation": "Para Vitória de Santo Antão, restaurar las tierras degradadas mejora la estabilidad del suelo, aumenta la absorción de carbono y revitaliza la vegetación. Estos esfuerzos también pueden prevenir inundaciones al mejorar la retención natural de agua y reducir la erosión. Con el tiempo, estos paisajes rehabilitados se vuelven más resilientes y contribuyen a los medios de vida locales.",
+    "action": {
+      "ActionID": "icare_0152",
+      "ActionName": "Recuperación de áreas degradadas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar los ecosistemas dañados por actividades humanas mediante la replantación de vegetación nativa, la restauración del suelo, la eliminación de especies invasoras y la implementación de técnicas de gestión sostenible.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Desarrollar un plan de restauración claro y asegurar financiamiento para la gestión a largo plazo.",
+        "Asegurar el acceso a especies de plantas nativas y proporcionar capacitación en prácticas sostenibles.",
+        "Eliminar especies invasoras y colaborar con las comunidades locales para una restauración exitosa del ecosistema."
+      ],
+      "KeyPerformanceIndicators": [
+        "Hectáreas de tierra degradada restauradas anualmente",
+        "Aumento en la cobertura vegetal (%) en áreas restauradas",
+        "Número de comunidades locales involucradas en proyectos de restauración"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "ipcc_0097",
+    "actionName": "Food storage/distribution improvements",
+    "actionPriority": 5,
+    "explanation": "Para Vitória de Santo Antão, garantizar un almacenamiento y transporte de alimentos robustos ayuda a mantener las cadenas de suministro cuando ocurren tormentas u olas de calor. Con instalaciones mejoradas, se reduce el desperdicio y los productos esenciales permanecen disponibles durante emergencias. Esta medida contribuye en gran medida a la seguridad alimentaria y al bienestar de la comunidad en tiempos de incertidumbre.",
+    "action": {
+      "ActionID": "ipcc_0097",
+      "ActionName": "Mejoras en el almacenamiento/distribución de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms",
+        "heatwaves"
+      ],
+      "Sector": [
+        "food_security",
+        "road_infrastructure"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar los sistemas de almacenamiento y distribución de alimentos mediante la mejora de la infraestructura de transporte, la optimización de las redes comerciales y el acortamiento de las cadenas de suministro para garantizar la disponibilidad local de alimentos y la resiliencia ante los impactos climáticos. Esta acción también incluye aumentar la capacidad de las instalaciones de almacenamiento de alimentos locales para reducir las pérdidas post-cosecha, abordar las ineficiencias en la logística y reforzar la infraestructura para productos perecederos. Su objetivo es mejorar la seguridad alimentaria y reducir la vulnerabilidad a eventos extremos, interrupciones e impactos en cascada, especialmente durante pandemias y otras crisis.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Apoya el acceso equitativo a alimentos para poblaciones marginadas y vulnerables al priorizar la producción local de alimentos y mejorar los sistemas de distribución que llegan a áreas desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en infraestructura",
+        "Incentivos políticos para la producción local de alimentos",
+        "Colaboración con los sectores de logística y comercio",
+        "Tecnología para la optimización de la cadena de suministro"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de pérdidas post-cosecha",
+        "Aumento de la disponibilidad de alimentos locales",
+        "Mejora de la eficiencia del transporte para la distribución de alimentos",
+        "Acortamiento de las cadenas de suministro"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "ipcc_0094",
+    "actionName": "Access to health care",
+    "actionPriority": 6,
+    "explanation": "Para Vitória de Santo Antão, ampliar la cobertura médica es fundamental para satisfacer las demandas de salud intensificadas por problemas relacionados con el clima, como el golpe de calor o las enfermedades transmitidas por el agua. Mejorar las clínicas y los servicios de emergencia reduce las muertes y acelera la recuperación durante las crisis. En general, una mejor infraestructura de salud fortalece la capacidad de la ciudad para enfrentar las nuevas presiones climáticas.",
+    "action": {
+      "ActionID": "ipcc_0094",
+      "ActionName": "Acceso a la atención médica",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "droughts"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar el acceso a los servicios de atención médica, incluidos los servicios de salud y nutrición, agua limpia, saneamiento y recursos de salud mental culturalmente apropiados. Ampliar las capacidades de telemedicina permite una entrega eficiente de servicios de salud, particularmente para poblaciones remotas y desatendidas. Fortalecer los sistemas básicos de salud pública y la preparación para desastres puede reducir rápidamente la vulnerabilidad a los riesgos de salud relacionados con el clima.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promueve el acceso equitativo a la atención médica para grupos marginados y vulnerables, incluidas las poblaciones sin hogar, las comunidades remotas y aquellos afectados por desigualdades en la vivienda.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en tecnologías de telemedicina",
+        "Fortalecimiento de la gobernanza de los sistemas de salud pública",
+        "Desarrollo de capacidades para los trabajadores de la salud",
+        "Mejoras en la infraestructura de las instalaciones de salud"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de la mortalidad relacionada con el clima",
+        "Mayor acceso a la telemedicina",
+        "Número de programas de salud adaptados culturalmente implementados",
+        "Mejora de los indicadores de acceso al agua y saneamiento"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "droughts": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0151",
+    "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+    "actionPriority": 7,
+    "explanation": "Para Vitória de Santo Antão, mapear y mejorar los barrios ZEIS previene que las vulnerabilidades se agraven ante condiciones climáticas severas. La vivienda y la infraestructura reforzadas hacen que estas áreas sean más seguras y saludables. Al mejorar las condiciones de vida de las comunidades en riesgo, la ciudad promueve una resiliencia equitativa y un tejido urbano más sólido.",
+    "action": {
+      "ActionID": "icare_0151",
+      "ActionName": "Desarrollar diagnósticos y restaurar áreas de Zonas de Interés Social Especial (ZEIS)",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "sea-level-rise",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Prioridad a las áreas ZEIS en acciones de mejora de vivienda y la aplicación de recursos del Fondo de Urbanización, con la implementación de infraestructura urbana que considere la adaptación climática en estos espacios. Uso de Soluciones basadas en la Naturaleza (NbS) en la adaptación del saneamiento ambiental y las infraestructuras verdes y azules que potencian el ocio, la cultura, la agricultura urbana y actividades para fortalecer las asociaciones comunitarias.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de financiamiento del Fondo de Urbanización y otros mecanismos financieros para apoyar mejoras en la vivienda e infraestructura urbana en áreas ZEIS",
+        "Colaboración entre urbanistas, expertos ambientales y comunidades locales para diseñar e implementar soluciones basadas en la naturaleza (NbS) para la infraestructura urbana",
+        "Marcos de políticas y regulaciones que integren medidas de adaptación al clima en la planificación urbana, asegurando que las inversiones prioricen la sostenibilidad ambiental y la comunidad"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de áreas ZEIS diagnosticadas y restauradas.",
+        "Porcentaje de residentes beneficiados por las áreas restauradas (%).",
+        "Inversiones públicas asignadas a las áreas ZEIS (monto en moneda)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "sea-level-rise": "medium",
+        "floods": "medium",
+        "landslides": "low",
+        "diseases": "medium",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0145",
+    "actionName": "Strengthen the healthcare network to attend to climate victims",
+    "actionPriority": 8,
+    "explanation": "Para Vitória de Santo Antão, mejorar los hospitales y las clínicas garantiza que los residentes reciban atención rápida durante emergencias relacionadas con el clima, como inundaciones u olas de calor. Esta acción reduce las tasas de lesiones, salva vidas y disminuye las cargas de salud a largo plazo. Al priorizar la resiliencia médica, la ciudad refuerza su capacidad para proteger la salud pública ante condiciones cambiantes.",
+    "action": {
+      "ActionID": "icare_0145",
+      "ActionName": "Fortalecer la red de atención médica para atender a las víctimas del clima",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "storms",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar la infraestructura de las unidades de salud para asistir a las personas que requieren atención médica debido a impactos asociados con riesgos climáticos (víctimas del clima), como aquellos afectados por olas de calor o inundaciones, especialmente en áreas más vulnerables. Desarrollar planes de acción para preparar la red de salud para situaciones extremas relacionadas con el clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Inversión en la renovación y expansión de las instalaciones de salud, asegurando que estén equipadas para manejar los impactos en la salud relacionados con el clima, especialmente en áreas vulnerables.",
+        "Desarrollo de planes de acción y programas de capacitación para profesionales de la salud para responder a eventos climáticos extremos como olas de calor e inundaciones.",
+        "Colaboración con autoridades locales, equipos de respuesta a emergencias y expertos en clima para crear un marco integral para preparar la red de salud ante los riesgos climáticos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de instalaciones de salud mejoradas para emergencias relacionadas con el clima.",
+        "Aumento en el personal de salud capacitado en respuesta a emergencias climáticas (%).",
+        "Número de lesiones relacionadas con el clima tratadas con éxito. |||"
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "medium",
+        "floods": "high",
+        "storms": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0157",
+    "actionName": "Maintenance and Revitalization of Riparian Forests",
+    "actionPriority": 9,
+    "explanation": "Para Vitória de Santo Antão, preservar los bosques a lo largo de ríos y arroyos garantiza el control natural de inundaciones y mejora la calidad del agua. Estas franjas de protección limitan la erosión del suelo y moderan el flujo durante lluvias intensas. La restauración de las zonas ribereñas también sostiene los hábitats locales, reforzando la resiliencia ambiental de la ciudad.",
+    "action": {
+      "ActionID": "icare_0157",
+      "ActionName": "Mantenimiento y Revitalización de Bosques Ribereños",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mapeo y evaluación de bosques ribereños degradados, desarrollo de planes de revitalización con la plantación de especies nativas, control de especies invasoras, medidas de contención de la erosión y evaluaciones periódicas de los impactos en las condiciones ambientales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Asegurar la disponibilidad de datos geoespaciales y el mapeo previo de áreas degradadas.",
+        "Formar asociaciones con viveros locales y proporcionar equipo y mano de obra calificada para el control de especies invasoras.",
+        "Asegurar recursos financieros y establecer un sistema de monitoreo para evaluar los impactos ambientales."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total de bosques ribereños restaurados (ha).",
+        "Número de proyectos implementados.",
+        "Reducción de la erosión y sedimentación de cuerpos de agua (toneladas/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0149",
+    "actionName": "Encourage sustainable land use practices",
+    "actionPriority": 10,
+    "explanation": "Para Vitória de Santo Antão, adoptar directrices sostenibles para el uso del suelo mantiene el desarrollo en equilibrio con la naturaleza, reduce la erosión y preserva las fuentes de agua. Este enfoque mesurado también protege los hábitats, mitigando los extremos de calor e inundaciones. Al orientar el uso del suelo, la ciudad protege recursos esenciales para el crecimiento y la estabilidad futuros.",
+    "action": {
+      "ActionID": "icare_0149",
+      "ActionName": "Fomentar prácticas sostenibles de uso de la tierra",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Promover métodos que garanticen la conservación y salud del suelo, preservando la biodiversidad, reduciendo la erosión y minimizando los impactos ambientales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Proporcionar acceso a conocimientos técnicos y capacitación sobre prácticas de manejo sostenible del suelo.",
+        "Ofrecer incentivos financieros y formar asociaciones con instituciones de investigación y agricultores locales.",
+        "Desarrollar sistemas de monitoreo para la salud del suelo y la biodiversidad, e implementar políticas para el control de la erosión."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de área de tierra gestionada bajo prácticas de uso sostenible de la tierra (%)",
+        "Reducción en las tasas de deforestación o degradación de la tierra (%)",
+        "Aumento en los indicadores de biodiversidad en tierras gestionadas (por ejemplo, conteo de especies, calidad del hábitat)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "medium",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "ipcc_0096",
+    "actionName": "Farm/fishery improvements",
+    "actionPriority": 11,
+    "explanation": "Para Vitória de Santo Antão, la modernización de los métodos agrícolas y pesqueros aumenta los rendimientos y reduce el estrés ambiental. Las técnicas modernas de gestión del agua y rotación de cultivos ayudan a los productores a enfrentar los patrones climáticos impredecibles. Esta medida asegura el suministro local de alimentos y respalda los medios de vida de las familias rurales.",
+    "action": {
+      "ActionID": "ipcc_0096",
+      "ActionName": "Mejoras en granjas/pesquerías",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementar una serie de estrategias para adaptar granjas y pesquerías a los impactos climáticos. Esto incluye cambiar el equipo de pesca o la potencia de los barcos, adoptar nuevas variedades de cultivos o ajustar los calendarios de siembra, mejorar los sistemas de riego, integrar sistemas de cultivos y ganado, reubicar el ganado con una mejor gestión de pastizales y adoptar sistemas agroecológicos y de agroforestería. Innovaciones tecnológicas como la agricultura inteligente y medidas financieras como los subsidios apoyan estas adaptaciones.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garantiza el acceso a recursos para agricultores y pescadores marginados, promueve opciones diversas de sustento y fortalece la resiliencia en comunidades desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Apoyo político para la agricultura y pesca resilientes al clima",
+        "Acceso a financiamiento y subsidios",
+        "Capacitación para adoptar nuevas prácticas",
+        "Mejora de la infraestructura de mercado"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento de la productividad agrícola y pesquera",
+        "Tasa de adopción de sistemas integrados",
+        "Reducción de pérdidas de rendimiento relacionadas con el clima"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "wildfires": "low",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "ipcc_0093",
+    "actionName": "Availability of health infrastructure",
+    "actionPriority": 12,
+    "explanation": "Para Vitória de Santo Antão, la construcción de más hospitales y clínicas amplía la capacidad de la ciudad para atender tanto las necesidades de salud rutinarias como las crisis provocadas por el clima. Esto reduce el tiempo de traslado de los pacientes y mantiene el sistema médico en funcionamiento bajo presión. Una mejor cobertura es una piedra angular de un entorno urbano resiliente que protege el bienestar público.",
+    "action": {
+      "ActionID": "ipcc_0093",
+      "ActionName": "Disponibilidad de infraestructura sanitaria",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "sea-level-rise",
+        "diseases"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Garantizar el acceso a infraestructura de agua potable segura, proteger los servicios de salud y mejorar los sistemas de saneamiento para mitigar los impactos climáticos. Esto incluye desarrollar medidas adaptativas para la seguridad del agua frente a sequías, inundaciones y el aumento del nivel del mar. Fortalecer la resiliencia de la infraestructura asegura un acceso equitativo a los servicios de salud, reduce los riesgos de contaminación y aborda los impactos de los peligros inducidos por el clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Mejora el acceso a recursos críticos de salud y agua para comunidades vulnerables y desatendidas, mitigando las inequidades causadas por los impactos climáticos.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamiento adecuado",
+        "inversiones tecnológicas en infraestructura de salud y agua",
+        "gobernanza efectiva y coordinación intersectorial"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de enfermedades transmitidas por el agua",
+        "mejor acceso a agua potable",
+        "número de instalaciones de salud resilientes desarrolladas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "sea-level-rise": "high",
+        "diseases": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "ipcc_0092",
+    "actionName": "Social safety nets",
+    "actionPriority": 13,
+    "explanation": "Para Vitória de Santo Antão, el fortalecimiento de los programas de bienestar amortigua los impactos económicos y sociales causados por inundaciones, olas de calor u otros eventos climáticos. La asistencia oportuna—como la ayuda alimentaria o el alojamiento de emergencia—reduce las dificultades y favorece un retorno más rápido a la estabilidad. Estas redes de protección evitan que los grupos vulnerables caigan en una pobreza más profunda durante las crisis.",
+    "action": {
+      "ActionID": "ipcc_0092",
+      "ActionName": "Redes de seguridad social",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Las redes de seguridad social abarcan mecanismos de protección social adaptativa para reducir la inseguridad alimentaria y la malnutrición, especialmente para las poblaciones vulnerables. Estos incluyen transferencias de efectivo, programas de alimentación escolar, iniciativas de trabajo público, compensación por desempleo, reformas agrarias, esquemas de crédito y seguros. Los enfoques integrados combinan evaluaciones de riesgos climáticos con la reducción del riesgo de desastres, la educación y la equidad social para mejorar la resiliencia ante las tensiones climáticas.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Mejora el estatus social y los derechos de los grupos marginados, protege a las poblaciones vulnerables, reduce las desigualdades y promueve la educación y la equidad de género.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Integración del clima y el riesgo de desastres en la protección social",
+        "programas educativos",
+        "coordinación con iniciativas de medios de vida sostenibles e inclusión financiera"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en las tasas de malnutrición",
+        "Aumento en el acceso a la educación para grupos vulnerables",
+        "Participación en programas de protección social"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0148",
+    "actionName": "Create the Municipal Climate Change Forum",
+    "actionPriority": 14,
+    "explanation": "Para Vitória de Santo Antão, convocar un foro sobre cambio climático une a funcionarios públicos, líderes comunitarios y empresas en una planificación colaborativa. Este espacio compartido impulsa la innovación en adaptación y reducción de emisiones. Al combinar recursos y conocimientos, la ciudad desarrolla medidas que abordan de manera efectiva sus desafíos climáticos particulares.",
+    "action": {
+      "ActionID": "icare_0148",
+      "ActionName": "Crear el Foro Municipal de Cambio Climático",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "diseases",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Creación de un Foro Municipal de Cambio Climático con la participación de líderes comunitarios, científicos, colectivos, institutos de investigación, ONG y miembros de la administración municipal y estatal. El Foro servirá como referencia para acciones relacionadas con el Cambio Climático, con el objetivo de monitorear futuras políticas sobre el tema en el municipio, estimular el diálogo y crear una red de discusiones sobre la crisis climática.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Participación de diversos actores, incluidos líderes comunitarios, científicos, ONG y autoridades locales, para establecer y mantener el Foro.",
+        "Asignación de recursos para facilitar reuniones, talleres y eventos regulares para que el Foro permanezca activo e impactante.",
+        "Desarrollo de un marco claro y directrices para que el Foro monitoree y guíe las políticas e iniciativas de cambio climático dentro del municipio."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de partes interesadas clave participando activamente en el foro.",
+        "Número de políticas o acciones relacionadas con el clima propuestas a través del foro.",
+        "Participación pública en iniciativas del foro (medida por la asistencia a eventos o encuestas)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "landslides": "low",
+        "floods": "medium",
+        "wildfires": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0181",
+    "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+    "actionPriority": 15,
+    "explanation": "Para Vitória de Santo Antão, trasladar a las comunidades fuera de las zonas propensas a desastres previene los costos frecuentes de reconstrucción y las crisis recurrentes. Tras la reubicación, restaurar los ecosistemas de estas áreas reduce aún más los riesgos de inundaciones o erosión. Este esfuerzo proactivo protege a los residentes y recupera hábitats para una estabilidad a largo plazo.",
+    "action": {
+      "ActionID": "icare_0181",
+      "ActionName": "Reubicación y Restauración Ambiental en Áreas Vulnerables",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Un proyecto integral que aborda la vulnerabilidad socioambiental de un asentamiento informal. Incluye la reubicación de residentes de áreas propensas a inundaciones, la restauración del medio ambiente y la provisión de infraestructura y servicios sociales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamiento adecuado",
+        "Coordinación interinstitucional",
+        "Seguridad de tenencia de la tierra"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de hogares reubicados.",
+        "Progreso de la restauración ambiental.",
+        "Reducción del riesgo de inundación."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0144",
+    "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+    "actionPriority": 16,
+    "explanation": "Para Vitória de Santo Antão, ofrecer asistencia financiera durante emergencias climáticas ayuda a las familias y empresas a recuperarse rápidamente de las pérdidas. Este apoyo estabiliza los mercados locales, previniendo una crisis económica generalizada. Al amortiguar los impactos de los desastres, la ciudad fomenta la resiliencia social y un retorno más rápido a la normalidad.",
+    "action": {
+      "ActionID": "icare_0144",
+      "ActionName": "Creación de un Programa de Apoyo Financiero para Abordar Eventos Climáticos Extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "wildfires",
+        "floods",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Creación de un programa para mitigar los efectos de las tragedias climáticas, incluyendo asistencia financiera a las familias afectadas y esfuerzos para asegurar recursos adicionales para la recuperación y reconstrucción.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Recursos financieros",
+        "Planes de respuesta de emergencia",
+        "Coordinación institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de personas asistidas",
+        "Rentabilidad",
+        "Resiliencia comunitaria"
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "diseases": "medium",
+        "landslides": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0156",
+    "actionName": "Implementation of urban gardens",
+    "actionPriority": 17,
+    "explanation": "Para Vitória de Santo Antão, la introducción de jardines en terrenos baldíos de la ciudad reduce las temperaturas locales y ofrece productos frescos. La vegetación también absorbe el exceso de lluvia, aliviando la presión sobre los sistemas de drenaje. La participación vecinal fomenta una mayor conciencia ambiental y fortalece los lazos comunitarios.",
+    "action": {
+      "ActionID": "icare_0156",
+      "ActionName": "Implementación de huertos urbanos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Identificar y evaluar la viabilidad de áreas adecuadas para la instalación de huertos urbanos y asegurar que los sitios elegidos cumplan con las expectativas de la comunidad.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Asegurar la disponibilidad de mapas detallados de uso del suelo y datos de planificación urbana.",
+        "Involucrarse con las comunidades locales para comprender sus necesidades y expectativas.",
+        "Evaluar la calidad del suelo, la disponibilidad de agua y formar asociaciones para apoyar el establecimiento y mantenimiento de jardines."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de huertos urbanos creados.",
+        "Cantidad de alimentos producidos localmente (kg/año).",
+        "Número de beneficiarios directos."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "landslides": "low",
+        "floods": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0175",
+    "actionName": "Recovery and preservation of green areas",
+    "actionPriority": 18,
+    "explanation": "Para Vitória de Santo Antão, proteger y restaurar bosques o parques ayuda a combatir las inundaciones y reduce el calor. Estos hábitats también apoyan la biodiversidad y las actividades recreativas para los residentes. Las zonas verdes saludables mejoran la resiliencia climática local y, al mismo tiempo, elevan la calidad de vida en la ciudad.",
+    "action": {
+      "ActionID": "icare_0175",
+      "ActionName": "Recuperación y preservación de áreas verdes",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Rehabilitación y protección de los espacios verdes existentes, como parques, bosques y humedales, y expansión de áreas verdes mediante la plantación de árboles y vegetación en áreas urbanas y periurbanas. Estas áreas proporcionan soluciones naturales para la gestión de los recursos hídricos, la reducción del estrés térmico, la mejora de la calidad del aire y el aumento de la biodiversidad.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de terrenos adecuados para espacios verdes",
+        "Acceso a recursos hídricos para riego"
+      ],
+      "KeyPerformanceIndicators": [
+        "Área de espacios verdes creados o restaurados.",
+        "Índices de biodiversidad en áreas verdes.",
+        "Participación comunitaria en actividades de espacios verdes."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0164",
+    "actionName": "Hydrological Monitoring System with Telemetry Stations",
+    "actionPriority": 19,
+    "explanation": "Para Vitória de Santo Antão, el monitoreo en tiempo real de los niveles y caudales de agua proporciona alertas tempranas de inundaciones o sequías. Las alertas rápidas reducen los daños y permiten a las autoridades coordinar evacuaciones oportunas si es necesario. Con el tiempo, estos datos respaldan planes de gestión del agua más precisos y una mejor preparación ante los cambios en los patrones climáticos.",
+    "action": {
+      "ActionID": "icare_0164",
+      "ActionName": "Sistema de Monitoreo Hidrológico con Estaciones de Telemetría",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementación de un sistema de monitoreo hidrológico con estaciones de telemetría para monitorear la lluvia, los niveles de agua y las variables meteorológicas en tiempo real.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Equipamiento e infraestructura",
+        "Sistema robusto de gestión de datos",
+        "Coordinación institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Puntualidad de los datos",
+        "Rentabilidad",
+        "Efectividad de mitigación"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR VDS",
+    "cityName": "Vitória de Santo Antão",
+    "region": "PE",
+    "regionName": "Pernambuco",
+    "actionId": "icare_0180",
+    "actionName": "Implement permeable pavements and increase green areas in roadways",
+    "actionPriority": 20,
+    "explanation": "Para Vitória de Santo Antão, el uso de superficies permeables permite que el agua de lluvia se filtre al subsuelo, evitando la escorrentía superficial y las inundaciones repentinas. La incorporación de árboles o parterres a lo largo de las calles refresca las zonas pavimentadas y mejora la calidad del aire local. En conjunto, estas mejoras aumentan la seguridad vial y refuerzan la resiliencia de la ciudad frente a lluvias extremas.",
+    "action": {
+      "ActionID": "icare_0180",
+      "ActionName": "Implementar pavimentos permeables y aumentar las áreas verdes en las vías públicas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Incrementar las áreas permeables y semi-permeables en edificios y espacios públicos bajo la administración de la Ciudad, con la adopción de soluciones basadas en la naturaleza (NbS). En áreas con limitaciones de espacio, la acción incluye análisis de viabilidad para implementar pavimentos permeables y aumentar las áreas verdes en las vías. Entre las soluciones de construcción tradicionales, se encuentran características como bordillos y canaletas con desagües pluviales, así como soluciones a mayor escala como estanques de retención. Las soluciones basadas en la naturaleza incluyen la plantación de árboles urbanos, techos verdes, cisternas de agua de lluvia, bio-swales, y más.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Expansión de áreas permeables y semi-permeables en edificios administrados por la ciudad y espacios públicos.",
+        "Adopción de soluciones basadas en la naturaleza (NbS) como la plantación de árboles urbanos, techos verdes, cisternas de agua de lluvia y bio-swales.",
+        "Análisis de viabilidad para pavimentos permeables y aumento de áreas verdes en carreteras, junto con soluciones tradicionales de gestión de aguas pluviales como bordillos, canaletas y estanques de retención."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en la escorrentía de agua superficial durante eventos de lluvia (%).",
+        "Disminución en la ocurrencia de inundaciones en áreas modificadas.",
+        "Porcentaje de espacios públicos que cumplen con las nuevas regulaciones de superficies permeables."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "medium",
+        "heatwaves": "medium"
+      },
+      "biome": "none"
+    }
+  }
 ]

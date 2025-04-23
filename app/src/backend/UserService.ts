@@ -130,12 +130,12 @@ export default class UserService {
       session.user?.id,
     );
 
-    const hasCityAccess =
+    const hasNoCityAccess =
       inventory.city.users.length === 0 ||
       !session?.user?.id ||
       !inventory.city.users.map((u) => u.userId).includes(session?.user?.id);
 
-    if (!(hasOrgLevelAccess || hasCityAccess)) {
+    if (!hasOrgLevelAccess && hasNoCityAccess) {
       throw new createHttpError.Unauthorized(
         "User is not part of this inventory's city",
       );

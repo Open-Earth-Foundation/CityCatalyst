@@ -18,6 +18,9 @@ export const hasProjectOwnerLevelAccess = async (
 };
 
 export const hasOrgOwnerLevelAccess = async (orgId: string, userId: string) => {
+  if (!orgId) {
+    return false;
+  }
   const orgOwner = await db.models.OrganizationAdmin.findOne({
     where: { organizationId: orgId, userId },
   });

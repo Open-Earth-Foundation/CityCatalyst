@@ -90,5 +90,9 @@
   "password-number": "La contraseña debe incluir al menos un número.",
   "password-min-length-check": "Al menos {{length}} caracteres",
   "password-upper-case-check": "Al menos una letra mayúscula",
-  "password-lower-case-check": "Al menos una letra minúscula"
+  "password-lower-case-check": "Al menos una letra minúscula",
+  "contributor": "Colaborador",
+  "remove-city-confirmation-message": "¿Estás seguro de que quieres <2>eliminar permanentemente esta ciudad</2> de CityCatalyst?",
+  "no-date-available": "No hay fecha disponible",
+  "invalid-date": "Fecha inválida"
 }

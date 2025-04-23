@@ -16,6 +16,7 @@ import {
 import { Tooltip } from "@/components/ui/tooltip";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
+import Link from "next/link";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -69,14 +70,18 @@ export function Hero({
                 </Text>
                 <Box className="flex flex-col gap-2">
                   {!isPublic && (
-                    <Text
-                      fontSize="title.md"
-                      w="max-content"
-                      fontWeight="semibold"
-                      color="white"
+                    <Link
+                      href={`/public/project/${inventory?.city?.project?.projectId}`}
                     >
-                      {inventory?.city.project.name}
-                    </Text>
+                      <Text
+                        fontSize="title.md"
+                        w="max-content"
+                        fontWeight="semibold"
+                        color="white"
+                      >
+                        {inventory?.city?.project?.name}
+                      </Text>
+                    </Link>
                   )}
                   <Box className="flex items-center gap-4">
                     {inventory?.city ? (

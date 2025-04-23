@@ -101,7 +101,11 @@ export default function Settings({
           </Box>
           <Box marginTop="48px" borderBottomColor={"border.overlay"}>
             <Tabs.Root defaultValue="my-profile" variant="enclosed">
-              <Tabs.List p={0} w="full">
+              <Tabs.List
+                p={0}
+                w="full"
+                backgroundColor="background.backgroundLight"
+              >
                 <Tabs.Trigger
                   value="my-profile"
                   _selected={{

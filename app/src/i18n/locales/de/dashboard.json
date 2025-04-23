@@ -178,5 +178,13 @@
   "an-error-occurred": "Ein Fehler ist aufgetreten",
   "error-fetching-sector-breakdown": "Fehler beim Abrufen der Sektoraufteilung",
   "source-open-climate": "Quelle: OpenClimate",
-  "projects": "Projekte"
+  "projects": "Projekte",
+  "n-a": "N/V",
+  "project": "Projekt",
+  "select-project": "Wählen Sie ein Projekt",
+  "select-project-to-invite-collaborators": "Wählen Sie das Projekt aus, um Mitarbeiter einzuladen",
+  "project-to-share": "Wählen Sie aus, welches Projekt Sie teilen möchten",
+  "upgrade-plan-city-limit-heading": "Müssen Sie Ihren Tarif aktualisieren?",
+  "upgrade-plan-city-limit-text": "Es scheint, dass Sie die Grenze der Städte erreicht haben, die zu diesem Projekt hinzugefügt werden können. Um Ihren Plan zu aktualisieren, wenden Sie sich bitte an <mail>info@openearth.com</mail>.",
+  "tab-cap-title": "Priorisierung von Klimaschutzmaßnahmen"
 }

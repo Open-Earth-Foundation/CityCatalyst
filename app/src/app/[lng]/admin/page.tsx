@@ -50,6 +50,7 @@ import { Toaster } from "@/components/ui/toaster";
 import BulkActionsTabContent from "./bulk-inventory-actions/BulkActionsTabContent";
 import { OrganizationRole } from "@/util/types";
 import { toaster } from "@/components/ui/toaster";
+import ProgressLoader from "@/components/ProgressLoader";
 
 interface OrgData {
   contactEmail: string;
@@ -176,7 +177,6 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
         <Tabs.Root defaultValue="organizations" variant="line">
           <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
             <TabTrigger title="organizations" />
-            <TabTrigger title="projects" />
             <TabTrigger title="bulk-actions" />
             <Tabs.Indicator rounded="l2" />
           </Tabs.List>
@@ -215,16 +215,8 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
               </Button>
             </Box>
             <Box>
-              {isOrgDataLoading && (
-                <div className="flex items-center justify-center w-full">
-                  <Box className="w-full py-12 flex items-center justify-center">
-                    <ProgressCircleRoot value={null}>
-                      <ProgressCircleRing cap="round" />
-                    </ProgressCircleRoot>
-                  </Box>
-                </div>
-              )}
-              {!isOrgDataLoading && orgData.length === 0 && (
+              {isOrgDataLoading && <ProgressLoader />}
+              {!isOrgDataLoading && orgData?.length === 0 && (
                 <Text color="content.tertiary" fontSize="body.lg">
                   {t("no-data")}
                 </Text>
@@ -255,7 +247,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                       <Table.Cell>
                         {" "}
                         {item.status === "accepted" ? (
-                          <Tag size="lg" rounded="full" colorPalette="green">
+                          <Tag size="lg" colorPalette="green">
                             {" "}
                             {t("accepted")}
                           </Tag>

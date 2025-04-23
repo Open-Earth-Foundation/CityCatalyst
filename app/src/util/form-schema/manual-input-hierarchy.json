@@ -24,8 +24,13 @@
               {
                 "id": "residential-building-type",
                 "options": [
-                  "building-type-all"
-                ]
+                  "building-type-all",
+                  "building-type-single-family-home",
+                  "building-type-multi-family-home",
+                  "building-type-high-rise-residential-buildings",
+                  "building-type-informal-housing"
+                ],
+                "exclusive": "building-type-all"
               },
               {
                 "id": "residential-building-fuel-type",
@@ -33,11 +38,12 @@
                   "fuel-type-propane",
                   "fuel-type-natural-gas",
                   "fuel-type-charcoal",
-                  "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-peat",
                   "fuel-type-anthracite",
                   "fuel-type-gasoline",
-                  "fuel-type-diesel"
+                  "fuel-type-diesel",
+                  "fuel-type-liquefied-petroleum-gases",
+                  "fuel-type-firewood"
                 ],
                 "emission-factor-dependency": true
               },
@@ -48,10 +54,17 @@
             ],
             "units": [
               "units-gallons",
+              "units-gallons-us",
+              "units-gallons-uk",
               "units-liters",
               "units-cubic-meters",
+              "units-cubic-feet",
+              "units-barrel",
               "units-kilograms",
-              "units-other"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ]
           }
         ],
@@ -92,8 +105,13 @@
         {
           "id": "residential-building-type",
           "options": [
-            "residential-building-type-all"
-          ]
+            "building-type-all",
+            "building-type-single-family-home",
+            "building-type-multi-family-home",
+            "building-type-high-rise-residential-buildings",
+            "building-type-informal-housing"
+          ],
+          "exclusive": "building-type-all"
         },
         {
           "id": "residential-building-fuel-type",
@@ -106,7 +124,8 @@
             "fuel-type-peat",
             "fuel-type-anthracite",
             "fuel-type-gasoline",
-            "fuel-type-diesel"
+            "fuel-type-diesel",
+            "fuel-type-firewood"
           ],
           "exclusive": "fuel-type-all"
         },
@@ -142,8 +161,13 @@
               {
                 "id": "residential-building-type",
                 "options": [
-                  "residential-building-type-all"
-                ]
+                  "building-type-all",
+                  "building-type-single-family-home",
+                  "building-type-multi-family-home",
+                  "building-type-high-rise-residential-buildings",
+                  "building-type-informal-housing"
+                ],
+                "exclusive": "building-type-all"
               },
               {
                 "id": "residential-building-energy-usage",
@@ -208,8 +232,13 @@
         {
           "id": "residential-building-type",
           "options": [
-            "building-type-all"
-          ]
+            "building-type-all",
+            "building-type-single-family-home",
+            "building-type-multi-family-home",
+            "building-type-high-rise-residential-buildings",
+            "building-type-informal-housing"
+          ],
+          "exclusive": "building-type-all"
         },
         {
           "id": "residential-building-energy-usage",
@@ -242,8 +271,13 @@
         {
           "id": "residential-building-type",
           "options": [
-            "building-type-all"
-          ]
+            "building-type-all",
+            "building-type-single-family-home",
+            "building-type-multi-family-home",
+            "building-type-high-rise-residential-buildings",
+            "building-type-informal-housing"
+          ],
+          "exclusive": "building-type-all"
         },
         {
           "id": "residential-building-energy-usage",
@@ -296,7 +330,9 @@
                   "type-commercial-institutional",
                   "type-commercial-buildings",
                   "type-institutional-buildings",
-                  "type-street-lighting"
+                  "type-street-lighting",
+                  "type-municipal-public-buildings",
+                  "type-non-municipal-public-buildings"
                 ],
                 "exclusive": "type-all"
               },
@@ -309,7 +345,8 @@
                   "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-anthracite",
                   "fuel-type-gasoline",
-                  "fuel-type-diesel"
+                  "fuel-type-diesel",
+                  "fuel-type-firewood"
                 ],
                 "emission-factor-dependency": true
               },
@@ -320,10 +357,17 @@
             ],
             "units": [
               "units-gallons",
+              "units-gallons-us",
+              "units-gallons-uk",
               "units-liters",
               "units-cubic-meters",
+              "units-cubic-feet",
+              "units-barrel",
               "units-kilograms",
-              "units-other"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ]
           }
         ],
@@ -386,7 +430,9 @@
             "type-commercial-institutional",
             "type-commercial-buildings",
             "type-institutional-buildings",
-            "type-street-lighting"
+            "type-street-lighting",
+            "type-municipal-public-buildings",
+            "type-non-municipal-public-buildings"
           ],
           "exclusive": "type-all"
         },
@@ -400,7 +446,8 @@
             "fuel-type-liquefied-petroleum-gases",
             "fuel-type-anthracite",
             "fuel-type-gasoline",
-            "fuel-type-diesel"
+            "fuel-type-diesel",
+            "fuel-type-firewood"
           ],
           "exclusive": "fuel-type-all"
         },
@@ -440,7 +487,9 @@
                   "type-commercial-institutional",
                   "type-commercial-buildings",
                   "type-institutional-buildings",
-                  "type-street-lighting"
+                  "type-street-lighting",
+                  "type-municipal-public-buildings",
+                  "type-non-municipal-public-buildings"
                 ],
                 "exclusive": "type-all"
               },
@@ -529,7 +578,9 @@
             "type-commercial-institutional",
             "type-commercial-buildings",
             "type-institutional-buildings",
-            "type-street-lighting"
+            "type-street-lighting",
+            "type-municipal-public-buildings",
+            "type-non-municipal-public-buildings"
           ],
           "exclusive": "type-all"
         },
@@ -545,7 +596,8 @@
             "energy-usage-steam-chp",
             "energy-usage-refrigeration",
             "energy-usage-refrigeration-chp"
-          ]
+          ],
+          "exclusive": "energy-usage-all"
         },
         {
           "id": "data-source",
@@ -567,7 +619,9 @@
             "type-commercial-institutional",
             "type-commercial-buildings",
             "type-institutional-buildings",
-            "type-street-lighting"
+            "type-street-lighting",
+            "type-municipal-public-buildings",
+            "type-non-municipal-public-buildings"
           ],
           "exclusive": "type-all"
         },
@@ -583,7 +637,8 @@
             "energy-usage-steam-chp",
             "energy-usage-refrigeration",
             "energy-usage-refrigeration-chp"
-          ]
+          ],
+          "exclusive": "energy-usage-all"
         },
         {
           "id": "data-source",
@@ -658,6 +713,7 @@
                   "fuel-type-coke-oven-gas",
                   "fuel-type-oxygen-steel-furnace-gas",
                   "fuel-type-natural-gas-liquids",
+                  "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-industrial-wastes",
                   "fuel-type-waste-oils",
                   "fuel-type-bitumen",
@@ -671,10 +727,17 @@
             ],
             "units": [
               "units-gallons",
+              "units-gallons-us",
+              "units-gallons-uk",
               "units-liters",
               "units-cubic-meters",
+              "units-cubic-feet",
+              "units-barrel",
               "units-kilograms",
-              "units-other"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ]
           }
         ],
@@ -758,7 +821,8 @@
             "fuel-type-industrial-wastes",
             "fuel-type-waste-oils",
             "fuel-type-bitumen",
-            "fuel-type-municipal-wastes"
+            "fuel-type-municipal-wastes",
+            "fuel-type-liquefied-petroleum-gases"
           ],
           "exclusive": "fuel-type-all"
         },
@@ -845,7 +909,7 @@
             "prefills": [
               {
                 "key": "manufacturing-and-construction-type",
-                "value": "manufacturing-and-construction-type-all"
+                "value": "type-all"
               }
             ]
           },
@@ -854,7 +918,7 @@
             "prefills": [
               {
                 "key": "manufacturing-and-construction-type",
-                "value": "commercial-buildings"
+                "value": "type-cement"
               }
             ]
           },
@@ -863,7 +927,7 @@
             "prefills": [
               {
                 "key": "manufacturing-and-construction-type",
-                "value": "institutional-buildings"
+                "value": "type-pulp-paper-and-printing"
               }
             ]
           }
@@ -1039,7 +1103,8 @@
                   "fuel-type-oxygen-steel-furnace-gas",
                   "fuel-type-natural-gas-liquids",
                   "fuel-type-jet-kerosene",
-                  "fuel-type-municipal-wastes"
+                  "fuel-type-municipal-wastes",
+                  "fuel-type-liquefied-petroleum-gases"
                 ]
               },
               {
@@ -1049,10 +1114,17 @@
             ],
             "units": [
               "units-gallons",
+              "units-gallons-us",
+              "units-gallons-uk",
               "units-liters",
               "units-cubic-meters",
+              "units-cubic-feet",
+              "units-barrel",
               "units-kilograms",
-              "units-other"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ]
           }
         ],
@@ -1148,7 +1220,8 @@
             "fuel-type-oxygen-steel-furnace-gas",
             "fuel-type-natural-gas-liquids",
             "fuel-type-jet-kerosene",
-            "fuel-type-municipal-wastes"
+            "fuel-type-municipal-wastes",
+            "fuel-type-liquefied-petroleum-gases"
           ],
           "exclusive": "fuel-type-all"
         },
@@ -1383,9 +1456,10 @@
                 "id": "agriculture-forestry-fishing-activities-type",
                 "options": [
                   "type-all",
-                  "type-stationary",
-                  "type-off-road-vehicles-and-machinery",
-                  "type-fishing-mobile-combustion"
+                  "type-agriculture",
+                  "type-forestry",
+                  "type-fishing",
+                  "type-aquaculture"
                 ],
                 "exclusive": "type-all"
               },
@@ -1400,7 +1474,8 @@
                   "fuel-type-other-primary-solid-biomass",
                   "fuel-type-natural-charcoal",
                   "fuel-type-gas-oil",
-                  "fuel-type-peat"
+                  "fuel-type-peat",
+                  "fuel-type-natural-gas-liquids"
                 ]
               },
               {
@@ -1410,10 +1485,17 @@
             ],
             "units": [
               "units-gallons",
+              "units-gallons-us",
+              "units-gallons-uk",
               "units-liters",
               "units-cubic-meters",
+              "units-cubic-feet",
+              "units-barrel",
               "units-kilograms",
-              "units-other"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ]
           }
         ],
@@ -1464,9 +1546,10 @@
           "id": "agriculture-forestry-fishing-activities-type",
           "options": [
             "type-all",
-            "type-stationary",
-            "type-off-road-vehicles-and-machinery",
-            "type-fishing-mobile-combustion"
+            "type-agriculture",
+            "type-forestry",
+            "type-fishing",
+            "type-aquaculture"
           ],
           "exclusive": "type-all"
         },
@@ -1481,7 +1564,8 @@
             "fuel-type-other-primary-solid-biomass",
             "fuel-type-charcoal",
             "fuel-type-gas-oil",
-            "fuel-type-peat"
+            "fuel-type-peat",
+            "fuel-type-natural-gas-liquids"
           ],
           "exclusive": "fuel-type-all"
         },
@@ -1518,9 +1602,10 @@
                 "id": "agriculture-forestry-fishing-activities-type",
                 "options": [
                   "type-all",
-                  "type-stationary",
-                  "type-off-road-vehicles-and-machinery",
-                  "type-fishing-mobile-combustion"
+                  "type-agriculture",
+                  "type-forestry",
+                  "type-fishing",
+                  "type-aquaculture"
                 ],
                 "exclusive": "type-all"
               },
@@ -1597,9 +1682,10 @@
           "id": "agriculture-forestry-fishing-activities-type",
           "options": [
             "type-all",
-            "type-stationary",
-            "type-off-road-vehicles-and-machinery",
-            "type-fishing-mobile-combustion"
+            "type-agriculture",
+            "type-forestry",
+            "type-fishing",
+            "type-aquaculture"
           ],
           "exclusive": "type-all"
         },
@@ -1635,9 +1721,10 @@
           "id": "agriculture-forestry-fishing-activities-type",
           "options": [
             "type-all",
-            "type-stationary",
-            "type-off-road-vehicles-and-machinery",
-            "type-fishing-mobile-combustion"
+            "type-agriculture",
+            "type-forestry",
+            "type-fishing",
+            "type-aquaculture"
           ],
           "exclusive": "type-all"
         },
@@ -1717,10 +1804,17 @@
             ],
             "units": [
               "units-gallons",
+              "units-gallons-us",
+              "units-gallons-uk",
               "units-liters",
               "units-cubic-meters",
+              "units-cubic-feet",
+              "units-barrel",
               "units-kilograms",
-              "units-other"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ]
           }
         ],
@@ -1986,23 +2080,18 @@
               "fugitive-emissions-coal-source"
             ],
             "activity-title": "activity-total-fugitive-emissions",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "fugitive-emissions-coal-type",
                 "emission-factor-dependency": true,
                 "options": [
                   "type-all",
-                  "type-coal-mining-and-handling",
-                  "type-coal-mining-and-handling-underground-mines",
-                  "type-coal-mining-and-handling-underground-mines-mining",
-                  "type-coal-mining-and-handling-underground-mines-mining-post-mining-seam-gas-emissions",
-                  "type-coal-mining-and-handling-underground-mines-mining-abandoned-underground-mines",
-                  "type-coal-mining-and-handling-underground-mines-flaring-of-drained-CH4-or-conversion-of-CH4-to-CO2",
-                  "type-surface-mines",
-                  "type-surface-mines-mining",
-                  "type-surface-mines-post-mining-seam-gas-emissions",
-                  "type-uncontrolled-combustion-and-burning-coal-dumps",
-                  "type-solid-fuel-transformation"
+                  "type-underground-mining",
+                  "type-surface-mining",
+                  "type-post-mining",
+                  "type-flaring-recovered-ch4",
+                  "type-abandoned-mines"
                 ],
                 "exclusive": "type-all"
               },
@@ -2013,10 +2102,17 @@
             ],
             "units": [
               "units-gallons",
+              "units-gallons-us",
+              "units-gallons-uk",
               "units-liters",
               "units-cubic-meters",
+              "units-cubic-feet",
+              "units-barrel",
               "units-kilograms",
-              "units-other"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ]
           }
         ],
@@ -2059,17 +2155,11 @@
           "id": "fugitive-emissions-coal-type",
           "options": [
             "type-all",
-            "type-coal-mining-and-handling",
-            "type-coal-mining-and-handling-underground-mines",
-            "type-coal-mining-and-handling-underground-mines-mining",
-            "type-coal-mining-and-handling-underground-mines-mining-post-mining-seam-gas-emissions",
-            "type-coal-mining-and-handling-underground-mines-mining-abandoned-underground-mines",
-            "type-coal-mining-and-handling-underground-mines-flaring-of-drained-CH4-or-conversion-of-CH4-to-CO2",
-            "type-surface-mines",
-            "type-surface-mines-mining",
-            "type-surface-mines-post-mining-seam-gas-emissions",
-            "type-uncontrolled-combustion-and-burning-coal-dumps",
-            "type-solid-fuel-transformation "
+            "type-underground-mining",
+            "type-surface-mining",
+            "type-post-mining",
+            "type-flaring-recovered-ch4",
+            "type-abandoned-mines"
           ],
           "exclusive": "type-all"
         },
@@ -2100,6 +2190,7 @@
               "fugitive-emissions-oil-gas-fugitive-source"
             ],
             "activity-title": "activity-total-fugitive-activity",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "fugitive-emissions-oil-gas-type",
@@ -2129,10 +2220,17 @@
             ],
             "units": [
               "units-gallons",
+              "units-gallons-us",
+              "units-gallons-uk",
               "units-liters",
               "units-cubic-meters",
+              "units-cubic-feet",
+              "units-barrel",
               "units-kilograms",
-              "units-other"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ]
           }
         ],
@@ -2228,7 +2326,7 @@
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
-                  "fuel-type-lpg",
+                  "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-cng",
                   "fuel-type-biofuel"
                 ]
@@ -2252,9 +2350,17 @@
             ],
             "units": [
               "units-gallons",
+              "units-gallons-us",
+              "units-gallons-uk",
               "units-liters",
               "units-cubic-meters",
-              "units-kilograms"
+              "units-cubic-feet",
+              "units-barrel",
+              "units-kilograms",
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ]
           }
         ],
@@ -2343,7 +2449,7 @@
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
-                  "fuel-type-lpg",
+                  "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-cng",
                   "fuel-type-biofuel"
                 ]
@@ -2413,7 +2519,7 @@
             "fuel-type-all",
             "fuel-type-gasoline",
             "fuel-type-diesel",
-            "fuel-type-lpg",
+            "fuel-type-liquefied-petroleum-gases",
             "fuel-type-cng",
             "fuel-type-biofuel"
           ],
@@ -2594,7 +2700,7 @@
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
-                  "fuel-type-lpg",
+                  "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-cng",
                   "fuel-type-biofuel"
                 ]
@@ -2617,9 +2723,17 @@
             ],
             "units": [
               "units-gallons",
+              "units-gallons-us",
+              "units-gallons-uk",
               "units-liters",
               "units-cubic-meters",
+              "units-cubic-feet",
+              "units-barrel",
               "units-kilograms",
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds",
               "units-terajoules"
             ]
           }
@@ -2692,7 +2806,7 @@
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
-                  "fuel-type-lpg",
+                  "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-cng",
                   "fuel-type-biofuel"
                 ]
@@ -2762,7 +2876,7 @@
           "options": [
             "fuel-type-gasoline",
             "fuel-type-diesel",
-            "fuel-type-lpg",
+            "fuel-type-liquefied-petroleum-gases",
             "fuel-type-cng",
             "fuel-type-biofuel"
           ]
@@ -2935,7 +3049,7 @@
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
-                  "fuel-type-lpg",
+                  "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-cng",
                   "fuel-type-biofuel"
                 ]
@@ -2958,9 +3072,17 @@
             ],
             "units": [
               "units-gallons",
+              "units-gallons-us",
+              "units-gallons-uk",
               "units-liters",
               "units-cubic-meters",
+              "units-cubic-feet",
+              "units-barrel",
               "units-kilograms",
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds",
               "units-terajoules",
               "units-kilowatt-hours"
             ]
@@ -3034,7 +3156,7 @@
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
-                  "fuel-type-lpg",
+                  "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-cng",
                   "fuel-type-biofuel"
                 ]
@@ -3091,7 +3213,7 @@
           "options": [
             "fuel-type-gasoline",
             "fuel-type-diesel",
-            "fuel-type-lpg",
+            "fuel-type-liquefied-petroleum-gases",
             "fuel-type-cng",
             "fuel-type-biofuel"
           ]
@@ -3262,7 +3384,7 @@
                   "fuel-type-diesel",
                   "fuel-type-jet-gasoline",
                   "fuel-type-jet-kerosene",
-                  "fuel-type-lpg",
+                  "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-gasoline",
                   "fuel-type-natural-gas-liquids"
                 ]
@@ -3274,7 +3396,9 @@
                   "vehicle-type-passenger-aircraft",
                   "vehicle-type-cargo-aircraft",
                   "vehicle-type-private-and-business-aircraft",
-                  "vehicle-type-helicopters"
+                  "vehicle-type-helicopters",
+                  "vehicle-type-commercial-aviation",
+                  "vehicle-type-domestic-aviation"
                 ],
                 "exclusive": "vehicle-type-all"
               },
@@ -3285,9 +3409,17 @@
             ],
             "units": [
               "units-gallons",
+              "units-gallons-us",
+              "units-gallons-uk",
               "units-liters",
               "units-cubic-meters",
+              "units-cubic-feet",
+              "units-barrel",
               "units-kilograms",
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds",
               "units-terajoules",
               "units-kilowatt-hours"
             ]
@@ -3364,7 +3496,7 @@
                   "fuel-type-diesel",
                   "fuel-type-jet-gasoline",
                   "fuel-type-jet-kerosene",
-                  "fuel-type-lpg",
+                  "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-gasoline",
                   "fuel-type-natural-gas-liquids"
                 ]
@@ -3423,7 +3555,7 @@
             "fuel-type-diesel",
             "fuel-type-jet-gasoline",
             "fuel-type-jet-kerosene",
-            "fuel-type-lpg",
+            "fuel-type-liquefied-petroleum-gases",
             "fuel-type-gasoline",
             "fuel-type-natural-gas-liquids"
           ],
@@ -3600,7 +3732,7 @@
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
-                  "fuel-type-lpg",
+                  "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-cng",
                   "fuel-type-biofuel"
                 ]
@@ -3623,9 +3755,17 @@
             ],
             "units": [
               "units-gallons",
+              "units-gallons-us",
+              "units-gallons-uk",
               "units-liters",
               "units-cubic-meters",
+              "units-cubic-feet",
+              "units-barrel",
               "units-kilograms",
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds",
               "units-terajoules",
               "units-kilowatt-hours"
             ]
@@ -3672,7 +3812,7 @@
           "options": [
             "fuel-type-gasoline",
             "fuel-type-diesel",
-            "fuel-type-lpg",
+            "fuel-type-liquefied-petroleum-gases",
             "fuel-type-cng",
             "fuel-type-biofuel"
           ],
@@ -3850,7 +3990,8 @@
                   "waste-composition-wood",
                   "waste-composition-textiles",
                   "waste-composition-industrial"
-                ]
+                ],
+                "required": false
               },
               {
                 "id": "methane-commitment-solid-waste-inboundary-source",
@@ -3959,7 +4100,8 @@
                   "waste-composition-wood",
                   "waste-composition-textiles",
                   "waste-composition-industrial"
-                ]
+                ],
+                "required": false
               }
             ],
             "units": [
@@ -4049,7 +4191,10 @@
                 "type": "number",
                 "units": [
                   "units-kilograms",
-                  "units-tonnes"
+                  "units-tonnes",
+                  "units-long-tons",
+                  "units-short-tons",
+                  "units-pounds"
                 ],
                 "default-units": "units-kilograms"
               },
@@ -4060,7 +4205,10 @@
             ],
             "units": [
               "units-kilograms",
-              "units-tonnes"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ]
           }
         ],
@@ -4153,7 +4301,10 @@
                 "type": "number",
                 "units": [
                   "units-kilograms",
-                  "units-tonnes"
+                  "units-tonnes",
+                  "units-long-tons",
+                  "units-short-tons",
+                  "units-pounds"
                 ],
                 "default-units": "units-kilograms"
               },
@@ -4164,7 +4315,10 @@
             ],
             "units": [
               "units-kilograms",
-              "units-tonnes"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ]
           }
         ],
@@ -4258,7 +4412,8 @@
                   "waste-composition-industrial-solid-waste",
                   "waste-composition-municipal-solid-waste",
                   "waste-composition-sewage-sludge"
-                ]
+                ],
+                "required": false
               },
               {
                 "id": "incineration-waste-inboundary-technology",
@@ -4278,7 +4433,10 @@
             ],
             "units": [
               "units-kilograms",
-              "units-tonnes"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ]
           }
         ]
@@ -4352,7 +4510,8 @@
                   "waste-composition-industrial-solid-waste",
                   "waste-composition-municipal-solid-waste",
                   "waste-composition-sewage-sludge"
-                ]
+                ],
+                "required": false
               },
               {
                 "id": "incineration-waste-outboundary-technology",
@@ -4372,7 +4531,10 @@
             ],
             "units": [
               "units-kilograms",
-              "units-tonnes"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ]
           }
         ]
@@ -4453,7 +4615,11 @@
                 "id": "wastewater-inside-domestic-calculator-methane-recovered",
                 "type": "number",
                 "units": [
-                  "units-kilograms"
+                  "units-kilograms",
+                  "units-tonnes",
+                  "units-long-tons",
+                  "units-short-tons",
+                  "units-pounds"
                 ],
                 "default-units": "units-kilograms"
               },
@@ -4542,7 +4708,10 @@
             "activity-title": "total-industry-production",
             "units": [
               "units-kilograms",
-              "units-tonnes"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ],
             "default-units": "units-tonnes",
             "extra-fields": [
@@ -4580,7 +4749,10 @@
                 "type": "number",
                 "units": [
                   "units-kilograms",
-                  "units-tonnes"
+                  "units-tonnes",
+                  "units-long-tons",
+                  "units-short-tons",
+                  "units-pounds"
                 ],
                 "default-units": "units-kilograms"
               },
@@ -4755,7 +4927,11 @@
                 "id": "wastewater-outside-domestic-calculator-methane-recovered",
                 "type": "number",
                 "units": [
-                  "units-kilograms"
+                  "units-kilograms",
+                  "units-tonnes",
+                  "units-long-tons",
+                  "units-short-tons",
+                  "units-pounds"
                 ],
                 "default-units": "units-kilograms"
               },
@@ -4844,7 +5020,10 @@
             "activity-title": "total-industry-production",
             "units": [
               "units-kilograms",
-              "units-tonnes"
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
             ],
             "default-units": "units-tonnes",
             "extra-fields": [
@@ -4881,7 +5060,10 @@
                 "type": "number",
                 "units": [
                   "units-kilograms",
-                  "units-tonnes"
+                  "units-tonnes",
+                  "units-long-tons",
+                  "units-short-tons",
+                  "units-pounds"
                 ],
                 "default-units": "units-kilograms"
               },

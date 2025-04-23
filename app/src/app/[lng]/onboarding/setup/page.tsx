@@ -26,6 +26,7 @@ import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
+import { hasFeatureFlag } from "@/util/feature-flags";
 
 export type Inputs = {
   city: string;
@@ -75,7 +76,20 @@ export default function OnboardingSetup({
 
   const projectId = params.get("project");
 
-  const { data: projectsList, isLoading } = api.useGetUserProjectsQuery({});
+  const EnterpriseMode = hasFeatureFlag("ENTERPRISE_MODE");
+
+  const { data: projectsList, isLoading } = api.useGetUserProjectsQuery(
+    {},
+    {
+      skip: !EnterpriseMode,
+    },
+  );
+  
+  useEffect(() => {
+    if (projectsList && projectsList.length > 0) {
+      setSelectedProject([projectsList[0].projectId]);
+    }
+  }, [projectsList]);
 
   const steps = [
     { title: t("setup-step") },
@@ -153,6 +167,9 @@ export default function OnboardingSetup({
     )[0];
     const countryName = country?.name ?? "";
 
+    const projectId =
+      selectedProject?.length > 0 ? selectedProject[0] : undefined;
+
     try {
       city = await addCity({
         name: data.name,
@@ -162,9 +179,7 @@ export default function OnboardingSetup({
         country: countryName ?? undefined,
         regionLocode: region?.actor_id ?? undefined,
         countryLocode: country?.actor_id ?? undefined,
-        projectId: (selectedProject.length > 0
-          ? selectedProject[0]
-          : projectId) as string,
+        projectId: EnterpriseMode ? projectId : undefined,
       }).unwrap();
       await addCityPopulation({
         cityId: city.cityId,

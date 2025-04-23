@@ -12,6 +12,7 @@ import {
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
 import { useTranslation } from "@/i18n/client";
+import { useSession } from "next-auth/react";
 
 export default function AdminLayout({
   children,
@@ -23,30 +24,27 @@ export default function AdminLayout({
   const router = useRouter();
 
   const { t } = useTranslation(lng, "admin");
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
+  const { data } = useSession();
 
   useEffect(() => {
-    if (!isUserInfoLoading && userInfo?.role !== Roles.Admin) {
+    if (data?.user?.role !== Roles.Admin) {
       toaster.error({
         title: t("not-authorized"),
       });
       const REDIRECT_DELAY_MS = 2000;
       setTimeout(() => {
-        const fallbackPath = userInfo?.defaultInventoryId
-          ? `/${lng}/${userInfo.defaultInventoryId}`
-          : `/${lng}`;
+        const fallbackPath = `/${lng}`;
         router.push(fallbackPath);
       }, REDIRECT_DELAY_MS);
     }
-  }, [isUserInfoLoading, userInfo, router, lng, t]);
+  }, [data, router, lng, t]);
 
   return (
     <Box className="h-full flex flex-col" bg="background.backgroundLight">
       <NavigationBar lng={lng} />
       <Toaster />
       <div className="w-full h-full">
-        {!isUserInfoLoading && userInfo?.role === Roles.Admin ? (
+        {data?.user?.role === Roles.Admin ? (
           children
         ) : (
           <div className="flex items-center justify-center w-full">

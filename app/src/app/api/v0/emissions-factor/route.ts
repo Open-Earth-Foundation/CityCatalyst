@@ -4,7 +4,7 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { Op } from "sequelize";
 import { fetchEmissionsFactorRequest } from "@/util/validation";
-
+import { logger } from "@/services/logger";
 const filterMappings: Record<string, any> = {
   "fuel-type-wood/wood-waste": "fuel-type-wood-wood-waste",
 };
@@ -33,7 +33,6 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
 
   if (inventoryId && !regionLocode) {
     let city = await db.models.City.findOne({
-      attributes: ["regionLocode"],
       include: [
         {
           model: db.models.Inventory,
@@ -46,7 +45,7 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
         },
       ],
     });
-    parsedLocode = city?.regionLocode;
+    parsedLocode = city?.countryLocode;
   }
 
   // use units from the emission factors first
@@ -99,12 +98,18 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
       whereClause.methodologyName = "sampling-scaled-data";
     if (methodologyId.includes("modeled-data"))
       whereClause.methodologyName = "modeled-data";
+    if (methodologyId.includes("electricity-consumption"))
+      whereClause.methodologyName = "electricity-consumption";
+    if (methodologyId.includes("energy-consumption"))
+      whereClause.methodologyName = "energy-consumption";
   }
 
   const emissionsFactors = await db.models.EmissionsFactor.findAll({
     where: whereClause,
     include: [{ model: db.models.DataSource, as: "dataSources" }],
   });
+
+  logger.info("actor Id used to filter emissionsFactors ", parsedLocode);
 
   let output = emissionsFactors.filter(({ actorId }) =>
     ["world", parsedLocode].includes(actorId as string),

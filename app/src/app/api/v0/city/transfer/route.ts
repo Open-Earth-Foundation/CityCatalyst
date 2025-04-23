@@ -7,8 +7,6 @@ import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { NextResponse } from "next/server";
 
-// endpoint should take an array of city ids and a project id to move it to.
-
 export const PATCH = apiHandler(async (req, { session }) => {
   UserService.validateIsAdmin(session);
 
@@ -36,12 +34,32 @@ export const PATCH = apiHandler(async (req, { session }) => {
     // confirm project exists
     const project = await db.models.Project.findByPk(body.projectId, {
       transaction: t,
+      include: [
+        {
+          model: db.models.City,
+          as: "cities",
+          attributes: ["cityId"],
+        },
+      ],
     });
 
     if (!project) {
       throw new createHttpError.NotFound(
         `Project not found for ID: ${body.projectId}`,
       );
+    }
+
+    const newCityCount = body.cityIds.filter(
+      (id) => !project.cities.map((city) => city.cityId).includes(id),
+    ).length;
+    const isValidTransfer =
+      Number(project.cities.length + newCityCount) <=
+      Number(project.cityCountLimit);
+
+    // check if project city count limit is reached or will be with the new ci
+
+    if (!isValidTransfer) {
+      throw new createHttpError.BadRequest(`project-city-count-limit-exceeded`);
     }
 
     await db.models.City.update(

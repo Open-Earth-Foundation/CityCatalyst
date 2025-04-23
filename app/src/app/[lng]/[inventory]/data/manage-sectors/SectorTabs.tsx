@@ -118,7 +118,10 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   // State to track selected subsector IDs per sector (keyed by sector ID)
   const [selectedCardsBySector, setSelectedCardsBySector] = useState<
     Record<string, string[]>
-  >({}); // State to track selected subsector IDs per sector (keyed by sector ID)
+  >({});
+  const [originalCardInputs, setOriginalCardInputs] = useState<
+    Record<string, CardInputs>
+  >({});
 
   // Quick action input values per sector
   const [quickActionValues, setQuickActionValues] = useState<
@@ -156,11 +159,12 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
           },
         ]);
       });
+      const newInputs = Object.fromEntries(result);
+      setOriginalCardInputs(newInputs); // Store original values
       setCardInputs((prev) => {
-        const newInputs: Record<string, CardInputs> = { ...prev };
-        // If there are selected cards, update only those; otherwise update all items.
-        Object.assign(newInputs, Object.fromEntries(result));
-        return newInputs;
+        const updatedInputs: Record<string, CardInputs> = { ...prev };
+        Object.assign(updatedInputs, newInputs);
+        return updatedInputs;
       });
     }
   }, [error, isSectorDataLoading, sectorData]);
@@ -324,7 +328,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   });
   // handle undo changes
   const handleUndoChanges = () => {
-    // setCardInputs({});
+    setCardInputs(originalCardInputs); // Restore to original values
     setIsDirty(false);
     setQuickActionValues({});
     setSelectedCardsBySector({});

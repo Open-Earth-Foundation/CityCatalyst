@@ -150,6 +150,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
             subSectorId: subCategory?.subsectorId,
             sectorId: subCategory?.subsector?.sectorId,
             inventoryId,
+            gpcReferenceNumber: subCategory?.referenceNumber,
           },
           { transaction },
         );

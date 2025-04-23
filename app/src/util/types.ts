@@ -406,7 +406,12 @@ export type ListOrganizationsResponse = {
     email: string;
     role: OrganizationRole;
   }[];
-}[];
+  projects: {
+    projectId: string;
+    name: string;
+    cityCountLimit: number;
+  }[];
+};
 
 export type ProjectWithCities = {
   projectId: string;
@@ -438,3 +443,33 @@ export type UserAccessResponse = {
   isProjectAdmin: boolean;
   isCollaborator: boolean;
 };
+export enum ACTION_TYPES {
+  Mitigation = "mitigation",
+  Adaptation = "adaptation"
+}
+
+export type CityWithProjectDataResponse = {
+  cityId: string;
+  name: string;
+  locode: string;
+  populationYear: number;
+  country: string;
+  population: number;
+  project?: {
+    name: string;
+    cityCountLimit: number;
+    organization: {
+      organizationId: string;
+      name: string;
+      contactEmail: string;
+    };
+  };
+};
+
+export enum LANGUAGES {
+  "en" = "en",
+  "es" = "es",
+  "pt" = "pt",
+  "de" = "de"
+}
+

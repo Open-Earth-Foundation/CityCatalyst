@@ -5,7 +5,11 @@ import {
   OnboardingData,
 } from "../../app/[lng]/onboarding/setup/page";
 import { TFunction } from "i18next";
-import { OCCityAttributes, ProjectResponse } from "@/util/types";
+import {
+  OCCityAttributes,
+  ProjectResponse,
+  ProjectWithCities,
+} from "@/util/types";
 import { useAppDispatch } from "@/lib/hooks";
 import React, { useEffect, useMemo, useState } from "react";
 import { set } from "@/features/city/openclimateCitySlice";
@@ -45,6 +49,7 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
+import { hasFeatureFlag } from "@/util/feature-flags";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -71,12 +76,13 @@ export default function SelectCityStep({
   ocCityData?: OCCityAttributes;
   setOcCityData: (cityData: OCCityAttributes) => void;
   setData: (data: OnboardingData) => void;
-  projectsList: ProjectResponse[] | undefined;
+  projectsList: ProjectWithCities[] | undefined;
   selectedProject: string[];
   setSelectedProject: (val: string[]) => void;
 }) {
   const searchParams = useSearchParams();
   const cityFromUrl = searchParams.get("city");
+  const EnterpriseMode = hasFeatureFlag("ENTERPRISE_MODE");
 
   const currentYear = new Date().getFullYear();
 
@@ -297,38 +303,41 @@ export default function SelectCityStep({
         <Card.Root p={6} shadow="none" px="24px" py="32px">
           <Card.Body>
             <form className="space-y-8">
-              <Box w="full">
-                <SelectRoot
-                  value={selectedProject}
-                  onValueChange={(e) => setSelectedProject(e.value)}
-                  variant="outline"
-                  collection={projectCollection}
-                >
-                  <SelectLabel display="flex" alignItems="center" gap="8px">
-                    <Text
-                      fontFamily="heading"
-                      className="capitalize"
-                      color="content.secondary"
-                    >
-                      {t("project")}
-                    </Text>
-                  </SelectLabel>
-                  <SelectTrigger shadow="1dp">
-                    <SelectValueText
-                      color="content.tertiary"
-                      fontWeight="medium"
-                      placeholder={t("select-project")}
-                    />
-                  </SelectTrigger>
-                  <SelectContent portalled={false}>
-                    {projectCollection?.items.map((project) => (
-                      <SelectItem key={project.value} item={project.value}>
-                        {project.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </SelectRoot>
-              </Box>
+              {EnterpriseMode && (
+                <Box w="full">
+                  <SelectRoot
+                    value={selectedProject}
+                    disabled={projectCollection.size === 1}
+                    onValueChange={(e) => setSelectedProject(e.value)}
+                    variant="outline"
+                    collection={projectCollection}
+                  >
+                    <SelectLabel display="flex" alignItems="center" gap="8px">
+                      <Text
+                        fontFamily="heading"
+                        className="capitalize"
+                        color="content.secondary"
+                      >
+                        {t("project")}
+                      </Text>
+                    </SelectLabel>
+                    <SelectTrigger shadow="1dp">
+                      <SelectValueText
+                        color="content.tertiary"
+                        fontWeight="medium"
+                        placeholder={t("select-project")}
+                      />
+                    </SelectTrigger>
+                    <SelectContent portalled={false}>
+                      {projectCollection?.items.map((project) => (
+                        <SelectItem key={project.value} item={project.value}>
+                          {project.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectRoot>
+                </Box>
+              )}
               <Field
                 invalid={!!errors.city}
                 errorText={

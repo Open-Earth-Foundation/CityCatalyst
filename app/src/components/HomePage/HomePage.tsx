@@ -27,6 +27,8 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
+import CapTab from "@/app/[lng]/[inventory]/CapTab";
+import { hasFeatureFlag } from "@/util/feature-flags";
 
 export default function HomePage({
   lng,
@@ -203,6 +205,7 @@ export default function HomePage({
                       {[
                         "tab-emission-inventory-calculation-title",
                         "tab-emission-inventory-results-title",
+                        ...(inventory?.city?.country === "Brazil" && hasFeatureFlag('CAP_TAB_ENABLED') ? ["tab-cap-title"] : []),
                       ].map((tab, index) => (
                         <Tabs.Trigger key={index} value={tab}>
                           <Text
@@ -231,6 +234,11 @@ export default function HomePage({
                         inventory={inventory}
                       />
                     </Tabs.Content>
+                    {inventory?.city?.country === "Brazil" && (
+                      <Tabs.Content value="tab-cap-title">
+                        <CapTab inventory={inventory} lng={lng} />
+                      </Tabs.Content>
+                    )}
                   </Tabs.Root>
                 </>
               ) : (

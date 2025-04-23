@@ -4,7 +4,7 @@ import { createOrganizationRequest } from "@/util/validation";
 import { NextResponse } from "next/server";
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
-import { OrganizationInvite } from "@/models/OrganizationInvite";
+import { db } from "@/models";
 
 export const POST = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
@@ -22,13 +22,19 @@ export const GET = apiHandler(async (_req, { params, session }) => {
   const organizations = await Organization.findAll({
     include: [
       {
-        model: OrganizationInvite,
+        model: db.models.OrganizationInvite,
         as: "organizationInvite",
         attributes: ["status", "email", "role"],
         where: { role: "org_admin" },
         required: false,
       },
+      {
+        model: db.models.Project,
+        as: "projects",
+        attributes: ["projectId", "name", "cityCountLimit"],
+      },
     ],
+    order: [["created", "ASC"]],
   });
 
   return NextResponse.json(organizations, { status: 200 });

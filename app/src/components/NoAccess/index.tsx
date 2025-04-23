@@ -15,7 +15,7 @@ const NoAccessPage = ({ lng, email }: { lng: string; email: string }) => {
       minHeight="100vh"
       bg="background.backgroundLight"
     >
-      <NavigationBar showMenu lng={lng} isPublic={true} />
+      <NavigationBar showMenu lng={lng} restrictAccess />
 
       <Grid
         flex="1"

@@ -11,6 +11,7 @@ import {
   GET as findCity,
   PATCH as updateCity,
 } from "@/app/api/v0/city/[city]/route";
+import { GET as getAllCities } from "@/app/api/v0/admin/all-cities/route";
 import { POST as createCity } from "@/app/api/v0/city/route";
 import { db } from "@/models";
 import { CreateCityRequest } from "@/util/validation";
@@ -49,6 +50,11 @@ const invalidCity = {
 
 const mockSession: AppSession = {
   user: { id: testUserID, role: Roles.User },
+  expires: "1h",
+};
+
+const mockAdminSession: AppSession = {
+  user: { id: testUserID, role: Roles.Admin },
   expires: "1h",
 };
 
@@ -111,7 +117,7 @@ describe("City API", () => {
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 6);
+    assert.equal(issues.length, 5);
   });
 
   it("should find a city", async () => {
@@ -124,6 +130,22 @@ describe("City API", () => {
     assert.equal(data.country, cityData.country);
     assert.equal(data.region, cityData.region);
     assert.equal(data.area, cityData.area);
+  });
+
+  it("should prevent unauthorized access to all city data", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockSession));
+    const req = mockRequest();
+    const res = await getAllCities(req, { params: {} });
+    assert.equal(res.status, 403);
+  });
+
+  it("should get all cities for admin", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
+    const req = mockRequest();
+    const res = await getAllCities(req, { params: {} });
+    assert.equal(res.status, 200);
+    const { data } = await res.json();
+    assert.notEqual(data.length, 0);
   });
 
   it("should not find a non-existing city", async () => {
@@ -151,7 +173,7 @@ describe("City API", () => {
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 6);
+    assert.equal(issues.length, 5);
   });
 
   it("should delete a city", async () => {

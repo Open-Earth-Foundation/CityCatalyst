@@ -470,6 +470,11 @@ export default class DataSourceService {
         activityId: activity.activity_name + "-activity",
         ...activity.activity_subcategory_type,
       },
+      activityData: {
+        "activity-value":
+          activity.gases.reduce((acc, gas) => acc + gas.activity_value, 0) ?? 0,
+        "activity-unit": activity.activity_units,
+      },
     });
     const emissionsFactors = activity.gases.map((gas) => ({
       id: randomUUID(),

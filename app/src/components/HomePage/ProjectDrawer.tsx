@@ -17,7 +17,11 @@ import {
 import { InputGroup } from "@/components/ui/input-group";
 import { LuSearch } from "react-icons/lu";
 import { ProjectWithCities, ProjectWithCitiesResponse } from "@/util/types";
-import { useGetProjectsQuery } from "@/services/api";
+import {
+  useGetProjectsQuery,
+  useGetProjectUsersQuery,
+  useGetUserProjectsQuery,
+} from "@/services/api";
 import {
   ProgressCircleRing,
   ProgressCircleRoot,
@@ -28,59 +32,7 @@ import { useRouter } from "next/navigation";
 import { FaLocationDot } from "react-icons/fa6";
 import { useTranslation } from "@/i18n/client";
 import ProjectLimitModal from "@/components/project-limit";
-
-const SearchInput = ({
-  searchTerm,
-  setSearchTerm,
-  className,
-}: {
-  searchTerm: string;
-  setSearchTerm: (searchTerm: string) => void;
-  className?: string;
-}) => {
-  return (
-    <InputGroup
-      color=""
-      w="full"
-      rounded={32}
-      backgroundColor="background.overlay"
-      className={className}
-      startElement={
-        <Icon
-          as={LuSearch}
-          className="opacity-50"
-          color={"#414249"}
-          boxSize={4}
-        />
-      }
-      endElement={
-        searchTerm ? (
-          <IconButton
-            onClick={() => setSearchTerm("")}
-            aria-label="search"
-            colorScheme="interactive.secondary"
-            variant="ghost"
-          >
-            <Icon
-              as={MdClose}
-              className="opacity-50"
-              boxSize={4}
-              color={"#414249"}
-            />
-          </IconButton>
-        ) : null
-      }
-    >
-      <Input
-        onChange={(e) => setSearchTerm(e.target.value)}
-        border="0px"
-        paddingX={2}
-        outline="none"
-        value={searchTerm}
-      />
-    </InputGroup>
-  );
-};
+import SearchInput from "@/components/SearchInput";
 
 const ProjectList = ({
   t,
@@ -141,17 +93,18 @@ const SingleProjectView = ({
   project,
   backToProjects,
   t,
+  lng,
   currentInventoryId,
 }: {
   project: ProjectWithCities;
   backToProjects: () => void;
   t: Function;
+  lng: string;
   currentInventoryId: string;
 }) => {
   const router = useRouter();
   const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
   const goToOnboarding = () => {
-    console.log("goToOnboarding", project);
     if (
       BigInt(project.cities.length) ===
       BigInt(project.cityCountLimit as unknown as string)
@@ -162,8 +115,8 @@ const SingleProjectView = ({
     }
   };
 
-  const goToInventory = (inventoryId: string) => {
-    router.push(`/${inventoryId}`);
+  const goToInventory = (inventoryId: string, lng: string) => {
+    router.push(`/${lng}/${inventoryId}`);
   };
 
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -221,7 +174,7 @@ const SingleProjectView = ({
             className="flex justify-start gap-2.5"
             w="full"
             key={city.cityId}
-            onClick={() => goToInventory(city.inventories[0].inventoryId)}
+            onClick={() => goToInventory(city.inventories[0].inventoryId, lng)}
           >
             {city.inventories.find(
               (inventory) => inventory.inventoryId === currentInventoryId,
@@ -258,18 +211,11 @@ const ProjectDrawer = ({
   isOpen: boolean;
   onClose: () => void;
   onOpenChange: (val: OpenChangeDetails) => void;
-  organizationId: string;
-  currentInventoryId: string;
+  organizationId?: string;
+  currentInventoryId?: string;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
-  const { data: projectsData, isLoading } = useGetProjectsQuery(
-    {
-      organizationId,
-    },
-    {
-      skip: !organizationId,
-    },
-  );
+  const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
 
   const [selectedProject, setSelectedProject] = React.useState<string | null>();
 
@@ -331,11 +277,12 @@ const ProjectDrawer = ({
               selectProject={selectProject}
             />
           )}
-          {selectedProjectData && (
+          {selectedProjectData && currentInventoryId && (
             <SingleProjectView
               t={t}
               currentInventoryId={currentInventoryId}
               project={selectedProjectData}
+              lng={lng}
               backToProjects={() => setSelectedProject(null)}
             />
           )}

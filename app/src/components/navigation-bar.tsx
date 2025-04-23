@@ -19,6 +19,7 @@ import Image from "next/image";
 import { CircleFlag } from "react-circle-flags";
 import { FiSettings } from "react-icons/fi";
 import {
+  MdApartment,
   MdArrowDropDown,
   MdArrowDropUp,
   MdAspectRatio,
@@ -54,12 +55,16 @@ export function NavigationBar({
   isPublic = false,
   showMenu = false,
   isAuth = false,
+  children,
+  restrictAccess,
 }: {
   lng: string;
   showNav?: boolean;
   isPublic?: boolean;
   showMenu?: boolean;
   isAuth?: boolean;
+  children?: React.ReactNode;
+  restrictAccess?: boolean;
 }) {
   const { t } = useTranslation(lng, "navigation");
   const { inventory: inventoryParam } = useParams();
@@ -120,7 +125,7 @@ export function NavigationBar({
 
   return (
     <Box
-      className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50"
+      className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50 w-full"
       bgColor="content.alternative"
     >
       <Box className="flex" gap={6}>
@@ -173,6 +178,7 @@ export function NavigationBar({
           />
         </>
       )}
+      {children}
       <Box display="flex">
         <Box display="flex">
           <MenuRoot
@@ -285,59 +291,86 @@ export function NavigationBar({
                 display="flex"
                 flexDirection="column"
                 justifyContent="space-around"
-                minH="128px"
+                minH="58px"
                 zIndex={2000}
               >
                 {userInfo?.role === Roles.Admin && (
+                  <>
+                    <MenuItem
+                      value="admin"
+                      paddingTop="12px"
+                      paddingBottom="12px"
+                      px="16px"
+                      onClick={() => router.push(`/admin`)}
+                    >
+                      <Box display="flex" alignItems="center">
+                        {" "}
+                        <Icon
+                          as={MdAspectRatio}
+                          boxSize={6}
+                          color={
+                            userMenuHighlight === "admin"
+                              ? "background.neutral"
+                              : "content.tertiary"
+                          }
+                          mr={4}
+                        />
+                        <Text fontSize="title.md">{t("admin")}</Text>
+                      </Box>
+                    </MenuItem>
+                    <MenuItem
+                      value="cities"
+                      paddingTop="12px"
+                      paddingBottom="12px"
+                      px="16px"
+                      onClick={() => router.push(`/cities`)}
+                    >
+                      <Box display="flex" alignItems="center">
+                        <Icon
+                          as={MdApartment}
+                          boxSize={6}
+                          color={
+                            userMenuHighlight === "cities"
+                              ? "background.neutral"
+                              : "content.tertiary"
+                          }
+                          mr={4}
+                        />
+                        <Text textTransform={"capitalize"} fontSize="title.md">
+                          {t("cities")}
+                        </Text>
+                      </Box>
+                    </MenuItem>
+                  </>
+                )}
+                {!restrictAccess && (
                   <MenuItem
-                    value="admin"
+                    value="settings"
                     paddingTop="12px"
                     paddingBottom="12px"
                     px="16px"
-                    onClick={() => router.push(`/admin`)}
+                    onClick={() =>
+                      router.push(
+                        `/${inventory ? inventory.inventoryId : currentInventoryId}/settings`,
+                      )
+                    }
                   >
                     <Box display="flex" alignItems="center">
                       {" "}
                       <Icon
-                        as={MdAspectRatio}
+                        as={FiSettings}
                         boxSize={6}
                         color={
-                          userMenuHighlight === "admin"
+                          userMenuHighlight === "settings"
                             ? "background.neutral"
                             : "content.tertiary"
                         }
                         mr={4}
                       />
-                      <Text fontSize="title.md">{t("admin")}</Text>
+                      <Text fontSize="title.md">{t("settings")}</Text>
                     </Box>
                   </MenuItem>
                 )}
-                <MenuItem
-                  value="settings"
-                  paddingTop="12px"
-                  paddingBottom="12px"
-                  px="16px"
-                  onClick={() =>
-                    router.push(
-                      `/${inventory ? inventory.inventoryId : currentInventoryId}/settings`,
-                    )
-                  }
-                >
-                  <Box display="flex" alignItems="center">
-                    {" "}
-                    <Icon
-                      as={FiSettings}
-                      boxSize={6}
-                      color={
-                        userMenuHighlight === "settings"
-                          ? "background.neutral"
-                          : "content.tertiary"
-                      }
-                      mr={4}
-                    />
-                    <Text fontSize="title.md">{t("settings")}</Text>
-                  </Box>
-                </MenuItem>
                 <MenuItem
                   paddingTop="12px"
                   paddingBottom="12px"
@@ -367,7 +400,6 @@ export function NavigationBar({
       <ProjectDrawer
         lng={lng}
         currentInventoryId={currentInventoryId as string}
-        organizationId={inventory?.city.project.organizationId as string}
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         onOpenChange={({ open }) => setIsDrawerOpen(open)}

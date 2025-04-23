@@ -7,9 +7,19 @@ import { api, useAcceptInviteMutation } from "@/services/api";
 import { logger } from "@/services/logger";
 import InviteErrorView from "./InviteErrorView";
 import { emailPattern, tokenRegex, uuidRegex } from "@/util/validation";
+import { UseSuccessToast } from "@/hooks/Toasts";
+import { useTranslation } from "@/i18n/client";
+import ProgressLoader from "@/components/ProgressLoader";
 
 const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
   const searchParams = useSearchParams();
+  console.log(searchParams.get("email"));
+  const { t } = useTranslation(lng, "auth");
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("invite-accepted"),
+    description: t("invite-accepted-org-details"),
+    duration: 5000,
+  });
   const queryParams = Object.fromEntries(searchParams.entries());
   const [acceptInvite, { isLoading, isError }] =
     api.useAcceptOrganizationAdminInviteMutation();
@@ -48,27 +58,28 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
       if (!calledOnce.current) {
         calledOnce.current = true;
         const { token, email, organizationId } = queryParams;
-
+        const cleanedEmail = email?.split(" ").join("+").replace(/%40/g, "@");
         if (
           token &&
           email &&
           organizationId &&
-          validateInput(token, email, organizationId)
+          validateInput(token, cleanedEmail, organizationId)
         ) {
           try {
             const sanitizedToken = sanitizeInput(token);
-            const sanitizedEmail = sanitizeInput(email);
-            const sanitizedCityIds = sanitizeInput(organizationId);
+            const sanitizedEmail = sanitizeInput(cleanedEmail);
+            const sanitizedOrganizationId = sanitizeInput(organizationId);
 
             const { error } = await acceptInvite({
               token: sanitizedToken,
-              organizationId: organizationId,
+              organizationId: sanitizedOrganizationId,
               email: sanitizedEmail,
             });
 
             if (!!error) {
               setError(true);
             } else {
+              showSuccessToast();
               router.push(`/`);
             }
           } catch (error) {
@@ -84,17 +95,7 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
     accept();
   }, [queryParams, acceptInvite, router]);
 
-  if (isLoading)
-    return (
-      <Center>
-        <ProgressCircle.Root value={null} size="sm">
-          <ProgressCircle.Circle>
-            <ProgressCircle.Track />
-            <ProgressCircle.Range />
-          </ProgressCircle.Circle>
-        </ProgressCircle.Root>
-      </Center>
-    );
+  if (isLoading) return <ProgressLoader />;
 
   if (isError || error) return <InviteErrorView lng={lng} />;
 

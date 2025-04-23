@@ -8,9 +8,13 @@ python -m scripts.upload_to_frontend.enrich_for_frontend_schema --locode "BR CCI
 
 import json
 import argparse
-import requests
+import logging
 from pathlib import Path
-from requests.exceptions import RequestException
+from typing import Optional, Dict, List
+from scripts.get_actions import get_actions
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 # Define the base directory relative to the script's location
 BASE_DIR = Path(__file__).parent.parent.parent
@@ -19,41 +23,47 @@ BASE_DIR = Path(__file__).parent.parent.parent
 BASE_PATH_PRIORITIZED_ACTIONS = BASE_DIR / "data" / "prioritized"
 BASE_PATH_OUTPUT = BASE_DIR / "data" / "frontend"
 
-# Define the language endpoints
-LANGUAGE_ENDPOINTS = {
-    "en": "https://ccglobal.openearth.dev/api/v0/climate_actions?language=en",
-    "es": "https://ccglobal.openearth.dev/api/v0/climate_actions?language=es",
-    "pt": "https://ccglobal.openearth.dev/api/v0/climate_actions?language=pt",
-}
+
+def get_language_actions() -> Dict[str, Optional[List[dict]]]:
+    """Fetch actions for all supported languages."""
+    return {
+        "en": get_actions(language="en"),
+        "es": get_actions(language="es"),
+        "pt": get_actions(language="pt"),
+    }
 
 
-def process_city_multilingual(locode, action_type):
-    print(f"Processing city: {locode}, action type: {action_type}")
+def process_city_multilingual(locode: str, action_type: str) -> None:
     """Process a city and generate enriched JSON output for all supported languages."""
+    logger.info(f"Processing city: {locode}, action type: {action_type}")
 
     # Read the prioritized actions (this is language-independent)
-    with open(
-        BASE_PATH_PRIORITIZED_ACTIONS / f"output_{locode}_{action_type}.json",
-        "r",
-        encoding="utf-8",
-    ) as f:
-        priority_list = json.load(f)
+    try:
+        with open(
+            BASE_PATH_PRIORITIZED_ACTIONS / f"output_{locode}_{action_type}.json",
+            "r",
+            encoding="utf-8",
+        ) as f:
+            priority_list = json.load(f)
+    except FileNotFoundError:
+        logger.error(f"Prioritized actions file not found for {locode} {action_type}")
+        return
+    except json.JSONDecodeError:
+        logger.error(
+            f"Invalid JSON in prioritized actions file for {locode} {action_type}"
+        )
+        return
+
+    # Get actions for all languages
+    language_actions = get_language_actions()
 
     # Process each language
-    for lang, endpoint in LANGUAGE_ENDPOINTS.items():
-        print(f"Processing language: {lang}")
+    for lang, actions_list in language_actions.items():
+        if not actions_list:
+            logger.warning(f"No actions list found for language: {lang}")
+            continue
 
-        try:
-            # Read the actions list for this language
-            response = requests.get(endpoint)
-            response.raise_for_status()  # Raise an exception for bad status codes
-            actions_list = response.json()
-        except RequestException as e:
-            print(f"Error fetching actions for language {lang}: {str(e)}")
-            continue
-        except json.JSONDecodeError as e:
-            print(f"Error parsing JSON response for language {lang}: {str(e)}")
-            continue
+        logger.info(f"Processing language: {lang}")
 
         # Create a map of actions by ActionID for quick lookup
         action_map = {action["ActionID"]: action for action in actions_list}
@@ -63,29 +73,36 @@ def process_city_multilingual(locode, action_type):
         for entry in priority_list:
             action = action_map.get(entry["actionId"])
             if not action:
-                print(f"No action found for Action ID: {entry['actionId']}", entry)
+                logger.warning(f"No action found for Action ID: {entry['actionId']}")
             enriched_entry = {**entry, "action": action}
             enriched_priority_list.append(enriched_entry)
 
         # Create the output directory if it doesn't exist
-        if not BASE_PATH_OUTPUT.exists():
-            BASE_PATH_OUTPUT.mkdir(parents=True, exist_ok=True)
-            print(f"Created directory: {BASE_PATH_OUTPUT}")
+        BASE_PATH_OUTPUT.mkdir(parents=True, exist_ok=True)
 
         # Write the enriched data to a language-specific file
         file_path = (
             BASE_PATH_OUTPUT / f"output_{locode}_{action_type}_enriched_{lang}.json"
         )
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(enriched_priority_list, f, indent=4)
-        print(f"File written: {file_path}")
+        try:
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(enriched_priority_list, f, indent=4)
+            logger.info(f"Successfully wrote file: {file_path}")
+        except IOError as e:
+            logger.error(f"Failed to write file {file_path}: {e}")
 
 
-def main(locode: str, action_type: str):
+def main(locode: str, action_type: str) -> None:
+    """Main function to process the city data."""
     process_city_multilingual(locode, action_type)
 
 
 if __name__ == "__main__":
+    from logger_config import setup_logger
+
+    # Set up logging
+    setup_logger(level=logging.INFO)
+
     parser = argparse.ArgumentParser(
         description="Create enriched JSON files for frontend in multiple languages"
     )

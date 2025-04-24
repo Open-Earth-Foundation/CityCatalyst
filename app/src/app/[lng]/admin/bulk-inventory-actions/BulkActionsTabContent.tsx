@@ -214,7 +214,7 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
                 fontSize="body.md"
                 mb="4px"
               >
-                Project
+                {t("project")}
               </Field.Label>
               <NativeSelect.Root>
                 <NativeSelect.Field
@@ -225,7 +225,9 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
                   })}
                 >
                   {projectsList?.map((project) => (
-                    <option value={project.projectId}>{project.name}</option>
+                    <option value={project.projectId} key={project.projectId}>
+                      {project.name}
+                    </option>
                   ))}
                 </NativeSelect.Field>
                 <NativeSelect.Indicator />

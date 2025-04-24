@@ -17,6 +17,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
 import Link from "next/link";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -69,20 +70,13 @@ export function Hero({
                   {!inventory ? <>{t("welcome")}</> : null}
                 </Text>
                 <Box className="flex flex-col gap-2">
-                  {!isPublic && (
+                  {!isPublic && hasFeatureFlag(FeatureFlags.PROJECT_OVERVIEW_ENABLED) ? (
                     <Link
                       href={`/public/project/${inventory?.city?.project?.projectId}`}
                     >
-                      <Text
-                        fontSize="title.md"
-                        w="max-content"
-                        fontWeight="semibold"
-                        color="white"
-                      >
-                        {inventory?.city?.project?.name}
-                      </Text>
+                      <ProjectTitle inventory={inventory} />
                     </Link>
-                  )}
+                  ) : <ProjectTitle inventory={inventory} />}
                   <Box className="flex items-center gap-4">
                     {inventory?.city ? (
                       <>
@@ -306,4 +300,16 @@ export function Hero({
       </Box>
     </>
   );
+}
+
+
+function ProjectTitle({ inventory }: { inventory: InventoryResponse }) {
+  return <Text
+    fontSize="title.md"
+    w="max-content"
+    fontWeight="semibold"
+    color="white"
+  >
+    {inventory?.city?.project?.name}
+  </Text>;
 }

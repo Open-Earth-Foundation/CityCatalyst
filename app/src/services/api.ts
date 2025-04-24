@@ -985,6 +985,7 @@ export const api = createApi({
       }),
       createBulkInventories: builder.mutation({
         query: (data: {
+          projectId: string;
           emails: string[];
           cityLocodes: string[];
           years: number[];
@@ -1091,7 +1092,10 @@ export const api = createApi({
         }),
         providesTags: ["Inventory"],
       }),
-      getCap: builder.query<string, { inventoryId: string; actionType: ACTION_TYPES; lng: LANGUAGES }>({
+      getCap: builder.query<
+        string,
+        { inventoryId: string; actionType: ACTION_TYPES; lng: LANGUAGES }
+      >({
         query: ({ inventoryId, actionType, lng }) => ({
           url: `inventory/${inventoryId}/cap?actionType=${actionType}&lng=${lng}`,
           method: "GET",

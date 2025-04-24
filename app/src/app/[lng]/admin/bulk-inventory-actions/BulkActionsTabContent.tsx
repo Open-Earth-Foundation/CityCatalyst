@@ -8,6 +8,7 @@ import {
   HStack,
   Icon,
   Link,
+  NativeSelect,
   Tabs,
   Text,
 } from "@chakra-ui/react";
@@ -21,6 +22,7 @@ import CustomSelectableButton from "@/components/custom-selectable-buttons";
 import { Button } from "@/components/ui/button";
 import { RadioGroup } from "@/components/ui/custom-radio";
 import CityAutocompleteInput from "./CityAutoCompleteInput";
+import { hasFeatureFlag } from "@/util/feature-flags";
 
 interface BulkActionsTabContentProps {
   t: TFunction;
@@ -30,6 +32,7 @@ type CityDetails = {
   cityLocode: string;
 };
 export interface BulkCreationInputs {
+  projectId: string;
   cities: string[];
   years: number[];
   emails: string[];
@@ -91,7 +94,16 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
   const [createBulkInventories, { isLoading, isError }] =
     api.useCreateBulkInventoriesMutation();
 
-  // connect data sources api
+  // fetch projects api
+
+  const { data: projectsList, isLoading: isProjectListLoading } =
+    api.useGetUserProjectsQuery({});
+
+  if (isProjectListLoading) {
+    console.log("loading");
+  } else {
+    console.log(projectsList);
+  }
 
   const [
     connectBulkSources,
@@ -100,6 +112,7 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
 
   const onSubmit = async (data: BulkCreationInputs) => {
     await createBulkInventories({
+      projectId: data.projectId,
       cityLocodes: data.cities,
       emails: data.emails,
       years: data.years,
@@ -175,6 +188,20 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
       <Box>
         <Fieldset.Root size="lg" maxW="full" py="36px">
           <Fieldset.Content display="flex" flexDir="column" gap="36px">
+            <NativeSelect.Root>
+              <NativeSelect.Field
+                h="56px"
+                boxShadow="1dp"
+                {...register("projectId", {
+                  required: "A project is required",
+                })}
+              >
+                {projectsList?.map((project) => (
+                  <option value={project.projectId}>{project.name}</option>
+                ))}
+              </NativeSelect.Field>
+              <NativeSelect.Indicator />
+            </NativeSelect.Root>
             <Controller
               name="cities"
               defaultValue={[]}

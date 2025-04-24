@@ -49,7 +49,7 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
-import { hasFeatureFlag } from "@/util/feature-flags";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -82,7 +82,7 @@ export default function SelectCityStep({
 }) {
   const searchParams = useSearchParams();
   const cityFromUrl = searchParams.get("city");
-  const EnterpriseMode = hasFeatureFlag("ENTERPRISE_MODE");
+  const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
 
   const currentYear = new Date().getFullYear();
 

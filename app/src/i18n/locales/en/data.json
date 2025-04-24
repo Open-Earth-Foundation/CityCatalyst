@@ -1229,5 +1229,7 @@
   "type-surface-mining": "Surface mining",
   "type-post-mining": "Post mining",
   "type-flaring-recovered-ch4": "Flaring of recovered CH4",
-  "type-abandoned-mines": "Abandoned mines"
+  "type-abandoned-mines": "Abandoned mines",
+  "vehicle-type-national-flights": "National flights",
+  "vehicle-type-international-flights": "International flights"
 }

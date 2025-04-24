@@ -3,6 +3,8 @@ import { api } from "@/services/api";
 import {
   Box,
   Checkbox,
+  Field,
+  FieldRoot,
   Fieldset,
   Heading,
   HStack,
@@ -26,6 +28,7 @@ import { hasFeatureFlag } from "@/util/feature-flags";
 
 interface BulkActionsTabContentProps {
   t: TFunction;
+  onTabReset?: () => void;
 }
 type CityDetails = {
   cityName: string;
@@ -41,7 +44,10 @@ export interface BulkCreationInputs {
   connectSources: boolean;
 }
 
-const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
+const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
+  t,
+  onTabReset,
+}) => {
   // React hook form to manage form state
   const {
     control,
@@ -130,6 +136,18 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
         type: "success",
         description: t("bulk-inventory-creation-success"),
       });
+
+      // Reset form
+      reset();
+      setCitiesArray([]);
+      setYearsArray([]);
+      setEmailsArray([]);
+      setSelectedInventoryGoalValue("");
+      setSelectedGlobalWarmingPotentialValue("");
+
+      // Reset tab if callback provided
+      onTabReset?.();
+
       emailsArray.forEach(async (email) => {
         await connectBulkSources({
           cityLocodes: citiesArray,
@@ -188,20 +206,32 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
       <Box>
         <Fieldset.Root size="lg" maxW="full" py="36px">
           <Fieldset.Content display="flex" flexDir="column" gap="36px">
-            <NativeSelect.Root>
-              <NativeSelect.Field
-                h="56px"
-                boxShadow="1dp"
-                {...register("projectId", {
-                  required: "A project is required",
-                })}
+            <FieldRoot>
+              {" "}
+              <Field.Label
+                fontFamily="heading"
+                fontWeight="medium"
+                fontSize="body.md"
+                mb="4px"
               >
-                {projectsList?.map((project) => (
-                  <option value={project.projectId}>{project.name}</option>
-                ))}
-              </NativeSelect.Field>
-              <NativeSelect.Indicator />
-            </NativeSelect.Root>
+                Project
+              </Field.Label>
+              <NativeSelect.Root>
+                <NativeSelect.Field
+                  h="56px"
+                  boxShadow="1dp"
+                  {...register("projectId", {
+                    required: "A project is required",
+                  })}
+                >
+                  {projectsList?.map((project) => (
+                    <option value={project.projectId}>{project.name}</option>
+                  ))}
+                </NativeSelect.Field>
+                <NativeSelect.Indicator />
+              </NativeSelect.Root>
+            </FieldRoot>
+
             <Controller
               name="cities"
               defaultValue={[]}

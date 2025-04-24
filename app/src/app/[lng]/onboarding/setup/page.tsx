@@ -26,7 +26,7 @@ import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
-import { hasFeatureFlag } from "@/util/feature-flags";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 export type Inputs = {
   city: string;
@@ -76,7 +76,7 @@ export default function OnboardingSetup({
 
   const projectId = params.get("project");
 
-  const EnterpriseMode = hasFeatureFlag("ENTERPRISE_MODE");
+  const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
 
   const { data: projectsList, isLoading } = api.useGetUserProjectsQuery(
     {},
@@ -84,7 +84,7 @@ export default function OnboardingSetup({
       skip: !EnterpriseMode,
     },
   );
-  
+
   useEffect(() => {
     if (projectsList && projectsList.length > 0) {
       setSelectedProject([projectsList[0].projectId]);

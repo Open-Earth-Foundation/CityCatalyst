@@ -3397,8 +3397,8 @@
                   "vehicle-type-cargo-aircraft",
                   "vehicle-type-private-and-business-aircraft",
                   "vehicle-type-helicopters",
-                  "vehicle-type-commercial-aviation",
-                  "vehicle-type-domestic-aviation"
+                  "vehicle-type-national-flights",
+                  "vehicle-type-international-flights"
                 ],
                 "exclusive": "vehicle-type-all"
               },
@@ -3484,7 +3484,9 @@
                   "vehicle-type-passenger-aircraft",
                   "vehicle-type-cargo-aircraft",
                   "vehicle-type-private-and-business-aircraft",
-                  "vehicle-type-helicopters"
+                  "vehicle-type-helicopters",
+                  "vehicle-type-national-flights",
+                  "vehicle-type-international-flights"
                 ],
                 "exclusive": "vehicle-type-all"
               },
@@ -3564,10 +3566,13 @@
         {
           "id": "aviation-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-passenger-aircraft",
             "vehicle-type-cargo-aircraft",
             "vehicle-type-private-and-business-aircraft",
-            "vehicle-type-helicopters"
+            "vehicle-type-helicopters",
+            "vehicle-type-national-flights",
+            "vehicle-type-international-flights"
           ],
           "multiselect": true
         },
@@ -3604,7 +3609,9 @@
                   "vehicle-type-passenger-aircraft",
                   "vehicle-type-cargo-aircraft",
                   "vehicle-type-private-and-business-aircraft",
-                  "vehicle-type-helicopters"
+                  "vehicle-type-helicopters",
+                  "vehicle-type-national-flights",
+                  "vehicle-type-international-flights"
                 ],
                 "exclusive": "vehicle-type-all"
               },
@@ -3660,10 +3667,13 @@
         {
           "id": "aviation-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-passenger-aircraft",
             "vehicle-type-cargo-aircraft",
             "vehicle-type-private-and-business-aircraft",
-            "vehicle-type-helicopters"
+            "vehicle-type-helicopters",
+            "vehicle-type-national-flights",
+            "vehicle-type-international-flights"
           ],
           "multiselect": true
         },
@@ -3683,10 +3693,13 @@
         {
           "id": "aviation-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-passenger-aircraft",
             "vehicle-type-cargo-aircraft",
             "vehicle-type-private-and-business-aircraft",
-            "vehicle-type-helicopters"
+            "vehicle-type-helicopters",
+            "vehicle-type-national-flights",
+            "vehicle-type-international-flights"
           ],
           "multiselect": true
         },

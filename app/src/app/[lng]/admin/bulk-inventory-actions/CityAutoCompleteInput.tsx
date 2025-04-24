@@ -92,6 +92,9 @@ const CityAutocompleteInput: React.FC<CityAutocompleteInputProps> = ({
 
   return (
     <Box position="relative" ref={containerRef}>
+      <Text fontFamily="heading" fontWeight="medium" fontSize="body.md">
+        Cities
+      </Text>
       <Input
         h="56px"
         boxShadow="1dp"

@@ -105,12 +105,6 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
   const { data: projectsList, isLoading: isProjectListLoading } =
     api.useGetUserProjectsQuery({});
 
-  if (isProjectListLoading) {
-    console.log("loading");
-  } else {
-    console.log(projectsList);
-  }
-
   const [
     connectBulkSources,
     { isLoading: isConnectSourcesLoading, data: isConnectSourcesData },

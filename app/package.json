@@ -65,7 +65,7 @@
     "@types/wellknown": "^0.5.8",
     "accept-language": "^3.0.18",
     "ai": "^3.4.7",
-    "autoprefixer": "10.4.16",
+    "autoprefixer": "10.4.21",
     "bcrypt": "^5.1.1",
     "chakra-react-select": "^4.9.1",
     "char-regex": "^2.0.2",

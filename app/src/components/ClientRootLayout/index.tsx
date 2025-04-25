@@ -41,7 +41,9 @@ export function ClientRootLayout({
       userAccessStatus?.isProjectAdmin ||
       userAccessStatus?.isOrgOwner ||
       userAccessStatus?.isCollaborator ||
-      userInfo?.role === Roles.Admin
+      userInfo?.role === Roles.Admin ||
+      // TODO: Remove this once we have a way to handle new user access on dev
+      userInfo?.role === Roles.User
     )
   ) {
     return <NoAccess lng={lng} email={userInfo?.email as string} />;

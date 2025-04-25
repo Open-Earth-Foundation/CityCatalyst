@@ -3,11 +3,14 @@ import { api } from "@/services/api";
 import {
   Box,
   Checkbox,
+  Field,
+  FieldRoot,
   Fieldset,
   Heading,
   HStack,
   Icon,
   Link,
+  NativeSelect,
   Tabs,
   Text,
 } from "@chakra-ui/react";
@@ -21,15 +24,18 @@ import CustomSelectableButton from "@/components/custom-selectable-buttons";
 import { Button } from "@/components/ui/button";
 import { RadioGroup } from "@/components/ui/custom-radio";
 import CityAutocompleteInput from "./CityAutoCompleteInput";
+import { hasFeatureFlag } from "@/util/feature-flags";
 
 interface BulkActionsTabContentProps {
   t: TFunction;
+  onTabReset?: () => void;
 }
 type CityDetails = {
   cityName: string;
   cityLocode: string;
 };
 export interface BulkCreationInputs {
+  projectId: string;
   cities: string[];
   years: number[];
   emails: string[];
@@ -38,7 +44,10 @@ export interface BulkCreationInputs {
   connectSources: boolean;
 }
 
-const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
+const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
+  t,
+  onTabReset,
+}) => {
   // React hook form to manage form state
   const {
     control,
@@ -91,7 +100,10 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
   const [createBulkInventories, { isLoading, isError }] =
     api.useCreateBulkInventoriesMutation();
 
-  // connect data sources api
+  // fetch projects api
+
+  const { data: projectsList, isLoading: isProjectListLoading } =
+    api.useGetUserProjectsQuery({});
 
   const [
     connectBulkSources,
@@ -100,6 +112,7 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
 
   const onSubmit = async (data: BulkCreationInputs) => {
     await createBulkInventories({
+      projectId: data.projectId,
       cityLocodes: data.cities,
       emails: data.emails,
       years: data.years,
@@ -117,6 +130,18 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
         type: "success",
         description: t("bulk-inventory-creation-success"),
       });
+
+      // Reset form
+      reset();
+      setCitiesArray([]);
+      setYearsArray([]);
+      setEmailsArray([]);
+      setSelectedInventoryGoalValue("");
+      setSelectedGlobalWarmingPotentialValue("");
+
+      // Reset tab if callback provided
+      onTabReset?.();
+
       emailsArray.forEach(async (email) => {
         await connectBulkSources({
           cityLocodes: citiesArray,
@@ -175,6 +200,34 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
       <Box>
         <Fieldset.Root size="lg" maxW="full" py="36px">
           <Fieldset.Content display="flex" flexDir="column" gap="36px">
+            <FieldRoot>
+              {" "}
+              <Field.Label
+                fontFamily="heading"
+                fontWeight="medium"
+                fontSize="body.md"
+                mb="4px"
+              >
+                {t("project")}
+              </Field.Label>
+              <NativeSelect.Root>
+                <NativeSelect.Field
+                  h="56px"
+                  boxShadow="1dp"
+                  {...register("projectId", {
+                    required: "A project is required",
+                  })}
+                >
+                  {projectsList?.map((project) => (
+                    <option value={project.projectId} key={project.projectId}>
+                      {project.name}
+                    </option>
+                  ))}
+                </NativeSelect.Field>
+                <NativeSelect.Indicator />
+              </NativeSelect.Root>
+            </FieldRoot>
+
             <Controller
               name="cities"
               defaultValue={[]}

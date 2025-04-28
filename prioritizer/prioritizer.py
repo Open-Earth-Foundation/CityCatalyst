@@ -494,7 +494,7 @@ def tournament_ranking(actions, city):
     Returns:
       A list of (action, rank_index).
     """
-    logging.debug(
+    logging.info(
         f"\n\n========== STARTING TOURNAMENT RANKING WITH {len(actions)} ACTIONS =========="
     )
     remaining = actions[:]
@@ -521,14 +521,14 @@ def tournament_ranking(actions, city):
         remaining = losers
         # print(f"{len(remaining)} actions will compete for rank #{current_rank}")
 
-    logging.debug(
+    logging.info(
         f"\n========== TOURNAMENT RANKING COMPLETE. RANKED {len(full_ranking)} ACTIONS =========="
     )
 
     # Print final ranking summary
-    logging.debug("\nFinal Ranking Summary:")
+    logging.info("\nFinal Ranking Summary:")
     for action, rank in full_ranking:
-        logging.debug(f"  #{rank}: {action.get('ActionID', 'Unknown')}")
+        logging.info(f"  #{rank}: {action.get('ActionID', 'Unknown')}")
 
     return full_ranking
 
@@ -558,7 +558,7 @@ def main(locode: str):
 
     # Filter actions by biome if applicable
     filtered_actions = filter_actions_by_biome(actions, city)
-    logging.debug(f"After biome filtering: {len(filtered_actions)} actions remain")
+    logging.info(f"After biome filtering: {len(filtered_actions)} actions remain")
 
     # Separate adaptation and mitigation actions
     adaptation_actions = [
@@ -576,12 +576,12 @@ def main(locode: str):
         and "mitigation" in action["ActionType"]
     ]
 
-    logging.debug(
+    logging.info(
         f"Found {len(adaptation_actions)} adaptation actions and {len(mitigation_actions)} mitigation actions"
     )
 
     # Apply tournament ranking for adaptation actions
-    logging.debug("Starting tournament ranking for adaptation actions...")
+    logging.info("Starting tournament ranking for adaptation actions...")
     adaptation_ranking = tournament_ranking(adaptation_actions, city)
 
     # Format adaptation results
@@ -616,6 +616,7 @@ def main(locode: str):
                 "actionId": action.get("ActionID", "Unknown"),
                 "actionName": action.get("ActionName", "Unknown"),
                 "actionPriority": rank,
+                "explanation": f"Ranked #{rank} by tournament ranking algorithm",
             }
         )
 
@@ -628,7 +629,7 @@ def main(locode: str):
 if __name__ == "__main__":
     from logger_config import setup_logger
 
-    setup_logger(level=logging.DEBUG)
+    setup_logger(level=logging.INFO)
 
     parser = argparse.ArgumentParser(
         description="Prioritize climate actions for a given city."

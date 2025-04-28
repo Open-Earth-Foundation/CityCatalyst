@@ -45,6 +45,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Check version and bump if dev prerelease
+        if: github.ref == 'refs/heads/develop'
         run: |
           version=$(node -p "require('./package.json').version")
           prerelease=$(echo "$version" | grep -o '\-.*' || true)

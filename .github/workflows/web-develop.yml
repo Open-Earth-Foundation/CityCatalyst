@@ -18,6 +18,9 @@ on:
       - k8s/cc-web.yml
       - .github/workflows/web-develop.yml
 
+permissions:
+  contents: write
+
 jobs:
   runTests:
     runs-on: ubuntu-latest

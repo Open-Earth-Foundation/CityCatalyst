@@ -18,9 +18,6 @@ on:
       - k8s/cc-web.yml
       - .github/workflows/web-develop.yml
 
-permissions:
-  contents: write
-
 jobs:
   runTests:
     runs-on: ubuntu-latest
@@ -41,28 +38,6 @@ jobs:
           node-version: 20
           cache: "npm"
           cache-dependency-path: app/package-lock.json
-
-      - name: Configure git user
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Check version and bump if dev prerelease
-        if: github.ref == 'refs/heads/develop'
-        run: |
-          version=$(node -p "require('./package.json').version")
-          prerelease=$(echo "$version" | grep -o '\-.*' || true)
-
-          if [[ "$prerelease" == dev.* || "$prerelease" == "-dev."* ]]; then
-            echo "Current version $version is a dev prerelease. Bumping..."
-            npm version prerelease --preid dev
-            version=$(node -p "require('./package.json').version")
-            git commit -m "chore: bump dev tag to $version [skip ci]" package.json package-lock.json
-            git tag -a "$version" -m "chore: bump dev tag to $version [skip ci]"
-            git push --follow-tags
-          else
-            echo "Current version $version is not a dev prerelease. Skipping bump."
-          fi
 
       - name: Install dependencies
         run: npm ci

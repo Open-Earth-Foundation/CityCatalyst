@@ -2201,14 +2201,14 @@
       "inadequateSanitation": "low"
     },
     "stationaryEnergyEmissions": 1600502.751,
-    "transportationEmissions": 1281904.464,
+    "transportationEmissions": 1547223.4270000001,
     "wasteEmissions": 2493662.846,
-    "industrialProcessEmissions": 5966.772,
+    "industrialProcessEmissions": 0.0,
     "landUseEmissions": 4727.184,
-    "scope1Emissions": 1793192.6160000002,
+    "scope1Emissions": 1787225.844,
     "scope2Emissions": 2441023.9659999995,
-    "scope3Emissions": 41934.772,
-    "totalEmissions": 5386764.017,
+    "scope3Emissions": 307253.735,
+    "totalEmissions": 5646116.208000001,
     "ccra": [
       {
         "keyimpact": "water resources",
@@ -2409,14 +2409,14 @@
       "inadequateSanitation": "low"
     },
     "stationaryEnergyEmissions": 1005914.72,
-    "transportationEmissions": 1099570.8299999998,
+    "transportationEmissions": 1224034.636,
     "wasteEmissions": 1374291.546,
     "industrialProcessEmissions": 0.0,
     "landUseEmissions": 119292.66,
     "scope1Emissions": 2748521.16,
     "scope2Emissions": 178807.305,
-    "scope3Emissions": 14454.832,
-    "totalEmissions": 3599069.756,
+    "scope3Emissions": 138918.638,
+    "totalEmissions": 3723533.562,
     "ccra": [
       {
         "keyimpact": "water resources",
@@ -2928,15 +2928,15 @@
       "inadequateWaterAccess": "moderate",
       "inadequateSanitation": "low"
     },
-    "stationaryEnergyEmissions": 1567583.2829999998,
-    "transportationEmissions": 2050841.0180000002,
+    "stationaryEnergyEmissions": 5619356.431999999,
+    "transportationEmissions": 2210887.676,
     "wasteEmissions": 1221599.803,
-    "industrialProcessEmissions": 0.0,
+    "industrialProcessEmissions": 203820.74,
     "landUseEmissions": 174808.858,
-    "scope1Emissions": 3397659.41,
+    "scope1Emissions": 7653253.299,
     "scope2Emissions": 349063.133,
-    "scope3Emissions": 324415.608,
-    "totalEmissions": 5014832.962,
+    "scope3Emissions": 484462.266,
+    "totalEmissions": 9430473.509,
     "ccra": [
       {
         "keyimpact": "water resources",
@@ -3760,15 +3760,15 @@
       "inadequateWaterAccess": "very_low",
       "inadequateSanitation": "very_low"
     },
-    "stationaryEnergyEmissions": 951406.6020000001,
-    "transportationEmissions": 944335.044,
+    "stationaryEnergyEmissions": 927960.947,
+    "transportationEmissions": 1147362.709,
     "wasteEmissions": 680580.997,
     "industrialProcessEmissions": 0.0,
     "landUseEmissions": 172735.362,
     "scope1Emissions": 1266601.3910000003,
-    "scope2Emissions": 833465.294,
-    "scope3Emissions": 39500.787,
-    "totalEmissions": 2749058.0050000004,
+    "scope2Emissions": 810019.6390000001,
+    "scope3Emissions": 242528.45200000002,
+    "totalEmissions": 2928640.015,
     "ccra": [
       {
         "keyimpact": "water resources",
@@ -3969,14 +3969,14 @@
       "inadequateSanitation": "very_low"
     },
     "stationaryEnergyEmissions": 3951168.8669999996,
-    "transportationEmissions": 3040439.658,
+    "transportationEmissions": 3611480.9960000003,
     "wasteEmissions": 4799911.953,
     "industrialProcessEmissions": 2342979.801,
     "landUseEmissions": 33257.962,
     "scope1Emissions": 6644893.673,
     "scope2Emissions": 4267525.472999999,
-    "scope3Emissions": 415037.6180000001,
-    "totalEmissions": 14167758.240999999,
+    "scope3Emissions": 986078.956,
+    "totalEmissions": 14738799.578999998,
     "ccra": [
       {
         "keyimpact": "water resources",

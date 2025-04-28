@@ -6,7 +6,7 @@ The GHGI emissions data is provided via csv export and stored in the data/ghgi f
 The city data is stored in the data/cities folder.
 
 Run it from the root of the project with the following command:
-python scripts/create_city_data/add_ghgis_to_city_data.py --file_name "inventory-BRCCI-2022.csv" --locode "BRCCI"
+python scripts/create_city_data/add_ghgis_to_city_data.py --file_name "inventory-BR CCI-2022.csv" --locode "BR CCI"
 """
 
 import sys

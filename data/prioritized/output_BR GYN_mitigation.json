@@ -4,18 +4,10 @@
         "cityName": "Goi\u00e2nia",
         "region": "GO",
         "regionName": "Goi\u00e1s",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
-        "actionPriority": 2
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR GYN",
@@ -24,25 +16,8 @@
         "regionName": "Goi\u00e1s",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 5
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR GYN",
@@ -51,43 +26,28 @@
         "regionName": "Goi\u00e1s",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 6
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR GYN",
         "cityName": "Goi\u00e2nia",
         "region": "GO",
         "regionName": "Goi\u00e1s",
-        "actionId": "icare_0052",
-        "actionName": "Develop projects for renewable energy and waste reuse",
-        "actionPriority": 7
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR GYN",
         "cityName": "Goi\u00e2nia",
         "region": "GO",
         "regionName": "Goi\u00e1s",
-        "actionId": "c40_0035",
-        "actionName": "Waste Efficiency",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 10
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BR GYN",
@@ -96,52 +56,48 @@
         "regionName": "Goi\u00e1s",
         "actionId": "icare_0024",
         "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 11
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR GYN",
         "cityName": "Goi\u00e2nia",
         "region": "GO",
         "regionName": "Goi\u00e1s",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 12
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR GYN",
         "cityName": "Goi\u00e2nia",
         "region": "GO",
         "regionName": "Goi\u00e1s",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 13
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BR GYN",
         "cityName": "Goi\u00e2nia",
         "region": "GO",
         "regionName": "Goi\u00e1s",
-        "actionId": "c40_0026",
-        "actionName": "Vehicle Emissions",
-        "actionPriority": 14
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BR GYN",
         "cityName": "Goi\u00e2nia",
         "region": "GO",
         "regionName": "Goi\u00e1s",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0033",
-        "actionName": "Install biodigesters in rural properties",
-        "actionPriority": 16
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BR GYN",
@@ -150,7 +106,48 @@
         "regionName": "Goi\u00e1s",
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
-        "actionPriority": 17
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0033",
+        "actionName": "Install biodigesters in rural properties",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0038",
+        "actionName": "Promote community solar farms",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BR GYN",
@@ -159,16 +156,18 @@
         "regionName": "Goi\u00e1s",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 18
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BR GYN",
         "cityName": "Goi\u00e2nia",
         "region": "GO",
         "regionName": "Goi\u00e1s",
-        "actionId": "icare_0097",
-        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
-        "actionPriority": 19
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BR GYN",
@@ -177,6 +176,27 @@
         "regionName": "Goi\u00e1s",
         "actionId": "icare_0040",
         "actionName": "Adopt solar-powered street lighting in rural areas",
-        "actionPriority": 20
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0011",
+        "actionName": "Provide tax incentives for renewable energy in residential projects",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

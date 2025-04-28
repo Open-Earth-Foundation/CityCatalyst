@@ -70,7 +70,7 @@ def get_actions(language: str = "en") -> Optional[list[dict]]:
 if __name__ == "__main__":
     from logger_config import setup_logger
 
-    setup_logger(level=logging.DEBUG)
+    setup_logger(level=logging.INFO)
 
     parser = argparse.ArgumentParser(description="Fetch climate actions data.")
 

@@ -13,6 +13,7 @@ import sys
 import pandas as pd
 from pathlib import Path
 import argparse
+import json
 
 # Load the city data from the CSV file
 BASE_DIR = Path(__file__).parent.parent.parent
@@ -88,48 +89,35 @@ def extract_data(file_name: str) -> dict:
 
 
 def add_emissions_to_city_data(locode: str, dict_extracted_emissions: dict) -> None:
-
     file_path = BASE_PATH_CITIES / "city_data.json"
-    # Load the city data from the CSV file
-    data = pd.read_json(file_path, encoding="utf-8")
+    # Load the city data as a list of dicts
+    with open(file_path, "r", encoding="utf-8") as f:
+        cities = json.load(f)
 
-    if not data.empty:
-        print(f"City data loaded from {file_path}")
+    updated = False
+    for city in cities:
+        if city.get("locode") == locode:
+            print(f"Match found for locode {locode}!")
+            # Update emissions fields
+            for key, value in dict_extracted_emissions.items():
+                city[key] = value
+            city["totalEmissions"] = (
+                dict_extracted_emissions["stationaryEnergyEmissions"]
+                + dict_extracted_emissions["transportationEmissions"]
+                + dict_extracted_emissions["wasteEmissions"]
+                + dict_extracted_emissions["industrialProcessEmissions"]
+                + dict_extracted_emissions["landUseEmissions"]
+            )
+            updated = True
+            break
 
-        # Flag to check if the locode was found
-        updated = False
-
-        # Add the emissions data to the city data
-        # Iterate through each row in the DataFrame
-        for index, city in data.iterrows():
-            # Check if the locode matches
-            if city["locode"] == locode:
-                print(f"Match found for locode {locode}!")
-
-                # Update the emissions data
-                for key, value in dict_extracted_emissions.items():
-                    data.at[index, key] = value
-
-                # Update the total emissions field
-                data.at[index, "totalEmissions"] = (
-                    dict_extracted_emissions["stationaryEnergyEmissions"]
-                    + dict_extracted_emissions["transportationEmissions"]
-                    + dict_extracted_emissions["wasteEmissions"]
-                    + dict_extracted_emissions["industrialProcessEmissions"]
-                    + dict_extracted_emissions["landUseEmissions"]
-                )
-
-                updated = True
-                break  # Stop the loop if the locode was found
-
-        if updated:
-            # Save the updated data back to the JSON file
-            data.to_json(file_path, orient="records", indent=4)
-            print(f"Updated city data saved to {file_path}")
-        else:
-            print(f"No matching city found for locode: {locode}")
+    if updated:
+        # Write back the updated list, preserving formatting
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(cities, f, ensure_ascii=False, indent=2)
+        print(f"Updated city data saved to {file_path}")
     else:
-        print(f"City data could not be loaded from {file_path}")
+        print(f"No matching city found for locode: {locode}")
         sys.exit(1)
 
 

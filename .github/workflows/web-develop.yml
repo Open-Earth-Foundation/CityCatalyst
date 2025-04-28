@@ -52,7 +52,10 @@ jobs:
 
           if [[ "$prerelease" == dev.* || "$prerelease" == "-dev."* ]]; then
             echo "Current version $version is a dev prerelease. Bumping..."
-            npm version prerelease --preid dev -m "ci: bump dev tag to %s [skip ci]"
+            npm version prerelease --preid dev
+            version=$(node -p "require('./package.json').version")
+            git commit -m "chore: bump dev tag to $version [skip ci]" package.json package-lock.json
+            git tag -a "$version" -m "chore: bump dev tag to $version [skip ci]"
             git push --follow-tags
           else
             echo "Current version $version is not a dev prerelease. Skipping bump."

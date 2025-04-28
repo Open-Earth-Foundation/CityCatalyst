@@ -125,7 +125,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@playwright/test": "^1.47.2",
+    "@playwright/test": "^1.52.0",
     "@storybook/addon-essentials": "^8.2.6",
     "@storybook/addon-interactions": "^8.2.5",
     "@storybook/addon-links": "^7.6.17",

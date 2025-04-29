@@ -3,8 +3,11 @@ import { Project } from "@/models/Project";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { db } from "@/models";
-import CityBoundaryService from "@/backend/CityBoundaryService";
+import CityBoundaryService, {
+  CityBoundary,
+} from "@/backend/CityBoundaryService";
 import type { Inventory } from "@/models/Inventory";
+import { logger } from "@/services/logger";
 
 // TODO cache the results of this route
 export const GET = apiHandler(async (req, { params, session }) => {
@@ -29,13 +32,31 @@ export const GET = apiHandler(async (req, { params, session }) => {
   if (!project) {
     throw new createHttpError.NotFound("project-not-found");
   }
-  const boundaries = await Promise.all(
+
+  const errors: { locode?: string; error: any }[] = [];
+  const cityResults = await Promise.all(
     project.cities
       .filter((city) => !!city.locode)
       .map(async (city) => {
-        const boundary = await CityBoundaryService.getCityBoundary(
-          city.locode!,
-        );
+        let boundary: CityBoundary | null = null;
+        try {
+          boundary = await CityBoundaryService.getCityBoundary(city.locode!);
+        } catch (error: any) {
+          const message =
+            error instanceof Error ? error.message : "unknown-error";
+          logger.error(
+            `Failed to fetch boundary for city ${city.name} (${city.locode}, ${city.cityId}): ${message}`,
+          );
+          errors.push({
+            locode: city.locode,
+            error: message,
+          });
+        }
+
+        if (!boundary) {
+          return null;
+        }
+
         let latestInventory: Inventory | null = null;
         if (city.inventories && city.inventories.length > 0) {
           latestInventory = city.inventories.reduce((latest, inventory) => {
@@ -60,6 +81,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
         };
       }),
   );
+  const result = cityResults.filter((cityResult) => cityResult != null);
 
-  return NextResponse.json(boundaries);
+  return NextResponse.json({ result, errors });
 });

@@ -48,7 +48,10 @@ export async function getFileDataFromStream(filePath: string): Promise<Blob> {
   const fileStream = fs.createReadStream(filePath);
   const chunks: Buffer[] = [];
 
-  fileStream.on("data", (chunk: Buffer) => {
+  fileStream.on("data", (chunk: string | Buffer) => {
+    if (typeof chunk === "string") {
+      chunk = Buffer.from(chunk, "utf-8");
+    }
     chunks.push(chunk);
   });
 

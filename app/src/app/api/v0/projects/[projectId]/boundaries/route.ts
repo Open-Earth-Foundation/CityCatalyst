@@ -41,9 +41,16 @@ export const GET = apiHandler(async (req, { params, session }) => {
         let boundary: CityBoundary | null = null;
         try {
           boundary = await CityBoundaryService.getCityBoundary(city.locode!);
-        } catch (error) {
-          logger.error(error);
-          errors.push({ locode: city.locode, error });
+        } catch (error: any) {
+          const message =
+            error instanceof Error ? error.message : "unknown-error";
+          logger.error(
+            `Failed to fetch boundary for city ${city.name} (${city.locode}, ${city.cityId}): ${message}`,
+          );
+          errors.push({
+            locode: city.locode,
+            error: message,
+          });
         }
 
         if (!boundary) {

@@ -16,7 +16,7 @@ const ProjectDashboardNavbar = ({
           className="flex items-center"
         >
           <Heading color="base.light" size="md" className="opacity-75">
-            {"dashboard"}
+            {"Dashboard"}
           </Heading>
         </Link>
         <Link
@@ -24,7 +24,7 @@ const ProjectDashboardNavbar = ({
           className="flex items-center"
         >
           <Heading color="base.light" size="md" className="opacity-75">
-            {"about"}
+            {"About"}
           </Heading>
         </Link>
         <Link
@@ -32,7 +32,7 @@ const ProjectDashboardNavbar = ({
           className="flex items-center"
         >
           <Heading color="base.light" size="md" className="opacity-75">
-            {"collaborators"}
+            {"Collaborators"}
           </Heading>
         </Link>
       </>

@@ -4,6 +4,7 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { db } from "@/models";
 import CityBoundaryService from "@/backend/CityBoundaryService";
+import type { Inventory } from "@/models/Inventory";
 
 // TODO cache the results of this route
 export const GET = apiHandler(async (req, { params, session }) => {
@@ -35,15 +36,18 @@ export const GET = apiHandler(async (req, { params, session }) => {
         const boundary = await CityBoundaryService.getCityBoundary(
           city.locode!,
         );
-        const latestInventory = city.inventories.reduce((latest, inventory) => {
-          if (!latest) {
-            return inventory;
-          }
-          if ((inventory.year ?? 0) > (latest.year ?? 0)) {
-            return inventory;
-          }
-          return latest;
-        });
+        let latestInventory: Inventory | null = null;
+        if (city.inventories && city.inventories.length > 0) {
+          latestInventory = city.inventories.reduce((latest, inventory) => {
+            if (!latest) {
+              return inventory;
+            }
+            if ((inventory.year ?? 0) > (latest.year ?? 0)) {
+              return inventory;
+            }
+            return latest;
+          });
+        }
 
         return {
           ...boundary,

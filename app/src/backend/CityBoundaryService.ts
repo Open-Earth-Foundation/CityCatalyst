@@ -5,7 +5,7 @@ import wellknown from "wellknown";
 
 export type CityBoundary = {
   data: wellknown.GeoJSONGeometryOrNull;
-  boundingBox: any[];
+  boundingBox: number[];
   area: number;
 };
 

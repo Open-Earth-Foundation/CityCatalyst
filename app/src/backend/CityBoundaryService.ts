@@ -3,12 +3,16 @@ import { logger } from "@/services/logger";
 import createHttpError from "http-errors";
 import wellknown from "wellknown";
 
+export type CityBoundary = {
+  data: wellknown.GeoJSONGeometryOrNull;
+  boundingBox: any[];
+  area: number;
+};
+
 export default class CityBoundaryService {
-  public static async getCityBoundary(cityLocode: string): Promise<{
-    data: wellknown.GeoJSONGeometryOrNull;
-    boundingBox: any[];
-    area: number;
-  }> {
+  public static async getCityBoundary(
+    cityLocode: string,
+  ): Promise<CityBoundary> {
     const url = `${GLOBAL_API_URL}/api/v0/cityboundary/city/${cityLocode}`;
     logger.info(`Fetching ${url}`);
 

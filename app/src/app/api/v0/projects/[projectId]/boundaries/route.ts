@@ -3,8 +3,11 @@ import { Project } from "@/models/Project";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { db } from "@/models";
-import CityBoundaryService from "@/backend/CityBoundaryService";
+import CityBoundaryService, {
+  CityBoundary,
+} from "@/backend/CityBoundaryService";
 import type { Inventory } from "@/models/Inventory";
+import { logger } from "@/services/logger";
 
 // TODO cache the results of this route
 export const GET = apiHandler(async (req, { params, session }) => {
@@ -29,13 +32,24 @@ export const GET = apiHandler(async (req, { params, session }) => {
   if (!project) {
     throw new createHttpError.NotFound("project-not-found");
   }
+
+  const errors: { locode?: string; error: any }[] = [];
   const boundaries = await Promise.all(
     project.cities
       .filter((city) => !!city.locode)
       .map(async (city) => {
-        const boundary = await CityBoundaryService.getCityBoundary(
-          city.locode!,
-        );
+        let boundary: CityBoundary | null = null;
+        try {
+          boundary = await CityBoundaryService.getCityBoundary(city.locode!);
+        } catch (error) {
+          logger.error(error);
+          errors.push({ locode: city.locode, error });
+        }
+
+        if (!boundary) {
+          return null;
+        }
+
         let latestInventory: Inventory | null = null;
         if (city.inventories && city.inventories.length > 0) {
           latestInventory = city.inventories.reduce((latest, inventory) => {
@@ -57,8 +71,10 @@ export const GET = apiHandler(async (req, { params, session }) => {
             locode: city.locode,
             latestInventoryId: latestInventory?.inventoryId,
           },
+          errors,
         };
-      }),
+      })
+      .filter((result) => result != null),
   );
 
   return NextResponse.json(boundaries);

@@ -184,20 +184,21 @@ export const POST = apiHandler(async (req, { params, session }) => {
           doesInvitedUserExist ? "true" : "false",
         );
         const url = `${host}/user/invites?${params.toString()}`;
+        const html = await render(
+          InviteUserToMultipleCitiesTemplate({
+            url,
+            email,
+            cities: cities,
+            invitingUser: {
+              name: session?.user.name!,
+              email: session?.user.email!,
+            },
+          }),
+        );
         const sendInvite = await sendEmail({
           to: email!,
           subject: "City Catalyst - City Invitation",
-          html: render(
-            InviteUserToMultipleCitiesTemplate({
-              url,
-              email,
-              cities: cities,
-              invitingUser: {
-                name: session?.user.name!,
-                email: session?.user.email!,
-              },
-            }),
-          ),
+          html,
         });
         if (!sendInvite) {
           logger.error(

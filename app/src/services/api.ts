@@ -1083,6 +1083,7 @@ export const api = createApi({
           method: "GET",
           url: `projects/${projectId}/boundaries`,
         }),
+        transformResponse: (response: any) => response.result,
         providesTags: ["Inventory"],
       }),
       getProjectSummary: builder.query({

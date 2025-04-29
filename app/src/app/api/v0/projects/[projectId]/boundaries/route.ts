@@ -34,7 +34,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
   }
 
   const errors: { locode?: string; error: any }[] = [];
-  const boundaries = await Promise.all(
+  const cityResults = await Promise.all(
     project.cities
       .filter((city) => !!city.locode)
       .map(async (city) => {
@@ -71,11 +71,10 @@ export const GET = apiHandler(async (req, { params, session }) => {
             locode: city.locode,
             latestInventoryId: latestInventory?.inventoryId,
           },
-          errors,
         };
-      })
-      .filter((result) => result != null),
+      }),
   );
+  const result = cityResults.filter((cityResult) => cityResult != null);
 
-  return NextResponse.json(boundaries);
+  return NextResponse.json({ result, errors });
 });

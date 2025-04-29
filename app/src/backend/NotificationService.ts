@@ -1,7 +1,6 @@
 import { smtpOptions } from "@/lib/email";
 import AdminNotificationTemplate from "@/lib/emails/AdminNotificationTemplate";
 import { City } from "@/models/City";
-import { User } from "@/models/User";
 import { UserFileResponse } from "@/util/types";
 import { render } from "@react-email/components";
 import nodemailer, { Transporter } from "nodemailer";
@@ -48,6 +47,7 @@ class NotificationService {
     };
 
     try {
+      // TODO use cached `transporter` from class
       const transporter = nodemailer.createTransport({ ...smtpOptions });
       const info = await transporter.sendMail(mailOptions);
       return { success: true, messageId: info.messageId };
@@ -68,22 +68,24 @@ class NotificationService {
     city: City;
     inventoryId: string;
   }) {
+    const html = await render(
+      AdminNotificationTemplate({
+        adminNames: process.env.ADMIN_NAMES!,
+        file: fileData,
+        user: {
+          cityName: city.name!,
+          email: user?.email!,
+          name: user?.name!,
+        },
+        inventoryId,
+      }),
+    );
+
     await NotificationService.sendEmail({
       to: process.env.ADMIN_EMAILS!,
       subject: "CityCatalyst File Upload",
       text: "City Catalyst",
-      html: render(
-        AdminNotificationTemplate({
-          adminNames: process.env.ADMIN_NAMES!,
-          file: fileData,
-          user: {
-            cityName: city.name!,
-            email: user?.email!,
-            name: user?.name!,
-          },
-          inventoryId,
-        }),
-      ),
+      html,
     });
   }
 }

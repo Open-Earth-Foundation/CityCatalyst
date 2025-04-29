@@ -16,6 +16,7 @@ import Metrics from "@/app/[lng]/public/project/[project]/components/Metrics";
 import Navbar from "@/app/[lng]/public/project/[project]/components/Navbar";
 import Collaborators from "@/app/[lng]/public/project/[project]/components/Collaborators";
 import { formatEmissions } from "@/util/helpers";
+import { useTranslation } from "@/i18n/client";
 
 export interface PartnerLogo {
   id: string;
@@ -114,6 +115,7 @@ export default function ProjectPage({
 }: {
   params: { project: string; lng: string };
 }) {
+  const { t } = useTranslation(lng, "dashboard");
   const {
     data: projectSummary,
     isLoading,
@@ -155,7 +157,7 @@ export default function ProjectPage({
 
   return (
     <VStack className="min-h-screen" gap={0} flexDirection="column">
-      <Navbar lng={lng} project={project} />
+      <Navbar lng={lng} project={project} t={t} />
       <Box flex={1} className="flex-grow" w="100%">
         <Hero />
         <PartnerLogos partners={partners} />

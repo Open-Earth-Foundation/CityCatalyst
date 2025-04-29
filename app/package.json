@@ -63,7 +63,7 @@
     "@types/react-table": "^7.7.20",
     "@types/uuid": "^9.0.8",
     "@types/wellknown": "^0.5.8",
-    "accept-language": "^3.0.18",
+    "accept-language": "^3.0.20",
     "ai": "^3.4.7",
     "autoprefixer": "10.4.21",
     "bcrypt": "^5.1.1",

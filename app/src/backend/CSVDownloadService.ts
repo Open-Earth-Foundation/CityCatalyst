@@ -172,9 +172,12 @@ export default class CSVDownloadService {
             let ch4_gas = activityValue.gasValues.find((g) => g.gas === "CH4");
             let n2o_gas = activityValue.gasValues.find((g) => g.gas === "N2O");
 
-            emission_factor_co2 = co2_gas?.emissionsFactor.emissionsPerActivity;
-            emission_factor_ch4 = ch4_gas?.emissionsFactor.emissionsPerActivity;
-            emission_factor_n2o = n2o_gas?.emissionsFactor.emissionsPerActivity;
+            emission_factor_co2 =
+              co2_gas?.emissionsFactor?.emissionsPerActivity;
+            emission_factor_ch4 =
+              ch4_gas?.emissionsFactor?.emissionsPerActivity;
+            emission_factor_n2o =
+              n2o_gas?.emissionsFactor?.emissionsPerActivity;
             emission_ch4 = ch4_gas?.gasAmount;
             emission_co2 = co2_gas?.gasAmount;
             emission_n2o = n2o_gas?.gasAmount;

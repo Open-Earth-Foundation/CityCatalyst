@@ -1,30 +1,15 @@
-import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import Excel from "exceljs";
-import { Op } from "sequelize";
 import createHttpError from "http-errors";
 
 import type { Inventory } from "@/models/Inventory";
-import type { InventoryValue } from "@/models/InventoryValue";
-import type {
-  InventoryResponse,
-  InventoryWithInventoryValuesAndActivityValues,
-} from "@/util/types";
-import type { EmissionsFactor } from "@/models/EmissionsFactor";
+import type { InventoryWithInventoryValuesAndActivityValues } from "@/util/types";
 import { db } from "@/models";
-import {
-  findClosestYearToInventory,
-  getTranslationFromDictionary,
-  keyBy,
-  PopulationEntry,
-} from "@/util/helpers";
+import { getTranslationFromDictionary, keyBy } from "@/util/helpers";
 import ECRFDownloadService from "@/backend/ECRFDownloadService";
 import CSVDownloadService from "@/backend/CSVDownloadService";
-
-type InventoryValueWithEF = InventoryValue & {
-  emissionsFactor?: EmissionsFactor;
-};
+import InventoryDownloadService from "@/backend/InventoryDownloadService";
 
 const CIRIS_TEMPLATE_PATH = "./templates/CIRIS_template.xlsm";
 
@@ -47,89 +32,15 @@ const sectorSheetMapping: { [key: string]: number } = {
 
 export const GET = apiHandler(async (req, { params, session }) => {
   const lng = req.nextUrl.searchParams.get("lng") || "en";
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
-    session,
-    [
-      {
-        model: db.models.InventoryValue,
-        as: "inventoryValues",
-        include: [
-          {
-            model: db.models.ActivityValue,
-            as: "activityValues",
-            include: [
-              {
-                model: db.models.GasValue,
-                as: "gasValues",
-                separate: true,
-                include: [
-                  {
-                    model: db.models.EmissionsFactor,
-                    as: "emissionsFactor",
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            model: db.models.DataSource,
-            attributes: [
-              "datasourceId",
-              "sourceType",
-              "datasetName",
-              "datasourceName",
-              "dataQuality",
-            ],
-            as: "dataSource",
-          },
-          {
-            model: db.models.SubSector,
-            as: "subSector",
-            attributes: ["subsectorId", "subsectorName"],
-          },
-        ],
-      },
-    ],
-  );
 
-  if (!inventory.year) {
-    throw new createHttpError.BadRequest(
-      `Inventory ${inventory.inventoryId} is missing a year number`,
-    );
-  }
-  const MAX_YEARS_DIFFERENCE = 10;
-  const populationEntries = await db.models.Population.findAll({
-    attributes: ["year", "population"],
-    where: {
-      cityId: inventory.cityId,
-      year: {
-        [Op.gte]: inventory.year - MAX_YEARS_DIFFERENCE,
-        [Op.lte]: inventory.year + MAX_YEARS_DIFFERENCE,
-      },
-      population: {
-        [Op.ne]: null,
-      },
-    },
-    order: [["year", "DESC"]],
-  });
-
-  const population = findClosestYearToInventory(
-    populationEntries as PopulationEntry[],
-    inventory.year,
-    MAX_YEARS_DIFFERENCE,
-  );
-  if (!population) {
-    throw new createHttpError.NotFound(
-      `Population data not found for city ${inventory.cityId} for year ${inventory.year}`,
-    );
-  }
-
-  const output: InventoryResponse = inventory.toJSON();
-  output.city.populationYear = population.year;
-  output.city.population = population.population || 0;
   let body: Buffer | null = null;
   let headers: Record<string, string> | null = null;
+
+  const { output, inventory } =
+    await InventoryDownloadService.queryInventoryData(
+      params.inventory,
+      session,
+    );
 
   switch (req.nextUrl.searchParams.get("format")?.toLowerCase()) {
     case "csv":

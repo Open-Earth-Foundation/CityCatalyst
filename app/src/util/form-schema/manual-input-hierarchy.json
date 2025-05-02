@@ -2334,6 +2334,7 @@
               {
                 "id": "on-road-transport-vehicle-type",
                 "options": [
+                  "vehicle-type-all",
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
                   "vehicle-type-public-transport-vehicles",
@@ -2341,6 +2342,7 @@
                   "vehicle-type-service-vehicles",
                   "vehicle-type-other"
                 ],
+                "exclusive": "type-all",
                 "multiselect": true
               },
               {
@@ -2435,12 +2437,14 @@
               {
                 "id": "on-road-transport-vehicle-type",
                 "options": [
+                  "vehicle-type-all",
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
                   "vehicle-type-public-transport-vehicles",
                   "vehicle-type-emergency-vehicles",
                   "vehicle-type-service-vehicles"
                 ],
+                "exclusive": "type-all",
                 "multiselect": true
               },
               {
@@ -2528,12 +2532,14 @@
         {
           "id": "on-road-transport-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-passenger-vehicles",
             "vehicle-type-commercial-vehicles",
             "vehicle-type-public-transport-vehicles",
             "vehicle-type-emergency-vehicles",
             "vehicle-type-service-vehicles"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {
@@ -2571,7 +2577,9 @@
                   "vehicle-type-public-transport-vehicles",
                   "vehicle-type-emergency-vehicles",
                   "vehicle-type-service-vehicles"
-                ]
+                ],
+                "exclusive": "type-all",
+                "multiselect": true
               },
               {
                 "id": "on-road-transport-electricity-source",
@@ -2625,12 +2633,14 @@
         {
           "id": "on-road-transport-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-passenger-vehicles",
             "vehicle-type-commercial-vehicles",
             "vehicle-type-public-transport-vehicles",
             "vehicle-type-emergency-vehicles",
             "vehicle-type-service-vehicles"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {
@@ -2649,12 +2659,14 @@
         {
           "id": "on-road-transport-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-passenger-vehicles",
             "vehicle-type-commercial-vehicles",
             "vehicle-type-public-transport-vehicles",
             "vehicle-type-emergency-vehicles",
             "vehicle-type-service-vehicles"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {
@@ -2714,7 +2726,8 @@
                   "vehicle-type-high-speed-trains",
                   "vehicle-type-tourist-trains"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "type-all",
+                "multiselect": true
               },
               {
                 "id": "data-source",
@@ -2793,11 +2806,13 @@
               {
                 "id": "railways-vehicle-type",
                 "options": [
+                  "vehicle-type-all",
                   "vehicle-type-passenger-trains",
                   "vehicle-type-freight-trains",
                   "vehicle-type-high-speed-trains",
                   "vehicle-type-tourist-trains"
                 ],
+                "exclusive": "type-all",
                 "multiselect": true
               },
               {
@@ -2884,11 +2899,13 @@
         {
           "id": "railways-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-passenger-trains",
             "vehicle-type-freight-trains",
             "vehicle-type-high-speed-trains",
             "vehicle-type-tourist-trains"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {
@@ -2923,7 +2940,8 @@
                   "vehicle-type-high-speed-trains",
                   "vehicle-type-tourist-trains"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "type-all",
+                "multiselect": true
               },
               {
                 "id": "railways-electricity-source",
@@ -2977,11 +2995,13 @@
         {
           "id": "railways-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-passenger-trains",
             "vehicle-type-freight-trains",
             "vehicle-type-high-speed-trains",
             "vehicle-type-tourist-trains"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {
@@ -3000,11 +3020,13 @@
         {
           "id": "railways-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-passenger-trains",
             "vehicle-type-freight-trains",
             "vehicle-type-high-speed-trains",
             "vehicle-type-tourist-trains"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {
@@ -3063,7 +3085,8 @@
                   "vehicle-type-marine-vessels",
                   "vehicle-type-other"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "type-all",
+                "multiselect": true
               },
               {
                 "id": "data-source",
@@ -3148,7 +3171,8 @@
                   "vehicle-type-boats",
                   "vehicle-type-marine-vessels"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "type-all",
+                "multiselect": true
               },
               {
                 "id": "waterborne-navigation-fuel-type",
@@ -3221,10 +3245,12 @@
         {
           "id": "waterborne-navigation-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-ferries",
             "vehicle-type-boats",
             "vehicle-type-marine-vessels"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {
@@ -3258,7 +3284,8 @@
                   "vehicle-type-boats",
                   "vehicle-type-marine-vessels"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "type-all",
+                "multiselect": true
               },
               {
                 "id": "waterborne-navigation-electricity-source",
@@ -3312,10 +3339,12 @@
         {
           "id": "waterborne-navigation-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-ferries",
             "vehicle-type-boats",
             "vehicle-type-marine-vessels"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {
@@ -3334,10 +3363,12 @@
         {
           "id": "waterborne-navigation-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-ferries",
             "vehicle-type-boats",
             "vehicle-type-marine-vessels"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {
@@ -3400,7 +3431,8 @@
                   "vehicle-type-national-flights",
                   "vehicle-type-international-flights"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "type-all",
+                "multiselect": true
               },
               {
                 "id": "data-source",
@@ -3488,7 +3520,8 @@
                   "vehicle-type-national-flights",
                   "vehicle-type-international-flights"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "type-all",
+                "multiselect": true
               },
               {
                 "id": "aviation-fuel-type",
@@ -3574,6 +3607,7 @@
             "vehicle-type-national-flights",
             "vehicle-type-international-flights"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {
@@ -3613,7 +3647,8 @@
                   "vehicle-type-national-flights",
                   "vehicle-type-international-flights"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "type-all",
+                "multiselect": true
               },
               {
                 "id": "aviation-electricity-source",
@@ -3675,6 +3710,7 @@
             "vehicle-type-national-flights",
             "vehicle-type-international-flights"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {
@@ -3701,6 +3737,7 @@
             "vehicle-type-national-flights",
             "vehicle-type-international-flights"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {
@@ -3759,7 +3796,8 @@
                   "vehicle-type-mining-equipment",
                   "vehicle-type-forestry-equipment"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "type-all",
+                "multiselect": true
               },
               {
                 "id": "data-source",
@@ -3840,6 +3878,7 @@
             "vehicle-type-mining-equipment",
             "vehicle-type-forestry-equipment"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {
@@ -3877,7 +3916,8 @@
                   "vehicle-type-mining-equipment",
                   "vehicle-type-forestry-equipment"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "type-all",
+                "multiselect": true
               },
               {
                 "id": "off-road-transport-electricity-source",
@@ -3937,6 +3977,7 @@
             "vehicle-type-mining-equipment",
             "vehicle-type-forestry-equipment"
           ],
+          "exclusive": "type-all",
           "multiselect": true
         },
         {

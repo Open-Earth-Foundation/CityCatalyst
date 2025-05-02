@@ -64,6 +64,9 @@ interface OrgData {
 const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
   const { t } = useTranslation(lng, "admin");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bulkActionsTab, setBulkActionsTab] = useState(
+    "bulk-inventory-creation",
+  );
   const router = useRouter();
 
   const { data: organizationData, isLoading: isOrgDataLoading } =
@@ -375,6 +378,8 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
               orientation="vertical"
               mt="48px"
               variant="subtle"
+              value={bulkActionsTab}
+              onValueChange={(details) => setBulkActionsTab(details.value)}
             >
               <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
                 <BulkActionsTabTrigger title="bulk-inventory-creation" />
@@ -386,7 +391,10 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                 />
                 <Tabs.Indicator rounded="l2" />
               </Tabs.List>
-              <BulkActionsTabContent t={t} />
+              <BulkActionsTabContent
+                t={t}
+                onTabReset={() => setBulkActionsTab("bulk-inventory-creation")}
+              />
 
               {/* TODO add more actions */}
               <Tabs.Content value="bulk-data-connection">

@@ -1,12 +1,13 @@
 "use client";
 import SubSectorCard from "@/components/Cards/SubSectorCard";
 import { InventoryResponse, SectorProgress } from "@/util/types";
-import { Accordion, Box, Button, Heading, Icon, Text } from "@chakra-ui/react";
+import { Box, Button, Heading, Icon, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 
 import { useState } from "react";
 import { SegmentedProgress } from "../SegmentedProgress";
 import {
+  clamp,
   convertSectorReferenceNumberToNumber,
   formatPercent,
 } from "@/util/helpers";
@@ -29,7 +30,7 @@ export function SectorCard({
   t,
   inventory,
 }: {
-  sectorProgress: SectorProgress;
+  sectorProgress?: SectorProgress;
   sector: ISector;
   t: TFunction;
   inventory: InventoryResponse;
@@ -40,10 +41,12 @@ export function SectorCard({
   let totalProgress = 0,
     thirdPartyProgress = 0,
     uploadedProgress = 0;
-  if (sectorProgress.total > 0) {
-    thirdPartyProgress = sectorProgress.thirdParty / sectorProgress.total;
-    uploadedProgress = sectorProgress.uploaded / sectorProgress.total;
-    totalProgress = thirdPartyProgress + uploadedProgress;
+  if (sectorProgress && sectorProgress.total > 0) {
+    thirdPartyProgress = clamp(
+      sectorProgress.thirdParty / sectorProgress.total,
+    );
+    uploadedProgress = clamp(sectorProgress.uploaded / sectorProgress.total);
+    totalProgress = clamp(thirdPartyProgress + uploadedProgress);
   }
   /*** Data ***/
   const {
@@ -146,7 +149,7 @@ export function SectorCard({
                 <Trans t={t}>sub-sectors-required</Trans>
               </Text>
               <Box className="grid grid-cols-3 gap-4 py-4">
-                {sectorProgress.subSectors.map((subSector, i) => (
+                {sectorProgress?.subSectors?.map((subSector, i) => (
                   <NextLink
                     key={i}
                     href={`/${inventory.inventoryId}/data/${convertSectorReferenceNumberToNumber(sector.referenceNumber)}/${subSector.subsectorId}`}

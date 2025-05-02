@@ -1,16 +1,19 @@
 /* eslint-disable i18next/no-literal-string */
-
 "use client";
+
 import { Box, Container, Text, Heading, Flex, Strong } from "@chakra-ui/react";
 import Footer from "../components/Footer";
 import NavigationBar from "../components/Navbar";
 import Image from "next/image";
+import { useTranslation } from "@/i18n/client";
 
 const Collaborators = ({
   params: { project, lng },
 }: {
   params: { project: string; lng: string };
 }) => {
+  const { t } = useTranslation(lng, "dashboard");
+
   const footerProps = {
     copyright: "© 2025 CHAMP Brazil Cities Initiative",
     links: [
@@ -21,7 +24,7 @@ const Collaborators = ({
   };
   return (
     <Box minH="100vh" display="flex" flexDirection="column">
-      <NavigationBar lng={lng} project={project} />
+      <NavigationBar lng={lng} project={project} t={t} />
       <Box as="main" flexGrow={1}>
         {/* Example conversion for just one section, all others follow this pattern */}
         <Box py={16} px={{ base: 6, md: 10, lg: 16 }} w="full" bg="white">

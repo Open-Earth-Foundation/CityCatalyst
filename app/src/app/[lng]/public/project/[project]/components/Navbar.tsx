@@ -1,12 +1,15 @@
 import { Heading, Link } from "@chakra-ui/react";
 import { NavigationBar } from "@/components/navigation-bar";
+import type { TFunction } from "i18next";
 
 const ProjectDashboardNavbar = ({
   lng,
   project,
+  t,
 }: {
   lng: string;
   project: string;
+  t: TFunction;
 }) => {
   return (
     <NavigationBar lng={lng} isPublic>
@@ -16,7 +19,7 @@ const ProjectDashboardNavbar = ({
           className="flex items-center"
         >
           <Heading color="base.light" size="md" className="opacity-75">
-            {"dashboard"}
+            {t("dashboard")}
           </Heading>
         </Link>
         <Link
@@ -24,7 +27,7 @@ const ProjectDashboardNavbar = ({
           className="flex items-center"
         >
           <Heading color="base.light" size="md" className="opacity-75">
-            {"about"}
+            {t("about")}
           </Heading>
         </Link>
         <Link
@@ -32,7 +35,7 @@ const ProjectDashboardNavbar = ({
           className="flex items-center"
         >
           <Heading color="base.light" size="md" className="opacity-75">
-            {"collaborators"}
+            {t("collaborators")}
           </Heading>
         </Link>
       </>

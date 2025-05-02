@@ -43,16 +43,17 @@ export default class EmailService {
     params.set("role", role);
 
     const url = `${host}/organization/invites?${params.toString()}`;
+    const html = await render(
+      InviteToOrganizationTemplate({
+        url,
+        organization,
+        user,
+      }),
+    );
     return sendEmail({
       to: email,
       subject: "City Catalyst - Organization Invitation",
-      html: render(
-        InviteToOrganizationTemplate({
-          url,
-          organization,
-          user,
-        }),
-      ),
+      html,
     });
   }
 }

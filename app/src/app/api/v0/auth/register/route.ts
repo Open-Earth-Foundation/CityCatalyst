@@ -36,15 +36,16 @@ export const POST = apiHandler(async (req: Request) => {
 
   if (process.env.EMAIL_ENABLED === "true") {
     try {
+      const html = await render(
+        ConfirmRegistrationTemplate({
+          url: `${host}/dashboard`,
+          user: { name: body.name },
+        }),
+      );
       await sendEmail({
         to: body.email,
         subject: "City Catalyst - User Registration",
-        html: render(
-          ConfirmRegistrationTemplate({
-            url: `${host}/dashboard`,
-            user: { name: body.name },
-          }),
-        ),
+        html,
       });
     } catch (error) {
       throw new createHttpError.BadRequest("Email could not be sent");

@@ -13,6 +13,7 @@ import { DEFAULT_PROJECT_ID, InventoryTypeEnum } from "@/util/constants";
 import { InventoryAttributes } from "@/models/Inventory";
 import { GlobalWarmingPotentialTypeEnum } from "@/util/enums";
 import CityBoundaryService from "./CityBoundaryService";
+import UserService from "./UserService";
 
 export interface BulkInventoryCreateProps {
   cityLocodes: string[]; // List of city locodes
@@ -42,7 +43,7 @@ export default class AdminService {
     props: BulkInventoryCreateProps,
     session: AppSession | null,
   ): Promise<CreateBulkInventoriesResponse> {
-    this.ensureIsAdmin(session);
+    UserService.ensureIsAdmin(session);
 
     const errors: { locode: string; error: any }[] = [];
     const results: { locode: string; result: string[] }[] = [];
@@ -132,7 +133,7 @@ export default class AdminService {
     props: BulkInventoryUpdateProps,
     session: AppSession | null,
   ): Promise<{ errors: { locode: string; error: string }[] }> {
-    this.ensureIsAdmin(session);
+    UserService.ensureIsAdmin(session);
 
     const errors: { locode: string; error: string }[] = [];
 
@@ -177,27 +178,11 @@ export default class AdminService {
     return { errors };
   }
 
-  private static ensureIsAdmin(session: AppSession | null) {
-    // Ensure user is signed in
-    const isSignedIn = !!session?.user;
-    if (!isSignedIn) {
-      throw new createHttpError.Unauthorized("Not signed in");
-    }
-
-    // Ensure user has admin role
-    const isAdmin = session?.user?.role === Roles.Admin;
-    if (!isAdmin) {
-      throw new createHttpError.Unauthorized(
-        "Not signed in as an admin: " + session?.user?.role,
-      );
-    }
-  }
-
   public static async bulkUpdateInventories(
     { cityLocodes, userEmail, years, projectId }: BulkInventoryUpdateProps,
     session: AppSession | null,
   ) {
-    this.ensureIsAdmin(session);
+    UserService.ensureIsAdmin(session);
     const errors: { locode: string; error: string }[] = [];
     for (const locode of cityLocodes) {
       const city = await db.models.City.findOne({

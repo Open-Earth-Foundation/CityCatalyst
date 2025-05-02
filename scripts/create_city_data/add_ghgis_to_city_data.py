@@ -42,6 +42,62 @@ GPC_TO_SECTOR = {
     "V": "landUseEmissions",
 }
 
+GPC_TO_SCOPE = {
+    "I.1.1": 1,
+    "I.1.2": 2,
+    "I.1.3": 3,
+    "I.2.1": 1,
+    "I.2.2": 2,
+    "I.2.3": 3,
+    "I.3.1": 1,
+    "I.3.2": 2,
+    "I.3.3": 3,
+    "I.4.1": 1,
+    "I.4.2": 2,
+    "I.4.3": 3,
+    "I.4.4": 1,
+    "I.5.1": 1,
+    "I.5.2": 2,
+    "I.5.3": 3,
+    "I.6.1": 1,
+    "I.6.2": 2,
+    "I.63": 3,
+    "I.7.1": 1,
+    "I.8.1": 1,
+    "II.1.1": 1,
+    "II.1.2": 2,
+    "II.1.3": 3,
+    "II.2.1": 1,
+    "II.2.2": 2,
+    "II.2.3": 3,
+    "II.3.1": 1,
+    "II.3.2": 2,
+    "II.3.3": 3,
+    "II.4.1": 1,
+    "II.4.2": 2,
+    "II.4.3": 3,
+    "II.5.1": 1,
+    "II.5.2": 2,
+    "III.1.1": 1,
+    "III.1.2": 3,
+    "III.1.3": 1,
+    "III.2.1": 1,
+    "III.2.2": 3,
+    "III.2.3": 1,
+    "III.3.1": 1,
+    "III.3.2": 3,
+    "III.3.3": 1,
+    "III.4.1": 1,
+    "III.4.2": 3,
+    "III.4.3": 1,
+    "IV.1": 1,
+    "IV.2": 1,
+    "V.1": 1,
+    "V.2": 1,
+    "V.3": 1,
+    "VI.1": 3,
+}
+
 
 def extract_data(file_name: str) -> dict:
     # Create a copy of the emissions dictionary to avoid global state issues
@@ -71,15 +127,12 @@ def extract_data(file_name: str) -> dict:
                 emissions[sector] += total_emissions
 
             # Extract the scope from the GPC Reference Number
-            scope_key = gpc_ref.split(".")[
-                -1
-            ]  # Get the last part of GPC (e.g., "1" from "I.1.1")
-
-            if scope_key == "1":
+            scope = GPC_TO_SCOPE.get(gpc_ref)
+            if scope == 1:
                 emissions["scope1Emissions"] += total_emissions
-            elif scope_key == "2":
+            elif scope == 2:
                 emissions["scope2Emissions"] += total_emissions
-            elif scope_key == "3":
+            elif scope == 3:
                 emissions["scope3Emissions"] += total_emissions
 
         return emissions

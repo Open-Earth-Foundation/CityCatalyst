@@ -3,6 +3,9 @@
 """
 This script runs the complete pipeline for multiple cities in bulk.
 
+IMPORTANT: If you only want to run parts of the pipeline, go to `scripts/upload_to_frontend/run_pipeline.py` and
+comment out the parts of the pipeline you don't want to run.
+
 The pipeline processes all cities listed in a JSON file containing locodes.
 For each city, it will:
 1. Run the prioritizer

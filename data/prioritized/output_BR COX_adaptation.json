@@ -7,7 +7,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "The development of a Climate Action Plan is crucial for Coxim due to its significant environmental challenges, including high land use emissions and vulnerability to droughts and heatwaves. With a low population density and a predominantly grassland/savanna biome, the city faces unique risks that require tailored strategies to mitigate climate impacts. Additionally, the moderate level of inadequate sanitation highlights the need for comprehensive planning to improve public health and infrastructure resilience. By prioritizing this action, Coxim can effectively address its environmental vulnerabilities and enhance its sustainability efforts."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR COX",
@@ -17,37 +17,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 2,
-        "explanation": "Farm and fishery improvements are crucial for Coxim due to its significant reliance on agriculture and fisheries, which are vulnerable to climate impacts like droughts. Enhancing these sectors can help mitigate the risks to food security, which is a key concern given the city's exposure to droughts. Additionally, improving these areas can support the local economy and livelihoods, especially in a region with low-income levels. By prioritizing this action, Coxim can build resilience against climate-related hazards and ensure sustainable development."
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 3,
-        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Coxim is crucial due to the city's socio-economic context. With a low-income population and moderate inadequate sanitation, improving these areas can significantly enhance living conditions. Additionally, addressing these zones can help mitigate the impacts of environmental hazards such as droughts and heatwaves, which pose risks to public health and biodiversity. By focusing on ZEIS, the city can promote sustainable development and resilience against climate-related challenges."
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 4,
-        "explanation": "Improving access to health care in Coxim is crucial due to the moderate risk of public health impacts from heatwaves and diseases. The city's low-income status may exacerbate health vulnerabilities, making it essential to enhance healthcare services. Additionally, addressing healthcare access can help mitigate the effects of climate-related health risks, ensuring the community is better prepared for future challenges. Prioritizing this action can lead to improved overall well-being and resilience of the population."
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 5,
-        "explanation": "Establishing a plan for preparation and emergency response measures in Coxim is crucial due to the city's vulnerability to extreme weather events such as droughts and heatwaves. The region's low population density and moderate access to sanitation services can exacerbate the impact of these events, making it essential to have a robust response plan. Additionally, the high emissions from land use and transportation suggest that the city is already facing environmental challenges, which could be compounded by extreme weather. Implementing this action will help mitigate risks to public health, infrastructure, and biodiversity, ensuring the community is better prepared for future climate-related incidents."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR COX",
@@ -56,8 +26,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
-        "actionPriority": 6,
-        "explanation": "Implementing a disaster early warning system in Coxim is crucial due to the city's vulnerability to various climate hazards, such as droughts and heatwaves. These hazards pose significant risks to water resources, food security, and public health, making timely warnings essential for mitigating their impacts. Additionally, the city's low population density and moderate access to sanitation services highlight the need for effective communication and preparedness strategies to protect its residents. By prioritizing early warning systems, Coxim can enhance its resilience and reduce the potential damage from climate-related disasters."
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR COX",
@@ -66,18 +36,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 7,
-        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Coxim is crucial due to the city's vulnerability to droughts, which significantly impact water resources and biodiversity. The system will provide real-time data, enabling better management of water resources and early warning for drought conditions. This action is particularly important given the city's low population density and large area, which can make traditional monitoring methods less effective. Additionally, improved water management can help mitigate the moderate risk of inadequate sanitation, enhancing public health and overall quality of life."
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 8,
-        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for Coxim due to its potential impact on food security and environmental sustainability. Given the city's vulnerability to droughts, which significantly affect food security, encouraging dietary changes can help mitigate these risks by promoting more sustainable food consumption patterns. Additionally, reducing food waste can lower emissions associated with waste management, contributing to the overall reduction of the city's total emissions. This action aligns with the need to address both environmental and socio-economic challenges in the region."
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR COX",
@@ -86,8 +46,28 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 9,
-        "explanation": "Improving food storage and distribution is crucial for Coxim due to its vulnerability to droughts, which pose a significant risk to food security. Enhancing these systems can help mitigate the impact of droughts by ensuring a stable food supply even during adverse conditions. Additionally, better food distribution can support the local economy and improve the resilience of the community against climate-related disruptions. This action aligns with the need to address the socio-economic challenges faced by the region, particularly in maintaining food security."
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR COX",
@@ -96,18 +76,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
-        "actionPriority": 10,
-        "explanation": "Implementing social safety nets in Coxim is crucial due to the city's socio-economic context. With a low-income population, these safety nets can provide essential support to vulnerable groups, enhancing their resilience against economic shocks and environmental hazards. Given the moderate risk of inadequate sanitation and the potential impacts of climate-related hazards like droughts and heatwaves, social safety nets can help mitigate these risks by ensuring access to basic needs and services. This action is a priority to improve the overall well-being and stability of the community in the face of environmental and economic challenges."
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0152",
-        "actionName": "Recovery of degraded areas",
-        "actionPriority": 11,
-        "explanation": "The recovery of degraded areas in Coxim is crucial due to the significant land use emissions, which are the highest among all emission sources in the city. Restoring these areas can help sequester carbon, thereby reducing the overall carbon footprint of the region. Additionally, improving land conditions can enhance biodiversity, which is currently at risk from droughts and heatwaves. This action also supports the resilience of local ecosystems, which are vital for maintaining water resources and food security in the face of climate change."
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BR COX",
@@ -116,8 +86,18 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 12,
-        "explanation": "Encouraging sustainable land use practices in Coxim is crucial due to the significant land use emissions, which are the highest among all emission sources in the city. The region's grassland/savanna biome is particularly sensitive to unsustainable practices, which can exacerbate emissions and degrade biodiversity. By promoting sustainable land use, Coxim can mitigate its environmental impact and enhance resilience against climate-related hazards such as droughts, which pose a high risk to biodiversity. This action aligns with the city's need to address its largest source of emissions and protect its natural resources."
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BR COX",
@@ -126,58 +106,28 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 13,
-        "explanation": "The implementation of urban gardens in Coxim is a strategic action to enhance food security, especially given the city's vulnerability to droughts. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the impact of food shortages. Additionally, these gardens can improve local biodiversity and offer green spaces that contribute to the community's well-being. By promoting local food production, this action also supports the city's socio-economic development, particularly in a region with low-income levels."
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 14,
-        "explanation": "Improving the availability of health infrastructure in Coxim is crucial due to the city's vulnerability to public health risks from heatwaves and diseases. The region's low-income status may exacerbate the impact of health-related hazards, making it essential to enhance healthcare facilities to better serve the population. Additionally, with moderate inadequate sanitation access, strengthening health infrastructure can help mitigate potential health crises and improve overall community resilience."
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 15,
-        "explanation": "Creating the Municipal Climate Change Forum in Coxim is a crucial step towards addressing the city's environmental challenges. With significant emissions from land use and transportation, a dedicated forum can facilitate discussions and strategies to mitigate these impacts. Additionally, the forum can serve as a platform for engaging local stakeholders, including residents and businesses, in climate action initiatives. Given the city's vulnerability to droughts and heatwaves, the forum can also prioritize adaptive measures to enhance resilience. Overall, this action supports a collaborative approach to climate governance, essential for sustainable development in Coxim."
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 16,
-        "explanation": "The recovery and preservation of green areas in Coxim is crucial due to the city's location in a grassland/savanna biome, which is sensitive to environmental changes. This action can help mitigate the high land use emissions, which are a significant contributor to the city's total emissions. Additionally, preserving green areas can enhance biodiversity, which is at risk from both droughts and heatwaves. By focusing on this action, Coxim can improve its resilience against climate-related hazards and support the well-being of its residents."
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 17,
-        "explanation": "Strengthening programs for control and conservation of protected areas in Coxim is crucial due to the city's significant land use emissions, which are the highest among its emission sources. The region's biome, grassland/savanna, is sensitive to changes and requires careful management to maintain biodiversity and ecological balance. Additionally, the city faces high risks to biodiversity from droughts and heatwaves, making conservation efforts vital to mitigate these impacts. By prioritizing this action, Coxim can enhance its resilience against environmental hazards and contribute to the preservation of its natural resources."
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0150",
-        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
-        "actionPriority": 18,
-        "explanation": "Implementing a Loss Reduction and Control Program to promote water security is crucial for Coxim due to its vulnerability to droughts, which significantly impact water resources. The city's low population density and large area make efficient water management essential to ensure sustainable access for all residents. Additionally, improving water security can help mitigate the moderate risk of inadequate sanitation, enhancing public health and overall quality of life. This action aligns with the need to address key climate risks and supports the long-term resilience of the municipality."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR COX",
@@ -186,8 +136,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
-        "actionPriority": 19,
-        "explanation": "The action of water capture and storage is crucial for Coxim due to its vulnerability to droughts, which significantly impact water resources. With a low population density and a large area, efficient water management is essential to ensure sustainable access to water for the community. Additionally, improving water capture and storage can help mitigate the effects of climate change, particularly in a region where droughts pose a high risk to biodiversity and food security. Implementing this action can enhance resilience against water scarcity and support the socio-economic stability of the region."
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR COX",
@@ -196,7 +146,57 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 20,
-        "explanation": "Ecosystem-based adaptation is crucial for Coxim due to its significant land use emissions and the vulnerability of its biodiversity to droughts and heatwaves. The city's biome, primarily grassland and savanna, can benefit from strategies that enhance natural resilience and biodiversity. Implementing this action can help mitigate the impacts of climate change by preserving and restoring natural habitats, which in turn supports water resources and food security. Given the high risk to biodiversity, this approach is essential for maintaining ecological balance and supporting the community's long-term sustainability."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

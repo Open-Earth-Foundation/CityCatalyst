@@ -7,17 +7,7 @@
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
         "actionPriority": 1,
-        "explanation": "The implementation of an urban toll in Montes Claros is a priority due to the high transportation emissions, which are a significant contributor to the city's total emissions. By introducing a toll, the city can encourage the use of public transportation and reduce the number of vehicles on the road, thereby decreasing emissions. Additionally, this action can help alleviate traffic congestion, improving air quality and public health. Given the city's low-income status, it is crucial to ensure that the toll system is equitable and does not disproportionately impact low-income residents."
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2,
-        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Montes Claros due to its potential to reduce transportation emissions, which are currently a significant contributor to the city's total emissions. By promoting electric bikes, the city can offer a sustainable and efficient alternative to traditional vehicles, helping to alleviate urban congestion and improve air quality. Additionally, this initiative aligns with the city's need to enhance public health and infrastructure resilience, as it provides a healthier mode of transport and reduces the strain on existing transportation systems. Furthermore, the focus on electric bikes can make cycling more accessible to a broader segment of the population, encouraging more residents to adopt this eco-friendly mode of transport."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR MOC",
@@ -26,8 +16,18 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 3,
-        "explanation": "The adoption of biomethane in public fleets in Montes Claros is a strategic action to reduce transportation emissions, which are a significant contributor to the city's total emissions. By transitioning to biomethane, the city can decrease its reliance on fossil fuels, thereby reducing its carbon footprint and improving air quality. This action is particularly important given the city's high risk of public health impacts from heatwaves and diseases, which can be exacerbated by poor air quality. Additionally, utilizing biomethane supports sustainable waste management practices, as it can be produced from organic waste, aligning with broader environmental goals."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR MOC",
@@ -37,67 +37,17 @@
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 4,
-        "explanation": "The implementation of free public transportation programs during peak hours in Montes Claros is a strategic action to address the high transportation emissions, which are a significant contributor to the city's total emissions. By encouraging the use of public transport, the city can reduce the reliance on individual vehicles, thereby decreasing emissions and improving air quality. Additionally, this initiative can alleviate traffic congestion during peak hours, enhancing the overall efficiency of the city's transportation network. Furthermore, providing free transportation can support low-income residents by reducing their commuting costs, contributing to social equity and accessibility."
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR MOC",
         "cityName": "Montes Claros",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 5,
-        "explanation": "The adoption of electric drones for last-mile deliveries in Montes Claros is a strategic action to reduce transportation emissions, which are a significant contributor to the city's total emissions. By utilizing electric drones, the city can decrease reliance on traditional delivery vehicles, thereby reducing air pollution and greenhouse gas emissions. This action also aligns with the city's need to improve air quality and mitigate the impacts of climate change, particularly given the high risk of heatwaves and their impact on public health. Additionally, electric drones can enhance delivery efficiency and accessibility, especially in areas with inadequate infrastructure."
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 6,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Montes Claros is crucial due to the city's vulnerability to droughts, which significantly impact water resources and food security. By providing technical support and education to rural communities, these actions can enhance agricultural practices, improve water management, and increase resilience against climate-related hazards. Additionally, ATER initiatives can help boost the socio-economic conditions of low-income populations by promoting sustainable agricultural practices and improving access to resources. This action is a priority as it addresses both immediate and long-term challenges faced by the rural sector in the region."
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 7,
-        "explanation": "Promoting urban reforestation and green corridors in Montes Claros is crucial due to the city's grassland/savanna biome, which can benefit significantly from increased vegetation. This action can help mitigate the high risk of droughts and heatwaves by enhancing local microclimates and providing shade, thus improving public health and infrastructure resilience. Additionally, green corridors can support biodiversity, which is at risk from both droughts and heatwaves, and contribute to reducing the city's overall carbon emissions by absorbing CO2. Implementing this action aligns with the city's need to address environmental challenges while enhancing the quality of life for its residents."
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 8,
-        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Montes Claros is a strategic priority due to the city's high transportation emissions, which are a significant contributor to its total emissions. By transitioning to electric vehicles, the city can reduce its carbon footprint and improve air quality, addressing both environmental and public health concerns. Additionally, the on-demand nature of the transport system can enhance accessibility and convenience for residents, particularly in areas with inadequate public transport infrastructure. This action aligns with the city's need to mitigate climate risks and promote sustainable urban development."
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 9,
-        "explanation": "Facilitating technology transfer for conservation practices in Montes Claros is crucial due to the city's vulnerability to environmental hazards such as droughts and floods. These hazards pose significant risks to water resources, food security, and public health, making it imperative to adopt advanced conservation techniques. By transferring technology, the city can enhance its resilience against these climate impacts, ensuring sustainable management of natural resources. Additionally, improved conservation practices can help reduce emissions from land use, contributing to the overall reduction of the city's carbon footprint."
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0128",
-        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 10,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Montes Claros is a priority due to the city's significant environmental challenges. The region faces high risks from droughts, which impact water resources and food security, making it crucial to incentivize conservation efforts. PES programs can encourage sustainable land use practices, helping to mitigate emissions from land use and improve biodiversity. Additionally, these programs can enhance the resilience of local ecosystems, providing long-term benefits to both the environment and the community."
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BR MOC",
@@ -106,18 +56,18 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 11,
-        "explanation": "Expanding cycling infrastructure and building public walkways in Montes Claros is crucial due to the city's high transportation emissions, which contribute significantly to its total emissions. By promoting cycling and walking, the city can reduce its reliance on motor vehicles, thereby decreasing emissions and improving air quality. Additionally, creating infrastructure that is resilient to climate threats is vital, given the city's high risk of heatwaves and floods, which can impact public health and infrastructure. This action not only addresses environmental concerns but also enhances the quality of life for residents by providing safer and more sustainable transportation options."
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR MOC",
         "cityName": "Montes Claros",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 12,
-        "explanation": "Implementing agroforestry systems in Montes Claros is a strategic action due to the city's grassland/savanna biome, which can benefit from increased biodiversity and improved soil health. Agroforestry can help mitigate the high risk of droughts impacting water and food security by enhancing water retention and providing diverse food sources. Additionally, this approach can contribute to reducing land use emissions, which are a significant part of the city's total emissions. By integrating trees with crops and livestock, agroforestry can also improve resilience against climate hazards such as heatwaves and floods, which pose a high risk to public health and infrastructure."
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR MOC",
@@ -126,8 +76,38 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 13,
-        "explanation": "The expansion of mass transit systems on rails in Montes Claros is crucial due to the city's significant transportation emissions, which are a major contributor to its overall carbon footprint. By enhancing public transit options, the city can reduce reliance on personal vehicles, thereby decreasing emissions and improving air quality. Additionally, improved mass transit can provide more equitable access to transportation for low-income residents, aligning with the city's socio-economic needs. This action also supports resilience against climate risks by reducing the urban heat island effect and mitigating the impact of heatwaves on public health."
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR MOC",
@@ -136,8 +116,8 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 14,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Montes Claros due to its significant risk of droughts impacting water and food security. By supporting local agroecological practices, the city can enhance its resilience to climate-related hazards, ensuring a more stable food supply. This action also supports the local economy, which is important given the low-income socio-economic status of the region. Additionally, reducing transportation emissions by sourcing products locally can contribute to lowering the city's overall carbon footprint."
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR MOC",
@@ -146,8 +126,8 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0085",
         "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 15,
-        "explanation": "Promoting the adoption of agroecological pest control in Montes Claros is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which can severely impact food security. By implementing sustainable pest control methods, the city can enhance its agricultural resilience, ensuring a stable food supply even in adverse conditions. Additionally, agroecological practices can help preserve biodiversity and reduce reliance on chemical pesticides, contributing to healthier ecosystems and public health. This action aligns with the city's need to address socio-economic challenges and improve environmental sustainability."
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR MOC",
@@ -156,38 +136,58 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0134",
         "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 16,
-        "explanation": "Strengthening mechanisms for deforestation control in Montes Claros is crucial due to the city's location in a grassland/savanna biome, which is vulnerable to land degradation. Deforestation can exacerbate the risk of droughts, which already pose a significant threat to water resources and food security in the region. By enhancing deforestation control, the city can help preserve its natural environment, which is essential for maintaining biodiversity and mitigating climate change impacts. Additionally, controlling deforestation can contribute to reducing land use emissions, which are a significant component of the city's total emissions."
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BR MOC",
         "cityName": "Montes Claros",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 17,
-        "explanation": "Promoting sustainable agricultural practices in Montes Claros is crucial due to the city's vulnerability to droughts, which significantly impact water resources and food security. By adopting sustainable methods, the city can enhance its resilience against these climate hazards, ensuring a stable food supply and conserving water resources. Additionally, sustainable agriculture can help reduce land use emissions, contributing to the overall reduction of the city's total emissions. This action aligns with the need to address socio-economic challenges, as it can support low-income communities by improving agricultural productivity and sustainability."
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BR MOC",
         "cityName": "Montes Claros",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
         "actionPriority": 18,
-        "explanation": "Supporting the implementation of ecological fiscal incentives in Montes Claros is crucial due to the city's significant environmental challenges. The city faces high risks from droughts and heatwaves, which impact water resources, food security, and public health. By promoting ecological fiscal incentives, the city can encourage sustainable practices that mitigate these risks and enhance resilience. Additionally, these incentives can stimulate local economic growth by attracting environmentally conscious businesses and investments, aligning with the city's socio-economic needs."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BR MOC",
         "cityName": "Montes Claros",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionId": "icare_0126",
+        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
         "actionPriority": 19,
-        "explanation": "Encouraging local agroecological production and short supply chains in Montes Claros is crucial due to the city's vulnerability to droughts, which significantly impact water resources and food security. By promoting local agriculture, the city can enhance its resilience to these climate hazards, ensuring a more stable food supply. Additionally, this action supports the local economy and reduces transportation emissions, contributing to overall sustainability goals. Given the low income levels in the area, this initiative can also provide economic opportunities and improve access to fresh produce for the community."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR MOC",
@@ -197,6 +197,6 @@
         "actionId": "icare_0100",
         "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 20,
-        "explanation": "Supporting regenerative agriculture practices in Montes Claros is crucial due to the city's vulnerability to droughts, which significantly impact water resources and food security. By promoting these practices, the city can enhance soil health, increase water retention, and improve crop resilience, thereby mitigating the effects of droughts. Additionally, regenerative agriculture can contribute to reducing land use emissions, which are a significant part of the city's total emissions, thus supporting broader environmental sustainability goals."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

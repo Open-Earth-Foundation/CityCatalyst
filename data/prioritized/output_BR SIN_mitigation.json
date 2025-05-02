@@ -7,17 +7,7 @@
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
         "actionPriority": 1,
-        "explanation": "Implementing agroforestry systems in Sinop is a high priority due to the city's location in a tropical rainforest biome, which is highly susceptible to deforestation and land degradation. Agroforestry can help mitigate land use emissions, which are a significant contributor to the city's total emissions. Additionally, this action can enhance biodiversity and improve food security, both of which are critical given the high risk of droughts and floods impacting these areas. By integrating trees with crops and livestock, agroforestry systems can also improve soil health and water retention, addressing some of the socio-economic challenges related to inadequate sanitation and low-income levels."
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 2,
-        "explanation": "Promoting urban reforestation and green corridors in Sinop is crucial due to its tropical rainforest biome, which supports rich biodiversity. This action can help mitigate the high emissions from land use and transportation by enhancing carbon sequestration and reducing urban heat. Additionally, green corridors can improve public health by providing shade and reducing heatwave impacts, which are significant risks in the area. Furthermore, reforestation efforts can enhance water retention and reduce the risk of floods, addressing some of the city's key climate change risks."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR SIN",
@@ -26,28 +16,18 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0134",
         "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 3,
-        "explanation": "Strengthening mechanisms for deforestation control in Sinop is crucial due to the city's location in a tropical rainforest biome, which is highly susceptible to deforestation. The region's land use emissions are significantly high, indicating that deforestation is a major contributor to the city's overall carbon footprint. By enhancing deforestation control, Sinop can reduce its land use emissions, thereby contributing to climate change mitigation efforts. Additionally, preserving the rainforest is vital for maintaining biodiversity and protecting water resources, which are at risk from droughts and other climate hazards."
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 4,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Sinop is crucial due to the city's significant land use emissions, which are a major contributor to its total emissions profile. By providing technical support and education to rural communities, these actions can promote sustainable agricultural practices, reducing deforestation and land degradation. Additionally, ATER initiatives can enhance food security, which is a key concern given the high risk of droughts impacting this sector. Overall, these actions support both environmental sustainability and the socio-economic development of the region."
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 5,
-        "explanation": "Facilitating technology transfer for conservation practices in Sinop is crucial due to the city's significant land use emissions, which are a major contributor to its total emissions. The region's tropical rainforest biome is under threat from deforestation and land degradation, making conservation efforts vital for maintaining biodiversity and ecosystem services. Additionally, the city faces high risks from droughts and floods, which can be mitigated through improved conservation practices that enhance resilience. By prioritizing this action, Sinop can address both environmental and socio-economic challenges, promoting sustainable development in the region."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR SIN",
@@ -56,18 +36,28 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 6,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Sinop is crucial due to the city's significant land use emissions, which are a major contributor to its total emissions. By incentivizing landowners to maintain and restore natural ecosystems, PES can help reduce these emissions and enhance biodiversity. Additionally, given the high risk of droughts impacting water resources and food security, PES programs can support sustainable land management practices that mitigate these risks. This action aligns with the city's need to address environmental challenges while promoting economic incentives for conservation."
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR SIN",
         "cityName": "Sinop",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 7,
-        "explanation": "Promoting organic farming in Sinop is a crucial action due to the city's location in a tropical rainforest biome, which is highly sensitive to environmental changes. Organic farming can help reduce land use emissions, which are currently a significant contributor to the city's total emissions. Additionally, this approach can improve food security by making agriculture more resilient to climate hazards such as droughts and floods, which are high-risk factors in the region. By reducing reliance on chemical fertilizers and pesticides, organic farming also supports biodiversity, which is vital for maintaining ecological balance in the area."
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR SIN",
@@ -76,18 +66,8 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0084",
         "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 8,
-        "explanation": "Creating incentives for agroforestry practices in livestock systems is crucial for Sinop due to its tropical rainforest biome and significant land use emissions. Agroforestry can help reduce these emissions by integrating trees into agricultural landscapes, enhancing carbon sequestration, and improving biodiversity. Additionally, this approach can mitigate the impacts of droughts and heatwaves, which are high-risk hazards for the region, by improving soil health and water retention. Implementing such practices aligns with the city's need to address its high emissions and environmental vulnerabilities effectively."
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 9,
-        "explanation": "Supporting regenerative agriculture practices in Sinop is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to environmental changes. The city faces significant risks from droughts and floods, which can severely impact food security. By promoting regenerative agriculture, Sinop can enhance soil health, increase biodiversity, and improve water retention, thereby mitigating these risks. Additionally, this action aligns with the need to reduce land use emissions, which are a major contributor to the city's total emissions, thus supporting overall environmental sustainability."
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR SIN",
@@ -96,8 +76,28 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0102",
         "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 10,
-        "explanation": "Promoting sustainable agricultural practices in Sinop is crucial due to the city's location in a tropical rainforest biome, which is sensitive to environmental changes. The region faces significant risks from droughts, which can severely impact water resources and food security. By adopting sustainable practices, the city can mitigate these risks, ensuring long-term agricultural productivity and resilience. Additionally, sustainable agriculture can help reduce land use emissions, which are a major contributor to the city's total emissions, thereby supporting broader environmental goals."
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BR SIN",
@@ -107,7 +107,7 @@
         "actionId": "icare_0101",
         "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
         "actionPriority": 11,
-        "explanation": "Encouraging the use of low-emission agricultural machinery in Sinop is crucial due to the city's significant land use emissions, which are a major contributor to its total emissions profile. By adopting cleaner technologies in agriculture, Sinop can reduce its environmental impact and improve air quality, which is essential given the city's tropical rainforest biome. Additionally, this action aligns with the need to address climate risks such as droughts and floods, which threaten food security and biodiversity in the region. Implementing this action can also support sustainable development and enhance the resilience of local agricultural practices."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR SIN",
@@ -117,7 +117,7 @@
         "actionId": "icare_0127",
         "actionName": "Accelerate Environmental Regularization of Rural Properties",
         "actionPriority": 12,
-        "explanation": "Accelerating the environmental regularization of rural properties in Sinop is crucial due to the significant land use emissions, which are a major contributor to the city's total emissions. By ensuring that rural properties comply with environmental regulations, the city can reduce deforestation and land degradation, which are key drivers of these emissions. Additionally, this action can help preserve the tropical rainforest biome, which is vital for maintaining biodiversity and mitigating climate change impacts. Given the high risk of droughts and their impact on water resources and food security, regularization can also promote sustainable land management practices that enhance resilience to these hazards."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR SIN",
@@ -127,17 +127,7 @@
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 13,
-        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Sinop due to its high transportation emissions. Encouraging the use of bikes can significantly reduce the reliance on motor vehicles, thereby lowering emissions and improving air quality. Additionally, promoting electric bikes can make cycling more accessible to a broader range of people, including those who may find traditional biking challenging. This initiative also aligns with the city's need to address public health concerns related to heatwaves and diseases by promoting healthier, more sustainable modes of transportation. Overall, this action supports the city's efforts to mitigate climate risks and enhance urban mobility."
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 14,
-        "explanation": "The implementation of free public transportation programs during peak hours in Sinop is a strategic action to address the high transportation emissions, which are a significant contributor to the city's total emissions. By encouraging the use of public transport, the city can reduce the reliance on individual vehicles, thereby decreasing emissions and improving air quality. Additionally, this initiative can alleviate traffic congestion during peak hours, enhancing the overall efficiency of the city's transportation network. Furthermore, providing free transportation can be particularly beneficial for low-income residents, improving their access to essential services and opportunities."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR SIN",
@@ -146,8 +136,28 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
         "actionPriority": 15,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Sinop due to its significant agricultural potential and the need to support sustainable practices. This action can help reduce transportation emissions, which are a major contributor to the city's overall emissions, by minimizing the distance food travels. Additionally, it supports local farmers and the economy, aligning with the city's socio-economic context where low income is a concern. By focusing on agroecological products, the city can also enhance food security and resilience against climate impacts such as droughts and floods, which are high-risk factors in the region."
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BR SIN",
@@ -156,28 +166,18 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 16,
-        "explanation": "The adoption of biomethane in public fleets in Sinop is a significant action due to the city's high transportation emissions, which are a major contributor to its overall carbon footprint. By transitioning to biomethane, Sinop can reduce its reliance on fossil fuels, thereby decreasing greenhouse gas emissions and improving air quality. Additionally, this action supports energy security by utilizing locally produced renewable energy sources, which is crucial given the city's vulnerability to energy-related risks. Implementing biomethane in public fleets also aligns with sustainable development goals, promoting a cleaner and more resilient urban environment."
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 17,
-        "explanation": "Supporting the implementation of ecological fiscal incentives in Sinop is crucial due to the city's significant land use emissions, which are a major contributor to its total emissions. By promoting sustainable land management practices through fiscal incentives, the city can address its high emissions and mitigate environmental impacts. Additionally, these incentives can encourage local stakeholders to adopt more sustainable practices, which is essential given the city's tropical rainforest biome and the associated biodiversity risks. This action aligns with the need to enhance environmental sustainability and resilience in the face of climate-related hazards such as droughts and floods."
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BR SIN",
         "cityName": "Sinop",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
         "actionPriority": 18,
-        "explanation": "The adoption of electric drones for last-mile deliveries in Sinop is a strategic move to reduce transportation emissions, which are a significant contributor to the city's total emissions. Given the city's low population density and large area, drones can efficiently cover distances without contributing to road congestion or further emissions. Additionally, this action aligns with the city's need to address environmental concerns, as it offers a sustainable alternative to traditional delivery methods. By implementing this technology, Sinop can enhance its logistics efficiency while supporting its broader environmental goals."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BR SIN",
@@ -187,16 +187,16 @@
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 19,
-        "explanation": "Supporting agroecological certification programs in Sinop is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to agricultural practices. By promoting sustainable farming methods, these programs can help mitigate land use emissions, which are a significant contributor to the city's total emissions. Additionally, agroecological practices can enhance food security, a key impact area identified as being at high risk from droughts and floods. This action aligns with the need to balance agricultural productivity with environmental conservation, ensuring long-term sustainability for the region."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR SIN",
         "cityName": "Sinop",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0085",
-        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 20,
-        "explanation": "Promoting the adoption of agroecological pest control in Sinop is crucial due to the city's location in a tropical rainforest biome, which supports a diverse range of agricultural activities. This approach can help reduce the reliance on chemical pesticides, thereby minimizing environmental pollution and protecting biodiversity. Additionally, agroecological methods can enhance food security by improving soil health and resilience against climate-related hazards such as droughts and floods, which are significant risks in the region. Implementing this action aligns with sustainable agricultural practices, contributing to long-term ecological and economic benefits for the community."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

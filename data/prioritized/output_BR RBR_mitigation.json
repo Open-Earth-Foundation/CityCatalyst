@@ -4,120 +4,120 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
         "actionPriority": 1,
-        "explanation": "Implementing agroforestry systems in Rio Branco is a high priority due to the city's location in a tropical rainforest biome, which is ideal for such practices. Agroforestry can help mitigate the high land use emissions by integrating trees with crops and livestock, enhancing carbon sequestration and reducing deforestation. Additionally, this action supports biodiversity and improves food security, which are critical given the city's high risk of droughts and floods impacting these areas. By promoting sustainable land management, agroforestry also contributes to the resilience of local communities against climate-related hazards."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
         "actionPriority": 2,
-        "explanation": "Strengthening mechanisms for deforestation control in Rio Branco is crucial due to its location in a tropical rainforest biome, which is highly susceptible to deforestation. The city faces significant environmental challenges, including high emissions from land use, which contribute to climate change and biodiversity loss. By enhancing deforestation control, Rio Branco can mitigate these emissions and protect its rich biodiversity. Additionally, controlling deforestation can help maintain water resources and reduce the risk of droughts, which are critical issues for the city's sustainability and resilience."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionId": "c40_0040",
+        "actionName": "Volume-Based Collection",
         "actionPriority": 3,
-        "explanation": "Promoting urban reforestation and green corridors in Rio Branco is crucial due to the city's tropical rainforest biome, which supports a rich biodiversity. This action can help mitigate the high risk of droughts and heatwaves by enhancing the urban microclimate and reducing heat island effects. Additionally, increasing green spaces can improve air quality and provide natural habitats, contributing to the overall resilience of the city against climate change impacts. Furthermore, urban reforestation can play a role in carbon sequestration, helping to offset some of the city's significant emissions."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0128",
-        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
         "actionPriority": 4,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Rio Branco is crucial due to the city's significant land use emissions, which are the largest contributor to its total emissions. By incentivizing landowners to maintain and restore natural ecosystems, PES can help reduce these emissions and enhance carbon sequestration. Additionally, Rio Branco's tropical rainforest biome is vital for biodiversity, and PES programs can support its conservation, thereby mitigating risks to biodiversity from climate hazards like droughts and heatwaves. Furthermore, PES can improve water resources management, which is critical given the high risk of droughts affecting water security in the region."
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionId": "icare_0122",
+        "actionName": "Establish eco-parks.",
         "actionPriority": 5,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Rio Branco is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact water and food security. These actions can help improve agricultural practices, making them more resilient to climate change, thereby enhancing food security and supporting the local economy. Additionally, ATER initiatives can provide essential knowledge and resources to rural communities, empowering them to adapt to environmental changes and mitigate risks associated with extreme weather events. This proactive approach is vital for sustaining the livelihoods of those dependent on agriculture and ensuring long-term socio-economic stability in the region."
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionId": "icare_0053",
+        "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
         "actionPriority": 6,
-        "explanation": "Facilitating technology transfer for conservation practices in Rio Branco is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to environmental changes. The city faces significant risks from droughts, heatwaves, and floods, all of which threaten its biodiversity and public health. By adopting advanced conservation technologies, Rio Branco can better manage its natural resources and mitigate the impacts of these hazards. This action supports sustainable development and helps preserve the ecological balance in the region, which is vital for the well-being of its residents."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
+        "actionId": "c40_0039",
+        "actionName": "Gas Management",
         "actionPriority": 7,
-        "explanation": "Promoting organic farming in Rio Branco is a crucial action due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. Organic farming practices can enhance soil health and water retention, making crops more resilient to these environmental stresses. Additionally, by reducing reliance on chemical fertilizers and pesticides, organic farming can help protect the region's rich biodiversity and improve public health. This action aligns with the need to develop sustainable agricultural practices that can withstand the challenges posed by climate change."
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionId": "ipcc_0080",
+        "actionName": "Avoiding, Minimising, and Recycling Waste",
         "actionPriority": 8,
-        "explanation": "Creating incentives for agroforestry practices in livestock systems is crucial for Rio Branco due to its location in a tropical rainforest biome. This action can help mitigate land use emissions, which are a significant contributor to the city's total emissions. By integrating trees into livestock systems, the city can enhance biodiversity and improve soil health, which are vital for long-term sustainability. Additionally, agroforestry can provide resilience against climate hazards such as droughts and floods, which pose high risks to food security and infrastructure in the region."
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
+        "actionId": "icare_0017",
+        "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
         "actionPriority": 9,
-        "explanation": "Supporting regenerative agriculture practices in Rio Branco is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods. These practices can enhance soil health, increase biodiversity, and improve water retention, which are essential in mitigating the impacts of these hazards. Additionally, regenerative agriculture can contribute to food security by ensuring sustainable crop production, which is vital given the high risk of food insecurity in the region. Implementing these practices aligns with the city's need to reduce land use emissions, which are a significant component of its total emissions profile."
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 10,
-        "explanation": "Promoting sustainable agricultural practices in Rio Branco is crucial due to the city's vulnerability to droughts, which significantly impact water resources and food security. By adopting sustainable methods, the city can enhance its resilience against these climate hazards, ensuring a stable food supply and conserving water resources. Additionally, sustainable agriculture can help reduce land use emissions, which are a major contributor to the city's total emissions, thereby supporting broader environmental goals. This action aligns with the need to address socio-economic challenges, as it can provide more stable livelihoods for low-income populations dependent on agriculture."
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0127",
-        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionId": "icare_0110",
+        "actionName": "Regulate the Construction Waste Management Plan",
         "actionPriority": 11,
-        "explanation": "Accelerating the environmental regularization of rural properties in Rio Branco is crucial due to the city's significant land use emissions, which are the highest among all emission categories. This action can help mitigate the impact of deforestation and land degradation, which are major contributors to these emissions. Additionally, by ensuring that rural properties comply with environmental regulations, the city can enhance its resilience against climate-related hazards such as droughts and floods, which pose high risks to water resources, food security, and infrastructure. Implementing this action aligns with the need to protect the tropical rainforest biome, which is vital for maintaining biodiversity and ecological balance in the region."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0101",
-        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionId": "icare_0066",
+        "actionName": "Expand the coverage of the public selective waste collection network",
         "actionPriority": 12,
-        "explanation": "Encouraging the use of low-emission agricultural machinery in Rio Branco is crucial due to the city's significant land use emissions, which are the highest among its emission sources. By adopting cleaner technologies in agriculture, the city can substantially reduce its carbon footprint and contribute to mitigating climate change impacts. Additionally, this action aligns with the need to address the high risk of droughts affecting water and food security, as more sustainable agricultural practices can enhance resilience. Implementing this action can also support the socio-economic development of the region by promoting sustainable practices that may lead to long-term economic benefits."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
@@ -127,17 +127,7 @@
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 13,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Rio Branco due to its significant vulnerability to climate-related hazards such as droughts and floods. This action supports local farmers, enhances food security, and reduces dependency on external food sources, which is vital given the high risk of food insecurity. Additionally, promoting agroecological practices can help mitigate land use emissions, which are a major contributor to the city's total emissions. By focusing on local and sustainable agriculture, Rio Branco can strengthen its resilience against climate impacts while supporting its socio-economic development."
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 14,
-        "explanation": "Encouraging local agroecological production and short supply chains in Rio Branco is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which threaten food security. By promoting sustainable agricultural practices, the city can enhance its resilience against these risks and ensure a stable food supply. Additionally, local production reduces dependency on external sources, which is vital in a region with high transportation emissions. This action also supports the local economy by creating jobs and fostering community engagement in sustainable practices."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
@@ -146,18 +136,48 @@
         "regionName": "Acre",
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 15,
-        "explanation": "Supporting agroecological certification programs in Rio Branco is crucial due to the city's reliance on agriculture and the surrounding tropical rainforest biome. These programs can promote sustainable farming practices that help mitigate the impact of climate change, particularly in a region facing high risks from droughts and floods. By encouraging agroecological methods, the city can enhance food security and reduce land use emissions, which are significant contributors to its total emissions. Additionally, such initiatives can improve the socio-economic conditions of low-income communities by providing them with better access to sustainable agricultural markets."
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionId": "icare_0113",
+        "actionName": "Universalize the coverage of the selective waste collection service for dry materials",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0119",
+        "actionName": "Maximize composting processes.",
         "actionPriority": 16,
-        "explanation": "Supporting the implementation of ecological fiscal incentives in Rio Branco is crucial due to the city's significant environmental challenges. The city is located in a tropical rainforest biome, which is vital for biodiversity and carbon sequestration, yet it faces high emissions from land use and stationary energy. By promoting ecological fiscal incentives, the city can encourage sustainable land management practices and reduce emissions. Additionally, these incentives can help mitigate the risks associated with climate hazards such as droughts and floods, which threaten water resources, food security, and public health."
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0111",
+        "actionName": "Strengthen the reverse logistics system.",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0109",
+        "actionName": "Promote Energy Recovery from Biogas in Landfills",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
@@ -166,37 +186,17 @@
         "regionName": "Acre",
         "actionId": "icare_0085",
         "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 17,
-        "explanation": "Promoting the adoption of agroecological pest control in Rio Branco is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which can severely impact food security. By implementing sustainable pest control methods, the city can enhance its agricultural resilience, ensuring a stable food supply even in adverse conditions. Additionally, agroecological practices can help preserve the biodiversity of the tropical rainforest biome, which is vital for maintaining ecological balance and supporting local livelihoods. This action aligns with the need to address socio-economic challenges, as it can provide low-income communities with more sustainable and cost-effective agricultural solutions."
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0052",
-        "actionName": "Reduce Deforestation and Degradation",
-        "actionPriority": 18,
-        "explanation": "Reducing deforestation and degradation is crucial for Rio Branco, given its location in a tropical rainforest biome. The city faces significant land use emissions, which are a major contributor to its total emissions profile. By addressing deforestation, Rio Branco can significantly reduce its carbon footprint and mitigate climate change impacts. Additionally, preserving forest areas can help maintain biodiversity and protect against soil erosion, which is vital for the city's resilience against natural hazards like landslides and floods."
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0061",
-        "actionName": "Soil Carbon Management in Croplands and Grasslands",
         "actionPriority": 19,
-        "explanation": "Soil Carbon Management in Croplands and Grasslands is a crucial action for Rio Branco due to its significant land use emissions, which are the largest contributor to the city's total emissions. By improving soil carbon management, the city can enhance carbon sequestration, thereby reducing overall emissions. Additionally, this action can improve soil health and productivity, which is vital for food security, especially in a region facing high risks from droughts. Implementing this action can also contribute to biodiversity conservation, as healthier soils support diverse ecosystems."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0053",
-        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionId": "icare_0123",
+        "actionName": "Adopt Centralized Biological Treatment Technologies",
         "actionPriority": 20,
-        "explanation": "Afforestation, reforestation, and forest ecosystem restoration are crucial for Rio Branco due to its location in a tropical rainforest biome. These actions can significantly contribute to reducing land use emissions, which are the largest source of emissions in the city. Additionally, restoring forest ecosystems can enhance biodiversity and improve resilience against climate hazards such as droughts and floods, which pose high risks to the city's water resources and infrastructure. By prioritizing this action, Rio Branco can also improve its carbon sequestration capacity, helping to mitigate the impacts of climate change."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

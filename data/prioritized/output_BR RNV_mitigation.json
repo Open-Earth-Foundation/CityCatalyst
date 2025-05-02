@@ -1,202 +1,202 @@
 [
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
         "actionPriority": 1,
-        "explanation": "Encouraging renewable energy policies at the municipal level in Ribeirão das Neves is crucial due to the city's significant stationary energy emissions, which contribute heavily to its total emissions. By promoting renewable energy, the city can reduce its reliance on fossil fuels, thereby decreasing its carbon footprint and improving air quality. Additionally, renewable energy initiatives can stimulate local economic growth and provide new job opportunities, which is particularly beneficial given the city's very low-income socio-economic status. Implementing these policies aligns with global sustainability goals and can enhance the city's resilience against climate-related risks."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 2,
-        "explanation": "Integrating renewables into municipal water systems in Ribeirão das Neves is a crucial step towards enhancing the city's resilience against climate change impacts. The city faces significant risks from droughts, which threaten water resources and food security. By incorporating renewable energy, the city can ensure a more reliable and sustainable water supply, reducing dependency on traditional energy sources that contribute to emissions. This action also aligns with the city's need to address its high stationary energy emissions, promoting a cleaner and more sustainable urban environment."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 3,
-        "explanation": "Promoting community solar farms in Ribeirão das Neves is a strategic action to address the city's high stationary energy emissions. By harnessing solar energy, the city can reduce its reliance on traditional energy sources, thereby decreasing its overall carbon footprint. Additionally, this initiative can provide affordable and sustainable energy solutions to the local population, which is crucial given the very low income levels in the area. Furthermore, community solar farms can foster local job creation and economic development, contributing to the socio-economic upliftment of the region."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0033",
-        "actionName": "Install biodigesters in rural properties",
-        "actionPriority": 4,
-        "explanation": "Installing biodigesters in rural properties in Ribeirão das Neves is a strategic action to address waste emissions, which are a significant component of the city's total emissions. Biodigesters can help convert organic waste into biogas, reducing methane emissions and providing a renewable energy source. This action is particularly relevant given the city's low-income status, as it can offer cost-effective energy solutions and improve waste management. Additionally, by reducing waste emissions, the city can mitigate some of the environmental impacts associated with its current waste management practices."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0040",
-        "actionName": "Adopt solar-powered street lighting in rural areas",
-        "actionPriority": 5,
-        "explanation": "Adopting solar-powered street lighting in rural areas of Ribeirão das Neves is a strategic move to enhance energy efficiency and reduce emissions. The city has significant stationary energy emissions, and transitioning to solar energy can help mitigate this impact. Additionally, solar lighting can improve safety and accessibility in rural areas, which may currently lack adequate infrastructure. This action aligns with the city's need to address energy security and reduce its carbon footprint, contributing to a more sustainable and resilient community."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0029",
-        "actionName": "Adopt policies for fossil fuel-free buildings",
-        "actionPriority": 6,
-        "explanation": "Adopting policies for fossil fuel-free buildings in Ribeirão das Neves is crucial due to the city's high population density and significant stationary energy emissions. Transitioning to cleaner energy sources in buildings can substantially reduce the city's overall emissions, contributing to improved air quality and public health. Additionally, this action aligns with the need to mitigate climate change impacts, such as heatwaves and floods, which pose high risks to public health and infrastructure in the region. Implementing these policies can also set a precedent for sustainable urban development, fostering a healthier and more resilient community."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0097",
-        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
-        "actionPriority": 7,
-        "explanation": "Supporting distributed energy generation in residences and businesses is crucial for Ribeirão das Neves due to its high stationary energy emissions. By promoting local energy generation, the city can reduce its reliance on centralized power sources, which often contribute significantly to emissions. This action also aligns with the need to enhance energy security, especially in a region where droughts pose a risk to traditional energy sources. Furthermore, distributed energy systems can provide resilience against power outages, which is vital for maintaining public health and infrastructure stability in the face of climate-related hazards."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0011",
-        "actionName": "Provide tax incentives for renewable energy in residential projects",
-        "actionPriority": 8,
-        "explanation": "Providing tax incentives for renewable energy in residential projects is crucial for Ribeirão das Neves due to its high stationary energy emissions. Encouraging the adoption of renewable energy can significantly reduce these emissions, contributing to a cleaner environment. Additionally, this action can help mitigate the impact of heatwaves, which pose a high risk to public health in the city. By promoting renewable energy, the city can also enhance its energy security, reducing dependency on non-renewable sources."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0105",
-        "actionName": "Reduce technical losses in energy distribution networks",
-        "actionPriority": 9,
-        "explanation": "Reducing technical losses in energy distribution networks is crucial for Ribeirão das Neves due to its significant stationary energy emissions. By improving the efficiency of energy distribution, the city can lower its overall emissions, contributing to a cleaner environment. Additionally, this action can enhance energy security, which is vital given the city's vulnerability to droughts affecting energy resources. Implementing this measure can also lead to cost savings for both the energy providers and consumers, making it a financially beneficial initiative."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 10,
-        "explanation": "Creating credit lines for residential and community wind energy projects in Ribeirão das Neves is a strategic action to address the city's energy needs sustainably. Given the city's high population density and low-income levels, providing financial support for renewable energy projects can help reduce energy costs for residents. Additionally, this initiative can contribute to lowering stationary energy emissions, which are a significant part of the city's total emissions. By promoting wind energy, the city can enhance its energy security and resilience against climate-related risks such as droughts and heatwaves."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0020",
-        "actionName": "Promote sustainable construction practices and encourage green technologies in public, residential, commercial, industrial, and service buildings.",
-        "actionPriority": 11,
-        "explanation": "Promoting sustainable construction practices and encouraging green technologies in Ribeirão das Neves is crucial due to the city's high population density and significant emissions from stationary energy and transportation. Implementing these practices can help reduce the city's overall carbon footprint, addressing the high total emissions of 473,401.459 tons. Additionally, sustainable construction can improve resilience against climate-related hazards such as floods and heatwaves, which pose significant risks to public health and infrastructure. By adopting green technologies, the city can also enhance its energy efficiency, contributing to better energy security and reducing the socio-economic impact on its low-income population."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0008",
-        "actionName": "Develop Smart Grids and Energy Storage Systems",
-        "actionPriority": 12,
-        "explanation": "Developing smart grids and energy storage systems in Ribeirão das Neves is crucial due to the city's high stationary energy emissions. By implementing these technologies, the city can enhance energy efficiency and reduce emissions, contributing to a more sustainable environment. Additionally, smart grids can improve energy security, which is vital given the city's vulnerability to droughts affecting energy resources. This action also aligns with the need to address public health risks associated with heatwaves, as improved energy systems can support better cooling solutions."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0002",
-        "actionName": "Encourage the Use of the Brazilian Labeling Program for Buildings",
-        "actionPriority": 13,
-        "explanation": "Encouraging the use of the Brazilian Labeling Program for Buildings in Ribeirão das Neves is a strategic action to improve energy efficiency and reduce emissions. The city has significant stationary energy emissions, and this program can help mitigate these by promoting energy-efficient building practices. Additionally, with the city's low-income status, improving energy efficiency can lead to cost savings for residents, making it a socially beneficial initiative. This action also aligns with the need to address public health risks associated with heatwaves, as energy-efficient buildings can provide better thermal comfort."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 14,
-        "explanation": "Creating financing programs for local renewable energy projects in Ribeirão das Neves is crucial due to the city's high stationary energy emissions. By promoting renewable energy, the city can significantly reduce its carbon footprint and improve air quality. Additionally, such programs can stimulate local economic growth by creating jobs and fostering innovation in the energy sector. Given the city's socio-economic challenges, these programs can also provide affordable energy solutions to low-income households, enhancing their quality of life. Overall, this action aligns with the city's need to address environmental and socio-economic issues simultaneously."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0043",
-        "actionName": "Integrate geothermal energy for heating where feasible",
-        "actionPriority": 15,
-        "explanation": "Integrating geothermal energy for heating in Ribeirão das Neves could significantly reduce stationary energy emissions, which are currently a major contributor to the city's total emissions. Given the city's high population density and the need for sustainable energy solutions, geothermal energy offers a renewable and low-emission alternative. Although the socio-economic factors indicate a very low-income level, which might pose challenges in implementation, the long-term benefits of reduced emissions and energy costs could outweigh the initial investment. Additionally, this action aligns with the city's need to address climate change impacts, particularly in reducing emissions and enhancing energy security."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0046",
-        "actionName": "Make efforts to promote socioeconomic development and improve the quality of life in the city from the perspective of a circular economy and zero carbon emissions.",
-        "actionPriority": 16,
-        "explanation": "Promoting socioeconomic development in Ribeirão das Neves is crucial due to the city's very low income levels, which can hinder overall quality of life. By focusing on a circular economy and zero carbon emissions, the city can address its significant emissions from stationary energy and transportation, contributing to a more sustainable environment. This approach not only aims to improve economic conditions but also aligns with global sustainability goals, potentially attracting investments and fostering innovation. Additionally, enhancing the quality of life through sustainable practices can mitigate the risks associated with climate hazards such as droughts and floods, which pose significant threats to public health and infrastructure."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0004",
-        "actionName": "Raise awareness to reduce peak-hour energy consumption",
-        "actionPriority": 17,
-        "explanation": "Raising awareness to reduce peak-hour energy consumption is crucial for Ribeirão das Neves due to its high stationary energy emissions. By targeting peak-hour consumption, the city can alleviate stress on the energy grid, potentially reducing emissions and improving energy security. Additionally, this action can help mitigate the impact of heatwaves, which pose a significant risk to public health in the area. Educating the population on energy conservation can lead to long-term behavioral changes that support sustainable energy use."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0022",
-        "actionName": "Set municipal energy efficiency targets",
-        "actionPriority": 18,
-        "explanation": "Setting municipal energy efficiency targets is crucial for Ribeirão das Neves due to its significant stationary energy emissions, which contribute heavily to the city's total emissions. By improving energy efficiency, the city can reduce its carbon footprint, which is essential given the high risk of climate-related hazards such as heatwaves and floods that threaten public health and infrastructure. Additionally, enhancing energy efficiency can lead to cost savings and improved energy security, which is particularly important in a region with socio-economic challenges. This action aligns with the city's need to address environmental sustainability while also considering economic and social benefits."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 19,
-        "explanation": "The incentive to create bike-sharing programs, particularly with electric bikes, is a strategic action for Ribeirão das Neves. This city has a high population density, which makes it suitable for bike-sharing as a means to reduce transportation emissions, currently a significant contributor to the city's total emissions. Additionally, promoting electric bikes can help mitigate the impact of heatwaves on public health by providing a cooler, more sustainable transportation option. Encouraging bike-sharing can also improve access to transportation for low-income residents, aligning with the city's socio-economic needs."
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0060",
+        "actionName": "Introduction of modular and automated collective transport systems.",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0091",
+        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0021",
+        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0126",
+        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
         "actionPriority": 20,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Ribeirão das Neves due to its very low-income socio-economic status. This action can stimulate the local economy by supporting local farmers and producers, thereby creating jobs and increasing income levels. Additionally, it can enhance food security, which is a significant concern given the high risk of droughts and floods impacting food availability. By focusing on agroecological products, the city can also promote sustainable agricultural practices that are better suited to the local biome and environmental conditions."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

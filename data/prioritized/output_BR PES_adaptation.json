@@ -1,202 +1,202 @@
 [
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Establishing a plan for preparation and emergency response measures in Petrópolis is crucial due to the city's high vulnerability to extreme weather events. The city faces significant risks from hazards such as floods, landslides, and heatwaves, which can severely impact public health and infrastructure. By prioritizing this action, Petrópolis can enhance its resilience and reduce the potential damage and disruption caused by these events. Additionally, a well-prepared emergency response plan can save lives and protect the community's well-being during such crises."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "The development of a Climate Action Plan is crucial for Petrópolis due to its high vulnerability to climate-related hazards such as floods, landslides, and heatwaves. These hazards pose significant risks to public health, infrastructure, and food security, making it imperative to have a strategic plan in place. Additionally, the city's total emissions are substantial, necessitating a comprehensive approach to reduce its carbon footprint and enhance resilience. Implementing a Climate Action Plan will help coordinate efforts across sectors to address these challenges effectively."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 3,
-        "explanation": "Strengthening programs for control and conservation of protected areas in Petrópolis is crucial due to its tropical rainforest biome, which is rich in biodiversity. The city faces significant risks from climate hazards such as droughts and heatwaves, which can severely impact biodiversity and ecosystem services. By enhancing conservation efforts, the city can mitigate these risks and preserve its natural resources, which are vital for maintaining ecological balance and supporting local livelihoods. Additionally, protecting these areas can help reduce emissions from land use changes, contributing to overall climate resilience."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 4,
-        "explanation": "The recovery of degraded areas in Petrópolis is crucial due to the city's vulnerability to landslides and floods, which are exacerbated by environmental degradation. Restoring these areas can help stabilize the soil, reducing the risk of landslides that threaten infrastructure and public health. Additionally, rehabilitating degraded land can enhance biodiversity and improve the resilience of local ecosystems, which is vital in a region with a tropical rainforest biome. This action also supports long-term sustainability by potentially reducing emissions from land use changes."
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 5,
-        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Petrópolis is crucial due to the city's socio-economic challenges. With a very low-income population, enhancing these areas can significantly improve living conditions and access to essential services. Additionally, addressing these zones can help mitigate the impacts of environmental hazards such as landslides and floods, which pose high risks to infrastructure and public health. This action supports sustainable urban development and resilience against climate-related threats."
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 6,
-        "explanation": "Access to health care is a critical priority for Petrópolis due to the high risk of public health impacts from hazards such as heatwaves, diseases, and floods. The city's vulnerability to these hazards, as indicated by the high normalized risk scores, underscores the need for robust health care systems to manage potential health crises. Improving access to health care can enhance the city's resilience by ensuring that residents receive timely medical attention during emergencies. Additionally, strengthening health care infrastructure can mitigate the adverse effects of climate-related health risks, thereby safeguarding the well-being of the population."
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petrópolis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0157",
-        "actionName": "Maintenance and Revitalization of Riparian Forests",
-        "actionPriority": 7,
-        "explanation": "The maintenance and revitalization of riparian forests in Petrópolis is crucial due to the city's vulnerability to floods and landslides. Riparian forests play a significant role in stabilizing soil and reducing the impact of heavy rainfall, which is essential given the high risk of infrastructure damage from these hazards. Additionally, these forests contribute to biodiversity conservation and improve water quality, addressing the moderate issue of inadequate water access. By prioritizing this action, Petrópolis can enhance its resilience against climate-related risks and improve the overall environmental health of the region."
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
-        "actionPriority": 8,
-        "explanation": "Strengthening the healthcare network in Petrópolis is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, floods, and landslides, all of which can severely affect public health. By enhancing healthcare services, the city can better manage and respond to the increased demand for medical attention during such events. This action is essential to ensure the well-being of residents and to mitigate the adverse effects of climate change on public health."
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 9,
-        "explanation": "The implementation of urban gardens in Petrópolis is a significant action due to its potential to enhance food security, which is a critical concern given the city's vulnerability to droughts and floods. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the impact of food shortages during extreme weather events. Additionally, these gardens can contribute to community resilience by fostering local engagement and education on sustainable practices. Furthermore, urban gardens can help improve the urban environment by increasing green spaces, which can aid in temperature regulation and enhance biodiversity."
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 10,
-        "explanation": "Improving food storage and distribution is crucial for Petrópolis due to its vulnerability to floods and droughts, which can severely impact food security. The city faces high risks from these hazards, making it essential to ensure a stable food supply chain. Enhancing these systems can help mitigate the effects of climate-related disruptions, ensuring that the population has consistent access to food. Additionally, better food distribution can support the city's socio-economic development by reducing waste and improving efficiency."
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 11,
-        "explanation": "Encouraging sustainable land use practices in Petrópolis is crucial due to the city's vulnerability to landslides and floods, as indicated by the high risk scores for these hazards. The city's tropical rainforest biome and significant elevation make it susceptible to these natural disasters, which can severely impact infrastructure and public health. By promoting sustainable land use, Petrópolis can mitigate the effects of these hazards, protect its biodiversity, and enhance resilience against climate change impacts. Additionally, sustainable practices can help reduce land use emissions, contributing to the city's overall emission reduction goals."
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petrópolis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 12,
-        "explanation": "The action of relocating and restoring vulnerable areas in Petrópolis is crucial due to the city's high risk of landslides and floods, which pose significant threats to infrastructure and public health. Given the city's tropical rainforest biome and its elevation, these natural hazards are exacerbated, making certain areas particularly susceptible to environmental degradation and human risk. By prioritizing relocation and restoration, the city can mitigate these risks, protect its residents, and preserve its natural environment. This action also aligns with the need to address inadequate water access and improve overall resilience against climate-related hazards."
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
-        "actionPriority": 13,
-        "explanation": "Farm and fishery improvements are crucial for Petrópolis due to the high risk of droughts impacting water resources and food security. Enhancing agricultural practices can help mitigate these risks by improving water efficiency and crop resilience. Additionally, these improvements can support the local economy by increasing productivity and sustainability in the face of climate challenges. Given the city's very low-income levels, such actions can also contribute to socio-economic development by providing more stable food sources and potential employment opportunities."
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR PES",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
-        "actionPriority": 14,
-        "explanation": "The availability of health infrastructure is crucial for Petrópolis, given the high risk of public health impacts from hazards such as heatwaves, landslides, and floods. These hazards pose significant threats to the well-being of the population, necessitating robust health infrastructure to manage potential crises effectively. Improving health infrastructure can enhance the city's resilience, ensuring that residents have access to necessary medical services during emergencies. Additionally, strengthening health systems can mitigate the adverse effects of climate-related health risks, contributing to overall community safety and stability."
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 15,
-        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for Petrópolis due to its significant impact on food security. The city faces high risks from droughts and floods, which can severely affect food availability and stability. By encouraging sustainable dietary practices and minimizing food waste, the city can enhance its resilience against these climate-related hazards. Additionally, reducing food waste can contribute to lowering overall emissions, aligning with the city's need to address its substantial waste emissions."
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 16,
-        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Petrópolis is crucial due to the city's vulnerability to floods and landslides. The city faces significant risks from these hazards, which can severely impact infrastructure and public health. By establishing a robust monitoring system, the city can enhance its ability to predict and respond to these events, thereby reducing potential damage and safeguarding its residents. Additionally, improved water resource management can help mitigate the effects of droughts, another critical risk for the region."
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 17,
-        "explanation": "Creating the Municipal Climate Change Forum in Petrópolis is crucial due to the city's high vulnerability to climate-related hazards such as floods, landslides, and heatwaves. These hazards pose significant risks to public health, infrastructure, and food security, as indicated by the high normalized risk scores. Establishing a dedicated forum will facilitate coordinated efforts to address these challenges, engage stakeholders, and develop effective adaptation and mitigation strategies. Additionally, the forum can serve as a platform for raising awareness and fostering community resilience against the impacts of climate change."
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR PES",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
-        "actionPriority": 18,
-        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Petrópolis due to its high vulnerability to natural hazards such as floods, landslides, and heatwaves. These events pose significant risks to public health, infrastructure, and food security, as indicated by the city's climate change risk assessment. Implementing a financial support program can help mitigate the economic impact on affected communities, ensuring quicker recovery and resilience building. Given the city's socio-economic challenges, such as very low-income levels, this program is essential to provide necessary aid and support to the most vulnerable populations."
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR PES",
+        "cityName": "Petr\u00f3polis",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR PES",
+        "cityName": "Petr\u00f3polis",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR PES",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 19,
-        "explanation": "The recovery and preservation of green areas in Petrópolis is crucial due to the city's tropical rainforest biome, which plays a significant role in maintaining biodiversity and ecological balance. Green areas can help mitigate the impacts of climate change, such as heatwaves and floods, which are significant risks for the city. Additionally, preserving these areas can improve public health by providing cleaner air and recreational spaces, which are essential for the well-being of the residents. Given the city's vulnerability to environmental hazards, this action supports long-term sustainability and resilience."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR PES",
-        "cityName": "Petrópolis",
+        "cityName": "Petr\u00f3polis",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 20,
-        "explanation": "Implementing social safety nets in Petrópolis is crucial due to the city's vulnerability to various climate hazards such as floods, landslides, and heatwaves. These events pose significant risks to public health and infrastructure, making it essential to have systems in place to support affected populations. Additionally, with a very low-income population, social safety nets can provide necessary financial and social support to those most in need, enhancing community resilience. By prioritizing this action, the city can better prepare for and mitigate the impacts of climate-related disasters, ensuring a more secure and stable environment for its residents."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

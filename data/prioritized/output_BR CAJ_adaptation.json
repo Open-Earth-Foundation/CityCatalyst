@@ -3,200 +3,200 @@
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "The development of a Climate Action Plan is crucial for Cajazeiras due to its high vulnerability to climate-related hazards such as droughts and heatwaves, which pose significant risks to water resources and public health. With a high population density and socio-economic challenges, including a high percentage of low-income residents, the city needs a comprehensive strategy to mitigate these risks and enhance resilience. Additionally, the city's total emissions are substantial, necessitating a structured approach to reduce emissions and promote sustainable development. Implementing a Climate Action Plan will help coordinate efforts across sectors, ensuring that resources are effectively utilized to address the city's unique environmental and socio-economic challenges."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 2,
-        "explanation": "Access to health care is a critical priority for Cajazeiras due to the high risk of public health impacts from heatwaves and diseases. The city's socio-economic factors, such as high levels of low-income residents, exacerbate vulnerabilities to health-related hazards. Improving health care access can mitigate these risks by providing timely medical interventions and preventive care. Additionally, enhanced health care infrastructure can support the community in managing the impacts of climate-related health threats, thereby improving overall resilience."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 3,
-        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) is crucial for Cajazeiras due to its high levels of low-income residents. These areas often lack adequate infrastructure and services, which can exacerbate socio-economic disparities. By focusing on ZEIS, the city can improve living conditions, enhance public health, and reduce vulnerability to climate-related hazards such as droughts and heatwaves. This action supports sustainable urban development and resilience, making it a priority for the city's growth and well-being."
-    },
-    {
-        "locode": "BR CAJ",
-        "cityName": "Cajazeiras",
-        "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 4,
-        "explanation": "Improving food storage and distribution is crucial for Cajazeiras due to its high risk of droughts, which significantly threaten food security. The city's socio-economic factors, such as a high percentage of low-income residents, make it essential to ensure reliable access to food. Enhancing food storage and distribution systems can mitigate the impact of supply disruptions and help maintain food availability during adverse conditions. This action is a priority as it directly addresses the vulnerabilities related to food security in the region."
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 5,
-        "explanation": "Establishing a plan for preparation and emergency response measures in the event of extreme weather events is crucial for Cajazeiras due to its high vulnerability to droughts and heatwaves. The city faces significant risks to water resources and public health, with droughts posing a severe threat. Additionally, the socio-economic factors, such as high levels of low-income residents, make the population more susceptible to the impacts of extreme weather. By prioritizing this action, Cajazeiras can enhance its resilience and protect its citizens from the adverse effects of climate-related hazards."
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 6,
-        "explanation": "Farm and fishery improvements are crucial for Cajazeiras due to the high risk of droughts impacting water resources and food security. The city's socio-economic factors, such as high levels of low-income residents, make it essential to enhance local food production to ensure food availability and affordability. Additionally, improving agricultural practices can help mitigate the effects of climate change on local biodiversity and support sustainable development. These improvements can also contribute to reducing emissions from land use, which is a significant source of the city's total emissions."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 7,
-        "explanation": "Implementing social safety nets in Cajazeiras is crucial due to the high level of low-income residents in the city. These safety nets can provide essential support to vulnerable populations, especially in times of economic instability or natural disasters. Given the city's high risk of droughts and heatwaves, social safety nets can help mitigate the impact on public health and food security. By prioritizing this action, the city can enhance resilience and improve the quality of life for its residents."
-    },
-    {
-        "locode": "BR CAJ",
-        "cityName": "Cajazeiras",
-        "region": "PB",
-        "regionName": "Paraíba",
-        "actionId": "icare_0152",
-        "actionName": "Recovery of degraded areas",
-        "actionPriority": 8,
-        "explanation": "The action 'Recovery of degraded areas' is crucial for Cajazeiras due to its desert biome and the high risk of droughts impacting water resources and food security. Restoring degraded land can improve soil health and increase vegetation cover, which helps in water retention and reduces the severity of droughts. Additionally, this action can enhance biodiversity and contribute to carbon sequestration, thereby mitigating some of the city's high land use emissions. Given the socio-economic challenges, such as high low-income levels, this action can also provide employment opportunities and improve the quality of life for residents."
-    },
-    {
-        "locode": "BR CAJ",
-        "cityName": "Cajazeiras",
-        "region": "PB",
-        "regionName": "Paraíba",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 9,
-        "explanation": "Strengthening programs for control and conservation of protected areas is crucial for Cajazeiras due to its desert biome, which is sensitive to environmental changes. The city faces significant risks from droughts, impacting water resources and food security, making the conservation of natural areas vital for maintaining ecological balance. Additionally, protecting these areas can help mitigate the effects of climate change, such as heatwaves and biodiversity loss, which are pressing concerns for the region. By prioritizing this action, Cajazeiras can enhance its resilience against environmental hazards and support sustainable development."
-    },
-    {
-        "locode": "BR CAJ",
-        "cityName": "Cajazeiras",
-        "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
-        "actionPriority": 10,
-        "explanation": "The availability of health infrastructure is a critical priority for Cajazeiras due to the high risk of public health impacts from heatwaves and diseases. The city faces significant challenges with droughts and heatwaves, which can exacerbate health issues, making robust health infrastructure essential. Additionally, the socio-economic context of high low-income levels suggests that many residents may have limited access to private healthcare, increasing the reliance on public health services. Improving health infrastructure can help mitigate the risks associated with these environmental and socio-economic factors, ensuring better health outcomes for the population."
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 11,
-        "explanation": "Encouraging sustainable land use practices in Cajazeiras is crucial due to the high land use emissions, which are a significant contributor to the city's total emissions. The region's desert biome and high risk of droughts further emphasize the need for sustainable practices to preserve water resources and maintain food security. Implementing these practices can help mitigate the impact of climate change on local agriculture and biodiversity, ensuring long-term environmental and economic stability for the community."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 12,
-        "explanation": "Creating the Municipal Climate Change Forum in Cajazeiras is a crucial step towards addressing the city's environmental challenges. Given the high risk of droughts impacting water resources and food security, a dedicated forum can facilitate coordinated efforts to mitigate these risks. Additionally, the forum can serve as a platform for engaging stakeholders in developing strategies to reduce emissions and improve public health, which is currently threatened by heatwaves and diseases. Establishing this forum will also enhance community awareness and participation in climate resilience initiatives, fostering a more sustainable future for the city."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 13,
-        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for Cajazeiras due to its high risk of food insecurity exacerbated by droughts. With a significant portion of the population experiencing low income, improving food efficiency can help alleviate economic pressures. Additionally, reducing food waste can contribute to lowering the city's overall emissions, which are currently substantial. This action aligns with the need to enhance sustainability and resilience in the face of climate-related challenges."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
         "actionId": "icare_0150",
         "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
         "actionPriority": 14,
-        "explanation": "Implementing a Loss Reduction and Control Program to promote water security is crucial for Cajazeiras due to its high risk of droughts impacting water resources. The city faces significant challenges with water access, which is only moderately adequate, making this action vital to ensure sustainable water supply. Additionally, improving water security can help mitigate the socio-economic impacts on the low-income population, who are particularly vulnerable to water scarcity. This program is essential to enhance resilience against climate-related hazards and support the overall well-being of the community."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
-        "actionId": "icare_0144",
-        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
-        "actionPriority": 15,
-        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Cajazeiras due to its high vulnerability to droughts and heatwaves. These hazards pose significant risks to water resources, food security, and public health, which are critical areas for the city's well-being. Given the socio-economic challenges, including a high percentage of low-income residents, financial support can help mitigate the impacts of these extreme weather events. This program would provide necessary resources to enhance resilience and protect the most vulnerable populations in the city."
-    },
-    {
-        "locode": "BR CAJ",
-        "cityName": "Cajazeiras",
-        "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
-        "actionPriority": 16,
-        "explanation": "The maintenance and revitalization of riparian forests in Cajazeiras is crucial due to the city's high risk of droughts, which significantly impact water resources and food security. Riparian forests play a vital role in maintaining water quality and availability, which is essential for both human consumption and agricultural activities. Additionally, these forests help in stabilizing the soil, reducing the risk of erosion and landslides, which are potential hazards in the region. By enhancing the health of riparian zones, the city can improve its resilience against climate-related challenges and support biodiversity conservation."
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 17,
-        "explanation": "Strengthening the healthcare network in Cajazeiras is crucial due to the high risk of public health impacts from climate-related hazards such as heatwaves and diseases. The city faces significant challenges with droughts and heatwaves, which can exacerbate health issues and increase the demand for medical services. Additionally, the socio-economic factors, including a high percentage of low-income residents, make it essential to ensure accessible and robust healthcare services. By prioritizing this action, Cajazeiras can better prepare for and mitigate the health impacts of climate change, ensuring the well-being of its population."
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 18,
-        "explanation": "Implementing a disaster early warning system in Cajazeiras is crucial due to the high risk of droughts and heatwaves, which significantly impact water resources and public health. The city's socio-economic factors, such as high levels of low-income residents, make it particularly vulnerable to these hazards. An early warning system can help mitigate the effects of these disasters by providing timely information, allowing residents and authorities to prepare and respond effectively. This action is essential to enhance the city's resilience and protect its most vulnerable populations."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 19,
-        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Cajazeiras is crucial due to the high risk of droughts impacting water resources. The city faces significant challenges with water scarcity, which can affect both public health and food security. By establishing a monitoring system, the city can better manage its water resources, anticipate shortages, and implement timely interventions. This action is essential to mitigate the adverse effects of droughts and ensure sustainable water management for the community."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR CAJ",
         "cityName": "Cajazeiras",
         "region": "PB",
-        "regionName": "Paraíba",
+        "regionName": "Para\u00edba",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 20,
-        "explanation": "The implementation of urban gardens in Cajazeiras is a significant action due to the city's high risk of droughts impacting water resources and food security. Urban gardens can help mitigate these risks by promoting local food production and reducing dependency on external food sources. Additionally, they can improve the socio-economic conditions by providing opportunities for community engagement and potentially generating income for low-income residents. Furthermore, urban gardens can enhance biodiversity and contribute to the city's resilience against climate change impacts."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

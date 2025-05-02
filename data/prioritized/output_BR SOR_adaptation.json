@@ -3,200 +3,200 @@
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
+        "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Establishing a plan for preparation and emergency response measures in Sorocaba is crucial due to the high risk of extreme weather events such as heatwaves, floods, and landslides. The city faces significant threats to public health and infrastructure from these hazards, as indicated by the high risk scores. Implementing this action will enhance the city's resilience and ability to protect its population and infrastructure during such events. Additionally, proactive planning can mitigate the impact of these events, ensuring quicker recovery and reducing potential damages."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 2,
-        "explanation": "Strengthening programs for control and conservation of protected areas in Sorocaba is crucial due to the city's tropical rainforest biome, which is rich in biodiversity. The preservation of these areas can help mitigate the impacts of climate change, such as droughts and heatwaves, which pose significant risks to public health and infrastructure. Additionally, maintaining healthy ecosystems supports biodiversity and can enhance the city's resilience against environmental hazards. This action aligns with the need to protect natural resources and ensure sustainable development in the region."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0152",
-        "actionName": "Recovery of degraded areas",
-        "actionPriority": 3,
-        "explanation": "The recovery of degraded areas in Sorocaba is crucial due to the city's significant industrial process emissions and the need to enhance biodiversity resilience. Restoring these areas can help mitigate the impacts of climate change, such as floods and landslides, which pose high risks to infrastructure and public health. Additionally, improving land use can contribute to reducing overall emissions and enhancing the city's capacity to manage environmental hazards effectively. This action aligns with the city's need to address environmental degradation and improve ecological stability."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
+        "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
         "actionPriority": 4,
-        "explanation": "The development of a Climate Action Plan is crucial for Sorocaba due to its significant total emissions, which exceed two million metric tons. This plan will help address the city's high emissions from stationary energy and industrial processes, which are major contributors to its carbon footprint. Additionally, Sorocaba faces various climate risks, including heatwaves and floods, which threaten public health and infrastructure. A comprehensive Climate Action Plan will provide a strategic framework to mitigate these risks and promote sustainable development in the city."
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 5,
-        "explanation": "The action of relocating and restoring vulnerable areas in Sorocaba is crucial due to the high risk of natural hazards such as floods and landslides, which pose significant threats to public health and infrastructure. Given the city's tropical rainforest biome and the high population density, these environmental challenges can have severe impacts on the community. By prioritizing this action, Sorocaba can mitigate the risks associated with these hazards, ensuring the safety and well-being of its residents. Additionally, environmental restoration can enhance biodiversity and improve the overall resilience of the city against climate change impacts."
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
+        "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 6,
-        "explanation": "The maintenance and revitalization of riparian forests in Sorocaba is crucial due to the city's tropical rainforest biome, which plays a significant role in maintaining biodiversity and ecological balance. Riparian forests help in reducing the risk of floods, which is a major hazard for the city's infrastructure and public health, as indicated by the high risk scores. Additionally, these forests contribute to improving water quality and availability, which is essential given the city's vulnerability to droughts. By prioritizing this action, Sorocaba can enhance its resilience against climate-related risks and support sustainable urban development."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 7,
-        "explanation": "Encouraging sustainable land use practices in Sorocaba is crucial due to the city's significant industrial process emissions and the potential impact on biodiversity. The city faces risks from droughts and heatwaves, which can exacerbate land degradation and affect local ecosystems. By promoting sustainable land use, Sorocaba can mitigate these environmental risks and enhance resilience against climate-related hazards. Additionally, sustainable practices can contribute to reducing overall emissions, aligning with the city's goals to manage its environmental footprint effectively."
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
+        "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 8,
-        "explanation": "The implementation of urban gardens in Sorocaba is a significant action due to its potential to enhance food security, which is a concern given the risk of droughts affecting the region. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the impact of food shortages. Additionally, these gardens can contribute to biodiversity by creating green spaces that support various plant and animal species. Furthermore, urban gardens can improve public health by promoting access to nutritious food and encouraging community engagement in healthy outdoor activities."
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
         "actionPriority": 9,
-        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Sorocaba is crucial due to the city's socio-economic context. Although the city has very low levels of low-income population and inadequate access to water and sanitation, focusing on ZEIS can help address potential inequalities and improve living conditions for vulnerable groups. Additionally, restoring these areas can contribute to reducing emissions and enhancing resilience against climate hazards such as floods and landslides, which pose significant risks to infrastructure and public health. This action aligns with the city's need to manage its environmental impact while promoting social equity."
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
-        "actionPriority": 10,
-        "explanation": "Strengthening the healthcare network in Sorocaba is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, floods, and landslides, all of which can severely affect public health. By enhancing healthcare services, Sorocaba can better manage the increased demand for medical attention during such events, ensuring timely and effective care for its residents. This action is vital to mitigate the adverse health effects of climate change and improve the city's resilience."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
         "actionPriority": 11,
-        "explanation": "Access to health care is a critical priority for Sorocaba due to the high risk of public health impacts from hazards such as heatwaves, landslides, and floods. These hazards pose significant threats to the well-being of the population, necessitating robust health care systems to manage potential health crises. Improving access to health care can enhance the city's resilience by ensuring timely medical response and support during emergencies. Additionally, better health care access can mitigate the long-term health impacts of climate-related events, contributing to overall community health and safety."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
+        "regionName": "S\u00e3o Paulo",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 12,
-        "explanation": "Improving food storage and distribution is crucial for Sorocaba due to its vulnerability to droughts and floods, which can severely impact food security. By enhancing these systems, the city can ensure a more reliable food supply, even during adverse weather conditions. This action also supports the city's socio-economic stability, as it can help mitigate the effects of food shortages on low-income populations. Additionally, efficient food distribution can reduce waste emissions, contributing to overall emission reduction goals."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
         "actionPriority": 13,
-        "explanation": "The action of recovering and preserving green areas in Sorocaba is crucial due to the city's tropical rainforest biome, which supports a rich biodiversity. Green areas play a significant role in mitigating the effects of climate change by absorbing carbon emissions, which is vital given Sorocaba's high total emissions. Additionally, preserving green spaces can help manage the risks associated with heatwaves and floods, which are significant hazards for the city. This action also contributes to improving public health and quality of life by providing recreational spaces and enhancing air quality."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
+        "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 14,
-        "explanation": "Implementing permeable pavements and increasing green areas in roadways is crucial for Sorocaba due to its high risk of floods, which pose a significant threat to infrastructure and public health. By enhancing the city's ability to manage stormwater, this action can mitigate flood risks and improve urban resilience. Additionally, increasing green areas contributes to biodiversity and helps reduce the urban heat island effect, which is important given the city's vulnerability to heatwaves. This action aligns with the city's need to address environmental challenges while promoting sustainable urban development."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 15,
-        "explanation": "Farm and fishery improvements are crucial for Sorocaba due to the city's vulnerability to droughts, which pose a significant risk to water resources and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience and ensuring a stable food supply. Additionally, improving fisheries can contribute to the local economy and provide alternative food sources, which is vital given the potential impacts of climate change on traditional agriculture. These improvements can also support biodiversity by promoting sustainable practices that protect local ecosystems."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 16,
-        "explanation": "Implementing social safety nets in Sorocaba is crucial due to the city's vulnerability to various climate hazards, such as heatwaves and floods, which pose significant risks to public health and infrastructure. The socio-economic factors indicate a very low-income level, making the population particularly susceptible to the impacts of these hazards. By establishing robust social safety nets, the city can enhance its resilience, ensuring that vulnerable populations receive the necessary support during climate-related emergencies. This action is essential to mitigate the adverse effects of climate change and promote social equity in Sorocaba."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 17,
-        "explanation": "Implementing stringent building codes in Sorocaba is crucial due to the high risk of infrastructure damage from natural hazards such as floods and landslides. The city faces significant threats from these hazards, with normalized risk scores indicating a high potential for impact. By enforcing robust building standards, Sorocaba can enhance the resilience of its infrastructure, ensuring safety and reducing potential economic losses. This action is particularly important given the city's dense population and the need to protect public health and safety."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
+        "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 18,
-        "explanation": "Creating the Municipal Climate Change Forum in Sorocaba is a crucial step towards addressing the city's environmental challenges. With significant emissions from stationary energy and transportation, a dedicated forum can facilitate discussions and strategies to reduce these emissions effectively. Additionally, the city faces high risks from climate hazards such as heatwaves, floods, and landslides, which threaten public health and infrastructure. A climate change forum can serve as a platform for stakeholders to collaborate on resilience-building measures and policy development. This initiative will also help in raising awareness and engaging the community in sustainable practices."
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 19,
-        "explanation": "Ecosystem-based adaptation is crucial for Sorocaba due to its tropical rainforest biome, which is sensitive to climate change impacts such as droughts and heatwaves. These hazards pose significant risks to biodiversity and public health, as indicated by the city's climate change risk assessment. Implementing ecosystem-based strategies can enhance the resilience of natural systems, thereby protecting vital resources and reducing vulnerability to climate-related hazards. Additionally, such adaptation measures can provide co-benefits, including improved air quality and enhanced recreational spaces, contributing to the overall well-being of the city's population."
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
         "actionPriority": 20,
-        "explanation": "The action to improve the availability of health infrastructure in Sorocaba is crucial due to the high risk of public health impacts from various hazards such as heatwaves, landslides, and floods. These hazards have been identified as having a significant potential to affect public health, with risk scores indicating a high level of concern. Enhancing health infrastructure will help mitigate these risks by ensuring that the city is better prepared to handle health emergencies and provide adequate care to its residents. Additionally, improving health infrastructure can contribute to overall community resilience, making Sorocaba more capable of withstanding and recovering from climate-related challenges."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

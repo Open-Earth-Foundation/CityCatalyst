@@ -3,200 +3,200 @@
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0075",
         "actionName": "Set carbon emissions reduction targets for industrial sectors",
         "actionPriority": 1,
-        "explanation": "Setting carbon emissions reduction targets for industrial sectors in Cariacica is a critical priority due to the significant contribution of industrial processes to the city's total emissions. With industrial process emissions accounting for a substantial portion of the city's overall carbon footprint, targeted reductions in this sector can lead to meaningful decreases in total emissions. Additionally, addressing industrial emissions aligns with broader environmental goals and can help mitigate the impacts of climate change, which is crucial given the city's vulnerability to hazards like droughts and floods. Implementing these targets can also drive innovation and efficiency within the industrial sector, potentially leading to economic benefits and improved public health outcomes."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0078",
-        "actionName": "Develop and implement industrial waste management programs",
-        "actionPriority": 2,
-        "explanation": "Developing and implementing industrial waste management programs in Cariacica is crucial due to the significant industrial process emissions contributing to the city's total emissions. With industrial emissions being a major component, effective waste management can help reduce environmental pollution and improve air quality. Additionally, better waste management practices can mitigate the risk of contamination to water resources, which is vital given the city's vulnerability to droughts. This action aligns with the need to address public health concerns, as reducing industrial waste can decrease the incidence of diseases linked to pollution."
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0081",
-        "actionName": "Enhance material recycling in manufacturing",
-        "actionPriority": 3,
-        "explanation": "Enhancing material recycling in manufacturing is crucial for Cariacica due to its significant industrial process emissions, which are a major contributor to the city's total emissions. By improving recycling practices, the city can reduce waste emissions and lower the environmental impact of its manufacturing sector. This action also aligns with the need to address socio-economic challenges, as it can create job opportunities and promote sustainable economic growth. Furthermore, reducing emissions through recycling can help mitigate the risks associated with climate change impacts, such as floods and landslides, which pose a high risk to the city's infrastructure and public health."
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0074",
         "actionName": "Support research into carbon-neutral manufacturing technologies",
-        "actionPriority": 4,
-        "explanation": "Supporting research into carbon-neutral manufacturing technologies is crucial for Cariacica due to its significant industrial process emissions. With industrial emissions being a major contributor to the city's total emissions, advancing carbon-neutral technologies can help reduce the environmental impact. Additionally, this action aligns with the city's need to address climate change risks, such as droughts and heatwaves, which can be exacerbated by high emissions. By investing in research, Cariacica can foster innovation and potentially lead to more sustainable industrial practices, benefiting both the local economy and the environment."
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0001",
-        "actionName": "Stimulate solar energy production in industrial facilities",
-        "actionPriority": 5,
-        "explanation": "Stimulating solar energy production in industrial facilities in Cariacica is a crucial action due to the city's high industrial process emissions, which are a significant contributor to its total emissions. By promoting solar energy, the city can reduce its reliance on fossil fuels, thereby decreasing its carbon footprint and improving air quality. Additionally, this action aligns with the need to enhance energy security, especially in the face of potential energy shortages exacerbated by climate change impacts such as droughts. Implementing solar energy solutions can also provide economic benefits by reducing energy costs for industries and creating green jobs, contributing to the city's socio-economic development."
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0078",
+        "actionName": "Develop and implement industrial waste management programs",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 6,
-        "explanation": "Encouraging renewable energy policies at the municipal level in Cariacica is crucial due to the city's high stationary energy emissions. Transitioning to renewable energy sources can significantly reduce these emissions, contributing to a cleaner environment. Additionally, renewable energy can enhance energy security, which is vital given the city's vulnerability to droughts that can impact energy supply. Implementing these policies can also stimulate local economic growth by creating green jobs and reducing dependency on non-renewable energy sources."
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0082",
-        "actionName": "Transition to renewable energy for industrial operations",
-        "actionPriority": 7,
-        "explanation": "Transitioning to renewable energy for industrial operations in Cariacica is crucial due to the high level of industrial process emissions, which are a significant contributor to the city's total emissions. By shifting to renewable energy sources, the city can substantially reduce its carbon footprint, aligning with global sustainability goals. Additionally, this transition can enhance energy security, which is vital given the city's vulnerability to droughts that can impact energy supply. Implementing this action can also stimulate local economic growth by creating green jobs and fostering innovation in the renewable energy sector."
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0073",
         "actionName": "Support the transition to low-emission industrial refrigeration",
-        "actionPriority": 8,
-        "explanation": "Supporting the transition to low-emission industrial refrigeration in Cariacica is crucial due to the city's significant industrial process emissions. With industrial emissions being a major contributor to the city's total emissions, reducing them can have a substantial impact on overall environmental health. Additionally, this action aligns with the need to address climate change impacts, as reducing emissions can help mitigate risks associated with heatwaves and other climate-related hazards. By prioritizing this transition, Cariacica can improve its air quality and contribute to global efforts to combat climate change."
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0079",
-        "actionName": "Implement energy audits in industrial plants",
-        "actionPriority": 9,
-        "explanation": "Implementing energy audits in industrial plants in Cariacica is a crucial step towards reducing the city's high industrial process emissions, which are a significant contributor to its total emissions. By identifying inefficiencies and areas for improvement, these audits can lead to more sustainable energy use and cost savings for industries. Given the city's very low socio-economic status, reducing energy costs can have a positive economic impact. Additionally, improving energy efficiency aligns with the city's need to address energy security risks exacerbated by droughts. Overall, this action supports both environmental and economic resilience in Cariacica."
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0081",
+        "actionName": "Enhance material recycling in manufacturing",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0001",
+        "actionName": "Stimulate solar energy production in industrial facilities",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0076",
         "actionName": "Encourage the use of low-emission fuels in industrial processes",
-        "actionPriority": 10,
-        "explanation": "Encouraging the use of low-emission fuels in industrial processes in Cariacica is crucial due to the city's significant industrial process emissions, which are the highest among all sectors. This action can substantially reduce the overall carbon footprint of the city, contributing to a healthier environment. Additionally, with the city's vulnerability to climate-related hazards such as floods and landslides, reducing emissions can help mitigate some of the adverse effects of climate change. Implementing this action aligns with the city's need to improve air quality and public health, given the high risk of diseases exacerbated by pollution."
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0082",
+        "actionName": "Transition to renewable energy for industrial operations",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0077",
         "actionName": "Encourage the use of alternative materials in manufacturing",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0071",
+        "actionName": "Promote the substitution of traditional materials with sustainable alternatives",
         "actionPriority": 11,
-        "explanation": "Encouraging the use of alternative materials in manufacturing is crucial for Cariacica due to its high industrial process emissions. By adopting sustainable materials, the city can significantly reduce its carbon footprint and mitigate environmental impacts. This action also aligns with the need to address the socio-economic challenges faced by the city, as it can lead to the development of new industries and job opportunities. Furthermore, reducing reliance on traditional materials can enhance the city's resilience against climate-related risks, such as droughts and floods, which threaten infrastructure and public health."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
         "actionPriority": 12,
-        "explanation": "The adoption of biomethane in public fleets in Cariacica is a significant step towards reducing transportation emissions, which are a major contributor to the city's total emissions. Given the city's high levels of industrial and transportation emissions, transitioning to cleaner fuel sources can substantially lower the carbon footprint. Additionally, this action supports energy security by diversifying energy sources, which is crucial in a region facing risks from droughts and heatwaves. Implementing biomethane can also enhance public health by reducing air pollution, which is a critical concern given the city's vulnerability to climate-related health impacts."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 13,
-        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Cariacica due to its high transportation emissions. Encouraging the use of electric bikes can significantly reduce the carbon footprint associated with urban transportation. Additionally, this initiative can improve public health by promoting physical activity and reducing air pollution. Given the city's challenges with inadequate public services, such programs can also enhance mobility for low-income residents, providing them with affordable and sustainable transportation options."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0079",
+        "actionName": "Implement energy audits in industrial plants",
         "actionPriority": 14,
-        "explanation": "Implementing free public transportation during peak hours in Cariacica can significantly reduce the reliance on individual vehicles, thereby decreasing transportation emissions, which are a major contributor to the city's total emissions. This action is particularly important given the city's high population density, which can exacerbate traffic congestion and air pollution. By encouraging the use of public transport, the city can improve air quality and reduce greenhouse gas emissions, contributing to a healthier urban environment. Additionally, this initiative can provide economic relief to low-income residents, aligning with the city's socio-economic needs."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0034",
+        "actionName": "Create tax incentives for companies adopting clean technologies",
         "actionPriority": 15,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Cariacica due to its potential to enhance food security, which is at high risk from hazards like floods. This action supports local farmers, reduces transportation emissions, and strengthens the local economy, aligning with the city's need to address socio-economic challenges. Additionally, promoting agroecological practices can improve biodiversity and resilience against climate impacts, such as droughts and heatwaves, which are significant risks for the region. By focusing on local procurement, the city can also mitigate the impact of global supply chain disruptions, ensuring a more stable and sustainable food supply."
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0072",
         "actionName": "Promote industry-government collaborations on emissions reduction",
         "actionPriority": 16,
-        "explanation": "Promoting industry-government collaborations on emissions reduction is crucial for Cariacica due to its significant industrial process emissions, which are the highest among all sectors. By fostering partnerships, the city can leverage resources and expertise to implement effective strategies for reducing emissions. This collaboration can also drive innovation and investment in cleaner technologies, contributing to long-term sustainability. Additionally, reducing emissions aligns with the city's need to address climate risks, such as droughts and heatwaves, which impact public health and infrastructure."
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0034",
-        "actionName": "Create tax incentives for companies adopting clean technologies",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 17,
-        "explanation": "Creating tax incentives for companies adopting clean technologies in Cariacica is a strategic move to address the city's high industrial process emissions. By encouraging businesses to transition to cleaner technologies, the city can significantly reduce its carbon footprint, contributing to a healthier environment. Additionally, this action can stimulate economic growth by attracting environmentally conscious companies and fostering innovation in sustainable practices. Given the city's vulnerability to climate-related hazards such as floods and landslides, reducing emissions is crucial for enhancing resilience and protecting public health and infrastructure."
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 18,
-        "explanation": "Supporting agroecological certification programs in Cariacica is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which directly impact food security. By promoting sustainable agricultural practices, these programs can enhance the resilience of local food systems against such environmental challenges. Additionally, agroecological practices can contribute to reducing emissions from land use, which is a significant source of emissions in the city. This action aligns with the need to improve socio-economic conditions, as it can provide economic opportunities for low-income communities through sustainable agriculture."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
         "actionPriority": 19,
-        "explanation": "The implementation of an urban toll in Cariacica is a strategic action to address the high transportation emissions, which are a significant contributor to the city's total emissions. By introducing a toll, the city can encourage the use of public transportation and reduce the number of vehicles on the road, thereby decreasing emissions. Additionally, this action can generate revenue that can be reinvested into improving public transportation infrastructure, making it a more attractive option for residents. Given the city's challenges with inadequate public services and high emissions, this action is a step towards creating a more sustainable urban environment."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 20,
-        "explanation": "Integrating renewables into municipal water systems in Cariacica is a crucial step towards reducing the city's overall emissions. Given the city's very low access to adequate water services, this action can improve water access while simultaneously decreasing reliance on fossil fuels. Additionally, the region faces significant risks from droughts, which can impact water resources and energy security. By incorporating renewable energy, the city can enhance its resilience against these climate-related hazards, ensuring a more sustainable and reliable water supply."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

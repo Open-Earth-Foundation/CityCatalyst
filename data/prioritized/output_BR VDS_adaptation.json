@@ -1,202 +1,202 @@
 [
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "For Vitória de Santo Antão, having a formal emergency response plan helps coordinate evacuations and rescue when storms or floods hit. This approach minimizes confusion and property damage by clearly defining roles and resources. Preparedness of this kind makes recovery faster and the city more resilient."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "For Vitória de Santo Antão, creating a unified Climate Action Plan sets measurable goals and strategies to address emissions and local vulnerabilities. By identifying climate risks early, resources can be allocated efficiently. This plan also provides direction for cross-sector collaboration, guiding the city toward more sustainable growth."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 3,
-        "explanation": "For Vitória de Santo Antão, preserving key ecosystems ensures clean air, consistent water flow, and carbon storage. By keeping forests intact, the city mitigates the effects of extreme weather, supports biodiversity, and sustains crucial ecological services. Reinforcing protective measures fosters a healthier environment and bolsters climate resilience."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0152",
-        "actionName": "Recovery of degraded areas",
-        "actionPriority": 4,
-        "explanation": "For Vitória de Santo Antão, restoring damaged lands improves soil stability, boosts carbon absorption, and revitalizes vegetation. These efforts can also prevent flooding by improving natural water retention and reducing erosion. Over time, such rehabilitated landscapes become more resilient and contribute to local livelihoods."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 5,
-        "explanation": "For Vitória de Santo Antão, ensuring robust food storage and transport helps maintain supply chains when storms or heatwaves occur. With upgraded facilities, spoilage is reduced, and essential goods remain available during emergencies. This measure greatly contributes to food security and community well-being in uncertain times."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 6,
-        "explanation": "For Vitória de Santo Antão, expanding medical coverage is critical to meeting health demands intensified by climate-related issues like heatstroke or waterborne diseases. Improving clinics and emergency services curbs fatalities and speeds recovery during crises. Overall, better health infrastructure strengthens the city’s capacity to cope with emerging climate stresses."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 7,
-        "explanation": "For Vitória de Santo Antão, mapping and improving ZEIS neighborhoods prevents vulnerabilities from worsening under severe weather. Reinforced housing and infrastructure make these areas safer and healthier. By enhancing living conditions for at-risk communities, the city promotes equitable resilience and a more robust urban fabric."
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
-        "actionPriority": 8,
-        "explanation": "For Vitória de Santo Antão, improving hospitals and clinics ensures that residents receive rapid care during climate-related emergencies like floods or heatwaves. This action lowers injury rates, saves lives, and reduces longer-term health burdens. By prioritizing medical resilience, the city reinforces its ability to protect public health under changing conditions."
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 9,
-        "explanation": "For Vitória de Santo Antão, preserving forests along rivers and streams secures natural flood control and improves water quality. These buffers limit soil erosion and moderate flow during heavy rainfall. Rejuvenating riparian zones also sustains local habitats, reinforcing the city’s environmental resilience."
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 10,
-        "explanation": "For Vitória de Santo Antão, adopting sustainable land-use guidelines keeps development in balance with nature, reducing erosion and maintaining water sources. This measured approach also preserves habitats, mitigating heat and flood extremes. By guiding how land is used, the city protects essential resources for future growth and stability."
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 11,
-        "explanation": "For Vitória de Santo Antão, upgrading agricultural and fishery methods boosts yields while reducing environmental stress. Modern techniques in water management and crop rotation help producers cope with unpredictable climate patterns. This step secures local food supplies and supports the livelihoods of rural families."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 12,
-        "explanation": "For Vitória de Santo Antão, more hospitals and clinics expand the city’s capacity to tackle both routine health needs and climate-induced crises. This reduces travel time for patients and keeps the medical system functioning under duress. Better coverage is a cornerstone of a resilient urban environment that safeguards public well-being."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 13,
-        "explanation": "For Vitória de Santo Antão, strengthening welfare programs cushions economic and social shocks caused by floods, heatwaves, or other climate events. Timely assistance—such as food aid or emergency housing—reduces hardships and fosters a quicker return to stability. Such safety nets keep vulnerable groups from falling into deeper poverty during crises."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 14,
-        "explanation": "For Vitória de Santo Antão, convening a climate change forum unites public officials, community leaders, and businesses in collaborative planning. This shared space drives innovation in adaptation and emissions reduction. By pooling resources and expertise, the city crafts measures that address its unique climate challenges effectively."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 15,
-        "explanation": "For Vitória de Santo Antão, moving communities out of disaster-prone zones prevents frequent rebuilding costs and recurring crises. After relocation, restoring these areas’ ecosystems further mitigates flood or erosion risks. This proactive effort guards residents and reclaims habitats for longer-term stability."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 16,
-        "explanation": "For Vitória de Santo Antão, offering financial assistance during climate emergencies helps families and businesses recover quickly from losses. This support stabilizes local markets, preventing widespread economic fallout. By cushioning the impacts of disasters, the city fosters social resilience and a faster return to normalcy."
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 17,
-        "explanation": "For Vitória de Santo Antão, introducing gardens in vacant city lots lowers local temperatures and offers fresh produce. Greenery also absorbs excess rain, easing strain on drainage systems. Neighborhood participation encourages greater environmental awareness and fosters community connections."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 18,
-        "explanation": "For Vitória de Santo Antão, safeguarding and restoring forests or parks helps combat flooding and reduces heat. These habitats also support biodiversity and recreational activities for residents. Healthy green zones enhance local climate resilience while improving quality of life in the city."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 19,
-        "explanation": "For Vitória de Santo Antão, tracking water levels and flows in real time provides early flood or drought warnings. Quick alerts reduce damages and allow authorities to coordinate timely evacuations if needed. Over time, this data supports more accurate water management plans and better preparedness for changing weather patterns."
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0180",
-        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
         "actionPriority": 20,
-        "explanation": "For Vitória de Santo Antão, using permeable surfaces lets rainwater seep underground, preventing surface runoff and flash floods. Adding trees or flowerbeds along roads cools paved areas and improves local air quality. Together, these upgrades enhance road safety and reinforce the city’s resilience to extreme rainfall."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

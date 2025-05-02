@@ -7,17 +7,7 @@
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
         "actionPriority": 1,
-        "explanation": "Implementing agroforestry systems in Miranda is a high priority due to the city's significant land use emissions, which are the largest contributor to its total emissions. Agroforestry can help sequester carbon, reduce emissions, and improve biodiversity, which is crucial given the city's grassland/savanna biome. Additionally, this action can enhance food security and resilience against droughts, which are identified as key risks for the region. By integrating trees with crops and livestock, agroforestry can also improve soil health and water retention, addressing some of the socio-economic challenges faced by the community."
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 2,
-        "explanation": "Strengthening mechanisms for deforestation control in Miranda is crucial due to the city's significant land use emissions, which are the highest among all emission sources. The region's biome, primarily grassland and savanna, is vulnerable to deforestation, which can exacerbate climate change impacts and biodiversity loss. By enhancing deforestation control, the city can mitigate its carbon footprint and protect its natural ecosystems, which are vital for maintaining ecological balance and supporting local livelihoods. Additionally, effective deforestation control can help reduce the risk of droughts and other climate-related hazards that threaten water resources and food security in the area."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR MRD",
@@ -26,28 +16,18 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
         "actionPriority": 3,
-        "explanation": "Promoting urban reforestation and green corridors in Miranda is crucial due to the city's low population density and large area, which provide ample space for such initiatives. This action can significantly enhance biodiversity, which is currently at risk from droughts and heatwaves. Additionally, increasing green spaces can help mitigate the impact of heatwaves on public health and infrastructure by providing natural cooling and reducing urban heat island effects. Furthermore, reforestation efforts can contribute to carbon sequestration, helping to offset the city's high land use emissions and improve overall air quality."
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 4,
-        "explanation": "Facilitating technology transfer for conservation practices in Miranda is crucial due to the city's significant land use emissions, which are the highest among its emission sources. By adopting advanced conservation technologies, the city can effectively manage its grassland and savanna biomes, reducing emissions and preserving biodiversity. Additionally, with the moderate risk of droughts impacting water resources and food security, improved conservation practices can enhance resilience against these climate hazards. This action aligns with the need to address the socio-economic challenges and environmental vulnerabilities faced by the region."
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 5,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions is crucial for Miranda due to its significant land use emissions and the predominance of grassland/savanna biome. These actions can help improve sustainable agricultural practices, which are essential for reducing emissions and enhancing food security. Additionally, ATER initiatives can support local farmers in adapting to climate risks such as droughts, which pose a threat to water resources and food production. By prioritizing this action, Miranda can address socio-economic challenges and promote resilience in its rural communities."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR MRD",
@@ -56,18 +36,38 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 6,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Miranda is a strategic action due to the city's significant land use emissions. With a large area and a grassland/savanna biome, incentivizing landowners to maintain or enhance ecosystem services can help reduce emissions and promote sustainable land management. Additionally, PES programs can support biodiversity conservation, which is crucial given the risks posed by droughts and heatwaves to local ecosystems. Implementing PES can also enhance water resources management, addressing the moderate risk of droughts impacting water availability."
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR MRD",
         "cityName": "Miranda",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 7,
-        "explanation": "Promoting sustainable agricultural practices in Miranda is crucial due to the city's significant land use emissions, which are the highest among its emission sources. By adopting sustainable methods, the city can reduce its environmental impact and improve soil health, which is vital for long-term agricultural productivity. Additionally, sustainable practices can help mitigate the effects of droughts, a key hazard impacting water resources and food security in the region. This action aligns with the need to address socio-economic factors, as it can support local farmers in maintaining their livelihoods while protecting the environment."
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR MRD",
@@ -77,7 +77,17 @@
         "actionId": "icare_0100",
         "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 8,
-        "explanation": "Supporting regenerative agriculture practices in Miranda is crucial due to the city's reliance on agriculture and its vulnerability to climate hazards like droughts. The region's grassland/savanna biome can benefit significantly from regenerative practices, which enhance soil health and water retention, thereby improving resilience against droughts. Additionally, these practices can help reduce land use emissions, which are a major contributor to the city's total emissions. By prioritizing regenerative agriculture, Miranda can enhance food security and contribute to sustainable land management, aligning with its socio-economic and environmental needs."
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BR MRD",
@@ -86,18 +96,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0096",
         "actionName": "Promote Organic Farming",
-        "actionPriority": 9,
-        "explanation": "Promoting organic farming in Miranda is a strategic action due to the city's significant land use emissions, which are the highest among its emission sources. By transitioning to organic farming practices, the city can reduce its environmental impact and improve soil health, which is crucial in a grassland/savanna biome. Additionally, organic farming can enhance food security by providing more resilient agricultural systems in the face of droughts, a key hazard identified in the city's climate risk assessment. This action also aligns with the socio-economic context of the region, potentially providing economic benefits to moderate-income communities through sustainable agricultural practices."
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 10,
-        "explanation": "Creating incentives for agroforestry practices in livestock systems is a priority for Miranda due to its significant land use emissions. Agroforestry can help sequester carbon, thereby reducing the city's overall emissions and contributing to climate change mitigation. Additionally, integrating trees into livestock systems can improve biodiversity and enhance the resilience of the ecosystem against droughts, which are a key risk for the region. This action also supports sustainable agricultural practices, which can improve food security and provide economic benefits to local farmers."
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BR MRD",
@@ -107,7 +107,7 @@
         "actionId": "icare_0101",
         "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
         "actionPriority": 11,
-        "explanation": "Encouraging the use of low-emission agricultural machinery in Miranda is crucial due to the city's significant land use emissions, which are the highest among its emission sources. By adopting cleaner technologies in agriculture, the city can substantially reduce its carbon footprint and contribute to mitigating climate change. Additionally, this action aligns with the need to address the moderate socio-economic challenges faced by the population, potentially leading to more sustainable agricultural practices and economic benefits. Given the city's vulnerability to droughts, improving agricultural efficiency and sustainability is essential for long-term food security and resilience."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR MRD",
@@ -117,17 +117,7 @@
         "actionId": "icare_0127",
         "actionName": "Accelerate Environmental Regularization of Rural Properties",
         "actionPriority": 12,
-        "explanation": "Accelerating the environmental regularization of rural properties in Miranda is crucial due to the significant land use emissions, which are the highest among all emission sources in the city. This action can help mitigate the impact of these emissions by ensuring that rural properties adhere to environmental standards, thus preserving the grassland/savanna biome. Additionally, regularization can enhance biodiversity conservation efforts, which are vital given the risks posed by droughts and heatwaves. By prioritizing this action, Miranda can also improve its resilience against climate-related hazards, such as droughts, which threaten water and food security."
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 13,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Miranda due to its potential to enhance food security. The city faces risks from droughts and floods, which can disrupt food supply chains. By supporting local agroecological practices, the city can build resilience against these climate impacts and ensure a stable food supply. Additionally, this action can stimulate the local economy by supporting local farmers and reducing dependency on external food sources. It also aligns with sustainable practices, contributing to the reduction of emissions associated with long-distance transportation of goods."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR MRD",
@@ -136,38 +126,18 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0061",
         "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 14,
-        "explanation": "Soil Carbon Management in Croplands and Grasslands is a crucial action for Miranda due to its significant land use emissions, which are the highest among all emission sources in the city. By improving soil carbon management, the city can effectively reduce its carbon footprint and enhance the resilience of its grassland/savanna biome. This action also supports biodiversity and food security, which are key concerns given the risks posed by droughts and floods. Implementing this strategy can lead to more sustainable agricultural practices, benefiting both the environment and the local economy."
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0085",
-        "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 15,
-        "explanation": "Promoting the adoption of agroecological pest control in Miranda is crucial due to the city's reliance on agriculture and its vulnerability to climate-related hazards such as droughts and floods. Agroecological practices can enhance the resilience of local food systems by reducing dependency on chemical pesticides, which can harm biodiversity and contribute to environmental degradation. Additionally, these practices can improve soil health and water retention, mitigating the impacts of droughts and supporting food security. By adopting sustainable pest control methods, Miranda can strengthen its agricultural sector while addressing key environmental and socio-economic challenges."
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 16,
-        "explanation": "Supporting agroecological certification programs in Miranda is crucial due to the city's reliance on agriculture and its vulnerability to climate hazards like droughts and floods. These programs can promote sustainable farming practices that enhance food security and reduce environmental impact. By encouraging agroecological methods, the city can improve resilience against climate change, ensuring long-term agricultural productivity and biodiversity conservation. Additionally, such initiatives can empower local farmers economically by opening up new markets for certified products."
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 17,
-        "explanation": "Encouraging local agroecological production and short supply chains is crucial for Miranda due to its moderate food security risk from droughts and floods. By promoting local agriculture, the city can enhance its resilience to these climate impacts, ensuring a stable food supply. Additionally, this action supports the local economy and reduces transportation emissions, contributing to overall sustainability. Given the city's socio-economic context, such initiatives can also provide economic opportunities for residents, aligning with the need to address moderate low-income levels."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR MRD",
@@ -176,8 +146,38 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 18,
-        "explanation": "Supporting the implementation of ecological fiscal incentives in Miranda is crucial due to the city's significant land use emissions, which are the highest among its emission sources. By promoting sustainable land management practices through fiscal incentives, the city can effectively reduce its carbon footprint and enhance biodiversity conservation. Additionally, these incentives can encourage local stakeholders to adopt environmentally friendly practices, contributing to the overall resilience of the region against climate-related hazards such as droughts and floods. This action aligns with the city's need to address its socio-economic challenges by potentially providing economic benefits to communities engaged in sustainable practices."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BR MRD",
@@ -187,7 +187,7 @@
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 19,
-        "explanation": "Afforestation, reforestation, and forest ecosystem restoration are crucial for Miranda due to its significant land use emissions, which are the highest among all emission sources in the city. By restoring forest ecosystems, the city can effectively sequester carbon, thereby reducing its overall carbon footprint. Additionally, enhancing forest cover can help mitigate the impacts of droughts and heatwaves, which are identified as key hazards affecting water resources, food security, and biodiversity in the region. This action also supports biodiversity conservation, which is vital given the city's grassland/savanna biome."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR MRD",
@@ -197,6 +197,6 @@
         "actionId": "c40_0042",
         "actionName": "Biodiversity Expansion",
         "actionPriority": 20,
-        "explanation": "The action 'Biodiversity Expansion' is crucial for Miranda due to its location in a grassland/savanna biome, which is sensitive to environmental changes. Enhancing biodiversity can help mitigate the impacts of droughts and heatwaves, which pose significant risks to the city's infrastructure and public health. Additionally, increasing biodiversity can improve the resilience of local ecosystems, supporting food security and water resources. Given the moderate socio-economic status of the population, this action can also provide sustainable development opportunities, enhancing the quality of life for residents."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

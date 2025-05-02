@@ -3,200 +3,200 @@
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Establishing a plan for preparation and emergency response measures in the event of extreme weather events is crucial for Cariacica due to its high vulnerability to hazards such as floods, landslides, and heatwaves. The city faces significant risks to public health and infrastructure from these events, as indicated by the high normalized risk scores. Implementing this action will help mitigate the impacts of these hazards, ensuring the safety and resilience of the community. Additionally, a well-prepared emergency response plan can significantly reduce the potential economic and social disruptions caused by extreme weather conditions."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "The development of a Climate Action Plan is crucial for Cariacica due to its high vulnerability to climate-related hazards such as floods, landslides, and heatwaves. These hazards pose significant risks to public health, infrastructure, and food security, making it imperative to have a strategic plan in place. Additionally, the city's high emissions from industrial processes and transportation highlight the need for targeted actions to reduce its carbon footprint. Implementing a comprehensive Climate Action Plan will help mitigate these risks and guide the city towards sustainable development."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0152",
-        "actionName": "Recovery of degraded areas",
-        "actionPriority": 3,
-        "explanation": "The recovery of degraded areas in Cariacica is crucial due to the city's vulnerability to environmental hazards such as landslides and floods. Restoring these areas can help mitigate the impact of such hazards by stabilizing the soil and improving water absorption, reducing the risk of landslides and flooding. Additionally, rehabilitating degraded land can enhance local biodiversity and contribute to the overall ecological health of the region. This action also aligns with the city's need to address its high emissions from land use, providing a sustainable approach to environmental management."
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 4,
-        "explanation": "Encouraging sustainable land use practices in Cariacica is crucial due to the significant land use emissions contributing to the city's total emissions. With a tropical rainforest biome, maintaining biodiversity and preventing deforestation are essential to mitigate climate change impacts. Additionally, sustainable land use can help reduce the risk of landslides and floods, which are high-risk hazards for the city's infrastructure and public health. Implementing these practices can also support food security by ensuring that agricultural activities are conducted in an environmentally friendly manner."
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 5,
-        "explanation": "Strengthening programs for control and conservation of protected areas in Cariacica is crucial due to its tropical rainforest biome, which is vital for biodiversity and ecological balance. The city faces significant environmental challenges, including high emissions from industrial processes and transportation, which can impact these protected areas. By enhancing conservation efforts, Cariacica can mitigate the adverse effects of climate change, such as droughts and heatwaves, which pose risks to biodiversity and public health. Additionally, protecting these areas supports the city's resilience against natural hazards like landslides and floods, which are prevalent risks in the region."
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
         "actionPriority": 6,
-        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Cariacica is crucial due to the city's socio-economic challenges. With a very low-income population, improving these areas can significantly enhance living conditions and access to essential services. Additionally, addressing these zones can help mitigate the impacts of environmental hazards such as floods and landslides, which pose high risks to public health and infrastructure. This action supports sustainable urban development and resilience against climate-related threats."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
         "actionPriority": 7,
-        "explanation": "Improving access to health care in Cariacica is crucial due to the high risk of public health impacts from various hazards such as heatwaves, diseases, and floods. The city's vulnerability to these hazards, combined with its very low socio-economic status, makes it imperative to enhance health care services to protect the population. Ensuring robust health care access can mitigate the adverse effects of these environmental and health challenges, thereby improving overall community resilience. Additionally, addressing health care access aligns with the city's need to manage the risks associated with climate change and its impacts on public health."
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 8,
-        "explanation": "Improving food storage and distribution is crucial for Cariacica due to its vulnerability to droughts and floods, which pose significant risks to food security. The city's low-income population may face challenges in accessing adequate food supplies during such events, making efficient storage and distribution systems vital. Additionally, enhancing these systems can help mitigate the impact of climate-related disruptions, ensuring a stable food supply. This action supports the city's resilience against climate hazards, particularly in maintaining food availability during extreme weather conditions."
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0157",
-        "actionName": "Maintenance and Revitalization of Riparian Forests",
-        "actionPriority": 9,
-        "explanation": "The maintenance and revitalization of riparian forests in Cariacica is crucial due to the city's tropical rainforest biome, which plays a significant role in maintaining biodiversity and ecological balance. Riparian forests help in reducing the risk of floods and landslides, which are identified as high-risk hazards for the city's infrastructure and public health. Additionally, these forests contribute to improving water quality and availability, addressing the city's challenges with water resources and droughts. By prioritizing this action, Cariacica can enhance its resilience against climate-related impacts and support sustainable development."
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0145",
-        "actionName": "Strengthen the healthcare network to attend to climate victims",
-        "actionPriority": 10,
-        "explanation": "Strengthening the healthcare network in Cariacica is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, diseases, and floods, all of which can severely affect public health. By enhancing healthcare services, the city can better manage and mitigate the health consequences of these climate hazards. This action is essential to ensure the well-being of the population, particularly in a region with very low income levels, where access to adequate healthcare is vital."
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 11,
-        "explanation": "Improving the availability of health infrastructure in Cariacica is crucial due to the high risk of public health impacts from various hazards such as heatwaves, diseases, and floods. The city's low-income status and inadequate access to sanitation further exacerbate the vulnerability of its population to health-related issues. By prioritizing health infrastructure, Cariacica can better prepare for and mitigate the effects of these hazards, ensuring the well-being of its residents. Additionally, enhanced health infrastructure can improve overall public health outcomes and resilience against future climate-related challenges."
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0144",
-        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
-        "actionPriority": 12,
-        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Cariacica due to its high vulnerability to hazards such as floods, landslides, and diseases. These events pose significant risks to public health and infrastructure, as indicated by the high risk scores. Implementing a financial support program can help mitigate the economic impact on the community, especially given the city's very low-income levels. This action is essential to enhance resilience and provide immediate relief to affected populations, ensuring a quicker recovery from such events."
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 13,
-        "explanation": "The action of relocating and restoring vulnerable areas in Cariacica is crucial due to the high risk of natural hazards such as landslides and floods, which pose significant threats to infrastructure and public health. Given the city's tropical rainforest biome and the socio-economic challenges faced by its low-income population, improving environmental resilience is essential. This action not only aims to protect residents from immediate dangers but also contributes to long-term sustainability by enhancing the ecological balance. Furthermore, addressing these vulnerabilities can help mitigate the impacts of climate change, ensuring a safer and more stable environment for the community."
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 14,
-        "explanation": "Creating the Municipal Climate Change Forum in Cariacica is a crucial step towards addressing the city's significant environmental challenges. With high emissions from industrial processes and transportation, the forum can facilitate discussions and strategies to reduce these emissions effectively. Additionally, the city faces severe risks from climate hazards such as droughts, heatwaves, and floods, which threaten public health and infrastructure. Establishing a dedicated forum will enable stakeholders to collaborate on adaptive measures and enhance the city's resilience to these climate impacts."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 15,
-        "explanation": "Farm and fishery improvements are crucial for Cariacica due to the significant risk of droughts impacting food security. Enhancing agricultural practices can help mitigate the effects of climate change, ensuring a stable food supply for the population. Additionally, these improvements can contribute to economic resilience by supporting local livelihoods in a region with very low income levels. By prioritizing this action, Cariacica can address both environmental and socio-economic challenges effectively."
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 16,
-        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Cariacica is crucial due to the city's vulnerability to water-related hazards such as floods and droughts. The city faces significant risks from these hazards, which can impact public health, infrastructure, and food security. By establishing a monitoring system, the city can better predict and manage these events, reducing potential damage and improving resilience. Additionally, this system can provide valuable data to inform future urban planning and resource management, ensuring sustainable development in the face of climate change."
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
-        "actionPriority": 17,
-        "explanation": "The implementation of urban gardens in Cariacica is a strategic action to enhance food security, especially given the city's vulnerability to floods and droughts. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the impact of climate-related disruptions. Additionally, these gardens can improve community resilience by fostering local engagement and education around sustainable practices. This action also has the potential to enhance green spaces in the city, contributing to biodiversity and improving the overall quality of life for residents."
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Espírito Santo",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
         "actionPriority": 18,
-        "explanation": "Implementing social safety nets in Cariacica is crucial due to the city's very low-income levels, which make its population particularly vulnerable to economic shocks and climate-related hazards. The city faces significant risks from natural disasters such as floods and landslides, which can severely impact public health and infrastructure. By establishing robust social safety nets, the city can enhance its resilience, ensuring that vulnerable populations receive necessary support during crises. This action is essential to mitigate the socio-economic impacts of climate change and improve the overall well-being of its residents."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 19,
-        "explanation": "Implementing permeable pavements and increasing green areas in roadways in Cariacica is crucial due to the city's vulnerability to floods and landslides. The city's high population density and inadequate sanitation exacerbate the impact of these hazards, making it essential to improve water absorption and reduce surface runoff. Additionally, enhancing green spaces can help mitigate the urban heat island effect, which is particularly important given the high risk of heatwaves affecting public health and infrastructure. This action not only addresses immediate environmental challenges but also contributes to long-term urban resilience and sustainability."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR CII",
         "cityName": "Cariacica",
         "region": "ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 20,
-        "explanation": "The recovery and preservation of green areas in Cariacica is crucial due to the city's tropical rainforest biome, which plays a significant role in maintaining biodiversity and ecological balance. Given the high risk of droughts impacting water and energy security, enhancing green spaces can help mitigate these effects by improving water retention and reducing heat. Additionally, green areas contribute to better air quality and provide recreational spaces, which are essential for public health, especially in a densely populated area. This action supports long-term sustainability and resilience against climate-related hazards."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

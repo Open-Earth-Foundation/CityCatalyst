@@ -1,202 +1,202 @@
 [
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 1,
-        "explanation": "For the city of Vitória de Santo Antão, fostering municipal renewable energy policies creates a regulatory framework that accelerates the transition from fossil fuels to clean energy. This action mobilizes public and private investments in sustainable technologies while reducing overall emissions. It aligns local governance with broader climate targets, laying the foundation for long-term environmental resilience."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
-        "actionPriority": 2,
-        "explanation": "For Vitória de Santo Antão, implementing an urban toll decreases the use of private vehicles by incentivizing public transportation and carpooling. This measure helps lower traffic congestion and reduces vehicular emissions, thus directly contributing to improved urban air quality. It also encourages a cultural shift toward sustainable mobility practices, benefiting both the environment and public health."
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 3,
-        "explanation": "For Vitória de Santo Antão, enhancing cycling infrastructure and pedestrian pathways promotes healthy, low-carbon travel alternatives. This development reduces reliance on motorized transport, easing congestion and decreasing emissions. Additionally, resilient, well-designed walkways ensure that public spaces remain safe and accessible during extreme weather, thus fostering a more livable urban environment."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4,
-        "explanation": "For Vitória de Santo Antão, offering free public transportation during peak hours encourages residents to choose collective transit over driving. This policy reduces traffic congestion and cuts emissions from individual vehicles, improving urban air quality. It also ensures equitable access to mobility options, particularly benefiting lower-income segments of the community."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 5,
-        "explanation": "For Vitória de Santo Antão, establishing bike-sharing programs that focus on electric bikes offers a healthy and sustainable alternative to car travel. This initiative helps reduce congestion and vehicular emissions while promoting active lifestyles. Electric bikes make cycling accessible to a broader population, further integrating green mobility solutions into the urban landscape."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 6,
-        "explanation": "For Vitória de Santo Antão, deploying 100% electric, on-demand transport systems offers a flexible alternative to traditional commuting options. This solution reduces emissions and noise pollution by replacing fossil-fuel vehicles, while efficiently meeting varying passenger demands. The approach enhances urban mobility and supports the city’s transition toward cleaner public transit."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 7,
-        "explanation": "For Vitória de Santo Antão, converting public fleets to run on biomethane significantly lowers greenhouse gas emissions compared to conventional fuels. This shift not only improves air quality but also utilizes locally produced renewable energy, aligning public transport with sustainable practices. The result is a cleaner and more efficient transit system that benefits both health and the environment."
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 8,
-        "explanation": "For Vitória de Santo Antão, deploying electric drones for last-mile deliveries offers an innovative way to reduce the reliance on traditional delivery vans. This technology minimizes road congestion and cuts emissions by efficiently transporting small packages. It also helps in reaching areas that are difficult to navigate by conventional vehicles, supporting the city’s commitment to smart, sustainable logistics."
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 9,
-        "explanation": "For Vitória de Santo Antão, technical assistance and rural extension initiatives enable local farmers to adopt sustainable, efficient practices. These actions improve agricultural productivity and resilience while reducing the environmental impacts associated with conventional methods. By empowering rural communities, the city enhances long-term food security and ecosystem health."
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 10,
-        "explanation": "For Vitória de Santo Antão, integrating trees into agricultural practices (agroforestry) enhances soil quality, improves water retention, and sequesters carbon. This sustainable technique makes farms more resilient to climate shocks while providing additional crops and resources. It represents a win-win strategy for both environmental protection and agricultural productivity."
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0129",
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
         "actionPriority": 11,
-        "explanation": "For Vitória de Santo Antão, transferring modern conservation technology to local stakeholders boosts the efficiency of resource management and reduces environmental impacts. Improved methods such as precision irrigation and sustainable pest control enhance local productivity while preserving natural ecosystems. This knowledge sharing builds capacity and fosters long-term sustainability."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 12,
-        "explanation": "For Vitória de Santo Antão, sourcing locally produced agroecological products in public procurement supports sustainable agriculture and cuts transportation emissions. This practice bolsters the regional economy and encourages environmentally responsible production methods. It also ensures that public institutions benefit from healthier, locally adapted food supplies."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 13,
-        "explanation": "For Vitória de Santo Antão, integrating renewable energy into water treatment and distribution enhances efficiency and reliability of municipal services. This approach reduces operational costs and aligns water infrastructure with clean energy objectives. It further ensures that the city’s water systems remain resilient under changing climate conditions."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 14,
-        "explanation": "For Vitória de Santo Antão, community solar farms democratize renewable energy by making clean power more accessible to residents and local businesses. These projects empower communities to produce their own energy, reducing reliance on centralized grids. They also promote local job creation and environmental awareness through shared ownership."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0085",
         "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 15,
-        "explanation": "For Vitória de Santo Antão, adopting agroecological pest control methods reduces the need for chemical pesticides, preserving soil and water quality. This sustainable technique promotes the use of natural predators and organic practices that lower environmental and health risks. It also contributes to a more resilient agricultural sector through eco-friendly management."
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 16,
-        "explanation": "For Vitória de Santo Antão, reducing vehicle emissions directly improves urban air quality and public health. Enhanced emission standards and cleaner technology lower the environmental footprint of the transport sector. This measure is critical in densely populated areas where traffic is a major source of pollutants."
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0097",
-        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 17,
-        "explanation": "For Vitória de Santo Antão, promoting decentralized renewable energy generation empowers local communities to produce their own clean power. This decreases dependency on large, centralized grids and reduces transmission losses. Distributed energy strengthens resilience and creates economic opportunities in local markets."
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionId": "icare_0059",
+        "actionName": "Modernization of ports and airports with zero-emission technologies",
         "actionPriority": 18,
-        "explanation": "For Vitória de Santo Antão, expanding rail-based transit reduces the number of private vehicles on the road, easing congestion and lowering emissions. High-capacity systems move more people efficiently, reducing per capita energy use and travel time. This upgrade not only improves urban mobility but also has significant environmental and social benefits."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 19,
-        "explanation": "For Vitória de Santo Antão, providing fiscal incentives for sustainable practices motivates businesses to lower emissions and conserve resources. These financial tools make it economically attractive to invest in green technologies and responsible practices. Over time, such incentives drive a market shift towards environmentally sustainable production methods."
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vitória de Santo Antão",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
         "actionId": "icare_0134",
         "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 20,
-        "explanation": "For Vitória de Santo Antão, enhancing deforestation controls protects vital forest ecosystems that act as carbon sinks and regulate water cycles. By curbing illegal logging and land clearing, the city preserves biodiversity and natural resources. This conservation effort is key to mitigating climate impacts and ensuring long-term environmental stability."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

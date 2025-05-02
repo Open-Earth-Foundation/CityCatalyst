@@ -7,7 +7,7 @@
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
         "actionPriority": 1,
-        "explanation": "Implementing agroforestry systems in Parintins is a high priority due to the city's location in the Amazon rainforest, where biodiversity and sustainable land use are critical. Agroforestry can help mitigate land use emissions, which are a significant contributor to the city's total emissions. Additionally, this approach can enhance food security by providing diverse and resilient food sources, which is crucial given the high risk of droughts affecting food availability. Furthermore, agroforestry supports the local economy by creating jobs and improving livelihoods, particularly in a region with high levels of low-income households."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR PIN",
@@ -17,7 +17,7 @@
         "actionId": "icare_0134",
         "actionName": "Strengthen Mechanisms for Deforestation Control",
         "actionPriority": 2,
-        "explanation": "Strengthening mechanisms for deforestation control in Parintins is crucial due to its location in the Amazon rainforest, a vital global carbon sink. The city faces significant land use emissions, which are a major contributor to its total emissions profile. By enhancing deforestation control, Parintins can reduce these emissions and help preserve biodiversity, which is at risk from both droughts and heatwaves. Additionally, controlling deforestation can improve the resilience of local ecosystems, supporting food and water security in the face of climate change."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR PIN",
@@ -27,7 +27,7 @@
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 3,
-        "explanation": "Promoting urban reforestation and green corridors in Parintins is crucial due to its tropical rainforest biome, which is vital for maintaining biodiversity and ecological balance. The city faces significant environmental challenges, including high emissions from land use and waste, which can be mitigated by increasing green spaces. Additionally, reforestation can help combat the effects of heatwaves and improve public health by reducing urban heat islands. This action also supports the city's resilience against climate change impacts, such as droughts and floods, by enhancing natural water retention and soil stability."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR PIN",
@@ -37,17 +37,7 @@
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
         "actionPriority": 4,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Parintins is crucial due to the city's location in the Amazon rainforest, which is a vital ecological area. The PES programs can incentivize local communities to engage in conservation efforts, helping to preserve biodiversity and mitigate the impacts of deforestation. Given the high risk of droughts and the significant land use emissions, these programs can also contribute to reducing emissions and enhancing water resource management. Additionally, PES can provide economic benefits to the local population, which faces high levels of low income, by creating sustainable livelihoods linked to environmental conservation."
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 5,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Parintins is crucial due to the high risk of droughts impacting food and energy security. The city's socio-economic factors, such as high levels of low income and inadequate sanitation, exacerbate the vulnerability of rural communities. By implementing ATER actions, the city can enhance agricultural productivity and resilience, thereby improving food security and livelihoods. Additionally, these actions can help mitigate the effects of climate change on local agriculture, ensuring sustainable development in the region."
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR PIN",
@@ -56,38 +46,18 @@
         "regionName": "Amazonas",
         "actionId": "icare_0129",
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 6,
-        "explanation": "Facilitating technology transfer for conservation practices in Parintins is crucial due to the city's location in the Amazon rainforest, a region of immense biodiversity and ecological importance. The city faces significant environmental challenges, including high emissions from land use and waste, which can be mitigated through advanced conservation technologies. Additionally, the socio-economic context of high low-income levels and inadequate public services highlights the need for sustainable practices that can improve living conditions while preserving natural resources. By prioritizing this action, Parintins can enhance its resilience against climate risks such as droughts and floods, which threaten food and energy security."
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 7,
-        "explanation": "Promoting organic farming in Parintins is a crucial action due to the city's high risk of food insecurity, exacerbated by droughts and floods. Organic farming can enhance soil health and resilience, making it more adaptable to climate-related hazards. Additionally, it can provide sustainable livelihoods for the local population, which is predominantly low-income, by reducing dependency on expensive chemical inputs. This approach also aligns with preserving the biodiversity of the tropical rainforest biome, which is vital for maintaining ecological balance."
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 8,
-        "explanation": "Promoting sustainable agricultural practices in Parintins is crucial due to the high risk of droughts impacting food security. The city is located in a tropical rainforest biome, which is sensitive to climate changes that can affect agricultural productivity. Additionally, with a high percentage of the population living in low-income conditions, ensuring food security through sustainable practices can help mitigate economic vulnerabilities. Implementing these practices can also contribute to reducing land use emissions, which are a significant part of the city's total emissions profile."
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 9,
-        "explanation": "Supporting regenerative agriculture practices in Parintins is crucial due to the high risk of droughts impacting food security. The city's tropical rainforest biome and high land use emissions suggest that sustainable land management can significantly reduce environmental impact. Additionally, with a high percentage of low-income residents, promoting regenerative agriculture can enhance local food production and economic resilience. This action aligns with the need to address socio-economic challenges while mitigating climate risks."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR PIN",
@@ -96,18 +66,38 @@
         "regionName": "Amazonas",
         "actionId": "icare_0084",
         "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 10,
-        "explanation": "Creating incentives for agroforestry practices in livestock systems is crucial for Parintins due to its location in the Amazon rainforest, where deforestation and land use change are significant concerns. Agroforestry can help mitigate land use emissions, which are a major contributor to the city's total emissions. Additionally, integrating trees into livestock systems can improve biodiversity and enhance resilience against climate impacts such as droughts and floods, which are high-risk hazards for the region. This action also aligns with the socio-economic need to support low-income communities by potentially increasing agricultural productivity and sustainability."
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR PIN",
         "cityName": "Parintins",
         "region": "AM",
         "regionName": "Amazonas",
-        "actionId": "icare_0101",
-        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
-        "actionPriority": 11,
-        "explanation": "Encouraging the use of low-emission agricultural machinery in Parintins is crucial due to the city's significant land use emissions, which are the highest among its emission sources. By adopting cleaner technologies in agriculture, the city can reduce its carbon footprint and contribute to mitigating climate change impacts. Additionally, this action aligns with the need to address food security risks exacerbated by climate hazards such as droughts and floods. Implementing low-emission machinery can also improve the sustainability of local agricultural practices, supporting the socio-economic development of a region with high levels of low-income residents."
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BR PIN",
@@ -116,8 +106,18 @@
         "regionName": "Amazonas",
         "actionId": "icare_0127",
         "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
         "actionPriority": 12,
-        "explanation": "Accelerating the environmental regularization of rural properties in Parintins is crucial due to the high land use emissions, which are a significant contributor to the city's total emissions. This action can help mitigate the impact of deforestation and land degradation, which are prevalent in the Amazon region. By ensuring that rural properties comply with environmental regulations, the city can promote sustainable land use practices, thereby reducing emissions and preserving biodiversity. Additionally, this initiative can support the local economy by fostering sustainable agricultural practices, which are essential for food security in the face of climate change."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR PIN",
@@ -127,17 +127,7 @@
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 13,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Parintins due to its high risk of food insecurity, as indicated by the city's vulnerability to droughts and floods. This action supports local farmers, enhances food security, and reduces dependency on external food sources, which is vital given the socio-economic challenges faced by the population. Additionally, promoting agroecological practices can help mitigate environmental impacts and support biodiversity, aligning with the city's need to address its significant land use emissions. By focusing on local procurement, Parintins can strengthen its resilience against climate-related hazards and improve the well-being of its residents."
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 14,
-        "explanation": "Supporting the implementation of ecological fiscal incentives in Parintins is crucial due to the city's high vulnerability to environmental hazards such as droughts and floods. These incentives can encourage sustainable land use practices, which are essential given the significant land use emissions and the city's location in a tropical rainforest biome. Additionally, with high levels of low-income residents, ecological fiscal incentives can provide financial benefits that promote both environmental sustainability and economic resilience. This action aligns with the need to address inadequate sanitation and water access, which are critical socio-economic challenges in the region."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR PIN",
@@ -146,8 +136,8 @@
         "regionName": "Amazonas",
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 15,
-        "explanation": "Supporting agroecological certification programs in Parintins is crucial due to the city's high risk of food insecurity exacerbated by climate hazards such as droughts and floods. These programs can promote sustainable agricultural practices that enhance resilience against these environmental challenges. Additionally, given the high level of low-income residents, such initiatives can provide economic benefits by opening new markets and improving food quality and availability. This action aligns with the need to address socio-economic vulnerabilities while also contributing to the reduction of land use emissions."
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR PIN",
@@ -156,28 +146,8 @@
         "regionName": "Amazonas",
         "actionId": "icare_0085",
         "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 16,
-        "explanation": "Promoting the adoption of agroecological pest control in Parintins is crucial due to the city's high risk of food insecurity exacerbated by climate hazards such as droughts and floods. Agroecological methods can enhance resilience by improving soil health and biodiversity, which are vital in a tropical rainforest biome. Additionally, these practices can reduce dependency on chemical pesticides, aligning with sustainable development goals and potentially lowering emissions related to agricultural practices. This action supports the local economy by empowering smallholder farmers with sustainable techniques, which is essential given the high levels of low-income residents in the area."
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0052",
-        "actionName": "Reduce Deforestation and Degradation",
-        "actionPriority": 17,
-        "explanation": "Reducing deforestation and degradation is crucial for Parintins, given its location in the Amazon rainforest, which is a vital carbon sink and biodiversity hotspot. The city faces significant land use emissions, which are the largest contributor to its total emissions, making this action a priority to mitigate climate change impacts. Additionally, preserving the forest can help maintain water resources and food security, which are at high risk due to droughts. By focusing on this action, Parintins can also protect its biodiversity and improve resilience against climate-related hazards."
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0061",
-        "actionName": "Soil Carbon Management in Croplands and Grasslands",
-        "actionPriority": 18,
-        "explanation": "Soil Carbon Management in Croplands and Grasslands is a crucial action for Parintins due to its potential to enhance carbon sequestration and improve soil health. Given the city's high land use emissions, this action can significantly contribute to reducing overall emissions by capturing carbon in the soil. Additionally, improving soil health can lead to better agricultural productivity, which is vital for food security, especially in a region facing high risks from droughts. Implementing this action can also support biodiversity by maintaining healthier ecosystems in croplands and grasslands."
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BR PIN",
@@ -186,8 +156,38 @@
         "regionName": "Amazonas",
         "actionId": "icare_0132",
         "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
         "actionPriority": 19,
-        "explanation": "Encouraging local agroecological production and short supply chains in Parintins is crucial due to the high risk of food insecurity exacerbated by climate hazards such as droughts and floods. The city's socio-economic context, characterized by high levels of low income, makes it vulnerable to disruptions in food supply. By promoting local production, the city can enhance its resilience against these risks, ensuring a more stable and sustainable food supply. Additionally, this action supports the local economy and reduces dependency on external food sources, which is vital for a region with limited access to public services."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR PIN",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 20,
-        "explanation": "Afforestation, reforestation, and forest ecosystem restoration are crucial for Parintins due to its location in the Amazon region, which is vital for global biodiversity and climate regulation. The city faces significant land use emissions, and restoring forests can help sequester carbon, reducing these emissions. Additionally, enhancing forest ecosystems can improve resilience against climate hazards such as droughts and heatwaves, which pose high risks to food and energy security. This action also supports biodiversity, which is threatened by both droughts and heatwaves, making it a strategic priority for the city's environmental and socio-economic stability."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

@@ -1,202 +1,202 @@
 [
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Establishing a plan for preparation and emergency response measures in Ribeirão das Neves is crucial due to the high risk of extreme weather events impacting public health and infrastructure. The city faces significant threats from heatwaves, floods, and landslides, all of which have high normalized risk scores. These hazards can severely affect the well-being of the population and the functionality of essential services. By prioritizing this action, the city can enhance its resilience and ensure a more effective response to potential disasters, thereby safeguarding its residents and infrastructure."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "The development of a Climate Action Plan is crucial for Ribeirão das Neves due to its high vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These hazards pose significant risks to public health, food security, and infrastructure, as indicated by the high normalized risk scores. Additionally, the city's socio-economic factors, such as very low income levels, exacerbate the community's ability to adapt and respond to these challenges. Implementing a comprehensive Climate Action Plan will help mitigate these risks by providing a strategic framework for reducing emissions and enhancing resilience."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 3,
-        "explanation": "Strengthening programs for control and conservation of protected areas is crucial for Ribeirão das Neves due to its grassland/savanna biome, which is sensitive to environmental changes. The city faces significant risks from droughts and heatwaves, which can severely impact biodiversity and ecosystem services. By enhancing conservation efforts, the city can mitigate these risks and preserve its natural resources, which are vital for maintaining ecological balance and supporting local livelihoods. Additionally, protecting these areas can help reduce emissions from land use changes, contributing to overall climate resilience."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 4,
-        "explanation": "The action 'Recovery of degraded areas' is crucial for Ribeirão das Neves due to its biome of grassland/savanna, which is susceptible to degradation. Restoring these areas can enhance biodiversity and improve the resilience of local ecosystems against climate hazards such as droughts and heatwaves. Additionally, recovery efforts can contribute to reducing land use emissions, which are a component of the city's total emissions. This action also aligns with improving public health and food security, which are at high risk from climate impacts in the region."
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 5,
-        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Ribeirão das Neves is crucial due to the city's socio-economic challenges. With a very low-income population, improving these areas can significantly enhance living conditions and access to essential services. Additionally, addressing these zones can help mitigate the impacts of environmental hazards such as floods and landslides, which pose high risks to public health and infrastructure. This action aligns with the need to improve resilience and quality of life for vulnerable communities in the city."
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0145",
-        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
         "actionPriority": 6,
-        "explanation": "Strengthening the healthcare network in Ribeirão das Neves is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, floods, and landslides, all of which pose severe risks to public health. With a very low income level and inadequate access to public services, the population is particularly vulnerable to these hazards. Enhancing healthcare infrastructure will improve the city's resilience and capacity to respond to climate-induced health emergencies, ensuring better protection for its residents."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0157",
-        "actionName": "Maintenance and Revitalization of Riparian Forests",
-        "actionPriority": 7,
-        "explanation": "The maintenance and revitalization of riparian forests in Ribeirão das Neves is crucial due to the city's vulnerability to floods and landslides, which pose significant risks to public health and infrastructure. Riparian forests play a vital role in stabilizing soil and reducing the impact of heavy rains, thereby mitigating these hazards. Additionally, these forests contribute to biodiversity conservation and improve water quality, which is essential given the city's very low access to adequate water and sanitation services. By prioritizing this action, the city can enhance its resilience against climate-related risks and improve the overall quality of life for its residents."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 8,
-        "explanation": "Encouraging sustainable land use practices in Ribeirão das Neves is crucial due to the city's significant land use emissions. With a population density of over 2,000 people per square kilometer, efficient land management can help mitigate environmental impacts and improve local biodiversity. Additionally, sustainable practices can enhance food security, which is at risk from both droughts and floods, as indicated by the city's climate risk assessments. Implementing these practices can also contribute to reducing overall emissions, aligning with the city's need to address its high total emissions."
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 9,
-        "explanation": "Improving access to health care in Ribeirão das Neves is crucial due to the high risk of public health impacts from hazards such as heatwaves, diseases, and floods. The city faces significant challenges with public health risks, as indicated by the high normalised risk scores for these hazards. Enhancing health care access can help mitigate the adverse effects of these environmental and climate-related threats, ensuring better preparedness and response. Additionally, addressing health care access aligns with the city's socio-economic context, where low-income levels may limit residents' ability to seek necessary medical attention."
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 10,
-        "explanation": "Improving food storage and distribution is crucial for Ribeirão das Neves due to its high risk of food insecurity from droughts and floods. The city faces significant challenges in maintaining food security, as indicated by the high risk scores for these hazards. Enhancing food storage and distribution systems can help mitigate the impact of these environmental threats, ensuring a stable food supply for the population. Additionally, such improvements can support the local economy by reducing food waste and increasing the efficiency of food supply chains."
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
         "actionPriority": 11,
-        "explanation": "The action of relocating and restoring vulnerable areas in Ribeirão das Neves is crucial due to the high risk of natural hazards such as floods and landslides, which pose significant threats to public health and infrastructure. The city faces a very high risk of public health impacts from floods and landslides, making it imperative to address these vulnerabilities. Additionally, environmental restoration can help mitigate the effects of these hazards by improving the resilience of the local ecosystem. This action is also aligned with the need to enhance the quality of life for residents in low-income areas, who are disproportionately affected by inadequate infrastructure and environmental risks."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 12,
-        "explanation": "Creating the Municipal Climate Change Forum in Ribeirão das Neves is a crucial step towards addressing the city's environmental challenges. The city faces significant risks from climate-related hazards such as droughts, heatwaves, and floods, which impact water resources, food security, and public health. Establishing a dedicated forum will facilitate collaboration among stakeholders, enabling the development of effective strategies to mitigate these risks. Additionally, the forum can serve as a platform for raising awareness and engaging the community in climate action initiatives, which is essential given the city's socio-economic vulnerabilities."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 13,
-        "explanation": "The implementation of urban gardens in Ribeirão das Neves is a strategic action to enhance food security, which is at high risk due to droughts and floods. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the impact of climate-related disruptions. Additionally, these gardens can improve community resilience by fostering local engagement and education on sustainable practices. Given the city's socio-economic challenges, such as very low income levels, urban gardens can also offer economic opportunities and improve access to nutritious food."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 14,
-        "explanation": "Farm and fishery improvements are crucial for Ribeirão das Neves due to the high risk of droughts impacting food security. Enhancing agricultural practices can help mitigate the effects of climate change, ensuring a stable food supply for the population. Additionally, these improvements can support the local economy by increasing productivity and resilience against environmental hazards. Given the city's very low-income levels, such actions can also contribute to poverty alleviation by providing more reliable sources of food and income."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 15,
-        "explanation": "Improving the availability of health infrastructure in Ribeirão das Neves is crucial due to the high risk of public health impacts from heatwaves, diseases, and floods. The city faces significant challenges with inadequate access to public services, which can exacerbate health issues during extreme weather events. Enhancing health infrastructure will help mitigate these risks and improve the overall resilience of the community. Additionally, better health facilities can provide essential services to the low-income population, who are particularly vulnerable to health hazards."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 16,
-        "explanation": "Implementing social safety nets in Ribeirão das Neves is crucial due to the city's very low-income levels. These safety nets can provide essential support to vulnerable populations, especially in times of economic instability or natural disasters. Given the high risk of public health impacts from heatwaves and floods, social safety nets can help mitigate these risks by ensuring access to necessary resources and services. Additionally, they can play a vital role in enhancing food security, which is at risk from both droughts and floods. Overall, strengthening social safety nets can improve resilience and quality of life for the city's residents."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0144",
-        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
-        "actionPriority": 17,
-        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Ribeirão das Neves due to its high vulnerability to climate-related hazards. The city faces significant risks from droughts, heatwaves, and floods, which can severely impact public health, food security, and infrastructure. Establishing a financial support program would provide necessary resources to mitigate these impacts and enhance the city's resilience. Additionally, given the socio-economic challenges, such as very low income levels, financial assistance is essential to support the community in recovering from and adapting to these extreme weather events."
-    },
-    {
-        "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 18,
-        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Ribeirão das Neves is crucial due to the city's vulnerability to droughts and floods. The city faces significant risks to water resources and food security from these hazards, making real-time monitoring essential for timely response and mitigation. Additionally, the system can help manage water resources more efficiently, which is vital given the city's very low income levels and inadequate access to public services. By providing accurate data, the system supports better decision-making and resource allocation, ultimately enhancing the city's resilience to climate impacts."
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 19,
-        "explanation": "The recovery and preservation of green areas in Ribeirão das Neves is crucial due to the city's high population density and its location within a grassland/savanna biome. Green areas can help mitigate the effects of heatwaves, which pose a significant risk to public health in the city. Additionally, preserving green spaces can enhance biodiversity and improve the overall quality of life for residents. This action also supports the city's resilience against climate-related hazards such as floods and landslides by improving natural water absorption and reducing soil erosion."
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeirão das Neves",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 20,
-        "explanation": "Implementing permeable pavements and increasing green areas in roadways is crucial for Ribeirão das Neves due to its high risk of floods, which pose a significant threat to public health and infrastructure. The city's dense population and inadequate access to public services exacerbate the impact of flooding, making it essential to enhance natural water absorption and reduce surface runoff. Additionally, increasing green areas can help mitigate the urban heat island effect, which is particularly important given the high risk of heatwaves affecting public health. This action not only addresses immediate environmental challenges but also contributes to long-term urban resilience and sustainability."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

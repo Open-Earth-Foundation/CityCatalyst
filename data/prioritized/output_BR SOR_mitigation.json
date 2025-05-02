@@ -3,200 +3,200 @@
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0075",
-        "actionName": "Set carbon emissions reduction targets for industrial sectors",
-        "actionPriority": 1,
-        "explanation": "Setting carbon emissions reduction targets for industrial sectors in Sorocaba is a critical priority due to the significant contribution of industrial processes to the city's total emissions. With industrial process emissions accounting for a substantial portion of the city's overall carbon footprint, targeted reductions in this sector can lead to meaningful progress in lowering total emissions. Additionally, addressing industrial emissions aligns with broader environmental goals and can help mitigate the impacts of climate change, which is crucial given the city's vulnerability to hazards like droughts and heatwaves. Implementing these targets can also drive innovation and efficiency within the industrial sector, potentially leading to economic benefits and improved sustainability."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 2,
-        "explanation": "Encouraging renewable energy policies at the municipal level in Sorocaba is crucial due to the city's significant stationary energy emissions, which contribute to its overall high total emissions. By promoting renewable energy, Sorocaba can reduce its reliance on fossil fuels, thereby decreasing its carbon footprint and mitigating climate change impacts. Additionally, renewable energy initiatives can enhance energy security, which is particularly important given the city's vulnerability to droughts that can affect energy supply. Implementing these policies can also stimulate local economic growth and create jobs, aligning with the city's socio-economic development goals."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 3,
-        "explanation": "Integrating renewables into municipal water systems in Sorocaba is a strategic action due to the city's high stationary energy emissions. By utilizing renewable energy sources, the city can significantly reduce its carbon footprint, contributing to a more sustainable environment. Additionally, this action aligns with the city's need to enhance energy security, especially in the face of climate-related risks such as droughts and heatwaves. Implementing renewable energy solutions in water systems can also lead to cost savings and increased resilience against energy supply disruptions."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4,
-        "explanation": "The implementation of free public transportation programs during peak hours in Sorocaba is a strategic action to address the city's high transportation emissions, which contribute significantly to its total emissions. By encouraging the use of public transport, this initiative aims to reduce the reliance on individual vehicles, thereby decreasing traffic congestion and air pollution. Additionally, this action supports the city's socio-economic goals by providing affordable transportation options, particularly benefiting low-income residents. Given the city's challenges with infrastructure risks due to climate hazards, improving public transportation can also enhance resilience by reducing the strain on existing infrastructure."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 5,
-        "explanation": "The adoption of biomethane in public fleets in Sorocaba is a crucial step towards reducing the city's transportation emissions, which are a significant contributor to its overall carbon footprint. Given the city's high total emissions, transitioning to cleaner energy sources for public transportation can substantially lower greenhouse gas emissions. Additionally, this action supports the city's efforts to improve air quality and public health, as it reduces reliance on fossil fuels. Implementing biomethane in public fleets also aligns with sustainable development goals, promoting energy efficiency and environmental responsibility."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
+        "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
-        "actionPriority": 6,
-        "explanation": "The implementation of an urban toll in Sorocaba is a strategic action aimed at reducing transportation emissions, which are a significant contributor to the city's total emissions. By discouraging the use of private vehicles, the toll can help decrease traffic congestion and promote the use of public transportation, leading to a reduction in air pollution and greenhouse gas emissions. Additionally, this measure can generate revenue that can be reinvested in sustainable urban infrastructure and public transport improvements, further enhancing the city's environmental sustainability. Given Sorocaba's high population density, managing transportation effectively is crucial to improving air quality and public health."
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0074",
-        "actionName": "Support research into carbon-neutral manufacturing technologies",
-        "actionPriority": 7,
-        "explanation": "Supporting research into carbon-neutral manufacturing technologies is crucial for Sorocaba due to its significant industrial process emissions. With industrial emissions being one of the largest contributors to the city's total emissions, transitioning to carbon-neutral technologies can substantially reduce the environmental impact. This action aligns with the city's need to address climate change and improve air quality, benefiting both the environment and public health. Additionally, investing in such research can position Sorocaba as a leader in sustainable industrial practices, potentially attracting green investments and boosting the local economy."
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
+        "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 8,
-        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Sorocaba due to its high population density and urban setting. Encouraging the use of electric bikes can significantly reduce transportation emissions, which are a major contributor to the city's total emissions. Additionally, promoting bike-sharing can alleviate traffic congestion and improve air quality, enhancing public health. This initiative also aligns with the city's need to address infrastructure challenges posed by climate hazards such as floods and heatwaves, by providing a sustainable and resilient mode of transportation."
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 9,
-        "explanation": "Promoting community solar farms in Sorocaba is a crucial step towards reducing the city's stationary energy emissions, which are a significant contributor to its total emissions. Given the city's tropical rainforest biome, there is ample sunlight that can be harnessed for solar energy, making this a viable and sustainable energy solution. Additionally, community solar farms can enhance energy security by diversifying energy sources and reducing reliance on traditional fossil fuels. This action also aligns with the city's socio-economic context, as it can provide affordable energy options to low-income communities, thereby improving their access to clean energy."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0079",
-        "actionName": "Implement energy audits in industrial plants",
-        "actionPriority": 10,
-        "explanation": "Implementing energy audits in industrial plants in Sorocaba is a crucial step towards reducing the city's significant industrial process emissions, which are a major contributor to its total emissions. By identifying inefficiencies and areas for improvement, these audits can lead to more sustainable energy use and lower emissions. This action is particularly important given the city's high stationary energy emissions, which contribute to its overall environmental impact. Additionally, improving energy efficiency in industrial plants can enhance energy security, which is a key concern for the city. Overall, this action supports Sorocaba's efforts to mitigate climate change impacts and promote sustainable industrial practices."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0040",
-        "actionName": "Adopt solar-powered street lighting in rural areas",
-        "actionPriority": 11,
-        "explanation": "Adopting solar-powered street lighting in rural areas of Sorocaba is a strategic move to enhance energy efficiency and reduce emissions. Given the city's high stationary energy emissions, transitioning to renewable energy sources like solar can significantly lower the carbon footprint. Additionally, solar-powered lighting can improve safety and accessibility in rural areas, which may currently lack adequate infrastructure. This action aligns with the city's need to address energy security and sustainability, contributing to long-term environmental and economic benefits."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 12,
-        "explanation": "Expanding the cycling infrastructure and building public walkways in Sorocaba is crucial due to the city's high population density and the need for sustainable transportation options. This action will help reduce transportation emissions, which are a significant contributor to the city's total emissions. Additionally, creating accessible sidewalks and walkways that are resilient to climate threats will enhance public safety and mobility, especially in light of the city's vulnerability to hazards like floods and heatwaves. By prioritizing this action, Sorocaba can improve urban livability and reduce its carbon footprint, aligning with broader environmental goals."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0033",
-        "actionName": "Install biodigesters in rural properties",
-        "actionPriority": 13,
-        "explanation": "Installing biodigesters in rural properties in Sorocaba is a strategic action to reduce waste emissions, which currently contribute significantly to the city's total emissions. Biodigesters can convert organic waste into biogas, providing a renewable energy source and reducing reliance on fossil fuels. This action also supports sustainable agricultural practices by producing nutrient-rich digestate that can be used as fertilizer, enhancing soil health. Given Sorocaba's tropical rainforest biome, this initiative aligns with environmental conservation efforts by minimizing waste and promoting energy efficiency. Additionally, it can contribute to the city's resilience against climate change impacts by reducing greenhouse gas emissions."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 14,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Sorocaba due to its potential to enhance food security and support local economies. This action can help mitigate the impacts of droughts on food security, as identified in the city's climate risk assessment. By supporting local agroecological practices, the city can reduce its carbon footprint associated with transportation emissions and promote sustainable land use. Additionally, this initiative aligns with the city's socio-economic context, where promoting local agriculture can provide economic opportunities and resilience against climate-related disruptions."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 15,
-        "explanation": "The adoption of electric drones for last-mile deliveries in Sorocaba is a strategic move to reduce transportation emissions, which currently contribute significantly to the city's total emissions. By utilizing electric drones, the city can decrease reliance on traditional delivery vehicles, thereby cutting down on fossil fuel consumption and air pollution. This action also aligns with the city's need to address infrastructure challenges posed by climate hazards such as floods and landslides, as drones can operate in conditions where ground transport might be disrupted. Furthermore, this initiative supports the city's efforts to enhance energy efficiency and sustainability in urban logistics."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 16,
-        "explanation": "The development of micro-logistics hubs to encourage the use of electric cargo bikes in Sorocaba is a strategic action to reduce transportation emissions, which are a significant contributor to the city's total emissions. By promoting electric cargo bikes, the city can decrease reliance on traditional fossil fuel-powered vehicles, thus lowering air pollution and enhancing urban air quality. Additionally, this initiative supports sustainable urban mobility, which is crucial given the city's high population density. Implementing such hubs can also improve the efficiency of local deliveries, contributing to economic growth and reducing traffic congestion."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0029",
-        "actionName": "Adopt policies for fossil fuel-free buildings",
-        "actionPriority": 17,
-        "explanation": "Adopting policies for fossil fuel-free buildings in Sorocaba is crucial due to the city's significant stationary energy emissions, which contribute to its overall high total emissions. Transitioning to fossil fuel-free buildings can substantially reduce these emissions, aligning with global sustainability goals and improving air quality. Additionally, this action supports energy security by reducing reliance on fossil fuels, which is particularly important given the city's vulnerability to climate hazards like heatwaves and droughts. Implementing such policies can also stimulate local economic growth by fostering innovation and creating green jobs in the construction and energy sectors."
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "São Paulo",
+        "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 18,
-        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Sorocaba is a strategic move to address the city's transportation emissions, which are a significant contributor to its total emissions. This action aligns with the city's need to reduce its carbon footprint and improve air quality, benefiting public health. Additionally, electric fleets can help mitigate the impact of heatwaves and other climate-related hazards by reducing reliance on fossil fuels. Implementing this system can also enhance mobility and accessibility for residents, particularly in areas with inadequate public transport options."
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 19,
-        "explanation": "The expansion of mass transit systems on rails in Sorocaba is a crucial action due to the city's high population density and significant transportation emissions. By enhancing public transportation infrastructure, the city can reduce reliance on private vehicles, thereby decreasing emissions and improving air quality. Additionally, improved mass transit can alleviate traffic congestion, making the city more accessible and livable for its residents. This action also supports sustainable urban development, aligning with global efforts to combat climate change."
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
-        "regionName": "São Paulo",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0021",
+        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0060",
+        "actionName": "Introduction of modular and automated collective transport systems.",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "ipcc_0012",
+        "actionName": "Electric Technologies",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0059",
+        "actionName": "Modernization of ports and airports with zero-emission technologies",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0091",
+        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0126",
+        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
         "actionPriority": 20,
-        "explanation": "Supporting agroecological certification programs in Sorocaba is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which impact food security. By promoting sustainable agricultural practices, these programs can enhance resilience against these hazards, ensuring a stable food supply. Additionally, agroecological practices can help reduce emissions from land use, contributing to the city's overall emission reduction goals. This action aligns with the need to address socio-economic factors by potentially providing economic opportunities for local farmers."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

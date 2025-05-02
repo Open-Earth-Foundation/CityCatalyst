@@ -1,202 +1,202 @@
 [
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
         "actionPriority": 1,
-        "explanation": "The implementation of an urban toll in São Leopoldo is a priority due to the city's high transportation emissions, which are a significant contributor to its overall carbon footprint. By introducing a toll, the city can encourage the use of public transportation and reduce the number of vehicles on the road, thereby decreasing emissions. Additionally, this action can help alleviate traffic congestion, improving air quality and public health. Given the city's vulnerability to public health risks from heatwaves and landslides, reducing emissions and improving air quality are crucial steps in enhancing the resilience of São Leopoldo."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2,
-        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for São Leopoldo due to its high population density and urban setting. Encouraging the use of bikes can significantly reduce transportation emissions, which are currently a major contributor to the city's total emissions. Additionally, promoting electric bikes can help mitigate the impact of heatwaves on public health by providing a sustainable and less physically demanding transportation option. This initiative also aligns with the city's need to improve air quality and reduce reliance on traditional motor vehicles."
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 3,
-        "explanation": "The adoption of biomethane in public fleets in São Leopoldo is a strategic action to reduce transportation emissions, which are a significant contributor to the city's total emissions. By transitioning to biomethane, the city can decrease its reliance on fossil fuels, thereby lowering its carbon footprint and improving air quality. This action also aligns with the city's need to address climate change impacts, such as heatwaves and public health risks, by promoting cleaner energy solutions. Furthermore, utilizing biomethane supports local energy security and can stimulate economic opportunities in the renewable energy sector."
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 4,
-        "explanation": "Expanding the cycling infrastructure and building public walkways in São Leopoldo is crucial due to the city's high population density, which can lead to congestion and pollution. By promoting cycling and walking, the city can reduce transportation emissions, which are currently a significant contributor to its total emissions. Additionally, creating infrastructure that is resilient to climate threats is vital, given the city's vulnerability to hazards such as floods and landslides. This action not only addresses environmental concerns but also enhances public health by encouraging active transportation and providing safer, more accessible routes for all citizens."
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 5,
-        "explanation": "The implementation of free public transportation programs during peak hours in São Leopoldo is a crucial action to address the city's high transportation emissions, which are a significant contributor to its total emissions. By encouraging the use of public transport, the city can reduce the reliance on individual vehicles, thereby decreasing traffic congestion and air pollution. This initiative also supports socio-economic inclusivity by providing low-income residents with better access to transportation, enhancing their mobility and access to opportunities. Additionally, reducing vehicle emissions can contribute to improved public health by lowering the risk of respiratory diseases associated with air pollution."
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SLO",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 6,
-        "explanation": "Deploying on-demand transport systems with 100% electric fleets in São Leopoldo is a strategic move to address the city's high transportation emissions, which are a significant contributor to its total emissions. This action can help reduce the carbon footprint and improve air quality, benefiting public health. Additionally, electric fleets align with global sustainability goals and can serve as a model for other cities in the region. By implementing this system, São Leopoldo can enhance its public transport infrastructure, making it more efficient and environmentally friendly."
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 7,
-        "explanation": "Encouraging renewable energy policies at the municipal level in São Leopoldo is crucial due to the city's significant stationary energy emissions. Transitioning to renewable energy sources can help reduce these emissions, contributing to a cleaner environment and improved air quality. Additionally, promoting renewable energy aligns with global sustainability goals and can enhance energy security, especially in a region vulnerable to climate-related hazards like droughts and heatwaves. Implementing such policies can also stimulate local economic growth by creating green jobs and attracting investments in sustainable technologies."
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 8,
-        "explanation": "The adoption of electric drones for last-mile deliveries in São Leopoldo is a strategic action to reduce transportation emissions, which are currently a significant contributor to the city's total emissions. By transitioning to electric drones, the city can decrease its reliance on traditional delivery vehicles, thereby reducing air pollution and contributing to cleaner air quality. Additionally, this action supports the city's efforts to mitigate the impacts of climate change by lowering its carbon footprint. Furthermore, the use of drones can enhance delivery efficiency, which is crucial for a city with a high population density, ensuring timely and effective service to its residents."
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 9,
-        "explanation": "The expansion of mass transit systems on rails in São Leopoldo is a crucial action due to the city's high population density and the need to reduce transportation emissions, which are a significant contributor to the city's total emissions. By improving public transportation infrastructure, the city can offer a more sustainable and efficient alternative to private vehicle use, thereby reducing traffic congestion and air pollution. Additionally, enhancing mass transit systems can improve accessibility for residents, particularly those with very low income, by providing affordable and reliable transportation options. This action also aligns with the city's need to address public health risks associated with air pollution and heatwaves, as better public transit can lead to reduced emissions and improved urban air quality."
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
-        "actionPriority": 10,
-        "explanation": "The action to address vehicle emissions in São Leopoldo is a priority due to the significant contribution of transportation to the city's overall emissions. With transportation emissions accounting for a substantial portion of the total emissions, reducing vehicle emissions can have a meaningful impact on improving air quality and reducing the city's carbon footprint. Additionally, addressing vehicle emissions can help mitigate public health risks associated with air pollution, which is crucial given the city's vulnerability to public health hazards. Implementing this action aligns with broader environmental goals and can enhance the quality of life for residents by promoting cleaner air and a healthier urban environment."
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 11,
-        "explanation": "Promoting the use of bicycles in São Leopoldo is crucial due to the city's high population density, which can lead to traffic congestion and increased emissions from transportation. By expanding bicycle infrastructure, the city can reduce transportation emissions, which are currently a significant contributor to the overall emissions profile. Additionally, encouraging cycling can improve public health by promoting physical activity and reducing air pollution. This action also aligns with the city's need to address public health risks associated with air quality and heatwaves. Overall, enhancing bicycle use supports sustainable urban mobility and contributes to a healthier environment."
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 12,
-        "explanation": "Integrating renewables into municipal water systems in São Leopoldo is a crucial step towards reducing the city's overall emissions. The city faces significant risks from climate-related hazards such as droughts and floods, which can impact water resources and public health. By incorporating renewable energy, the city can enhance the resilience of its water systems, ensuring a more reliable and sustainable water supply. This action also aligns with the city's need to address its stationary energy emissions, contributing to a reduction in the total emissions footprint."
+        "actionId": "icare_0021",
+        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0012",
+        "actionName": "Electric Technologies",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SLO",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
         "actionPriority": 13,
-        "explanation": "Increasing the attractiveness of the municipal bus system in São Leopoldo is crucial due to the city's high transportation emissions, which are a significant contributor to its total emissions. By promoting public transport, the city can reduce its carbon footprint and improve air quality. Additionally, enhancing the bus system can provide a more reliable and affordable transportation option for residents, particularly benefiting those with very low income. This action also aligns with the city's need to address public health risks associated with air pollution and climate change."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0060",
-        "actionName": "Introduction of modular and automated collective transport systems.",
+        "actionId": "icare_0059",
+        "actionName": "Modernization of ports and airports with zero-emission technologies",
         "actionPriority": 14,
-        "explanation": "The introduction of modular and automated collective transport systems in São Leopoldo is a strategic action to address the city's high transportation emissions, which are a significant contributor to its total emissions. By implementing this system, the city can reduce its carbon footprint and improve air quality, benefiting public health. Additionally, enhancing public transport can alleviate traffic congestion, making the city more livable and accessible for its residents. This action aligns with the city's need to modernize its infrastructure and support sustainable urban development."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 15,
-        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for São Leopoldo due to its potential to enhance food security and support local economies. This action can help mitigate the impacts of droughts on food security by promoting sustainable agricultural practices that are more resilient to climate change. Additionally, it can reduce transportation emissions by decreasing the need for long-distance food transport, thus contributing to the city's overall emission reduction goals. Supporting local agroecological products also aligns with the city's socio-economic context, as it can provide economic opportunities for local farmers and communities."
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "São Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0021",
-        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
-        "actionPriority": 16,
-        "explanation": "Encouraging and promoting sustainable and rational use of individual motorized transportation in São Leopoldo is crucial due to the high transportation emissions, which are a significant contributor to the city's total emissions. By focusing on this action, the city can reduce its carbon footprint and improve air quality, benefiting public health. Additionally, promoting sustainable transportation can alleviate traffic congestion, leading to more efficient urban mobility and enhancing the quality of life for residents."
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "São Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0011",
-        "actionName": "Provide tax incentives for renewable energy in residential projects",
-        "actionPriority": 17,
-        "explanation": "Providing tax incentives for renewable energy in residential projects is crucial for São Leopoldo due to its high population density and significant stationary energy emissions. Encouraging the adoption of renewable energy can help reduce the city's overall emissions, which are currently substantial. Additionally, this action aligns with the city's need to enhance energy security, especially in the face of climate-related risks such as droughts and heatwaves. By promoting renewable energy, São Leopoldo can also improve its resilience to these hazards while fostering sustainable development."
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0091",
         "actionName": "Implementation of prioritized routes for sustainable vehicles.",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SLO",
+        "cityName": "S\u00e3o Leopoldo",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0060",
+        "actionName": "Introduction of modular and automated collective transport systems.",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SLO",
+        "cityName": "S\u00e3o Leopoldo",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0126",
+        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SLO",
+        "cityName": "S\u00e3o Leopoldo",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0135",
+        "actionName": "Ensure that 100% of the fleet used by the Municipality (or outsourced) is zero-emission.",
         "actionPriority": 18,
-        "explanation": "The implementation of prioritized routes for sustainable vehicles in São Leopoldo is crucial due to the city's high population density and significant transportation emissions. By promoting sustainable transportation, the city can effectively reduce its carbon footprint and improve air quality. Additionally, this action supports the city's efforts to mitigate the impacts of climate change, particularly in reducing emissions that contribute to public health risks. Prioritizing sustainable vehicle routes can also enhance the overall efficiency of the transportation system, benefiting both the environment and the community."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0033",
-        "actionName": "Install biodigesters in rural properties",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 19,
-        "explanation": "Installing biodigesters in rural properties in São Leopoldo is a strategic action to manage waste emissions effectively. The city has a significant amount of waste emissions, and biodigesters can help convert organic waste into biogas, reducing these emissions. Additionally, this initiative supports energy security by providing a renewable energy source, which is crucial given the city's vulnerability to energy disruptions due to climate hazards. Furthermore, biodigesters can improve sanitation in rural areas, aligning with the city's low risk of inadequate sanitation but ensuring continued progress in this area."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR SLO",
-        "cityName": "São Leopoldo",
+        "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
+        "actionId": "icare_0063",
+        "actionName": "Gradual replacement of trucks with electric or hybrid rail transport.",
         "actionPriority": 20,
-        "explanation": "Promoting community solar farms in São Leopoldo is a strategic action to reduce the city's reliance on traditional energy sources, thereby decreasing stationary energy emissions. Given the city's tropical rainforest biome, there is significant potential for harnessing solar energy, which can contribute to a more sustainable energy mix. Additionally, this initiative can empower local communities by providing them with access to renewable energy, potentially lowering energy costs and fostering economic resilience. As São Leopoldo faces risks related to energy security due to climate hazards, community solar farms can enhance energy independence and stability."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

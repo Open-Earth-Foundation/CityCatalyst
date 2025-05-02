@@ -1,202 +1,202 @@
 [
     {
         "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
+        "cityName": "Ji-Paran\u00e1",
         "region": "RO",
-        "regionName": "Rondônia",
+        "regionName": "Rond\u00f4nia",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ji-Paraná is highly vulnerable to extreme weather events such as droughts and heatwaves, which pose significant risks to water resources, food security, and public health. Establishing a plan for preparation and emergency response is crucial to mitigate these risks and protect the community. The city's high total emissions and the impact of climate change further emphasize the need for proactive measures. By prioritizing this action, Ji-Paraná can enhance its resilience and ensure the safety and well-being of its residents during extreme weather conditions."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
+        "cityName": "Ji-Paran\u00e1",
         "region": "RO",
-        "regionName": "Rondônia",
+        "regionName": "Rond\u00f4nia",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "The development of a Climate Action Plan is crucial for Ji-Paraná due to its high total emissions and significant land use emissions. The city faces severe risks from climate hazards such as droughts and heatwaves, which threaten water resources, food security, and public health. A comprehensive plan will help mitigate these risks by outlining strategies to reduce emissions and enhance resilience. Additionally, the plan can guide the city in improving its infrastructure and public services to better withstand climate impacts."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
+        "cityName": "Ji-Paran\u00e1",
         "region": "RO",
-        "regionName": "Rondônia",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 3,
-        "explanation": "Access to health care is a critical priority for Ji-Paraná due to the high risk of public health impacts from heatwaves and diseases. The city's vulnerability to these hazards necessitates robust healthcare infrastructure to manage potential health crises effectively. Improving access to healthcare can mitigate the adverse effects of climate-related health risks, ensuring the well-being of the population. Additionally, enhancing healthcare services can contribute to overall community resilience against climate change impacts."
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
-        "region": "RO",
-        "regionName": "Rondônia",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 4,
-        "explanation": "Improving food storage and distribution is crucial for Ji-Paraná due to its vulnerability to droughts, which significantly impact food security. The city faces high risks from climate hazards, including droughts and floods, which can disrupt food supply chains. Enhancing food storage and distribution systems can help mitigate these risks by ensuring a stable food supply during adverse conditions. Additionally, better food management can reduce waste emissions, contributing to lower overall emissions in the city. This action is a priority as it directly addresses the critical issue of food security in a region prone to climate-related disruptions."
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
-        "region": "RO",
-        "regionName": "Rondônia",
+        "regionName": "Rond\u00f4nia",
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
-        "actionPriority": 5,
-        "explanation": "The recovery of degraded areas in Ji-Paraná is crucial due to the city's location in a tropical rainforest biome, which is vital for biodiversity and carbon sequestration. The high land use emissions indicate significant environmental degradation, making restoration efforts essential to mitigate climate change impacts. Additionally, restoring these areas can enhance resilience against climate hazards such as droughts and floods, which pose significant risks to the region's water resources and food security. This action supports the preservation of natural ecosystems, which are critical for maintaining the ecological balance and supporting local livelihoods."
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
+        "cityName": "Ji-Paran\u00e1",
         "region": "RO",
-        "regionName": "Rondônia",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 6,
-        "explanation": "Farm and fishery improvements are crucial for Ji-Paraná due to the high risk of droughts impacting water resources and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience to climate hazards. Additionally, improving fisheries can support local food supply and economic stability, which is vital given the socio-economic challenges in the region. This action aligns with the need to address the significant land use emissions and promote sustainable practices in the tropical rainforest biome."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
+        "cityName": "Ji-Paran\u00e1",
         "region": "RO",
-        "regionName": "Rondônia",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 7,
-        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Ji-Paraná is crucial due to the city's socio-economic challenges and environmental vulnerabilities. These zones often house low-income communities that are disproportionately affected by inadequate access to public services and environmental hazards. By focusing on these areas, the city can improve living conditions, enhance resilience against climate-related risks such as droughts and heatwaves, and promote social equity. This action aligns with the need to address the high risk of droughts impacting water resources and food security, which are critical for the well-being of the population."
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
-        "region": "RO",
-        "regionName": "Rondônia",
+        "regionName": "Rond\u00f4nia",
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
         "actionPriority": 8,
-        "explanation": "Strengthening programs for control and conservation of protected areas in Ji-Paraná is crucial due to its location in a tropical rainforest biome, which is rich in biodiversity. The city faces significant environmental challenges, including high emissions from land use and transportation, which can threaten these ecosystems. By enhancing conservation efforts, Ji-Paraná can mitigate the impacts of climate change, such as droughts and heatwaves, which pose a high risk to biodiversity and public health. Additionally, protecting these areas can help maintain the ecological balance and support the city's resilience against environmental hazards."
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
+        "cityName": "Ji-Paran\u00e1",
         "region": "RO",
-        "regionName": "Rondônia",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 9,
-        "explanation": "The availability of health infrastructure is crucial for Ji-Paraná, especially given the high risk of public health impacts from heatwaves and diseases. The city's vulnerability to these hazards necessitates robust health systems to manage potential health crises effectively. Improving health infrastructure can enhance the city's resilience, ensuring that residents have access to necessary medical services during extreme weather events. This action is a priority to safeguard public health and maintain community well-being in the face of climate-related challenges."
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
-        "region": "RO",
-        "regionName": "Rondônia",
-        "actionId": "icare_0157",
-        "actionName": "Maintenance and Revitalization of Riparian Forests",
-        "actionPriority": 10,
-        "explanation": "The maintenance and revitalization of riparian forests in Ji-Paraná is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to environmental changes. Riparian forests play a vital role in maintaining water quality and preventing soil erosion, which is particularly important given the high risk of droughts and floods in the region. Additionally, these forests support biodiversity and help mitigate the impacts of climate change by sequestering carbon. Given the significant land use emissions in Ji-Paraná, revitalizing these forests can contribute to reducing the overall carbon footprint of the city."
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
-        "region": "RO",
-        "regionName": "Rondônia",
-        "actionId": "icare_0150",
-        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
-        "actionPriority": 11,
-        "explanation": "Implementing a Loss Reduction and Control Program to promote water security is crucial for Ji-Paraná due to its high risk of droughts impacting water resources. The city faces significant challenges with inadequate water access, making this action vital to ensure a reliable water supply for its residents. Additionally, improving water security can help mitigate the effects of climate change, which poses a severe threat to the region's socio-economic stability. By prioritizing this program, Ji-Paraná can enhance its resilience against water scarcity and support sustainable development."
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
-        "region": "RO",
-        "regionName": "Rondônia",
-        "actionId": "icare_0145",
-        "actionName": "Strengthen the healthcare network to attend to climate victims",
-        "actionPriority": 12,
-        "explanation": "Strengthening the healthcare network in Ji-Paraná is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves and diseases, both of which can severely affect public health. By enhancing healthcare services, the city can better manage and mitigate the health consequences of these climate hazards. This action is essential to ensure the community's resilience and capacity to respond effectively to climate-induced health emergencies."
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
-        "region": "RO",
-        "regionName": "Rondônia",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 13,
-        "explanation": "Implementing social safety nets in Ji-Paraná is crucial due to the high risk of climate-related hazards such as droughts and heatwaves, which can severely impact vulnerable populations. These safety nets can provide essential support to low-income residents who may lack adequate resources to cope with such events. Additionally, social safety nets can help mitigate the impacts on public health and food security, which are identified as key areas at risk. By prioritizing this action, the city can enhance its resilience and ensure a more equitable distribution of resources during climate emergencies."
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
-        "region": "RO",
-        "regionName": "Rondônia",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 14,
-        "explanation": "Encouraging sustainable land use practices in Ji-Paraná is crucial due to the significant land use emissions, which are the largest contributor to the city's total emissions. The tropical rainforest biome of the region is highly sensitive to unsustainable land practices, which can exacerbate deforestation and biodiversity loss. Implementing sustainable practices can help mitigate these impacts, preserve the natural environment, and contribute to reducing the overall carbon footprint of the city. Additionally, sustainable land use can enhance resilience against climate-related hazards such as droughts and floods, which pose high risks to the region."
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
-        "region": "RO",
-        "regionName": "Rondônia",
+        "regionName": "Rond\u00f4nia",
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 15,
-        "explanation": "Creating the Municipal Climate Change Forum in Ji-Paraná is a crucial step towards addressing the city's significant environmental challenges. The city faces high risks from droughts, heatwaves, and other climate-related hazards, which threaten water resources, food security, and public health. Establishing a dedicated forum will facilitate collaboration among stakeholders, enabling the development of effective strategies to mitigate these risks. Additionally, it will provide a platform for raising awareness and engaging the community in climate action, which is essential for building resilience and ensuring sustainable development in the region."
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
+        "cityName": "Ji-Paran\u00e1",
         "region": "RO",
-        "regionName": "Rondônia",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 16,
-        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Ji-Paraná is crucial due to the high risk of droughts impacting water resources, food security, and energy security. The city's tropical rainforest biome and significant land use emissions further emphasize the need for effective water management. This system will provide real-time data to help mitigate the effects of droughts and ensure sustainable water usage. Additionally, it can aid in early warning systems for floods, which also pose a risk to food security in the region."
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
+        "cityName": "Ji-Paran\u00e1",
         "region": "RO",
-        "regionName": "Rondônia",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
         "actionPriority": 17,
-        "explanation": "Implementing a disaster early warning system in Ji-Paraná is crucial due to the high risk of natural hazards such as droughts and heatwaves, which significantly impact water resources, food security, and public health. The city faces severe challenges from these hazards, as indicated by the high normalized risk scores. An early warning system can help mitigate the adverse effects by providing timely alerts, allowing residents and authorities to prepare and respond effectively. This action is essential to enhance the city's resilience and protect its population from the increasing frequency and intensity of climate-related events."
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
+        "cityName": "Ji-Paran\u00e1",
         "region": "RO",
-        "regionName": "Rondônia",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 18,
-        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for Ji-Paraná due to its significant land use emissions, which are a major contributor to the city's total emissions. By encouraging more sustainable dietary habits and minimizing food waste, the city can reduce its environmental footprint and improve food security, which is at risk from hazards like droughts and floods. Additionally, this action can help mitigate the impact of climate change on local biodiversity and public health, both of which are vulnerable to the effects of heatwaves and other climate-related hazards. Implementing this action aligns with the city's need to address its high emissions and enhance resilience against climate risks."
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
-        "region": "RO",
-        "regionName": "Rondônia",
-        "actionId": "icare_0144",
-        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
-        "actionPriority": 19,
-        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Ji-Paraná due to its high vulnerability to climate-related hazards. The city faces significant risks from droughts, heatwaves, and floods, which can severely impact water resources, food security, and public health. Establishing a financial support program would provide necessary resources to mitigate these impacts and enhance the city's resilience. This action is particularly important given the socio-economic challenges and inadequate access to public services in the region."
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paraná",
-        "region": "RO",
-        "regionName": "Rondônia",
+        "regionName": "Rond\u00f4nia",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
         "actionPriority": 20,
-        "explanation": "The implementation of urban gardens in Ji-Paraná is a strategic action to enhance food security, which is a significant concern due to the high risk of droughts affecting the region. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the impact of food shortages. Additionally, these gardens can improve community resilience by promoting local food production and fostering community engagement. This initiative also supports biodiversity by creating green spaces within urban areas, which can help counteract some of the negative impacts of urbanization."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

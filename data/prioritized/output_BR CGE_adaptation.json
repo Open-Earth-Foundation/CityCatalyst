@@ -7,17 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Establishing a plan for preparation and emergency response measures in the event of extreme weather events is crucial for Contagem due to its high risk of natural hazards. The city faces significant threats from droughts, heatwaves, landslides, and floods, all of which have high normalized risk scores. These hazards pose serious risks to public health, infrastructure, and food security, making it imperative to have a robust emergency response plan. By prioritizing this action, Contagem can enhance its resilience and protect its population and infrastructure from the adverse impacts of climate change."
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 2,
-        "explanation": "The development of a Climate Action Plan is crucial for Contagem due to its high total emissions and significant risks from climate hazards such as droughts, heatwaves, and floods. With a population of over 600,000, the city faces challenges in managing emissions from transportation and stationary energy, which are major contributors to its carbon footprint. Additionally, the city's vulnerability to climate impacts like landslides and public health risks necessitates a strategic approach to mitigate these threats. Implementing a comprehensive Climate Action Plan will help Contagem address these issues systematically, ensuring sustainable development and resilience against climate change."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR CGE",
@@ -26,8 +16,18 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
         "actionPriority": 3,
-        "explanation": "The recovery of degraded areas in Contagem is crucial due to the city's high population density and the need to maintain healthy ecosystems. Restoring these areas can help mitigate the impacts of climate change, such as droughts and floods, which pose significant risks to water resources, food security, and public health. Additionally, improving land use can reduce emissions and enhance biodiversity, contributing to a more sustainable urban environment. This action aligns with the city's need to address environmental challenges and improve the quality of life for its residents."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR CGE",
@@ -37,17 +37,17 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 4,
-        "explanation": "Strengthening programs for control and conservation of protected areas is crucial for Contagem due to its grassland/savanna biome, which is sensitive to environmental changes. The city faces significant risks from droughts and heatwaves, which can severely impact biodiversity. By enhancing conservation efforts, the city can mitigate these risks and preserve its natural habitats. Additionally, protecting these areas can contribute to maintaining ecological balance and supporting biodiversity, which is vital for the overall health of the environment and the community."
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR CGE",
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 5,
-        "explanation": "Improving food storage and distribution is crucial for Contagem due to its vulnerability to droughts and floods, which pose significant risks to food security. The city's high population density and very low-income levels exacerbate the impact of food shortages, making efficient distribution systems essential. Enhancing these systems can help mitigate the effects of climate-related hazards, ensuring a stable food supply for the population. Additionally, better food storage can reduce waste emissions, contributing to overall emission reduction efforts."
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BR CGE",
@@ -57,7 +57,17 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 6,
-        "explanation": "Improving access to health care in Contagem is crucial due to the high risk of public health impacts from various hazards such as heatwaves, landslides, and floods. The city's vulnerability to these hazards, combined with its very low socio-economic status, makes it imperative to strengthen health care systems to ensure resilience. Enhancing health care access can mitigate the adverse effects of climate-related health risks, thereby protecting the well-being of the population. Additionally, better health care infrastructure can improve overall public health outcomes, making the city more resilient to future challenges."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR CGE",
@@ -66,8 +76,8 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 7,
-        "explanation": "Encouraging sustainable land use practices in Contagem is crucial due to the city's significant land use emissions. With a population density of 3193.2 people per square kilometer, efficient land use is essential to minimize environmental impact and support the growing population. Additionally, sustainable practices can help mitigate the risks associated with droughts and floods, which are significant hazards in the region. By promoting these practices, Contagem can enhance its resilience to climate change and improve overall environmental health."
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BR CGE",
@@ -76,38 +86,8 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
-        "actionPriority": 8,
-        "explanation": "The maintenance and revitalization of riparian forests in Contagem is crucial due to the city's vulnerability to floods and landslides, as indicated by the high risk scores for these hazards. Riparian forests play a significant role in stabilizing soil and reducing runoff, which can mitigate the impact of such natural disasters. Additionally, these forests contribute to biodiversity conservation and improve water quality, which is essential given the city's very low access to adequate water services. By prioritizing this action, Contagem can enhance its resilience against climate-related risks and improve the overall environmental health of the region."
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 9,
-        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Contagem is crucial due to the city's high risk of droughts and floods. These hazards pose significant threats to water resources, food security, and public health, as indicated by the city's climate change risk assessment. By establishing a robust monitoring system, the city can better predict and manage water-related hazards, thereby safeguarding its population and infrastructure. This proactive approach is essential for enhancing resilience against climate impacts and ensuring sustainable water management."
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 10,
-        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Contagem is crucial due to the city's socio-economic challenges. With a very low-income population, enhancing these areas can significantly improve living conditions and access to essential services. Additionally, addressing these zones can help mitigate the impacts of environmental hazards such as floods and landslides, which pose high risks to public health and infrastructure. This action supports sustainable urban development and resilience against climate-related threats."
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 11,
-        "explanation": "The implementation of urban gardens in Contagem is a strategic action to enhance food security, especially given the city's vulnerability to droughts and floods. Urban gardens can help mitigate the impact of these hazards by providing a local and sustainable food source, reducing dependency on external food supplies. Additionally, they can improve biodiversity and contribute to the city's green spaces, which are crucial for maintaining ecological balance in a densely populated area. This initiative also supports community engagement and education, fostering a sense of ownership and responsibility towards environmental sustainability."
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BR CGE",
@@ -116,8 +96,28 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 12,
-        "explanation": "Strengthening the healthcare network in Contagem is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, floods, and landslides, all of which can severely affect public health. By enhancing healthcare services, the city can better manage and mitigate the health consequences of these hazards, ensuring the well-being of its residents. Additionally, a robust healthcare system can improve resilience against future climate events, providing timely and effective responses to emergencies."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR CGE",
@@ -127,27 +127,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 13,
-        "explanation": "Farm and fishery improvements are crucial for Contagem due to the significant risk of droughts impacting water resources and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience to water scarcity and ensuring a stable food supply. Additionally, improving fisheries can contribute to biodiversity conservation, which is threatened by both droughts and heatwaves. These improvements can also support the local economy by providing sustainable livelihoods in the face of climate-related challenges."
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 14,
-        "explanation": "Creating the Municipal Climate Change Forum in Contagem is a crucial step towards addressing the city's environmental challenges. The city faces significant risks from climate-related hazards such as droughts, heatwaves, and floods, which impact water resources, public health, and infrastructure. Establishing a dedicated forum will facilitate coordinated efforts among stakeholders to develop and implement effective climate adaptation and mitigation strategies. This initiative will also enhance community engagement and awareness, fostering a collaborative approach to building resilience against climate change impacts."
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 15,
-        "explanation": "The action of relocating and restoring vulnerable areas in Contagem is crucial due to the high risk of natural hazards such as landslides and floods, which pose significant threats to public health and infrastructure. Given the city's high population density and the very low income levels, many residents may be living in areas that are particularly susceptible to these hazards. Environmental restoration can help mitigate these risks by stabilizing the land and improving the resilience of ecosystems. Additionally, this action supports long-term sustainability and safety for the community, aligning with the city's need to address its socio-economic vulnerabilities."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR CGE",
@@ -156,18 +136,18 @@
         "regionName": "Minas Gerais",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
-        "actionPriority": 16,
-        "explanation": "The availability of health infrastructure is crucial for Contagem, especially given the high risk of public health impacts from hazards such as heatwaves, landslides, and floods. These hazards have been identified as having significant risk scores, indicating a pressing need for robust health systems to manage potential crises. Improving health infrastructure can enhance the city's resilience to these climate-related challenges, ensuring better preparedness and response capabilities. Additionally, strengthening health infrastructure can contribute to overall public well-being, making it a vital component of the city's adaptation strategy."
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR CGE",
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 17,
-        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for Contagem due to its potential impact on food security and emissions reduction. Given the city's high risk of droughts affecting water resources and food security, encouraging sustainable dietary practices can help mitigate these risks. Additionally, reducing food waste can significantly lower waste emissions, which are a notable contributor to the city's total emissions. This action aligns with the need to address both environmental sustainability and public health concerns in the region."
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BR CGE",
@@ -176,8 +156,38 @@
         "regionName": "Minas Gerais",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 18,
-        "explanation": "Implementing social safety nets in Contagem is crucial due to the city's socio-economic challenges, particularly the very low-income levels. These safety nets can provide essential support to vulnerable populations, helping them cope with economic instability and potential climate-related impacts. Given the high risk of hazards such as droughts and floods, which can severely affect public health and food security, social safety nets can play a vital role in enhancing community resilience. By prioritizing this action, the city can better protect its residents from the adverse effects of climate change and socio-economic disruptions."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR CGE",
@@ -186,17 +196,7 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
-        "actionPriority": 19,
-        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Contagem due to its high vulnerability to such hazards. The city faces significant risks from droughts, heatwaves, and floods, which can severely impact water resources, public health, and infrastructure. Establishing a financial support program would provide necessary resources to mitigate these impacts and enhance the city's resilience. Additionally, this program could help protect low-income populations, who are particularly vulnerable to the adverse effects of extreme weather events."
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
         "actionPriority": 20,
-        "explanation": "The recovery and preservation of green areas in Contagem is crucial due to the city's high population density and the associated environmental pressures. Green spaces can help mitigate the effects of urban heat islands, which is particularly important given the city's vulnerability to heatwaves. Additionally, preserving green areas can enhance biodiversity and improve air quality, contributing to better public health outcomes. This action also supports the city's resilience against climate change impacts, such as floods and landslides, by improving natural water absorption and reducing surface runoff."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

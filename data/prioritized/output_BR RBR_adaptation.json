@@ -7,7 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Establishing a plan for preparation and emergency response measures in Rio Branco is crucial due to the high risk of extreme weather events such as droughts, heatwaves, and floods. The city faces significant threats to water resources, food security, and public health, with normalized risk scores close to 0.99 for these hazards. Implementing a comprehensive emergency response plan will help mitigate the impacts of these events, protect vulnerable populations, and ensure the resilience of critical infrastructure. Given the city's low-income status and inadequate access to water, such a plan is essential to safeguard the community and maintain stability during crises."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
@@ -17,17 +17,17 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "The development of a Climate Action Plan is crucial for Rio Branco due to its high vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These hazards pose significant risks to water resources, food security, energy security, and public health, making it imperative to have a strategic plan in place. A comprehensive Climate Action Plan will help the city prioritize and implement effective measures to mitigate these risks and enhance resilience. Additionally, with the city's total emissions being substantial, a targeted plan can guide efforts to reduce emissions and promote sustainable development."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0152",
-        "actionName": "Recovery of degraded areas",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 3,
-        "explanation": "The action 'Recovery of degraded areas' is crucial for Rio Branco due to its significant land use emissions, which are the highest among all emission sources in the city. Restoring degraded areas can help sequester carbon, thereby reducing the overall carbon footprint of the city. Additionally, this action can enhance biodiversity and improve resilience against climate hazards such as floods and landslides, which are high-risk factors for the region. By prioritizing this action, Rio Branco can address both environmental and socio-economic challenges, contributing to sustainable development."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
@@ -37,27 +37,17 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 4,
-        "explanation": "Strengthening programs for control and conservation of protected areas in Rio Branco is crucial due to its location in a tropical rainforest biome, which is rich in biodiversity. The city faces significant environmental challenges, including high emissions from land use and a high risk of biodiversity loss due to droughts and heatwaves. By enhancing conservation efforts, Rio Branco can mitigate these risks, protect its unique ecosystems, and contribute to global biodiversity preservation. Additionally, effective management of protected areas can help in maintaining ecological balance and supporting sustainable development in the region."
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
         "actionPriority": 5,
-        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Rio Branco is crucial due to the city's socio-economic challenges and environmental vulnerabilities. The city faces high risks from droughts, heatwaves, and floods, which can severely impact public health, infrastructure, and food security. By focusing on ZEIS, the action aims to improve living conditions in vulnerable areas, enhancing resilience against these climate hazards. Additionally, addressing these zones can help mitigate the effects of inadequate water access and support sustainable urban development."
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 6,
-        "explanation": "Improving access to health care in Rio Branco is crucial due to the high risk of public health impacts from hazards such as heatwaves, diseases, and floods. The city's vulnerability to these hazards, combined with its low-income socio-economic status, makes it imperative to enhance health care services to protect the population. Ensuring robust health care access can mitigate the adverse effects of these environmental and health challenges, thereby improving overall community resilience."
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
@@ -66,8 +56,18 @@
         "regionName": "Acre",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
         "actionPriority": 7,
-        "explanation": "Improving food storage and distribution is crucial for Rio Branco due to its high risk of droughts, which can severely impact food security. By enhancing these systems, the city can better manage food supplies during periods of scarcity, ensuring that residents have access to essential resources. Additionally, efficient food distribution can help mitigate the effects of floods, which also pose a significant risk to food security in the region. This action supports the city's resilience against climate-related hazards, making it a vital priority."
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
@@ -77,27 +77,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 8,
-        "explanation": "Strengthening the healthcare network in Rio Branco is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, floods, and diseases, all of which can severely affect public health. By enhancing healthcare services, the city can better manage and mitigate the health consequences of these climate hazards, ensuring the well-being of its residents. Additionally, improved healthcare infrastructure will increase resilience against future climate events, providing a more robust response to emergencies."
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 9,
-        "explanation": "Farm and fishery improvements are crucial for Rio Branco due to the high risk of droughts impacting water resources and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience to climate variability. Additionally, improving fisheries can support local food supply and economic stability, which is vital given the socio-economic challenges in the region. This action aligns with the need to address key vulnerabilities in the city's food and water systems."
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 10,
-        "explanation": "Encouraging sustainable land use practices in Rio Branco is crucial due to the city's significant land use emissions, which are the highest among all emission sources. The tropical rainforest biome of the region is highly sensitive to unsustainable land practices, which can exacerbate deforestation and biodiversity loss. Additionally, sustainable land use can help mitigate the risks associated with droughts and floods, which are significant hazards for the city. By prioritizing this action, Rio Branco can improve its resilience to climate change impacts and protect its natural resources."
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
@@ -106,8 +86,18 @@
         "regionName": "Acre",
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
-        "actionPriority": 11,
-        "explanation": "The maintenance and revitalization of riparian forests in Rio Branco is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to environmental changes. Riparian forests play a vital role in maintaining water quality and preventing soil erosion, which is particularly important given the high risk of floods and landslides in the area. Additionally, these forests contribute to biodiversity conservation and can help mitigate the impacts of climate change by sequestering carbon. Given the city's socio-economic challenges and environmental risks, this action supports both ecological stability and community resilience."
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
@@ -116,18 +106,18 @@
         "regionName": "Acre",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
-        "actionPriority": 12,
-        "explanation": "Improving the availability of health infrastructure in Rio Branco is crucial due to the high risk of public health impacts from hazards such as heatwaves, diseases, and floods. The city's vulnerability to these hazards, combined with its low-income socio-economic status, makes it imperative to enhance healthcare facilities to ensure resilience and effective response. Additionally, better health infrastructure can mitigate the adverse effects of climate-related events, safeguarding the well-being of the population and reducing long-term healthcare costs."
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 13,
-        "explanation": "Implementing social safety nets in Rio Branco is crucial due to the high risk of climate-related hazards such as droughts, heatwaves, and floods, which significantly impact public health and food security. These safety nets can provide essential support to low-income populations, who are particularly vulnerable to these risks. By enhancing resilience and providing financial assistance during crises, social safety nets can help mitigate the adverse effects of climate change on the city's most vulnerable residents."
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
@@ -136,38 +126,8 @@
         "regionName": "Acre",
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 14,
-        "explanation": "Creating the Municipal Climate Change Forum in Rio Branco is a crucial step towards addressing the city's significant environmental challenges. The city faces high risks from climate-related hazards such as droughts, heatwaves, and floods, which threaten water resources, food security, and public health. Establishing a dedicated forum will facilitate coordinated efforts among stakeholders to develop and implement effective climate adaptation and mitigation strategies. This initiative will also enhance community engagement and awareness, empowering residents to contribute to sustainable solutions."
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0144",
-        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
-        "actionPriority": 15,
-        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Rio Branco due to its high vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These events pose significant risks to water resources, food security, energy security, and public health, as indicated by the city's climate change risk assessment. By establishing a financial support program, the city can better prepare for and mitigate the impacts of these extreme weather events, ensuring the resilience and well-being of its population. Additionally, such a program can provide necessary resources to recover from damages, thereby reducing long-term socio-economic impacts."
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 16,
-        "explanation": "The implementation of urban gardens in Rio Branco is a significant action due to its potential to enhance food security, which is a critical issue given the high risk of droughts affecting the region. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and increasing resilience against climate-related disruptions. Additionally, these gardens can improve community well-being by offering green spaces that contribute to biodiversity and provide educational opportunities about sustainable practices. This action also aligns with the city's need to address socio-economic challenges by potentially creating jobs and fostering community engagement."
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 17,
-        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Rio Branco is crucial due to the city's high risk of floods and droughts. The system will provide real-time data, enabling better management of water resources and timely responses to potential hazards. This action is particularly important given the city's tropical rainforest biome, where water management is essential for maintaining ecological balance and supporting the local population. Additionally, improved monitoring can help mitigate the impacts on public health and infrastructure, which are at significant risk from these climate-related hazards."
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
@@ -176,8 +136,48 @@
         "regionName": "Acre",
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 18,
-        "explanation": "The recovery and preservation of green areas in Rio Branco is crucial due to its location in a tropical rainforest biome, which is vital for maintaining biodiversity and ecological balance. Green areas can help mitigate the impacts of climate change, such as heatwaves and floods, which pose significant risks to public health and infrastructure in the city. Additionally, preserving these areas can enhance the city's resilience against droughts, which threaten water and food security. By prioritizing this action, Rio Branco can improve its environmental sustainability and quality of life for its residents."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
@@ -187,16 +187,16 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 19,
-        "explanation": "The action of relocating and restoring vulnerable areas in Rio Branco is crucial due to the city's high risk of natural hazards such as floods and landslides. These hazards pose significant threats to infrastructure and public health, making it imperative to address areas most susceptible to damage. By focusing on relocation and environmental restoration, the city can enhance its resilience against these risks, ensuring the safety and well-being of its residents. Additionally, this action supports the preservation of biodiversity in the tropical rainforest biome, which is vital for maintaining ecological balance."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR RBR",
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0180",
-        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 20,
-        "explanation": "Implementing permeable pavements and increasing green areas in roadways in Rio Branco is crucial due to the city's high risk of floods and landslides. These measures can significantly enhance water absorption and reduce surface runoff, mitigating the impact of heavy rainfall. Additionally, increasing green areas can help lower urban heat, which is vital given the high risk of heatwaves affecting public health and infrastructure. This action also contributes to improving the city's resilience against climate change impacts, supporting biodiversity, and enhancing the overall quality of life for residents."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

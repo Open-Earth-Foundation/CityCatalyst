@@ -1,202 +1,202 @@
 [
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
         "actionPriority": 1,
-        "explanation": "For Tarauacá, implementing agroforestry systems blends tree cover with traditional farming to enhance soil fertility, improve water retention, and sequester carbon. This approach reduces the environmental footprint of agriculture while boosting farm resilience to climate variability. The integration of trees into cropping systems supports long-term sustainability and ecological balance."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 2,
-        "explanation": "For Tarauacá, promoting urban reforestation and creating green corridors provides natural cooling, improves air quality, and manages stormwater by absorbing excess runoff. These green spaces also enhance urban aesthetics and offer recreational benefits. Integrating nature into the urban fabric strengthens the city’s resilience against extreme weather events."
-    },
-    {
-        "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0134",
         "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 3,
-        "explanation": "For Tarauacá, reinforcing deforestation controls is vital to preserve existing forests that act as natural carbon sinks and regulate local hydrology. This measure helps curb illegal logging and land clearing, protecting biodiversity and preventing soil erosion. Maintaining forest cover is critical for sustaining the ecological functions that help mitigate climate change impacts."
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0129",
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
         "actionPriority": 4,
-        "explanation": "For Tarauacá, facilitating technology transfer equips local farmers and land managers with modern conservation practices, such as precision irrigation and sustainable pest management. These innovations improve efficiency and reduce resource waste. This exchange of knowledge fosters a more resilient and sustainable agricultural sector."
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0130",
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 5,
-        "explanation": "For Tarauacá, technical assistance and rural extension services help farmers adopt sustainable, climate-smart techniques that improve productivity and resilience. This on-site support bridges the gap between innovative practices and traditional methods. As a result, rural communities become better equipped to adapt to climate change."
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
         "actionPriority": 6,
-        "explanation": "For Tarauacá, establishing PES programs offers financial incentives to landowners for conserving forests and water resources. This approach aligns economic benefits with environmental stewardship, encouraging sustainable land management. Such programs provide a steady revenue stream for conservation efforts and help maintain critical ecosystems."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0102",
         "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 7,
-        "explanation": "For Tarauacá, adopting sustainable agricultural practices—such as efficient water use, integrated pest management, and conservation tillage—reduces environmental impact while maintaining productivity. These methods help farms better withstand climate variability and preserve natural resources. In the long run, sustainable agriculture supports food security and minimizes the sector’s carbon footprint."
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 8,
-        "explanation": "For Tarauacá, promoting organic farming limits chemical inputs and fosters healthier soils and water systems. Organic practices bolster biodiversity and improve the resilience of crops to climate stresses. This approach not only benefits public health but also contributes to long-term sustainability in the agricultural sector."
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0100",
         "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 9,
-        "explanation": "For Tarauacá, supporting regenerative agriculture practices, such as cover cropping and composting, improves soil structure and captures carbon. This not only increases crop resilience but also enhances water retention and reduces erosion. Regenerative methods drive long-term improvements in productivity and environmental health."
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
         "actionPriority": 10,
-        "explanation": "For Tarauacá, incentivizing agroforestry in livestock systems encourages the integration of trees with grazing lands, providing natural shade and additional fodder. This practice improves pasture quality and sequesters carbon, reducing the environmental impact of livestock operations. It also diversifies income sources for farmers, enhancing rural sustainability."
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0127",
-        "actionName": "Accelerate Environmental Regularization of Rural Properties",
-        "actionPriority": 11,
-        "explanation": "For Tarauacá, accelerating the formalization of rural properties strengthens land tenure security, which in turn enforces sustainable land-use practices. This legal clarity helps curb illegal deforestation and promotes responsible agriculture. Such regularization is critical for maintaining the balance between development and conservation."
-    },
-    {
-        "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0101",
         "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
-        "actionPriority": 12,
-        "explanation": "For Tarauacá, transitioning to low-emission agricultural machinery significantly reduces fuel consumption and related emissions. Modern equipment improves operational efficiency and reduces the environmental impact of farming. This shift not only supports sustainable production but also helps lower operating costs, benefiting local farmers."
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0061",
-        "actionName": "Soil Carbon Management in Croplands and Grasslands",
-        "actionPriority": 13,
-        "explanation": "For Tarauacá, implementing soil carbon management techniques such as reduced tillage and the use of organic matter enhances soil quality and sequesters carbon. These practices improve crop resilience and support long-term agricultural productivity in a changing climate. This approach is both cost-effective and environmentally beneficial, reducing the overall carbon footprint of farming."
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 14,
-        "explanation": "For Tarauacá, prioritizing locally produced agroecological goods in public procurement supports regional farmers and reduces transportation emissions. This policy reinforces sustainable production practices and builds a resilient local food system. Public institutions benefit from higher-quality, locally adapted products, enhancing both food security and economic stability."
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 15,
-        "explanation": "For Tarauacá, fostering local agroecological production with short supply chains minimizes transportation impacts and waste. This approach promotes closer connections between producers and consumers, ensuring fresher products and lower carbon footprints. Supporting local systems builds economic resilience and enhances environmental sustainability."
-    },
-    {
-        "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 16,
-        "explanation": "For Tarauacá, promoting certification programs for agroecological practices incentivizes farmers to adopt sustainable methods. Certification not only adds market value to eco-friendly products but also encourages continuous improvement in environmental performance. This measure boosts consumer confidence in local produce and supports a transition toward more sustainable agricultural practices."
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0085",
         "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 17,
-        "explanation": "For Tarauacá, encouraging agroecological pest control reduces dependency on synthetic pesticides, protecting both soil and water resources. This natural approach supports beneficial insect populations and promotes healthier crop production. It ultimately lowers environmental and health risks while maintaining agricultural productivity."
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 18,
-        "explanation": "For Tarauacá, offering fiscal incentives for sustainable practices motivates businesses and landowners to invest in green technologies. These incentives lower financial barriers, leading to broader adoption of conservation measures. Over time, they drive systemic change towards a more sustainable and environmentally responsible local economy."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "ipcc_0052",
         "actionName": "Reduce Deforestation and Degradation",
         "actionPriority": 19,
-        "explanation": "For Tarauacá, reducing deforestation and land degradation is crucial for maintaining forest cover and ecosystem services, such as water regulation and carbon sequestration. This action mitigates environmental damage and prevents the loss of biodiversity. Sustaining natural habitats is key to long-term climate stability and rural productivity."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauacá",
+        "cityName": "Tarauac\u00e1",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 20,
-        "explanation": "For Tarauacá, investing in afforestation, reforestation, and restoring forest ecosystems enhances natural carbon sequestration while rebuilding essential habitats. These actions improve water retention and reduce soil erosion, mitigating the effects of extreme weather. In the long term, restoring forests bolsters regional climate resilience and supports sustainable ecological recovery."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

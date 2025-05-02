@@ -4,199 +4,199 @@
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
         "actionPriority": 1,
-        "explanation": "The implementation of an urban toll in Caxias do Sul is a priority due to the high transportation emissions, which are a significant contributor to the city's total emissions. By introducing a toll, the city can effectively manage traffic congestion, encouraging the use of public transportation and reducing vehicle emissions. This action is crucial in addressing the environmental impact of transportation, which is currently the largest source of emissions in the city. Additionally, reducing traffic can improve air quality and public health, aligning with the city's goals to mitigate climate risks and enhance the quality of life for its residents."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
         "actionPriority": 2,
-        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Caxias do Sul due to its high transportation emissions. Encouraging the use of bikes can significantly reduce the reliance on motor vehicles, thereby decreasing emissions and improving air quality. Additionally, promoting electric bikes can make cycling more accessible in the city's hilly terrain, enhancing mobility for residents. This initiative also aligns with the city's need to address public health risks associated with air pollution and sedentary lifestyles. Overall, this action supports sustainable urban mobility and contributes to the city's environmental and health goals."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
         "actionPriority": 3,
-        "explanation": "The adoption of biomethane in public fleets in Caxias do Sul is a significant action due to the city's high transportation emissions, which are a major contributor to its total emissions. By transitioning to biomethane, the city can reduce its reliance on fossil fuels, thereby decreasing greenhouse gas emissions and improving air quality. This action is particularly important given the city's vulnerability to climate-related hazards such as floods and landslides, which can be exacerbated by climate change. Additionally, using biomethane supports local energy security and aligns with sustainable development goals by promoting cleaner energy sources."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionId": "c40_0040",
+        "actionName": "Volume-Based Collection",
         "actionPriority": 4,
-        "explanation": "The implementation of free public transportation programs during peak hours in Caxias do Sul is a strategic action to address the high transportation emissions, which are a significant contributor to the city's total emissions. By encouraging the use of public transport, the city can reduce the reliance on individual vehicles, thereby decreasing traffic congestion and lowering emissions. This initiative also aligns with the city's socio-economic context, as it can provide financial relief to residents with very low income, enhancing their mobility and access to opportunities. Additionally, reducing vehicle emissions can improve air quality, contributing to better public health outcomes in the city."
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionId": "icare_0122",
+        "actionName": "Establish eco-parks.",
         "actionPriority": 5,
-        "explanation": "Expanding cycling infrastructure and building public walkways in Caxias do Sul is crucial due to the city's high transportation emissions, which are a significant contributor to its total emissions. By promoting cycling and walking, the city can reduce reliance on motor vehicles, thereby decreasing emissions and improving air quality. Additionally, creating infrastructure that is resilient to climate threats, such as floods and landslides, is essential given the city's high risk scores for these hazards. This action not only addresses environmental concerns but also enhances public health and safety by providing safer, more sustainable transportation options."
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionId": "c40_0039",
+        "actionName": "Gas Management",
         "actionPriority": 6,
-        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Caxias do Sul is a strategic move to address the city's high transportation emissions, which are a significant contributor to its total emissions. This action can help reduce the carbon footprint and improve air quality, benefiting public health. Additionally, the electric fleet aligns with the city's need to enhance energy security and reduce reliance on fossil fuels. By implementing this system, the city can also improve mobility and accessibility for its residents, particularly in areas with limited public transport options."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionId": "icare_0053",
+        "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
         "actionPriority": 7,
-        "explanation": "The adoption of electric drones for last-mile deliveries in Caxias do Sul is a strategic move to reduce transportation emissions, which are currently the highest among the city's emission sources. By transitioning to electric drones, the city can significantly cut down on carbon emissions associated with traditional delivery vehicles. This action also aligns with the city's need to address climate risks, as reducing emissions can mitigate the impact of climate-related hazards such as floods and landslides. Furthermore, electric drones can enhance delivery efficiency and reduce traffic congestion, contributing to a more sustainable urban environment."
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionId": "ipcc_0080",
+        "actionName": "Avoiding, Minimising, and Recycling Waste",
         "actionPriority": 8,
-        "explanation": "Encouraging renewable energy policies at the municipal level in Caxias do Sul is crucial due to the city's significant stationary energy emissions. Transitioning to renewable energy sources can help reduce these emissions, contributing to a cleaner environment and improved air quality. Additionally, renewable energy can enhance energy security, which is vital given the city's vulnerability to droughts that can impact energy resources. Implementing these policies aligns with global sustainability goals and can position Caxias do Sul as a leader in environmental responsibility within the region."
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionId": "icare_0017",
+        "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
         "actionPriority": 9,
-        "explanation": "The expansion of mass transit systems on rails, such as metros, LRTs, and monorails, is a crucial action for Caxias do Sul due to its significant transportation emissions. With transportation being a major contributor to the city's total emissions, enhancing public transit can help reduce reliance on personal vehicles, thereby lowering emissions. Additionally, improved mass transit can alleviate traffic congestion, making the city more accessible and reducing travel times for residents. This action also supports sustainable urban development by promoting efficient land use and reducing the environmental impact of urban sprawl."
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0026",
-        "actionName": "Vehicle Emissions",
+        "actionId": "icare_0110",
+        "actionName": "Regulate the Construction Waste Management Plan",
         "actionPriority": 10,
-        "explanation": "The action to address vehicle emissions in Caxias do Sul is a priority due to the significant contribution of transportation to the city's overall emissions. With transportation emissions accounting for a substantial portion of the total emissions, reducing vehicle emissions can have a major impact on improving air quality and reducing the city's carbon footprint. Additionally, addressing vehicle emissions can help mitigate the risks associated with climate change impacts, such as heatwaves and public health issues, which are prevalent in the region. By prioritizing this action, Caxias do Sul can enhance its sustainability and resilience against environmental hazards."
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionId": "icare_0066",
+        "actionName": "Expand the coverage of the public selective waste collection network",
         "actionPriority": 11,
-        "explanation": "The development of micro-logistics hubs to encourage the use of electric cargo bikes in Caxias do Sul is a strategic action to address transportation emissions, which are a significant contributor to the city's total emissions. By promoting electric cargo bikes, the city can reduce its reliance on traditional fossil fuel-powered vehicles, thereby decreasing air pollution and greenhouse gas emissions. This initiative also aligns with the city's need to improve public health, as it can lead to cleaner air and reduced traffic congestion. Additionally, the action supports sustainable urban mobility, which is crucial for a city with a growing population and urban density."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionId": "icare_0113",
+        "actionName": "Universalize the coverage of the selective waste collection service for dry materials",
         "actionPriority": 12,
-        "explanation": "Promoting the use of bicycles in Caxias do Sul is a crucial action due to the city's high transportation emissions, which are a significant contributor to its total emissions. By expanding bicycle infrastructure and raising awareness, the city can reduce its reliance on motor vehicles, thereby decreasing emissions and improving air quality. Additionally, this initiative can enhance public health by encouraging physical activity and reducing the risk of diseases associated with sedentary lifestyles. Furthermore, as the city faces risks from climate-related hazards like floods and landslides, reducing emissions through sustainable transport options can contribute to broader climate resilience efforts."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 13,
-        "explanation": "Integrating renewables into municipal water systems in Caxias do Sul is a strategic action due to the city's high total emissions and the need to reduce its carbon footprint. The city faces significant risks from climate-related hazards such as droughts and floods, which can impact water resources and infrastructure. By incorporating renewable energy, the city can enhance the resilience of its water systems against these hazards while also promoting sustainable energy use. This action aligns with the city's need to address both environmental sustainability and energy security, making it a crucial step towards a more sustainable future."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0021",
-        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
+        "actionId": "icare_0119",
+        "actionName": "Maximize composting processes.",
         "actionPriority": 14,
-        "explanation": "Encouraging and promoting sustainable and rational use of individual motorized transportation in Caxias do Sul is crucial due to the high transportation emissions, which are a significant contributor to the city's total emissions. By focusing on this action, the city can effectively reduce its carbon footprint and improve air quality, benefiting public health. Additionally, promoting sustainable transportation can alleviate traffic congestion, leading to more efficient urban mobility and enhancing the overall quality of life for residents."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0128",
-        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionId": "icare_0018",
+        "actionName": "Implement the Sustainable Logistics Plan in all public administration bodies",
         "actionPriority": 15,
-        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Caxias do Sul is a strategic action to enhance environmental conservation efforts. The city faces significant environmental challenges, including high emissions and risks from natural hazards such as floods and landslides. Implementing PES can incentivize landowners to maintain and improve ecosystem services, which can help mitigate these risks. Additionally, PES programs can contribute to biodiversity conservation and improve water resource management, addressing some of the key impacts identified in the city's climate risk assessment. This action aligns with the city's need to balance development with environmental sustainability."
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionId": "icare_0111",
+        "actionName": "Strengthen the reverse logistics system.",
         "actionPriority": 16,
-        "explanation": "Facilitating technology transfer for conservation practices in Caxias do Sul is crucial due to the city's significant environmental challenges. The city faces high emissions from transportation and stationary energy, which contribute to its total emissions. By adopting advanced conservation technologies, Caxias do Sul can effectively reduce its carbon footprint and mitigate the impact of these emissions. Additionally, the city is at risk from various climate hazards such as floods and landslides, which can be better managed through improved conservation practices. This action supports sustainable development and resilience against environmental risks."
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
         "actionPriority": 17,
-        "explanation": "Supporting regenerative agriculture practices in Caxias do Sul is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which directly impact food security. By promoting these practices, the city can enhance soil health, increase biodiversity, and improve water retention, thereby mitigating the effects of these hazards. Additionally, regenerative agriculture can contribute to reducing emissions from land use, which is a significant source of the city's total emissions. This action aligns with the need to build resilience in the agricultural sector, ensuring sustainable food production and security for the population."
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0126",
-        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 18,
-        "explanation": "The implementation of green fuel supply infrastructure for aircraft in Caxias do Sul is a significant step towards reducing transportation emissions, which are a major contributor to the city's total emissions. By transitioning to biofuels or green hydrogen, the city can significantly lower its carbon footprint, aligning with global sustainability goals. Additionally, this action supports the city's efforts to mitigate climate change impacts, particularly in a region where transportation emissions are notably high. Furthermore, investing in green fuel infrastructure can stimulate local economic growth by creating new jobs and fostering innovation in the renewable energy sector."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionId": "icare_0109",
+        "actionName": "Promote Energy Recovery from Biogas in Landfills",
         "actionPriority": 19,
-        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Caxias do Sul is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. By providing technical support and education to rural communities, these actions can enhance agricultural resilience and productivity, mitigating the effects of these hazards. Additionally, ATER initiatives can promote sustainable farming practices, reducing emissions from land use and contributing to overall environmental sustainability. This action aligns with the city's need to address socio-economic challenges and improve the livelihoods of its rural population."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BR CXL",
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
+        "actionId": "icare_0112",
+        "actionName": "Universalize sewage collection and treatment",
         "actionPriority": 20,
-        "explanation": "Promoting community solar farms in Caxias do Sul is a strategic action to reduce the city's reliance on traditional energy sources, which contribute significantly to stationary energy emissions. Given the city's tropical rainforest biome, there is potential for harnessing solar energy effectively. This initiative can also enhance energy security, which is crucial given the risks associated with droughts and heatwaves. Additionally, community solar farms can provide economic benefits by reducing energy costs for residents, aligning with the city's socio-economic context of very low-income levels."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

@@ -31,8 +31,8 @@ export default class CSVDownloadService {
       "CO2 Emissions",
       "CH4 Emissions",
       "N2O Emissions",
-      "Datasource ID",
-      "DataSource name",
+      "Data source ID",
+      "Data source name",
     ];
 
     const { t } = await translationFunc(lng, "data");

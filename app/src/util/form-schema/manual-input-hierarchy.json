@@ -2342,7 +2342,7 @@
                   "vehicle-type-service-vehicles",
                   "vehicle-type-other"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -2444,7 +2444,7 @@
                   "vehicle-type-emergency-vehicles",
                   "vehicle-type-service-vehicles"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -2539,7 +2539,7 @@
             "vehicle-type-emergency-vehicles",
             "vehicle-type-service-vehicles"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {
@@ -2578,7 +2578,7 @@
                   "vehicle-type-emergency-vehicles",
                   "vehicle-type-service-vehicles"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -2640,7 +2640,7 @@
             "vehicle-type-emergency-vehicles",
             "vehicle-type-service-vehicles"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {
@@ -2666,7 +2666,7 @@
             "vehicle-type-emergency-vehicles",
             "vehicle-type-service-vehicles"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {
@@ -2726,7 +2726,7 @@
                   "vehicle-type-high-speed-trains",
                   "vehicle-type-tourist-trains"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -2812,7 +2812,7 @@
                   "vehicle-type-high-speed-trains",
                   "vehicle-type-tourist-trains"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -2905,7 +2905,7 @@
             "vehicle-type-high-speed-trains",
             "vehicle-type-tourist-trains"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {
@@ -2940,7 +2940,7 @@
                   "vehicle-type-high-speed-trains",
                   "vehicle-type-tourist-trains"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -3001,7 +3001,7 @@
             "vehicle-type-high-speed-trains",
             "vehicle-type-tourist-trains"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {
@@ -3026,7 +3026,7 @@
             "vehicle-type-high-speed-trains",
             "vehicle-type-tourist-trains"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {
@@ -3085,7 +3085,7 @@
                   "vehicle-type-marine-vessels",
                   "vehicle-type-other"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -3171,7 +3171,7 @@
                   "vehicle-type-boats",
                   "vehicle-type-marine-vessels"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -3250,7 +3250,7 @@
             "vehicle-type-boats",
             "vehicle-type-marine-vessels"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {
@@ -3284,7 +3284,7 @@
                   "vehicle-type-boats",
                   "vehicle-type-marine-vessels"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -3344,7 +3344,7 @@
             "vehicle-type-boats",
             "vehicle-type-marine-vessels"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {
@@ -3368,7 +3368,7 @@
             "vehicle-type-boats",
             "vehicle-type-marine-vessels"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {
@@ -3431,7 +3431,7 @@
                   "vehicle-type-national-flights",
                   "vehicle-type-international-flights"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -3520,7 +3520,7 @@
                   "vehicle-type-national-flights",
                   "vehicle-type-international-flights"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -3607,7 +3607,7 @@
             "vehicle-type-national-flights",
             "vehicle-type-international-flights"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {
@@ -3647,7 +3647,7 @@
                   "vehicle-type-national-flights",
                   "vehicle-type-international-flights"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -3710,7 +3710,7 @@
             "vehicle-type-national-flights",
             "vehicle-type-international-flights"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {
@@ -3737,7 +3737,7 @@
             "vehicle-type-national-flights",
             "vehicle-type-international-flights"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {
@@ -3796,7 +3796,7 @@
                   "vehicle-type-mining-equipment",
                   "vehicle-type-forestry-equipment"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -3878,7 +3878,7 @@
             "vehicle-type-mining-equipment",
             "vehicle-type-forestry-equipment"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {
@@ -3916,7 +3916,7 @@
                   "vehicle-type-mining-equipment",
                   "vehicle-type-forestry-equipment"
                 ],
-                "exclusive": "type-all",
+                "exclusive": "vehicle-type-all",
                 "multiselect": true
               },
               {
@@ -3977,7 +3977,7 @@
             "vehicle-type-mining-equipment",
             "vehicle-type-forestry-equipment"
           ],
-          "exclusive": "type-all",
+          "exclusive": "vehicle-type-all",
           "multiselect": true
         },
         {

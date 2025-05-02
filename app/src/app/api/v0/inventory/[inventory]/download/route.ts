@@ -133,10 +133,12 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
   switch (req.nextUrl.searchParams.get("format")?.toLowerCase()) {
     case "csv":
-      body = await CSVDownloadService.downloadCSV(
-        output as InventoryWithInventoryValuesAndActivityValues,
-        lng,
-      );
+      const { headerTitles, inventoryLines } =
+        await CSVDownloadService.extractCSVData(
+          output as InventoryWithInventoryValuesAndActivityValues,
+          lng,
+        );
+      body = CSVDownloadService.stringifyCSV(headerTitles, inventoryLines);
       headers = {
         "Content-Type": "text/csv",
         "Content-Disposition": `attachment; filename="inventory-${inventory.city.locode}-${inventory.year}.csv"`,

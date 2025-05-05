@@ -40,7 +40,7 @@ jobs:
           cd app
           for lang in de es pt; do
             git checkout -b "i18n/$lang/$EXTRA"
-            node scripts/update-translations.js $lang
+            node scripts/update-translation.js $lang
             git add app/src/i18n/locales/$lang
             git commit -m "i18n: Update translations for $lang"
             git push --set-upstream origin "i18n/$lang/$EXTRA"

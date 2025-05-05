@@ -116,5 +116,6 @@
   "project-city-count-limit-exceeded": "Limite de contagem de cidades do projeto excedido, por favor, aumente o limite de contagem de cidades do seu projeto para completar a transferência",
   "city-transfer-error": "A transferência da cidade falhou",
   "search-city-placeholder": "Pesquisar cidade",
-  "n-a": "N/D"
+  "n-a": "N/D",
+  "cities": "Cidades"
 }

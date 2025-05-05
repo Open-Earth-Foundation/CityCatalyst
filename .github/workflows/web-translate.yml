@@ -36,12 +36,12 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.TRANSLATION_OPENAI_API_KEY }}
           EXTRA: ${{ github.sha }}
+        working-directory: ./app
         run: |
-          cd app
           for lang in de es pt; do
             git checkout -b "i18n/$lang/$EXTRA"
             node scripts/update-translation.js $lang
-            git add app/src/i18n/locales/$lang
+            git add src/i18n/locales/$lang
             git commit -m "i18n: Update translations for $lang"
             git push --set-upstream origin "i18n/$lang/$EXTRA"
             gh pr create --base develop --title "i18n: Update translations for $lang" --body "This PR updates the translations for the $lang language."

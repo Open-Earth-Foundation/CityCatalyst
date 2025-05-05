@@ -8,6 +8,8 @@ export interface OrganizationAttributes {
   contactEmail?: string;
   created?: Date;
   lastUpdated?: Date;
+  themeId?: string;
+  logoUrl?: string;
 }
 
 export type OrganizationPk = "organizationId";
@@ -27,7 +29,10 @@ export class Organization
   contactEmail?: string;
   created?: Date;
   lastUpdated?: Date;
+  themeId?: string;
+  logoUrl?: string;
 
+  theme: Theme;
   projects!: Project[];
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Organization {
@@ -48,6 +53,7 @@ export class Organization
           allowNull: false,
           field: "contact_email",
         },
+        themeId: {},
       },
       {
         sequelize,

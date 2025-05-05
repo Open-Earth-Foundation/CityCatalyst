@@ -8,6 +8,8 @@ import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { whiteLabelSchema } from "@/util/validation";
 import { readFile } from "node:fs/promises";
+import { Organization } from "@/models/Organization";
+import { db } from "@/models";
 
 export async function parseMultipartForm<T extends z.ZodRawShape>(
   req: Request,
@@ -33,15 +35,20 @@ export async function parseMultipartForm<T extends z.ZodRawShape>(
   });
 }
 
-export const PATCH = apiHandler(async (req, { session }) => {
+export const PATCH = apiHandler(async (req, { params, session }) => {
   if (!session) throw new createHttpError.Unauthorized();
-
+  const { organizationId } = params;
   const { fields, file } = await parseMultipartForm(req, whiteLabelSchema);
+
+  const org = await Organization.findByPk(organizationId as string);
+  if (!org) {
+    throw new createHttpError.NotFound("organization-not-found");
+  }
 
   const buffer = await readFile(file.filepath);
   const fileUploadService = new FileUploadService(
-    new S3FileStorageProvider("your-bucket", {
-      region: "your-region",
+    new S3FileStorageProvider(process.env.AWS_FILE_UPLOAD_S3_BUCKET_ID!, {
+      region: process.env.AWS_FILE_UPLOAD_REGION,
       credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
@@ -55,6 +62,18 @@ export const PATCH = apiHandler(async (req, { session }) => {
     size: file.size,
     buffer: Buffer.from(buffer),
   });
+
+  await db.models.Organization.update(
+    {
+      logoUrl: uploaded.url,
+      themeId: fields.themeId,
+    },
+    {
+      where: {
+        organizationId: organizationId as string,
+      },
+    },
+  );
 
   return NextResponse.json({ data: uploaded, themeKey: fields.themeId });
 });

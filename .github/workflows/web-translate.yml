@@ -24,7 +24,8 @@ jobs:
           cache-dependency-path: app/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
+        working-directory: ./app
 
       - name: Configure git user
         run: |
@@ -36,6 +37,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.TRANSLATION_OPENAI_API_KEY }}
           EXTRA: ${{ github.sha }}
         run: |
+          cd app
           for lang in de es pt; do
             git checkout -b "i18n/$lang/$EXTRA"
             node scripts/update-translations.js $lang

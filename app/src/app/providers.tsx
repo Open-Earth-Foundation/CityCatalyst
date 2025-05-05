@@ -1,10 +1,7 @@
 "use client";
 
 import { store } from "@/lib/store";
-// TODO enable again when dark mode is supported
-// import { Provider as ChakraProvider } from "@/components/ui/provider";
 import { ChakraProvider } from "@chakra-ui/react";
-import { ColorModeProvider } from "@chakra-ui/color-mode";
 import { SessionProvider } from "next-auth/react";
 import localFont from "next/font/local";
 import { Provider } from "react-redux";

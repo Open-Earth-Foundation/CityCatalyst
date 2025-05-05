@@ -1,28 +1,16 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import { Box, Heading, HStack, Tabs, Text } from "@chakra-ui/react";
-import { useTheme } from "next-themes";
 import Link from "next/link";
 import AccountSettingsTab from "./account/account-settings-tab";
 
-const OrganizationSettingsPage = ({
+const AccountSettingsPage = ({
   params: { lng },
 }: {
   params: { lng: string };
 }) => {
   const { t } = useTranslation(lng, "account-settings");
-
-  const { theme, setTheme } = useTheme();
-
-  type theme =
-    | "blue_theme"
-    | "light_brown_theme"
-    | "dark_orange_theme"
-    | "green_theme"
-    | "light_blue_theme"
-    | "violet_theme";
 
   return (
     <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
@@ -109,4 +97,4 @@ const OrganizationSettingsPage = ({
   );
 };
 
-export default OrganizationSettingsPage;
+export default AccountSettingsPage;

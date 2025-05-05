@@ -11,7 +11,16 @@ import UserService from "@/backend/UserService";
 export const GET = apiHandler(async (req, { params, session }) => {
   const lng = req.nextUrl.searchParams.get("lng") || "en";
 
-  const projectId = z.string().uuid().parse(params.projectId);
+  let projectId: string;
+  try {
+    projectId = z.string().uuid().parse(params.projectId);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    throw new Error(
+      `Invalid project ID format: ${params.projectId}. ${message}`,
+    );
+  }
+
   // TODO also allow project admins to bulk download all inventories?
   UserService.ensureIsAdmin(session);
 
@@ -31,6 +40,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
   });
 
   let expandedHeaderTitles: string[] = [];
+
   const allInventoryLines = await Promise.all(
     inventories.map(async (inventory) => {
       const { output } = await InventoryDownloadService.queryInventoryData(
@@ -44,8 +54,16 @@ export const GET = apiHandler(async (req, { params, session }) => {
           lng,
         );
 
-      if (headerTitles.length > 0) {
-        expandedHeaderTitles = headerTitles;
+      if (headerTitles.length > 0 && expandedHeaderTitles.length === 0) {
+        expandedHeaderTitles = [
+          "City Name",
+          "Locode",
+          "Region Name",
+          "Country Name",
+          "Inventory ID",
+          "Inventory Year",
+          ...headerTitles,
+        ];
       }
 
       const expandedInventoryLines = inventoryLines.map((line) => {
@@ -62,14 +80,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
       return expandedInventoryLines;
     }),
-  );
-  expandedHeaderTitles.unshift(
-    "City Name",
-    "Locode",
-    "Region Name",
-    "Country Name",
-    "Inventory ID",
-    "Inventory Year",
   );
 
   const mergedInventoryLines = allInventoryLines.flat();

@@ -6,6 +6,9 @@ import createHttpError from "http-errors";
 import { findClosestYearToInventory, PopulationEntry } from "@/util/helpers";
 import { InventoryResponse } from "@/util/types";
 
+// Maximum years to look forward/backward for population data
+const MAX_POPULATION_YEAR_DIFFERENCE = 10;
+
 export default class InventoryDownloadService {
   public static async queryInventoryData(
     inventoryId: string,
@@ -62,14 +65,13 @@ export default class InventoryDownloadService {
         `Inventory ${inventory.inventoryId} is missing a year number`,
       );
     }
-    const MAX_YEARS_DIFFERENCE = 10;
     const populationEntries = await db.models.Population.findAll({
       attributes: ["year", "population"],
       where: {
         cityId: inventory.cityId,
         year: {
-          [Op.gte]: inventory.year - MAX_YEARS_DIFFERENCE,
-          [Op.lte]: inventory.year + MAX_YEARS_DIFFERENCE,
+          [Op.gte]: inventory.year - MAX_POPULATION_YEAR_DIFFERENCE,
+          [Op.lte]: inventory.year + MAX_POPULATION_YEAR_DIFFERENCE,
         },
         population: {
           [Op.ne]: null,
@@ -81,7 +83,7 @@ export default class InventoryDownloadService {
     const population = findClosestYearToInventory(
       populationEntries as PopulationEntry[],
       inventory.year,
-      MAX_YEARS_DIFFERENCE,
+      MAX_POPULATION_YEAR_DIFFERENCE,
     );
     if (!population) {
       throw new createHttpError.NotFound(

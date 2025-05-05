@@ -40,6 +40,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Roles } from "@/util/types";
 import ProjectDrawer from "@/components/HomePage/ProjectDrawer";
+import { TbSettingsCog } from "react-icons/tb";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -311,7 +312,7 @@ export function NavigationBar({
                           color={
                             userMenuHighlight === "admin"
                               ? "background.neutral"
-                              : "content.tertiary"
+                              : "content.alternative"
                           }
                           mr={4}
                         />
@@ -332,7 +333,7 @@ export function NavigationBar({
                           color={
                             userMenuHighlight === "cities"
                               ? "background.neutral"
-                              : "content.tertiary"
+                              : "content.alternative"
                           }
                           mr={4}
                         />
@@ -363,7 +364,7 @@ export function NavigationBar({
                         color={
                           userMenuHighlight === "settings"
                             ? "background.neutral"
-                            : "content.tertiary"
+                            : "content.alternative"
                         }
                         mr={4}
                       />
@@ -371,6 +372,29 @@ export function NavigationBar({
                     </Box>
                   </MenuItem>
                 )}
+                <MenuItem
+                  paddingTop="12px"
+                  paddingBottom="12px"
+                  value="account-settings"
+                  px="16px"
+                  onClick={() => {
+                    router.push(`/account-settings`);
+                  }}
+                >
+                  <Box display="flex" alignItems="center">
+                    <Icon
+                      as={TbSettingsCog}
+                      boxSize={6}
+                      color={
+                        userMenuHighlight === "account-settings"
+                          ? "background.neutral"
+                          : "content.alternative"
+                      }
+                      mr={4}
+                    />
+                    <Text fontSize="title.md">{t("account-settings")}</Text>
+                  </Box>
+                </MenuItem>
                 <MenuItem
                   paddingTop="12px"
                   paddingBottom="12px"

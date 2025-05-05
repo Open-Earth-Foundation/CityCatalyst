@@ -1,0 +1,18 @@
+{
+  "account-settings": "Account Settings",
+  "account": "Account",
+  "brand-settings": "Brand Settings",
+  "brand-settings-description": "Set up your own brand",
+  "logo": "Logo",
+  "logo-recommendation": "We recommend using a horizontal logo with a transparent background in a png format",
+  "primary-color": "Primary Color",
+  "primary-color-recommendation": "We recommend using the default",
+  "blue_theme": "Blue (Default)",
+  "light_brown_theme": "Light Brown",
+  "dark_orange_theme": "Dark Orange",
+  "light_blue_theme": "Light Blue",
+  "violet_theme": "Violet",
+  "green": "Green",
+  "go-back": "Go Back",
+  "save-changes": "Save Changes"
+}

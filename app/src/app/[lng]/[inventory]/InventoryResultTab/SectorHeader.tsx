@@ -16,7 +16,7 @@ export const SectorHeader = ({
   dataForSector?: SectorEmission;
 }) => (
   <HStack alignItems={"start"}>
-    <Icon as={icon} height="24px" w="24px" color="brand.secondary" />
+    <Icon as={icon} height="24px" w="24px" color="interactive.secondary" />
     <VStack alignItems={"start"} gap={0}>
       <Text fontSize="14px" fontWeight="500" fontStyle="normal">
         {capitalizeFirstLetter(t("sector"))} -{" "}

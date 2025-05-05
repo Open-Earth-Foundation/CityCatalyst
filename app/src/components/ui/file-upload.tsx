@@ -47,10 +47,10 @@ export const FileUploadDropzone = React.forwardRef<
   return (
     <ChakraFileUpload.Dropzone
       ref={ref}
-      {...rest}
       border="none"
       h="206px"
       bg="none"
+      {...rest}
     >
       <ChakraFileUpload.DropzoneContent>
         <div>{label}</div>

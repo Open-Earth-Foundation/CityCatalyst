@@ -681,7 +681,7 @@ export default function AddDataSteps({
               <Icon
                 as={currentStep.icon}
                 boxSize={8}
-                color="brand.secondary"
+                color="interactive.secondary"
                 mr={4}
               />
               <div className="space-y-4 w-[100%]">

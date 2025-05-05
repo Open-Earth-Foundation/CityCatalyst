@@ -56,7 +56,11 @@ export function Hero({
 
   return (
     <>
-      <Box bg="brand.primary" className="w-full h-[491px] pt-[150px]" px={8}>
+      <Box
+        bg="content.alternative"
+        className="w-full h-[491px] pt-[150px]"
+        px={8}
+      >
         <Box className="flex mx-auto max-w-full w-[1090px]">
           <Box className="w-full h-[240px] flex flex-col justify-center">
             <Box className="flex h-[240px]">
@@ -70,13 +74,16 @@ export function Hero({
                   {!inventory ? <>{t("welcome")}</> : null}
                 </Text>
                 <Box className="flex flex-col gap-2">
-                  {!isPublic && hasFeatureFlag(FeatureFlags.PROJECT_OVERVIEW_ENABLED) ? (
+                  {!isPublic &&
+                  hasFeatureFlag(FeatureFlags.PROJECT_OVERVIEW_ENABLED) ? (
                     <Link
                       href={`/public/project/${inventory?.city?.project?.projectId}`}
                     >
                       <ProjectTitle inventory={inventory} />
                     </Link>
-                  ) : <ProjectTitle inventory={inventory} />}
+                  ) : (
+                    <ProjectTitle inventory={inventory} />
+                  )}
                   <Box className="flex items-center gap-4">
                     {inventory?.city ? (
                       <>
@@ -302,14 +309,15 @@ export function Hero({
   );
 }
 
-
 function ProjectTitle({ inventory }: { inventory: InventoryResponse }) {
-  return <Text
-    fontSize="title.md"
-    w="max-content"
-    fontWeight="semibold"
-    color="white"
-  >
-    {inventory?.city?.project?.name}
-  </Text>;
+  return (
+    <Text
+      fontSize="title.md"
+      w="max-content"
+      fontWeight="semibold"
+      color="white"
+    >
+      {inventory?.city?.project?.name}
+    </Text>
+  );
 }

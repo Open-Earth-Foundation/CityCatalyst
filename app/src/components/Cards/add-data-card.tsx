@@ -48,7 +48,12 @@ function AddDataCard({
       <VStack justify="space-between" gap="24px" height="100%">
         <Box className="flex flex-col gap-6">
           <VStack align="left" display="flex" gap="24px">
-            <Icon as={icon} height="32px" w="32px" color="brand.secondary" />
+            <Icon
+              as={icon}
+              height="32px"
+              w="32px"
+              color="content.alternative"
+            />
             <Heading fontSize="title.lg">{title}</Heading>
           </VStack>
           <Separator borderColor="border.overlay" />

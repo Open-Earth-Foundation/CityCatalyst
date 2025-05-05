@@ -148,10 +148,10 @@ export const tabsRecipe = defineRecipe({
     true: {
       line: {
         tab: {
-          borderColor: "#E6E7FF",
+          borderColor: "interactive.secondary",
           _selected: {
             color: "content.link",
-            borderColor: "interactive.secondary",
+            borderColor: "content.link",
             fontWeight: "bold",
           },
         },

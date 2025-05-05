@@ -1254,5 +1254,7 @@
   "type-surface-mining": "Tagebau",
   "type-post-mining": "Nach dem Bergbau",
   "type-flaring-recovered-ch4": "Ausflammen von zurückgewonnenem CH4",
-  "type-abandoned-mines": "Verlassene Minen"
+  "type-abandoned-mines": "Verlassene Minen",
+  "vehicle-type-national-flights": "Inlandsflüge",
+  "vehicle-type-international-flights": "Internationale Flüge"
 }

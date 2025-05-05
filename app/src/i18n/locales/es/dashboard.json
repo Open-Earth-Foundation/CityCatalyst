@@ -189,5 +189,8 @@
   "project-to-share": "Selecciona qué proyecto quieres compartir",
   "upgrade-plan-city-limit-heading": "¿Necesitas actualizar tu plan?",
   "upgrade-plan-city-limit-text": "Parece que has alcanzado el límite de ciudades que se pueden agregar a este proyecto. Para actualizar tu plan, por favor contacta a <mail>info@openearth.com</mail>.",
-  "tab-cap-title": "Priorización de la acción climática"
+  "tab-cap-title": "Priorización de la acción climática",
+  "dashboard": "Tablero",
+  "about": "Acerca de",
+  "collaborators": "Colaboradores"
 }

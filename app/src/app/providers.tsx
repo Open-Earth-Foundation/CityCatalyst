@@ -58,6 +58,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         `}
       </style>
       <ThemeProvider
+        defaultTheme="blue_theme"
         themes={[
           "blue_theme",
           "light_brown_theme",

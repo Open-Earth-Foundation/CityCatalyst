@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum } from "./enums";
 import { OrganizationRole } from "@/util/types";
+import formidable, { File } from "formidable";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -309,3 +310,7 @@ export const transferCitiesRequest = z.object({
 });
 
 export type TransferCitiesRequest = z.infer<typeof transferCitiesRequest>;
+
+export const whiteLabelSchema = z.object({
+  themeId: z.string().min(1, "themeKey is required"),
+});

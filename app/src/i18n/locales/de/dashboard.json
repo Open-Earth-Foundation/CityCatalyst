@@ -186,5 +186,8 @@
   "project-to-share": "Wählen Sie aus, welches Projekt Sie teilen möchten",
   "upgrade-plan-city-limit-heading": "Müssen Sie Ihren Tarif aktualisieren?",
   "upgrade-plan-city-limit-text": "Es scheint, dass Sie die Grenze der Städte erreicht haben, die zu diesem Projekt hinzugefügt werden können. Um Ihren Plan zu aktualisieren, wenden Sie sich bitte an <mail>info@openearth.com</mail>.",
-  "tab-cap-title": "Priorisierung von Klimaschutzmaßnahmen"
+  "tab-cap-title": "Priorisierung von Klimaschutzmaßnahmen",
+  "dashboard": "Armaturenbrett",
+  "about": "Über",
+  "collaborators": "Mitarbeiter"
 }

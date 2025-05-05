@@ -116,5 +116,6 @@
   "project-city-count-limit-exceeded": "Projekt-Stadtanzahl-Limit überschritten, bitte erweitern Sie das Stadtanzahl-Limit Ihres Projekts, um die Übertragung abzuschließen",
   "city-transfer-error": "Stadtübertragung fehlgeschlagen",
   "search-city-placeholder": "Stadt suchen",
-  "n-a": "N/V"
+  "n-a": "N/V",
+  "cities": "Städte"
 }

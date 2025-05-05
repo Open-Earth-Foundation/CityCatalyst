@@ -7,7 +7,7 @@
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
+        "explanation": "Implementing agroforestry systems in Coxim is a high priority due to the city's significant land use emissions and its location within a grassland/savanna biome. Agroforestry can help restore degraded lands, enhance biodiversity, and sequester carbon, directly addressing the city's largest source of greenhouse gas emissions. Additionally, this approach can improve resilience to droughts, which are a key climate risk for Coxim, by increasing soil moisture retention and supporting food security. The integration of trees and crops also offers socio-economic benefits for local communities, making it a holistic solution for both environmental and community well-being."
     },
     {
         "locode": "BR COX",
@@ -17,7 +17,7 @@
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
+        "explanation": "Promoting urban reforestation and green corridors is a significant priority for Coxim due to its grassland/savanna biome and the high impact of droughts and heatwaves on biodiversity and public health. Increasing green spaces can help mitigate the urban heat island effect, improve air quality, and enhance resilience to climate hazards such as heatwaves. Additionally, reforestation supports biodiversity, which is particularly important given the high risk to local ecosystems. This action also contributes to carbon sequestration, helping to address the city's substantial land use emissions."
     },
     {
         "locode": "BR COX",
@@ -27,7 +27,7 @@
         "actionId": "icare_0134",
         "actionName": "Strengthen Mechanisms for Deforestation Control",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
+        "explanation": "Strengthening mechanisms for deforestation control is a significant priority for Coxim due to the city's extremely high land use emissions, which are the largest contributor to its total greenhouse gas emissions. The region's grassland and savanna biome is particularly vulnerable to biodiversity loss, as indicated by high climate risk scores related to droughts and heatwaves. Effective deforestation control can help preserve local ecosystems, protect biodiversity, and reduce emissions, supporting both environmental sustainability and climate resilience. This action also aligns with the need to address key climate risks impacting water resources and food security in the area."
     },
     {
         "locode": "BR COX",
@@ -37,7 +37,7 @@
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
+        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) is important for Coxim due to its vast area, low population density, and significant land use emissions. PES programs can incentivize landowners to conserve natural habitats, restore degraded areas, and adopt sustainable land management practices, which is crucial in a grassland/savanna biome. Given that land use is the largest source of emissions in Coxim, this action directly addresses a key driver of the city's environmental impact. Additionally, PES can help protect biodiversity and water resources, both of which are at risk from droughts and other climate hazards in the region."
     },
     {
         "locode": "BR COX",
@@ -47,7 +47,7 @@
         "actionId": "icare_0129",
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
+        "explanation": "Facilitating technology transfer for conservation practices is important for Coxim due to its vast area, low population density, and significant land use emissions. The city is located in a grassland/savanna biome, making it particularly sensitive to biodiversity loss and land degradation, especially under the threat of droughts. By adopting advanced conservation technologies, Coxim can better protect its natural resources, enhance ecosystem resilience, and reduce emissions from land use. This action also supports long-term sustainability and helps mitigate the impacts of climate hazards identified in the region."
     },
     {
         "locode": "BR COX",
@@ -57,7 +57,7 @@
         "actionId": "icare_0130",
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
+        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions is important for Coxim due to its large rural area and the significant role of land use in the city's overall emissions. By providing technical support and education to rural producers, the city can promote sustainable agricultural practices, which can help reduce land use emissions and improve resilience to climate hazards such as droughts. These actions also support food security and biodiversity, both of which are identified as key areas at risk in Coxim. Strengthening rural extension services can empower local communities to adapt to changing environmental conditions and enhance their livelihoods."
     },
     {
         "locode": "BR COX",
@@ -67,7 +67,7 @@
         "actionId": "icare_0100",
         "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
+        "explanation": "Supporting regenerative agriculture practices is important for Coxim due to its location in a grassland/savanna biome and the significant land use emissions the city faces. Regenerative agriculture can help restore soil health, increase biodiversity, and improve water retention, which is especially relevant given the city's vulnerability to droughts and risks to water resources and food security. By adopting these practices, Coxim can reduce its environmental impact while enhancing the resilience of its agricultural sector. This action also aligns with the need to protect biodiversity, which is at high risk from climate hazards in the region."
     },
     {
         "locode": "BR COX",
@@ -77,7 +77,7 @@
         "actionId": "icare_0096",
         "actionName": "Promote Organic Farming",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
+        "explanation": "Promoting organic farming in Coxim is important due to the city's location in a grassland/savanna biome, where sustainable agricultural practices can help preserve biodiversity and soil health. The region faces significant risks from droughts, which threaten both water resources and food security, making resilient farming methods a priority. Organic farming reduces reliance on chemical inputs, which can benefit local water quality and public health. Additionally, this approach can help maintain ecosystem services and support long-term agricultural productivity in the face of climate hazards."
     },
     {
         "locode": "BR COX",
@@ -87,7 +87,7 @@
         "actionId": "icare_0102",
         "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
+        "explanation": "Promoting sustainable agricultural practices is particularly important for Coxim, given its location in a grassland/savanna biome and the significant impact of land use emissions on the city's total greenhouse gas output. Sustainable agriculture can help reduce land degradation, preserve biodiversity, and improve resilience to droughts, which are a key climate risk for the region. Additionally, these practices can support food security and the livelihoods of local farmers, while also contributing to long-term environmental health. Implementing this action aligns with the city's need to address both environmental and socio-economic challenges."
     },
     {
         "locode": "BR COX",
@@ -97,7 +97,7 @@
         "actionId": "icare_0084",
         "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
+        "explanation": "Creating incentives for agroforestry practices in livestock systems is particularly relevant for Coxim, given its large area, low population density, and significant land use emissions. Agroforestry can help restore degraded grassland and savanna biomes, enhance biodiversity, and sequester carbon, directly addressing the city's high land use emissions. Additionally, integrating trees into livestock systems can improve resilience to droughts, which are a key climate risk for Coxim, and support food security. This action also aligns with the region's rural character and can provide co-benefits such as improved soil health and diversified farmer income."
     },
     {
         "locode": "BR COX",
@@ -107,7 +107,7 @@
         "actionId": "icare_0101",
         "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
+        "explanation": "Encouraging the use of low-emission agricultural machinery in Coxim is important due to the city's large area and its location within a grassland/savanna biome, where agriculture likely plays a significant role. Reducing emissions from agricultural activities can help address the city's high land use emissions, which are a major contributor to its overall greenhouse gas profile. This action also supports the preservation of local biodiversity, which is at risk from both droughts and heatwaves. Promoting cleaner technology in agriculture can contribute to long-term sustainability and resilience in the face of climate-related hazards."
     },
     {
         "locode": "BR COX",
@@ -117,7 +117,7 @@
         "actionId": "icare_0127",
         "actionName": "Accelerate Environmental Regularization of Rural Properties",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
+        "explanation": "Accelerating the environmental regularization of rural properties is important for Coxim due to its vast area and significant land use emissions, which are the largest contributor to the city's total greenhouse gas emissions. Ensuring rural properties comply with environmental regulations can help protect the grassland and savanna biome, support biodiversity, and reduce deforestation. This action also aligns with the need to address drought and biodiversity risks, which are notable climate hazards for the region. By promoting sustainable land management, Coxim can enhance ecosystem resilience and contribute to long-term environmental and economic stability."
     },
     {
         "locode": "BR COX",
@@ -127,7 +127,7 @@
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases can strengthen Coxim's food security and support sustainable agricultural practices. Given the city's vulnerability to droughts, which threaten both water resources and food security, fostering resilient local food systems is especially important. This action also promotes local economic development and reduces emissions associated with long-distance food transport. By supporting agroecological producers, Coxim can enhance biodiversity and build community resilience to climate-related hazards."
     },
     {
         "locode": "BR COX",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0061",
         "actionName": "Soil Carbon Management in Croplands and Grasslands",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
+        "explanation": "Soil Carbon Management in Croplands and Grasslands is particularly relevant for Coxim, given its vast area, low population density, and location within a grassland/savanna biome. The city's land use emissions are extremely high, indicating that land management practices significantly impact its overall greenhouse gas emissions. Implementing soil carbon management can help sequester carbon, improve soil health, and enhance resilience to droughts, which are a key climate risk for Coxim. This action also supports biodiversity and long-term agricultural productivity, making it a strategic priority for both climate mitigation and adaptation in the region."
     },
     {
         "locode": "BR COX",
@@ -147,7 +147,7 @@
         "actionId": "icare_0132",
         "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
+        "explanation": "Encouraging local agroecological production and short supply chains is important for Coxim due to its vulnerability to droughts, which threaten both water resources and food security. By promoting sustainable agricultural practices and reducing dependence on long supply chains, the city can enhance local food resilience and support biodiversity in its grassland/savanna biome. This action also helps reduce transportation emissions, which are significant in Coxim, and strengthens the local economy by supporting small producers. Overall, it addresses key climate risks while fostering community well-being and environmental sustainability."
     },
     {
         "locode": "BR COX",
@@ -157,7 +157,7 @@
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
+        "explanation": "Supporting agroecological certification programs in Coxim is important due to the city's location in a grassland/savanna biome and its significant land use emissions. Promoting sustainable agricultural practices can help reduce environmental impacts, protect biodiversity, and improve soil and water conservation. Additionally, these programs can enhance food security and resilience to droughts, which are notable risks for the region. Encouraging agroecology also supports local farmers and can contribute to long-term economic and environmental sustainability."
     },
     {
         "locode": "BR COX",
@@ -167,7 +167,7 @@
         "actionId": "icare_0085",
         "actionName": "Promote the Adoption of Agroecological Pest Control",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
+        "explanation": "Promoting the adoption of agroecological pest control in Coxim is important due to the city's location in a grassland/savanna biome, where biodiversity is at risk from both droughts and heatwaves. Agroecological methods can help maintain ecosystem health and resilience, supporting food security in the face of climate hazards. This approach reduces reliance on chemical pesticides, which can harm local biodiversity and water resources. By encouraging sustainable pest management, Coxim can better protect its agricultural productivity and natural environment."
     },
     {
         "locode": "BR COX",
@@ -177,7 +177,7 @@
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
+        "explanation": "Supporting the implementation of ecological fiscal incentives in Coxim is important due to the city's significant land use emissions and its location within a grassland/savanna biome. These incentives can encourage sustainable land management practices, which are crucial for reducing emissions and preserving biodiversity, especially given the high risk to biodiversity from droughts. By promoting conservation and responsible land use, the city can address both environmental and climate risks. Additionally, such incentives can help maintain ecosystem services that support water resources and food security, both of which are identified as vulnerable in Coxim."
     },
     {
         "locode": "BR COX",
@@ -187,7 +187,7 @@
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
+        "explanation": "Afforestation, reforestation, and forest ecosystem restoration are important for Coxim due to its significant land use emissions, which are the largest contributor to the city's total greenhouse gas emissions. Restoring and expanding forested areas can help sequester carbon, improve biodiversity, and enhance ecosystem resilience, especially in a region characterized by grassland and savanna biomes. Additionally, these actions can help mitigate the impacts of droughts and biodiversity loss, which are notable climate risks for Coxim. Implementing this action supports both climate mitigation and adaptation goals for the city."
     },
     {
         "locode": "BR COX",
@@ -197,6 +197,6 @@
         "actionId": "c40_0042",
         "actionName": "Biodiversity Expansion",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
+        "explanation": "Biodiversity expansion is particularly important for Coxim, given its location in a grassland/savanna biome and the high risk to biodiversity from both droughts and heatwaves. The city faces significant land use emissions, indicating that land management and ecosystem health are critical issues. Enhancing biodiversity can help build resilience against climate hazards, support ecosystem services, and maintain food and water security. This action also aligns with the need to protect natural habitats and mitigate the impacts of climate change on local flora and fauna."
     }
 ]

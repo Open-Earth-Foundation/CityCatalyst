@@ -7,7 +7,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
+        "explanation": "Developing a Climate Action Plan is a crucial step for Caxias do Sul, given the city's significant risks from hazards such as floods, landslides, and public health threats. A comprehensive plan will help coordinate efforts to reduce emissions, which are currently dominated by waste, and to adapt to climate-related risks. With a large population and a tropical rainforest biome, the city needs a strategic approach to protect its residents and infrastructure. Establishing a Climate Action Plan will provide a roadmap for sustainable development and resilience in the face of climate change."
     },
     {
         "locode": "BR CXL",
@@ -17,7 +17,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
+        "explanation": "Strengthening programs for control and conservation of protected areas is a significant priority for Caxias do Sul. The city is located within a tropical rainforest biome, making biodiversity conservation crucial for maintaining ecosystem services and resilience. With high risks from hazards such as floods and landslides, well-managed protected areas can help buffer these impacts by stabilizing soils and regulating water flows. Additionally, conserving natural areas supports public health and food security by preserving clean water sources and local agriculture. This action aligns with the city's environmental context and helps build long-term climate resilience."
     },
     {
         "locode": "BR CXL",
@@ -27,7 +27,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
+        "explanation": "Establishing a plan for preparation and emergency response measures in the event of extreme weather events is crucial for Caxias do Sul. The city faces significant risks from hazards such as floods, landslides, and heatwaves, all of which can have severe impacts on public health, infrastructure, and food security. A well-developed emergency response plan will help the city minimize damage, protect vulnerable populations, and ensure a coordinated response during crises. Given the high risk scores for several hazards, proactive planning is essential to enhance resilience and safeguard the community."
     },
     {
         "locode": "BR CXL",
@@ -37,7 +37,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
+        "explanation": "Encouraging sustainable land use practices is important for Caxias do Sul due to its large area and the presence of significant environmental risks, such as floods and landslides. Sustainable land management can help reduce soil erosion, improve water retention, and mitigate the impacts of extreme weather events, which are notable hazards for the city. Additionally, these practices support biodiversity and long-term food security, both of which are identified as key areas of concern. Implementing sustainable land use can also enhance the city's resilience to climate change and protect public health by reducing environmental degradation."
     },
     {
         "locode": "BR CXL",
@@ -47,7 +47,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
+        "explanation": "Recovery of degraded areas is important for Caxias do Sul, as it can help restore ecosystem services and improve resilience to climate hazards such as floods and landslides, which are significant risks for the city. Restoring degraded land can also enhance biodiversity and contribute to better water management, both of which are relevant given the city's exposure to droughts and water resource challenges. Additionally, this action supports long-term sustainability and can provide co-benefits for public health and food security. While not the top priority, it remains a valuable step toward building a more resilient and environmentally healthy city."
     },
     {
         "locode": "BR CXL",
@@ -57,7 +57,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
+        "explanation": "Relocation and environmental restoration in vulnerable areas is important for Caxias do Sul due to the city's high risk of floods and landslides, which threaten both infrastructure and public health. The city faces some of the highest risk scores for these hazards, making vulnerable populations particularly susceptible to disaster impacts. By relocating residents from high-risk zones and restoring degraded environments, the city can reduce loss of life, property damage, and long-term social disruption. This action also supports ecosystem recovery, which can further mitigate future risks and enhance community resilience."
     },
     {
         "locode": "BR CXL",
@@ -67,7 +67,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
+        "explanation": "Implementing and enforcing building codes is particularly important for Caxias do Sul due to its high risk of floods and landslides, which threaten both infrastructure and public health. Strong building codes can help ensure that new constructions and renovations are resilient to these hazards, reducing potential damage and loss of life. Given the city's elevation and tropical rainforest biome, well-designed codes can also address issues related to heavy rainfall and soil stability. This action supports long-term urban safety and sustainability, making it a relevant priority for the city."
     },
     {
         "locode": "BR CXL",
@@ -77,7 +77,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
+        "explanation": "Improving the availability of health infrastructure is a significant priority for Caxias do Sul. The city faces high risks to public health from hazards such as floods, landslides, and diseases, all of which have been identified as having very high normalized risk scores. Strengthening health infrastructure will enhance the city's capacity to respond to emergencies and protect vulnerable populations during climate-related events. This action is crucial for building resilience and ensuring the well-being of residents in the face of increasing climate risks."
     },
     {
         "locode": "BR CXL",
@@ -87,7 +87,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
+        "explanation": "The maintenance and revitalization of riparian forests is crucial for Caxias do Sul, given its vulnerability to floods and landslides, which pose significant risks to public health and infrastructure. Healthy riparian forests help stabilize riverbanks, reduce soil erosion, and improve water quality, all of which are essential for mitigating the impacts of extreme weather events. Additionally, these forests support local biodiversity and enhance ecosystem resilience in the tropical rainforest biome. Prioritizing this action can help safeguard the city’s natural resources and protect its residents from climate-related hazards."
     },
     {
         "locode": "BR CXL",
@@ -97,7 +97,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations is important for Caxias do Sul due to its significant risks from floods and landslides, as indicated by high hazard scores. Real-time monitoring can provide early warnings, helping to protect public health and infrastructure from these climate-related threats. The city's large area and population make effective water resource management crucial for resilience. This action supports proactive disaster response and long-term adaptation to changing climate conditions."
     },
     {
         "locode": "BR CXL",
@@ -107,7 +107,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) is important for Caxias do Sul, as these zones often house vulnerable populations who may be disproportionately affected by climate hazards such as floods and landslides. The city faces high risks from these hazards, which can severely impact public health and infrastructure. By focusing on ZEIS, the city can enhance resilience, improve living conditions, and reduce the vulnerability of at-risk communities. This action also supports social equity by prioritizing areas with greater social needs."
     },
     {
         "locode": "BR CXL",
@@ -117,7 +117,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
+        "explanation": "Implementing urban gardens in Caxias do Sul can enhance local food security, which is particularly important given the city's moderate risk from droughts and floods. Urban gardens can also help mitigate the impacts of heatwaves by increasing green spaces, improving air quality, and providing cooling effects. Additionally, these gardens foster community engagement and can contribute to public health by promoting access to fresh produce. Given the city's low levels of inadequate water and sanitation access, urban gardens are likely to be sustainable and beneficial for residents."
     },
     {
         "locode": "BR CXL",
@@ -127,7 +127,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
+        "explanation": "Strengthening the healthcare network to attend to climate victims is particularly important for Caxias do Sul due to its high risk of climate-related hazards such as floods, landslides, and disease outbreaks. The city faces significant threats to public health from these hazards, as indicated by high risk scores for floods, landslides, and diseases. Enhancing healthcare capacity will improve the city's ability to respond to emergencies and protect vulnerable populations during climate events. This action will also help reduce long-term health impacts and support community resilience in the face of increasing climate risks."
     },
     {
         "locode": "BR CXL",
@@ -137,7 +137,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
+        "explanation": "Establishing the Municipal Climate Change Forum in Caxias do Sul is important for fostering collaboration among stakeholders, including government, civil society, and the private sector. The city faces significant climate risks, such as floods, landslides, and public health threats, which require coordinated and informed responses. A dedicated forum can facilitate knowledge sharing, policy development, and the integration of climate adaptation and mitigation strategies. This action helps ensure that local climate initiatives are inclusive, transparent, and responsive to the city's specific vulnerabilities."
     },
     {
         "locode": "BR CXL",
@@ -147,7 +147,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
+        "explanation": "Recovery and preservation of green areas is important for Caxias do Sul due to its vulnerability to hazards such as floods, landslides, and heatwaves. Green areas help absorb excess rainwater, reducing flood and landslide risks, which are significant threats to both infrastructure and public health in the city. Additionally, preserving green spaces supports biodiversity and can help mitigate the urban heat island effect, improving overall resilience. This action also contributes to the city's environmental quality and residents' well-being."
     },
     {
         "locode": "BR CXL",
@@ -157,7 +157,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
+        "explanation": "Farm and fishery improvements are important for Caxias do Sul, especially given the significant risks to food security from both droughts and floods. Enhancing agricultural and fishery practices can help build resilience against these climate hazards, ensuring stable food supplies for the population. Such improvements can also support local livelihoods and contribute to the city's overall sustainability. Given the city's exposure to climate-related risks, investing in this area is a proactive step toward long-term adaptation."
     },
     {
         "locode": "BR CXL",
@@ -167,7 +167,7 @@
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
+        "explanation": "Implementing permeable pavements and increasing green areas in roadways is important for Caxias do Sul due to its high risk of floods and landslides, which threaten both infrastructure and public health. Permeable surfaces help manage stormwater, reducing runoff and mitigating flood impacts. Expanding green areas also supports urban cooling and biodiversity, which is valuable in a tropical rainforest biome. These measures can enhance the city's resilience to climate hazards while improving the quality of urban life."
     },
     {
         "locode": "BR CXL",
@@ -177,7 +177,7 @@
         "actionId": "icare_0172",
         "actionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
+        "explanation": "Developing and implementing the Municipal Risk Reduction Plan (PMRR) is crucial for Caxias do Sul due to its significant exposure to climate hazards such as floods, landslides, and droughts. Identifying vulnerable population groups ensures that resources and interventions are targeted where they are most needed, enhancing community resilience. Given the high risk scores for public health and infrastructure impacts from these hazards, a comprehensive risk reduction plan will help the city prepare for and mitigate the effects of climate-related disasters. This proactive approach supports the safety and well-being of residents, especially those most at risk."
     },
     {
         "locode": "BR CXL",
@@ -187,7 +187,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
+        "explanation": "Access to health care is a significant priority for Caxias do Sul due to the high risks posed by climate-related hazards such as floods, landslides, and disease outbreaks. The city faces elevated risks to public health from these hazards, as indicated by the high normalized risk scores for public health impacts. Ensuring robust access to health care will help the city respond effectively to emergencies and protect vulnerable populations. Strengthening health care systems also supports overall community resilience in the face of climate change."
     },
     {
         "locode": "BR CXL",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
+        "explanation": "Improving food storage and distribution is important for Caxias do Sul, especially given the city's moderate risk to food security from hazards like droughts and floods. Enhanced storage and distribution systems can help ensure food availability during extreme weather events, which are a significant risk in the region. This action also supports community resilience by reducing food waste and improving access to food during disruptions. While not the highest priority, it addresses a key vulnerability and contributes to overall food security."
     }
 ]

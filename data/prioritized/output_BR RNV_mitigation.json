@@ -1,202 +1,202 @@
 [
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
+        "explanation": "Implementing an urban toll in Ribeirão das Neves is a high priority because transportation emissions are the largest contributor to the city's total greenhouse gas emissions. By introducing a toll, the city can discourage excessive car use, reduce traffic congestion, and promote the use of public transportation or non-motorized travel. This action can also help improve air quality and public health, which are significant concerns given the high risk of heatwaves and diseases. Additionally, reducing vehicle traffic can contribute to better urban mobility and overall quality of life for residents."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
+        "explanation": "Adopting biomethane in public fleets is a significant step for Ribeirão das Neves, given the city's high transportation emissions. Transitioning public vehicles to biomethane can substantially reduce greenhouse gas emissions and improve air quality, benefiting public health. This action also supports energy diversification and resilience, which is important in a region facing climate risks such as droughts and heatwaves. Implementing this measure demonstrates leadership in sustainable urban mobility and can inspire further adoption of clean technologies."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
+        "explanation": "Expanding cycling infrastructure and building accessible sidewalks in Ribeirão das Neves is important due to the city's high population density and the need for sustainable transportation options. These measures can help reduce transportation emissions, which are a significant contributor to the city's total emissions. Prioritizing climate-resilient designs is crucial, as the city faces high risks from floods, heatwaves, and landslides, all of which can impact public health and infrastructure. Improved walkability and cycling options also enhance public health and social inclusion, especially in a city with very low income levels. This action supports both climate adaptation and mitigation while improving quality of life for residents."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
+        "explanation": "Promoting bike-sharing programs, especially with electric bikes, can help reduce transportation emissions, which are a significant contributor to Ribeirão das Neves' total greenhouse gas output. Encouraging cycling also supports healthier lifestyles and can alleviate traffic congestion in urban areas. Given the city's high population density, providing accessible and sustainable mobility options is important for both environmental and public health. Electric bikes make cycling more accessible to a wider range of residents, including those who may not be able to use traditional bikes due to the city's elevation or personal limitations."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
+        "explanation": "The adoption of electric drones for last-mile deliveries in Ribeirão das Neves can help reduce transportation emissions, which are currently the largest contributor to the city's total emissions. By shifting to electric drones, the city can decrease reliance on conventional delivery vehicles, thus lowering air pollution and greenhouse gas output. This action also supports innovation and can improve delivery efficiency, especially in densely populated areas. While it may not address the most urgent climate risks directly, it contributes to the city's broader sustainability and emissions reduction goals."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
+        "explanation": "Implementing free public transportation during peak hours in Ribeirão das Neves can significantly reduce the use of individual vehicles, which is important given the city's high transportation emissions. This action can help lower air pollution and greenhouse gas emissions, contributing to improved public health, especially since the city faces high risks from heatwaves, floods, and diseases. Additionally, providing free transit supports social equity by making mobility more accessible for low-income residents. By encouraging public transport use, the city can also alleviate traffic congestion and improve overall urban mobility."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Ribeirão das Neves is a forward-thinking action that addresses both emissions reduction and urban mobility. The city has significant transportation emissions, making the transition to electric vehicles a meaningful step toward lowering its carbon footprint. On-demand systems can also improve accessibility and efficiency, especially in areas with limited public transport coverage. This action supports cleaner air and aligns with broader sustainability goals, benefiting public health and quality of life for residents."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
+        "explanation": "Promoting the use of bicycles as a regular mode of transport in Ribeirão das Neves can help reduce transportation emissions, which are currently the largest contributor to the city's total emissions. Expanding cycling infrastructure and raising awareness can encourage more residents to choose this sustainable mode of transport, improving air quality and public health. Additionally, cycling can provide affordable mobility options for the population, which is important in a city with very low income levels. This action also supports climate resilience by reducing reliance on fossil fuels and mitigating the impacts of heatwaves and air pollution."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
+        "explanation": "Expanding mass transit systems on rails, such as metros and light rail, can significantly reduce transportation emissions, which are currently the largest source of greenhouse gases in Ribeirão das Neves. Improved public transit options can also enhance mobility for residents, particularly in a city with a high population density. This action supports sustainable urban growth and can help mitigate risks associated with air pollution and traffic congestion. Additionally, reliable mass transit can improve access to jobs and services, contributing to overall social and economic well-being."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
+        "explanation": "Addressing vehicle emissions is important for Ribeirão das Neves due to the significant contribution of transportation to the city's overall greenhouse gas emissions. Reducing vehicle emissions can help improve air quality and public health, especially since the city faces high risks from heatwaves, floods, and diseases, all of which can be exacerbated by poor air quality. Additionally, targeting transportation emissions supports broader climate goals and can enhance the quality of life for residents. Implementing measures to reduce vehicle emissions can also set a foundation for sustainable urban mobility in the future."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
+        "explanation": "Encouraging renewable energy policies at the municipal level is important for Ribeirão das Neves, as it can help reduce stationary energy emissions, which are a significant part of the city's total greenhouse gas output. Transitioning to renewable energy sources also increases energy security, making the city less vulnerable to disruptions caused by climate hazards such as droughts and heatwaves. Additionally, promoting renewables can foster local economic development and create green jobs, which is particularly valuable in a city with very low income levels. This action supports long-term sustainability and resilience for the community."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0060",
         "actionName": "Introduction of modular and automated collective transport systems.",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
+        "explanation": "Introducing modular and automated collective transport systems in Ribeirão das Neves can significantly reduce transportation emissions, which are currently the largest contributor to the city's total emissions. Improved public transport options can also enhance mobility for residents, especially in a city with a high population density. Additionally, such systems can help alleviate traffic congestion and improve air quality, contributing to better public health outcomes. This action supports sustainable urban development and aligns with the city's need to address both environmental and social challenges."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
+        "explanation": "Improving waste efficiency is important for Ribeirão das Neves, as waste emissions are a significant contributor to the city's total greenhouse gas emissions. By enhancing waste management practices, the city can reduce methane and other harmful emissions, which will help mitigate climate change impacts. Additionally, better waste efficiency can improve public health and environmental quality, especially in a densely populated area. This action supports the city's broader sustainability and resilience goals."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
+        "explanation": "Increasing the attractiveness of the municipal bus system in Ribeirão das Neves is important because transportation emissions are the largest contributor to the city's total greenhouse gas emissions. By making public transport more appealing, the city can encourage residents to shift away from private vehicles, reducing both emissions and traffic congestion. Improved public transport also enhances mobility for low-income populations, supporting social equity. Additionally, better bus services can help the city adapt to climate risks by providing reliable transportation during extreme weather events."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0091",
         "actionName": "Implementation of prioritized routes for sustainable vehicles.",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
+        "explanation": "Implementing prioritized routes for sustainable vehicles in Ribeirão das Neves can help reduce transportation emissions, which are a significant contributor to the city's total greenhouse gas output. This action supports cleaner air and improved public health, especially important given the high risks from heatwaves, floods, and diseases. By encouraging the use of sustainable vehicles, the city can also enhance mobility options and resilience to climate impacts. Prioritizing such routes aligns with broader goals of sustainable urban development and climate adaptation."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases can strengthen food security in Ribeirão das Neves, a city facing high risks from droughts and floods. Supporting local agroecological producers helps build resilience in the food system, making it less vulnerable to climate-related disruptions. This action also promotes sustainable agricultural practices, which can benefit the local environment and economy. By focusing on local procurement, the city can reduce emissions from food transportation and foster community well-being."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0052",
         "actionName": "Develop projects for renewable energy and waste reuse",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
+        "explanation": "Developing projects for renewable energy and waste reuse is important for Ribeirão das Neves, as the city has significant emissions from both stationary energy and waste sectors. By investing in renewable energy, the city can reduce its reliance on fossil fuels and lower its greenhouse gas emissions. Waste reuse projects can help manage the substantial waste emissions, turning potential pollutants into resources. These initiatives also support long-term sustainability and can create local economic opportunities, making them a valuable priority for the city's climate and environmental goals."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0021",
         "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
+        "explanation": "Encouraging and promoting sustainable and rational use of individual motorized transportation is important for Ribeirão das Neves due to the significant contribution of transportation emissions to the city's total greenhouse gas output. By addressing personal vehicle use, the city can help reduce air pollution and improve public health, which is especially relevant given the high risk of heatwaves and diseases. Promoting alternatives such as public transit, cycling, or carpooling can also alleviate traffic congestion and enhance overall urban mobility. This action supports the city's broader goals of sustainability and resilience in the face of climate-related hazards."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "icare_0126",
         "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
+        "explanation": "Implementing green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen, is a forward-looking action that supports the decarbonization of the aviation sector. However, Ribeirão das Neves does not have significant industrial process emissions and is not a major aviation hub, so the direct impact of this action on the city's emissions profile may be limited. The city's main emission sources are transportation and waste, and its most pressing climate risks relate to public health, food security, and water resources. While this action aligns with broader sustainability goals, it is not an immediate priority for addressing the city's most urgent climate challenges."
     },
     {
         "locode": "BR RNV",
-        "cityName": "Ribeir\u00e3o das Neves",
+        "cityName": "Ribeirão das Neves",
         "region": "MG",
         "regionName": "Minas Gerais",
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
+        "explanation": "Landfill management is an important action for Ribeirão das Neves, given the city's significant waste emissions. Proper landfill management can help reduce greenhouse gas emissions, particularly methane, which is a potent contributor to climate change. Additionally, improved landfill practices can mitigate public health risks associated with improper waste disposal, which is especially relevant given the city's high vulnerability to public health impacts from hazards like floods and landslides. Effective landfill management also supports environmental protection and can enhance the overall quality of life for residents."
     }
 ]

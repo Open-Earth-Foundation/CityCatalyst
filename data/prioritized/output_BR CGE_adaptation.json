@@ -7,7 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
+        "explanation": "Establishing a plan for preparation and emergency response to extreme weather events is crucial for Contagem due to its high vulnerability to hazards such as floods, landslides, droughts, and heatwaves. The city faces significant risks to public health, infrastructure, water resources, and food security, as indicated by the high normalized risk scores for these hazards. A comprehensive emergency response plan will help protect residents, minimize damage, and ensure a coordinated approach during crises. Given the city's population density and exposure to multiple climate risks, proactive planning is essential to enhance resilience and safeguard community well-being."
     },
     {
         "locode": "BR CGE",
@@ -17,7 +17,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
+        "explanation": "Recovery of degraded areas is a significant priority for Contagem due to its high population density and the presence of grassland/savanna biomes, which are sensitive to environmental degradation. Restoring these areas can help mitigate the impacts of hazards such as floods and landslides, both of which pose very high risks to infrastructure and public health in the city. Additionally, rehabilitating degraded land supports biodiversity and enhances the city's resilience to climate change. This action also contributes to long-term sustainability and improves the quality of life for residents."
     },
     {
         "locode": "BR CGE",
@@ -27,7 +27,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
+        "explanation": "Developing a Climate Action Plan is crucial for Contagem, given its significant greenhouse gas emissions and high vulnerability to climate hazards such as droughts, floods, heatwaves, and landslides. A comprehensive plan will provide a strategic framework to address these risks, prioritize mitigation and adaptation measures, and coordinate efforts across sectors. This action is especially important for protecting public health, infrastructure, and natural resources in the face of climate change. By establishing clear goals and pathways, the city can enhance its resilience and ensure sustainable development for its population."
     },
     {
         "locode": "BR CGE",
@@ -37,7 +37,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
+        "explanation": "Strengthening programs for control and conservation of protected areas is important for Contagem due to its location in a grassland/savanna biome, which supports unique biodiversity. The city faces significant risks from droughts, floods, and heatwaves, all of which can impact natural habitats and ecosystem services. By enhancing conservation efforts, Contagem can help maintain biodiversity, improve resilience to climate hazards, and support public health. Protecting these areas also contributes to long-term sustainability and quality of life for residents."
     },
     {
         "locode": "BR CGE",
@@ -47,7 +47,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) is important for Contagem, as these zones often house vulnerable populations who may be disproportionately affected by climate hazards such as floods, landslides, and heatwaves. The city faces high risks from these hazards, which can threaten public health and infrastructure, especially in socially and economically sensitive areas. By focusing on ZEIS, the city can enhance resilience, improve living conditions, and reduce the impact of climate-related events on its most at-risk residents. This action supports social equity and helps ensure that adaptation measures reach those who need them most."
     },
     {
         "locode": "BR CGE",
@@ -57,7 +57,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
+        "explanation": "Access to health care is a significant priority for Contagem due to the city's exposure to climate-related hazards such as heatwaves, floods, and landslides, all of which pose direct risks to public health. The city faces high normalized risk scores for public health impacts from these hazards, indicating a strong need for robust health care systems to respond to emergencies and ongoing health challenges. Ensuring access to health care will help the population better cope with disease outbreaks and health complications arising from climate events. Strengthening health care access also supports the city's resilience and overall well-being in the face of increasing climate risks."
     },
     {
         "locode": "BR CGE",
@@ -67,7 +67,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
+        "explanation": "Improving food storage and distribution is important for Contagem, especially given the city's vulnerability to droughts and floods, which can disrupt food supply chains. Enhanced storage and distribution systems can help maintain food security during extreme weather events, reducing spoilage and ensuring that residents have reliable access to food. This action also supports public health by minimizing the risk of foodborne illnesses and malnutrition during climate-related disruptions. Given the moderate risk to food security identified in the city's climate risk assessment, this action is a relevant and proactive measure."
     },
     {
         "locode": "BR CGE",
@@ -77,7 +77,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
+        "explanation": "Encouraging sustainable land use practices is important for Contagem due to its high population density and significant risks from hazards such as floods and landslides. Sustainable land management can help reduce soil erosion, improve water retention, and mitigate the impacts of extreme weather events, which are particularly relevant given the city's vulnerability to these hazards. Additionally, promoting sustainable land use supports biodiversity and helps maintain ecosystem services in the grassland/savanna biome. This action contributes to long-term resilience and environmental health for the city's growing population."
     },
     {
         "locode": "BR CGE",
@@ -87,7 +87,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
+        "explanation": "The maintenance and revitalization of riparian forests is important for Contagem due to its role in protecting water resources and reducing the impacts of floods and landslides. The city faces high risks from droughts and flooding, both of which can be mitigated by healthy riparian zones that stabilize riverbanks and improve water quality. Additionally, revitalized riparian forests support biodiversity and enhance ecosystem resilience, which is crucial in a grassland/savanna biome. This action also contributes to public health by reducing pollution and providing green spaces for the community."
     },
     {
         "locode": "BR CGE",
@@ -97,7 +97,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
+        "explanation": "Strengthening the healthcare network to attend to climate victims is crucial for Contagem, given the city's high vulnerability to climate-related hazards such as heatwaves, floods, and landslides. These hazards pose significant risks to public health, as indicated by the high normalized risk scores for public health impacts. By improving healthcare capacity and preparedness, the city can better respond to emergencies and reduce the adverse health effects of climate events. This action will help protect the well-being of residents, especially during extreme weather events that are expected to become more frequent and severe due to climate change."
     },
     {
         "locode": "BR CGE",
@@ -107,7 +107,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
+        "explanation": "Relocation and environmental restoration in vulnerable areas is a significant priority for Contagem due to the city's high exposure to hazards such as floods, landslides, and heatwaves, all of which pose substantial risks to public health and infrastructure. The city's climate risk assessment highlights extremely high risk scores for these hazards, indicating that vulnerable populations and ecosystems are at considerable risk. By relocating residents from high-risk zones and restoring degraded environments, the city can reduce the impact of disasters, protect lives, and enhance ecological resilience. This action also supports long-term sustainability and helps safeguard essential services for the community."
     },
     {
         "locode": "BR CGE",
@@ -117,7 +117,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations is crucial for Contagem due to its high risk of droughts, floods, and landslides. The city faces significant threats to water resources and public health from these hazards, as indicated by the high normalized risk scores. Real-time hydrological data will enable better forecasting, early warning, and rapid response to extreme weather events. This action supports the city's resilience by protecting infrastructure, ensuring water security, and safeguarding residents from climate-related disasters."
     },
     {
         "locode": "BR CGE",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
+        "explanation": "Farm and fishery improvements are important for Contagem, especially considering the city's exposure to droughts and floods, which can threaten food security. Enhancing agricultural and fishery practices can help build resilience against these climate hazards, ensuring a stable food supply for the population. While the city has a very low proportion of low-income residents and good access to water and sanitation, strengthening local food systems remains a valuable adaptation strategy. This action supports both economic stability and public health in the face of climate risks."
     },
     {
         "locode": "BR CGE",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
+        "explanation": "Improving the availability of health infrastructure is crucial for Contagem, given its significant risks from heatwaves, floods, and landslides, all of which can have severe public health impacts. The city faces high normalized risk scores for public health hazards, particularly from floods and landslides, indicating a strong need for robust health services to respond to emergencies and ongoing health challenges. Strengthening health infrastructure will enhance the city's resilience, ensuring that residents have access to care during climate-related events. This action supports the well-being of the population and helps mitigate the adverse effects of climate hazards on public health."
     },
     {
         "locode": "BR CGE",
@@ -147,7 +147,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
+        "explanation": "The implementation of urban gardens in Contagem can provide multiple benefits, including enhancing food security and increasing green spaces within the city. Given the city's exposure to droughts and floods, urban gardens can help improve local resilience by promoting sustainable water management and reducing runoff. Additionally, these gardens can foster community engagement and support biodiversity in an urbanized environment. While not the highest priority compared to actions directly addressing critical hazards, urban gardens still contribute positively to the city's sustainability and quality of life."
     },
     {
         "locode": "BR CGE",
@@ -157,7 +157,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
+        "explanation": "Implementing social safety nets in Contagem is important for enhancing community resilience, especially given the city's exposure to climate hazards such as floods, landslides, and heatwaves. While the city currently has very low levels of low income and good access to water and sanitation, extreme weather events can still disproportionately impact vulnerable populations. Social safety nets can provide crucial support during and after such events, helping residents recover more quickly and reducing long-term social and economic impacts. This action supports overall community well-being and helps ensure that all residents are protected in the face of climate risks."
     },
     {
         "locode": "BR CGE",
@@ -167,7 +167,7 @@
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
+        "explanation": "Implementing permeable pavements and increasing green areas in roadways is important for Contagem due to its high population density and significant risks from floods and heatwaves. Permeable surfaces help manage stormwater, reducing flood risk and improving urban resilience. Expanding green areas also mitigates urban heat, supports biodiversity, and enhances public health. These measures are particularly relevant given the city's vulnerability to climate hazards and the need for sustainable urban infrastructure."
     },
     {
         "locode": "BR CGE",
@@ -177,7 +177,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
+        "explanation": "Promoting behavior change in diets and reducing food waste can contribute to lowering greenhouse gas emissions associated with food production and waste management. In Contagem, where food security is at risk from both droughts and floods, encouraging more sustainable consumption patterns can help build resilience in the local food system. While the city does not face high levels of poverty or inadequate public services, addressing food waste remains important for environmental sustainability and resource efficiency. This action supports broader climate goals and can have positive social and environmental impacts, even if it is not the highest immediate priority."
     },
     {
         "locode": "BR CGE",
@@ -187,7 +187,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
+        "explanation": "Establishing the Municipal Climate Change Forum in Contagem is important for fostering collaboration among stakeholders, including government, civil society, and the private sector. This forum can serve as a platform to coordinate climate adaptation and mitigation strategies, which is crucial given the city's high risks from hazards like droughts, floods, and landslides. By facilitating dialogue and knowledge sharing, the forum can help ensure that climate actions are inclusive and tailored to local needs. It also strengthens governance and accountability, making climate initiatives more effective and sustainable in the long term."
     },
     {
         "locode": "BR CGE",
@@ -197,6 +197,6 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
+        "explanation": "Contagem faces significant risks from extreme weather events such as floods, landslides, droughts, and heatwaves, all of which have high impacts on public health, infrastructure, and water resources. Establishing a financial support program would help the city respond more effectively to these hazards, providing resources for rapid recovery and resilience-building. This action is particularly important given the high normalized risk scores for floods and landslides, which threaten both the population and critical infrastructure. By proactively addressing the financial needs associated with extreme weather, the city can better protect its residents and reduce long-term economic and social impacts."
     }
 ]

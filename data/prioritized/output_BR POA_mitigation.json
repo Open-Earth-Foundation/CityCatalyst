@@ -7,7 +7,7 @@
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
+        "explanation": "Implementing an urban toll in Porto Alegre is a high priority due to the city's significant transportation emissions, which are the largest contributor to its total greenhouse gas output. By introducing a toll, the city can discourage excessive car use, reduce traffic congestion, and promote the use of public transportation or alternative mobility options. This action can also help improve air quality and public health, especially important given the city's vulnerability to hazards like heatwaves and floods. Additionally, reducing vehicle traffic can support infrastructure resilience and contribute to a more sustainable urban environment."
     },
     {
         "locode": "BR POA",
@@ -17,7 +17,7 @@
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
+        "explanation": "Expanding cycling infrastructure and building accessible sidewalks in Porto Alegre is a high priority due to the city's significant transportation emissions and vulnerability to climate hazards such as floods and heatwaves. Improved active transportation options can reduce reliance on cars, thereby lowering emissions and improving air quality. Additionally, resilient walkways and sidewalks enhance public safety and mobility, especially during extreme weather events. This action also promotes inclusivity and healthier lifestyles for residents, making the city more livable and sustainable."
     },
     {
         "locode": "BR POA",
@@ -27,7 +27,7 @@
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
+        "explanation": "Adopting biomethane in public fleets is a significant step for Porto Alegre, given the city's high transportation emissions. Transitioning public vehicles to cleaner fuels like biomethane can substantially reduce greenhouse gas emissions and improve air quality. This action also supports energy diversification and resilience, which is important in a city facing climate risks such as floods and heatwaves. By leading with public fleets, the city can set an example for sustainable mobility and encourage broader adoption of low-carbon technologies."
     },
     {
         "locode": "BR POA",
@@ -37,7 +37,7 @@
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
+        "explanation": "Implementing free public transportation during peak hours in Porto Alegre can significantly reduce the use of individual vehicles, which is crucial given the city's high transportation emissions. With a population of over 1.3 million and a dense urban environment, traffic congestion and air pollution are likely challenges. Encouraging public transit use can help lower greenhouse gas emissions, improve air quality, and make commuting more efficient. This action also supports equitable mobility, making transportation more accessible for all residents."
     },
     {
         "locode": "BR POA",
@@ -47,7 +47,7 @@
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
+        "explanation": "The adoption of electric drones for last-mile deliveries in Porto Alegre can help reduce transportation emissions, which are currently the largest contributor to the city's total emissions. By shifting to electric drones, the city can decrease reliance on conventional delivery vehicles, thus lowering air pollution and greenhouse gas output. This action also supports innovation in urban logistics, potentially improving delivery efficiency and reducing traffic congestion. While not the highest priority, it aligns with the city's broader goals of sustainability and emission reduction."
     },
     {
         "locode": "BR POA",
@@ -57,7 +57,7 @@
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets is a significant step for Porto Alegre, given the city's high transportation emissions. This action can help reduce air pollution and greenhouse gas emissions, contributing to improved public health and environmental quality. Additionally, electric on-demand transport can offer flexible mobility options, supporting residents' needs while aligning with sustainability goals. As Porto Alegre faces climate risks such as heatwaves and floods, transitioning to cleaner transport options can also enhance the city's resilience to these hazards."
     },
     {
         "locode": "BR POA",
@@ -67,7 +67,7 @@
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
+        "explanation": "Promoting bike-sharing programs, especially those featuring electric bikes, can significantly reduce transportation emissions in Porto Alegre, which are currently the city's largest source of greenhouse gases. By providing accessible and sustainable mobility options, this action can help alleviate traffic congestion and improve air quality. Additionally, encouraging cycling supports public health by promoting physical activity and reducing exposure to vehicle pollution. Focusing on urban areas ensures that the program reaches a large portion of the population, maximizing its impact on both emissions and quality of life."
     },
     {
         "locode": "BR POA",
@@ -77,7 +77,7 @@
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
+        "explanation": "Expanding mass transit systems on rails, such as metros and light rail, is highly relevant for Porto Alegre due to its large population and high population density. Improved rail transit can significantly reduce transportation emissions, which are currently the largest source of greenhouse gases in the city. Enhanced public transit also increases mobility, reduces traffic congestion, and supports equitable access to transportation. This action can help the city address both environmental and social challenges, making it a strategic priority for sustainable urban development."
     },
     {
         "locode": "BR POA",
@@ -87,7 +87,7 @@
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
+        "explanation": "Addressing vehicle emissions is important for Porto Alegre, as transportation is the largest contributor to the city's greenhouse gas emissions. Reducing emissions from vehicles can significantly improve air quality and public health, especially given the city's high population density. Additionally, mitigating transportation emissions supports broader climate goals and helps the city adapt to risks associated with heatwaves and air pollution. Prioritizing this action can also enhance the quality of life for residents by promoting cleaner and more sustainable mobility options."
     },
     {
         "locode": "BR POA",
@@ -97,7 +97,7 @@
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
+        "explanation": "Promoting the use of bicycles as a regular mode of transport in Porto Alegre is important due to the city's high transportation emissions, which are a significant contributor to its overall greenhouse gas output. Expanding cycling infrastructure and raising public awareness can help shift travel habits toward more sustainable modes, reducing air pollution and congestion. Additionally, encouraging cycling supports public health by promoting physical activity and can make the city more resilient to climate-related hazards by reducing reliance on fossil fuels. This action aligns well with the city's need to address both environmental and health challenges."
     },
     {
         "locode": "BR POA",
@@ -107,7 +107,7 @@
         "actionId": "icare_0021",
         "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
+        "explanation": "Encouraging and promoting sustainable and rational use of individual motorized transportation is important for Porto Alegre due to its high transportation emissions, which are a significant contributor to the city's total greenhouse gas output. By addressing private vehicle use, the city can reduce air pollution, improve public health, and help mitigate climate change impacts. Additionally, promoting sustainable transportation can alleviate traffic congestion and enhance urban mobility. This action supports the city's broader environmental and public health goals, making it a relevant priority for long-term urban sustainability."
     },
     {
         "locode": "BR POA",
@@ -117,7 +117,7 @@
         "actionId": "icare_0059",
         "actionName": "Modernization of ports and airports with zero-emission technologies",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
+        "explanation": "Modernizing ports and airports with zero-emission technologies is important for Porto Alegre, given its significant transportation emissions. As a major urban center, the city likely relies on these hubs for economic activity and connectivity, making their decarbonization impactful for overall emissions reduction. Transitioning to zero-emission technologies can also improve air quality and public health, which is particularly relevant given the city's vulnerability to hazards like heatwaves and floods that can be exacerbated by pollution. This action supports long-term sustainability and resilience in critical infrastructure."
     },
     {
         "locode": "BR POA",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0012",
         "actionName": "Electric Technologies",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
+        "explanation": "Promoting electric technologies in Porto Alegre can significantly reduce emissions from stationary energy and transportation, which are major contributors to the city's total greenhouse gas output. Transitioning to electric solutions also supports energy security, especially in the face of climate hazards like heatwaves and droughts that can strain traditional energy systems. Additionally, electric technologies can help improve air quality and public health, which are at risk from both heatwaves and pollution. Given the city's high population density, widespread adoption of electric technologies can have a broad and positive impact on urban sustainability."
     },
     {
         "locode": "BR POA",
@@ -137,7 +137,7 @@
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
+        "explanation": "The development of micro-logistics hubs to encourage the use of electric cargo bikes is important for Porto Alegre due to its high transportation emissions, which are the largest contributor to the city's total emissions. By promoting cleaner last-mile delivery solutions, this action can help reduce air pollution and greenhouse gas emissions in densely populated urban areas. Additionally, electric cargo bikes can improve urban mobility and reduce traffic congestion, supporting a healthier and more sustainable city environment. This approach aligns well with the city's need to address climate risks and improve quality of life for its residents."
     },
     {
         "locode": "BR POA",
@@ -147,7 +147,7 @@
         "actionId": "icare_0060",
         "actionName": "Introduction of modular and automated collective transport systems.",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
+        "explanation": "Introducing modular and automated collective transport systems in Porto Alegre can significantly reduce transportation emissions, which are currently the largest contributor to the city's total emissions. This action supports sustainable urban mobility, potentially decreasing traffic congestion and improving air quality. Additionally, modernizing public transport can enhance accessibility and efficiency for residents, aligning with the city's low levels of inadequate public service access. By investing in innovative transport solutions, Porto Alegre can make progress toward its climate goals while improving quality of life for its population."
     },
     {
         "locode": "BR POA",
@@ -157,7 +157,7 @@
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
+        "explanation": "Increasing the attractiveness of the municipal bus system in Porto Alegre is important because transportation emissions are the largest contributor to the city's total greenhouse gas emissions. By making public transit more appealing, the city can encourage a shift away from private vehicles, reducing congestion and air pollution. Improved public transport also enhances mobility for all residents, supporting social inclusion and access to opportunities. Additionally, a robust bus system can help the city adapt to climate risks by providing reliable transportation during extreme weather events."
     },
     {
         "locode": "BR POA",
@@ -167,7 +167,7 @@
         "actionId": "icare_0091",
         "actionName": "Implementation of prioritized routes for sustainable vehicles.",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
+        "explanation": "Implementing prioritized routes for sustainable vehicles in Porto Alegre is important due to the city's high transportation emissions, which are a significant contributor to its overall greenhouse gas output. By encouraging the use of sustainable vehicles, the city can reduce air pollution and improve public health, especially since public health is at high risk from hazards like floods, heatwaves, and landslides. Additionally, promoting sustainable transportation supports long-term resilience and aligns with global climate goals. This action also helps to modernize urban mobility and can enhance the quality of life for residents."
     },
     {
         "locode": "BR POA",
@@ -177,7 +177,7 @@
         "actionId": "icare_0126",
         "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
+        "explanation": "Implementing green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen, can help reduce transportation emissions, which are a significant contributor to Porto Alegre's total emissions. While aviation may not be the largest source of emissions in the city, transitioning to cleaner fuels supports broader decarbonization goals and aligns with global efforts to make air travel more sustainable. This action also positions Porto Alegre as a forward-thinking city in the adoption of innovative, low-carbon technologies. However, the direct local impact may be less immediate compared to actions targeting more pressing risks like floods and landslides, which have very high risk scores for public health and infrastructure."
     },
     {
         "locode": "BR POA",
@@ -187,7 +187,7 @@
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases can strengthen local food systems and support sustainable agriculture in Porto Alegre. This action helps reduce transportation emissions by sourcing food closer to the point of consumption, which is important given the city's high transportation emissions. Additionally, supporting agroecological practices can enhance food security and resilience to climate hazards such as droughts and floods, which are relevant risks for the city. By fostering local economies and sustainable farming, this action also contributes to biodiversity and public health."
     },
     {
         "locode": "BR POA",
@@ -197,6 +197,6 @@
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
+        "explanation": "Encouraging renewable energy policies at the municipal level is important for Porto Alegre, as stationary energy emissions are a significant contributor to the city's total greenhouse gas emissions. By promoting renewables, the city can reduce its reliance on fossil fuels, lower emissions, and improve air quality. This action also supports long-term energy security and resilience, especially in the face of climate hazards like heatwaves and droughts that can impact energy supply. Implementing such policies aligns with global sustainability goals and can foster local economic opportunities in the green energy sector."
     }
 ]

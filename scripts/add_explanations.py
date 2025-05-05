@@ -1,3 +1,23 @@
+"""
+add_explanations.py
+-------------------
+
+This script generates qualitative explanations for prioritized climate actions for each city, using city context and additional action data. It leverages OpenAI's GPT model to create a short explanation for each action, then saves the updated action lists to a new output folder.
+
+How it works:
+- For each prioritized actions file in 'data/prioritized/', it:
+  1. Extracts the city code from the filename.
+  2. Loads the corresponding city data from 'data/cities/city_data.json'.
+  3. Loads the prioritized actions for that city.
+  4. For each action, generates a 3-5 sentence explanation using OpenAI's API.
+  5. Saves the updated actions (with explanations) to 'data/prioritized_updated/'.
+
+How to run (from project root, in Windows CMD or PowerShell):
+
+    python scripts\add_explanations.py
+
+The script will process all .json files in 'data/prioritized/' and output updated files to 'data/prioritized_updated/'.
+"""
 import os
 import re
 import json
@@ -132,7 +152,7 @@ def generate_single_explanation(
     try:
         # We'll use parse with Pydantic ExplanationItem to ensure correct structure.
         completion = client.beta.chat.completions.parse(
-            model="gpt-4o",
+            model="gpt-4.1",
             messages=[
                 {
                     "role": "system",
@@ -151,6 +171,8 @@ def generate_single_explanation(
         # 'completion' is already validated by ExplanationItem
         # It will have the form ExplanationItem(actionId="...", explanation="...")
         response_content = completion.choices[0].message.content
+        if response_content is None:
+            return "Error: No response content"
         response_data = json.loads(response_content)
         print(f"response_data: {response_data}")
         if "explanation" in response_data:
@@ -158,7 +180,7 @@ def generate_single_explanation(
             return response_data["explanation"]
         else:
             print("Warning: No explanations found in response")
-            return []
+            return "Error: No explanations found in response"
 
     except Exception as e:
         print(f"Error generating explanation for action '{single_action.get('actionId')}': {str(e)}")

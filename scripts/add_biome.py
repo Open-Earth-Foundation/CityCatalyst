@@ -1,3 +1,22 @@
+"""
+add_biome.py
+------------
+
+This script adds biome information to each climate action in a merged adaptation effectiveness file. It uses OpenAI's GPT model to determine the most restrictive biome for each action, or 'none' if the action can be implemented in more than one biome. The updated actions are saved to a new output file.
+
+How it works:
+- Loads actions from 'data/climate_actions/output/merged_individual_adaptation_effectiveness.json'.
+- For each action, queries OpenAI to determine the biome (or 'none').
+- Saves the updated actions to 'data/climate_actions/output/merged_with_biome.json'.
+
+How to run (from project root, in Windows CMD or PowerShell):
+
+    python scripts\add_biome.py
+
+The script will process all actions in the input file and output the updated file with biome information.
+"""
+
+
 import os
 import json
 from typing import List, Dict
@@ -78,8 +97,7 @@ def get_biome_for_action(action: Dict) -> str:
         response_data = json.loads(completion.choices[0].message.content)
     except Exception as e:
         print(f"Error generating explanation: {str(e)}")
-        # Fallback to a basic explanation if the API call fails
-        return 
+        return None
 
     return response_data['biome']
 

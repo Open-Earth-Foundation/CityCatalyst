@@ -1,202 +1,202 @@
 [
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
+        "explanation": "Establishing a plan for preparation and emergency response to extreme weather events is crucial for Tarauacá due to its high vulnerability to hazards such as floods, heatwaves, and landslides. The city faces significant risks to public health, infrastructure, and food security, as indicated by the high normalized risk scores for these hazards. With a moderate population size and very high levels of inadequate water access, the community is particularly susceptible to the impacts of extreme weather. Implementing this action will help protect lives, reduce damage to infrastructure, and improve the city's resilience to climate-related disasters."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
+        "explanation": "Developing a Climate Action Plan is crucial for Tarauacá given its high vulnerability to climate hazards such as heatwaves, floods, and landslides, which pose significant risks to public health and infrastructure. The city faces very high levels of inadequate water access and moderate issues with sanitation, making coordinated climate adaptation and mitigation strategies essential. A comprehensive plan will help prioritize interventions, allocate resources efficiently, and engage stakeholders in building resilience. This foundational step is necessary to address the city's substantial land use emissions and to guide future climate-related actions effectively."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) is important for Tarauacá due to its moderate low-income population and significant challenges in access to water and sanitation. These zones often house vulnerable communities that are disproportionately affected by environmental hazards such as floods, landslides, and heatwaves, all of which present high risks in the city. Restoration and targeted interventions in ZEIS can improve living conditions, enhance resilience to climate impacts, and promote social equity. Focusing on these areas helps address both immediate social needs and long-term urban sustainability."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
+        "explanation": "Strengthening programs for control and conservation of protected areas is important for Tarauacá, given its location in the tropical rainforest biome and the significant land use emissions reported. Protecting these areas helps preserve biodiversity and maintain ecosystem services that are vital for the community, such as water regulation and climate resilience. With high risks from hazards like floods, landslides, and heatwaves, conserving natural areas can also mitigate some of these impacts by stabilizing soils and regulating local climate. This action supports long-term environmental health and sustainability for the city."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
+        "explanation": "Recovery of degraded areas is particularly important for Tarauacá, given its location in the tropical rainforest biome and the extremely high land use emissions reported. Restoring degraded land can help sequester carbon, reduce emissions, and support biodiversity, which is vital in a region with significant environmental value. Additionally, healthy ecosystems can provide resilience against climate hazards such as floods and landslides, which are high risks for the city. This action also supports long-term sustainability and can improve local livelihoods by restoring ecosystem services."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
+        "explanation": "The maintenance and revitalization of riparian forests is particularly important for Tarauacá, given its location in a tropical rainforest biome and the significant land use emissions reported. Healthy riparian forests help prevent soil erosion, reduce the risk of floods and landslides, and protect water quality, which is crucial in a city facing very high inadequate water access. Additionally, these forests support biodiversity and can act as natural buffers against climate hazards such as droughts and heatwaves. Prioritizing this action can enhance ecosystem resilience and provide long-term benefits for both the environment and the community."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
+        "explanation": "Strengthening the healthcare network to attend to climate victims is crucial for Tarauacá, given the city's high vulnerability to climate-related hazards such as heatwaves, floods, and landslides. The city faces very high risks to public health from these hazards, as indicated by the elevated risk scores. Improving healthcare capacity will help the community respond more effectively to climate-induced health emergencies and reduce the impact on vulnerable populations. This action is especially important in a context where access to public services is already challenged, ensuring that residents receive timely and adequate care during climate events."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
+        "explanation": "Relocation and environmental restoration in vulnerable areas is particularly important for Tarauacá due to its high exposure to hazards such as floods, landslides, and heatwaves, all of which pose significant risks to infrastructure and public health. The city has a very high rate of inadequate water access and moderate inadequate sanitation, making vulnerable populations even more susceptible to the impacts of environmental hazards. By relocating residents from high-risk zones and restoring degraded environments, the city can reduce disaster risk, improve living conditions, and enhance resilience to climate change. This action also supports biodiversity and helps maintain the integrity of the tropical rainforest biome, which is crucial for long-term sustainability."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
+        "explanation": "Encouraging sustainable land use practices is highly relevant for Tarauacá, as land use emissions are by far the largest contributor to the city's total greenhouse gas emissions. The city is located in a tropical rainforest biome, making the preservation and sustainable management of land critical for both climate mitigation and biodiversity protection. Implementing sustainable land use can help reduce deforestation, protect water resources, and enhance resilience to climate hazards such as floods and landslides, which are significant risks for the area. This action also supports long-term food and energy security by maintaining ecosystem services essential for the community's well-being."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
+        "explanation": "Improving access to health care is a critical priority for Tarauacá due to the city's high vulnerability to public health hazards such as heatwaves, diseases, floods, and landslides. The climate risk assessment indicates extremely high risks to public health from these hazards, which can strain existing health services and disproportionately affect vulnerable populations. Additionally, the city's moderate low-income levels and inadequate access to water and sanitation further increase health risks. Strengthening health care access will help the community better respond to climate-related health emergencies and improve overall resilience."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
+        "explanation": "Improving food storage and distribution is important for Tarauacá due to its vulnerability to droughts and floods, which can disrupt food supply chains and threaten food security. The city faces moderate risks to food security from both droughts and floods, making reliable food storage and distribution systems essential for resilience. Enhancing these systems can help ensure that residents have consistent access to food, even during extreme weather events. This action also supports the well-being of the population, particularly those with moderate income levels who may be more affected by supply disruptions."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
+        "explanation": "Tarauacá faces significant risks from extreme weather events such as heatwaves, floods, and landslides, which threaten public health, infrastructure, and food security. The creation of a financial support program would help residents and local institutions recover more quickly from these hazards, reducing long-term social and economic impacts. Given the city's moderate income levels and very high rates of inadequate water access, such a program would provide a crucial safety net for vulnerable populations. This action is important for building resilience and ensuring that the community can better withstand and adapt to the increasing frequency and severity of extreme weather events."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
+        "explanation": "Farm and fishery improvements are important for Tarauacá due to the city's vulnerability to droughts and floods, which directly impact food security. Enhancing agricultural and fishery practices can help build resilience against climate hazards, ensuring stable food supplies for the population. Given the moderate level of low income in the area, such improvements can also support local livelihoods and economic stability. These actions contribute to both adaptation and mitigation by promoting sustainable resource use and reducing vulnerability to climate-related risks."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
+        "explanation": "Implementing urban gardens in Tarauacá can help improve local food security, which is important given the city's moderate risk from droughts and floods. Urban gardens can also enhance community resilience by providing access to fresh produce, especially in a region with moderate low-income levels. Additionally, these gardens can contribute to public health by promoting better nutrition and offering green spaces that mitigate heatwaves. Given the city's high vulnerability to climate hazards, urban gardens are a practical adaptation measure that supports both environmental and social well-being."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
+        "explanation": "Implementing social safety nets in Tarauacá is important due to the city's moderate low-income population and high vulnerability to climate-related hazards such as floods, heatwaves, and landslides. These hazards pose significant risks to public health, infrastructure, and food security, making it crucial to support the most vulnerable residents. Social safety nets can help buffer the impacts of disasters, reduce poverty, and promote resilience in the face of frequent environmental and economic shocks. By providing targeted assistance, the city can ensure that basic needs are met during crises and recovery periods."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
+        "explanation": "Establishing a Municipal Climate Change Forum in Tarauacá is important for fostering collaboration and raising awareness about climate risks. The city faces significant threats from heatwaves, floods, landslides, and public health hazards, making coordinated action essential. A forum can bring together local stakeholders, experts, and community members to develop strategies, share knowledge, and advocate for effective climate adaptation and mitigation measures. This platform can also help ensure that local voices are included in decision-making, increasing the relevance and impact of climate policies."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
+        "explanation": "The recovery and preservation of green areas is important for Tarauacá, given its location in a tropical rainforest biome and the significant land use emissions reported. Protecting green areas helps maintain biodiversity, supports ecosystem services, and can mitigate the impacts of climate hazards such as floods and landslides, which are high risks for the city. Additionally, healthy green spaces contribute to public health and can help buffer the effects of heatwaves. This action supports both environmental sustainability and community resilience in the face of climate change."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
+        "explanation": "Implementing permeable pavements and increasing green areas in roadways is important for Tarauacá due to its vulnerability to floods and landslides, as indicated by the high risk scores for these hazards. Permeable surfaces help manage stormwater, reducing runoff and the likelihood of flooding, while green areas can stabilize soil and mitigate landslide risks. Additionally, these measures can improve urban resilience, enhance public health by reducing heat and improving air quality, and support local biodiversity. Given the city's tropical rainforest biome and high exposure to climate hazards, this action supports both climate adaptation and environmental sustainability."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
+        "explanation": "Ecosystem-based adaptation is particularly relevant for Tarauacá, which is located in a tropical rainforest biome and faces significant risks from climate hazards such as floods, landslides, and droughts. These nature-based solutions can help buffer the impacts of extreme weather, protect biodiversity, and support local livelihoods. Given the city's very high inadequate water access and moderate issues with sanitation, healthy ecosystems can also improve water quality and availability. Implementing this action can enhance resilience to climate change while preserving the natural environment that is vital to the region."
     },
     {
         "locode": "BR TAA",
-        "cityName": "Tarauac\u00e1",
+        "cityName": "Tarauacá",
         "region": "AC",
         "regionName": "Acre",
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
+        "explanation": "Implementing and enforcing building codes is important for Tarauacá due to its high vulnerability to hazards such as floods, landslides, and heatwaves, all of which pose significant risks to infrastructure and public safety. The city faces a very high risk of infrastructure damage from these hazards, as indicated by the climate risk assessment. Strong building codes can help ensure that new and existing structures are more resilient to extreme weather events, reducing potential damage and loss of life. This action is particularly relevant given the city's moderate income levels and challenges with public service access, making proactive risk reduction through regulation a prudent priority."
     }
 ]

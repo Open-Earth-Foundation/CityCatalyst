@@ -1,202 +1,202 @@
 [
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
+        "explanation": "Implementing an urban toll in São João de Meriti is a high priority due to the city's high population density and significant transportation emissions. By introducing a toll, the city can discourage excessive car use, reduce traffic congestion, and lower air pollution, which is crucial for public health, especially given the high risks from heatwaves and diseases. This measure can also encourage the use of public transportation and more sustainable mobility options. Overall, the urban toll supports both climate mitigation and adaptation goals for the city."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
+        "explanation": "Adopting biomethane in public fleets is a significant step for São João de Meriti, given its high transportation emissions. Transitioning to cleaner fuels can help reduce greenhouse gas emissions and improve air quality, which is crucial for public health, especially in a densely populated urban area. This action also supports energy security by diversifying fuel sources and reducing reliance on fossil fuels. Implementing biomethane aligns with the city's need to address climate risks and promote sustainable urban mobility."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
+        "explanation": "Promoting bike-sharing programs, especially with electric bikes, can significantly improve urban mobility in São João de Meriti, a densely populated city. This action helps reduce transportation emissions, which are a major contributor to the city's total greenhouse gas output. Additionally, encouraging cycling can alleviate traffic congestion and improve public health by promoting physical activity. Given the city's vulnerability to heatwaves and air pollution, increasing access to sustainable transportation options is a strategic step toward resilience and environmental sustainability."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
+        "explanation": "Improving waste efficiency is important for São João de Meriti, as waste emissions are a significant contributor to the city's total greenhouse gas emissions. By optimizing waste management practices, the city can reduce landfill use, lower methane emissions, and promote recycling and composting. This action also supports public health by minimizing pollution and potential disease vectors associated with improper waste disposal. Given the city's high population density, efficient waste management is crucial for maintaining a clean and healthy urban environment."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
+        "explanation": "Expanding cycling infrastructure and building accessible sidewalks in São João de Meriti is important due to the city's high population density and urban environment. Improved walkways and bike paths can promote sustainable transportation, reduce traffic emissions, and enhance public health by encouraging active mobility. Prioritizing climate-resilient measures is crucial, as the city faces significant risks from heatwaves, floods, and landslides, which can impact both infrastructure and public safety. Making these pathways accessible also supports social inclusion and benefits residents with limited mobility. Overall, this action addresses both environmental and social challenges in the city."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
+        "explanation": "Implementing free public transportation during peak hours in São João de Meriti can significantly reduce the reliance on individual vehicles, which is important given the city's high transportation emissions. With a dense population and limited area, traffic congestion and air pollution are likely concerns that this action can help address. Additionally, improving access to public transit supports social equity, especially in a city with very low income levels. This measure can also contribute to better public health by reducing air pollution and encouraging more sustainable mobility options."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0052",
         "actionName": "Develop projects for renewable energy and waste reuse",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
+        "explanation": "Developing projects for renewable energy and waste reuse is important for São João de Meriti due to its high total emissions, particularly from waste and stationary energy sources. By investing in renewable energy, the city can reduce its reliance on fossil fuels and lower greenhouse gas emissions, contributing to climate mitigation. Waste reuse projects can help manage the significant waste emissions, improve environmental quality, and create economic opportunities. These initiatives also support public health by reducing pollution and can enhance the city's resilience to climate risks such as heatwaves and diseases."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
+        "explanation": "The adoption of electric drones for last-mile deliveries in São João de Meriti can help reduce transportation emissions, which are a significant contributor to the city's total greenhouse gas output. With a high population density and urban environment, efficient and low-emission delivery solutions can alleviate traffic congestion and improve air quality. This action also supports innovation and modernization of local logistics, potentially making goods more accessible to residents. While not the highest priority compared to urgent public health or climate adaptation needs, it represents a forward-thinking step toward sustainable urban mobility."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets in São João de Meriti addresses the city's significant transportation emissions, which are a major contributor to its overall greenhouse gas output. This action can help reduce air pollution and improve public health, which is especially important given the city's high vulnerability to heatwaves and disease-related hazards. Additionally, electric fleets support sustainable urban mobility in a densely populated area, offering cleaner and more efficient transportation options. Implementing this measure aligns with the city's need to modernize infrastructure while mitigating climate risks."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
+        "explanation": "Expanding mass transit systems on rails, such as metros and light rail, is important for São João de Meriti due to its high population density and significant transportation emissions. Improved rail transit can help reduce reliance on private vehicles, thereby lowering greenhouse gas emissions and easing traffic congestion. Additionally, efficient public transportation enhances mobility for residents, particularly in a city with very low income levels, supporting equitable access to jobs and services. This action also contributes to better air quality and public health, which is crucial given the city's high vulnerability to heatwaves and disease-related hazards."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
+        "explanation": "The development of micro-logistics hubs to encourage the use of electric cargo bikes is particularly relevant for São João de Meriti, a densely populated urban area with significant transportation emissions. By promoting electric cargo bikes, the city can reduce air pollution and greenhouse gas emissions, improving public health and contributing to climate goals. This action also supports more efficient and sustainable urban logistics, which is important in a city with limited space and high population density. Additionally, it can create new economic opportunities and improve last-mile delivery services for residents and businesses."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
+        "explanation": "Promoting the use of bicycles as a regular mode of transport in São João de Meriti can help reduce transportation emissions, which are a significant contributor to the city's total greenhouse gas output. Expanding cycling infrastructure and raising public awareness can encourage more residents to choose this sustainable mode of transport, improving air quality and public health. Additionally, cycling can offer affordable mobility options for the city's population, which has a very low average income. This action supports both environmental and social benefits, making it a valuable step toward a more sustainable and equitable urban environment."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
+        "explanation": "Addressing vehicle emissions is important for São João de Meriti due to the city's high transportation emissions, which are a significant contributor to its overall greenhouse gas output. Reducing vehicle emissions can improve air quality, which is crucial for public health, especially given the high risks from heatwaves and diseases. Additionally, targeting transportation emissions supports broader climate goals and can enhance the quality of life for residents in this densely populated urban area. Implementing this action can also set the stage for sustainable urban mobility solutions in the future."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "c40_0040",
         "actionName": "Volume-Based Collection",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
+        "explanation": "Volume-Based Collection can help São João de Meriti manage its significant waste emissions, which are a major contributor to the city's total greenhouse gas output. By incentivizing residents and businesses to reduce waste generation, this approach can lead to lower landfill use and associated emissions. Given the city's high population density, effective waste management is crucial for maintaining public health and environmental quality. Implementing this system could also foster greater community awareness and participation in sustainability efforts."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0060",
         "actionName": "Introduction of modular and automated collective transport systems.",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
+        "explanation": "Introducing modular and automated collective transport systems in São João de Meriti can significantly reduce transportation emissions, which are a major contributor to the city's total greenhouse gas output. With a high population density and a large urban population, efficient public transport is essential for reducing congestion and improving air quality. Automated systems can also enhance accessibility and reliability, making public transport more attractive and reducing reliance on private vehicles. This action supports sustainable urban mobility and aligns with the city's need to address both environmental and public health challenges."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases can strengthen São João de Meriti's food security, which is at risk from both droughts and floods. Supporting local agroecological producers helps build resilience in the food system, reduces dependency on external supply chains, and encourages sustainable agricultural practices. This action also has the potential to stimulate the local economy and provide healthier food options for the population. Given the city's vulnerability to climate-related hazards, such measures can contribute to both adaptation and mitigation efforts."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
+        "explanation": "Landfill management is an important action for São João de Meriti, given the city's high waste emissions, which are a significant portion of its total greenhouse gas output. Effective landfill management can help reduce methane emissions, improve local air quality, and minimize health risks associated with improper waste disposal. Additionally, improved landfill practices can contribute to better public health outcomes, which is particularly relevant as the city faces high risks from diseases and heatwaves. Prioritizing this action supports both environmental sustainability and the well-being of the city's residents."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0021",
         "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
+        "explanation": "Encouraging and promoting sustainable and rational use of individual motorized transportation is important for São João de Meriti due to its high transportation emissions, which are a significant contributor to the city's total greenhouse gas output. With a dense population and urban environment, reducing reliance on private vehicles can help alleviate air pollution and traffic congestion. This action also supports public health by improving air quality and reducing risks associated with heatwaves and diseases, which are notable hazards for the city. Promoting sustainable transportation aligns with broader climate goals and can enhance the overall quality of life for residents."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0059",
         "actionName": "Modernization of ports and airports with zero-emission technologies",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
+        "explanation": "Modernizing ports and airports with zero-emission technologies can contribute to reducing greenhouse gas emissions, especially in transportation and stationary energy sectors. However, São João de Meriti is a densely populated, landlocked city with no direct access to major ports or airports, making this action less immediately relevant to its local context. The city's primary climate risks are related to public health, droughts, heatwaves, and floods, which are not directly addressed by this action. Therefore, while beneficial in a broader regional sense, this action is not a top priority for São João de Meriti itself."
     },
     {
         "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "cityName": "São João de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0122",
         "actionName": "Establish eco-parks.",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
+        "explanation": "Establishing eco-parks in São João de Meriti can provide significant environmental and social benefits, especially in a densely populated urban area. Eco-parks help improve urban biodiversity, offer green spaces for recreation, and can mitigate the urban heat island effect, which is important given the high risk of heatwaves and public health impacts in the city. Additionally, these parks can serve as natural buffers against floods and landslides, hazards that also pose considerable risks locally. By enhancing residents' quality of life and supporting climate resilience, this action supports both adaptation and mitigation goals for the city."
     }
 ]

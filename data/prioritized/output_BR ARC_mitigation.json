@@ -7,7 +7,7 @@
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
+        "explanation": "Implementing an urban toll in Arapiraca is a priority because transportation emissions are the largest contributor to the city's total greenhouse gas emissions. By introducing a toll, the city can discourage excessive vehicle use, reduce traffic congestion, and promote more sustainable modes of transport. This action can also help improve air quality and public health, which are significant concerns given the high risk of heatwaves and disease outbreaks. Additionally, reducing vehicle emissions aligns with the city's need to address climate-related hazards and improve overall urban resilience."
     },
     {
         "locode": "BR ARC",
@@ -17,7 +17,7 @@
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
+        "explanation": "Promoting bike-sharing programs, especially with electric bikes, can significantly reduce transportation emissions, which are the largest source of greenhouse gases in Arapiraca. This action also supports public health by encouraging active transportation and reducing air pollution, which is important given the city's high vulnerability to heatwaves and disease-related hazards. Additionally, providing alternative, affordable mobility options can benefit residents with moderate low-income levels and improve access to urban services. Focusing on electric bikes makes cycling more accessible in a city with a hot, dry climate, helping to overcome barriers related to heat and distance."
     },
     {
         "locode": "BR ARC",
@@ -27,7 +27,7 @@
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
+        "explanation": "The adoption of biomethane in public fleets is an important action for Arapiraca, given the city's significant transportation emissions. Transitioning public vehicles to biomethane can help reduce greenhouse gas emissions and improve air quality, which is particularly relevant in a city facing high public health risks from heatwaves, diseases, and floods. Additionally, using biomethane supports energy security by diversifying fuel sources, which is crucial in a region vulnerable to droughts and energy disruptions. This action also aligns with broader sustainability goals and can serve as a model for other sectors to follow."
     },
     {
         "locode": "BR ARC",
@@ -37,7 +37,7 @@
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Arapiraca addresses the city's high transportation emissions, which are a significant contributor to its overall greenhouse gas output. This action can help reduce air pollution and improve public health, which is especially important given the city's high vulnerability to heatwaves, diseases, and floods. Electric fleets also support energy security by reducing reliance on fossil fuels, which is crucial in a region facing droughts and energy risks. Additionally, on-demand systems can improve mobility for residents, particularly those with moderate low-income levels and limited access to public services. Overall, this action supports both environmental sustainability and social equity in Arapiraca."
     },
     {
         "locode": "BR ARC",
@@ -47,7 +47,7 @@
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
+        "explanation": "Expanding cycling infrastructure and building public walkways and accessible sidewalks in Arapiraca is important for promoting sustainable and active transportation. This action can help reduce transportation emissions, which are a significant contributor to the city's total emissions. Additionally, prioritizing climate-resilient measures ensures that these infrastructures remain functional during extreme weather events, such as heatwaves and floods, which pose high risks to public health and safety. Improved walkability and cycling options also enhance accessibility for all residents, supporting social inclusion and healthier lifestyles."
     },
     {
         "locode": "BR ARC",
@@ -57,7 +57,7 @@
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
+        "explanation": "Implementing free public transportation during peak hours in Arapiraca can significantly reduce the reliance on individual vehicles, which are a major source of transportation emissions in the city. With transportation emissions being the largest contributor to the city's total emissions, this action directly addresses a key environmental challenge. Additionally, providing free transit can improve mobility for low- and moderate-income residents, supporting social equity. This measure also has the potential to alleviate traffic congestion and improve air quality, contributing to better public health outcomes."
     },
     {
         "locode": "BR ARC",
@@ -67,7 +67,7 @@
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
+        "explanation": "The adoption of electric drones for last-mile deliveries in Arapiraca can help reduce transportation emissions, which are currently the largest contributor to the city's total emissions. By shifting to electric drones, the city can decrease reliance on traditional delivery vehicles, thus lowering air pollution and greenhouse gas output. This action also supports innovation and can improve delivery efficiency, especially in areas with moderate access to public services. While not the highest priority, it aligns with the city's need to address environmental and logistical challenges."
     },
     {
         "locode": "BR ARC",
@@ -77,7 +77,7 @@
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
+        "explanation": "Expanding mass transit systems on rails, such as metros, LRTs, and monorails, can significantly reduce transportation emissions, which are currently the largest source of emissions in Arapiraca. Improved public transit can also enhance mobility for residents, particularly those with moderate low-income levels, by providing affordable and reliable transportation options. Additionally, shifting to rail-based transit can help alleviate air pollution and reduce the city's vulnerability to heatwaves by decreasing the number of private vehicles on the road. This action supports sustainable urban growth and addresses both environmental and social challenges faced by the city."
     },
     {
         "locode": "BR ARC",
@@ -87,7 +87,7 @@
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
+        "explanation": "Implementing agroforestry systems in Arapiraca is important due to the city's location in a desert biome, where droughts and food security are significant concerns. Agroforestry can improve soil quality, increase water retention, and enhance local food production, helping to mitigate the impacts of droughts. Additionally, these systems can contribute to biodiversity and reduce land use emissions, supporting both environmental and socio-economic resilience. Given the moderate level of low-income residents, agroforestry can also provide alternative livelihoods and strengthen community adaptation to climate risks."
     },
     {
         "locode": "BR ARC",
@@ -97,7 +97,7 @@
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
+        "explanation": "Promoting the use of bicycles as a regular mode of transport in Arapiraca can help reduce transportation emissions, which are currently the largest contributor to the city's total emissions. Expanding cycling infrastructure and raising awareness can also improve public health by encouraging physical activity and reducing air pollution. Given the city's moderate population density and urban area, cycling is a feasible and sustainable mobility option. Additionally, this action can provide affordable transportation alternatives for residents with moderate low-income levels, supporting social equity."
     },
     {
         "locode": "BR ARC",
@@ -107,7 +107,7 @@
         "actionId": "icare_0129",
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
+        "explanation": "Facilitating technology transfer for conservation practices in Arapiraca is important due to the city's vulnerability to droughts and heatwaves, which threaten water resources, food security, and public health. By adopting advanced conservation technologies, the city can improve water management and agricultural resilience, helping to mitigate the impacts of its desert biome and moderate low-income population. This action also supports long-term sustainability by promoting efficient resource use and reducing environmental degradation. Implementing these practices can enhance the city's ability to adapt to climate risks and improve the quality of life for its residents."
     },
     {
         "locode": "BR ARC",
@@ -117,7 +117,7 @@
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases can strengthen food security in Arapiraca, a city facing significant risks from droughts and floods. Supporting local agroecological producers helps build resilience in the food system, making it less vulnerable to climate hazards and supply chain disruptions. This action also promotes sustainable agricultural practices, which can improve soil health and water retention, important in a desert biome. Additionally, it can provide economic opportunities for local farmers, supporting moderate-income communities and enhancing social well-being."
     },
     {
         "locode": "BR ARC",
@@ -127,7 +127,7 @@
         "actionId": "icare_0130",
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
+        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions is important for Arapiraca due to its vulnerability to droughts and food security risks. By providing support and education to rural producers, the city can improve agricultural practices, increase resilience to climate hazards, and enhance food production. This is particularly relevant given the moderate risk to water resources and high risk to food security from climate impacts. Strengthening rural capacity also supports local livelihoods and can help mitigate the effects of environmental stressors on the community."
     },
     {
         "locode": "BR ARC",
@@ -137,7 +137,7 @@
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
+        "explanation": "Addressing vehicle emissions is important for Arapiraca, as transportation is a significant source of the city's greenhouse gas emissions. Reducing emissions from vehicles can improve air quality and public health, especially given the high risks from heatwaves and diseases. While this action is not the top priority, it still contributes to the city's overall climate and health resilience. Implementing measures to lower vehicle emissions can also support sustainable urban development in the long term."
     },
     {
         "locode": "BR ARC",
@@ -147,7 +147,7 @@
         "actionId": "icare_0102",
         "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
+        "explanation": "Promoting sustainable agricultural practices in Arapiraca is important due to the city's vulnerability to droughts, which threaten both water resources and food security. As a city located in a desert biome with moderate low-income levels, ensuring resilient and efficient agricultural methods can help safeguard livelihoods and local food supplies. Sustainable agriculture can also reduce land use emissions and improve soil health, contributing to long-term environmental and economic stability. This action supports adaptation to climate risks while fostering more sustainable development in the region."
     },
     {
         "locode": "BR ARC",
@@ -157,7 +157,7 @@
         "actionId": "icare_0100",
         "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
+        "explanation": "Supporting regenerative agriculture practices in Arapiraca is important due to the city's vulnerability to droughts and its location within a desert biome. Regenerative agriculture can help improve soil health, increase water retention, and enhance food security, which is particularly relevant given the moderate risk to water resources and food security from climate hazards. Additionally, these practices can contribute to reducing land use emissions and building resilience against climate impacts. By promoting sustainable farming, the city can also support local livelihoods and strengthen its socio-economic stability."
     },
     {
         "locode": "BR ARC",
@@ -167,7 +167,7 @@
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
+        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) can help incentivize the protection and restoration of natural resources in Arapiraca. Given the city's biome is classified as desert and faces significant risks from droughts, such programs could support water resource management and enhance local resilience. PES initiatives can also contribute to biodiversity conservation and improve ecosystem services, which are crucial for food and water security. While this action is not ranked as the highest priority, it still offers valuable long-term benefits for environmental sustainability and community well-being."
     },
     {
         "locode": "BR ARC",
@@ -177,7 +177,7 @@
         "actionId": "icare_0084",
         "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
+        "explanation": "Creating incentives for agroforestry practices in livestock systems is important for Arapiraca, given its location in a desert biome and the associated risks of droughts and food insecurity. Agroforestry can improve soil health, increase water retention, and provide shade, which helps livestock cope with heatwaves—an identified high risk for public health and infrastructure. Additionally, integrating trees into livestock systems can enhance biodiversity and contribute to carbon sequestration, supporting climate resilience. This action addresses both environmental sustainability and the economic stability of local farmers, making it a valuable step for the city's adaptation and mitigation efforts."
     },
     {
         "locode": "BR ARC",
@@ -187,7 +187,7 @@
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
+        "explanation": "The development of micro-logistics hubs to encourage the use of electric cargo bikes can help reduce transportation emissions, which are a significant contributor to Arapiraca's total emissions. By promoting cleaner last-mile delivery solutions, this action supports improved air quality and can help mitigate public health risks associated with pollution. Additionally, electric cargo bikes are well-suited for urban environments with moderate population density, like Arapiraca, and can enhance local economic opportunities. While not the highest priority, this action aligns with broader sustainability goals and can complement other efforts to address climate and health challenges in the city."
     },
     {
         "locode": "BR ARC",
@@ -197,6 +197,6 @@
         "actionId": "icare_0060",
         "actionName": "Introduction of modular and automated collective transport systems.",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
+        "explanation": "Introducing modular and automated collective transport systems in Arapiraca can help address the city's high transportation emissions, which are a significant contributor to its overall greenhouse gas output. Improved public transport options can also enhance mobility for residents, particularly those with moderate low-income levels, by providing more affordable and efficient travel. Additionally, such systems can reduce traffic congestion and air pollution, leading to better public health outcomes. Given the city's vulnerability to heatwaves and diseases, reducing emissions and improving air quality are important steps toward building resilience."
     }
 ]

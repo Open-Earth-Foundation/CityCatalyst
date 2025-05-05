@@ -1,202 +1,202 @@
 [
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
+        "explanation": "Implementing an urban toll in Cuiabá is a high priority due to the city's significant transportation emissions, which are the largest contributor to its total greenhouse gas output. By introducing a toll, the city can discourage excessive car use, reduce traffic congestion, and promote more sustainable transportation options. This action can also help improve air quality and public health, which are critical given the high risks from heatwaves and diseases. Additionally, reducing vehicle traffic can support infrastructure resilience and align with broader climate adaptation goals."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
+        "explanation": "Promoting bike-sharing programs, especially with electric bikes, can significantly reduce transportation emissions, which are the largest source of emissions in Cuiabá. This action also supports public health by encouraging active transportation and reducing air pollution, which is important given the city's high risk from heatwaves and diseases. Additionally, providing sustainable mobility options can help make urban transportation more resilient to climate impacts, such as heatwaves and floods, which threaten infrastructure and public health. Focusing on electric bikes makes cycling accessible to a wider range of people, including those who may be deterred by the city's heat or elevation."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
+        "explanation": "Adopting biomethane in public fleets is a significant step for Cuiabá, given its high transportation emissions. Transitioning to cleaner fuels can help reduce greenhouse gas emissions and improve air quality, which is crucial for public health, especially considering the city's vulnerability to heatwaves and diseases. This action also supports energy security by diversifying fuel sources. Implementing biomethane in public transport demonstrates leadership in sustainable urban mobility and can serve as a model for other sectors."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets is a significant priority for Cuiabá due to the city's high transportation emissions, which are a major contributor to its overall greenhouse gas output. Transitioning to electric vehicles can help reduce air pollution and improve public health, especially important given the city's vulnerability to heatwaves and disease outbreaks. Additionally, on-demand systems can increase mobility and accessibility for residents, supporting sustainable urban development. This action aligns with the city's need to address climate risks while modernizing its transportation infrastructure."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
+        "explanation": "Implementing free public transportation during peak hours in Cuiabá can significantly reduce the use of individual vehicles, which is important given the city's high transportation emissions. This action can help alleviate traffic congestion and improve air quality, benefiting public health, especially as the city faces high risks from heatwaves and diseases. Additionally, making public transport more accessible supports social equity, particularly in a city with very low levels of low-income residents. By encouraging a shift to public transit, Cuiabá can make progress toward its climate and sustainability goals."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
+        "explanation": "Expanding cycling infrastructure and building public walkways and accessible sidewalks in Cuiabá is important for promoting sustainable and active transportation options. This action can help reduce transportation emissions, which are a significant contributor to the city's total greenhouse gas output. Prioritizing climate-resilient measures is crucial, given the city's high risks from heatwaves, floods, and droughts, which threaten public health and infrastructure. Improved walkability and cycling access also enhance urban mobility and can provide safer, healthier alternatives for residents, especially in a city with very low levels of inadequate water and sanitation access."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0100",
         "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
+        "explanation": "Supporting regenerative agriculture practices is important for Cuiabá due to its location in a grassland/savanna biome and its vulnerability to droughts, which threaten both water resources and food security. Regenerative agriculture can help restore soil health, increase water retention, and improve resilience to climate hazards. These practices also contribute to biodiversity conservation and can reduce land use emissions, which are significant in the city. By promoting sustainable farming, Cuiabá can strengthen its food systems and better adapt to climate risks."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
+        "explanation": "The adoption of electric drones for last-mile deliveries in Cuiabá can help reduce transportation emissions, which are currently the largest contributor to the city's total emissions. By shifting to electric drones, the city can decrease reliance on conventional delivery vehicles, thus lowering air pollution and greenhouse gas output. This action also supports innovation and can improve delivery efficiency, especially in areas with challenging access. While not directly addressing the city's most critical climate risks like droughts and heatwaves, it contributes to broader sustainability goals and urban modernization."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0075",
         "actionName": "Set carbon emissions reduction targets for industrial sectors",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
+        "explanation": "Setting carbon emissions reduction targets for industrial sectors is important for Cuiabá because industrial processes contribute significantly to the city's total greenhouse gas emissions. By establishing clear targets, the city can drive innovation and efficiency within its industrial sector, leading to long-term emissions reductions. This action also supports broader climate goals and helps mitigate risks associated with climate change, such as heatwaves and droughts, which are particularly relevant for Cuiabá. Additionally, it can enhance the city's reputation as a leader in sustainable development and attract environmentally conscious investments."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0130",
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
+        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions is important for Cuiabá due to its vulnerability to droughts, which significantly impact water resources and food security. By providing support and education to rural producers, the city can enhance agricultural resilience, improve food production, and promote sustainable land management practices. These efforts help mitigate the effects of climate hazards, such as droughts and floods, which are high risks for the region. Strengthening rural capacity also supports local livelihoods and contributes to the overall sustainability of the city's economy and environment."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
+        "explanation": "Expanding mass transit systems on rails, such as metros, LRTs, and monorails, is a significant action for Cuiabá. The city faces high transportation emissions, which are a major contributor to its overall greenhouse gas output. Improved rail-based transit can reduce reliance on private vehicles, lower emissions, and provide more efficient and reliable mobility for residents. Additionally, enhanced public transit can help address urban challenges related to population growth and support equitable access to transportation."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
+        "explanation": "Implementing agroforestry systems in Cuiabá is a valuable strategy due to the city's location in a grassland/savanna biome and its significant land use emissions. Agroforestry can help restore degraded land, enhance biodiversity, and improve soil and water retention, which is crucial given the high risk of droughts and threats to water resources and food security. Additionally, these systems can contribute to carbon sequestration, helping to mitigate the city's overall greenhouse gas emissions. This action also supports local livelihoods and resilience, making it a meaningful priority for sustainable development in the region."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0129",
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
+        "explanation": "Facilitating technology transfer for conservation practices in Cuiabá is important due to the city's location in a grassland/savanna biome and its exposure to climate hazards such as droughts and heatwaves. These hazards threaten water resources, biodiversity, and food security, making effective conservation practices essential for resilience. By enabling access to advanced conservation technologies, the city can better protect its natural resources and adapt to climate risks. This action supports long-term sustainability and helps safeguard the well-being of the population and local ecosystems."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
+        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) is important for Cuiabá due to its location in a grassland/savanna biome and the significant environmental pressures it faces. The city is highly vulnerable to droughts, which threaten water resources, food security, and biodiversity. PES programs can incentivize landowners and stakeholders to conserve and restore natural ecosystems, helping to mitigate these risks. By promoting sustainable land use and protecting vital ecosystem services, this action supports long-term resilience and environmental health for the city."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0096",
         "actionName": "Promote Organic Farming",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
+        "explanation": "Promoting organic farming in Cuiabá is important due to the city's vulnerability to droughts and its impact on food security. Organic farming practices can improve soil health and water retention, making agriculture more resilient to climate hazards. Additionally, these practices can help preserve local biodiversity, which is threatened by both droughts and heatwaves. Supporting organic farming also aligns with the city's need to ensure sustainable food production in the face of environmental challenges."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
+        "explanation": "The development of micro-logistics hubs to encourage the use of electric cargo bikes can help reduce transportation emissions, which are a significant contributor to Cuiabá's total greenhouse gas emissions. By promoting cleaner last-mile delivery options, this action supports improved air quality and public health, both of which are critical given the city's high vulnerability to heatwaves and disease. Additionally, shifting to electric cargo bikes can alleviate traffic congestion and reduce noise pollution in urban areas. This action aligns with Cuiabá's need to address climate risks while fostering sustainable urban mobility solutions."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases can strengthen Cuiabá's food security, which is at risk due to frequent droughts and floods. Supporting local agroecological producers helps build resilience in the food system, reduces dependency on external supply chains, and encourages sustainable agricultural practices that are better suited to the region's grassland/savanna biome. This action also has the potential to boost the local economy and create jobs, especially important in a city with a very low proportion of low-income residents. Additionally, it can contribute to reducing emissions from transportation by shortening supply chains."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
+        "explanation": "Encouraging renewable energy policies at the municipal level is important for Cuiabá, given its significant stationary energy and industrial process emissions. Transitioning to renewables can help reduce the city's overall greenhouse gas emissions and improve energy security, especially in the face of climate risks like droughts and heatwaves. Implementing such policies can also foster local economic development and resilience. While not the highest priority, it remains a valuable step toward a more sustainable and climate-resilient city."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
+        "explanation": "Supporting agroecological certification programs in Cuiabá is important due to the city's vulnerability to droughts and its reliance on food security. Agroecological practices can enhance resilience to climate hazards by promoting sustainable land use and reducing environmental impacts. Certification programs encourage farmers to adopt methods that protect biodiversity and soil health, which is crucial in a grassland/savanna biome. This action also aligns with the need to safeguard food systems against climate risks, making it a relevant, though not topmost, priority for the city."
     },
     {
         "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
+        "cityName": "Cuiabá",
         "region": "MT",
         "regionName": "Mato Grosso",
         "actionId": "icare_0102",
         "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
+        "explanation": "Promoting sustainable agricultural practices in Cuiabá is important due to the city's location in a grassland/savanna biome and its vulnerability to droughts, which significantly impact water resources and food security. Sustainable agriculture can help preserve soil health, reduce emissions from land use, and improve resilience to climate hazards. Given the high risk of droughts and the importance of agriculture in the region, this action supports both environmental sustainability and local livelihoods. Implementing these practices can also contribute to biodiversity conservation and long-term food security for the population."
     }
 ]

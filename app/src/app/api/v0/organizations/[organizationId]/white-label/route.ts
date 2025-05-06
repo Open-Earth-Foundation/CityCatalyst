@@ -7,12 +7,6 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
 
-export const config = {
-  api: {
-    bodyParser: false, // needed for formData()
-  },
-};
-
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const organizationId = params.organizationId;
   const org = await db.models.Organization.findOne({

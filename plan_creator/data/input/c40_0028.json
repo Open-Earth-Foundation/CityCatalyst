@@ -1,0 +1,71 @@
+{
+    "ActionID": "c40_0028",
+    "ActionName": "Zero Emission Buses",
+    "ActionType": [
+        "mitigation"
+    ],
+    "AdaptationCategory": null,
+    "Hazard": null,
+    "Sector": [
+        "transportation"
+    ],
+    "Subsector": [
+        "on-road"
+    ],
+    "PrimaryPurpose": [
+        "ghg_reduction"
+    ],
+    "InterventionType": [
+        "programs_and_initiatives",
+        "infrastructure_investments"
+    ],
+    "Description": "\"Zero Emission Buses\" initiatives focus on integrating electric or other zero-emission technologies into public transportation fleets. This strategy aims to eliminate traditional bus emissions, contributing to cleaner air and a more sustainable urban transit system.",
+    "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Zero Emission Buses\" initiative aims to achieve is an increased reliance on public transportation, specifically the use of electric or zero-emission buses, over personal vehicles. This shift is intended to encourage individuals to choose cleaner, more sustainable transit options, thereby reducing greenhouse gas emissions and contributing to improved air quality in urban areas. By enhancing the perception of public transportation as a convenient, safe, and environmentally friendly alternative, the initiative seeks to foster a cultural norm that prioritizes sustainable commuting practices.",
+    "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+    },
+    "EquityAndInclusionConsiderations": "The \"Zero Emission Buses\" initiative promotes equity and inclusion by prioritizing cleaner air in urban areas, which often include vulnerable or underserved communities that are disproportionately affected by air pollution. By transitioning to electric or zero-emission buses, the initiative directly addresses health disparities faced by these populations, improving their overall quality of life.\n\nAdditionally, the integration of zero-emission technologies into public transportation enhances accessibility to reliable and sustainable transit options for low-income individuals who may rely on public transport for their daily commutes. This ensures that all community members, regardless of socioeconomic status, have equitable access to clean transportation.\n\nFurthermore, the initiative may create job opportunities in the maintenance and operation of zero-emission buses, particularly in communities that have historically faced economic disadvantages. This can help foster economic inclusion and support local workforce development.\n\nOverall, the initiative's focus on reducing emissions and improving public transportation aligns with the needs of underserved communities, promoting environmental justice and equitable access to clean transit solutions.",
+    "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "20-39",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+    },
+    "AdaptationEffectiveness": null,
+    "CostInvestmentNeeded": "high",
+    "TimelineForImplementation": "<5 years",
+    "Dependencies": [
+        "Availability of electric or zero-emission bus technology",
+        "Investment in charging infrastructure for electric buses",
+        "Supportive government policies and regulations promoting zero-emission transportation",
+        "Public funding or financial incentives for transit agencies",
+        "Training and workforce development for maintenance and operation of new technologies",
+        "Public acceptance and demand for cleaner public transportation options"
+    ],
+    "KeyPerformanceIndicators": [
+        "Number of zero-emission buses deployed",
+        "Reduction in greenhouse gas emissions",
+        "Percentage of public transportation fleet that is zero-emission",
+        "Air quality improvement metrics",
+        "Operational cost savings from zero-emission buses",
+        "Public ridership levels",
+        "Energy consumption per mile",
+        "Maintenance costs of zero-emission buses",
+        "User satisfaction ratings",
+        "Reduction in noise pollution"
+    ],
+    "Impacts": [
+        "Reduction of greenhouse gas emissions in the transportation sector by 20-39%",
+        "Improvement of air quality in urban areas",
+        "Promotion of equity and inclusion for underserved communities",
+        "Enhanced accessibility to public transportation for low-income individuals",
+        "Creation of job opportunities in the maintenance and operation of zero-emission buses"
+    ]
+}

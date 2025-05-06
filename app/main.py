@@ -1,0 +1,58 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from prioritizer.api import router as prioritizer_router
+from plan_creator.api import router as plan_creator_router
+from utils.logging_config import setup_logger
+import httpx
+import uvicorn
+import logging
+
+app = FastAPI(
+    title="Climate Action Selection and Prioritization",
+    description="Unified API for plan creation and prioritization",
+    version="1.0.0",
+)
+
+# Add CORS middleware configuration with more explicit settings
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://cap.openearth.dev",
+        "https://cap-plan-creator.openearth.dev",
+        "http://localhost:3000",
+        "http://localhost:8000",
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
+    allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Headers",
+        "Access-Control-Allow-Origin",
+        "Access-Control-Allow-Methods",
+        "Access-Control-Allow-Credentials",
+        "Accept",
+        "Origin",
+        "X-Requested-With",
+    ],
+    expose_headers=["*"],
+    max_age=3600,  # Cache preflight requests for 1 hour
+)
+
+
+@app.get("/")
+async def root():
+    logger.info("Health check endpoint called")
+    return {"message": "Hello World"}
+
+
+# Mount feature routers
+app.include_router(prioritizer_router, prefix="/prioritizer", tags=["Prioritizer"])
+app.include_router(plan_creator_router, prefix="/plan-creator", tags=["Plan Creator"])
+
+if __name__ == "__main__":
+    setup_logger()
+    logger = logging.getLogger(__name__)
+
+    logger.info("Starting Uvicorn server")
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_config=None)

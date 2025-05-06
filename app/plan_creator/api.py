@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
+from fastapi import HTTPException, Request, BackgroundTasks, APIRouter
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -10,57 +10,63 @@ import logging
 import uuid
 import threading
 from typing import Optional, List, Dict, Any
-import httpx
-import uvicorn
+
+# import httpx
+# import uvicorn
+from utils.logging_config import setup_logger
 
 # Import the existing plan generation components
 from graph_definition import create_graph
 from state.agent_state import AgentState
 from langchain_core.messages import AIMessage
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.StreamHandler(), logging.FileHandler("app.log")],
-)
 logger = logging.getLogger(__name__)
 
+# Configure logging
+# logging.basicConfig(
+#     level=logging.INFO,
+#     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+#     handlers=[logging.StreamHandler(), logging.FileHandler("app.log")],
+# )
+# logger = logging.getLogger(__name__)
+
+router = APIRouter()
+
 # Configure longer timeout for external requests
-httpx._config.DEFAULT_TIMEOUT_CONFIG.connect = 3000.0  # 300 seconds
-httpx._config.DEFAULT_TIMEOUT_CONFIG.read = 3000.0  # 300 seconds
+# httpx._config.DEFAULT_TIMEOUT_CONFIG.connect = 3000.0  # 300 seconds
+# httpx._config.DEFAULT_TIMEOUT_CONFIG.read = 3000.0  # 300 seconds
 
-app = FastAPI(
-    title="Climate Action Plan Creator API",
-    description="API for generating climate action implementation plans",
-    version="1.0.0",
-)
+# app = FastAPI(
+#     title="Climate Action Plan Creator API",
+#     description="API for generating climate action implementation plans",
+#     version="1.0.0",
+# )
 
-# Add CORS middleware configuration with more explicit settings
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://cap.openearth.dev",
-        "https://cap-plan-creator.openearth.dev",
-        "http://localhost:3000",
-        "http://localhost:8000",
-    ],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
-    allow_headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Headers",
-        "Access-Control-Allow-Origin",
-        "Access-Control-Allow-Methods",
-        "Access-Control-Allow-Credentials",
-        "Accept",
-        "Origin",
-        "X-Requested-With",
-    ],
-    expose_headers=["*"],
-    max_age=3600,  # Cache preflight requests for 1 hour
-)
+# # Add CORS middleware configuration with more explicit settings
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=[
+#         "https://cap.openearth.dev",
+#         "https://cap-plan-creator.openearth.dev",
+#         "http://localhost:3000",
+#         "http://localhost:8000",
+#     ],
+#     allow_credentials=True,
+#     allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
+#     allow_headers=[
+#         "Content-Type",
+#         "Authorization",
+#         "Access-Control-Allow-Headers",
+#         "Access-Control-Allow-Origin",
+#         "Access-Control-Allow-Methods",
+#         "Access-Control-Allow-Credentials",
+#         "Accept",
+#         "Origin",
+#         "X-Requested-With",
+#     ],
+#     expose_headers=["*"],
+#     max_age=3600,  # Cache preflight requests for 1 hour
+# )
 
 # Define output directory
 output_dir = Path(__file__).parent / "data" / "output"
@@ -105,12 +111,6 @@ def get_city_by_name(city_name: str) -> Dict[str, Any]:
 
     logger.error(f"City not found: {city_name}")
     raise ValueError(f"City not found: {city_name}")
-
-
-@app.get("/")
-async def root():
-    logger.info("Health check endpoint called")
-    return {"message": "Hello World"}
 
 
 def _execute_plan_creation(task_uuid: str, request: PlanRequest):
@@ -210,7 +210,7 @@ def _execute_plan_creation(task_uuid: str, request: PlanRequest):
         task_storage[task_uuid]["error"] = f"Error generating plan: {str(e)}"
 
 
-@app.post("/start_plan_creation")
+@router.post("/start_plan_creation")
 async def start_plan_creation(request: PlanRequest):
     """Start asynchronous plan creation process"""
     # Generate a unique task ID
@@ -247,7 +247,7 @@ async def start_plan_creation(request: PlanRequest):
     )
 
 
-@app.get("/check_progress/{task_uuid}")
+@router.get("/check_progress/{task_uuid}")
 async def check_progress(task_uuid: str):
     """Check the progress of a plan creation task"""
     logger.info(f"Checking progress for task: {task_uuid}")
@@ -268,7 +268,7 @@ async def check_progress(task_uuid: str):
     return response_data
 
 
-@app.get("/get_plan/{task_uuid}")
+@router.get("/get_plan/{task_uuid}")
 async def get_plan(task_uuid: str):
     """Get the completed plan for a task"""
     logger.info(f"Retrieving plan for task: {task_uuid}")
@@ -306,7 +306,7 @@ async def get_plan(task_uuid: str):
 
 
 # Keep the old endpoint for backward compatibility
-@app.post("/create_plan")
+@router.post("/create_plan")
 async def create_plan(request: PlanRequest):
     logger.warning(
         "Deprecated /create_plan endpoint called. Consider using the new asynchronous API."
@@ -400,12 +400,12 @@ async def create_plan(request: PlanRequest):
         raise HTTPException(status_code=500, detail=f"Error generating plan: {str(e)}")
 
 
-if __name__ == "__main__":
-    logger.info("Configuring Uvicorn logging")
-    log_config = uvicorn.config.LOGGING_CONFIG
-    log_config["formatters"]["access"][
-        "fmt"
-    ] = "%(asctime)s - %(name)s - %(levelname)s - %(client_addr)s - '%(request_line)s' %(status_code)s"
+# if __name__ == "__main__":
+#     logger.info("Configuring Uvicorn logging")
+#     log_config = uvicorn.config.LOGGING_CONFIG
+#     log_config["formatters"]["access"][
+#         "fmt"
+#     ] = "%(asctime)s - %(name)s - %(levelname)s - %(client_addr)s - '%(request_line)s' %(status_code)s"
 
-    logger.info("Starting Uvicorn server")
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_config=log_config)
+#     logger.info("Starting Uvicorn server")
+#     uvicorn.run(app, host="0.0.0.0", port=8000, log_config=log_config)

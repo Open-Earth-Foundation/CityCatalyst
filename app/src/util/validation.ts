@@ -313,4 +313,6 @@ export type TransferCitiesRequest = z.infer<typeof transferCitiesRequest>;
 
 export const whiteLabelSchema = z.object({
   themeId: z.string().min(1, "themeKey is required"),
+  logoUrl: z.string().optional(),
+  clearLogoUrl: z.string().optional(),
 });

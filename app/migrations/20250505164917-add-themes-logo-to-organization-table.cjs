@@ -16,20 +16,14 @@ module.exports = {
     await queryInterface.addColumn("Organization", "theme_id", {
       type: Sequelize.UUID,
       allowNull: true,
-      references: {
-        model: "Themes",
-        key: "id",
-      },
-      onUpdate: "CASCADE",
-      onDelete: "SET NULL",
     });
     await queryInterface.addConstraint("Organization", {
       fields: ["theme_id"],
       type: "foreign key",
       name: "FK_organization_theme_id",
       references: {
-        table: "Themes",
-        field: "id",
+        table: "Theme",
+        field: "theme_id",
       },
       onUpdate: "CASCADE",
       onDelete: "SET NULL",

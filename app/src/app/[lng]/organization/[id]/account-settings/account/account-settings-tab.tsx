@@ -3,15 +3,17 @@ import {
   createListCollection,
   HStack,
   Icon,
+  SelectIndicatorGroup,
+  Spinner,
   Tabs,
   Text,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { Field } from "@/components/ui/field";
-import LogoUploadCard from "@/app/[lng]/account-settings/account/logo-file-upload";
+import LogoUploadCard from "./logo-file-upload";
 import { FileUploadRoot } from "@/components/ui/file-upload";
 import { IoMdInformationCircleOutline } from "react-icons/io";
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   SelectContent,
   SelectItem,
@@ -20,8 +22,26 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import {
+  useGetOrganizationQuery,
+  useGetThemesQuery,
+  useGetUserAccessStatusQuery,
+  useSetOrgWhiteLabelMutation,
+} from "@/services/api";
+import ProgressLoader from "@/components/ProgressLoader";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { useTheme } from "next-themes";
+import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {
+  const { showErrorToast } = UseErrorToast({
+    title: t("error-message"),
+  });
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("account-brand-updated"),
+    duration: 1200,
+  });
+
   const KeyColorMapping = {
     blue_theme: "#001EA7",
     light_brown_theme: "#B0901C",
@@ -33,43 +53,86 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
 
   type themeType = keyof typeof KeyColorMapping;
 
-  const options = createListCollection({
-    items: [
-      {
-        value: "blue_theme",
-        label: t("blue_theme"),
-        color: "#001EA7",
-      },
-      {
-        value: "light_brown_theme",
-        label: t("light_brown_theme"),
-        color: "#B0901C",
-      },
-      {
-        value: "dark_orange_theme",
-        label: t("dark_orange_theme"),
-        color: "#B0661C",
-      },
-      {
-        value: "green_theme",
-        label: t("green_theme"),
-        color: "#7FB01C",
-      },
-      {
-        value: "light_blue_theme",
-        label: t("light_blue_theme"),
-        color: "#1CAEB0",
-      },
-      {
-        value: "violet_theme",
-        label: t("violet_theme"),
-        color: "#7F1CB0",
-      },
-    ],
-  });
+  const { data: themeOptions, isLoading: isThemeOptionsLoading } =
+    useGetThemesQuery({});
+
+  const options = useMemo(() => {
+    return createListCollection({
+      items: themeOptions
+        ? themeOptions?.map((theme) => ({
+            value: theme.themeId,
+            key: theme.themeKey,
+            label: t(theme.themeKey),
+            color: KeyColorMapping[theme.themeKey as themeType],
+          }))
+        : [],
+    });
+  }, [themeOptions]);
 
   const [selectedTheme, setSelectedTheme] =
     React.useState<string>("blue_theme");
+
+  const [file, setFile] = React.useState<File | null>(null);
+  const [clearImage, setClearImage] = React.useState(false);
+  const { setTheme } = useTheme();
+  const { setLogoUrl } = useLogo();
+
+  const { data: userAccessStatus, isLoading } = useGetUserAccessStatusQuery({});
+
+  const { data: organization, isLoading: isOrganizationLoading } =
+    useGetOrganizationQuery(userAccessStatus?.organizationId as string, {
+      skip: !userAccessStatus?.organizationId,
+    });
+
+  const [setWhiteLabel, { isLoading: isSettingWhiteLabel }] =
+    useSetOrgWhiteLabelMutation();
+
+  const blueTheme = useMemo(() => {
+    return themeOptions?.find((theme) => theme.themeKey === "blue_theme");
+  }, [themeOptions]);
+
+  const selectedThemeValue = useMemo(() => {
+    return options?.items.find((item) => item.value === selectedTheme);
+  }, [selectedTheme, options?.items]);
+
+  useEffect(() => {
+    if (organization) {
+      setSelectedTheme((organization?.themeId as string) ?? blueTheme?.themeId);
+    }
+  }, [organization, blueTheme, setSelectedTheme]);
+
+  const handleSubmit = async () => {
+    if (!userAccessStatus?.organizationId) return;
+
+    try {
+      const response = await setWhiteLabel({
+        organizationId: userAccessStatus.organizationId,
+        whiteLabelData: {
+          themeId: selectedTheme,
+          logo: file ? file : undefined,
+          clearLogoUrl: clearImage,
+        },
+      }).unwrap();
+
+      console.log("response", response);
+
+      setFile(null);
+      setClearImage(false);
+      setTheme(selectedThemeValue?.key as string);
+      setLogoUrl(response?.logoUrl as string);
+      showSuccessToast();
+    } catch (err) {
+      console.error("Failed to update white label settings:", err);
+    }
+  };
+
+  const hasChanges = useMemo(() => {
+    return (
+      selectedTheme !== organization?.themeId || file !== null || clearImage
+    );
+  }, [selectedTheme, organization?.themeId, file, clearImage]);
+
+  if (isLoading || isOrganizationLoading) return <ProgressLoader />;
 
   return (
     <Tabs.Root
@@ -138,7 +201,14 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
           <Box mt={9}>
             <Field className="w-full" label={t("logo")}>
               <FileUploadRoot accept={{ "image/*": [] }} maxFiles={1}>
-                <LogoUploadCard />
+                <LogoUploadCard
+                  defaultUrl={clearImage ? undefined : organization?.logoUrl}
+                  setFile={setFile}
+                  clearImage={() => {
+                    setClearImage(true);
+                    setFile(null);
+                  }}
+                />
               </FileUploadRoot>
               <HStack>
                 <Icon
@@ -175,11 +245,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
                   borderRadius="md"
                 >
                   <HStack>
-                    <Box
-                      h={5}
-                      w={5}
-                      bg={KeyColorMapping[selectedTheme as themeType]}
-                    />
+                    <Box h={5} w={5} bg={selectedThemeValue?.color} />
                     <SelectValueText
                       color="content.tertiary"
                       fontWeight="medium"
@@ -187,6 +253,16 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
                     />
                   </HStack>
                 </SelectTrigger>
+                <SelectIndicatorGroup>
+                  {isThemeOptionsLoading && (
+                    <Spinner
+                      size="xs"
+                      ml={-10}
+                      borderWidth="1.5px"
+                      color="content.tertiary"
+                    />
+                  )}
+                </SelectIndicatorGroup>
                 <SelectContent>
                   {options?.items.map((item) => {
                     return (
@@ -219,7 +295,13 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
               </HStack>
             </Field>
             <Box justifyContent="end" w="full" display="flex" mt={6}>
-              <Button h={16} variant="solid">
+              <Button
+                onClick={handleSubmit}
+                h={16}
+                disabled={!hasChanges}
+                variant="solid"
+                loading={isSettingWhiteLabel}
+              >
                 {t("save-changes")}
               </Button>
             </Box>

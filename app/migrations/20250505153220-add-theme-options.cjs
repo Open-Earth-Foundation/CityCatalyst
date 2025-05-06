@@ -10,8 +10,8 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
 
-    await queryInterface.createTable("Themes", {
-      id: {
+    await queryInterface.createTable("Theme", {
+      theme_id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
@@ -33,45 +33,45 @@ module.exports = {
       },
     });
 
-    await queryInterface.addConstraint("Themes", {
+    await queryInterface.addConstraint("Theme", {
       fields: ["theme_key"],
       type: "unique",
-      name: "uq_theme_key",
+      name: "unique_theme_key",
     });
 
-    await queryInterface.bulkInsert("Themes", [
+    await queryInterface.bulkInsert("Theme", [
       {
-        id: "d1b2e3f4-5678-90ab-cdef-1234567890ab",
+        theme_id: "d1b2e3f4-5678-90ab-cdef-1234567890ab",
         theme_key: "blue_theme",
         created: new Date(),
         last_updated: new Date(),
       },
       {
-        id: "d1b2e3f4-5678-90ab-cdef-1234567890ac",
+        theme_id: "d1b2e3f4-5678-90ab-cdef-1234567890ac",
         theme_key: "light_brown_theme",
         created: new Date(),
         last_updated: new Date(),
       },
       {
-        id: "d1b2e3f4-5678-90ab-cdef-1234567890ad",
+        theme_id: "d1b2e3f4-5678-90ab-cdef-1234567890ad",
         theme_key: "dark_orange_theme",
         created: new Date(),
         last_updated: new Date(),
       },
       {
-        id: "d1b2e3f4-5678-90ab-cdef-1234567890ae",
+        theme_id: "d1b2e3f4-5678-90ab-cdef-1234567890ae",
         theme_key: "green_theme",
         created: new Date(),
         last_updated: new Date(),
       },
       {
-        id: "d1b2e3f4-5678-90ab-cdef-1234567890af",
+        theme_id: "d1b2e3f4-5678-90ab-cdef-1234567890af",
         theme_key: "light_blue_theme",
         created: new Date(),
         last_updated: new Date(),
       },
       {
-        id: "d1b2e3f4-5678-90ab-cdef-1234567890b1",
+        theme_id: "d1b2e3f4-5678-90ab-cdef-1234567890b1",
         theme_key: "violet_theme",
         created: new Date(),
         last_updated: new Date(),
@@ -86,8 +86,8 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.bulkDelete("Themes", null, {});
-    await queryInterface.removeConstraint("Themes", "uq_theme_key");
-    await queryInterface.dropTable("Themes");
+    await queryInterface.bulkDelete("Theme", null, {});
+    await queryInterface.removeConstraint("Theme", "unique_theme_key");
+    await queryInterface.dropTable("Theme");
   },
 };

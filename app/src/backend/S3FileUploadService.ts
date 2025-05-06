@@ -30,7 +30,7 @@ export class S3FileStorageProvider implements FileStorageProvider {
     await this.s3.send(command);
 
     return {
-      url: `https://${this.bucket}.s3.${this.s3.config.region}.amazonaws.com/${key}`,
+      url: `https://${process.env.AWS_FILE_UPLOAD_S3_BUCKET_ID}.s3.${process.env.AWS_FILE_UPLOAD_REGION}.amazonaws.com/${key}`,
       filename: file.filename,
       mimetype: file.mimetype,
       size: file.size,

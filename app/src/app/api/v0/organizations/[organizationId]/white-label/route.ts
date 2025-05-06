@@ -1,79 +1,90 @@
-import { z } from "zod";
-import formidable, { File } from "formidable";
-
+import { whiteLabelSchema } from "@/util/validation";
 import { FileUploadService } from "@/backend/FileUploadService";
 import { S3FileStorageProvider } from "@/backend/S3FileUploadService";
-import { NextResponse } from "next/server";
-import { apiHandler } from "@/util/api";
-import createHttpError from "http-errors";
-import { whiteLabelSchema } from "@/util/validation";
-import { readFile } from "node:fs/promises";
-import { Organization } from "@/models/Organization";
 import { db } from "@/models";
+import { Organization } from "@/models/Organization";
+import createHttpError from "http-errors";
+import { NextRequest, NextResponse } from "next/server";
+import { apiHandler } from "@/util/api";
 
-export async function parseMultipartForm<T extends z.ZodRawShape>(
-  req: Request,
-  schema: z.ZodObject<T>,
-): Promise<{
-  fields: z.infer<typeof schema>;
-  file: File;
-}> {
-  return new Promise((resolve, reject) => {
-    const form = formidable({ multiples: false, keepExtensions: true });
-
-    form.parse(req as any, (err, fields, files) => {
-      if (err) return reject(err);
-
-      const result = schema.safeParse(fields);
-      if (!result.success) return reject(result.error);
-
-      const file = (files.file ?? files.upload ?? null) as unknown as File;
-      if (!file) return reject(new Error("File is required"));
-
-      resolve({ fields: result.data, file });
-    });
-  });
-}
+export const config = {
+  api: {
+    bodyParser: false, // needed for formData()
+  },
+};
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
-  if (!session) throw new createHttpError.Unauthorized();
-  const { organizationId } = params;
-  const { fields, file } = await parseMultipartForm(req, whiteLabelSchema);
+  const organizationId = params.organizationId;
+  const org = await db.models.Organization.findOne({
+    where: {
+      organizationId,
+    },
+  });
 
-  const org = await Organization.findByPk(organizationId as string);
   if (!org) {
-    throw new createHttpError.NotFound("organization-not-found");
+    throw new createHttpError.NotFound("Organization not found");
   }
 
-  const buffer = await readFile(file.filepath);
-  const fileUploadService = new FileUploadService(
-    new S3FileStorageProvider(process.env.AWS_FILE_UPLOAD_S3_BUCKET_ID!, {
-      region: process.env.AWS_FILE_UPLOAD_REGION,
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-      },
-    }),
-  );
+  const formData = await req.formData();
 
-  const uploaded = await fileUploadService.uploadFile({
-    filename: file.originalFilename!,
-    mimetype: file.mimetype!,
-    size: file.size,
-    buffer: Buffer.from(buffer),
-  });
+  const themeId = formData.get("themeId");
+  const clearLogo = formData.get("clearLogoUrl");
+  const file = formData.get("file") as File | null;
+
+  const fields = {
+    themeId: themeId?.toString(),
+    clearLogoUrl: clearLogo?.toString() ?? undefined,
+  };
+
+  const parsed = whiteLabelSchema.safeParse(fields);
+  if (!parsed.success) {
+    throw new createHttpError.BadRequest("Validation failed");
+  }
+
+  const { themeId: validThemeId, clearLogoUrl: shouldClearLogo } = parsed.data;
+
+  let logoUrl: string | null = org.logoUrl as string;
+
+  if (shouldClearLogo === "true") {
+    logoUrl = null;
+  } else if (file instanceof File) {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const uploader = new FileUploadService(
+      new S3FileStorageProvider(process.env.AWS_FILE_UPLOAD_S3_BUCKET_ID!, {
+        region: process.env.AWS_FILE_UPLOAD_REGION!,
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        },
+      }),
+    );
+
+    const uploaded = await uploader.uploadFile({
+      filename: file.name,
+      mimetype: file.type,
+      size: file.size,
+      buffer,
+    });
+
+    logoUrl = uploaded.url;
+  }
 
   await db.models.Organization.update(
     {
-      logoUrl: uploaded.url,
-      themeId: fields.themeId,
+      logoUrl: logoUrl,
+      themeId: validThemeId,
     },
     {
-      where: {
-        organizationId: organizationId as string,
-      },
+      where: { organizationId },
     },
   );
 
-  return NextResponse.json({ data: uploaded, themeKey: fields.themeId });
+  return NextResponse.json({
+    data: {
+      logoUrl,
+      themeId: validThemeId,
+    },
+  });
 });

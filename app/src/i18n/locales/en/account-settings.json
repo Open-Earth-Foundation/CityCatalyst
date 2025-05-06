@@ -14,5 +14,7 @@
   "violet_theme": "Violet",
   "green": "Green",
   "go-back": "Go Back",
-  "save-changes": "Save Changes"
+  "save-changes": "Save Changes",
+  "account-brand-updated": "Account and brand settings updated successfully",
+  "error-message": "An Error occurred"
 }

@@ -4,11 +4,39 @@ import {
   FileUploadDropzone,
   FileUploadList,
 } from "@/components/ui/file-upload";
-import { Box, Icon, Image, Text, useFileUploadContext } from "@chakra-ui/react";
-import { MdOutlineAddAPhoto } from "react-icons/md";
+import {
+  Box,
+  Icon,
+  IconButton,
+  Image,
+  Text,
+  useFileUploadContext,
+} from "@chakra-ui/react";
+import { MdMoreVert, MdOutlineAddAPhoto } from "react-icons/md";
+import React, { useEffect } from "react";
+import { CiCircleRemove } from "react-icons/ci";
 
-const LogoUploadCard = ({ url }: { url?: string }) => {
-  const { acceptedFiles: files } = useFileUploadContext();
+const LogoUploadCard = ({
+  defaultUrl,
+  setFile,
+  clearImage,
+}: {
+  defaultUrl?: string;
+  setFile: (file: File | null) => void;
+  clearImage: () => void;
+}) => {
+  const { acceptedFiles: files, clearFiles } = useFileUploadContext();
+
+  const handleDelete = () => {
+    clearFiles();
+    clearImage();
+  };
+
+  useEffect(() => {
+    if (files.length > 0) {
+      setFile(files[0]);
+    }
+  }, [files]);
 
   return (
     <>
@@ -26,6 +54,7 @@ const LogoUploadCard = ({ url }: { url?: string }) => {
             display="flex"
             alignItems="center"
             justifyContent="center"
+            position="relative"
           >
             <Box
               bg="base.dark/60"
@@ -50,13 +79,30 @@ const LogoUploadCard = ({ url }: { url?: string }) => {
               />
             ) : (
               <Image
-                src={"/assets/wide-logo.png"}
+                src={defaultUrl ? defaultUrl : "/assets/wide-logo.png"}
                 alt="Uploaded preview"
                 objectFit="cover"
                 w="100%"
                 h="100%"
                 borderRadius="2xl"
               />
+            )}
+            {(files.length > 0 || defaultUrl) && (
+              <IconButton
+                data-testid="activity-more-icon"
+                aria-label="more-icon"
+                variant="ghost"
+                ml={2}
+                position="absolute"
+                left="100%"
+                color="content.tertiary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete();
+                }}
+              >
+                <Icon as={CiCircleRemove} size="lg" />
+              </IconButton>
             )}
           </Box>
         }

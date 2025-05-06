@@ -41,6 +41,8 @@ import { Button } from "@/components/ui/button";
 import { Roles } from "@/util/types";
 import ProjectDrawer from "@/components/HomePage/ProjectDrawer";
 import { TbSettingsCog } from "react-icons/tb";
+import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
+import { useTheme } from "next-themes";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -66,13 +68,20 @@ export function NavigationBar({
   isAuth?: boolean;
   children?: React.ReactNode;
   restrictAccess?: boolean;
+  isOrgOwner?: boolean;
 }) {
   const { t } = useTranslation(lng, "navigation");
+  const { logoUrl } = useLogo();
   const { inventory: inventoryParam } = useParams();
   const inventoryIdFromParam = inventoryParam;
   const { data: inventory, isLoading: isInventoryLoading } =
     api.useGetInventoryQuery((inventoryIdFromParam as string) || "default");
-
+  const { data: userAccessStatus } = useGetUserAccessStatusQuery(
+    {},
+    {
+      skip: isPublic,
+    },
+  );
   const onChangeLanguage = (language: string) => {
     Cookies.set("i18next", language);
     const cookieLanguage = Cookies.get("i18next");
@@ -116,6 +125,7 @@ export function NavigationBar({
   const router = useRouter();
   const pathname = usePathname();
   const dashboardPath = `/${lng}/${inventoryIdFromParam ?? currentInventoryId}`;
+  const { setTheme } = useTheme();
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setLanguageMenuOpen] = useState(false);
@@ -129,25 +139,39 @@ export function NavigationBar({
       className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50 w-full"
       bgColor="content.alternative"
     >
-      <Box className="flex" gap={6}>
+      <Box
+        className="flex"
+        gap={6}
+        flexShrink={logoUrl ? 0 : 1}
+        w={logoUrl ? "250px" : "auto"}
+        h={logoUrl ? "40px" : "auto"}
+      >
         {showMenu && !isPublic && (
           <IconButton variant="ghost" onClick={() => setIsDrawerOpen(true)}>
             <Icon as={MdOutlineMenu} boxSize={8} />
           </IconButton>
         )}
-        <Link width={9} height={9} href={dashboardPath}>
-          <Image
-            src="/assets/logo.svg"
-            width={36}
-            height={36}
-            alt="CityCatalyst logo"
-          />
-        </Link>
-        <Link href={dashboardPath}>
-          <Heading size="lg" color="base.light">
-            {t("title")}
-          </Heading>
-        </Link>
+        {logoUrl && !isAuth ? (
+          <Link href={dashboardPath}>
+            <img src={logoUrl} height={40} width={250} alt="Org logo" />
+          </Link>
+        ) : (
+          <>
+            <Link width={9} height={9} href={dashboardPath}>
+              <Image
+                src="/assets/logo.svg"
+                width={36}
+                height={36}
+                alt="CityCatalyst logo"
+              />
+            </Link>
+            <Link href={dashboardPath}>
+              <Heading size="lg" color="base.light">
+                {t("title")}
+              </Heading>
+            </Link>
+          </>
+        )}
       </Box>
       <div className="w-full" />
       {showNav && !isPublic && (
@@ -372,29 +396,33 @@ export function NavigationBar({
                     </Box>
                   </MenuItem>
                 )}
-                <MenuItem
-                  paddingTop="12px"
-                  paddingBottom="12px"
-                  value="account-settings"
-                  px="16px"
-                  onClick={() => {
-                    router.push(`/account-settings`);
-                  }}
-                >
-                  <Box display="flex" alignItems="center">
-                    <Icon
-                      as={TbSettingsCog}
-                      boxSize={6}
-                      color={
-                        userMenuHighlight === "account-settings"
-                          ? "background.neutral"
-                          : "content.alternative"
-                      }
-                      mr={4}
-                    />
-                    <Text fontSize="title.md">{t("account-settings")}</Text>
-                  </Box>
-                </MenuItem>
+                {userAccessStatus?.isOrgOwner && !restrictAccess && (
+                  <MenuItem
+                    paddingTop="12px"
+                    paddingBottom="12px"
+                    value="account-settings"
+                    px="16px"
+                    onClick={() => {
+                      router.push(
+                        `/organization/${userAccessStatus.organizationId}/account-settings`,
+                      );
+                    }}
+                  >
+                    <Box display="flex" alignItems="center">
+                      <Icon
+                        as={TbSettingsCog}
+                        boxSize={6}
+                        color={
+                          userMenuHighlight === "account-settings"
+                            ? "background.neutral"
+                            : "content.alternative"
+                        }
+                        mr={4}
+                      />
+                      <Text fontSize="title.md">{t("account-settings")}</Text>
+                    </Box>
+                  </MenuItem>
+                )}
                 <MenuItem
                   paddingTop="12px"
                   paddingBottom="12px"

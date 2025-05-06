@@ -1,6 +1,7 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import { Project } from "@/models/Project";
+import { Theme } from "@/models/Theme";
 
 export interface OrganizationAttributes {
   organizationId: string;
@@ -9,7 +10,7 @@ export interface OrganizationAttributes {
   created?: Date;
   lastUpdated?: Date;
   themeId?: string;
-  logoUrl?: string;
+  logoUrl?: string | null;
 }
 
 export type OrganizationPk = "organizationId";
@@ -30,9 +31,9 @@ export class Organization
   created?: Date;
   lastUpdated?: Date;
   themeId?: string;
-  logoUrl?: string;
+  logoUrl?: string | null;
 
-  theme: Theme;
+  theme!: Theme;
   projects!: Project[];
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Organization {
@@ -53,7 +54,20 @@ export class Organization
           allowNull: false,
           field: "contact_email",
         },
-        themeId: {},
+        themeId: {
+          type: DataTypes.UUID,
+          allowNull: false,
+          field: "theme_id",
+          references: {
+            model: "Theme",
+            key: "theme_id",
+          },
+        },
+        logoUrl: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "logo_url",
+        },
       },
       {
         sequelize,

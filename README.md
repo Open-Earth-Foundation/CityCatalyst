@@ -18,6 +18,7 @@ This will:
 
 - create a vector store with name `all_docs_db_small_chunks`
   It will create a vector store with the documents from this folder: `data/files`
+  The files are now stored in S3 bucket /data/files folder and need to be downloaded from there and put into the folder because of file size reasons.
 
 **Info:** If you want to adjust details of how the documents get added (e.g. chunk size, overlap, meta data) you need to add the arguments to the script call in the bash script.
 

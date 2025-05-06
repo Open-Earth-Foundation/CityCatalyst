@@ -148,6 +148,8 @@ jobs:
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,CAP_TAB_ENABLED" \
+            "AWS_FILE_UPLOAD_S3_BUCKET_ID=citycatalyst-files" \
+            "AWS_FILE_UPLOAD_REGION=us-east-1" \
             "AWS_REGION"=${{secrets.AWS_REGION}} \
             "AWS_ACCESS_KEY_ID"=${{secrets.AWS_ACCESS_KEY_ID}} \
             "AWS_SECRET_ACCESS_KEY"=${{secrets.AWS_SECRET_ACCESS_KEY}} \

@@ -48,10 +48,6 @@ function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
 }
 
-function logOut() {
-  signOut({ callbackUrl: "/auth/login", redirect: true });
-}
-
 export function NavigationBar({
   lng,
   showNav = true,
@@ -134,6 +130,11 @@ export function NavigationBar({
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  function logOut() {
+    signOut({ callbackUrl: "/auth/login", redirect: true });
+    setTheme("blue_theme");
+  }
+
   return (
     <Box
       className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50 w-full"
@@ -157,14 +158,16 @@ export function NavigationBar({
           </Link>
         ) : (
           <>
-            <Link width={9} height={9} href={dashboardPath}>
-              <Image
-                src="/assets/logo.svg"
-                width={36}
-                height={36}
-                alt="CityCatalyst logo"
-              />
-            </Link>
+            {!isAuth && (
+              <Link width={9} height={9} href={dashboardPath}>
+                <Image
+                  src="/assets/logo.svg"
+                  width={36}
+                  height={36}
+                  alt="CityCatalyst logo"
+                />
+              </Link>
+            )}
             <Link href={dashboardPath}>
               <Heading size="lg" color="base.light">
                 {t("title")}

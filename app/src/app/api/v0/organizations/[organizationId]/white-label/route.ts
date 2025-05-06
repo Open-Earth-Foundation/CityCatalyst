@@ -45,6 +45,17 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      throw new createHttpError.BadRequest("File size exceeds maximum allowed");
+    }
+
+    // Validate mime type
+    const ALLOWED_MIMES = ["image/jpeg", "image/jpg", "image/png"];
+    if (!ALLOWED_MIMES.includes(file.type)) {
+      throw new createHttpError.BadRequest("File type not allowed");
+    }
+
     const uploader = new FileUploadService(
       new S3FileStorageProvider(process.env.AWS_FILE_UPLOAD_S3_BUCKET_ID!, {
         region: process.env.AWS_FILE_UPLOAD_REGION!,

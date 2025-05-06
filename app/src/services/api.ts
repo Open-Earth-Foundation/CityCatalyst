@@ -670,7 +670,19 @@ export const api = createApi({
           };
         },
         transformResponse: (response: any) => response,
-        invalidatesTags: ["UserAccessStatus"],
+        invalidatesTags: [
+          "UserAccessStatus",
+          "Projects",
+          "Organizations",
+          "OrganizationInvite",
+          "ProjectUsers",
+          "UserInventories",
+          "CitiesAndInventories",
+          "Inventories",
+          "Projects",
+          "Organization",
+          "Project",
+        ],
       }),
       mockData: builder.query({
         query: () => {

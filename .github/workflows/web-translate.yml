@@ -1,0 +1,51 @@
+name: Translate Web interface
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "develop" ]
+    paths:
+      - app/src/i18n/locales/en/**
+      - .github/workflows/web-translate.yml
+
+jobs:
+
+  translate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./app
+
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Make translation PRs
+        env:
+          OPENAI_API_KEY: ${{ secrets.TRANSLATION_OPENAI_API_KEY }}
+          EXTRA: ${{ github.sha }}
+          GH_TOKEN: ${{ github.token }}
+        working-directory: ./app
+        run: |
+          for lang in de es pt; do
+            git checkout -b "i18n/$lang/$EXTRA"
+            node scripts/update-translation.js $lang
+            git add src/i18n/locales/$lang
+            git commit -m "i18n: Update translations for $lang"
+            git push --set-upstream origin "i18n/$lang/$EXTRA"
+            gh pr create --base develop --title "i18n: Update translations for $lang" --body "This PR updates the translations for the $lang language."
+            git checkout develop
+            git branch -D "i18n/$lang/$EXTRA"
+          done

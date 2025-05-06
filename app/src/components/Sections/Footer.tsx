@@ -5,21 +5,27 @@ import React from "react";
 import FooterLink from "../Navigation/FooterLink";
 import { useTranslation } from "@/i18n/client";
 import { getCurrentVersion } from "@/util/helpers";
+import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 
 const Footer = ({ lng }: { lng: string }) => {
   const currentVersion = getCurrentVersion();
   const { t } = useTranslation(lng, "footer");
+  const { logoUrl } = useLogo();
   return (
     <footer className="w-full h-[320px] bg-[#00001f] pt-[48px]">
       <Box className="w-full px-[64px]">
         <Box className="flex justify-between w-full pb-10">
           <Box>
-            <Image
-              src="/assets/city_catalyst_logo.svg"
-              alt="city-catalyst-logo"
-              width={121}
-              height={24}
-            />
+            {logoUrl ? (
+              <img src={logoUrl} width={200} alt="Org logo" />
+            ) : (
+              <Image
+                src="/assets/city_catalyst_logo.svg"
+                alt="city-catalyst-logo"
+                width={121}
+                height={24}
+              />
+            )}
           </Box>
           <Box
             fontFamily="heading"

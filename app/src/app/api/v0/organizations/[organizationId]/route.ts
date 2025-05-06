@@ -7,7 +7,6 @@ import UserService from "@/backend/UserService";
 import { db } from "@/models";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
-  UserService.validateIsAdmin(session);
   const { organizationId } = params;
   const org = await Organization.findByPk(organizationId as string, {
     include: [

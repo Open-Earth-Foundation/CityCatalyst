@@ -22,31 +22,25 @@ export const buttonRecipe = defineRecipe({
         borderColor: "interactive.secondary",
         color: "interactive.secondary",
         _hover: {
-          borderColor: "#5a7be0",
-          color: "#5a7be0",
-        },
-        _active: {
-          borderColor: "#899ee0",
-          color: "#899ee0",
+          opacity: 0.5,
+          bg: "background.overlay",
         },
         _loading: {
           opacity: 0.8,
         },
       },
       solid: {
-        bg: "interactive.secondary",
+        bg: "content.alternative",
         color: "white",
         _hover: {
-          bg: "#5a7be0",
-        },
-        _active: {
-          bg: "#899ee0",
+          opacity: 0.5,
+          bg: "content.alternative",
         },
         _loading: {
           bg: "background.overlay",
           color: "content.link",
           _hover: {
-            bg: "#5a7be0",
+            opacity: 0.5,
             color: "base.light",
           },
         },
@@ -71,7 +65,7 @@ export const buttonRecipe = defineRecipe({
       },
       solidPrimary: {
         bg: "sentiment.positiveOverlay",
-        color: "interactive.primary",
+        color: "content.alternative",
         _hover: {
           bg: "sentiment.positiveLight",
           color: "interactive.primaryLight",

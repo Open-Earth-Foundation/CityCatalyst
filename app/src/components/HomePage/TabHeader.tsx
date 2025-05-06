@@ -60,18 +60,20 @@ export function TabHeader({
             >
               {t(title)}
             </Heading>
-            <Button
-              variant={"outline"}
-              p={6}
-              onClick={() =>
-                router.push(`/${inventory?.inventoryId}/data/manage-sectors`)
-              }
-              display="flex"
-              gap={0}
-            >
-              <Icon as={DataAlertIcon} boxSize={10} mt={3} />
-              <Text>{t("manage-missing-subsectors")}</Text>
-            </Button>
+            {!isPublic && (
+              <Button
+                variant={"outline"}
+                p={6}
+                onClick={() =>
+                  router.push(`/${inventory?.inventoryId}/data/manage-sectors`)
+                }
+                display="flex"
+                gap={0}
+              >
+                <Icon as={DataAlertIcon} boxSize={10} mt={3} />
+                <Text>{t("manage-missing-subsectors")}</Text>
+              </Button>
+            )}
           </Box>
           <Box className="flex items-center gap-3">
             <Badge>
@@ -123,7 +125,7 @@ export function TabHeader({
               href="https://ghgprotocol.org/ghg-protocol-cities"
               target="_blank"
               fontWeight="bold"
-              color="brand.secondary"
+              color="interactive.secondary"
             >
               Learn more
             </Link>{" "}
@@ -141,7 +143,7 @@ export function TabHeader({
               href="https://ghgprotocol.org/ghg-protocol-cities"
               target="_blank"
               fontWeight="bold"
-              color="brand.secondary"
+              color="interactive.secondary"
             >
               Learn more
             </Link>{" "}

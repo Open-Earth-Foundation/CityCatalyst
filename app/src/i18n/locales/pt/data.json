@@ -1231,5 +1231,7 @@
   "type-surface-mining": "Mineração de superfície",
   "type-post-mining": "Pós-mineração",
   "type-flaring-recovered-ch4": "Queima de CH4 recuperado",
-  "type-abandoned-mines": "Minas abandonadas"
+  "type-abandoned-mines": "Minas abandonadas",
+  "vehicle-type-national-flights": "Voos nacionais",
+  "vehicle-type-international-flights": "Voos internacionais"
 }

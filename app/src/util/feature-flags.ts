@@ -1,5 +1,11 @@
 import { env } from "next-runtime-env";
 
+export enum FeatureFlags {
+  ENTERPRISE_MODE = "ENTERPRISE_MODE",
+  CAP_TAB_ENABLED = "CAP_TAB_ENABLED",
+  PROJECT_OVERVIEW_ENABLED = "PROJECT_OVERVIEW_ENABLED"
+}
+
 let cachedFeatureFlags: string[] | null = null;
 
 export function getFeatureFlags(): string[] {
@@ -21,6 +27,6 @@ export function getFeatureFlags(): string[] {
   return cachedFeatureFlags;
 }
 
-export function hasFeatureFlag(flag: string): boolean {
+export function hasFeatureFlag(flag: FeatureFlags): boolean {
   return getFeatureFlags().includes(flag);
 }

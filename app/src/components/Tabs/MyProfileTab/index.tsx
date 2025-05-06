@@ -147,7 +147,6 @@ export const MyProfileTab: FC<MyProfileTabProps> = ({ t, lng, userInfo }) => {
                 {t("manage-password")}
               </Tabs.Trigger>
             </Tabs.List>
-
             <Tabs.Content
               value="account-details"
               display="flex"

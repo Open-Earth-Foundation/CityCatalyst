@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import ProgressLoader from "@/components/ProgressLoader";
 import NoAccess from "@/components/NoAccess";
 import { Roles } from "@/util/types";
-import { hasFeatureFlag } from "@/util/feature-flags";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 export function ClientRootLayout({
   lng,
@@ -19,9 +19,11 @@ export function ClientRootLayout({
   const isPublic = pathname.includes("public");
   const isInvitePage = pathname.includes("invites");
   const isAuthPage = pathname.includes("auth");
-  const EnterpriseMode = hasFeatureFlag("ENTERPRISE_MODE");
+  const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
   const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
+    api.useGetUserInfoQuery(undefined, {
+      skip: isPublic || isAuthPage || !EnterpriseMode || isInvitePage,
+    });
 
   const { data: userAccessStatus, isLoading: isLoadingUserAccessStatus } =
     useGetUserAccessStatusQuery(

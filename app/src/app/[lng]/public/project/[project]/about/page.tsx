@@ -1,4 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
+"use client";
 
 import {
   Box,
@@ -12,12 +13,15 @@ import {
 import Footer from "../components/Footer";
 import NavigationBar from "../components/Navbar";
 import Collaborators from "@/app/[lng]/public/project/[project]/components/Collaborators";
+import { useTranslation } from "@/i18n/client";
 
 const About = ({
   params: { project, lng },
 }: {
   params: { project: string; lng: string };
 }) => {
+  const { t } = useTranslation(lng, "dashboard");
+
   const footerProps = {
     copyright: "© 2025 CHAMP Brazil Cities Initiative",
     links: [
@@ -29,7 +33,7 @@ const About = ({
 
   return (
     <Box minH="100vh" display="flex" flexDirection="column">
-      <NavigationBar lng={lng} project={project} />
+      <NavigationBar lng={lng} project={project} t={t} />
       <Box as="main" flexGrow={1}>
         {/* Project Overview Section */}
         <Box py={16} px={{ base: 4, md: 8 }}>

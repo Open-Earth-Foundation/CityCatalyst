@@ -50,21 +50,23 @@ export const POST = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.BadRequest("Something went wrong");
   }
   const host = process.env.HOST ?? "http://localhost:3000";
+  const html = await render(
+    InviteUserTemplate({
+      url: `${host}/api/v0/city/invite/${invite.id}?inventoryId=${body.inventoryId}&token=${invitationCode}&email=${body.email}`,
+      user: { email: body.email, name: body.name },
+      city,
+      invitingUser: {
+        name: session?.user.name!,
+        email: session?.user.email!,
+      },
+      members: city.users,
+    }),
+  );
+
   const sendInvite = await sendEmail({
     to: body.email!,
     subject: "City Catalyst - City Invitation",
-    html: render(
-      InviteUserTemplate({
-        url: `${host}/api/v0/city/invite/${invite.id}?inventoryId=${body.inventoryId}&token=${invitationCode}&email=${body.email}`,
-        user: { email: body.email, name: body.name },
-        city,
-        invitingUser: {
-          name: session?.user.name!,
-          email: session?.user.email!,
-        },
-        members: city.users,
-      }),
-    ),
+    html,
   });
 
   if (!sendInvite)

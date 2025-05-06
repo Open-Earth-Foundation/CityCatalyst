@@ -46,10 +46,11 @@ import {
   CityWithProjectDataResponse,
   LANGUAGES,
   ACTION_TYPES,
+  ThemeResponse,
+  OrganizationWithThemeResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { TransferCitiesRequest } from "@/util/validation";
 
 export const api = createApi({
   reducerPath: "api",
@@ -79,6 +80,7 @@ export const api = createApi({
     "UserAccessStatus",
     "Cities",
     "Cap",
+    "Themes",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -668,7 +670,19 @@ export const api = createApi({
           };
         },
         transformResponse: (response: any) => response,
-        invalidatesTags: ["UserAccessStatus"],
+        invalidatesTags: [
+          "UserAccessStatus",
+          "Projects",
+          "Organizations",
+          "OrganizationInvite",
+          "ProjectUsers",
+          "UserInventories",
+          "CitiesAndInventories",
+          "Inventories",
+          "Projects",
+          "Organization",
+          "Project",
+        ],
       }),
       mockData: builder.query({
         query: () => {
@@ -985,6 +999,7 @@ export const api = createApi({
       }),
       createBulkInventories: builder.mutation({
         query: (data: {
+          projectId: string;
           emails: string[];
           cityLocodes: string[];
           years: number[];
@@ -1082,6 +1097,7 @@ export const api = createApi({
           method: "GET",
           url: `projects/${projectId}/boundaries`,
         }),
+        transformResponse: (response: any) => response.result,
         providesTags: ["Inventory"],
       }),
       getProjectSummary: builder.query({
@@ -1091,13 +1107,63 @@ export const api = createApi({
         }),
         providesTags: ["Inventory"],
       }),
-      getCap: builder.query<string, { inventoryId: string; actionType: ACTION_TYPES; lng: LANGUAGES }>({
+      getCap: builder.query<
+        string,
+        { inventoryId: string; actionType: ACTION_TYPES; lng: LANGUAGES }
+      >({
         query: ({ inventoryId, actionType, lng }) => ({
           url: `inventory/${inventoryId}/cap?actionType=${actionType}&lng=${lng}`,
           method: "GET",
         }),
         transformResponse: (response: { data: string }) => response.data,
         providesTags: ["Cap"],
+      }),
+      setOrgWhiteLabel: builder.mutation({
+        query: (data: {
+          organizationId: string;
+          whiteLabelData: {
+            themeId: string;
+            logo?: File;
+            clearLogoUrl?: boolean;
+          };
+        }) => {
+          const formData = new FormData();
+          formData.append("themeId", data.whiteLabelData.themeId);
+
+          if (data.whiteLabelData.clearLogoUrl) {
+            formData.append("clearLogoUrl", "true");
+          }
+
+          if (data.whiteLabelData.logo) {
+            formData.append("file", data.whiteLabelData.logo);
+          }
+
+          return {
+            url: `/organizations/${data.organizationId}/white-label`,
+            method: "PATCH",
+            body: formData,
+          };
+        },
+        transformResponse: (response: { data: OrganizationResponse }) =>
+          response.data,
+        invalidatesTags: ["Organizations", "Organization"],
+      }),
+      getThemes: builder.query({
+        query: () => ({
+          method: "GET",
+          url: `/organizations/themes`,
+        }),
+        transformResponse: (response: ThemeResponse[]) => response,
+        providesTags: ["Themes"],
+      }),
+      getOrganizationForInventory: builder.query({
+        query: (inventoryId: string) => ({
+          method: "GET",
+          url: `/inventory/${inventoryId}/organization`,
+        }),
+        transformResponse: (response: OrganizationWithThemeResponse) =>
+          response,
+        providesTags: ["Organization"],
       }),
     };
   },
@@ -1195,5 +1261,8 @@ export const {
   useGetUserProjectsQuery,
   useTransferCitiesMutation,
   useGetCapQuery,
+  useGetThemesQuery,
+  useSetOrgWhiteLabelMutation,
+  useGetOrganizationForInventoryQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

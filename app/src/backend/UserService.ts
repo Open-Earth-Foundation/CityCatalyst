@@ -636,4 +636,20 @@ export default class UserService {
   }
 
   public async fetchUserProjects(userId: string) {}
+
+  public static ensureIsAdmin(session: AppSession | null) {
+    // Ensure user is signed in
+    const isSignedIn = !!session?.user;
+    if (!isSignedIn) {
+      throw new createHttpError.Unauthorized("Not signed in");
+    }
+
+    // Ensure user has admin role
+    const isAdmin = session?.user?.role === Roles.Admin;
+    if (!isAdmin) {
+      throw new createHttpError.Unauthorized(
+        "Not signed in as an admin: " + session?.user?.role,
+      );
+    }
+  }
 }

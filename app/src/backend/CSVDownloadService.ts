@@ -5,13 +5,16 @@ import { translationFunc } from "@/i18n/server";
 import { stringify } from "csv-stringify/sync";
 import { db } from "@/models";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
+import createHttpError from "http-errors";
+
+type InventoryLine = (string | number | null | undefined)[];
 
 export default class CSVDownloadService {
-  public static async downloadCSV(
+  public static async extractCSVData(
     output: InventoryWithInventoryValuesAndActivityValues,
     lng: string,
   ) {
-    const headers = [
+    const headerTitles = [
       "Inventory Reference",
       "GPC Reference Number",
       "Subsector name",
@@ -28,14 +31,14 @@ export default class CSVDownloadService {
       "CO2 Emissions",
       "CH4 Emissions",
       "N2O Emissions",
-      "Datasource ID",
-      "DataSource name",
+      "Data source ID",
+      "Data source name",
     ];
 
     const { t } = await translationFunc(lng, "data");
 
     // prepare the data
-    const dataDictionary = this.prepDataForCSV(output, t);
+    const dataDictionary = this.prepareDataForCSV(output, t);
 
     const sortedKeys = sortGpcReferenceNumbers(Object.keys(dataDictionary));
 
@@ -54,7 +57,7 @@ export default class CSVDownloadService {
       >,
     );
 
-    const inventoryLines = sortedKeys.flatMap((key) => {
+    const inventoryLines: InventoryLine[] = sortedKeys.flatMap((key) => {
       const value = dataDictionary[key];
       return value.activityValues.map((activityValue) => {
         return [
@@ -89,20 +92,30 @@ export default class CSVDownloadService {
       });
     });
 
+    return { headerTitles, inventoryLines };
+  }
+
+  public static stringifyCSV(
+    headersTitles: string[],
+    inventoryLines: InventoryLine[],
+  ) {
     const csvContent = stringify([...inventoryLines], {
       header: true,
-      columns: headers,
+      columns: headersTitles,
       quoted: true,
     });
     try {
       return Buffer.from(csvContent);
     } catch (e) {
       console.error("Error creating CSV", e);
-      throw new Error("Error creating CSV");
+      const message = e instanceof Error ? e.message : "Unknown error";
+      throw new createHttpError.InternalServerError(
+        "Error creating CSV: " + message,
+      );
     }
   }
 
-  public static prepDataForCSV(
+  private static prepareDataForCSV(
     output: InventoryWithInventoryValuesAndActivityValues,
     t: (str: string) => string,
   ) {
@@ -186,22 +199,22 @@ export default class CSVDownloadService {
           let usesEmissionFactor =
             inventoryValue.gpcReferenceNumber?.split(".")?.includes("I") ||
             inventoryValue.gpcReferenceNumber?.split(".").includes("II");
-          let efUnit = null;
+          let emission_factor_unit: string | null = null;
 
           if (usesEmissionFactor) {
             let scope = inventoryValue.gpcReferenceNumber?.split(".")[2];
-            efUnit = scope === "1" ? "kg/m3" : "kg/TJ";
+            emission_factor_unit = scope === "1" ? "kg/m3" : "kg/TJ";
           }
 
           return {
             activity_type: t(activityValue?.activityData?.[activityTypeKey]),
-            emission_factor_unit: efUnit,
+            emission_factor_unit,
             emission_factor_co2,
             emission_factor_ch4,
             emission_factor_n2o,
-            emission_co2: emission_co2,
-            emission_ch4: emission_ch4,
-            emission_n2o: emission_n2o,
+            emission_co2,
+            emission_ch4,
+            emission_n2o,
             activity_amount: activityAmount,
             activity_unit: activityUnit,
             data_source_id: inventoryValue.dataSource?.datasourceId,
@@ -209,7 +222,7 @@ export default class CSVDownloadService {
               inventoryValue.dataSource?.datasourceName ?? dataSource,
             total_co2e: toDecimal(activityValue.co2eq as bigint)
               ?.div(new Decimal("1e3"))
-              .toNumber(),
+              ?.toNumber(),
           };
         }),
       };

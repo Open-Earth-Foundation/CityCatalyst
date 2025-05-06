@@ -11,7 +11,7 @@ export interface UploadFile {
   filename: string;
   mimetype: string;
   size: number;
-  buffer: Buffer;
+  buffer: Buffer; // TODO Consider switching this to a readable stream
 }
 
 export interface FileStorageProvider {

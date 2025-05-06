@@ -9,7 +9,7 @@ export interface OrganizationAttributes {
   contactEmail?: string;
   created?: Date;
   lastUpdated?: Date;
-  themeId?: string;
+  themeId?: string | null;
   logoUrl?: string | null;
 }
 
@@ -30,7 +30,7 @@ export class Organization
   contactEmail?: string;
   created?: Date;
   lastUpdated?: Date;
-  themeId?: string;
+  themeId?: string | null;
   logoUrl?: string | null;
 
   theme!: Theme;
@@ -56,7 +56,7 @@ export class Organization
         },
         themeId: {
           type: DataTypes.UUID,
-          allowNull: false,
+          allowNull: true,
           field: "theme_id",
           references: {
             model: "Theme",

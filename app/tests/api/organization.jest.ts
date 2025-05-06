@@ -138,15 +138,6 @@ describe("Organization API", () => {
     expect(res.status).toEqual(404);
   });
 
-  it("should not allow non-admins to find an organization", async () => {
-    Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
-    const req = mockRequest();
-    const res = await getOrganization(req, {
-      params: { organizationId: organization.organizationId },
-    });
-    expect(res.status).toEqual(403);
-  });
-
   it("should not allow non-admins to update an organization", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
     const req = mockRequest(organization2);

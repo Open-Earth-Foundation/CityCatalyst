@@ -114,8 +114,6 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
         },
       }).unwrap();
 
-      console.log("response", response);
-
       setFile(null);
       setClearImage(false);
       setTheme(selectedThemeValue?.key as string);
@@ -229,7 +227,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
                 }}
                 shadow="1dp"
                 borderRadius="4px"
-                border="inpu/tBox"
+                border="inputBox"
                 fontSize="body.lg"
                 h="full"
                 w="full"

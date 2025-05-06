@@ -1,10 +1,10 @@
 import json
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from state.agent_state import AgentState
-from data.context import adaptation
+from plan_creator.state.agent_state import AgentState
+from plan_creator.data.context import adaptation
 from langchain_openai import ChatOpenAI
-from tools.tools import (
+from plan_creator.tools.tools import (
     placeholder_tool,
 )
 

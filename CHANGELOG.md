@@ -1,3 +1,15 @@
+## [0.47.0-rc.3] - 2025-05-06
+### Added
+- **Logging**:
+  - Added copious logging to the email sending function to improve traceability and debugging.
+
+- **Changelog**:
+  - Added a changelog to the repository for better release tracking.
+
+### Changed
+- **Version Update**:
+  - Updated version to `v0.47.0-rc.3`.
+
 ## [0.47.0-rc.2] - 2025-05-06
 ### Added
 - **White Label Support**:

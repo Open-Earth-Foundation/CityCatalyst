@@ -192,3 +192,6 @@ my_db.*
 z_for_testing/*
 
 .cap/Scripts/langsmith.exe
+
+# vector stores
+vector_stores/*

@@ -62,7 +62,7 @@ export default function Login({
       const paramsString = new URLSearchParams(queryParams).toString();
       callbackUrl = `/${lng}/user/invites?${paramsString}`;
     } else {
-      callbackUrl = "/";
+      callbackUrl = `/`;
     }
   }
 

@@ -6,6 +6,7 @@ import {
   api,
   useGetCityPopulationQuery,
   useGetCityYearsQuery,
+  useGetOrganizationForInventoryQuery,
 } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
@@ -29,6 +30,9 @@ import {
 } from "@/components/ui/progress-circle";
 import CapTab from "@/app/[lng]/[inventory]/CapTab";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
+import { useTheme } from "next-themes";
+import ProgressLoader from "@/components/ProgressLoader";
 
 export default function HomePage({
   lng,
@@ -46,7 +50,13 @@ export default function HomePage({
   isPublic || CheckUserSession();
   const language = cookieLanguage ?? lng;
   const { inventory: inventoryParam } = useParams();
-  const inventoryIdFromParam = inventoryId || inventoryParam;
+
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+
+  const inventoryIdFromParam =
+    inventoryId || inventoryParam || userInfo?.defaultInventoryId;
+
   const { data: inventory, isLoading: isInventoryLoading } =
     api.useGetInventoryQuery((inventoryIdFromParam as string) || "default");
 
@@ -104,18 +114,29 @@ export default function HomePage({
     return [...cityYears.years].sort((a, b) => b.year - a.year) || [];
   }, [cityYears]);
 
+  const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
+    useGetOrganizationForInventoryQuery(inventoryIdFromParam as string, {
+      skip: !inventoryIdFromParam,
+    });
+
+  const { setLogoUrl } = useLogo();
+  const { setTheme } = useTheme();
+
+  console.log(inventoryIdFromParam);
+
+  useEffect(() => {
+    if (inventoryOrgData) {
+      setLogoUrl(inventoryOrgData?.logoUrl as string);
+      setTheme(inventoryOrgData?.theme?.themeKey ?? ("blue_theme" as string));
+    }
+  }, [isInventoryOrgDataLoading, inventoryOrgData]);
+
   return (
     <>
-      {isInventoryLoading && (
-        <Box className="flex items-center justify-center w-full">
-          <Box className="w-full py-12 flex items-center justify-center">
-            <ProgressCircleRoot value={null}>
-              <ProgressCircleRing cap="round" />
-            </ProgressCircleRoot>
-          </Box>
-        </Box>
-      )}
-      {!inventory && !isInventoryLoading && (
+      {(isInventoryLoading ||
+        isInventoryOrgDataLoading ||
+        isUserInfoLoading) && <ProgressLoader />}
+      {inventory === null && !isInventoryLoading && !isUserInfoLoading && (
         <>
           {isPublic ? (
             <NotAvailable lng={language} />
@@ -125,7 +146,7 @@ export default function HomePage({
           <Footer lng={language} />
         </>
       )}
-      {inventory && (
+      {inventory && !isInventoryLoading && !isUserInfoLoading && (
         <>
           <Hero
             inventory={inventory}
@@ -205,7 +226,10 @@ export default function HomePage({
                       {[
                         "tab-emission-inventory-calculation-title",
                         "tab-emission-inventory-results-title",
-                        ...(inventory?.city?.country === "Brazil" && hasFeatureFlag(FeatureFlags.CAP_TAB_ENABLED) ? ["tab-cap-title"] : []),
+                        ...(inventory?.city?.country === "Brazil" &&
+                        hasFeatureFlag(FeatureFlags.CAP_TAB_ENABLED)
+                          ? ["tab-cap-title"]
+                          : []),
                       ].map((tab, index) => (
                         <Tabs.Trigger key={index} value={tab}>
                           <Text

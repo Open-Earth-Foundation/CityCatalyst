@@ -1,6 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 import { Box, Text } from "@chakra-ui/react";
 import Image from "next/image";
+import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 
 export interface FooterProps {
   copyright: string;
@@ -11,6 +12,7 @@ export interface FooterProps {
 }
 
 const Footer = ({ copyright, links }: FooterProps) => {
+  const { logoUrl } = useLogo();
   return (
     <Box className="bg-[#010018] py-6 px-6 text-white" w="100%">
       <Box className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center">
@@ -29,12 +31,16 @@ const Footer = ({ copyright, links }: FooterProps) => {
               rel="noopener noreferrer"
               className="inline-block"
             >
-              <Image
-                src="/assets/logo.svg"
-                width={36}
-                height={36}
-                alt="CityCatalyst logo"
-              />
+              {logoUrl ? (
+                <img src={logoUrl} height={40} width={250} alt="Org logo" />
+              ) : (
+                <Image
+                  src="/assets/logo.svg"
+                  width={36}
+                  height={36}
+                  alt="CityCatalyst logo"
+                />
+              )}
             </a>
           </Box>
         </Box>

@@ -177,6 +177,11 @@ import {
   ProjectInviteAttributes,
   ProjectInviteCreationAttributes,
 } from "@/models/ProjectInvite";
+import {
+  Theme as _Theme,
+  ThemeAttributes,
+  ThemeCreationAttributes,
+} from "@/models/Theme";
 
 export {
   _ActivityData as ActivityData,
@@ -221,6 +226,7 @@ export {
   _OrganizationAdmin as OrganizationAdmin,
   _ProjectAdmin as ProjectAdmin,
   _ProjectInvite as ProjectInvite,
+  _Theme as Theme,
 };
 
 export type {
@@ -304,6 +310,8 @@ export type {
   ProjectAdminCreationAttributes,
   ProjectInviteAttributes,
   ProjectInviteCreationAttributes,
+  ThemeAttributes,
+  ThemeCreationAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -351,6 +359,7 @@ export function initModels(sequelize: Sequelize) {
   const OrganizationAdmin = _OrganizationAdmin.initModel(sequelize);
   const ProjectAdmin = _ProjectAdmin.initModel(sequelize);
   const ProjectInvite = _ProjectInvite.initModel(sequelize);
+  const Theme = _Theme.initModel(sequelize);
 
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
@@ -785,6 +794,10 @@ export function initModels(sequelize: Sequelize) {
     as: "organizationInvite",
     foreignKey: "organizationId",
   });
+  Organization.hasOne(Theme, {
+    as: "theme",
+    foreignKey: "themeId",
+  });
   OrganizationInvite.belongsTo(Organization, {
     as: "organizationInvites",
     foreignKey: "organizationId",
@@ -912,5 +925,6 @@ export function initModels(sequelize: Sequelize) {
     OrganizationAdmin: OrganizationAdmin,
     ProjectAdmin: ProjectAdmin,
     ProjectInvite: ProjectInvite,
+    Theme: Theme,
   };
 }

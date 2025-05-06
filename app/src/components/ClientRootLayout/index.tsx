@@ -21,7 +21,9 @@ export function ClientRootLayout({
   const isAuthPage = pathname.includes("auth");
   const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
   const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
+    api.useGetUserInfoQuery(undefined, {
+      skip: isPublic || isAuthPage || !EnterpriseMode || isInvitePage,
+    });
 
   const { data: userAccessStatus, isLoading: isLoadingUserAccessStatus } =
     useGetUserAccessStatusQuery(

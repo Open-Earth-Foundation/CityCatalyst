@@ -595,10 +595,18 @@ export default class UserService {
   }
 
   public static async findUserAccessStatus(userId: string) {
-    const responseObject = {
+    const responseObject: {
+      isOrgOwner: boolean;
+      isProjectAdmin: boolean;
+      isCollaborator: boolean;
+      organizationId: string | null;
+      projectId: string | null;
+    } = {
       isOrgOwner: false,
       isProjectAdmin: false,
       isCollaborator: false,
+      organizationId: null,
+      projectId: null,
     };
 
     const orgOwner = await db.models.OrganizationAdmin.findOne({
@@ -606,6 +614,7 @@ export default class UserService {
     });
     if (orgOwner) {
       responseObject.isOrgOwner = true;
+      responseObject.organizationId = orgOwner.organizationId;
       return responseObject;
     }
     const projectAdmin = await db.models.ProjectAdmin.findOne({

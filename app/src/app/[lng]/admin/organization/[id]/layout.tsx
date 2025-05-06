@@ -23,6 +23,7 @@ import {
 import { useTranslation } from "@/i18n/client";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import ProgressLoader from "@/components/ProgressLoader";
 
 export default function AdminOrganizationLayout({
   children,
@@ -47,13 +48,7 @@ export default function AdminOrganizationLayout({
   }, [pathName]);
 
   if (isOrganizationLoading) {
-    return (
-      <Box className="w-full py-12 flex items-center justify-center">
-        <ProgressCircleRoot value={null}>
-          <ProgressCircleRing cap="round" />
-        </ProgressCircleRoot>
-      </Box>
-    );
+    return <ProgressLoader />;
   }
 
   return (

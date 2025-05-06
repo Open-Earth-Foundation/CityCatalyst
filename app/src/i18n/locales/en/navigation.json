@@ -1,5 +1,7 @@
 {
   "learning-hub": "Learn",
   "admin": "Admin",
-  "cities": "cities"
+  "cities": "cities",
+  "settings": "Settings",
+  "account-settings": "Account Settings"
 }

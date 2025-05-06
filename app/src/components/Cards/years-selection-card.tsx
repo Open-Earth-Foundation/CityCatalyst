@@ -57,7 +57,8 @@ function YearCard({
       backgroundColor={isActive ? "background.neutral" : ""}
       borderWidth="2px"
       border="solid"
-      borderColor={isActive ? "interactive.secondary" : "border.neutral"}
+      borderColor={isActive ? "interactive.secondary" : "border.overlay"}
+      color={isActive ? "content.link" : "content.secondary"}
       _hover={
         !isActive
           ? {
@@ -72,13 +73,12 @@ function YearCard({
           fontWeight="medium"
           lineHeight="20"
           letterSpacing="wide"
-          color="content.primary"
         >
           {year}
         </Heading>
         <Text
           fontWeight="regular"
-          color="interactive.control"
+          color="content.tertiary"
           lineHeight="20"
           letterSpacing="wide"
         >

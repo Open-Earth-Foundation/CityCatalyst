@@ -125,7 +125,7 @@ export function TabHeader({
               href="https://ghgprotocol.org/ghg-protocol-cities"
               target="_blank"
               fontWeight="bold"
-              color="brand.secondary"
+              color="interactive.secondary"
             >
               Learn more
             </Link>{" "}
@@ -143,7 +143,7 @@ export function TabHeader({
               href="https://ghgprotocol.org/ghg-protocol-cities"
               target="_blank"
               fontWeight="bold"
-              color="brand.secondary"
+              color="interactive.secondary"
             >
               Learn more
             </Link>{" "}

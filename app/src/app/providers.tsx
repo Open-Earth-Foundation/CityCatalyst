@@ -1,14 +1,14 @@
 "use client";
 
 import { store } from "@/lib/store";
-// TODO enable again when dark mode is supported
-// import { Provider as ChakraProvider } from "@/components/ui/provider";
 import { ChakraProvider } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
 import localFont from "next/font/local";
 import { Provider } from "react-redux";
 
-import { appTheme } from "@/lib/theme/app-theme";
+import { appTheme } from "@/lib/theme/recipes/app-theme";
+import { ThemeProvider } from "next-themes";
+import { LogoProvider } from "@/hooks/logo-provider/use-logo-provider";
 
 const openSans = localFont({
   src: [
@@ -55,11 +55,25 @@ export function Providers({ children }: { children: React.ReactNode }) {
           }
         `}
       </style>
-      <ChakraProvider value={appTheme}>
-        <SessionProvider>
-          <Provider store={store}>{children}</Provider>
-        </SessionProvider>
-      </ChakraProvider>
+      <ThemeProvider
+        defaultTheme="blue_theme"
+        themes={[
+          "blue_theme",
+          "light_brown_theme",
+          "dark_orange_theme",
+          "green_theme",
+          "light_blue_theme",
+          "violet_theme",
+        ]}
+      >
+        <LogoProvider>
+          <ChakraProvider value={appTheme}>
+            <SessionProvider>
+              <Provider store={store}>{children}</Provider>
+            </SessionProvider>
+          </ChakraProvider>
+        </LogoProvider>
+      </ThemeProvider>
     </>
   );
 }

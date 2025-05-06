@@ -1,7 +1,8 @@
 "use client";
 import SubSectorCard from "@/components/Cards/SubSectorCard";
 import { InventoryResponse, SectorProgress } from "@/util/types";
-import { Box, Button, Heading, Icon, Text } from "@chakra-ui/react";
+import { Box, Heading, Icon, Text } from "@chakra-ui/react";
+import { Button } from "@/components/ui/button";
 import NextLink from "next/link";
 
 import { useState } from "react";
@@ -66,7 +67,7 @@ export function SectorCard({
     >
       <Box className="flex gap-5 w-full">
         <Box className="flex items-start mt-2">
-          <Icon color="brand.secondary" boxSize={8} as={sectorIcon} />
+          <Icon color="content.link" boxSize={8} as={sectorIcon} />
         </Box>
         <Box className="w-full">
           <Box className="flex items-center justify-between">
@@ -113,7 +114,6 @@ export function SectorCard({
                   as="a"
                   variant="outline"
                   className="border-2 w-[256px] h-[48px] py-[16px] gap-2"
-                  color="brand.secondary"
                   ml={2}
                 >
                   <BsPlus />

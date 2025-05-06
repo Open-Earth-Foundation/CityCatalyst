@@ -374,6 +374,8 @@ export type OrganizationResponse = {
   last_updated: string;
   name: string;
   organizationId: string;
+  themeId?: string;
+  logoUrl?: string;
   projects: {
     projectId: string;
     name: string;
@@ -442,10 +444,11 @@ export type UserAccessResponse = {
   isOrgOwner: boolean;
   isProjectAdmin: boolean;
   isCollaborator: boolean;
+  organizationId: string;
 };
 export enum ACTION_TYPES {
   Mitigation = "mitigation",
-  Adaptation = "adaptation"
+  Adaptation = "adaptation",
 }
 
 export type CityWithProjectDataResponse = {
@@ -466,10 +469,28 @@ export type CityWithProjectDataResponse = {
   };
 };
 
+export type ThemeResponse = {
+  themeId: string;
+  themeKey: string;
+};
+
 export enum LANGUAGES {
   "en" = "en",
   "es" = "es",
   "pt" = "pt",
-  "de" = "de"
+  "de" = "de",
 }
 
+export type OrganizationWithThemeResponse = {
+  contactEmail: string;
+  created: string;
+  last_updated: string;
+  name: string;
+  organizationId: string;
+  themeId?: string;
+  logoUrl?: string;
+  theme: {
+    themeId: string;
+    themeKey: string;
+  };
+};

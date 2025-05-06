@@ -1,0 +1,202 @@
+[
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 1,
+        "explanation": "Waste Efficiency is a high priority for Caxias do Sul because waste emissions are the city's only significant source of greenhouse gases, accounting for all reported emissions. Improving waste management can directly reduce these emissions and contribute to climate mitigation. Additionally, efficient waste systems can enhance public health and resilience, especially given the city's high risk from floods and landslides, which can be exacerbated by poor waste management. Prioritizing waste efficiency aligns with the city's needs and offers immediate environmental and social benefits."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 2,
+        "explanation": "Developing projects for renewable energy and waste reuse is important for Caxias do Sul, as the city’s waste sector is the primary source of its greenhouse gas emissions. By focusing on waste reuse, the city can significantly reduce its environmental impact and promote a circular economy. Additionally, investing in renewable energy supports long-term sustainability and energy security, which is especially relevant given the city’s vulnerability to climate hazards like droughts and floods. These initiatives can also foster local innovation and create green jobs, benefiting both the environment and the community."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 3,
+        "explanation": "Landfill management is a significant priority for Caxias do Sul because waste emissions are the city's only notable source of greenhouse gases. Improving landfill practices can directly reduce these emissions, contributing to climate mitigation efforts. Additionally, effective landfill management can help prevent environmental contamination and reduce risks to public health, which is especially important given the city's vulnerability to hazards like floods and landslides. Addressing landfill issues also supports the city's long-term sustainability and resilience."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0040",
+        "actionName": "Volume-Based Collection",
+        "actionPriority": 4,
+        "explanation": "Volume-Based Collection is a relevant action for Caxias do Sul, as the city’s waste sector is the sole significant contributor to its greenhouse gas emissions. Implementing a system where waste collection fees are based on the amount of waste generated can incentivize residents and businesses to reduce waste and increase recycling. This approach can help lower overall waste emissions, which is crucial given the city’s emission profile. Additionally, reducing waste can contribute to improved public health and environmental quality, both of which are important given the city’s exposure to climate hazards such as floods and landslides."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0122",
+        "actionName": "Establish eco-parks.",
+        "actionPriority": 5,
+        "explanation": "Establishing eco-parks in Caxias do Sul is a valuable action for enhancing urban resilience and environmental quality. The city faces significant risks from floods, landslides, and public health hazards, and eco-parks can help mitigate these by improving green space, supporting biodiversity, and managing stormwater. Additionally, eco-parks provide recreational opportunities and can improve public well-being, especially in a densely populated urban area. While not the highest priority, this action supports long-term sustainability and adaptation to climate risks."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0039",
+        "actionName": "Gas Management",
+        "actionPriority": 6,
+        "explanation": "Gas management is an important action for Caxias do Sul, as the city’s waste sector is the primary source of its greenhouse gas emissions. By improving gas management, the city can significantly reduce emissions from waste, which will contribute to climate mitigation efforts. Additionally, better gas management can improve air quality and public health, which is particularly relevant given the city’s high risk from public health hazards such as floods and landslides. This action also supports sustainable urban development and aligns with the city’s need to address environmental challenges."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0053",
+        "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
+        "actionPriority": 7,
+        "explanation": "Supporting cooperatives of recyclable material collectors is important for Caxias do Sul, as waste emissions are the city's primary source of greenhouse gases. Strengthening these cooperatives can improve recycling rates, reduce landfill use, and lower overall waste emissions. Additionally, this action can provide social and economic benefits to low-income populations by creating jobs and improving livelihoods. Enhancing recycling infrastructure also contributes to environmental sustainability and resilience against climate-related hazards."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0080",
+        "actionName": "Avoiding, Minimising, and Recycling Waste",
+        "actionPriority": 8,
+        "explanation": "Avoiding, minimising, and recycling waste is a significant priority for Caxias do Sul because waste emissions are the city's only notable source of greenhouse gases. With stationary energy, transportation, and industrial process emissions at zero, addressing waste is essential for reducing the city's overall emissions footprint. Additionally, effective waste management can help prevent public health risks and environmental degradation, which are particularly important given the city's vulnerability to hazards like floods and landslides. By focusing on waste reduction and recycling, the city can make meaningful progress toward sustainability and resilience."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0017",
+        "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
+        "actionPriority": 9,
+        "explanation": "Optimizing the urban solid waste management system is a significant priority for Caxias do Sul because waste emissions are the city's primary source of greenhouse gases. Expanding collection and reducing illegal disposal will help mitigate environmental pollution and improve public health, especially given the high risk of floods and landslides that can be exacerbated by unmanaged waste. Improved waste management also supports the city's overall resilience to climate hazards and enhances the quality of life for its residents. This action aligns with the city's need to address its most pressing emissions source and reduce vulnerability to climate-related impacts."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0110",
+        "actionName": "Regulate the Construction Waste Management Plan",
+        "actionPriority": 10,
+        "explanation": "Regulating the Construction Waste Management Plan is important for Caxias do Sul, as waste emissions are the city's primary source of greenhouse gases. Effective management of construction waste can reduce landfill use, lower emissions, and prevent environmental contamination. Additionally, proper regulation can help mitigate risks to public health and infrastructure, especially given the city's vulnerability to floods and landslides. This action supports sustainable urban development and aligns with the city's need to address its main emission source."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0066",
+        "actionName": "Expand the coverage of the public selective waste collection network",
+        "actionPriority": 11,
+        "explanation": "Expanding the coverage of the public selective waste collection network is important for Caxias do Sul because waste emissions are the city's primary source of greenhouse gases. Improved selective collection can enhance recycling rates, reduce landfill use, and lower overall waste emissions. This action also supports environmental sustainability and can foster community engagement in responsible waste management. Given the city's low levels of inadequate water and sanitation access, focusing on waste management is a logical next step to further improve urban environmental quality."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0113",
+        "actionName": "Universalize the coverage of the selective waste collection service for dry materials",
+        "actionPriority": 12,
+        "explanation": "Universalizing the coverage of selective waste collection for dry materials is important for Caxias do Sul, as waste emissions are the city's only significant source of greenhouse gases. Expanding this service can help reduce landfill waste, promote recycling, and lower overall emissions. Additionally, improved waste management supports public health and environmental quality, which is crucial given the city's high risk from floods and landslides. This action also aligns with the city's strong socioeconomic standing, making implementation more feasible and impactful."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 13,
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases can strengthen local food systems and support sustainable agriculture in Caxias do Sul. This action helps reduce the environmental impact of food transportation and encourages farming practices that are better for the tropical rainforest biome. It also enhances food security, which is particularly important given the city's moderate risk from droughts and floods. Supporting local producers can have positive socio-economic effects, especially in a city with very low levels of low-income residents, by fostering community resilience and sustainable development."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0119",
+        "actionName": "Maximize composting processes.",
+        "actionPriority": 14,
+        "explanation": "Maximizing composting processes is important for Caxias do Sul because waste emissions are the city's primary source of greenhouse gases. By increasing composting, organic waste is diverted from landfills, reducing methane emissions and improving overall waste management. This action also supports soil health and can contribute to local food security. Given the city's low levels of inadequate sanitation and water access, the infrastructure is likely in place to support expanded composting efforts."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0018",
+        "actionName": "Implement the Sustainable Logistics Plan in all public administration bodies",
+        "actionPriority": 15,
+        "explanation": "Implementing the Sustainable Logistics Plan in all public administration bodies is important for promoting environmentally responsible practices within the city's government operations. Caxias do Sul faces significant risks from climate hazards such as floods and landslides, which can be exacerbated by inefficient logistics and resource use. By adopting sustainable logistics, the city can reduce waste emissions, improve resilience, and set a positive example for other sectors. This action also aligns with the city's low levels of inadequate public services, supporting continued progress toward sustainability."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0111",
+        "actionName": "Strengthen the reverse logistics system.",
+        "actionPriority": 16,
+        "explanation": "Strengthening the reverse logistics system in Caxias do Sul is important due to the city's significant waste emissions, which are the primary source of its total greenhouse gas output. Improving reverse logistics can enhance recycling and proper disposal, reducing environmental impacts and supporting a circular economy. This action also aligns with the city's need to manage waste efficiently, given its large population and urban density. By optimizing waste flows, the city can mitigate risks to public health and infrastructure, especially in the face of climate hazards like floods and landslides."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 17,
+        "explanation": "Promoting the adoption of agroecological pest control in Caxias do Sul is important for supporting sustainable agriculture and protecting local biodiversity. The city faces significant climate risks, including droughts and floods, which can impact food security and agricultural productivity. Agroecological pest control reduces reliance on chemical pesticides, helping to maintain soil health and water quality. This approach can also enhance the resilience of local food systems to climate hazards, supporting both environmental and public health in the region."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 18,
+        "explanation": "Supporting agroecological certification programs in Caxias do Sul is important due to the city's exposure to climate hazards such as droughts and floods, which can threaten food security. Agroecological practices promote sustainable agriculture, improve soil health, and enhance resilience to extreme weather events. Certification programs can incentivize local farmers to adopt these methods, contributing to long-term food security and environmental protection. This action aligns with the city's need to address food security risks and build resilience in the agricultural sector."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0109",
+        "actionName": "Promote Energy Recovery from Biogas in Landfills",
+        "actionPriority": 19,
+        "explanation": "Promoting energy recovery from biogas in landfills is important for Caxias do Sul because waste emissions are the city's only significant source of greenhouse gases. By capturing and utilizing biogas, the city can reduce methane emissions, which are potent contributors to climate change. This action also supports sustainable waste management and can provide a renewable energy source for local use. Implementing this measure aligns with the city's need to address waste-related emissions and improve environmental outcomes."
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0112",
+        "actionName": "Universalize sewage collection and treatment",
+        "actionPriority": 20,
+        "explanation": "Universalizing sewage collection and treatment is important for Caxias do Sul, as it helps protect public health and the environment. Although the city currently has very low levels of inadequate sanitation, maintaining and expanding this infrastructure ensures resilience against future population growth and climate-related hazards such as floods and landslides, which pose significant risks. Improved sewage systems can also prevent waterborne diseases and reduce pollution in local water bodies. This action supports long-term sustainability and quality of life for residents."
+    }
+]

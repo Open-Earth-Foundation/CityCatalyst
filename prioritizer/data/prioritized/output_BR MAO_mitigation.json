@@ -1,0 +1,202 @@
+[
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 1,
+        "explanation": "Implementing an urban toll in Manaus is a high priority due to the city's significant transportation emissions, which are a major contributor to its overall greenhouse gas output. By introducing a toll, the city can discourage excessive private vehicle use, reduce traffic congestion, and promote the use of public transportation. This action is particularly important in a rapidly growing city like Manaus, where population density and urban expansion can exacerbate air pollution and related public health risks. Additionally, reducing vehicle emissions will help mitigate the impacts of climate hazards such as heatwaves and poor air quality, both of which pose high risks to public health and infrastructure in Manaus."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 2,
+        "explanation": "Implementing free public transportation during peak hours in Manaus can significantly reduce the use of individual vehicles, which is crucial given the city's high transportation emissions. This action can help alleviate air pollution and traffic congestion, improving public health and quality of life. Additionally, providing free transit supports low-income residents, aligning with the city's socio-economic context. By encouraging public transport use, Manaus can make progress toward climate goals and enhance urban resilience to climate-related hazards."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 3,
+        "explanation": "Adopting biomethane in public fleets is a significant step for Manaus, given its high transportation emissions. Transitioning to cleaner fuels can help reduce greenhouse gas emissions and improve air quality, which is crucial for public health, especially in a city facing high risks from heatwaves and diseases. This action also supports energy security by diversifying fuel sources and reducing reliance on fossil fuels. Implementing biomethane aligns with the city's need to address climate risks and promote sustainable urban development."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 4,
+        "explanation": "Promoting bike-sharing programs, especially with electric bikes, can help reduce transportation emissions, which are a significant contributor to Manaus's total greenhouse gas output. This action supports sustainable mobility in a city with a large population and urban density, offering an alternative to car use and easing traffic congestion. Additionally, electric bikes make cycling more accessible in Manaus's hot and humid tropical climate, encouraging broader participation. By improving urban mobility and air quality, this initiative also supports public health and resilience to climate hazards such as heatwaves."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 5,
+        "explanation": "Expanding cycling infrastructure and building accessible sidewalks in Manaus is important due to the city's growing population and the need for sustainable transportation options. Improved walkways and bike paths can reduce transportation emissions, which are currently a significant contributor to the city's total emissions. Prioritizing climate-resilient designs is crucial, as Manaus faces high risks from floods, heatwaves, and landslides, all of which can damage infrastructure and disrupt mobility. This action also supports public health by encouraging active transportation and improving safety for pedestrians and cyclists."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 6,
+        "explanation": "The adoption of electric drones for last-mile deliveries in Manaus can help reduce transportation emissions, which are currently a significant contributor to the city's total emissions. Given Manaus's large area and relatively low population density, drones can improve delivery efficiency, especially in areas that are difficult to access by traditional vehicles. This action also supports innovation and can help reduce traffic congestion and air pollution. While not the highest priority, it aligns with the city's need to address environmental challenges and modernize its logistics infrastructure."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 7,
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets is a significant priority for Manaus due to its high transportation emissions, which are a major contributor to the city's total greenhouse gas output. Transitioning to electric vehicles can help reduce air pollution and improve public health, especially important given the city's vulnerability to heatwaves and disease outbreaks. Additionally, on-demand systems can enhance mobility for residents, particularly in a city with a large area and moderate population density. This action supports both climate mitigation and adaptation goals, making it a strategic investment for Manaus's sustainable future."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 8,
+        "explanation": "Expanding mass transit systems on rails, such as metros, LRTs, and monorails, is important for Manaus due to its large population and significant transportation emissions. Improved public transit can help reduce reliance on private vehicles, thereby lowering greenhouse gas emissions and alleviating traffic congestion. Additionally, enhanced rail systems can provide more reliable and efficient mobility options for residents, supporting economic activity and social inclusion. Given the city's vulnerability to climate hazards like heatwaves and floods, resilient and sustainable transit infrastructure is crucial for long-term urban adaptation."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 9,
+        "explanation": "Addressing vehicle emissions is important for Manaus due to the city's high transportation emissions, which are a significant contributor to its overall greenhouse gas output. Reducing vehicle emissions can help improve air quality and public health, especially since the city faces high risks from heatwaves and diseases. Additionally, lowering transportation emissions supports broader climate goals and can enhance the resilience of the city to climate-related hazards. This action is particularly relevant given Manaus's large population and urban density, which can amplify the impacts of air pollution."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 10,
+        "explanation": "Promoting the use of bicycles as a regular mode of transport in Manaus can help reduce transportation emissions, which are a significant contributor to the city's total greenhouse gas output. Expanding cycling infrastructure and raising awareness can also improve public health by encouraging physical activity and reducing air pollution. Given the city's vulnerability to heatwaves and public health risks, providing safe and accessible alternatives to motorized transport can help build resilience. Additionally, cycling infrastructure can offer affordable mobility options for residents, especially important in a city with very low income levels."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0021",
+        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
+        "actionPriority": 11,
+        "explanation": "Manaus faces significant transportation emissions, which are a major contributor to the city's overall greenhouse gas output. Encouraging and promoting sustainable and rational use of individual motorized transportation can help reduce these emissions, improve air quality, and support public health. Given the city's rapid growth and urbanization, managing transportation demand is crucial to prevent further environmental degradation. This action also aligns with the need to build resilience against climate-related hazards, such as heatwaves and floods, by reducing urban pollution and congestion."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0059",
+        "actionName": "Modernization of ports and airports with zero-emission technologies",
+        "actionPriority": 12,
+        "explanation": "Modernizing ports and airports in Manaus with zero-emission technologies is important due to the city's significant transportation emissions and its role as a regional logistics hub. Reducing emissions from these critical infrastructures can help address air quality and public health risks, which are heightened by the city's vulnerability to heatwaves and diseases. Additionally, as Manaus is located in the Amazon rainforest, minimizing emissions from transport infrastructure supports broader efforts to protect biodiversity and mitigate climate change. This action aligns with the city's need to modernize while prioritizing sustainability and resilience."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "ipcc_0012",
+        "actionName": "Electric Technologies",
+        "actionPriority": 13,
+        "explanation": "Implementing electric technologies in Manaus is important due to the city's high transportation and stationary energy emissions, which contribute significantly to its overall greenhouse gas output. Transitioning to electric solutions can help reduce air pollution and improve public health, especially given the city's vulnerability to heatwaves and disease outbreaks. Additionally, electric technologies can enhance energy security, which is a key concern for Manaus as identified in climate risk assessments. This action supports the city's broader goals of sustainability and resilience in the face of climate change."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 14,
+        "explanation": "Developing micro-logistics hubs to encourage the use of electric cargo bikes is important for Manaus due to its high transportation emissions, which are a significant contributor to the city's overall greenhouse gas output. By promoting cleaner last-mile delivery options, this action can help reduce air pollution and improve public health, especially in a densely populated urban environment. Additionally, shifting to electric cargo bikes can alleviate traffic congestion and support more sustainable urban mobility. This approach aligns well with the city's need to address both environmental and health risks associated with traditional transportation methods."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0060",
+        "actionName": "Introduction of modular and automated collective transport systems.",
+        "actionPriority": 15,
+        "explanation": "Introducing modular and automated collective transport systems in Manaus is important due to the city's large population and significant transportation emissions. Improved public transport can help reduce reliance on private vehicles, thereby lowering greenhouse gas emissions and easing traffic congestion. Additionally, efficient and modern transport systems can enhance access to services and economic opportunities, especially for low-income residents. This action also supports resilience by providing reliable mobility during extreme weather events, which are a high risk for the city."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0091",
+        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
+        "actionPriority": 16,
+        "explanation": "Implementing prioritized routes for sustainable vehicles in Manaus is important due to the city's significant transportation emissions, which are a major contributor to its overall greenhouse gas output. By encouraging the use of sustainable vehicles, this action can help reduce air pollution and improve public health, especially given the high risks from heatwaves and diseases. Additionally, promoting sustainable transportation supports resilience against climate hazards that threaten infrastructure and public health. This initiative aligns with the city's need to address environmental challenges while fostering cleaner, more efficient mobility options for its growing population."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0126",
+        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
+        "actionPriority": 17,
+        "explanation": "Implementing green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen, is important for reducing transportation emissions in Manaus, which are a significant contributor to the city's total emissions. As Manaus is a major urban center in the Amazon region, transitioning to cleaner aviation fuels can help mitigate the environmental impact of air travel, especially given the city's reliance on air transport due to its remote location. This action also supports broader climate goals and can position Manaus as a leader in sustainable aviation in the region. Additionally, reducing emissions from aviation can help address public health risks associated with air pollution."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 18,
+        "explanation": "Increasing the attractiveness of the municipal bus system in Manaus is important due to the city's large population and significant transportation emissions. By making public transport more appealing, the city can encourage a shift away from private vehicles, which helps reduce air pollution and greenhouse gas emissions. Improved public transit also enhances mobility for residents, particularly those with very low incomes, and can contribute to better public health by reducing traffic congestion and associated risks. This action supports sustainable urban development and addresses key environmental and social challenges faced by Manaus."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 19,
+        "explanation": "Developing projects for renewable energy and waste reuse is important for Manaus due to its high emissions from stationary energy and waste sectors. Transitioning to renewable energy can help reduce greenhouse gas emissions and improve energy security, which is especially critical given the city's vulnerability to droughts and heatwaves. Waste reuse initiatives can also address environmental concerns and support public health by minimizing landfill use and pollution. These projects align with the city's need to build resilience against climate risks while promoting sustainable development."
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0135",
+        "actionName": "Ensure that 100% of the fleet used by the Municipality (or outsourced) is zero-emission.",
+        "actionPriority": 20,
+        "explanation": "Ensuring that 100% of the municipal fleet is zero-emission is an important step for Manaus, given the city's high transportation emissions. Transitioning to zero-emission vehicles can significantly reduce air pollution and greenhouse gas emissions, improving public health and contributing to climate change mitigation. This action also sets a strong example for residents and businesses, encouraging broader adoption of clean transportation. Given the city's vulnerability to heatwaves and public health risks, reducing emissions from municipal operations is a proactive adaptation and mitigation measure."
+    }
+]

@@ -1,0 +1,1260 @@
+[
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0050",
+    "actionName": "Implement Agroforestry Systems",
+    "actionPriority": 1,
+    "explanation": "A implementação de sistemas agroflorestais em Cametá é uma prioridade elevada devido à localização da cidade em um bioma de floresta tropical, que é ideal para tais práticas. A agrofloresta pode aumentar a biodiversidade, melhorar a saúde do solo e aumentar a resiliência contra impactos climáticos, como secas e inundações, que são riscos significativos para a região. Além disso, essa ação pode proporcionar benefícios econômicos à população local, que enfrenta altos níveis de baixa renda, ao diversificar as fontes de renda e melhorar a segurança alimentar. Dado o alto nível de emissões provenientes do uso da terra, a agrofloresta também pode contribuir para a redução da pegada de carbono total da cidade.",
+    "action": {
+      "ActionID": "icare_0050",
+      "ActionName": "Implementar Sistemas Agroflorestais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover sistemas agroflorestais integrando árvores na produção de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecimento de suporte técnico e orientação aos agricultores sobre o design e implementação de sistemas agroflorestais.",
+        "Desenvolvimento de incentivos financeiros ou subsídios para tornar a agrofloresta mais economicamente atraente.",
+        "Criação de políticas que integrem práticas agroflorestais no planejamento do uso da terra agrícola e nos sistemas de posse de terra."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas convertidas em sistemas agroflorestais (%).",
+        "Número de novos projetos agroflorestais implementados.",
+        "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0133",
+    "actionName": "Promote Urban Reforestation and Green Corridors",
+    "actionPriority": 2,
+    "explanation": "Promover a reflorestação urbana e a criação de corredores verdes em Cametá é fundamental devido ao seu bioma de floresta tropical, que abriga uma rica biodiversidade. Essa ação pode ajudar a mitigar as altas emissões provenientes do uso do solo e da energia estacionária, ao aumentar a captura de carbono. Além disso, a ampliação de áreas verdes pode melhorar a saúde pública ao reduzir o efeito de ilha de calor urbana, o que é especialmente importante diante do alto risco de ondas de calor. Ademais, os corredores verdes podem aumentar a resiliência da cidade a inundações, melhorando a absorção de água e reduzindo o escoamento superficial.",
+    "action": {
+      "ActionID": "icare_0133",
+      "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aumentar a cobertura arbórea urbana para mitigar o efeito de ilha de calor urbano e melhorar a biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Identificação de áreas prioritárias e seleção de espécies nativas e resilientes ao clima para o plantio de árvores.",
+        "Parcerias com organizações locais e viveiros, e alocação de recursos para plantio e manutenção.",
+        "Envolvimento da comunidade para garantir cuidado e apoio a longo prazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento na cobertura de dossel arbóreo urbano (%)",
+        "Comprimento total de corredores verdes criados ou restaurados (quilômetros)",
+        "Redução nas temperaturas do efeito de ilha de calor urbano (°C)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0134",
+    "actionName": "Strengthen Mechanisms for Deforestation Control",
+    "actionPriority": 3,
+    "explanation": "O fortalecimento dos mecanismos de controle do desmatamento em Cametá é crucial devido à sua localização em um bioma de floresta tropical, altamente suscetível ao desmatamento. A cidade enfrenta desafios ambientais significativos, incluindo altas emissões provenientes do uso da terra, que contribuem para as mudanças climáticas e a perda de biodiversidade. Ao aprimorar o controle do desmatamento, Cametá pode proteger sua rica biodiversidade e mitigar os impactos das mudanças climáticas. Além disso, o controle do desmatamento pode ajudar a manter o equilíbrio ecológico e apoiar os meios de subsistência das comunidades locais que dependem dos recursos florestais.",
+    "action": {
+      "ActionID": "icare_0134",
+      "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aprimorar o monitoramento e a fiscalização para prevenir o desmatamento ilegal e promover o uso sustentável da terra.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Forte estrutura legal, tecnologias de monitoramento avançadas (satélites e drones) e capacitação para as autoridades locais.",
+        "Colaboração com comunidades locais e financiamento adequado para os esforços de fiscalização.",
+        "Transparência e responsabilidade na elaboração de relatórios para garantir a implementação eficaz."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total monitorada para desmatamento (hectares/ano).",
+        "Redução na taxa anual de desmatamento (%).",
+        "Quantidade de emissões evitadas pela redução do desmatamento (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0129",
+    "actionName": "Facilitate Technology Transfer for Conservation Practices",
+    "actionPriority": 4,
+    "explanation": "Facilitar a transferência de tecnologia para práticas de conservação em Cametá é crucial devido à localização da cidade em um bioma de floresta tropical, que é rico em biodiversidade, mas também vulnerável a mudanças ambientais. A cidade enfrenta riscos significativos de perigos climáticos, como secas e ondas de calor, que ameaçam tanto a biodiversidade quanto a saúde pública. Ao implementar tecnologias avançadas de conservação, Cametá pode proteger melhor seus recursos naturais e mitigar os impactos desses perigos. Além disso, a melhoria das práticas de conservação pode ajudar a enfrentar os altos níveis de emissões provenientes do uso da terra, contribuindo para a sustentabilidade ambiental como um todo.",
+    "action": {
+      "ActionID": "icare_0129",
+      "ActionName": "Facilitar a Transferência de Tecnologia para Práticas de Conservação",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover a adoção de práticas agrícolas sustentáveis por meio de treinamento, projetos piloto e demonstrações de tecnologia.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar práticas sustentáveis.",
+        "Parcerias com instituições de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a adoção.",
+        "Acesso a assistência técnica para implementação bem-sucedida."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de tecnologias de conservação transferidas e aplicadas em fazendas.",
+        "Percentual de produtores treinados para implementar práticas de conservação.",
+        "Redução na degradação do solo ou aumento na cobertura vegetal (hectares)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0130",
+    "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+    "actionPriority": 5,
+    "explanation": "Realizar ações de Assistência Técnica e Extensão Rural (ATER) em Cametá é fundamental devido aos grandes desafios socioeconômicos enfrentados pela população, especialmente em relação à baixa renda e ao acesso inadequado a serviços públicos. Essas ações podem ajudar a melhorar a produtividade e a sustentabilidade agrícola, o que é vital para a segurança alimentar em uma região vulnerável a secas e enchentes. Além disso, as iniciativas de ATER podem fortalecer as comunidades locais, fornecendo-lhes o conhecimento e os recursos necessários para se adaptarem aos impactos das mudanças climáticas, aumentando assim sua resiliência. Dada a significativa emissão de gases de efeito estufa relacionada ao uso da terra no município, essas ações também podem contribuir para práticas de manejo mais sustentáveis, reduzindo as emissões totais.",
+    "action": {
+      "ActionID": "icare_0130",
+      "ActionName": "Conduzir Ações de Assistência Técnica e Extensão Rural (ATER)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fornecer suporte técnico e treinamento aos produtores rurais para a produção agrícola sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de pessoal técnico qualificado e programas de formação personalizados.",
+        "Parcerias com instituições de pesquisa agrícola e alocação de recursos para o desenvolvimento de capacidades.",
+        "Envolvimento com produtores rurais para garantir a participação ativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de produtores beneficiados com assistência técnica rural (% do total).",
+        "Percentual de participantes adotando práticas resilientes ao clima.",
+        "Redução da vulnerabilidade das propriedades ao risco climático (%)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0128",
+    "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+    "actionPriority": 6,
+    "explanation": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA) em Cametá é fundamental devido à localização da cidade em um bioma de floresta tropical, que é vital para a biodiversidade e a regulação do clima. Os programas de PSA podem incentivar as comunidades locais a se envolverem em esforços de conservação, ajudando a mitigar as altas emissões provenientes do uso do solo e da energia estacionária. Além disso, esses programas podem enfrentar desafios socioeconômicos ao proporcionar benefícios financeiros aos residentes de baixa renda, melhorando assim seus meios de subsistência enquanto promovem práticas ambientais sustentáveis. Essa ação está alinhada com a necessidade de aumentar a resiliência contra riscos climáticos, como secas e inundações, que ameaçam os recursos hídricos e a segurança alimentar na região.",
+    "action": {
+      "ActionID": "icare_0128",
+      "ActionName": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas que paguem aos proprietários de terras por manterem ou melhorarem as condições ambientais em suas propriedades.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Criação de mecanismos de financiamento e critérios de elegibilidade claros com indicadores de desempenho.",
+        "Parcerias com organizações ambientais e campanhas de conscientização para incentivar a participação.",
+        "Integração com estruturas legais para garantir a sustentabilidade do programa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de contratos ativos de Pagamento por Serviços Ambientais (PSA) assinados.",
+        "Área total sob práticas de conservação ou restauração incentivadas (hectares).",
+        "Quantidade de carbono sequestrado ou emissões evitadas por meio de ações de PSA (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0102",
+    "actionName": "Promote Sustainable Agricultural Practices",
+    "actionPriority": 7,
+    "explanation": "Promover práticas agrícolas sustentáveis em Cametá é crucial devido ao alto risco de secas que impactam a segurança alimentar. O bioma de floresta tropical da cidade e a alta densidade populacional tornam essencial a adoção de práticas que conservem a água e mantenham a saúde do solo. Além disso, com uma alta porcentagem da população vivendo em condições de baixa renda, a agricultura sustentável pode melhorar a disponibilidade de alimentos e a resiliência econômica. A implementação dessas práticas também pode ajudar a reduzir as emissões provenientes do uso da terra, que são um contribuinte significativo para o total de emissões da cidade.",
+    "action": {
+      "ActionID": "icare_0102",
+      "ActionName": "Promover Práticas Agrícolas Sustentáveis",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar práticas agrícolas que reduzam as emissões de gases de efeito estufa, como o uso reduzido de fertilizantes e agroquímicos.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas educacionais e recursos para promover práticas agrícolas sustentáveis entre os agricultores.",
+        "Implementação de políticas que incentivem a redução do uso de fertilizantes e agroquímicos, como subsídios para insumos orgânicos ou técnicas de cultivo sustentável.",
+        "Colaboração com organizações agrícolas para fornecer suporte técnico e orientação sobre práticas de redução de emissões."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas adotando práticas sustentáveis (% do total de terras agrícolas).",
+        "Aumento no rendimento das colheitas por hectare (toneladas/hectare) devido a métodos sustentáveis.",
+        "Redução no uso de água para agricultura (litros ou m³/hectare/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0084",
+    "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+    "actionPriority": 8,
+    "explanation": "Criar incentivos para práticas de agrofloresta em sistemas de pecuária é fundamental para Cametá devido ao seu bioma de floresta tropical, que é altamente sensível ao desmatamento e à degradação do solo. A agrofloresta pode ajudar a manter a biodiversidade e melhorar a saúde do solo, fatores essenciais para a agricultura sustentável na região. Além disso, essa ação pode contribuir para a redução das emissões provenientes do uso da terra, que representam uma parte significativa das emissões totais do município. Ao integrar árvores aos sistemas de pecuária, a cidade pode aumentar a captura de carbono e melhorar a resiliência contra riscos climáticos, como secas e inundações.",
+    "action": {
+      "ActionID": "icare_0084",
+      "ActionName": "Criar Incentivos para Práticas de Agroflorestas em Sistemas de Pecuária",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Criar incentivos financeiros e técnicos para integrar práticas de agroflorestação em sistemas de pecuária, promovendo a captura de carbono, proteção do solo e melhoria da biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas de incentivos financeiros, como subsídios ou isenções fiscais, para apoiar os agricultores na integração da agrofloresta com sistemas de pecuária.",
+        "Fornecimento de assistência técnica e treinamento aos agricultores sobre as melhores práticas para a integração da agrofloresta nas operações de pecuária.",
+        "Colaboração com organizações agrícolas e ambientais para monitorar e avaliar os impactos das práticas agroflorestais na captura de carbono, saúde do solo e biodiversidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de incentivos financeiros fornecidos para integrar a agrofloresta em sistemas de pecuária.",
+        "Aumento na qualidade do solo e cobertura vegetal em propriedades manejadas (%).",
+        "Crescimento da biodiversidade em áreas de agrofloresta (% de espécies identificadas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0096",
+    "actionName": "Promote Organic Farming",
+    "actionPriority": 9,
+    "explanation": "Promover a agricultura orgânica em Cametá é uma ação crucial devido ao alto risco de insegurança alimentar na cidade, agravado por perigos climáticos como secas e inundações. A agricultura orgânica pode melhorar a saúde e a resiliência do solo, tornando-o mais apto a suportar esses desafios ambientais. Além disso, pode proporcionar meios de subsistência sustentáveis para a população local, que é predominantemente de baixa renda, ao reduzir a dependência de insumos químicos caros. Essa abordagem também está alinhada com a necessidade de reduzir as emissões provenientes do uso da terra, contribuindo para a sustentabilidade ambiental geral da região.",
+    "action": {
+      "ActionID": "icare_0096",
+      "ActionName": "Promover a Agricultura Orgânica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a adoção de práticas de agricultura orgânica que evitem o uso de produtos químicos e contribuam para a saúde do solo e captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecimento de incentivos financeiros, subsídios ou subsídios para apoiar a transição para práticas de agricultura orgânica.",
+        "Desenvolvimento de redes de treinamento e apoio para educar os agricultores sobre métodos de agricultura orgânica e seus benefícios.",
+        "Estabelecimento de sistemas de certificação e estratégias de acesso ao mercado para garantir a viabilidade econômica dos produtos orgânicos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas sob práticas de agricultura orgânica (%).",
+        "Aumento no teor de carbono orgânico do solo (toneladas de carbono por hectare).",
+        "Redução no uso de fertilizantes químicos e pesticidas (quilogramas/hectare/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0100",
+    "actionName": "Support Regenerative Agriculture Practices",
+    "actionPriority": 10,
+    "explanation": "Apoiar práticas de agricultura regenerativa em Cametá é fundamental devido ao alto risco de secas que afetam a segurança alimentar. A cidade enfrenta desafios significativos com o acesso inadequado à água, que podem ser mitigados por técnicas agrícolas sustentáveis que melhoram a saúde do solo e a retenção de água. Além disso, a agricultura regenerativa pode ajudar a reduzir as emissões provenientes do uso da terra, que são um dos principais contribuintes para o total de emissões da cidade. Ao priorizar essa ação, Cametá pode aumentar sua resiliência contra riscos relacionados ao clima e melhorar as condições socioeconômicas de sua população de baixa renda.",
+    "action": {
+      "ActionID": "icare_0100",
+      "ActionName": "Apoiar Práticas de Agricultura Regenerativa",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoiar práticas agrícolas regenerativas que se concentrem na restauração da saúde do solo e na redução das emissões de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas de treinamento e recursos para educar os agricultores sobre técnicas agrícolas regenerativas, como cobertura vegetal e redução do preparo do solo.",
+        "Implementação de incentivos financeiros ou subsídios para apoiar a adoção de práticas regenerativas.",
+        "Colaboração com instituições de pesquisa agrícola para monitorar e documentar a eficácia das práticas regenerativas na captura de carbono e na melhoria da saúde do solo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento nos níveis de carbono orgânico do solo (toneladas/hectare).",
+        "Redução no uso de água por hectare na produção agrícola (%).",
+        "Número de projetos piloto de agricultura regenerativa implementados."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0127",
+    "actionName": "Accelerate Environmental Regularization of Rural Properties",
+    "actionPriority": 11,
+    "explanation": "Acelerar a regularização ambiental das propriedades rurais em Cametá é fundamental devido às altas emissões provenientes do uso da terra, que representam uma parcela significativa das emissões totais do município. Essa ação pode ajudar a mitigar o impacto do desmatamento e da degradação do solo, problemas comuns em biomas de floresta tropical. Ao garantir que as propriedades rurais estejam em conformidade com as normas ambientais, o município pode promover práticas sustentáveis de uso da terra, reduzindo as emissões e preservando a biodiversidade. Além disso, essa iniciativa pode apoiar a economia local ao incentivar práticas agrícolas sustentáveis, que são essenciais para a segurança alimentar da região.",
+    "action": {
+      "ActionID": "icare_0127",
+      "ActionName": "Acelerar a Regularização Ambiental de Propriedades Rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas para registrar propriedades no Cadastro Ambiental Rural (CAR) e aderir aos compromissos de restauração ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Acesso a plataformas digitais e treinamento técnico para processos de registro e restauração de propriedades.",
+        "Incentivos financeiros e parcerias com agências ambientais para apoiar a implementação.",
+        "Mecanismos de monitoramento e fiscalização para garantir o cumprimento dos compromissos de restauração."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de propriedades rurais com Cadastro Ambiental Rural (CAR) regularizado.",
+        "Área total de vegetação nativa protegida ou restaurada em propriedades regularizadas (hectares).",
+        "Redução anual nas emissões de gases de efeito estufa (tCO₂e) devido à regularização."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0101",
+    "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+    "actionPriority": 12,
+    "explanation": "Incentivar o uso de máquinas agrícolas de baixa emissão em Cametá é fundamental devido às significativas emissões provenientes do uso da terra na cidade, que representam a maior fonte de emissões locais. Ao adotar tecnologias mais limpas na agricultura, o município pode reduzir substancialmente sua pegada de carbono e contribuir para a mitigação das mudanças climáticas. Além disso, essa ação está alinhada com a necessidade de enfrentar os desafios socioeconômicos vivenciados pela população, pois pode promover práticas agrícolas mais sustentáveis e, potencialmente, melhorar as condições de vida. Considerando o alto risco de secas que afetam a segurança alimentar, a redução das emissões na agricultura também pode ajudar a fortalecer a resiliência diante de perigos relacionados ao clima.",
+    "action": {
+      "ActionID": "icare_0101",
+      "ActionName": "Incentivar o Uso de Máquinas Agrícolas de Baixa Emissão",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover o uso de maquinário agrícola de baixo carbono, como tratores e equipamentos movidos a biocombustíveis ou energia solar.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Estabelecimento de programas de financiamento ou incentivos para que os agricultores adquiram máquinas agrícolas de baixo carbono.",
+        "Desenvolvimento de parcerias com fabricantes de máquinas para criar e distribuir soluções de equipamentos sustentáveis.",
+        "Implementação de programas de treinamento e apoio para ajudar os agricultores a integrar e manter máquinas agrícolas de baixo carbono."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas emissões de máquinas agrícolas (toneladas de CO₂e/ano).",
+        "Número de subsídios ou incentivos fornecidos para máquinas de baixa emissão.",
+        "Percentual de agricultores treinados para operar máquinas de baixa emissão."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "ipcc_0061",
+    "actionName": "Soil Carbon Management in Croplands and Grasslands",
+    "actionPriority": 13,
+    "explanation": "A Gestão do Carbono no Solo em áreas agrícolas e pastagens é uma ação crucial para Cametá devido ao seu potencial de aumentar o sequestro de carbono e melhorar a saúde do solo. Considerando o bioma de floresta tropical da cidade, o manejo do carbono no solo pode ajudar a mitigar as emissões provenientes do uso da terra, que são um dos principais contribuintes para o total de emissões do município. Além disso, a melhoria da saúde do solo pode apoiar a agricultura local, que é vital para a segurança alimentar, especialmente em uma região com altos riscos de secas e inundações. Essa ação também pode contribuir para a resiliência dos ecossistemas locais, apoiando a biodiversidade e reduzindo a vulnerabilidade aos impactos das mudanças climáticas.",
+    "action": {
+      "ActionID": "ipcc_0061",
+      "ActionName": "Gestão de Carbono do Solo em Terras Agrícolas e Pastagens",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementação de práticas de manejo sustentável do solo em terras agrícolas e pastagens para aumentar o carbono orgânico do solo. As práticas incluem manejo melhorado de culturas e nutrientes, redução do preparo do solo, retenção de resíduos, manejo de água e arroz, aplicação de biochar, melhoramento de variedades de gramíneas, manejo de lotação de gado e manejo de incêndios. Essas atividades visam aumentar a matéria orgânica do solo, mitigar as emissões de GEE e proporcionar co-benefícios para a biodiversidade, fornecimento de água e segurança alimentar.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Promove a inclusão de pequenos agricultores e comunidades com recursos limitados, fornecendo práticas econômicas e adaptáveis regionalmente que melhoram a produtividade agrícola e a resiliência às mudanças climáticas.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "O sucesso depende da disponibilidade de recursos para monitoramento e verificação",
+        "adaptação regional de práticas",
+        "enfrentamento de barreiras como saturação do solo e questões de permanência"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento do carbono orgânico do solo",
+        "redução nas emissões de GEE",
+        "melhoria na produtividade agrícola",
+        "melhorias na biodiversidade"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 14,
+    "explanation": "Priorizar a aquisição de produtos agroecológicos produzidos localmente nas compras públicas é fundamental para Cametá, devido ao seu alto risco de insegurança alimentar, agravado por eventos climáticos como enchentes e secas. Essa ação apoia os agricultores locais, fortalece a segurança alimentar e reduz a dependência de fontes externas de alimentos, o que é vital diante dos desafios socioeconômicos do município. Além disso, a promoção de práticas agroecológicas pode ajudar a mitigar impactos ambientais e aumentar a resiliência frente às mudanças climáticas, alinhando-se à necessidade da cidade de enfrentar suas significativas emissões relacionadas ao uso da terra. Ao focar na aquisição local, Cametá pode fortalecer sua economia e melhorar a sustentabilidade de seus sistemas alimentares.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar a Aquisição de Produtos Agroecológicos Produzidos Localmente em Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Concentre-se em comprar alimentos sustentáveis e produzidos localmente para instituições públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas de aquisição e identificação de fornecedores locais confiáveis.",
+        "Parcerias com produtores e alocação de financiamento para programas de aquisição sustentável.",
+        "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os critérios de sustentabilidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem do volume total de compras públicas provenientes de produtores agroecológicos locais.",
+        "Quantidade de emissões de CO₂ evitadas devido à redução da distância de transporte (tCO₂e).",
+        "Número de produtores agroecológicos beneficiados pelas compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0132",
+    "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+    "actionPriority": 15,
+    "explanation": "Incentivar a produção agroecológica local e cadeias curtas de abastecimento é crucial para Cametá devido ao seu alto risco de insegurança alimentar, especialmente por causa de secas e enchentes. Ao promover a agricultura local, a cidade pode aumentar sua resiliência diante desses riscos climáticos, garantindo um abastecimento alimentar mais estável. Além disso, essa ação pode ajudar a reduzir as emissões do transporte, que representam uma parte significativa das emissões totais da cidade, contribuindo assim para a sustentabilidade ambiental como um todo. Ademais, apoiar os agricultores locais pode melhorar as condições socioeconômicas em uma região com altos índices de baixa renda, promovendo o desenvolvimento comunitário e a autossuficiência.",
+    "action": {
+      "ActionID": "icare_0132",
+      "ActionName": "Incentivar a Produção Agroecológica Local e Cadeias Curtas de Abastecimento",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoiar práticas agrícolas locais e sustentáveis e reduzir as emissões associadas ao transporte de alimentos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Incentivos para práticas agrícolas sustentáveis e desenvolvimento de redes locais de distribuição de alimentos.",
+        "Parcerias com produtores e investimento em infraestrutura para apoiar mercados locais.",
+        "Políticas para priorizar métodos de transporte de baixa emissão."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de produtores aderindo a práticas agroecológicas locais.",
+        "Percentual de alimentos consumidos na cidade provenientes de cadeias curtas.",
+        "Redução nas emissões associadas ao transporte de alimentos (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0099",
+    "actionName": "Support Agroecological Certification Programs",
+    "actionPriority": 16,
+    "explanation": "Apoiar programas de certificação agroecológica em Cametá é fundamental devido à alta vulnerabilidade da cidade a riscos climáticos, como secas e enchentes, que impactam diretamente a segurança alimentar. Ao promover práticas agrícolas sustentáveis, esses programas podem aumentar a resiliência diante desses riscos, garantindo um abastecimento alimentar estável. Além disso, considerando os altos índices de moradores de baixa renda, as práticas agroecológicas podem proporcionar benefícios econômicos ao reduzir a dependência de insumos agrícolas caros. Essa ação também está alinhada com a necessidade de proteger o bioma da floresta tropical, que é vital para a manutenção da biodiversidade e para a mitigação dos impactos das mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0099",
+      "ActionName": "Apoiar Programas de Certificação Agroecológica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a certificação de produtos agroecológicos que atendam a critérios de sustentabilidade e tenham baixo impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de padrões de certificação claros e acessíveis para produtos agroecológicos que enfatizem a sustentabilidade e o baixo impacto ambiental.",
+        "Apoio a agricultores e produtores para atender aos requisitos de certificação por meio de treinamento, assistência financeira ou orientação técnica.",
+        "Criação de estratégias de marketing e parcerias para aumentar a visibilidade e a demanda por produtos agroecológicos certificados nos mercados locais e globais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de agricultores ou produtores obtendo certificações agroecológicas.",
+        "Percentual de produtos agrícolas certificados no mercado (%).",
+        "Redução no uso de insumos sintéticos (por exemplo, fertilizantes, pesticidas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0136",
+    "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+    "actionPriority": 17,
+    "explanation": "Apoiar a implementação de incentivos fiscais ecológicos em Cametá é fundamental devido às altas emissões e aos desafios ambientais enfrentados pela cidade. Cametá está exposta a riscos significativos decorrentes de perigos climáticos, como secas, ondas de calor e inundações, que ameaçam a saúde pública, a segurança alimentar e a infraestrutura. Ao promover políticas fiscais ecológicas, o município pode incentivar práticas sustentáveis que reduzam as emissões e aumentem a resiliência diante desses impactos climáticos. Além disso, esses incentivos podem contribuir para a resolução de questões socioeconômicas, ao possibilitar benefícios financeiros para comunidades de baixa renda, promovendo um ambiente urbano mais sustentável e equitativo.",
+    "action": {
+      "ActionID": "icare_0136",
+      "ActionName": "Apoiar a Implementação de Incentivos Fiscais Ecológicos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a aplicação de impostos ecológicos e incentivos para promover a conservação ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro regulatório claro com taxas de impostos justas e incentivos para a sustentabilidade.",
+        "Implementar sistemas de monitoramento eficazes para rastrear a conformidade e medir o impacto.",
+        "Promover a conscientização pública e fomentar a colaboração entre governos, empresas e comunidades."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de municípios que adotaram incentivos fiscais ambientais.",
+        "Percentual da receita tributária gasta em práticas sustentáveis.",
+        "Área ou número de propriedades beneficiadas por práticas de conservação como resultado de incentivos."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "icare_0085",
+    "actionName": "Promote the Adoption of Agroecological Pest Control",
+    "actionPriority": 18,
+    "explanation": "Promover a adoção do controle agroecológico de pragas em Cametá é fundamental devido à localização da cidade em um bioma de floresta tropical, que abriga uma rica biodiversidade que pode ser ameaçada pelos métodos convencionais de controle de pragas. As práticas agroecológicas podem ajudar a manter o equilíbrio ecológico e reduzir o risco de perda de biodiversidade, o que é uma preocupação, considerando a vulnerabilidade da cidade a perigos climáticos como secas e ondas de calor. Além disso, essas práticas podem fortalecer a segurança alimentar ao garantir uma produtividade agrícola sustentável, o que é vital em uma região com grandes desafios socioeconômicos e um risco significativo de insegurança alimentar devido aos impactos climáticos. Implementar essa ação está alinhado com a necessidade de abordar tanto a sustentabilidade ambiental quanto a resiliência socioeconômica em Cametá.",
+    "action": {
+      "ActionID": "icare_0085",
+      "ActionName": "Promover a Adoção do Controle de Pragas Agroecológico",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar métodos de controle de pragas que sejam agroecológicos, como o uso de predadores naturais e plantas repelentes, para reduzir a dependência de pesticidas químicos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de programas educacionais para informar os agricultores sobre métodos de controle de pragas agroecológicos e seus benefícios.",
+        "Fornecimento de acesso a recursos ou materiais para implementar métodos de controle de pragas naturais, como a introdução de insetos benéficos ou o cultivo de plantas repelentes.",
+        "Criação de incentivos ou redes de apoio para encorajar a transição do uso de pesticidas químicos em favor de alternativas sustentáveis."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento nas taxas de produtividade em áreas que adotam controle agroecológico de pragas (%).",
+        "Número de campanhas educativas realizadas sobre controle sustentável de pragas.",
+        "Impacto nos custos totais de produção devido à adoção de práticas agroecológicas (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "ipcc_0052",
+    "actionName": "Reduce Deforestation and Degradation",
+    "actionPriority": 19,
+    "explanation": "Reduzir o desmatamento e a degradação é crucial para Cametá devido à sua localização em um bioma de floresta tropical, que é vital para a biodiversidade e a captura de carbono. A cidade enfrenta emissões significativas provenientes do uso da terra, que podem ser mitigadas pela preservação das áreas florestais. Além disso, manter a cobertura florestal pode ajudar a mitigar os impactos de riscos climáticos, como secas e inundações, que representam ameaças aos recursos hídricos, à segurança alimentar e à saúde pública. Ao priorizar essa ação, Cametá pode aumentar sua resiliência às mudanças climáticas enquanto protege seu ambiente natural.",
+    "action": {
+      "ActionID": "ipcc_0052",
+      "ActionName": "Reduzir o Desmatamento e a Degradação",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Reduzir o desmatamento e a degradação florestal conserva os reservatórios de carbono na vegetação e no solo das florestas, evitando a perda de cobertura arbórea e distúrbios. Isso envolve controlar os fatores que levam ao desmatamento, melhorar a governança florestal e apoiar a gestão comunitária das florestas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Promove a posse segura da terra, apoia a gestão florestal comunitária e garante a participação de grupos marginalizados e indígenas nos processos de tomada de decisão.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Requer governança aprimorada",
+        "políticas claras de posse de terra",
+        "financiamento para áreas protegidas",
+        "participação da comunidade nos esforços de conservação florestal"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas taxas de desmatamento",
+        "aumento da cobertura florestal",
+        "a quantidade de emissões de GEE evitadas por ano"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "tropical_rainforest"
+    }
+  },
+  {
+    "locode": "BR CMA",
+    "cityName": "Cametá",
+    "region": "PA",
+    "regionName": "Pará",
+    "actionId": "ipcc_0053",
+    "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+    "actionPriority": 20,
+    "explanation": "A aforestação, a reflorestação e a restauração de ecossistemas florestais são cruciais para Cametá devido à sua localização em um bioma de floresta tropical. Essas ações podem aumentar significativamente a captura de carbono, ajudando a mitigar as altas emissões totais da cidade. Além disso, a restauração dos ecossistemas florestais pode melhorar a biodiversidade, que atualmente está em risco devido a secas e ondas de calor. Ao priorizar essa ação, Cametá também pode abordar as emissões relacionadas ao uso da terra, que são um dos principais contribuintes para o seu perfil geral de emissões.",
+    "action": {
+      "ActionID": "ipcc_0053",
+      "ActionName": "Aflorestamento, Reflorestamento e Restauração de Ecossistemas Florestais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Atividades focadas na conversão de terras em florestas, na restauração de florestas degradadas e na priorização da integridade ecológica. O reflorestamento visa terras historicamente não florestadas, enquanto a reflorestação visa áreas anteriormente florestadas. Os esforços incluem o aumento da biodiversidade, a melhoria dos serviços ecossistêmicos e o aumento da captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Apoia os meios de subsistência locais, promove a equidade no uso da terra e garante a participação inclusiva das partes interessadas em programas de reflorestamento e restauração.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Requer financiamento para restauração de terras",
+        "acesso a espécies adequadas para plantio",
+        "engajamento da comunidade local",
+        "sistemas de monitoramento para integridade do ecossistema e sequestro de carbono"
+      ],
+      "KeyPerformanceIndicators": [
+        "Área de terra reflorestada ou florestada",
+        "taxas de sequestro de carbono",
+        "melhoria nos índices de biodiversidade",
+        "métricas de serviços ecossistêmicos, como regulação da água e qualidade do solo"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
+]

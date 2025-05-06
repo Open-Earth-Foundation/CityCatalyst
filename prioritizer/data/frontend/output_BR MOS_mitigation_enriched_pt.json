@@ -1,0 +1,1259 @@
+[
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 1,
+    "explanation": "Incentivar políticas de energia renovável em nível municipal em Mossoró é uma prioridade elevada devido às significativas emissões de energia estacionária da cidade. A transição para fontes de energia renovável pode ajudar a reduzir essas emissões, contribuindo para um ambiente mais limpo e mitigando os impactos das mudanças climáticas. Além disso, a energia renovável pode aumentar a segurança energética, o que é crucial diante do alto risco de perigos relacionados à energia, como secas e ondas de calor. A implementação dessas políticas também pode estimular o crescimento econômico local, criando empregos verdes e reduzindo a dependência de fontes externas de energia.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Incentivar políticas de energia renovável a nível municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Defender e implementar políticas que priorizem o desenvolvimento e a integração de sistemas de energia renovável nas operações e no planejamento do governo local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e liderança para priorizar a energia renovável nas políticas e processos de planejamento do governo local",
+        "Desenvolvimento de políticas claras e estruturas regulatórias que facilitem a integração de sistemas de energia renovável nas operações governamentais",
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transição para a energia renovável na infraestrutura e operações municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia renovável aprovados ou iniciados anualmente a nível municipal.",
+        "Percentagem da demanda de energia municipal atendida por fontes renováveis (%).",
+        "Redução nas emissões de carbono municipais devido à adoção de energia renovável (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 2,
+    "explanation": "Integrar fontes de energia renovável aos sistemas municipais de água em Mossoró é uma ação crucial devido ao alto risco de secas na cidade, que impacta significativamente os recursos hídricos. Ao utilizar energia renovável, a cidade pode garantir um abastecimento de água mais confiável e sustentável, reduzindo a dependência de fontes de energia tradicionais, que podem ser menos confiáveis durante condições climáticas extremas. Essa ação também está alinhada com a necessidade do município de enfrentar suas substanciais emissões estacionárias de energia, contribuindo para a redução geral das emissões e para o fortalecimento da segurança energética. Além disso, a integração de fontes renováveis pode ajudar a mitigar os impactos socioeconômicos da escassez de água, beneficiando a população de baixa renda da cidade ao possibilitar, potencialmente, a redução dos custos da água.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energias renováveis nos sistemas municipais de água",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fontes de energia renovável, como energia solar ou eólica, para impulsionar sistemas de tratamento, bombeamento e distribuição de água, reduzindo custos de energia e emissões.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renovável, como energia solar ou eólica, em sistemas de tratamento e distribuição de água",
+        "Expertise técnica e infraestrutura para adaptar sistemas existentes com soluções de energia renovável ou projetar novas instalações alimentadas por energias renováveis",
+        "Apoio político e regulatório para incentivar o uso de energia limpa em sistemas de água e garantir sua integração nas redes de energia municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de sistemas municipais de água alimentados por energias renováveis.",
+        "Redução no consumo de energia de fontes não renováveis (kWh/ano).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0038",
+    "actionName": "Promote community solar farms",
+    "actionPriority": 3,
+    "explanation": "Promover fazendas solares comunitárias em Mossoró é uma ação estratégica devido ao alto potencial solar da cidade, considerando seu bioma desértico e a elevada exposição à luz solar. Essa iniciativa pode reduzir significativamente as emissões de energia estacionária, que atualmente são um dos principais contribuintes para o total de emissões do município. Além disso, as fazendas solares comunitárias podem aumentar a segurança energética, uma preocupação crítica diante do alto risco de impactos relacionados à energia causados por secas e ondas de calor. Ao investir em energia renovável, Mossoró também pode melhorar suas condições socioeconômicas, oferecendo soluções energéticas acessíveis para moradores de baixa renda.",
+    "action": {
+      "ActionID": "icare_0038",
+      "ActionName": "Promover fazendas solares comunitárias",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Desenvolver e incentivar a adoção de projetos de energia solar compartilhada, permitindo que as comunidades se beneficiem coletivamente de energia limpa e renovável.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas e estruturas regulatórias para apoiar projetos de energia solar compartilhada baseados na comunidade e garantir o acesso equitativo à energia limpa",
+        "Disponibilidade de mecanismos financeiros ou incentivos para ajudar as comunidades a investir e manter sistemas de energia solar compartilhada",
+        "Colaboração entre governos locais, fornecedores de energia e organizações comunitárias para projetar e implementar projetos de energia solar compartilhada de forma eficaz"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de residências atendidas por projetos solares comunitários.",
+        "Emissões de GEE evitadas através da produção de energia solar (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0121",
+    "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+    "actionPriority": 4,
+    "explanation": "A ação de incentivar programas de compartilhamento de bicicletas, especialmente com bicicletas elétricas, é crucial para Mossoró devido às suas altas emissões de transporte. Ao promover métodos alternativos de transporte, a cidade pode reduzir significativamente sua pegada de carbono e melhorar a qualidade do ar. Além disso, as bicicletas elétricas oferecem uma solução sustentável que pode ajudar a mitigar o impacto das ondas de calor na saúde pública, proporcionando um meio de transporte mais fresco e menos fisicamente exigente. Essa iniciativa também está alinhada com a necessidade da cidade de fortalecer a segurança energética e reduzir a dependência de fontes tradicionais de combustível.",
+    "action": {
+      "ActionID": "icare_0121",
+      "ActionName": "Incentivo à criação de programas de compartilhamento de bicicletas em áreas urbanas, com foco em bicicletas elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação incentiva o estabelecimento de sistemas de compartilhamento de bicicletas nas cidades, promovendo especificamente o uso de bicicletas elétricas. Esses sistemas permitem que os residentes aluguem bicicletas elétricas para viagens curtas, reduzindo a dependência de carros para o transporte urbano. Ao integrar bicicletas elétricas, as cidades podem reduzir ainda mais as emissões de gases de efeito estufa, aliviar a congestão do tráfego e promover um modo de transporte mais saudável e sustentável tanto para áreas urbanas quanto rurais. Esta iniciativa também apoia a igualdade de mobilidade, pois torna as bicicletas mais acessíveis a uma gama mais ampla de pessoas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecimento de sistemas de compartilhamento de bicicletas com foco em bicicletas elétricas para reduzir a dependência de carros.",
+        "Integração de bicicletas elétricas para reduzir as emissões de gases de efeito estufa, aliviar o congestionamento do tráfego e promover o transporte sustentável.",
+        "Promoção da igualdade de mobilidade tornando as bicicletas elétricas acessíveis a uma população mais ampla."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de bicicletas elétricas disponíveis em programas de compartilhamento de bicicletas.",
+        "Aumento anual no número de usuários de compartilhamento de bicicletas.",
+        "Redução estimada nas emissões de CO₂ equivalente com a adoção do compartilhamento de bicicletas elétricas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 5,
+    "explanation": "A implementação de programas de transporte público gratuito durante os horários de pico em Mossoró é uma ação crucial devido às altas emissões do setor de transporte na cidade, que contribuem significativamente para o total de emissões. Ao incentivar o uso do transporte público, essa iniciativa visa reduzir a dependência de veículos individuais, diminuindo assim as emissões e melhorando a qualidade do ar. Além disso, essa ação pode aliviar a congestão do tráfego nos horários de pico, aumentando a eficiência geral do sistema de transporte da cidade. Ademais, oferecer transporte gratuito pode melhorar a acessibilidade para os moradores de baixa renda, alinhando-se ao contexto socioeconômico da cidade e promovendo a equidade social.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementação de programas de transporte público gratuito durante os horários de pico para reduzir o uso de veículos individuais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar o uso do transporte público oferecendo serviços gratuitos durante os horários de pico para trabalhadores e estudantes. Esta medida reduz a congestão urbana, diminui o número de veículos individuais nas estradas e, consequentemente, reduz as emissões de gases de efeito estufa associadas ao transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Alocação de financiamento para subsidiar serviços de transporte público gratuito durante as horas de pico.",
+        "Desenvolvimento de políticas para garantir a sustentabilidade e eficiência dos sistemas de transporte público diante do aumento da demanda.",
+        "Coordenação com empregadores e instituições educacionais para otimizar os horários de pico e promover a iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nos níveis de poluição do ar durante as horas de pico (concentração de PM2.5/PM10).",
+        "Número de veículos particulares removidos das estradas durante as horas de pico.",
+        "Taxa de satisfação pública com a iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0139",
+    "actionName": "Implementation of urban toll.",
+    "actionPriority": 6,
+    "explanation": "A implementação de um pedágio urbano em Mossoró é uma ação estratégica voltada para a redução das emissões do setor de transporte, que representam uma contribuição significativa para o total de emissões da cidade. Ao introduzir um pedágio, a cidade pode incentivar o uso do transporte público e reduzir o número de veículos particulares nas ruas, diminuindo assim a congestão e as emissões. Essa ação é especialmente importante, considerando o alto risco de ondas de calor e os impactos na saúde pública, já que a redução das emissões pode ajudar a mitigar esses riscos. Além disso, a receita gerada pelo pedágio pode ser reinvestida na melhoria da infraestrutura do transporte público, promovendo ainda mais a mobilidade urbana sustentável.",
+    "action": {
+      "ActionID": "icare_0139",
+      "ActionName": "Implementação de pedágio urbano.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecimento de uma taxa de congestionamento e/ou rodízio de placas para veículos leves em áreas saturadas e em horários saturados",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro legal claro e investir em tecnologia para monitoramento e fiscalização (por exemplo, câmeras, sensores).",
+        "Lançar campanhas de conscientização e garantir a disponibilidade de transporte público eficiente ou soluções alternativas de mobilidade.",
+        "Colaborar com governos locais e agências de transporte, e estabelecer sistemas para monitorar e avaliar a eficácia da política."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução das emissões de CO₂ do transporte rodoviário urbano (tCO₂e/ano).",
+        "Receita gerada pela implementação da taxa de congestionamento urbano (R$)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0033",
+    "actionName": "Install biodigesters in rural properties",
+    "actionPriority": 7,
+    "explanation": "Instalar biodigestores em propriedades rurais em Mossoró é uma ação estratégica devido ao bioma desértico da cidade e aos desafios associados à segurança hídrica e alimentar. Os biodigestores podem ajudar a gerenciar resíduos orgânicos de forma eficaz, reduzindo as emissões de resíduos e fornecendo uma fonte renovável de energia, o que é crucial diante do alto risco de insegurança energética causado pelas secas. Além disso, essa ação apoia práticas agrícolas sustentáveis, que podem melhorar a segurança alimentar e a resiliência contra impactos climáticos, como secas e ondas de calor. Ao converter resíduos em biogás, os biodigestores também contribuem para a redução da pegada total de emissões da cidade.",
+    "action": {
+      "ActionID": "icare_0033",
+      "ActionName": "Instalar biodigestores em propriedades rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Equipar fazendas e propriedades rurais com biodigestores para converter resíduos orgânicos em biogás e fertilizantes ricos em nutrientes, fornecendo uma fonte de energia sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou subsídios para apoiar a instalação de biodigestores em fazendas e propriedades rurais",
+        "Acesso a expertise técnica para o design, instalação e manutenção de biodigestores",
+        "Desenvolvimento de um quadro regulatório de apoio que incentive o uso de biogás e sistemas de gestão de resíduos orgânicos na agricultura rural"
+      ],
+      "KeyPerformanceIndicators": [
+        "Volume de biogás gerado (m³/ano).",
+        "Emissões de GEE evitadas pela substituição de combustíveis fósseis (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0094",
+    "actionName": "Adoption of biomethane in public fleets.",
+    "actionPriority": 8,
+    "explanation": "A adoção do biometano nas frotas públicas de Mossoró é uma ação significativa devido às altas emissões do setor de transporte na cidade, que contribuem substancialmente para suas emissões totais. Ao fazer a transição para o biometano, uma alternativa mais limpa, a cidade pode reduzir sua pegada de carbono e melhorar a qualidade do ar. Além disso, essa ação está alinhada com a necessidade de fortalecer a segurança energética, conforme identificado na avaliação de risco climático do município, ao diversificar as fontes de energia e reduzir a dependência de combustíveis fósseis tradicionais. Essa iniciativa também apoia o desenvolvimento socioeconômico da cidade, ao potencialmente criar novos empregos no setor de energias renováveis.",
+    "action": {
+      "ActionID": "icare_0094",
+      "ActionName": "Adoção de biometano em frotas públicas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar biometano produzido a partir de resíduos urbanos e agroindustriais para abastecer ônibus e caminhões públicos, reduzindo as emissões de gases de efeito estufa nas frotas municipais",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de infraestrutura para a produção, processamento e distribuição de biometano a partir de resíduos urbanos e agroindustriais.",
+        "Retrofit ou aquisição de ônibus e caminhões públicos capazes de usar biometano como fonte de combustível.",
+        "Estabelecimento de políticas e incentivos financeiros para apoiar a produção de biometano e sua integração nas frotas municipais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Economia de custos na operação da frota devido ao uso de biometano (USD/ano).",
+        "Aumento na capacidade de produção de biometano (%).",
+        "Percentagem de biometano obtido localmente versus importado."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0090",
+    "actionName": "Adoption of electric drones for last-mile deliveries.",
+    "actionPriority": 9,
+    "explanation": "A adoção de drones elétricos para entregas de última milha em Mossoró é uma ação estratégica para reduzir as emissões do transporte, que atualmente contribuem de forma significativa para o total de emissões da cidade. Considerando a baixa densidade populacional e a grande extensão territorial do município, os drones podem cobrir distâncias de forma eficiente, sem contribuir para o congestionamento das vias ou para a poluição. Além disso, essa ação está alinhada com a necessidade da cidade de enfrentar riscos relacionados à segurança energética, já que drones elétricos podem ser alimentados por fontes de energia renovável, reduzindo a dependência de combustíveis fósseis. A implementação dessa tecnologia também pode aumentar a resiliência das cadeias de suprimentos, especialmente em uma região sujeita a riscos climáticos como enchentes e ondas de calor.",
+    "action": {
+      "ActionID": "icare_0090",
+      "ActionName": "Adoção de drones elétricos para entregas de última milha.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "off-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Substituir veículos tradicionais por drones elétricos para entregas de curta distância em centros urbanos, reduzindo emissões e congestionamento de tráfego.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de regulamentos para o espaço aéreo urbano para garantir a operação segura e eficiente de drones de entrega.",
+        "Investimento em infraestrutura de carregamento e manutenção para apoiar uma frota de drones elétricos.",
+        "Colaboração com empresas de logística para integrar drones em redes de entrega de última milha."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução do tempo de entrega em comparação com métodos tradicionais (minutos).",
+        "Aumento na satisfação do cliente com entregas por drones (%).",
+        "Redução do congestionamento de tráfego causado por veículos de entrega (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0029",
+    "actionName": "Adopt policies for fossil fuel-free buildings",
+    "actionPriority": 10,
+    "explanation": "A adoção de políticas para edifícios livres de combustíveis fósseis em Mossoró é crucial devido às altas emissões de energia estacionária da cidade, que contribuem significativamente para suas emissões totais. A transição para edifícios livres de combustíveis fósseis pode ajudar a reduzir essas emissões, alinhando-se aos esforços globais para combater as mudanças climáticas. Além disso, considerando a vulnerabilidade da cidade a ondas de calor e secas, a redução da dependência de combustíveis fósseis pode aumentar a segurança energética e a resiliência contra riscos relacionados ao clima. Essa ação apoia o desenvolvimento urbano sustentável e pode melhorar a saúde pública ao reduzir a poluição do ar associada ao uso de combustíveis fósseis.",
+    "action": {
+      "ActionID": "icare_0029",
+      "ActionName": "Adotar políticas para edifícios sem combustíveis fósseis",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Impor regulamentos que exijam que novas construções utilizem sistemas de energia renovável, designs eficientes em termos de energia e tecnologias de emissão zero.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de códigos de construção e estruturas regulatórias que exijam a integração de sistemas de energia renovável e designs energeticamente eficientes em novas construções",
+        "Disponibilidade de incentivos ou apoio para que os desenvolvedores cumpram as regulamentações e adotem tecnologias de emissão zero",
+        "Expertise técnica e recursos para garantir a implementação adequada e o monitoramento de sistemas de energia renovável e designs energeticamente eficientes em projetos de construção"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de edifícios em transição para fontes de energia renovável.",
+        "Redução total no uso de combustíveis fósseis para aquecimento/resfriamento (m³ ou litros).",
+        "Diminuição nas emissões de GEE relacionadas a edifícios (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0044",
+    "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+    "actionPriority": 11,
+    "explanation": "Expandir a infraestrutura cicloviária e construir passarelas públicas em Mossoró é fundamental devido ao alto risco de perigos climáticos na cidade, como ondas de calor e inundações. Essas medidas podem oferecer opções de transporte seguras e sustentáveis, reduzindo a dependência de veículos motorizados e, consequentemente, diminuindo as emissões do setor de transporte, que representam uma parte significativa do total de emissões da cidade. Além disso, melhorar a caminhabilidade e o uso da bicicleta pode promover a saúde pública ao incentivar a atividade física e reduzir a poluição do ar. Priorizar uma infraestrutura resiliente ao clima garante que esses benefícios sejam mantidos mesmo diante de eventos climáticos extremos.",
+    "action": {
+      "ActionID": "icare_0044",
+      "ActionName": "Expandir a infraestrutura cicloviária e construir passarelas públicas e calçadas acessíveis, priorizando medidas resilientes às ameaças climáticas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "O principal objetivo desta ação é promover a mobilidade ativa, garantindo a segurança, o conforto e a prioridade do movimento de pedestres, pessoas com deficiência (ou mobilidade reduzida) e veículos e equipamentos movidos por força humana, como bicicletas e patinetes.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimentos em infraestrutura em calçadas seguras e acessíveis, ciclovias e instalações para pessoas com deficiência",
+        "Estruturas de políticas e regulamentos para priorizar a mobilidade ativa e estabelecer padrões de segurança para pedestres e veículos não motorizados",
+        "Campanhas de conscientização pública para promover a mobilidade ativa e educar os cidadãos sobre os benefícios de caminhar, andar de bicicleta e usar outros meios de transporte movidos a energia humana"
+      ],
+      "KeyPerformanceIndicators": [
+        "Quilômetros de novas ciclovias e passarelas construídas anualmente.",
+        "Aumento no uso diário de infraestrutura cicloviária e pedonal (%).",
+        "Redução nas emissões do transporte urbano (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0040",
+    "actionName": "Adopt solar-powered street lighting in rural areas",
+    "actionPriority": 12,
+    "explanation": "A adoção de iluminação pública alimentada por energia solar em áreas rurais de Mossoró é uma ação estratégica devido à alta exposição da cidade a secas e ondas de calor, que são agravadas pelas mudanças climáticas. Essa iniciativa pode reduzir significativamente a dependência da cidade de fontes tradicionais de energia, diminuindo assim as emissões de energia estacionária. Além disso, a iluminação solar pode melhorar a segurança e a acessibilidade em áreas rurais, que frequentemente carecem de infraestrutura adequada. Ao aproveitar a energia renovável, Mossoró pode aumentar sua segurança energética e resiliência diante dos riscos relacionados ao clima.",
+    "action": {
+      "ActionID": "icare_0040",
+      "ActionName": "Adotar iluminação pública solar em áreas rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Instalar postes de iluminação pública movidos a energia solar para melhorar a segurança e acessibilidade em comunidades rurais, ao mesmo tempo que reduz os custos de energia e o impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a instalação de postes de iluminação pública solar em comunidades rurais",
+        "Acesso a expertise técnica para projetar, instalar e manter sistemas de iluminação pública solar",
+        "Colaboração com governos locais e comunidades para garantir a integração de postes de iluminação solar na infraestrutura existente e nos planos de energia"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de postes de iluminação pública alimentados por energia solar.",
+        "Redução anual no consumo de eletricidade (kWh).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0097",
+    "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+    "actionPriority": 13,
+    "explanation": "Apoiar a geração distribuída de energia em residências e empresas é fundamental para Mossoró devido às suas altas emissões de energia estacionária. Ao promover a produção local de energia, a cidade pode reduzir sua dependência de fontes centralizadas de eletricidade, que frequentemente contribuem de forma significativa para as emissões. Essa ação também está alinhada com a necessidade de aumentar a segurança energética, especialmente em uma região propensa a secas e ondas de calor, que podem interromper as cadeias tradicionais de fornecimento de energia. Além disso, os sistemas de energia distribuída podem proporcionar resiliência diante de vulnerabilidades na infraestrutura, garantindo um fornecimento de energia mais estável e sustentável para a comunidade.",
+    "action": {
+      "ActionID": "icare_0097",
+      "ActionName": "Apoiar a Geração de Energia Distribuída em Residências e Negócios",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Facilitar o uso de painéis solares e outras tecnologias de energia renovável em residências e edifícios comerciais.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecer incentivos financeiros, regulamentações claras de instalação e acesso a tecnologias acessíveis para painéis solares.",
+        "Lançar campanhas de conscientização pública e oferecer treinamento para proprietários de residências e empresas.",
+        "Incentivar a adoção de tecnologias de energia renovável para promover economias de energia a longo prazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Capacidade instalada de geração de energia distribuída (MW).",
+        "Percentual de residências e empresas gerando sua própria energia (%).",
+        "Redução nas emissões de CO₂ através da geração distribuída (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0105",
+    "actionName": "Reduce technical losses in energy distribution networks",
+    "actionPriority": 14,
+    "explanation": "Reduzir as perdas técnicas nas redes de distribuição de energia é fundamental para Mossoró devido ao seu alto risco de segurança energética causado por secas e ondas de calor. Ao melhorar a eficiência da distribuição de energia, a cidade pode gerenciar melhor seus recursos energéticos, o que é vital considerando a vulnerabilidade da região a riscos climáticos. Além disso, a redução das perdas de energia pode ajudar a diminuir as emissões, contribuindo para os objetivos gerais de sustentabilidade da cidade. Essa ação fortalece a resiliência do município diante dos impactos climáticos e aumenta a confiabilidade do fornecimento de energia para seus habitantes.",
+    "action": {
+      "ActionID": "icare_0105",
+      "ActionName": "Reduzir perdas técnicas nas redes de distribuição de energia",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_industries"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Atualizar e manter a infraestrutura elétrica para minimizar a perda de energia durante a transmissão e distribuição, melhorando a eficiência geral da rede.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento para investir na modernização da infraestrutura elétrica e na atualização das redes de transmissão e distribuição",
+        "Acesso a expertise técnica para implementar atualizações que reduzam perdas de energia e melhorem a eficiência da rede",
+        "Estruturas políticas e regulatórias para garantir a manutenção contínua e a integração de tecnologias energeticamente eficientes na infraestrutura da rede"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentual de redução nas perdas técnicas em relação à linha de base (%).",
+        "Economia de energia alcançada anualmente (kWh).",
+        "Emissões de GEE evitadas através da redução de perdas de energia (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0020",
+    "actionName": "Promote sustainable construction practices and encourage green technologies in public, residential, commercial, industrial, and service buildings.",
+    "actionPriority": 15,
+    "explanation": "Promover práticas de construção sustentável e incentivar tecnologias verdes em Mossoró é fundamental devido à vulnerabilidade da cidade a riscos climáticos, como secas e ondas de calor. Essas práticas podem ajudar a reduzir o consumo de energia e as emissões, que são contribuintes significativos para o total de emissões da cidade. Além disso, a construção sustentável pode aumentar a resiliência contra eventos climáticos extremos, melhorando a saúde pública e a estabilidade da infraestrutura. Ao adotar tecnologias verdes, Mossoró também pode enfrentar seu baixo status socioeconômico, potencialmente reduzindo os custos de energia e criando novas oportunidades de emprego no setor verde.",
+    "action": {
+      "ActionID": "icare_0020",
+      "ActionName": "Promover práticas de construção sustentável e incentivar tecnologias verdes em edifícios públicos, residenciais, comerciais, industriais e de serviços.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação busca aumentar a participação de fontes de energia renováveis na matriz energética da cidade, com foco em edifícios residenciais, comerciais, industriais e de serviços.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de incentivos e subsídios para incentivar a adoção de tecnologias de energia renovável em edifícios",
+        "Desenvolvimento de um quadro regulatório de apoio para a instalação e integração de sistemas de energia renovável nos setores residencial, comercial e industrial",
+        "Investimento na infraestrutura necessária para apoiar a geração e distribuição de energia renovável dentro da cidade"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de empregos criados nos setores da economia circular.",
+        "Aumento na porcentagem de materiais reutilizados ou reciclados na cidade.",
+        "Redução anual nas emissões de CO₂ equivalente provenientes de iniciativas de economia circular."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0068",
+    "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+    "actionPriority": 16,
+    "explanation": "Implantar sistemas de transporte sob demanda com frotas 100% elétricas em Mossoró é uma ação estratégica para enfrentar as emissões do setor de transporte da cidade, que são um dos principais contribuintes para suas emissões totais. Essa iniciativa pode ajudar a reduzir a pegada de carbono do município, alinhando-se com os objetivos globais de sustentabilidade. Além disso, frotas elétricas podem melhorar a qualidade do ar e a saúde pública ao reduzir poluentes associados a veículos movidos a combustíveis tradicionais. Dada a vulnerabilidade da cidade a riscos climáticos, como ondas de calor e secas, a transição para o transporte elétrico também pode aumentar a segurança energética ao diminuir a dependência de combustíveis fósseis.",
+    "action": {
+      "ActionID": "icare_0068",
+      "ActionName": "Implantar sistemas de transporte sob demanda com frotas 100% elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Serviços de transporte coletivo sob demanda, baseados em aplicativos, otimizam o uso de veículos elétricos, reduzindo as emissões por passageiro.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de plataformas digitais e aplicativos para gerenciar eficientemente serviços de transporte coletivo sob demanda.",
+        "Expansão de frotas de veículos elétricos adaptadas para soluções de transporte compartilhado.",
+        "Implementação de políticas e incentivos para incentivar a adoção e o uso de serviços de transporte elétrico compartilhado."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de usuários ativos do sistema de frota elétrica sob demanda.",
+        "Percentual da demanda de transporte urbano atendida por sistemas sob demanda.",
+        "Redução nos níveis de poluição sonora em áreas urbanas"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0057",
+    "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+    "actionPriority": 17,
+    "explanation": "A expansão dos sistemas de transporte coletivo sobre trilhos em Mossoró é uma ação crucial devido ao crescimento populacional da cidade e à necessidade de reduzir as emissões do setor de transporte, que atualmente contribuem de forma significativa para o total de emissões do município. Ao melhorar a infraestrutura de transporte público, a cidade pode oferecer uma alternativa mais sustentável e eficiente ao uso de veículos particulares, reduzindo assim a congestão e a poluição. Além disso, o aprimoramento dos sistemas de transporte coletivo pode melhorar o acesso dos moradores a serviços públicos e oportunidades econômicas, especialmente para aqueles que vivem em áreas de baixa renda. Essa ação também está alinhada com a necessidade da cidade de enfrentar riscos climáticos, pois pode ajudar a mitigar os impactos de ondas de calor e melhorar a segurança energética ao reduzir a dependência de combustíveis fósseis.",
+    "action": {
+      "ActionID": "icare_0057",
+      "ActionName": "Expansão dos sistemas de transporte público em massa sobre trilhos (metrôs, VLTs e monotrilhos).",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "railways"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esses sistemas oferecem alta capacidade e baixas emissões, cruciais para cidades com alta densidade populacional.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento no desenvolvimento e expansão da infraestrutura de transporte público de alta capacidade, como ônibus elétricos e sistemas de metrô.",
+        "Implementação de políticas e incentivos para encorajar o uso de transporte público em vez de veículos particulares.",
+        "Integração de fontes de energia renovável para alimentar esses sistemas, reduzindo ainda mais as emissões."
+      ],
+      "KeyPerformanceIndicators": [
+        "Comprimento das novas linhas de trânsito construídas (km/ano).",
+        "Redução na congestão do tráfego rodoviário (%).",
+        "Redução no uso de veículos privados (número de viagens evitadas/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0005",
+    "actionName": "Create credit lines for residential and community wind energy projects",
+    "actionPriority": 18,
+    "explanation": "A criação de linhas de crédito para projetos de energia eólica residenciais e comunitários em Mossoró é uma ação estratégica devido às altas emissões estacionárias de energia da cidade. Ao promover a energia eólica, a cidade pode reduzir significativamente sua dependência de fontes tradicionais de energia, diminuindo assim as emissões. Além disso, essa iniciativa pode aumentar a segurança energética, o que é crucial, considerando a vulnerabilidade da cidade a secas e ondas de calor. Ademais, o apoio a projetos eólicos comunitários pode estimular o desenvolvimento econômico local e oferecer uma solução energética sustentável para moradores de baixa renda.",
+    "action": {
+      "ActionID": "icare_0005",
+      "ActionName": "Criar linhas de crédito para projetos de energia eólica residencial e comunitária",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecer programas de financiamento acessíveis para apoiar o desenvolvimento e a adoção de sistemas de energia eólica em residências e projetos comunitários, possibilitando uma transição para fontes de energia mais limpas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 2,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de programas financeiros, subsídios ou subvenções para tornar os sistemas de energia eólica acessíveis para residências e projetos comunitários",
+        "Acesso a expertise técnica e recursos para orientar a instalação e manutenção de sistemas de energia eólica em ambientes residenciais e comunitários",
+        "Apoio político e regulatório para incentivar a adoção de energia eólica, incluindo processos de licenciamento simplificados e incentivos para projetos de energia limpa"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia eólica financiados anualmente.",
+        "Capacidade instalada de sistemas de energia eólica de projetos apoiados por crédito (MW).",
+        "Redução estimada nas emissões equivalentes de CO₂ pela adoção de energia eólica."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0027",
+    "actionName": "Create financing programs for local renewable energy projects",
+    "actionPriority": 19,
+    "explanation": "Criar programas de financiamento para projetos locais de energia renovável em Mossoró é fundamental devido às altas emissões de energia estacionária da cidade. Ao promover a energia renovável, o município pode reduzir significativamente sua pegada de carbono e mitigar os impactos das mudanças climáticas. Além disso, projetos de energia renovável podem aumentar a segurança energética, o que é vital considerando a vulnerabilidade da cidade a secas e ondas de calor. Essa ação também contribui para o desenvolvimento econômico, ao potencialmente gerar empregos e reduzir os custos de energia para os moradores.",
+    "action": {
+      "ActionID": "icare_0027",
+      "ActionName": "Criar programas de financiamento para projetos locais de energia renovável",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_industries"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecer mecanismos de financiamento, como subsídios e empréstimos a juros baixos, para apoiar o desenvolvimento de iniciativas de energia renovável em pequena escala nas comunidades.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de mecanismos financeiros acessíveis, incluindo subsídios e empréstimos a juros baixos, para apoiar projetos de energia renovável em pequena escala nas comunidades",
+        "Colaboração com instituições financeiras e governos locais para garantir a distribuição e gestão eficaz dos fundos para iniciativas de energia renovável",
+        "Diretrizes claras e apoio para organizações comunitárias e empresas locais acessarem financiamento e implementarem com sucesso projetos de energia renovável"
+      ],
+      "KeyPerformanceIndicators": [
+        "Total de fundos alocados para projetos de energia renovável (USD).",
+        "Número de projetos financiados anualmente.",
+        "Aumento na capacidade de energia renovável instalada (MW)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MOS",
+    "cityName": "Mossoró",
+    "region": "RN",
+    "regionName": "Rio Grande do Norte",
+    "actionId": "icare_0011",
+    "actionName": "Provide tax incentives for renewable energy in residential projects",
+    "actionPriority": 20,
+    "explanation": "Conceder incentivos fiscais para energias renováveis em projetos residenciais é fundamental para Mossoró devido às suas altas emissões de energia estacionária. Incentivar o uso de energia renovável pode reduzir significativamente essas emissões, contribuindo para um ambiente mais limpo. Além disso, considerando a vulnerabilidade da cidade a riscos climáticos como secas e ondas de calor, promover soluções energéticas sustentáveis pode aumentar a segurança e a resiliência energética. Essa ação está alinhada com a necessidade da cidade de enfrentar seus desafios socioeconômicos, ao possibilitar a redução dos custos de energia para os moradores. De modo geral, ela apoia a transição para um ambiente urbano mais sustentável e resiliente.",
+    "action": {
+      "ActionID": "icare_0011",
+      "ActionName": "Fornecer incentivos fiscais para energia renovável em projetos residenciais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar os proprietários de imóveis a adotarem energia solar, eólica e outras fontes de energia limpa.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de incentivos financeiros, subsídios ou créditos fiscais para incentivar os proprietários a instalar sistemas de energia solar, eólica e outras energias limpas",
+        "Acesso a informações e recursos educacionais para ajudar os proprietários a entender os benefícios, custos e processos de instalação de sistemas de energia limpa",
+        "Desenvolvimento de regulamentos e políticas de apoio que facilitem a instalação de tecnologias de energia renovável em áreas residenciais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de residências beneficiadas por incentivos fiscais para a adoção de energia renovável.",
+        "Aumento anual nas instalações de energia renovável em projetos residenciais.",
+        "Redução estimada nas emissões de CO₂ equivalente devido à adoção de energia renovável."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
+]

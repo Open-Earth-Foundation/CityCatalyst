@@ -1,0 +1,713 @@
+[
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0032",
+    "ActionB": "c40_0009",
+    "PreferredAction": "c40_0009"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0034",
+    "ActionB": "ipcc_0032",
+    "PreferredAction": "Irrelevant"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0064",
+    "ActionB": "c40_0022",
+    "PreferredAction": "icare_0064"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0062",
+    "ActionB": "ipcc_0080",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0096",
+    "ActionB": "c40_0042",
+    "PreferredAction": "icare_0096"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0135",
+    "ActionB": "c40_0019",
+    "PreferredAction": "icare_0135"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0021",
+    "ActionB": "icare_0093",
+    "PreferredAction": "Irrelevant"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0034",
+    "ActionB": "ipcc_0072",
+    "PreferredAction": "c40_0034"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0130",
+    "ActionB": "ipcc_0007",
+    "PreferredAction": "ipcc_0007"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0021",
+    "ActionB": "c40_0013",
+    "PreferredAction": "Irrelevant"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0103",
+    "ActionB": "icare_0097",
+    "PreferredAction": "icare_0097"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0026",
+    "ActionB": "icare_0136",
+    "PreferredAction": "icare_0136"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0059",
+    "ActionB": "ipcc_0008",
+    "PreferredAction": "ipcc_0008"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0023",
+    "ActionB": "ipcc_0030",
+    "PreferredAction": "c40_0023"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0037",
+    "ActionB": "c40_0034",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0062",
+    "ActionB": "c40_0014",
+    "PreferredAction": "c40_0014"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0069",
+    "ActionB": "icare_0105",
+    "PreferredAction": "ipcc_0069"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0037",
+    "ActionB": "icare_0045",
+    "PreferredAction": "icare_0045"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0058",
+    "ActionB": "c40_0022",
+    "PreferredAction": "icare_0058"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0050",
+    "ActionB": "ipcc_0050",
+    "PreferredAction": "icare_0050"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0043",
+    "ActionB": "icare_0012",
+    "PreferredAction": "icare_0012"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0021",
+    "ActionB": "icare_0113",
+    "PreferredAction": "icare_0113"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0030",
+    "ActionB": "c40_0011",
+    "PreferredAction": "c40_0011"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0091",
+    "ActionB": "icare_0072",
+    "PreferredAction": "icare_0091",
+    "note": "No industrial emissions in the city"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0003",
+    "ActionB": "ipcc_0051",
+    "PreferredAction": "ipcc_0003"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0076",
+    "ActionB": "ipcc_0023",
+    "PreferredAction": "Irrelevant"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0102",
+    "ActionB": "icare_0171",
+    "PreferredAction": "icare_0171"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0145",
+    "ActionB": "icare_0142",
+    "PreferredAction": "Unsure",
+    "note": "Both equally important"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0066",
+    "ActionB": "c40_0052",
+    "PreferredAction": "Unsure",
+    "note": "Both equally important"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0164",
+    "ActionB": "ipcc_0083",
+    "PreferredAction": "icare_0164",
+    "note": "No coast"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0148",
+    "ActionB": "c40_0064",
+    "PreferredAction": "Unsure",
+    "note": "Unclear over how big the agricultural sector is within this municipality"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0158",
+    "ActionB": "icare_0144",
+    "PreferredAction": "icare_0144"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0158",
+    "ActionB": "icare_0173",
+    "PreferredAction": "icare_0173"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0175",
+    "ActionB": "icare_0145",
+    "PreferredAction": "icare_0145"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0065",
+    "ActionB": "ipcc_0088",
+    "PreferredAction": "c40_0065"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0065",
+    "ActionB": "ipcc_0092",
+    "PreferredAction": "Unsure",
+    "note": "Both equally important"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0069",
+    "ActionB": "icare_0165",
+    "PreferredAction": "c40_0069"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0186",
+    "ActionB": "icare_0184",
+    "PreferredAction": "icare_0184"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0159",
+    "ActionB": "c40_0051",
+    "PreferredAction": "c40_0051"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0061",
+    "ActionB": "ipcc_0091",
+    "PreferredAction": "c40_0061"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0084",
+    "ActionB": "ipcc_0098",
+    "PreferredAction": "Unsure",
+    "note": "Difficult to decide - as the community is low income (and thus a likely lower producer of waste)"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0156",
+    "ActionB": "ipcc_0101",
+    "PreferredAction": "ipcc_0101"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0069",
+    "ActionB": "icare_0181",
+    "PreferredAction": "c40_0069"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0140",
+    "ActionB": "ipcc_0092",
+    "PreferredAction": "ipcc_0092"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0146",
+    "ActionB": "icare_0168",
+    "PreferredAction": "icare_0168"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0147",
+    "ActionB": "icare_0151",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0046",
+    "ActionB": "icare_0107",
+    "PreferredAction": "icare_0107"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0100",
+    "ActionB": "icare_0031",
+    "PreferredAction": "icare_0100"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0025",
+    "ActionB": "icare_0010",
+    "PreferredAction": "icare_0025"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0083",
+    "ActionB": "icare_0043",
+    "PreferredAction": "Irrelevant"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0094",
+    "ActionB": "c40_0036",
+    "PreferredAction": "c40_0036",
+    "note": "Don't know enough about biomethane to promote it. "
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0132",
+    "ActionB": "icare_0054",
+    "PreferredAction": "icare_0132"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0083",
+    "ActionB": "c40_0012",
+    "PreferredAction": "c40_0012"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0117",
+    "ActionB": "ipcc_0022",
+    "PreferredAction": "icare_0117"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0028",
+    "ActionB": "c40_0036",
+    "PreferredAction": "Unsure",
+    "note": "Not sure where to put this comment - but considering the income of the city, the low scope 2 emissions, and the actions' emphasis on energy efficiency - I wonder if we should be considering energy access within the choices of these decisions. It doesn't seem like this is considered within the city snapshot. "
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0032",
+    "ActionB": "icare_0040",
+    "PreferredAction": "icare_0040"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0023",
+    "ActionB": "ipcc_0033",
+    "PreferredAction": "Irrelevant"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0100",
+    "ActionB": "icare_0087",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0082",
+    "ActionB": "ipcc_0012",
+    "PreferredAction": "ipcc_0012"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0124",
+    "ActionB": "icare_0047",
+    "PreferredAction": "icare_0124"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0034",
+    "ActionB": "ipcc_0031",
+    "PreferredAction": "Irrelevant"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0062",
+    "ActionB": "icare_0102",
+    "PreferredAction": "icare_0102",
+    "note": "I'm not sure how the municipality can play a part in the implementation of the Left option. "
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0122",
+    "ActionB": "c40_0015",
+    "PreferredAction": "icare_0122"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0030",
+    "ActionB": "icare_0041",
+    "PreferredAction": "Irrelevant",
+    "note": "Like my last note - how much can the municipality contribute to R&D?"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0030",
+    "ActionB": "ipcc_0025",
+    "PreferredAction": "Irrelevant"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0080",
+    "ActionB": "icare_0021",
+    "PreferredAction": "icare_0021"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0090",
+    "ActionB": "icare_0158",
+    "PreferredAction": "ipcc_0090"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0089",
+    "ActionB": "ipcc_0087",
+    "PreferredAction": "ipcc_0087"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0170",
+    "ActionB": "c40_0058",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0049",
+    "ActionB": "icare_0171",
+    "PreferredAction": "icare_0171"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0096",
+    "ActionB": "icare_0146",
+    "PreferredAction": "icare_0146"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0171",
+    "ActionB": "icare_0149",
+    "PreferredAction": "icare_0171"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0145",
+    "ActionB": "icare_0162",
+    "PreferredAction": "icare_0145"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0049",
+    "ActionB": "c40_0051",
+    "PreferredAction": "c40_0051"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0046",
+    "ActionB": "c40_0069",
+    "PreferredAction": "c40_0069"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0165",
+    "ActionB": "c40_0048",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0053",
+    "ActionB": "icare_0145",
+    "PreferredAction": "c40_0053"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0069",
+    "ActionB": "icare_0186",
+    "PreferredAction": "c40_0069"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0069",
+    "ActionB": "icare_0152",
+    "PreferredAction": "c40_0069"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0167",
+    "ActionB": "ipcc_0095",
+    "PreferredAction": "ipcc_0095"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0175",
+    "ActionB": "c40_0049",
+    "PreferredAction": "icare_0175"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0172",
+    "ActionB": "icare_0186",
+    "PreferredAction": "icare_0172"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0158",
+    "ActionB": "ipcc_0099",
+    "PreferredAction": "ipcc_0099"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0048",
+    "ActionB": "ipcc_0090",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0051",
+    "ActionB": "icare_0158",
+    "PreferredAction": "c40_0051"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0180",
+    "ActionB": "c40_0058",
+    "PreferredAction": "icare_0180"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0029",
+    "ActionB": "icare_0012",
+    "PreferredAction": "c40_0029"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0056",
+    "ActionB": "icare_0112",
+    "PreferredAction": "ipcc_0056"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0033",
+    "ActionB": "c40_0012",
+    "PreferredAction": "Irrelevant"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0043",
+    "ActionB": "icare_0085",
+    "PreferredAction": "icare_0085"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0139",
+    "ActionB": "ipcc_0037",
+    "PreferredAction": "ipcc_0037"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0014",
+    "ActionB": "ipcc_0019",
+    "PreferredAction": "c40_0014"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0031",
+    "ActionB": "ipcc_0009",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0061",
+    "ActionB": "icare_0105",
+    "PreferredAction": "ipcc_0061"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0084",
+    "ActionB": "icare_0010",
+    "PreferredAction": "icare_0084"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0017",
+    "ActionB": "ipcc_0064",
+    "PreferredAction": "ipcc_0064"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0053",
+    "ActionB": "c40_0010",
+    "PreferredAction": "ipcc_0053"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0025",
+    "ActionB": "icare_0013",
+    "PreferredAction": "icare_0025"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0006",
+    "ActionB": "icare_0133",
+    "PreferredAction": "icare_0133"
+  },
+  {
+    "SessionID": "ba995806-a905-47a8-afb5-dacb067e72d8",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0106",
+    "ActionB": "ipcc_0039",
+    "PreferredAction": "icare_0106"
+  }
+]

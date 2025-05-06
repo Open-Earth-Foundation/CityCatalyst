@@ -1,0 +1,1265 @@
+[
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0050",
+    "actionName": "Implement Agroforestry Systems",
+    "actionPriority": 1,
+    "explanation": "A implementação de sistemas agroflorestais em Cruzeiro do Sul é uma prioridade elevada devido ao bioma de floresta tropical da cidade, que é altamente adequado para tais práticas. A agrofloresta pode aumentar a biodiversidade, melhorar a saúde do solo e ampliar a captura de carbono, o que é crucial, considerando as altas emissões de uso da terra na cidade. Além disso, esses sistemas podem proporcionar meios de subsistência sustentáveis para a população local, enfrentando desafios socioeconômicos em uma região com níveis de renda muito baixos. Ao integrar árvores com culturas e criação de animais, a agrofloresta também pode ajudar a mitigar os impactos das mudanças climáticas, como secas e inundações, que representam riscos significativos para a saúde pública e a infraestrutura da cidade.",
+    "action": {
+      "ActionID": "icare_0050",
+      "ActionName": "Implementar Sistemas Agroflorestais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover sistemas agroflorestais integrando árvores na produção de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecimento de suporte técnico e orientação aos agricultores sobre o design e implementação de sistemas agroflorestais.",
+        "Desenvolvimento de incentivos financeiros ou subsídios para tornar a agrofloresta mais economicamente atraente.",
+        "Criação de políticas que integrem práticas agroflorestais no planejamento do uso da terra agrícola e nos sistemas de posse de terra."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas convertidas em sistemas agroflorestais (%).",
+        "Número de novos projetos agroflorestais implementados.",
+        "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0134",
+    "actionName": "Strengthen Mechanisms for Deforestation Control",
+    "actionPriority": 2,
+    "explanation": "O fortalecimento dos mecanismos de controle do desmatamento em Cruzeiro do Sul é crucial devido à localização da cidade dentro de um bioma de floresta tropical. Esta área é altamente suscetível ao desmatamento, o que pode levar a uma perda significativa de biodiversidade e ao aumento das emissões de carbono. Diante das altas emissões provenientes do uso da terra na cidade, combater o desmatamento é essencial para mitigar os impactos das mudanças climáticas e preservar o equilíbrio ecológico. Além disso, um controle eficaz do desmatamento pode ajudar a manter os recursos hídricos e prevenir a degradação do solo, fatores vitais para a sustentabilidade da comunidade.",
+    "action": {
+      "ActionID": "icare_0134",
+      "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aprimorar o monitoramento e a fiscalização para prevenir o desmatamento ilegal e promover o uso sustentável da terra.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Forte estrutura legal, tecnologias de monitoramento avançadas (satélites e drones) e capacitação para as autoridades locais.",
+        "Colaboração com comunidades locais e financiamento adequado para os esforços de fiscalização.",
+        "Transparência e responsabilidade na elaboração de relatórios para garantir a implementação eficaz."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total monitorada para desmatamento (hectares/ano).",
+        "Redução na taxa anual de desmatamento (%).",
+        "Quantidade de emissões evitadas pela redução do desmatamento (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0133",
+    "actionName": "Promote Urban Reforestation and Green Corridors",
+    "actionPriority": 3,
+    "explanation": "Promover a reflorestação urbana e a criação de corredores verdes em Cruzeiro do Sul é fundamental devido ao bioma de floresta tropical da cidade, que pode se beneficiar significativamente com o aumento de áreas verdes. Essa ação pode ajudar a mitigar as altas emissões provenientes do uso do solo, que são um dos principais contribuintes para o total de emissões da cidade. Além disso, o fortalecimento da infraestrutura verde pode aumentar a resiliência contra riscos climáticos, como ondas de calor e inundações, que representam ameaças significativas à saúde pública e à infraestrutura. Ao ampliar a vegetação urbana, a cidade também pode promover a biodiversidade e melhorar a qualidade de vida de seus habitantes.",
+    "action": {
+      "ActionID": "icare_0133",
+      "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Aumentar a cobertura arbórea urbana para mitigar o efeito de ilha de calor urbano e melhorar a biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "80-100"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Identificação de áreas prioritárias e seleção de espécies nativas e resilientes ao clima para o plantio de árvores.",
+        "Parcerias com organizações locais e viveiros, e alocação de recursos para plantio e manutenção.",
+        "Envolvimento da comunidade para garantir cuidado e apoio a longo prazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento na cobertura de dossel arbóreo urbano (%)",
+        "Comprimento total de corredores verdes criados ou restaurados (quilômetros)",
+        "Redução nas temperaturas do efeito de ilha de calor urbano (°C)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0129",
+    "actionName": "Facilitate Technology Transfer for Conservation Practices",
+    "actionPriority": 4,
+    "explanation": "Facilitar a transferência de tecnologia para práticas de conservação é crucial para Cruzeiro do Sul devido à sua localização em um bioma de floresta tropical, altamente sensível a mudanças ambientais. A cidade enfrenta riscos significativos de perigos climáticos, como secas, ondas de calor e inundações, que ameaçam sua biodiversidade e a saúde pública. Ao adotar tecnologias avançadas de conservação, a cidade pode gerenciar melhor seus recursos naturais e mitigar os impactos desses perigos. Além disso, a melhoria das práticas de conservação pode ajudar a reduzir as emissões provenientes do uso da terra, que são um dos principais contribuintes para o perfil total de emissões da cidade.",
+    "action": {
+      "ActionID": "icare_0129",
+      "ActionName": "Facilitar a Transferência de Tecnologia para Práticas de Conservação",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover a adoção de práticas agrícolas sustentáveis por meio de treinamento, projetos piloto e demonstrações de tecnologia.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar práticas sustentáveis.",
+        "Parcerias com instituições de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a adoção.",
+        "Acesso a assistência técnica para implementação bem-sucedida."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de tecnologias de conservação transferidas e aplicadas em fazendas.",
+        "Percentual de produtores treinados para implementar práticas de conservação.",
+        "Redução na degradação do solo ou aumento na cobertura vegetal (hectares)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0130",
+    "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+    "actionPriority": 5,
+    "explanation": "A realização de ações de Assistência Técnica e Extensão Rural (ATER) é fundamental para Cruzeiro do Sul devido à sua condição de baixa renda e aos desafios impostos pelo bioma de floresta tropical. Essas ações podem ajudar a melhorar as práticas agrícolas, o que é vital para a segurança alimentar, especialmente em uma região suscetível a secas e inundações. Ao aprimorar o conhecimento e as práticas agrícolas locais, a ATER também pode contribuir para a redução das emissões provenientes do uso da terra, que representam uma parte significativa do total de emissões do município. Além disso, essas iniciativas podem fortalecer as comunidades locais, promovendo resiliência econômica e sustentabilidade diante dos riscos relacionados ao clima.",
+    "action": {
+      "ActionID": "icare_0130",
+      "ActionName": "Conduzir Ações de Assistência Técnica e Extensão Rural (ATER)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fornecer suporte técnico e treinamento aos produtores rurais para a produção agrícola sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de pessoal técnico qualificado e programas de formação personalizados.",
+        "Parcerias com instituições de pesquisa agrícola e alocação de recursos para o desenvolvimento de capacidades.",
+        "Envolvimento com produtores rurais para garantir a participação ativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de produtores beneficiados com assistência técnica rural (% do total).",
+        "Percentual de participantes adotando práticas resilientes ao clima.",
+        "Redução da vulnerabilidade das propriedades ao risco climático (%)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0128",
+    "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+    "actionPriority": 6,
+    "explanation": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA) em Cruzeiro do Sul é uma ação estratégica para enfrentar os desafios ambientais da cidade. Dada a localização do município em um bioma de floresta tropical, o PSA pode incentivar a preservação dos recursos naturais, o que é fundamental para manter a biodiversidade e mitigar os riscos climáticos. Além disso, os programas de PSA podem ajudar a reduzir as emissões provenientes do uso da terra, que são um dos principais contribuintes para o total de emissões da cidade. Ao promover práticas sustentáveis de manejo do solo, esses programas também podem aumentar a resiliência dos ecossistemas locais contra ameaças como enchentes e deslizamentos de terra, que representam altos riscos para a saúde pública e a infraestrutura.",
+    "action": {
+      "ActionID": "icare_0128",
+      "ActionName": "Estabelecer Programas Municipais de Pagamento por Serviços Ambientais (PSA)",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas que paguem aos proprietários de terras por manterem ou melhorarem as condições ambientais em suas propriedades.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Criação de mecanismos de financiamento e critérios de elegibilidade claros com indicadores de desempenho.",
+        "Parcerias com organizações ambientais e campanhas de conscientização para incentivar a participação.",
+        "Integração com estruturas legais para garantir a sustentabilidade do programa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de contratos ativos de Pagamento por Serviços Ambientais (PSA) assinados.",
+        "Área total sob práticas de conservação ou restauração incentivadas (hectares).",
+        "Quantidade de carbono sequestrado ou emissões evitadas por meio de ações de PSA (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0084",
+    "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+    "actionPriority": 7,
+    "explanation": "Criar incentivos para práticas de agrofloresta em sistemas de pecuária é fundamental para Cruzeiro do Sul devido ao seu bioma de floresta tropical, que é altamente sensível a mudanças no uso da terra. A agrofloresta pode ajudar a mitigar as emissões provenientes do uso da terra, que são um dos principais contribuintes para as emissões totais da cidade. Ao integrar árvores aos sistemas de pecuária, a cidade pode aumentar a biodiversidade, melhorar a saúde do solo e ampliar a captura de carbono. Essa ação também está alinhada com a necessidade de enfrentar o alto risco de deslizamentos de terra e inundações, já que a agrofloresta pode melhorar a estabilidade do solo e a gestão da água.",
+    "action": {
+      "ActionID": "icare_0084",
+      "ActionName": "Criar Incentivos para Práticas de Agroflorestas em Sistemas de Pecuária",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Criar incentivos financeiros e técnicos para integrar práticas de agroflorestação em sistemas de pecuária, promovendo a captura de carbono, proteção do solo e melhoria da biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas de incentivos financeiros, como subsídios ou isenções fiscais, para apoiar os agricultores na integração da agrofloresta com sistemas de pecuária.",
+        "Fornecimento de assistência técnica e treinamento aos agricultores sobre as melhores práticas para a integração da agrofloresta nas operações de pecuária.",
+        "Colaboração com organizações agrícolas e ambientais para monitorar e avaliar os impactos das práticas agroflorestais na captura de carbono, saúde do solo e biodiversidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de incentivos financeiros fornecidos para integrar a agrofloresta em sistemas de pecuária.",
+        "Aumento na qualidade do solo e cobertura vegetal em propriedades manejadas (%).",
+        "Crescimento da biodiversidade em áreas de agrofloresta (% de espécies identificadas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0102",
+    "actionName": "Promote Sustainable Agricultural Practices",
+    "actionPriority": 8,
+    "explanation": "Promover práticas agrícolas sustentáveis em Cruzeiro do Sul é fundamental devido à localização da cidade em um bioma de floresta tropical, que é sensível a mudanças ambientais. A cidade enfrenta emissões significativas relacionadas ao uso da terra, que podem ser reduzidas com a adoção de técnicas agrícolas mais sustentáveis. Além disso, a agricultura sustentável pode ajudar a melhorar a segurança alimentar, que está em risco devido a ameaças como enchentes e secas. Ao focar em práticas sustentáveis, a cidade pode aumentar sua resiliência aos impactos climáticos enquanto apoia a economia local.",
+    "action": {
+      "ActionID": "icare_0102",
+      "ActionName": "Promover Práticas Agrícolas Sustentáveis",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar práticas agrícolas que reduzam as emissões de gases de efeito estufa, como o uso reduzido de fertilizantes e agroquímicos.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas educacionais e recursos para promover práticas agrícolas sustentáveis entre os agricultores.",
+        "Implementação de políticas que incentivem a redução do uso de fertilizantes e agroquímicos, como subsídios para insumos orgânicos ou técnicas de cultivo sustentável.",
+        "Colaboração com organizações agrícolas para fornecer suporte técnico e orientação sobre práticas de redução de emissões."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas adotando práticas sustentáveis (% do total de terras agrícolas).",
+        "Aumento no rendimento das colheitas por hectare (toneladas/hectare) devido a métodos sustentáveis.",
+        "Redução no uso de água para agricultura (litros ou m³/hectare/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0100",
+    "actionName": "Support Regenerative Agriculture Practices",
+    "actionPriority": 9,
+    "explanation": "Apoiar práticas de agricultura regenerativa em Cruzeiro do Sul é fundamental devido à dependência da cidade do uso da terra, que contribui significativamente para suas emissões totais. Ao adotar essas práticas, a cidade pode reduzir suas emissões provenientes do uso da terra, que atualmente são as mais altas entre todas as fontes de emissão. Além disso, a agricultura regenerativa pode aumentar a segurança alimentar, que está em risco tanto devido a secas quanto a inundações, conforme indicado pelas avaliações de risco climático da cidade. A implementação dessas práticas também ajudará a preservar o bioma da floresta tropical, que é vital para a manutenção da biodiversidade e do equilíbrio ecológico na região.",
+    "action": {
+      "ActionID": "icare_0100",
+      "ActionName": "Apoiar Práticas de Agricultura Regenerativa",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoiar práticas agrícolas regenerativas que se concentrem na restauração da saúde do solo e na redução das emissões de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de programas de treinamento e recursos para educar os agricultores sobre técnicas agrícolas regenerativas, como cobertura vegetal e redução do preparo do solo.",
+        "Implementação de incentivos financeiros ou subsídios para apoiar a adoção de práticas regenerativas.",
+        "Colaboração com instituições de pesquisa agrícola para monitorar e documentar a eficácia das práticas regenerativas na captura de carbono e na melhoria da saúde do solo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento nos níveis de carbono orgânico do solo (toneladas/hectare).",
+        "Redução no uso de água por hectare na produção agrícola (%).",
+        "Número de projetos piloto de agricultura regenerativa implementados."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0096",
+    "actionName": "Promote Organic Farming",
+    "actionPriority": 10,
+    "explanation": "Promover a agricultura orgânica em Cruzeiro do Sul é uma prioridade devido ao seu potencial para aumentar a segurança alimentar e a biodiversidade na região. A cidade está localizada em um bioma de floresta tropical, o que favorece práticas agrícolas diversificadas que podem se beneficiar de métodos orgânicos. Além disso, a agricultura orgânica pode ajudar a reduzir as emissões provenientes do uso da terra, que atualmente são um dos principais contribuintes para o total de emissões da cidade. Ao adotar práticas de agricultura orgânica, a cidade também pode mitigar o impacto das secas sobre a segurança alimentar, já que esses métodos geralmente melhoram a saúde do solo e a retenção de água.",
+    "action": {
+      "ActionID": "icare_0096",
+      "ActionName": "Promover a Agricultura Orgânica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a adoção de práticas de agricultura orgânica que evitem o uso de produtos químicos e contribuam para a saúde do solo e captura de carbono.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecimento de incentivos financeiros, subsídios ou subsídios para apoiar a transição para práticas de agricultura orgânica.",
+        "Desenvolvimento de redes de treinamento e apoio para educar os agricultores sobre métodos de agricultura orgânica e seus benefícios.",
+        "Estabelecimento de sistemas de certificação e estratégias de acesso ao mercado para garantir a viabilidade econômica dos produtos orgânicos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de terras agrícolas sob práticas de agricultura orgânica (%).",
+        "Aumento no teor de carbono orgânico do solo (toneladas de carbono por hectare).",
+        "Redução no uso de fertilizantes químicos e pesticidas (quilogramas/hectare/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0101",
+    "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+    "actionPriority": 11,
+    "explanation": "Incentivar o uso de máquinas agrícolas de baixa emissão em Cruzeiro do Sul é uma ação significativa devido às altas emissões provenientes do uso da terra na cidade. Com um total de 87.842,696 toneladas emitidas, o uso da terra contribui com uma parcela substancial, tornando crucial a abordagem desse setor. Ao promover máquinas de baixa emissão, a cidade pode reduzir sua pegada de carbono e melhorar a qualidade do ar, o que é essencial para a saúde pública. Além disso, essa ação está alinhada com a necessidade do município de mitigar os impactos das mudanças climáticas, como secas e enchentes, que ameaçam a segurança alimentar e a infraestrutura.",
+    "action": {
+      "ActionID": "icare_0101",
+      "ActionName": "Incentivar o Uso de Máquinas Agrícolas de Baixa Emissão",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover o uso de maquinário agrícola de baixo carbono, como tratores e equipamentos movidos a biocombustíveis ou energia solar.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Estabelecimento de programas de financiamento ou incentivos para que os agricultores adquiram máquinas agrícolas de baixo carbono.",
+        "Desenvolvimento de parcerias com fabricantes de máquinas para criar e distribuir soluções de equipamentos sustentáveis.",
+        "Implementação de programas de treinamento e apoio para ajudar os agricultores a integrar e manter máquinas agrícolas de baixo carbono."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas emissões de máquinas agrícolas (toneladas de CO₂e/ano).",
+        "Número de subsídios ou incentivos fornecidos para máquinas de baixa emissão.",
+        "Percentual de agricultores treinados para operar máquinas de baixa emissão."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0127",
+    "actionName": "Accelerate Environmental Regularization of Rural Properties",
+    "actionPriority": 12,
+    "explanation": "Acelerar a regularização ambiental das propriedades rurais em Cruzeiro do Sul é fundamental devido às significativas emissões provenientes do uso da terra, que representam a maior contribuição para o total de emissões do município. Ao garantir que as propriedades rurais estejam em conformidade com as normas ambientais, a cidade pode reduzir efetivamente essas emissões e promover práticas sustentáveis de manejo do solo. Além disso, essa ação pode ajudar a mitigar os impactos de riscos climáticos, como enchentes e deslizamentos de terra, que representam um alto risco para a saúde pública e a infraestrutura. A implementação dessa medida está alinhada com a necessidade do município de enfrentar seus desafios ambientais e aumentar a resiliência diante das mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0127",
+      "ActionName": "Acelerar a Regularização Ambiental de Propriedades Rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar programas para registrar propriedades no Cadastro Ambiental Rural (CAR) e aderir aos compromissos de restauração ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Acesso a plataformas digitais e treinamento técnico para processos de registro e restauração de propriedades.",
+        "Incentivos financeiros e parcerias com agências ambientais para apoiar a implementação.",
+        "Mecanismos de monitoramento e fiscalização para garantir o cumprimento dos compromissos de restauração."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de propriedades rurais com Cadastro Ambiental Rural (CAR) regularizado.",
+        "Área total de vegetação nativa protegida ou restaurada em propriedades regularizadas (hectares).",
+        "Redução anual nas emissões de gases de efeito estufa (tCO₂e) devido à regularização."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0061",
+    "actionName": "Soil Carbon Management in Croplands and Grasslands",
+    "actionPriority": 13,
+    "explanation": "A Gestão do Carbono do Solo em Terras Agrícolas e Pastagens é uma ação crucial para Cruzeiro do Sul devido às suas emissões significativas provenientes do uso da terra, que são o maior contribuinte para o total de emissões da cidade. Ao aprimorar a gestão do carbono do solo, a cidade pode aumentar a captura de carbono, reduzindo assim sua pegada de carbono geral. Além disso, essa ação pode melhorar a saúde e a produtividade do solo, o que é vital para manter a segurança alimentar diante dos impactos das mudanças climáticas, como secas e inundações. A implementação dessa ação está alinhada com a necessidade da cidade de promover a sustentabilidade ambiental, ao mesmo tempo em que apoia as práticas agrícolas locais.",
+    "action": {
+      "ActionID": "ipcc_0061",
+      "ActionName": "Gestão de Carbono do Solo em Terras Agrícolas e Pastagens",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementação de práticas de manejo sustentável do solo em terras agrícolas e pastagens para aumentar o carbono orgânico do solo. As práticas incluem manejo melhorado de culturas e nutrientes, redução do preparo do solo, retenção de resíduos, manejo de água e arroz, aplicação de biochar, melhoramento de variedades de gramíneas, manejo de lotação de gado e manejo de incêndios. Essas atividades visam aumentar a matéria orgânica do solo, mitigar as emissões de GEE e proporcionar co-benefícios para a biodiversidade, fornecimento de água e segurança alimentar.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Promove a inclusão de pequenos agricultores e comunidades com recursos limitados, fornecendo práticas econômicas e adaptáveis regionalmente que melhoram a produtividade agrícola e a resiliência às mudanças climáticas.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "O sucesso depende da disponibilidade de recursos para monitoramento e verificação",
+        "adaptação regional de práticas",
+        "enfrentamento de barreiras como saturação do solo e questões de permanência"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento do carbono orgânico do solo",
+        "redução nas emissões de GEE",
+        "melhoria na produtividade agrícola",
+        "melhorias na biodiversidade"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 14,
+    "explanation": "Priorizar a aquisição de produtos agroecológicos produzidos localmente nas compras públicas é fundamental para Cruzeiro do Sul devido ao seu potencial de fortalecer a segurança alimentar. A cidade enfrenta riscos relacionados à segurança alimentar tanto por secas quanto por enchentes, tornando importante o apoio à agricultura local que possa se adaptar a essas condições. Além disso, essa ação pode ajudar a reduzir as emissões de transporte ao minimizar a necessidade de transporte de alimentos a longas distâncias, alinhando-se com o objetivo da cidade de diminuir suas emissões totais. Apoiar produtos agroecológicos locais também promove práticas sustentáveis de uso da terra, o que é vital, considerando as significativas emissões provenientes do uso do solo na cidade.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar a Aquisição de Produtos Agroecológicos Produzidos Localmente em Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Concentre-se em comprar alimentos sustentáveis e produzidos localmente para instituições públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas de aquisição e identificação de fornecedores locais confiáveis.",
+        "Parcerias com produtores e alocação de financiamento para programas de aquisição sustentável.",
+        "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os critérios de sustentabilidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem do volume total de compras públicas provenientes de produtores agroecológicos locais.",
+        "Quantidade de emissões de CO₂ evitadas devido à redução da distância de transporte (tCO₂e).",
+        "Número de produtores agroecológicos beneficiados pelas compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0085",
+    "actionName": "Promote the Adoption of Agroecological Pest Control",
+    "actionPriority": 15,
+    "explanation": "Promover a adoção do controle agroecológico de pragas em Cruzeiro do Sul é fundamental devido à localização da cidade em um bioma de floresta tropical, que abriga uma rica biodiversidade. Essa abordagem pode ajudar a manter o equilíbrio ecológico e reduzir a dependência de pesticidas químicos, que podem prejudicar o meio ambiente e a saúde humana. Além disso, os métodos agroecológicos podem aumentar a segurança alimentar ao melhorar a resiliência das culturas a pragas e doenças, o que é vital considerando a vulnerabilidade da cidade a riscos climáticos, como secas e enchentes. Implementar essa ação está alinhado com práticas agrícolas sustentáveis, contribuindo para benefícios ambientais e econômicos de longo prazo para a comunidade.",
+    "action": {
+      "ActionID": "icare_0085",
+      "ActionName": "Promover a Adoção do Controle de Pragas Agroecológico",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar métodos de controle de pragas que sejam agroecológicos, como o uso de predadores naturais e plantas repelentes, para reduzir a dependência de pesticidas químicos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de programas educacionais para informar os agricultores sobre métodos de controle de pragas agroecológicos e seus benefícios.",
+        "Fornecimento de acesso a recursos ou materiais para implementar métodos de controle de pragas naturais, como a introdução de insetos benéficos ou o cultivo de plantas repelentes.",
+        "Criação de incentivos ou redes de apoio para encorajar a transição do uso de pesticidas químicos em favor de alternativas sustentáveis."
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento nas taxas de produtividade em áreas que adotam controle agroecológico de pragas (%).",
+        "Número de campanhas educativas realizadas sobre controle sustentável de pragas.",
+        "Impacto nos custos totais de produção devido à adoção de práticas agroecológicas (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0132",
+    "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+    "actionPriority": 16,
+    "explanation": "Incentivar a produção agroecológica local e cadeias curtas de abastecimento em Cruzeiro do Sul é fundamental devido à vulnerabilidade da cidade a riscos climáticos, como secas e enchentes, que impactam a segurança alimentar. Ao promover a agricultura local, a cidade pode aumentar sua resiliência diante desses riscos, reduzindo a dependência de fontes externas de alimentos e garantindo um abastecimento alimentar local estável. Além disso, essa ação fortalece a economia local e pode ajudar a mitigar as emissões do transporte, que são um dos principais contribuintes para as emissões totais da cidade. A implementação dessa estratégia está alinhada com os objetivos de desenvolvimento sustentável e pode melhorar as condições socioeconômicas da comunidade.",
+    "action": {
+      "ActionID": "icare_0132",
+      "ActionName": "Incentivar a Produção Agroecológica Local e Cadeias Curtas de Abastecimento",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Apoiar práticas agrícolas locais e sustentáveis e reduzir as emissões associadas ao transporte de alimentos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Incentivos para práticas agrícolas sustentáveis e desenvolvimento de redes locais de distribuição de alimentos.",
+        "Parcerias com produtores e investimento em infraestrutura para apoiar mercados locais.",
+        "Políticas para priorizar métodos de transporte de baixa emissão."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de produtores aderindo a práticas agroecológicas locais.",
+        "Percentual de alimentos consumidos na cidade provenientes de cadeias curtas.",
+        "Redução nas emissões associadas ao transporte de alimentos (tCO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0099",
+    "actionName": "Support Agroecological Certification Programs",
+    "actionPriority": 17,
+    "explanation": "Apoiar programas de certificação agroecológica em Cruzeiro do Sul é fundamental devido à dependência da cidade da agricultura e à sua vulnerabilidade a riscos climáticos, como secas e enchentes. Esses programas podem promover práticas agrícolas sustentáveis que aumentam a segurança alimentar e reduzem o impacto ambiental. Ao incentivar métodos agroecológicos, a cidade pode melhorar sua resiliência diante das mudanças climáticas, especialmente em uma região com níveis de renda muito baixos. Além disso, tais iniciativas podem ajudar a preservar o bioma da floresta tropical, que é vital para a manutenção da biodiversidade e do equilíbrio ecológico.",
+    "action": {
+      "ActionID": "icare_0099",
+      "ActionName": "Apoiar Programas de Certificação Agroecológica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a certificação de produtos agroecológicos que atendam a critérios de sustentabilidade e tenham baixo impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de padrões de certificação claros e acessíveis para produtos agroecológicos que enfatizem a sustentabilidade e o baixo impacto ambiental.",
+        "Apoio a agricultores e produtores para atender aos requisitos de certificação por meio de treinamento, assistência financeira ou orientação técnica.",
+        "Criação de estratégias de marketing e parcerias para aumentar a visibilidade e a demanda por produtos agroecológicos certificados nos mercados locais e globais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de agricultores ou produtores obtendo certificações agroecológicas.",
+        "Percentual de produtos agrícolas certificados no mercado (%).",
+        "Redução no uso de insumos sintéticos (por exemplo, fertilizantes, pesticidas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0136",
+    "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+    "actionPriority": 18,
+    "explanation": "Apoiar a implementação de incentivos fiscais ecológicos em Cruzeiro do Sul é fundamental devido às significativas emissões provenientes do uso do solo na cidade, que representam a maior parcela de suas emissões totais. Ao promover práticas sustentáveis de manejo do solo por meio de incentivos fiscais, a cidade pode reduzir essas emissões de forma eficaz. Além disso, o bioma de floresta tropical da região é vital para a biodiversidade, e os incentivos ecológicos podem ajudar a preservar esse ambiente crítico. Essa ação está alinhada com a necessidade do município de enfrentar desafios ambientais enquanto promove o crescimento econômico por meio de práticas sustentáveis.",
+    "action": {
+      "ActionID": "icare_0136",
+      "ActionName": "Apoiar a Implementação de Incentivos Fiscais Ecológicos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a aplicação de impostos ecológicos e incentivos para promover a conservação ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro regulatório claro com taxas de impostos justas e incentivos para a sustentabilidade.",
+        "Implementar sistemas de monitoramento eficazes para rastrear a conformidade e medir o impacto.",
+        "Promover a conscientização pública e fomentar a colaboração entre governos, empresas e comunidades."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de municípios que adotaram incentivos fiscais ambientais.",
+        "Percentual da receita tributária gasta em práticas sustentáveis.",
+        "Área ou número de propriedades beneficiadas por práticas de conservação como resultado de incentivos."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0052",
+    "actionName": "Reduce Deforestation and Degradation",
+    "actionPriority": 19,
+    "explanation": "Reduzir o desmatamento e a degradação é fundamental para Cruzeiro do Sul devido à sua localização em um bioma de floresta tropical. A cidade enfrenta emissões significativas provenientes do uso da terra, que são um dos principais contribuintes para o seu perfil total de emissões. Ao combater o desmatamento, a cidade pode reduzir significativamente sua pegada de carbono e ajudar a preservar a biodiversidade. Além disso, a manutenção da cobertura florestal pode mitigar os impactos de perigos climáticos, como enchentes e deslizamentos de terra, que representam um alto risco para a saúde pública e a infraestrutura. Essa ação é essencial para promover a sustentabilidade ambiental e a resiliência na região.",
+    "action": {
+      "ActionID": "ipcc_0052",
+      "ActionName": "Reduzir o Desmatamento e a Degradação",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "land"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Reduzir o desmatamento e a degradação florestal conserva os reservatórios de carbono na vegetação e no solo das florestas, evitando a perda de cobertura arbórea e distúrbios. Isso envolve controlar os fatores que levam ao desmatamento, melhorar a governança florestal e apoiar a gestão comunitária das florestas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Promove a posse segura da terra, apoia a gestão florestal comunitária e garante a participação de grupos marginalizados e indígenas nos processos de tomada de decisão.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Requer governança aprimorada",
+        "políticas claras de posse de terra",
+        "financiamento para áreas protegidas",
+        "participação da comunidade nos esforços de conservação florestal"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas taxas de desmatamento",
+        "aumento da cobertura florestal",
+        "a quantidade de emissões de GEE evitadas por ano"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "tropical_rainforest"
+    }
+  },
+  {
+    "locode": "BR CZL",
+    "cityName": "Cruzeiro do Sul",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "c40_0042",
+    "actionName": "Biodiversity Expansion",
+    "actionPriority": 20,
+    "explanation": "A ação ‘Expansão da Biodiversidade’ é crucial para Cruzeiro do Sul devido à sua localização em um bioma de floresta tropical, rico em biodiversidade. O aumento da biodiversidade pode ajudar a mitigar os impactos das mudanças climáticas, como secas e ondas de calor, que representam riscos para a saúde pública e a infraestrutura da cidade. Além disso, expandir a biodiversidade pode melhorar a resiliência dos ecossistemas locais, apoiando a segurança alimentar e os recursos hídricos. Dado o baixo status socioeconômico da cidade, investir em biodiversidade também pode proporcionar oportunidades de desenvolvimento sustentável e melhorar a qualidade de vida de seus habitantes.",
+    "action": {
+      "ActionID": "c40_0042",
+      "ActionName": "Expansão da Biodiversidade",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "As iniciativas de \"Expansão da Biodiversidade\" visam preservar e expandir os espaços verdes, promovendo a biodiversidade dentro das áreas urbanas. Ao preservar habitats naturais, as cidades melhoram os serviços ecossistêmicos e criam ambientes resilientes que apoiam uma flora e fauna diversificadas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "As iniciativas de \"Expansão da Biodiversidade\" promovem equidade e inclusão ao garantir que comunidades carentes tenham acesso a espaços verdes preservados, que muitas vezes são escassos em áreas urbanas. Ao focar no aumento da biodiversidade nesses bairros, a ação aborda a justiça ambiental ao melhorar a qualidade de vida de populações vulneráveis que podem enfrentar maior exposição à poluição e acesso limitado à natureza. Além disso, a criação de ambientes resilientes apoia uma flora e fauna diversificadas, o que pode melhorar os ecossistemas locais dos quais essas comunidades dependem para benefícios recreativos, culturais e econômicos. No geral, a iniciativa promove um senso de propriedade comunitária e envolvimento na preservação de habitats naturais, garantindo que as vozes de grupos marginalizados sejam incluídas no planejamento urbano e na gestão ambiental.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "40-59"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento para projetos de espaços verdes",
+        "Envolvimento e apoio da comunidade para iniciativas de biodiversidade",
+        "Colaboração com governos locais e organizações ambientais",
+        "Acesso a pesquisas científicas sobre ecossistemas locais",
+        "Estruturas regulatórias que apoiam a conservação de terras e o planejamento urbano"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento na área de espaços verdes (hectares)",
+        "Número de espécies nativas introduzidas",
+        "Melhoria no índice de biodiversidade",
+        "Percentagem de áreas urbanas com espaços verdes acessíveis",
+        "Envolvimento da comunidade em programas de biodiversidade",
+        "Redução no efeito de ilha de calor urbano",
+        "Aumento nas populações de polinizadores",
+        "Melhoria nas métricas de qualidade do ar",
+        "Número de parcerias com organizações locais de conservação",
+        "Métricas de conscientização e educação pública"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
+]

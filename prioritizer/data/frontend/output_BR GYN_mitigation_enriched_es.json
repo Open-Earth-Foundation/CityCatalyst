@@ -1,0 +1,1276 @@
+[
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0139",
+    "actionName": "Implementation of urban toll.",
+    "actionPriority": 1,
+    "explanation": "La implementación de un peaje urbano en Goiânia es una prioridad debido a las altas emisiones del transporte, que constituyen un aporte significativo a las emisiones totales de la ciudad. Al introducir un peaje, la ciudad puede gestionar de manera efectiva la congestión del tráfico, reducir las emisiones de vehículos y fomentar el uso del transporte público. Esta acción es crucial para abordar el impacto ambiental del transporte y mejorar la calidad del aire, lo cual es vital para la salud pública. Además, la reducción de la congestión vehicular puede mejorar la calidad de vida de los residentes al disminuir los tiempos de viaje y promover un entorno urbano más sostenible.",
+    "action": {
+      "ActionID": "icare_0139",
+      "ActionName": "Implementación de peaje urbano.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Establecimiento de un cargo por congestión y/o rotación de matrículas para vehículos ligeros en áreas saturadas y en horarios saturados",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Establecer un marco legal claro e invertir en tecnología para el monitoreo y la aplicación (por ejemplo, cámaras, sensores).",
+        "Lanzar campañas de concienciación y asegurar la disponibilidad de transporte público eficiente o soluciones de movilidad alternativas.",
+        "Colaborar con los gobiernos locales y las agencias de transporte, y establecer sistemas para monitorear y evaluar la efectividad de la política."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de emisiones de CO₂ del transporte por carretera urbano (tCO₂e/año).",
+        "Ingresos generados por la implementación del cargo por congestión urbana (R$)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 2,
+    "explanation": "Fomentar políticas de energía renovable a nivel municipal en Goiânia es crucial debido a las altas emisiones de energía estacionaria de la ciudad, las cuales contribuyen significativamente a sus emisiones totales. Al promover la energía renovable, la ciudad puede reducir su dependencia de los combustibles fósiles, disminuyendo así su huella de carbono y mitigando los impactos del cambio climático. Además, las iniciativas de energía renovable pueden mejorar la seguridad energética, lo cual es vital dada la vulnerabilidad de la ciudad a las sequías que pueden afectar el suministro de energía. Implementar estas políticas también puede estimular el crecimiento económico local mediante la creación de empleos verdes y el fomento del desarrollo sostenible.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Fomentar políticas de energía renovable a nivel municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Abogar por e implementar políticas que prioricen el desarrollo e integración de sistemas de energía renovable en las operaciones y planificación del gobierno local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Voluntad política y liderazgo para priorizar la energía renovable en las políticas y procesos de planificación del gobierno local",
+        "Desarrollo de políticas claras y marcos regulatorios que faciliten la integración de sistemas de energía renovable en las operaciones gubernamentales",
+        "Disponibilidad de financiamiento o mecanismos financieros para apoyar la transición a la energía renovable en la infraestructura y operaciones municipales"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de proyectos de energía renovable aprobados o iniciados anualmente a nivel municipal.",
+        "Porcentaje de la demanda energética municipal cubierta por fuentes renovables (%).",
+        "Reducción de las emisiones de carbono municipales debido a la adopción de energía renovable (toneladas de CO₂e/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 3,
+    "explanation": "Integrar energías renovables en los sistemas municipales de agua en Goiânia es una acción estratégica debido al alto riesgo de sequías que afectan los recursos hídricos de la ciudad. Al utilizar energía renovable, la ciudad puede garantizar un suministro de agua más sostenible y confiable, reduciendo la dependencia de fuentes de energía tradicionales que contribuyen a las emisiones. Esta acción también está alineada con la necesidad de la ciudad de abordar sus significativas emisiones estacionarias de energía, promoviendo una infraestructura más limpia y resiliente. Además, la integración de energías renovables puede ayudar a mitigar los efectos del cambio climático, apoyando la sostenibilidad ambiental y económica de la ciudad a largo plazo.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energías renovables en los sistemas de agua municipales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fuentes de energía renovable, como la solar o la eólica, para impulsar los sistemas de tratamiento, bombeo y distribución de agua, reduciendo los costos de energía y las emisiones.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de financiación o incentivos financieros para integrar fuentes de energía renovable como la solar o la eólica en los sistemas de tratamiento y distribución de agua",
+        "Experiencia técnica e infraestructura para adaptar los sistemas existentes con soluciones de energía renovable o diseñar nuevas instalaciones alimentadas por energías renovables",
+        "Apoyo político y regulatorio para fomentar el uso de energía limpia en los sistemas de agua y asegurar su integración en las redes energéticas municipales"
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de sistemas de agua municipales alimentados por energías renovables.",
+        "Reducción en el consumo de energía de fuentes no renovables (kWh/año).",
+        "Emisiones de GEI evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0094",
+    "actionName": "Adoption of biomethane in public fleets.",
+    "actionPriority": 4,
+    "explanation": "La adopción de biometano en las flotas públicas de Goiânia es un paso crucial para reducir las emisiones del transporte, que constituyen una parte significativa de las emisiones totales de la ciudad. Dada la alta densidad poblacional y las necesidades de transporte asociadas, la transición hacia fuentes de combustible más limpias puede disminuir sustancialmente la huella de carbono. Además, esta acción está alineada con la necesidad de la ciudad de abordar riesgos climáticos, como las olas de calor y los problemas de salud pública, mediante la promoción de soluciones energéticas sostenibles. La implementación del biometano también puede mejorar la seguridad energética al diversificar las fuentes de combustible y reducir la dependencia de los combustibles fósiles tradicionales.",
+    "action": {
+      "ActionID": "icare_0094",
+      "ActionName": "Adopción de biometano en flotas públicas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar biometano producido a partir de residuos urbanos y agroindustriales para alimentar autobuses y camiones públicos, reduciendo las emisiones de gases de efecto invernadero en las flotas municipales.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de infraestructura para la producción, procesamiento y distribución de biometano a partir de residuos urbanos y agroindustriales.",
+        "Adaptación o adquisición de autobuses y camiones públicos capaces de utilizar biometano como fuente de combustible.",
+        "Establecimiento de políticas e incentivos financieros para apoyar la producción de biometano y su integración en las flotas municipales."
+      ],
+      "KeyPerformanceIndicators": [
+        "Ahorro de costos en la operación de la flota debido al uso de biometano (USD/año).",
+        "Aumento en la capacidad de producción de biometano (%).",
+        "Porcentaje de biometano obtenido localmente versus importado."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0121",
+    "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+    "actionPriority": 5,
+    "explanation": "La acción de incentivar los programas de bicicletas compartidas, especialmente con bicicletas eléctricas, es crucial para Goiânia debido a sus altas emisiones de transporte. Al promover métodos alternativos de transporte, la ciudad puede reducir significativamente su huella de carbono y mejorar la calidad del aire. Además, las bicicletas eléctricas ofrecen un modo de transporte sostenible y eficiente que puede ayudar a aliviar la congestión del tráfico en las zonas urbanas. Esta iniciativa también está alineada con la necesidad de la ciudad de abordar los riesgos para la salud pública asociados con la contaminación del aire y las olas de calor, proporcionando un entorno urbano más saludable y resiliente.",
+    "action": {
+      "ActionID": "icare_0121",
+      "ActionName": "Incentivo para crear programas de bicicletas compartidas en áreas urbanas, con un enfoque en bicicletas eléctricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta acción fomenta el establecimiento de sistemas de bicicletas compartidas en las ciudades, promoviendo específicamente el uso de bicicletas eléctricas. Estos sistemas permiten a los residentes alquilar bicicletas eléctricas para viajes cortos, reduciendo la dependencia de los automóviles para el transporte urbano. Al integrar bicicletas eléctricas, las ciudades pueden reducir aún más las emisiones de gases de efecto invernadero, aliviar la congestión del tráfico y promover un modo de transporte más saludable y sostenible tanto para áreas urbanas como rurales. Esta iniciativa también apoya la igualdad de movilidad, ya que hace que las bicicletas sean más accesibles para un rango más amplio de personas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Establecimiento de sistemas de bicicletas compartidas con un enfoque en bicicletas eléctricas para reducir la dependencia del automóvil.",
+        "Integración de bicicletas eléctricas para reducir las emisiones de gases de efecto invernadero, aliviar la congestión del tráfico y promover el transporte sostenible.",
+        "Promoción de la igualdad de movilidad haciendo que las bicicletas eléctricas sean accesibles para una población más amplia."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de bicicletas eléctricas disponibles en programas de bicicletas compartidas.",
+        "Aumento anual en usuarios de bicicletas compartidas.",
+        "Reducción estimada en emisiones equivalentes de CO₂ por la adopción de bicicletas eléctricas compartidas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "c40_0035",
+    "actionName": "Waste Efficiency",
+    "actionPriority": 6,
+    "explanation": "La acción \"Eficiencia en la gestión de residuos\" es una prioridad para Goiânia debido a la significativa contribución de las emisiones de residuos al perfil total de emisiones de la ciudad. Dado que las emisiones provenientes de los residuos representan una parte sustancial de las emisiones generales de la ciudad, mejorar las prácticas de gestión de residuos puede conducir a una reducción considerable de los gases de efecto invernadero. Además, aumentar la eficiencia en la gestión de residuos puede mitigar el impacto ambiental y mejorar la salud pública al reducir la contaminación y los riesgos sanitarios asociados. Considerando la vulnerabilidad de la ciudad ante peligros relacionados con el clima, como inundaciones y olas de calor, una gestión eficiente de los residuos también puede contribuir a una mayor resiliencia frente a estos impactos.",
+    "action": {
+      "ActionID": "c40_0035",
+      "ActionName": "Eficiencia en el manejo de residuos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "all"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Las iniciativas de \"Eficiencia de Residuos\" tienen como objetivo mejorar la eficiencia de los procesos de recolección de residuos, reduciendo el consumo de recursos y minimizando el impacto ambiental. Esto incluye la optimización de los sistemas de gestión de residuos para mejorar la eficiencia energética y promover prácticas sostenibles de eliminación de residuos.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Las iniciativas de \"Eficiencia de Residuos\" promueven la equidad y la inclusión al centrarse en comunidades desatendidas que a menudo soportan la carga de sistemas de gestión de residuos ineficientes. Al optimizar los procesos de recolección de residuos, estas iniciativas pueden reducir la carga ambiental sobre las poblaciones vulnerables, que pueden vivir en áreas desproporcionadamente afectadas por los residuos y la contaminación.\n\nAdemás, mejorar la eficiencia energética en la gestión de residuos puede generar ahorros de costos, que pueden reinvertirse en servicios comunitarios o infraestructuras que beneficien a los vecindarios de bajos ingresos. La promoción de prácticas sostenibles de eliminación de residuos también asegura que todos los miembros de la comunidad, independientemente de su estatus socioeconómico, tengan acceso a opciones ambientalmente responsables, fomentando un sentido de responsabilidad compartida e inclusión en los esfuerzos de acción climática.\n\nEn general, estas iniciativas reconocen los desafíos únicos que enfrentan las comunidades desatendidas y tienen como objetivo crear un sistema de gestión de residuos más equitativo que beneficie a todos los residentes.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "80-100",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Infraestructura y tecnología efectiva para la gestión de residuos",
+        "Colaboración con gobiernos locales y autoridades de gestión de residuos",
+        "Concienciación y educación pública sobre prácticas de eliminación de residuos",
+        "Acceso a datos para monitorear y optimizar los procesos de recolección de residuos",
+        "Inversión en instalaciones sostenibles de procesamiento de residuos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en los costos de recolección de residuos",
+        "Porcentaje de disminución de residuos enviados a vertederos",
+        "Aumento en las tasas de reciclaje",
+        "Consumo de energía por tonelada de residuos recolectados",
+        "Reducción de emisiones de carbono de la gestión de residuos",
+        "Satisfacción del cliente con los servicios de recolección de residuos",
+        "Volumen de residuos procesados mediante métodos sostenibles",
+        "Eficiencia operativa de las rutas de recolección de residuos"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0044",
+    "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+    "actionPriority": 7,
+    "explanation": "Ampliar la infraestructura ciclista y construir senderos públicos en Goiânia es crucial debido a la alta densidad de población de la ciudad y la necesidad de reducir las emisiones del transporte, que son contribuyentes significativos a las emisiones totales de la ciudad. Al promover el ciclismo y la caminata, la ciudad puede disminuir la dependencia de los vehículos motorizados, reduciendo así la contaminación del aire y mejorando la salud pública. Además, crear infraestructura resiliente frente a amenazas climáticas aborda la vulnerabilidad de la ciudad ante peligros como inundaciones y olas de calor, garantizando la sostenibilidad y seguridad a largo plazo para sus habitantes. Esta acción también está alineada con el contexto socioeconómico de la ciudad, proporcionando opciones de transporte asequibles y accesibles para todos los niveles de ingresos.",
+    "action": {
+      "ActionID": "icare_0044",
+      "ActionName": "Expandir la infraestructura para bicicletas y construir paseos públicos y aceras accesibles, priorizando medidas resilientes a las amenazas climáticas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "El objetivo principal de esta acción es promover la movilidad activa, garantizando la seguridad, comodidad y prioridad del movimiento peatonal, de personas con discapacidades (o movilidad reducida), y de vehículos y equipos impulsados por humanos, como bicicletas y patinetes.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversiones en infraestructura para pasarelas peatonales seguras y accesibles, carriles para bicicletas e instalaciones para personas con discapacidades",
+        "Marcos de políticas y regulaciones para priorizar la movilidad activa y establecer estándares de seguridad para peatones y vehículos no motorizados",
+        "Campañas de concienciación pública para promover la movilidad activa y educar a los ciudadanos sobre los beneficios de caminar, andar en bicicleta y usar otros medios de transporte impulsados por humanos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Kilómetros de nuevos carriles bici y senderos peatonales construidos anualmente.",
+        "Aumento en el uso diario de la infraestructura para ciclistas y peatones (%).",
+        "Reducción en las emisiones del transporte urbano (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 8,
+    "explanation": "La implementación de programas de transporte público gratuito durante las horas pico en Goiânia es una acción crucial para abordar las altas emisiones del sector transporte en la ciudad, las cuales representan una contribución significativa a sus emisiones totales. Al fomentar el uso del transporte público, esta iniciativa puede ayudar a reducir la dependencia de los vehículos particulares, disminuyendo así la congestión del tráfico y la contaminación del aire. Además, esta medida apoya el contexto socioeconómico de la ciudad al brindar a los residentes de bajos ingresos un mejor acceso al transporte, lo que podría mejorar su calidad de vida. Dada la vulnerabilidad de la ciudad a riesgos climáticos como olas de calor e inundaciones, la reducción de emisiones es fundamental para mejorar la salud pública y la resiliencia de la infraestructura.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementación de programas de transporte público gratuito durante las horas pico para reducir el uso de vehículos individuales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar el uso del transporte público ofreciendo servicios gratuitos durante las horas pico para trabajadores y estudiantes. Esta medida reduce la congestión urbana, disminuye el número de vehículos individuales en la carretera y, en consecuencia, reduce las emisiones de gases de efecto invernadero asociadas con el transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Asignación de fondos para subsidiar servicios de transporte público gratuito durante las horas pico.",
+        "Desarrollo de políticas para garantizar la sostenibilidad y eficiencia de los sistemas de transporte público ante el aumento de la demanda.",
+        "Coordinación con empleadores e instituciones educativas para optimizar los horarios de las horas pico y promover la iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en los niveles de contaminación del aire durante las horas pico (concentración de PM2.5/PM10).",
+        "Número de vehículos privados retirados de las carreteras durante las horas pico.",
+        "Tasa de satisfacción pública con la iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0068",
+    "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+    "actionPriority": 9,
+    "explanation": "Implementar sistemas de transporte bajo demanda con flotas 100% eléctricas en Goiânia es un paso crucial para reducir las emisiones del transporte, que son un contribuyente significativo a las emisiones totales de la ciudad. Dada la alta densidad poblacional de la ciudad y la demanda asociada de transporte eficiente, esta acción puede ayudar a aliviar la congestión y mejorar la calidad del aire. Además, la transición a flotas eléctricas está alineada con los objetivos globales de sostenibilidad y puede fortalecer la seguridad energética al reducir la dependencia de los combustibles fósiles. Esta iniciativa también apoya la salud pública al minimizar la contaminación del aire, lo cual es especialmente importante en una ciudad que enfrenta altos riesgos por olas de calor y otros peligros relacionados con el clima.",
+    "action": {
+      "ActionID": "icare_0068",
+      "ActionName": "Desplegar sistemas de transporte bajo demanda con flotas 100% eléctricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Servicios de transporte colectivo bajo demanda, basados en aplicaciones, optimizan el uso de vehículos eléctricos, reduciendo las emisiones por pasajero.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desarrollo de plataformas digitales y aplicaciones para gestionar eficientemente servicios de transporte colectivo bajo demanda.",
+        "Expansión de flotas de vehículos eléctricos adaptadas para soluciones de transporte compartido.",
+        "Implementación de políticas e incentivos para fomentar la adopción y el uso de servicios de transporte eléctrico compartido."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de usuarios activos del sistema de flota eléctrica bajo demanda.",
+        "Porcentaje de demanda de transporte urbano satisfecho por sistemas bajo demanda.",
+        "Reducción en los niveles de contaminación acústica en áreas urbanas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0052",
+    "actionName": "Develop projects for renewable energy and waste reuse",
+    "actionPriority": 10,
+    "explanation": "Desarrollar proyectos de energía renovable y reutilización de residuos en Goiânia es fundamental debido a las altas emisiones de la ciudad provenientes de la energía estacionaria y los residuos. Con un total de emisiones superior a 3,5 millones, enfocarse en la energía renovable puede reducir significativamente la huella de carbono. Además, los proyectos de reutilización de residuos pueden ayudar a gestionar las considerables emisiones de desechos, que actualmente son las más altas entre todas las fuentes de emisión. La implementación de estos proyectos está alineada con la necesidad de la ciudad de abordar la sostenibilidad ambiental y mejorar la salud pública mediante la reducción de la contaminación.",
+    "action": {
+      "ActionID": "icare_0052",
+      "ActionName": "Desarrollar proyectos para energía renovable y reutilización de residuos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta acción tiene como objetivo desarrollar e implementar proyectos de energía renovable, incluyendo: un biodigestor para el tratamiento de residuos orgánicos y una planta de energía solar.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "60-79",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo e implementación de proyectos de energía renovable.",
+        "Instalación de un biodigestor para el tratamiento de residuos orgánicos.",
+        "Establecimiento de una planta de energía solar para generar energía limpia."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de proyectos de energía renovable y reutilización de residuos implementados.",
+        "Cantidad de residuos reutilizados o reciclados (toneladas/año).",
+        "Reducción en los costos de energía para los municipios participantes (USD)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0090",
+    "actionName": "Adoption of electric drones for last-mile deliveries.",
+    "actionPriority": 11,
+    "explanation": "La adopción de drones eléctricos para entregas de última milla en Goiânia es una medida estratégica para reducir las emisiones del transporte, que constituyen un aporte significativo a las emisiones totales de la ciudad. Dada la alta densidad poblacional de la ciudad, los drones eléctricos pueden desplazarse eficientemente por las zonas urbanas, disminuyendo la congestión vehicular y reduciendo la huella de carbono asociada a los vehículos de reparto tradicionales. Además, esta acción está alineada con la necesidad de la ciudad de abordar los riesgos para la salud pública relacionados con la contaminación del aire, ya que métodos de entrega más limpios pueden mejorar la calidad del aire. La implementación de esta tecnología también posiciona a Goiânia como una ciudad visionaria, que adopta soluciones innovadoras para mejorar la sostenibilidad y la vida urbana.",
+    "action": {
+      "ActionID": "icare_0090",
+      "ActionName": "Adopción de drones eléctricos para entregas de última milla.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "off-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Reemplazar los vehículos tradicionales con drones eléctricos para entregas de corta distancia en centros urbanos, reduciendo emisiones y congestión de tráfico.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de regulaciones del espacio aéreo urbano para garantizar la operación segura y eficiente de drones de entrega.",
+        "Inversión en infraestructura de carga y mantenimiento para apoyar una flota de drones eléctricos.",
+        "Colaboración con empresas de logística para integrar drones en redes de entrega de última milla."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción del tiempo de entrega en comparación con los métodos tradicionales (minutos).",
+        "Aumento en la satisfacción del cliente con las entregas mediante drones (%).",
+        "Reducción de la congestión del tráfico causada por vehículos de entrega (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0057",
+    "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+    "actionPriority": 12,
+    "explanation": "La expansión de los sistemas de transporte masivo sobre rieles en Goiânia es una acción crucial debido a la alta densidad poblacional de la ciudad y a las significativas emisiones generadas por el transporte. Con una población de más de 1,4 millones de habitantes, mejorar el transporte público puede aliviar la congestión vehicular y reducir la dependencia de los vehículos particulares, disminuyendo así las emisiones. Además, un sistema de transporte masivo mejorado puede ofrecer un acceso más equitativo al transporte para los residentes de bajos ingresos, en consonancia con las necesidades socioeconómicas de la ciudad. Esta acción también contribuye a la resiliencia de la ciudad frente a los riesgos climáticos, al reducir potencialmente el impacto de las olas de calor en la salud pública mediante la disminución de las emisiones vehiculares.",
+    "action": {
+      "ActionID": "icare_0057",
+      "ActionName": "Expansión de los sistemas de transporte masivo sobre rieles (metros, LRTs y monorraíles).",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "railways"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estos sistemas ofrecen alta capacidad y bajas emisiones, cruciales para ciudades con alta densidad de población.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en el desarrollo y expansión de infraestructuras de transporte público de alta capacidad, como autobuses eléctricos y sistemas de metro.",
+        "Implementación de políticas e incentivos para fomentar el uso del transporte público sobre los vehículos privados.",
+        "Integración de fuentes de energía renovable para alimentar estos sistemas, reduciendo aún más las emisiones."
+      ],
+      "KeyPerformanceIndicators": [
+        "Longitud de las nuevas líneas de tránsito construidas (km/año).",
+        "Reducción en la congestión del tráfico vial (%).",
+        "Reducción en el uso de vehículos privados (número de viajes evitados/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0033",
+    "actionName": "Install biodigesters in rural properties",
+    "actionPriority": 13,
+    "explanation": "La instalación de biodigestores en propiedades rurales de Goiânia es una acción estratégica para abordar las emisiones de residuos, que constituyen un componente significativo del total de emisiones de la ciudad. Los biodigestores pueden ayudar a convertir los residuos orgánicos en biogás, reduciendo las emisiones de metano y proporcionando una fuente de energía renovable. Esta acción también contribuye a la seguridad energética al diversificar las fuentes de energía, lo cual es crucial dada la vulnerabilidad de la ciudad a las sequías que afectan el suministro energético. Además, puede mejorar el saneamiento en las zonas rurales, en línea con la necesidad de la ciudad de ampliar el acceso a los servicios públicos.",
+    "action": {
+      "ActionID": "icare_0033",
+      "ActionName": "Instalar biodigestores en propiedades rurales",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Equipar granjas y propiedades rurales con biodigestores para convertir los desechos orgánicos en biogás y fertilizantes ricos en nutrientes, proporcionando una fuente de energía sostenible.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidad de financiación o subsidios para apoyar la instalación de biodigestores en granjas y propiedades rurales",
+        "Acceso a experiencia técnica para el diseño, instalación y mantenimiento de biodigestores",
+        "Desarrollo de un marco regulatorio de apoyo que fomente el uso de biogás y sistemas de gestión de residuos orgánicos en la agricultura rural"
+      ],
+      "KeyPerformanceIndicators": [
+        "Volumen de biogás generado (m³/año).",
+        "Emisiones de GEI evitadas al reemplazar combustibles fósiles (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0053",
+    "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
+    "actionPriority": 14,
+    "explanation": "Implementar un proyecto para apoyar a las cooperativas de recolectores de materiales reciclables en Goiânia es fundamental debido a las significativas emisiones de residuos de la ciudad, que constituyen una parte importante de sus emisiones totales. Al mejorar la eficiencia y la capacidad de estas cooperativas, la ciudad puede reducir las emisiones de residuos y promover prácticas sostenibles de gestión de desechos. Además, el apoyo a estas cooperativas puede brindar oportunidades económicas a los residentes de bajos ingresos, en consonancia con las necesidades socioeconómicas de la ciudad. Esta acción también contribuye a reducir el impacto ambiental y a mejorar la salud pública al minimizar la contaminación relacionada con los residuos.",
+    "action": {
+      "ActionID": "icare_0053",
+      "ActionName": "Implementar un proyecto para apoyar a las cooperativas de recolectores de materiales reciclables",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "disposal_of_solid_waste_generated_in_the_city"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Medidas para mejorar las condiciones laborales y los ingresos en los procesos de clasificación de residuos reciclables. Incluye capacitación continua para los recolectores en tecnología, economía, gestión empresarial y planificación conceptual para la operación y administración de la Unidad de Clasificación.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "20-39",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Implementación de medidas para mejorar las condiciones laborales y los ingresos para la clasificación de residuos reciclables.",
+        "Capacitación continua para los recolectores en tecnología, economía, gestión empresarial y planificación operativa.",
+        "Desarrollo de capacidades administrativas y operativas para la Unidad de Clasificación."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de cooperativas apoyadas anualmente.",
+        "Aumento en los ingresos de los recolectores (%).",
+        "Volumen de materiales reciclables recolectados por cooperativas (toneladas/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "c40_0026",
+    "actionName": "Vehicle Emissions",
+    "actionPriority": 15,
+    "explanation": "Abordar las emisiones de vehículos en Goiânia es crucial debido a las altas emisiones del sector transporte, que constituyen un aporte significativo a las emisiones totales de la ciudad. Con una densidad de población de 1970,9 personas por kilómetro cuadrado, el impacto de las emisiones vehiculares en la calidad del aire y la salud pública es considerable. Reducir estas emisiones puede ayudar a mitigar los riesgos asociados con las olas de calor y los peligros para la salud pública, que han sido identificados como áreas de alto riesgo para la ciudad. Además, mejorar la calidad del aire puede aumentar la calidad de vida de los residentes y contribuir a los objetivos de sostenibilidad de la ciudad.",
+    "action": {
+      "ActionID": "c40_0026",
+      "ActionName": "Emisiones de Vehículos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Las estrategias de reducción de \"Vehicle Emissions\" se centran en minimizar el impacto ambiental de todo tipo de vehículos. La implementación de tecnologías más limpias y la promoción de combustibles alternativos contribuyen a reducir las emisiones, fomentando un transporte sostenible y ecológico.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Las estrategias de reducción de \"Emisiones de Vehículos\" promueven inherentemente la equidad y la inclusión al abordar los impactos ambientales que afectan desproporcionadamente a las comunidades vulnerables y desatendidas. Estas comunidades a menudo experimentan niveles más altos de contaminación del aire y problemas de salud relacionados debido a la proximidad a áreas de alto tráfico y zonas industriales. Al implementar tecnologías más limpias y promover combustibles alternativos, la acción beneficia directamente a estas poblaciones al mejorar la calidad del aire y reducir los riesgos para la salud.\n\nAdemás, el enfoque en el transporte sostenible y ecológico puede mejorar el acceso a opciones de transporte asequibles y eficientes para las comunidades desatendidas, que pueden carecer de un transporte público confiable. Esta inclusividad asegura que todos los miembros de la comunidad, independientemente de su estatus socioeconómico, puedan beneficiarse de un aire más limpio y mejores resultados de salud pública. En general, la acción reconoce y aborda las necesidades específicas de las poblaciones vulnerables, fomentando un enfoque más equitativo hacia la acción climática.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo y disponibilidad de tecnologías de vehículos más limpias",
+        "Infraestructura para la distribución de combustibles alternativos",
+        "Políticas y regulaciones gubernamentales que apoyan la reducción de emisiones",
+        "Conciencia pública y aceptación de opciones de transporte ecológicas",
+        "Inversión en investigación y desarrollo para soluciones de transporte sostenible"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de emisiones de vehículos (CO2, NOx, PM)",
+        "Porcentaje de vehículos que utilizan combustibles alternativos",
+        "Número de vehículos eléctricos en circulación",
+        "Mejoras en la eficiencia del combustible (millas por galón)",
+        "Tasa de adopción de tecnologías más limpias",
+        "Reducción en el consumo de combustibles fósiles",
+        "Tasas de uso del transporte público",
+        "Mejoras en el índice de calidad del aire",
+        "Porcentaje de zonas de bajas emisiones establecidas",
+        "Inversión en infraestructura de transporte sostenible"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "c40_0036",
+    "actionName": "Landfill Management",
+    "actionPriority": 16,
+    "explanation": "La gestión de vertederos es una acción fundamental para Goiânia debido a sus significativas emisiones de residuos, que constituyen una de las principales fuentes de emisiones totales de la ciudad. Una gestión adecuada de los vertederos puede ayudar a reducir las emisiones de metano, un potente gas de efecto invernadero, contribuyendo así a mitigar los impactos del cambio climático. Además, la mejora de las prácticas en los vertederos puede favorecer la salud pública al disminuir el riesgo de transmisión de enfermedades y la contaminación ambiental. Dada la alta densidad de población de la ciudad, una gestión eficaz de los residuos es esencial para mantener un entorno urbano saludable.",
+    "action": {
+      "ActionID": "c40_0036",
+      "ActionName": "Gestión de Vertederos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "all"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Las estrategias de \"Gestión de Vertederos\" se centran en prácticas responsables y sostenibles de gestión de vertederos para minimizar la degradación ambiental. Al adoptar técnicas de gestión efectivas, las ciudades buscan reducir la huella ecológica asociada con los sitios de vertederos y fomentar la reducción de residuos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "Las estrategias de \"Gestión de Vertederos\" promueven la equidad y la inclusión al abordar los impactos ambientales de los sitios de vertederos, que a menudo afectan de manera desproporcionada a las comunidades vulnerables y desatendidas. Estas comunidades frecuentemente residen cerca de vertederos y son más susceptibles a los riesgos para la salud asociados con la contaminación y la degradación ambiental. Al implementar prácticas de vertederos responsables y sostenibles, la acción busca reducir estos impactos negativos, mejorando así la calidad de vida de los residentes en estas áreas.\n\nAdemás, las técnicas efectivas de reducción de residuos pueden crear oportunidades para la participación y el compromiso comunitario, permitiendo que las poblaciones desatendidas tengan voz en las decisiones ambientales locales. Esta inclusión fomenta un sentido de pertenencia y empoderamiento entre los miembros de la comunidad, asegurando que sus necesidades y preocupaciones sean consideradas en la gestión de los sitios de vertederos. En general, la acción reconoce y busca mitigar las inequidades enfrentadas por las comunidades marginadas en relación con la gestión de residuos y la salud ambiental.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "60-79",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Prácticas efectivas de segregación de residuos para asegurar una correcta disposición y reciclaje",
+        "Inversión en tecnología para el tratamiento de residuos y monitoreo de vertederos",
+        "Participación comunitaria y educación sobre la reducción de residuos y el reciclaje",
+        "Marcos regulatorios y políticas que apoyan prácticas sostenibles en vertederos",
+        "Colaboración con gobiernos locales y organizaciones para compartir recursos y mejores prácticas"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción del volumen de residuos en vertederos",
+        "Porcentaje de residuos desviados de vertederos",
+        "Tasa de captura de gas de vertedero",
+        "Calidad del suelo y del agua alrededor de los sitios de vertederos",
+        "Frecuencia de inspecciones de vertederos",
+        "Niveles de concienciación y participación pública",
+        "Ahorro de costos por prácticas mejoradas de gestión de vertederos",
+        "Cumplimiento de las regulaciones ambientales"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0092",
+    "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+    "actionPriority": 17,
+    "explanation": "El desarrollo de microcentros logísticos para fomentar el uso de bicicletas de carga eléctricas en Goiânia es una acción estratégica para abordar las altas emisiones del sector transporte en la ciudad, las cuales representan una contribución significativa a sus emisiones totales. Al promover las bicicletas de carga eléctricas, la ciudad puede reducir su dependencia de los vehículos tradicionales impulsados por combustibles fósiles, disminuyendo así la contaminación del aire y las emisiones de gases de efecto invernadero. Además, esta iniciativa puede ayudar a aliviar la congestión del tráfico en la ciudad, mejorando la movilidad urbana en general. Dado el muy bajo nivel socioeconómico de Goiânia, esta acción también representa una oportunidad para crear nuevos empleos y apoyar a los negocios locales, contribuyendo al desarrollo económico.",
+    "action": {
+      "ActionID": "icare_0092",
+      "ActionName": "Desarrollo de micro-centros logísticos para fomentar el uso de bicicletas de carga eléctricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Crear centros logísticos a pequeña escala en barrios urbanos para facilitar las entregas utilizando bicicletas de carga eléctricas, mientras se implementan incentivos fiscales o subsidios para que las empresas adopten estas bicicletas como modo de transporte, reduciendo las emisiones y mejorando la eficiencia de las entregas en áreas densamente pobladas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "20-39",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Identificación y desarrollo de ubicaciones adecuadas para centros logísticos a pequeña escala dentro de los vecindarios urbanos.",
+        "Provisión de incentivos fiscales, subsidios o subvenciones para alentar a las empresas a hacer la transición a bicicletas de carga eléctricas.",
+        "Establecimiento de asociaciones con empresas de logística para garantizar la integración y eficiencia en las operaciones de entrega utilizando estos centros."
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en la distancia recorrida por vehículos de entrega tradicionales (km/año).",
+        "Aumento en la eficiencia operativa de los centros logísticos (%).",
+        "Número de empresas que utilizan micro-centros logísticos para entregas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 18,
+    "explanation": "Priorizar la adquisición de productos agroecológicos de producción local en las compras públicas es crucial para Goiânia debido al riesgo significativo de sequías que afectan la seguridad hídrica y alimentaria. Al apoyar las prácticas agroecológicas locales, la ciudad puede aumentar su resiliencia frente a estos peligros climáticos, garantizando un suministro de alimentos más estable. Además, esta acción puede contribuir a la reducción de emisiones del transporte, ya que los productos de origen local requieren menos desplazamiento, lo que está en línea con la necesidad de la ciudad de abordar sus altas emisiones provenientes del transporte. Asimismo, promover la agricultura local puede estimular la economía local, generando beneficios económicos para la comunidad.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar la Adquisición de Productos Agroecológicos de Producción Local en Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Centrarse en comprar alimentos sostenibles y producidos localmente para las instituciones públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de políticas de adquisición e identificación de proveedores locales confiables.",
+        "Alianzas con productores y asignación de fondos para programas de adquisición sostenible.",
+        "Establecimiento de sistemas de monitoreo para garantizar el cumplimiento de los criterios de sostenibilidad."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje del volumen total de compras públicas provenientes de productores agroecológicos locales.",
+        "Cantidad de emisiones de CO₂ evitadas debido a la reducción de la distancia de transporte (tCO₂e).",
+        "Número de productores agroecológicos beneficiados por las compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0038",
+    "actionName": "Promote community solar farms",
+    "actionPriority": 19,
+    "explanation": "Promover las granjas solares comunitarias en Goiânia es una acción estratégica para abordar las altas emisiones de energía estacionaria de la ciudad, las cuales contribuyen significativamente a sus emisiones totales. Al aprovechar la energía solar, la ciudad puede reducir su dependencia de los combustibles fósiles, disminuyendo así su huella de carbono y mejorando la calidad del aire. Además, las granjas solares pueden proporcionar una fuente de energía sostenible que es resistente a las frecuentes sequías que afectan a la región, garantizando la seguridad energética para la comunidad. Esta iniciativa también está alineada con la necesidad de la ciudad de mitigar los efectos del cambio climático, como las olas de calor e inundaciones, mediante la promoción de soluciones de energía renovable.",
+    "action": {
+      "ActionID": "icare_0038",
+      "ActionName": "Promover granjas solares comunitarias",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Desarrollar y fomentar la adopción de proyectos solares compartidos, permitiendo que las comunidades se beneficien colectivamente de energía limpia y renovable.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desarrollo de políticas y marcos regulatorios para apoyar proyectos de energía solar compartida basados en la comunidad y garantizar el acceso equitativo a la energía limpia",
+        "Disponibilidad de mecanismos financieros o incentivos para ayudar a las comunidades a invertir en y mantener sistemas de energía solar compartida",
+        "Colaboración entre gobiernos locales, proveedores de energía y organizaciones comunitarias para diseñar e implementar proyectos de energía solar compartida de manera efectiva"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de hogares atendidos por proyectos solares comunitarios.",
+        "Emisiones de GEI evitadas mediante la producción de energía solar (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR GYN",
+    "cityName": "Goiânia",
+    "region": "GO",
+    "regionName": "Goiás",
+    "actionId": "icare_0118",
+    "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+    "actionPriority": 20,
+    "explanation": "Promover el uso de bicicletas en Goiânia es un paso crucial para reducir las emisiones del transporte, que constituyen una parte significativa de las emisiones totales de la ciudad. Con una alta densidad de población, la expansión de la infraestructura ciclista puede aliviar la congestión del tráfico y mejorar la calidad del aire. Además, aumentar la concienciación y las estrategias de comunicación puede motivar a más residentes a adoptar el ciclismo, lo que conduce a estilos de vida más saludables y a una menor dependencia de los vehículos motorizados. Esta acción está alineada con la necesidad de la ciudad de abordar los desafíos ambientales, al mismo tiempo que mejora la salud pública y la movilidad urbana.",
+    "action": {
+      "ActionID": "icare_0118",
+      "ActionName": "Promover el uso de bicicletas como un modo de transporte regular mediante la expansión de la infraestructura y estrategias de concienciación y comunicación.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar la adopción de bicicletas como un modo de transporte regular mediante la expansión de la infraestructura para ciclistas, como carriles bici dedicados, instalaciones de estacionamiento y estaciones de reparación. Además, implementar campañas de concienciación y estrategias de comunicación para resaltar los beneficios ambientales, de salud y económicos del ciclismo, con el objetivo de aumentar la participación pública y hacer del ciclismo una opción de transporte viable y sostenible para el desplazamiento diario.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expandir la infraestructura para bicicletas, incluyendo carriles exclusivos para bicicletas, instalaciones de estacionamiento y estaciones de reparación.",
+        "Implementar campañas de concienciación para resaltar los beneficios ambientales, de salud y económicos del ciclismo.",
+        "Promover la participación pública a través de estrategias de comunicación, haciendo del ciclismo una opción viable y sostenible para el desplazamiento diario."
+      ],
+      "KeyPerformanceIndicators": [
+        "Longitud de los nuevos carriles bici añadidos a la red urbana (km).",
+        "Aumento anual en el número de usuarios de bicicletas en áreas urbanas.",
+        "Reducción estimada en las emisiones de CO₂ equivalente por el cambio al ciclismo."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
+]

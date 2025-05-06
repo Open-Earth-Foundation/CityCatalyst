@@ -1,0 +1,202 @@
+[
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 1,
+        "explanation": "Implementing an urban toll in Contagem is a high priority due to the city's significant transportation emissions, which are the largest contributor to its total greenhouse gas output. With a dense population and urban area, traffic congestion likely exacerbates air pollution and public health risks, especially during heatwaves and disease outbreaks. An urban toll can help reduce vehicle use, encourage public transportation, and improve air quality, directly addressing these challenges. Additionally, this measure can generate revenue for further sustainable urban mobility initiatives, supporting long-term climate resilience."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 2,
+        "explanation": "Expanding cycling infrastructure and building accessible sidewalks in Contagem is a significant priority due to the city's high population density and urban character. These measures can reduce transportation emissions, which are currently the largest contributor to the city's total emissions. Prioritizing climate-resilient designs also addresses the city's high risks from floods, heatwaves, and landslides, helping to protect public health and infrastructure. Improved walkability and cycling options promote sustainable mobility, enhance public safety, and support a healthier urban environment for residents."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 3,
+        "explanation": "Promoting bike-sharing programs, especially with electric bikes, can significantly reduce transportation emissions, which are the largest source of greenhouse gases in Contagem. The city's high population density makes urban cycling a practical and efficient mobility option. Electric bikes can help overcome the challenges posed by the city's elevation and encourage broader participation. This action also supports public health by promoting active transportation and reducing air pollution. Overall, it aligns well with the city's sustainability and climate resilience goals."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 4,
+        "explanation": "Adopting biomethane in public fleets can significantly reduce transportation emissions, which are the largest source of greenhouse gases in Contagem. This transition supports cleaner air and helps mitigate climate change impacts, which is crucial given the city's high risk from hazards like floods and heatwaves. Additionally, using biomethane leverages local waste resources, promoting a circular economy and enhancing energy security. This action aligns with the city's need to address both environmental and public health challenges."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 5,
+        "explanation": "Implementing free public transportation during peak hours in Contagem can significantly reduce the use of individual vehicles, which is crucial given the city's high transportation emissions. With a dense population and urban area, traffic congestion and air pollution are likely concerns that this action can help address. By making public transit more accessible and attractive, the city can lower greenhouse gas emissions and improve air quality. Additionally, this measure supports equitable mobility for residents, especially those with limited income, further enhancing social inclusion."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 6,
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets is a significant step for Contagem, given its high transportation emissions. This action can help reduce air pollution and greenhouse gas emissions, improving public health and contributing to climate goals. The city's dense population makes efficient, clean transport options especially impactful for daily commuters. Additionally, electric fleets can help modernize urban mobility and set a precedent for sustainable transportation in the region."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 7,
+        "explanation": "The adoption of electric drones for last-mile deliveries in Contagem can help reduce transportation emissions, which are currently the largest contributor to the city's total emissions. By shifting to electric drones, the city can decrease reliance on conventional delivery vehicles, thus lowering air pollution and greenhouse gas output. This action also supports innovation and can improve delivery efficiency, especially in densely populated urban areas. While not the highest priority compared to actions addressing immediate climate risks like floods or landslides, it represents a forward-thinking step toward sustainable urban logistics."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 8,
+        "explanation": "Expanding mass transit systems on rails, such as metros and light rail, is highly relevant for Contagem due to its large population and high population density. Improved rail transit can significantly reduce transportation emissions, which are currently the largest source of greenhouse gases in the city. Additionally, efficient public transit can help alleviate congestion and improve air quality, benefiting public health. Given the city's vulnerability to hazards like floods and heatwaves, reliable and sustainable transportation infrastructure is crucial for resilience and long-term urban sustainability."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 9,
+        "explanation": "Addressing vehicle emissions is important for Contagem, as transportation is the largest contributor to the city's greenhouse gas emissions. Reducing emissions from vehicles can improve air quality and public health, especially given the high population density. Additionally, mitigating transportation emissions supports the city's broader climate goals and helps build resilience against climate-related hazards. Prioritizing this action can also enhance the quality of life for residents by reducing pollution and promoting sustainable mobility options."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 10,
+        "explanation": "Promoting the use of bicycles as a regular mode of transport in Contagem is important due to the city's high population density and significant transportation emissions. Expanding cycling infrastructure and raising awareness can help reduce traffic congestion, improve air quality, and lower greenhouse gas emissions. Additionally, encouraging cycling supports public health by promoting physical activity and reducing exposure to vehicle pollution. This action aligns with the city's need to address climate risks related to public health and infrastructure, especially given the high risks from heatwaves and floods."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0021",
+        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
+        "actionPriority": 11,
+        "explanation": "Encouraging and promoting measures for the sustainable and rational use of individual motorized transportation is important for Contagem due to its high transportation emissions, which are a significant contributor to the city's total greenhouse gas output. With a dense urban population, traffic congestion and air pollution are likely concerns that can impact public health and quality of life. Promoting sustainable transportation can help reduce emissions, improve air quality, and support a healthier urban environment. Additionally, these measures can make the city more resilient to climate risks by reducing reliance on fossil fuels and supporting more efficient mobility options."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0059",
+        "actionName": "Modernization of ports and airports with zero-emission technologies",
+        "actionPriority": 12,
+        "explanation": "Modernizing ports and airports with zero-emission technologies can contribute to reducing greenhouse gas emissions, especially in the transportation sector, which is a significant source of emissions in Contagem. However, as Contagem is an inland city without major ports or airports, the direct impact of this action may be limited compared to other priorities. The city’s main climate risks are related to droughts, floods, and heatwaves, which are more directly addressed by other adaptation and mitigation strategies. While this action aligns with broader sustainability goals, its relevance to Contagem’s specific context is relatively low."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0126",
+        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
+        "actionPriority": 13,
+        "explanation": "Implementing green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen, can help reduce transportation emissions, which are a significant portion of Contagem's total emissions. While the city is not a major aviation hub, supporting sustainable aviation fuels aligns with broader climate goals and can set a precedent for cleaner transport options. This action also demonstrates leadership in adopting innovative technologies, potentially attracting investment and fostering local expertise. However, its direct impact on the city's emissions may be limited compared to actions targeting more dominant sources like road transport or stationary energy."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "ipcc_0012",
+        "actionName": "Electric Technologies",
+        "actionPriority": 14,
+        "explanation": "Implementing electric technologies in Contagem can help reduce emissions from stationary energy and transportation, which are significant contributors to the city's total greenhouse gas output. Transitioning to electric alternatives can also improve air quality and public health, especially important given the city's high population density. However, while beneficial, this action may not directly address the most urgent climate risks facing Contagem, such as droughts, floods, and landslides, which have high risk scores for key sectors like water resources, infrastructure, and public health. Therefore, while valuable, this action is not the highest priority compared to more immediate adaptation needs."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0060",
+        "actionName": "Introduction of modular and automated collective transport systems.",
+        "actionPriority": 15,
+        "explanation": "Introducing modular and automated collective transport systems in Contagem is important due to the city's high population density and significant transportation emissions. Modernizing public transport can help reduce congestion, lower greenhouse gas emissions, and improve air quality. Additionally, efficient and reliable transport options can enhance mobility for residents, supporting economic activity and quality of life. This action also aligns with the need to address climate risks, as improved transport infrastructure can help the city adapt to hazards like floods and heatwaves."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0091",
+        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
+        "actionPriority": 16,
+        "explanation": "Implementing prioritized routes for sustainable vehicles in Contagem is important due to the city's high transportation emissions, which are a significant contributor to its overall greenhouse gas output. By encouraging the use of sustainable vehicles, this action can help reduce air pollution and improve public health, especially given the city's vulnerability to heatwaves and diseases. Additionally, promoting sustainable transportation supports the city's efforts to build resilience against climate-related hazards and aligns with broader environmental goals. This initiative can also enhance mobility and quality of life for residents in a densely populated urban area."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 17,
+        "explanation": "Increasing the attractiveness of the municipal bus system is important for Contagem, as transportation emissions are the largest contributor to the city's total greenhouse gas emissions. By making public transit more appealing, the city can encourage a shift away from private vehicles, reducing congestion and air pollution. This action also supports equitable mobility for residents, especially in a city with a very low proportion of low-income households and good access to basic services. Improved public transport can enhance quality of life and help the city meet its climate goals."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 18,
+        "explanation": "Developing projects for renewable energy and waste reuse is important for Contagem, as the city has significant emissions from both stationary energy and waste sectors. By investing in renewable energy, the city can reduce its reliance on fossil fuels and lower its greenhouse gas emissions. Waste reuse projects can help minimize landfill use and further cut emissions, supporting a more sustainable urban environment. These initiatives also align with the city's need to address environmental risks and promote long-term resilience."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 19,
+        "explanation": "Encouraging renewable energy policies at the municipal level is important for Contagem, as it can help reduce stationary energy emissions, which are a significant part of the city's total greenhouse gas output. Transitioning to renewables also increases energy security and resilience, especially in the face of climate hazards like droughts and heatwaves that can impact traditional energy sources. Additionally, promoting renewables supports sustainable development and can create local economic opportunities. This action aligns with the city's need to address both environmental and socio-economic challenges in a proactive manner."
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0063",
+        "actionName": "Gradual replacement of trucks with electric or hybrid rail transport.",
+        "actionPriority": 20,
+        "explanation": "Gradually replacing trucks with electric or hybrid rail transport in Contagem addresses the city's high transportation emissions, which are a significant contributor to its total greenhouse gas output. This action can help reduce air pollution and improve public health, especially important given the city's high population density. Additionally, shifting to rail transport can enhance energy efficiency and support sustainable urban development. While the action is ranked lower in priority, it still offers long-term benefits for climate mitigation and urban quality of life."
+    }
+]

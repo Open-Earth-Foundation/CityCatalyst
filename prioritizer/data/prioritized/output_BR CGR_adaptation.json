@@ -1,0 +1,202 @@
+[
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Establishing a plan for preparation and emergency response measures in the event of extreme weather events is crucial for Campo Grande. The city faces significant risks from hazards such as droughts, heatwaves, floods, and landslides, all of which can severely impact public health, infrastructure, food security, and water resources. With a large population and notable climate vulnerabilities, having a robust emergency response plan will help protect residents, minimize damage, and ensure a coordinated reaction to disasters. Proactive planning enhances resilience and can save lives during extreme weather events."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Developing a Climate Action Plan is crucial for Campo Grande, given its significant greenhouse gas emissions and high vulnerability to climate hazards such as droughts, heatwaves, and floods. A comprehensive plan will provide a strategic framework to address these risks, prioritize mitigation and adaptation measures, and coordinate efforts across sectors. With a large population and growing urban area, proactive planning is essential to safeguard public health, infrastructure, and food and water security. This action lays the foundation for effective climate response and long-term resilience in the city."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 3,
+        "explanation": "Recovery of degraded areas is important for Campo Grande due to its large area and grassland/savanna biome, which are vulnerable to land degradation. Restoring these areas can help reduce land use emissions, which are a significant portion of the city's total emissions. Additionally, healthy ecosystems improve resilience to climate hazards such as droughts and floods, both of which pose high risks to the city. This action also supports biodiversity and can enhance food and water security for the population."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 4,
+        "explanation": "Strengthening programs for control and conservation of protected areas is important for Campo Grande due to its location in a grassland/savanna biome, which is sensitive to environmental changes. The city faces significant risks from droughts, heatwaves, and floods, all of which can threaten local biodiversity and ecosystem services. By enhancing conservation efforts, the city can help maintain ecological balance, protect water resources, and support food security. These actions also contribute to climate resilience, benefiting both the environment and the well-being of residents."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 5,
+        "explanation": "Strengthening the healthcare network to attend to climate victims is crucial for Campo Grande, given the high risks posed by heatwaves, floods, and disease outbreaks. The city faces significant threats to public health from these hazards, as indicated by the high risk scores for heatwaves and floods. Enhancing healthcare capacity will improve the city's ability to respond to climate-related emergencies and protect vulnerable populations. This action is especially important in a city with a large population and growing climate risks."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 6,
+        "explanation": "Encouraging sustainable land use practices is important for Campo Grande due to its significant land use emissions and its location within a grassland/savanna biome. Sustainable land management can help reduce emissions, preserve biodiversity, and improve resilience to climate hazards such as droughts and floods, which are high risks for the city. Additionally, these practices can support food security and water resources, both of which are identified as vulnerable to climate impacts. Implementing sustainable land use is a proactive step toward long-term environmental and community well-being."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 7,
+        "explanation": "Access to health care is a critical priority for Campo Grande, especially given the high risks posed by heatwaves, floods, and disease outbreaks. The city faces significant public health threats from climate-related hazards, which can strain existing health infrastructure and disproportionately impact vulnerable populations. Improving access to health care will enhance the city's resilience, ensuring timely treatment and support during emergencies. This action is essential for safeguarding the well-being of residents and reducing the adverse impacts of climate change on public health."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 8,
+        "explanation": "Farm and fishery improvements are important for Campo Grande, given the city's exposure to droughts and floods, which pose significant risks to food security. Enhancing agricultural and fishery practices can help increase resilience to climate hazards, ensuring a stable food supply for the population. These improvements can also support local livelihoods and contribute to sustainable land use, which is relevant given the city's large area and grassland/savanna biome. Prioritizing this action helps address both immediate and long-term challenges related to food production and environmental sustainability."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 9,
+        "explanation": "Improving food storage and distribution is important for Campo Grande, especially given the high risk of droughts and floods that threaten food security in the region. Enhancing these systems can help ensure a stable food supply during climate-related disruptions, reducing vulnerability for the city's population. With a large population and significant climate risks, strengthening food distribution networks can also support public health and community resilience. This action addresses a critical need to adapt to climate hazards and safeguard essential resources."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 10,
+        "explanation": "The maintenance and revitalization of riparian forests is important for Campo Grande due to its role in protecting water resources and enhancing biodiversity. Given the city's high risk from droughts and floods, healthy riparian zones help regulate water flow, reduce erosion, and improve water quality. These forests also provide habitat for local wildlife and contribute to climate resilience. Investing in this action supports long-term environmental stability and helps mitigate the impacts of climate hazards."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 11,
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) is important for Campo Grande, as it can help address social and environmental vulnerabilities in these neighborhoods. Given the city's very low levels of inadequate water access and low inadequate sanitation, targeted interventions in ZEIS can further improve living conditions and resilience. Restoration efforts can also enhance local biodiversity and reduce risks from hazards such as floods and heatwaves, which are significant threats to public health and infrastructure. This action supports inclusive urban development and helps ensure that vulnerable populations are better protected from climate-related impacts."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 12,
+        "explanation": "Social safety nets are important for Campo Grande, especially given the city's exposure to climate hazards such as droughts, heatwaves, and floods, which can disproportionately impact vulnerable populations. While the city has a very low proportion of low-income residents, climate-related risks to public health, food security, and infrastructure remain high. Strengthening social safety nets can help ensure that all residents, including those who may become vulnerable due to climate impacts, have access to essential support during crises. This action can enhance community resilience and reduce the long-term social and economic costs of climate hazards."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 13,
+        "explanation": "Establishing the Municipal Climate Change Forum is important for Campo Grande as it provides a dedicated platform for stakeholders to coordinate and develop effective climate strategies. The city faces significant risks from droughts, heatwaves, and floods, which impact water resources, food security, public health, and infrastructure. A forum can facilitate collaboration between government, civil society, and the private sector, ensuring that climate actions are well-informed and inclusive. This initiative will help align local policies with the city's specific vulnerabilities and promote community engagement in climate resilience efforts."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 14,
+        "explanation": "Improving the availability of health infrastructure is crucial for Campo Grande, given the high risks posed by heatwaves, floods, and disease outbreaks. The city faces significant threats to public health from climate-related hazards, making robust health systems essential for effective response and resilience. Enhanced health infrastructure will help protect vulnerable populations and ensure continuity of care during extreme events. This action supports the city's ability to adapt to climate impacts and maintain public well-being."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 15,
+        "explanation": "Campo Grande faces significant risks from extreme weather events such as droughts, heatwaves, floods, and landslides, all of which threaten public health, infrastructure, and food security. Establishing a financial support program would help the city respond more effectively to these hazards, providing resources for recovery and resilience-building. This action is particularly important given the high normalized risk scores for several hazards, indicating a strong need for preparedness and support mechanisms. By proactively addressing the financial impacts of extreme weather, the city can better protect its residents and critical services."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 16,
+        "explanation": "Implementing urban gardens in Campo Grande can help improve local food security, which is particularly important given the city's high risk from droughts and floods. Urban gardens can also enhance community resilience by providing fresh produce and green spaces, contributing to public health and well-being. Additionally, these gardens can help mitigate urban heat and support biodiversity in the grassland/savanna biome. Given the city's large area and population, urban gardens offer a scalable way to address environmental and social challenges."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 17,
+        "explanation": "Relocation and environmental restoration in vulnerable areas is important for Campo Grande due to the city's exposure to hazards such as floods, landslides, and heatwaves, all of which pose significant risks to infrastructure and public health. The city's large area and moderate population density mean that some communities may be situated in high-risk zones, making relocation a necessary step to protect lives and property. Environmental restoration can also help mitigate the impacts of these hazards by improving ecosystem resilience and reducing the likelihood of future disasters. While this action is not ranked as the highest priority, it remains a crucial component of a comprehensive climate adaptation strategy for the city."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 18,
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations is important for Campo Grande due to its significant exposure to droughts and floods, both of which threaten water resources and food security. Real-time monitoring can help the city better manage its water resources, anticipate shortages, and respond more effectively to extreme weather events. This action supports resilience by providing critical data for decision-making and early warning systems. Given the city's vulnerability to climate hazards, such a system is a valuable investment in safeguarding public health and infrastructure."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 19,
+        "explanation": "The recovery and preservation of green areas is important for Campo Grande due to its grassland/savanna biome and the significant risks posed by droughts, heatwaves, and floods. Green areas help mitigate urban heat, support biodiversity, and improve resilience against extreme weather events, which are highlighted as high risks for the city. Additionally, preserving green spaces can enhance public health and quality of life for the city's large population. This action supports long-term environmental sustainability and helps buffer the impacts of climate change."
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 20,
+        "explanation": "Promoting behavior change in diets and reducing food waste is important for Campo Grande, as food security is highly vulnerable to both droughts and floods. By encouraging more sustainable consumption patterns and minimizing waste, the city can help reduce pressure on local food systems and lower emissions from waste. These efforts also support resilience against climate-related disruptions to food supply. While the city has very low levels of low-income residents and relatively good access to public services, addressing food waste remains a relevant strategy for environmental and climate adaptation goals."
+    }
+]

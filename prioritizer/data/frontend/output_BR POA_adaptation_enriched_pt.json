@@ -1,0 +1,1295 @@
+[
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0176",
+    "actionName": "Development of Climate Action Plan",
+    "actionPriority": 1,
+    "explanation": "O desenvolvimento de um Plano de Ação Climática é uma prioridade máxima para Porto Alegre devido aos seus significativos desafios ambientais. A cidade enfrenta altos riscos de desastres naturais, como deslizamentos de terra, inundações e ondas de calor, que ameaçam a saúde pública e a infraestrutura. Ao criar um plano abrangente, a cidade pode abordar estrategicamente esses riscos e reduzir suas emissões totais, que atualmente são substanciais. Além disso, um Plano de Ação Climática ajudará a coordenar esforços entre os setores para melhorar a resiliência e a sustentabilidade diante das mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0176",
+      "ActionName": "Desenvolvimento do Plano de Ação Climática",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "wildfires",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Um plano abrangente que descreve as estratégias e ações de uma cidade para mitigar as emissões de gases de efeito estufa e se adaptar aos impactos das mudanças climáticas, que normalmente inclui uma avaliação dos riscos e vulnerabilidades climáticas da cidade, definição de metas de redução de emissões e implementação de ações em vários setores, como energia, transporte, gestão de resíduos e planejamento urbano.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e compromisso do governo",
+        "Envolvimento e colaboração das partes interessadas",
+        "Financiamento e recursos para implementação"
+      ],
+      "KeyPerformanceIndicators": [
+        "Metas de redução de emissões de gases de efeito estufa.",
+        "Número de ações de adaptação climática implementadas.",
+        "Investimento em projetos de mitigação e adaptação climática."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "medium",
+        "sea-level-rise": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "landslides": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0162",
+    "actionName": "Strengthen programs for control and conservation of protected areas",
+    "actionPriority": 2,
+    "explanation": "O fortalecimento de programas para o controle e a conservação de áreas protegidas em Porto Alegre é crucial devido à vulnerabilidade da cidade a riscos ambientais, como secas e ondas de calor. Essas áreas protegidas podem servir como barreiras vitais contra os impactos do clima, ajudando a preservar a biodiversidade e a manter o equilíbrio ecológico. Além disso, o aprimoramento dos esforços de conservação pode mitigar os efeitos da urbanização e das atividades industriais, que contribuem significativamente para as emissões da cidade. Ao priorizar essa ação, Porto Alegre pode aumentar sua resiliência às mudanças climáticas e proteger seus recursos naturais para as futuras gerações.",
+    "action": {
+      "ActionID": "icare_0162",
+      "ActionName": "Fortalecer programas de controle e conservação de áreas protegidas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves",
+        "diseases"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta ação foca na implementação de uma série de estratégias integradas para melhorar a conservação ambiental e maximizar seus benefícios, como a expansão de áreas protegidas, o desenvolvimento de planos de manejo para unidades de conservação e o treinamento de guias de ecoturismo para fortalecer o turismo sustentável.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expansão de áreas protegidas para melhorar a conservação ambiental.",
+        "Desenvolvimento de planos de manejo para unidades de conservação.",
+        "Treinamento de guias de ecoturismo para promover o turismo sustentável."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentual de aumento na área de regiões protegidas (%).",
+        "Redução nas taxas de desmatamento em áreas protegidas anualmente (%).",
+        "Número de programas de conservação fortalecidos anualmente."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high",
+        "heatwaves": "medium",
+        "diseases": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0169",
+    "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+    "actionPriority": 3,
+    "explanation": "Estabelecer um plano de preparação e medidas de resposta a emergências em caso de eventos climáticos extremos é crucial para Porto Alegre devido ao seu alto risco de deslizamentos de terra e inundações. A cidade enfrenta ameaças significativas à infraestrutura e à saúde pública decorrentes desses perigos, conforme indicado pelos altos índices de risco normalizados. Ao implementar essa ação, a cidade pode aumentar sua resiliência e reduzir o impacto potencial desses eventos climáticos extremos sobre sua população e infraestrutura. Além disso, contar com um plano robusto de resposta a emergências pode ajudar a mitigar as perturbações socioeconômicas causadas por tais eventos, garantindo uma recuperação mais rápida e protegendo o bem-estar de seus habitantes.",
+    "action": {
+      "ActionID": "icare_0169",
+      "ActionName": "Estabelecer um Plano de Preparação e Medidas de Resposta a Emergências em caso de eventos climáticos extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta ação foca em preparar o município para responder a eventos extremos, visando fornecer uma resposta rápida que minimize os impactos na população.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de um plano abrangente de resposta a emergências que inclua a coordenação entre as autoridades locais, serviços de emergência e organizações comunitárias",
+        "Investimento em sistemas de alerta precoce e infraestrutura para garantir respostas oportunas e eficazes a eventos extremos",
+        "Treinamento e capacitação para socorristas locais e comunidades para melhorar a preparação e resiliência a eventos extremos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de parcerias de resposta a emergências estabelecidas.",
+        "Tempo médio de resposta durante eventos climáticos extremos (horas).",
+        "Percentual de redução de vítimas e danos durante eventos climáticos extremos anualmente (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "wildfires": "high",
+        "sea-level-rise": "low",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0149",
+    "actionName": "Encourage sustainable land use practices",
+    "actionPriority": 4,
+    "explanation": "Incentivar práticas sustentáveis de uso do solo em Porto Alegre é fundamental devido às significativas emissões relacionadas ao uso da terra na cidade, que contribuem para sua pegada de carbono total. Ao adotar práticas sustentáveis, a cidade pode mitigar essas emissões e aumentar sua resiliência diante de riscos climáticos, como deslizamentos de terra e inundações, que representam grandes ameaças à infraestrutura e à saúde pública. Além disso, o uso sustentável do solo pode ajudar a preservar o bioma de campos/savana, apoiando a biodiversidade e mantendo o equilíbrio ecológico. Essa ação está alinhada com a necessidade da cidade de enfrentar desafios ambientais enquanto promove a sustentabilidade a longo prazo.",
+    "action": {
+      "ActionID": "icare_0149",
+      "ActionName": "Incentivar práticas sustentáveis de uso da terra",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Promover métodos que garantam a conservação e a saúde do solo, preservando a biodiversidade, reduzindo a erosão e minimizando os impactos ambientais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecer acesso a conhecimento técnico e treinamento em práticas de manejo sustentável do solo.",
+        "Oferecer incentivos financeiros e formar parcerias com instituições de pesquisa e agricultores locais.",
+        "Desenvolver sistemas de monitoramento para a saúde do solo e biodiversidade, e implementar políticas para controle da erosão."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem da área de terra gerida sob práticas de uso sustentável da terra (%)",
+        "Redução nas taxas de desmatamento ou degradação da terra (%)",
+        "Aumento nos indicadores de biodiversidade em terras geridas (por exemplo, contagem de espécies, qualidade do habitat)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "medium",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0152",
+    "actionName": "Recovery of degraded areas",
+    "actionPriority": 5,
+    "explanation": "A ação ‘Recuperação de áreas degradadas’ é crucial para Porto Alegre devido aos seus significativos desafios ambientais. A cidade enfrenta altas emissões provenientes de diversos setores, o que contribui para a degradação ambiental. Ao focar na recuperação de áreas degradadas, o município pode aumentar sua resiliência frente aos impactos climáticos, como enchentes e deslizamentos, que representam alto risco para a infraestrutura e a saúde pública. Além disso, a restauração dessas áreas pode melhorar a biodiversidade e contribuir para uma melhor qualidade do ar, alinhando-se aos objetivos de sustentabilidade da cidade.",
+    "action": {
+      "ActionID": "icare_0152",
+      "ActionName": "Recuperação de áreas degradadas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar ecossistemas danificados por atividades humanas através do replantio de vegetação nativa, restauração do solo, eliminação de espécies invasoras e implementação de técnicas de manejo sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Desenvolver um plano de restauração claro e garantir financiamento para a gestão a longo prazo.",
+        "Assegurar o acesso a espécies de plantas nativas e fornecer treinamento em práticas sustentáveis.",
+        "Remover espécies invasoras e colaborar com as comunidades locais para uma restauração bem-sucedida do ecossistema."
+      ],
+      "KeyPerformanceIndicators": [
+        "Hectares de terras degradadas restauradas anualmente",
+        "Aumento na cobertura vegetal (%) em áreas restauradas",
+        "Número de comunidades locais envolvidas em projetos de restauração"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0181",
+    "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+    "actionPriority": 6,
+    "explanation": "A ação ‘Realocação e Restauração Ambiental em Áreas Vulneráveis’ é crucial para Porto Alegre devido ao alto risco de deslizamentos e inundações, que representam ameaças significativas à infraestrutura e à saúde pública. Considerando a alta densidade populacional da cidade e a presença de áreas vulneráveis, a realocação de moradores e a restauração do meio ambiente podem mitigar esses riscos de forma eficaz. Além disso, enfrentar esses perigos está alinhado com a necessidade da cidade de aumentar a resiliência diante dos impactos relacionados ao clima, garantindo a segurança e o bem-estar de seus habitantes. Essa ação também contribui para a sustentabilidade a longo prazo, ao melhorar o uso do solo e reduzir os potenciais danos causados por desastres naturais.",
+    "action": {
+      "ActionID": "icare_0181",
+      "ActionName": "Relocação e Restauração Ambiental em Áreas Vulneráveis",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Um projeto abrangente que aborda a vulnerabilidade socioambiental de um assentamento informal. Inclui a realocação de residentes de áreas propensas a inundações, a restauração do meio ambiente e o fornecimento de infraestrutura e serviços sociais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamento adequado",
+        "Coordenação interagências",
+        "Segurança da posse da terra"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de famílias realocadas.",
+        "Progresso da restauração ambiental.",
+        "Redução do risco de inundações."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0157",
+    "actionName": "Maintenance and Revitalization of Riparian Forests",
+    "actionPriority": 7,
+    "explanation": "A manutenção e revitalização das florestas ripárias em Porto Alegre é crucial devido à vulnerabilidade da cidade a enchentes e deslizamentos de terra, que representam riscos significativos para a infraestrutura e a saúde pública. As florestas ripárias desempenham um papel vital na estabilização do solo e na redução do impacto desses perigos, ao aumentar a absorção de água e prevenir a erosão. Além disso, essas florestas contribuem para a conservação da biodiversidade e melhoram a qualidade da água, o que é essencial para a resiliência da cidade diante dos impactos das mudanças climáticas. Diante do alto risco de enchentes e deslizamentos, essa ação é prioritária para proteger a infraestrutura da cidade e o bem-estar de seus habitantes.",
+    "action": {
+      "ActionID": "icare_0157",
+      "ActionName": "Manutenção e Revitalização de Florestas Ripárias",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mapeamento e avaliação de florestas ripárias degradadas, desenvolvimento de planos de revitalização com o plantio de espécies nativas, controle de espécies invasoras, medidas de contenção de erosão e avaliações periódicas dos impactos nas condições ambientais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Garantir a disponibilidade de dados geoespaciais e mapeamento prévio de áreas degradadas.",
+        "Formar parcerias com viveiros locais e fornecer equipamentos e mão de obra qualificada para o controle de espécies invasoras.",
+        "Garantir recursos financeiros e estabelecer um sistema de monitoramento para avaliar os impactos ambientais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total de florestas ripárias restauradas (ha).",
+        "Número de projetos implementados.",
+        "Redução da erosão e assoreamento de corpos d'água (toneladas/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0156",
+    "actionName": "Implementation of urban gardens",
+    "actionPriority": 8,
+    "explanation": "A implementação de hortas urbanas em Porto Alegre é uma ação significativa devido ao seu potencial para aumentar a segurança alimentar e promover o desenvolvimento urbano sustentável. Dada a vulnerabilidade da cidade a secas, as hortas urbanas podem ajudar a mitigar interrupções no abastecimento de alimentos, fornecendo fontes locais e resilientes de alimentos. Além disso, essas hortas podem melhorar a biodiversidade e os espaços verdes na cidade, contribuindo para uma melhor qualidade do ar e resfriamento urbano, o que é crucial diante das ondas de calor. Ademais, as hortas urbanas podem promover o engajamento comunitário e oferecer oportunidades educativas, fortalecendo a coesão social e a conscientização ambiental entre os moradores.",
+    "action": {
+      "ActionID": "icare_0156",
+      "ActionName": "Implementação de hortas urbanas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Identificar e avaliar a viabilidade de áreas adequadas para a instalação de hortas urbanas e garantir que os locais escolhidos atendam às expectativas da comunidade.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Garantir a disponibilidade de mapas detalhados de uso do solo e dados de planejamento urbano.",
+        "Envolver-se com as comunidades locais para entender suas necessidades e expectativas.",
+        "Avaliar a qualidade do solo, a disponibilidade de água e formar parcerias para apoiar o estabelecimento e a manutenção de jardins."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de hortas urbanas criadas.",
+        "Quantidade de alimentos produzidos localmente (kg/ano).",
+        "Número de beneficiários diretos."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "landslides": "low",
+        "floods": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0180",
+    "actionName": "Implement permeable pavements and increase green areas in roadways",
+    "actionPriority": 9,
+    "explanation": "A implementação de pavimentos permeáveis e o aumento de áreas verdes nas vias públicas são cruciais para Porto Alegre devido ao seu alto risco de enchentes e deslizamentos de terra. A cidade enfrenta riscos significativos para a infraestrutura e a saúde pública decorrentes desses perigos, tornando essencial aumentar a absorção de água e reduzir o escoamento superficial. Ao ampliar as áreas verdes, a cidade também pode melhorar a biodiversidade urbana e mitigar o efeito de ilha de calor, o que é importante diante dos riscos associados às ondas de calor. Essa ação não apenas enfrenta desafios ambientais imediatos, mas também contribui para a resiliência e sustentabilidade urbana a longo prazo.",
+    "action": {
+      "ActionID": "icare_0180",
+      "ActionName": "Implementar pavimentos permeáveis e aumentar as áreas verdes nas vias públicas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Aumentar as áreas permeáveis e semi-permeáveis em edifícios e espaços públicos sob a administração da Cidade, com a adoção de soluções baseadas na natureza (NbS). Em áreas com limitações de espaço, a ação inclui análises de viabilidade para a implementação de pavimentos permeáveis e o aumento de áreas verdes em vias públicas. Entre as soluções de construção tradicionais, há características como meios-fios e sarjetas com drenos pluviais, bem como soluções em maior escala, como lagoas de retenção. As soluções baseadas na natureza incluem o plantio de árvores urbanas, telhados verdes, cisternas de água da chuva, bio-valas, entre outros.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Expansão de áreas permeáveis e semi-permeáveis em edifícios administrados pela cidade e espaços públicos.",
+        "Adoção de soluções baseadas na natureza (NbS), como plantio de árvores urbanas, telhados verdes, cisternas de água da chuva e bio-valas.",
+        "Análises de viabilidade para pavimentos permeáveis e aumento de áreas verdes em vias, juntamente com soluções tradicionais de gestão de águas pluviais, como meios-fios, sarjetas e lagoas de retenção."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução no escoamento de água superficial durante eventos de chuva (%).",
+        "Diminuição nas ocorrências de inundações em áreas modificadas.",
+        "Percentagem de espaços públicos em conformidade com os novos regulamentos de superfícies permeáveis."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "medium",
+        "heatwaves": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0164",
+    "actionName": "Hydrological Monitoring System with Telemetry Stations",
+    "actionPriority": 10,
+    "explanation": "A implementação de um Sistema de Monitoramento Hidrológico com Estações de Telemetria em Porto Alegre é crucial devido à vulnerabilidade da cidade a enchentes e deslizamentos de terra. A cidade enfrenta riscos significativos decorrentes desses perigos, que podem impactar gravemente a infraestrutura e a saúde pública. Ao estabelecer um sistema de monitoramento robusto, a cidade poderá prever e gerenciar melhor desastres relacionados à água, reduzindo assim os danos potenciais e aumentando a resiliência da comunidade. Essa abordagem proativa é essencial para proteger o bem-estar dos moradores de Porto Alegre e manter a infraestrutura da cidade.",
+    "action": {
+      "ActionID": "icare_0164",
+      "ActionName": "Sistema de Monitoramento Hidrológico com Estações de Telemetria",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementação de um sistema de monitoramento hidrológico com estações de telemetria para monitorar a precipitação, os níveis de água e as variáveis meteorológicas em tempo real.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Equipamento e infraestrutura",
+        "Sistema robusto de gestão de dados",
+        "Coordenação institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Pontualidade dos dados",
+        "Custo-benefício",
+        "Eficácia da mitigação"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0088",
+    "actionName": "Building codes",
+    "actionPriority": 11,
+    "explanation": "A implementação de códigos de construção em Porto Alegre é crucial devido ao alto risco de deslizamentos de terra e inundações, que representam ameaças significativas à infraestrutura e à saúde pública. A vulnerabilidade da cidade a esses perigos exige padrões de construção robustos para garantir a segurança e a resiliência das edificações. Ao aplicar códigos de construção rigorosos, Porto Alegre pode mitigar o impacto desses desastres naturais, protegendo sua população e reduzindo possíveis perdas econômicas. Além disso, a melhoria dos padrões de construção pode aumentar a eficiência energética, contribuindo para a redução das emissões de energia estacionária.",
+    "action": {
+      "ActionID": "ipcc_0088",
+      "ActionName": "Códigos de construção",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides"
+      ],
+      "Sector": [
+        "road_infrastructure",
+        "geo-hydrological_disasters"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "O desenvolvimento e implementação de códigos de construção e regulamentos de design arquitetônico voltados para a integração de parâmetros de adaptação climática. Esses códigos são focados na redução de riscos de perigos induzidos pelo clima, como inundações e deslizamentos de terra. Eles também apoiam o desenvolvimento urbano resiliente ao clima, orientando o uso do solo, práticas de construção e padrões de infraestrutura. A iniciativa promove o planejamento urbano estratégico de longo prazo para coordenar investimentos públicos e privados em adaptação, incluindo a criação de zonas seguras e a transformação de assentamentos precários. Ela garante que novas infraestruturas sejam resilientes aos riscos climáticos e que os espaços urbanos sejam seguros e sustentáveis para as populações atuais e futuras.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": "Promove o planejamento urbano inclusivo ao abordar riscos em assentamentos informais e precários e integrar eco-parques e eco-jardins para populações vulneráveis.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Integração com avaliações locais de risco climático",
+        "Colaboração estratégica entre planejadores urbanos e autoridades municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução de incidentes de inundações urbanas",
+        "Aumento da disponibilidade de habitação segura em áreas de risco",
+        "Taxa de implementação de eco-parques e eco-jardins em áreas vulneráveis"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0151",
+    "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+    "actionPriority": 12,
+    "explanation": "Desenvolver diagnósticos e restaurar áreas das Zonas Especiais de Interesse Social (ZEIS) em Porto Alegre é fundamental devido aos desafios socioeconômicos da cidade. Com uma população de renda muito baixa, a melhoria dessas áreas pode aumentar significativamente as condições de vida e reduzir a vulnerabilidade a riscos ambientais. Além disso, a restauração das ZEIS pode ajudar a mitigar os impactos de riscos relacionados ao clima, como enchentes e deslizamentos de terra, que representam uma grande ameaça à saúde pública e à infraestrutura. Essa ação está alinhada com a necessidade da cidade de enfrentar questões sociais e ambientais, tornando-se uma prioridade estratégica.",
+    "action": {
+      "ActionID": "icare_0151",
+      "ActionName": "Desenvolver diagnósticos e restaurar áreas de Zonas Especiais de Interesse Social (ZEIS)",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "sea-level-rise",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Prioridade para áreas ZEIS nas ações de melhoria habitacional e na aplicação de recursos do Fundo de Urbanização, com a implementação de infraestrutura urbana que considere a adaptação climática nesses espaços. Uso de Soluções Baseadas na Natureza (NbS) na adaptação do saneamento ambiental e infraestruturas verdes e azuis que potencializem o lazer, a cultura, a agricultura urbana e atividades para fortalecer associações comunitárias.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento do Fundo de Urbanização e de outros mecanismos financeiros para apoiar melhorias habitacionais e infraestrutura urbana em áreas ZEIS",
+        "Colaboração entre planejadores urbanos, especialistas ambientais e comunidades locais para projetar e implementar soluções baseadas na natureza (NbS) para infraestrutura urbana",
+        "Políticas e estruturas regulatórias que integrem medidas de adaptação climática no planejamento urbano, garantindo que os investimentos priorizem a sustentabilidade ambiental e a comunidade"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de áreas ZEIS diagnosticadas e restauradas.",
+        "Percentual de residentes beneficiados por áreas restauradas (%).",
+        "Investimentos públicos alocados para áreas ZEIS (valor em moeda)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "sea-level-rise": "medium",
+        "floods": "medium",
+        "landslides": "low",
+        "diseases": "medium",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0175",
+    "actionName": "Recovery and preservation of green areas",
+    "actionPriority": 13,
+    "explanation": "A recuperação e preservação das áreas verdes em Porto Alegre é crucial devido ao bioma da cidade, que é predominantemente composto por campos e savanas. Essas áreas verdes desempenham um papel significativo na manutenção da biodiversidade e na oferta de barreiras naturais contra riscos climáticos, como ondas de calor e enchentes. Além disso, a ampliação dos espaços verdes pode melhorar a saúde pública ao proporcionar áreas de lazer e reduzir os efeitos das ilhas de calor urbanas. Dada a alta densidade populacional da cidade, preservar as áreas verdes é essencial para garantir um ambiente sustentável e habitável para seus moradores.",
+    "action": {
+      "ActionID": "icare_0175",
+      "ActionName": "Recuperação e preservação de áreas verdes",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Reabilitação e proteção de espaços verdes existentes, como parques, florestas e zonas húmidas, e expansão de áreas verdes através do plantio de árvores e vegetação em áreas urbanas e periurbanas. Estas áreas oferecem soluções naturais para a gestão dos recursos hídricos, redução do estresse térmico, melhoria da qualidade do ar e aumento da biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de terrenos adequados para espaços verdes",
+        "Acesso a recursos hídricos para irrigação"
+      ],
+      "KeyPerformanceIndicators": [
+        "Área de espaços verdes criados ou restaurados.",
+        "Índices de biodiversidade em áreas verdes.",
+        "Envolvimento da comunidade em atividades de espaços verdes."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0097",
+    "actionName": "Food storage/distribution improvements",
+    "actionPriority": 14,
+    "explanation": "Melhorar o armazenamento e a distribuição de alimentos em Porto Alegre é fundamental devido à vulnerabilidade da cidade a riscos climáticos, como enchentes e secas, que podem interromper as cadeias de abastecimento de alimentos. O fortalecimento desses sistemas pode ajudar a garantir a segurança alimentar, especialmente considerando a grande população da cidade. Além disso, uma melhor distribuição de alimentos pode mitigar o impacto de possíveis escassezes e apoiar a estabilidade socioeconômica da região. Essa ação está alinhada com a necessidade de aumentar a resiliência diante de riscos ambientais que ameaçam a saúde pública e a infraestrutura.",
+    "action": {
+      "ActionID": "ipcc_0097",
+      "ActionName": "Melhorias no armazenamento/distribuição de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms",
+        "heatwaves"
+      ],
+      "Sector": [
+        "food_security",
+        "road_infrastructure"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Aprimorar os sistemas de armazenamento e distribuição de alimentos melhorando a infraestrutura de transporte, otimizando redes de comércio e encurtando cadeias de suprimento para garantir a disponibilidade local de alimentos e resiliência aos impactos climáticos. Esta ação também inclui aumentar a capacidade das instalações locais de armazenamento de alimentos para reduzir perdas pós-colheita, abordar ineficiências na logística e reforçar a infraestrutura para produtos perecíveis. O objetivo é melhorar a segurança alimentar e reduzir a vulnerabilidade a eventos extremos, interrupções e impactos em cascata, especialmente durante pandemias e outras crises.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Apoia o acesso equitativo a alimentos para populações marginalizadas e vulneráveis, priorizando a produção local de alimentos e melhorando os sistemas de distribuição que alcançam áreas desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento em infraestrutura",
+        "Incentivos políticos para a produção local de alimentos",
+        "Colaboração com os setores de logística e comércio",
+        "Tecnologia para otimização da cadeia de suprimentos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução das perdas pós-colheita",
+        "Aumento da disponibilidade de alimentos locais",
+        "Melhoria da eficiência do transporte para distribuição de alimentos",
+        "Cadeias de abastecimento encurtadas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0096",
+    "actionName": "Farm/fishery improvements",
+    "actionPriority": 15,
+    "explanation": "Melhorias na agricultura e na pesca são cruciais para Porto Alegre devido à vulnerabilidade da cidade a secas, que representam um risco significativo para os recursos hídricos e a segurança alimentar. O aprimoramento das práticas agrícolas pode ajudar a mitigar esses riscos, aumentando a resiliência e garantindo um fornecimento estável de alimentos. Além disso, práticas sustentáveis de pesca podem contribuir para a conservação da biodiversidade, o que é essencial considerando o bioma de campos/savana da cidade. Essas melhorias também podem apoiar a economia local, aumentando a produtividade e proporcionando meios de subsistência mais seguros para aqueles que dependem da agricultura e da pesca.",
+    "action": {
+      "ActionID": "ipcc_0096",
+      "ActionName": "Melhorias na fazenda/pesqueira",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementar uma variedade de estratégias para adaptar fazendas e pescarias aos impactos climáticos. Isso inclui mudar o equipamento de pesca ou a potência dos barcos, adotar novas variedades de culturas ou ajustar os cronogramas de plantio, melhorar os esquemas de irrigação, integrar sistemas de cultivo e pecuária, realocar o gado com manejo de pastagens melhorado e adotar sistemas agroecológicos e agroflorestais. Inovações tecnológicas como a agricultura inteligente e medidas financeiras como subsídios apoiam essas adaptações.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garante o acesso a recursos para agricultores e pescadores marginalizados, promove opções diversificadas de subsistência e fortalece a resiliência em comunidades desfavorecidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Apoio político para agricultura e pesca resilientes ao clima",
+        "Acesso a financiamento e subsídios",
+        "Treinamento para adoção de novas práticas",
+        "Infraestrutura de mercado melhorada"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento na produtividade agrícola e pesqueira",
+        "Taxa de adoção de sistemas integrados",
+        "Redução nas perdas de rendimento relacionadas ao clima"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "wildfires": "low",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0094",
+    "actionName": "Access to health care",
+    "actionPriority": 16,
+    "explanation": "Melhorar o acesso à saúde em Porto Alegre é fundamental devido à vulnerabilidade da cidade a riscos de saúde pública, como ondas de calor e deslizamentos de terra. Esses perigos representam ameaças significativas ao bem-estar da população, tornando necessários sistemas de saúde robustos para lidar com possíveis crises sanitárias. Além disso, o grande tamanho da população da cidade reforça ainda mais a necessidade de serviços de saúde acessíveis, garantindo que todos os residentes possam receber atendimento médico em tempo hábil. Ampliar o acesso à saúde também pode mitigar os impactos de doenças, que constituem um risco relevante na região.",
+    "action": {
+      "ActionID": "ipcc_0094",
+      "ActionName": "Acesso aos cuidados de saúde",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "droughts"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Melhorar o acesso aos serviços de saúde, incluindo serviços de saúde e nutrição, água limpa, saneamento e recursos de saúde mental culturalmente apropriados. A expansão das capacidades de telemedicina permite uma entrega eficiente de serviços de saúde, especialmente para populações remotas e carentes. Fortalecer os sistemas básicos de saúde pública e a preparação para desastres pode reduzir rapidamente a vulnerabilidade aos riscos de saúde relacionados ao clima.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promove o acesso equitativo aos cuidados de saúde para grupos marginalizados e vulneráveis, incluindo populações sem-teto, comunidades remotas e aqueles afetados por desigualdades habitacionais.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento em tecnologias de telemedicina",
+        "Governança fortalecida dos sistemas de saúde pública",
+        "Capacitação para trabalhadores da saúde",
+        "Melhorias na infraestrutura das instalações de saúde"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução na mortalidade relacionada ao clima",
+        "Aumento no acesso à telemedicina",
+        "Número de programas de saúde adaptados culturalmente implementados",
+        "Melhoria nas métricas de acesso à água e saneamento"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "droughts": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "icare_0145",
+    "actionName": "Strengthen the healthcare network to attend to climate victims",
+    "actionPriority": 17,
+    "explanation": "O fortalecimento da rede de saúde em Porto Alegre é crucial devido ao alto risco de perigos relacionados ao clima, como ondas de calor, deslizamentos de terra e inundações, que representam ameaças significativas à saúde pública. A cidade apresenta uma pontuação de risco normalizada elevada para impactos na saúde pública decorrentes desses perigos, o que indica uma necessidade premente de aprimorar a infraestrutura de saúde para lidar com possíveis aumentos em doenças e lesões relacionadas ao clima. Ao fortalecer a rede de saúde, a cidade pode se preparar melhor para enfrentar esses desafios e responder a eles, garantindo o bem-estar de seus habitantes. Além disso, um sistema de saúde robusto pode mitigar os impactos de longo prazo das mudanças climáticas sobre a população, tornando-se um componente vital da estratégia de adaptação climática da cidade.",
+    "action": {
+      "ActionID": "icare_0145",
+      "ActionName": "Fortalecer a rede de saúde para atender às vítimas do clima",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "storms",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Melhorar a infraestrutura das unidades de saúde para atender pessoas que necessitam de cuidados médicos devido a impactos associados a riscos climáticos (vítimas do clima), como aquelas afetadas por ondas de calor ou inundações, especialmente em áreas mais vulneráveis. Desenvolver planos de ação para preparar a rede de saúde para situações extremas relacionadas ao clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Investimento na renovação e expansão das instalações de saúde, garantindo que estejam equipadas para lidar com os impactos na saúde relacionados ao clima, especialmente em áreas vulneráveis.",
+        "Desenvolvimento de planos de ação e programas de treinamento para profissionais de saúde responderem a eventos climáticos extremos, como ondas de calor e inundações.",
+        "Colaboração com autoridades locais, equipes de resposta a emergências e especialistas em clima para criar uma estrutura abrangente para preparar a rede de saúde para os riscos climáticos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de instalações de saúde atualizadas para emergências relacionadas ao clima.",
+        "Aumento no percentual de profissionais de saúde treinados para resposta a emergências climáticas (%).",
+        "Número de lesões relacionadas ao clima tratadas com sucesso.",
+        "."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "medium",
+        "floods": "high",
+        "storms": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0092",
+    "actionName": "Social safety nets",
+    "actionPriority": 18,
+    "explanation": "A implementação de redes de proteção social em Porto Alegre é crucial devido à vulnerabilidade da cidade a diversos perigos climáticos, como deslizamentos de terra e inundações, que representam riscos significativos para a saúde pública e a infraestrutura. Essas redes de proteção podem oferecer apoio essencial às populações de baixa renda, que são particularmente vulneráveis durante esses eventos. Além disso, considerando o status socioeconômico muito baixo da cidade, o fortalecimento das redes de proteção social pode ajudar a mitigar os efeitos adversos das mudanças climáticas nas comunidades mais afetadas, garantindo uma sociedade mais resiliente e equitativa.",
+    "action": {
+      "ActionID": "ipcc_0092",
+      "ActionName": "Redes de proteção social",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "As redes de segurança social englobam mecanismos de proteção social adaptativa para reduzir a insegurança alimentar e a desnutrição, especialmente para populações vulneráveis. Estes incluem transferências de dinheiro, programas de alimentação escolar, iniciativas de trabalho público, compensação de desemprego, reformas agrárias, esquemas de crédito e seguros. Abordagens integradas combinam avaliações de risco climático com redução de risco de desastres, educação e equidade social para aumentar a resiliência aos estresses climáticos.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Aumenta o status social e os direitos de grupos marginalizados, protege populações vulneráveis, reduz desigualdades e promove a educação e a equidade de gênero.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Integração do clima e risco de desastres na proteção social",
+        "programas educacionais",
+        "coordenação com iniciativas de meios de subsistência sustentáveis e inclusão financeira"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas taxas de desnutrição",
+        "Aumento no acesso à educação para grupos vulneráveis",
+        "Participação em programas de proteção social"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0086",
+    "actionName": "Ecosystem-based adaptation",
+    "actionPriority": 19,
+    "explanation": "A adaptação baseada em ecossistemas é uma ação crucial para Porto Alegre devido ao seu potencial de mitigar os impactos das mudanças climáticas sobre a biodiversidade e a saúde pública. A cidade enfrenta riscos significativos de ameaças como secas e ondas de calor, que podem afetar gravemente os ecossistemas locais. Ao priorizar a adaptação baseada em ecossistemas, Porto Alegre pode aumentar sua resiliência diante dessas ameaças, garantindo a proteção de seus recursos naturais e o bem-estar de seus habitantes. Além disso, essa abordagem pode contribuir para a redução de emissões e para a melhoria da qualidade ambiental geral da cidade.",
+    "action": {
+      "ActionID": "ipcc_0086",
+      "ActionName": "Adaptação baseada em ecossistemas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "heatwaves",
+        "floods"
+      ],
+      "Sector": [
+        "biodiversity",
+        "geo-hydrological_disasters",
+        "water_resources",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar e gerir de forma sustentável os ecossistemas marinhos, costeiros, urbanos, fluviais e de zonas húmidas para proteger contra perigos climáticos, como tempestades, inundações e ondas de calor. Os esforços incluem agroecologia, vegetação costeira e marinha e recifes, corredores de vegetação, restauração de habitats de manguezais, espaços verdes urbanos para reduzir as temperaturas. Estas ações melhoram a biodiversidade, armazenam carbono, melhoram a qualidade da água e proporcionam co-benefícios socioeconômicos e culturais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": "Apoia comunidades vulneráveis ao melhorar a resiliência climática, promover o acesso equitativo aos serviços ecossistêmicos e criar oportunidades de subsistência, especialmente para populações marginalizadas e desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Engajamento comunitário",
+        "Apoio regulatório",
+        "Investimento financeiro",
+        "Planejamento urbano",
+        "Vegetação resiliente ao clima",
+        "Avaliações de biodiversidade",
+        "Gestão de bacias hidrográficas",
+        "Planejamento a montante",
+        "Financiamento sustentável"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução de danos causados por marés de tempestade",
+        "Taxas de sequestro de carbono",
+        "Aumento da biodiversidade",
+        "Redução da temperatura em áreas urbanas",
+        "Melhoria da qualidade da água",
+        "Acesso a espaços verdes por comunidades carentes",
+        "Redução de eventos de inundação",
+        "Melhoria da saúde dos ecossistemas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "high",
+        "sea-level-rise": "high",
+        "heatwaves": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR POA",
+    "cityName": "Porto Alegre",
+    "region": "RS",
+    "regionName": "Rio Grande do Sul",
+    "actionId": "ipcc_0093",
+    "actionName": "Availability of health infrastructure",
+    "actionPriority": 20,
+    "explanation": "A disponibilidade de infraestrutura de saúde é crucial para Porto Alegre, especialmente considerando o alto risco de impactos à saúde pública decorrentes de ameaças como ondas de calor, doenças e deslizamentos de terra. Essas ameaças representam riscos significativos ao bem-estar da população, tornando necessária uma infraestrutura de saúde robusta para gerenciar e mitigar seus efeitos. Além disso, com uma população de mais de 1,3 milhão de habitantes, garantir instalações de saúde adequadas é essencial para oferecer atendimento médico oportuno e eficaz. O fortalecimento da infraestrutura de saúde também pode aumentar a resiliência da cidade diante dos desafios de saúde relacionados ao clima, melhorando os resultados gerais de saúde pública.",
+    "action": {
+      "ActionID": "ipcc_0093",
+      "ActionName": "Disponibilidade de infraestrutura de saúde",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "sea-level-rise",
+        "diseases"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Garantir o acesso a infraestrutura de água potável segura, proteger os serviços de saúde e melhorar os sistemas de saneamento para mitigar os impactos climáticos. Isso inclui desenvolver medidas adaptativas para a segurança hídrica contra secas, inundações e elevação do nível do mar. Fortalecer a resiliência da infraestrutura garante acesso equitativo aos serviços de saúde, reduz os riscos de contaminação e aborda os impactos dos perigos induzidos pelo clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Melhora o acesso a recursos críticos de saúde e água para comunidades vulneráveis e desatendidas, mitigando as desigualdades causadas pelos impactos climáticos.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamento adequado",
+        "investimentos tecnológicos em infraestrutura de saúde e água",
+        "governança eficaz e coordenação intersetorial"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução de doenças transmitidas pela água",
+        "melhor acesso a água potável",
+        "número de instalações de saúde resilientes desenvolvidas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "sea-level-rise": "high",
+        "diseases": "high"
+      },
+      "biome": "none"
+    }
+  }
+]

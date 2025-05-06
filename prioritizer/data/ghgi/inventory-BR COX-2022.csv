@@ -1,0 +1,61 @@
+"Inventory Reference","GPC Reference Number","Subsector name","Notation Key","Total Emissions","Total Emission Units","Activity type","Activity Value","Activity Units","Emission Factor - CO2","Emission Factor - CH4","Emission Factor - N2O","Emission Factor - Unit","CO2 Emissions","CH4 Emissions","N2O Emissions","Datasource ID","DataSource name"
+"58a9822a-fae0-3831-9f8b-4ec1fb48a54f","I.1.1","Residential buildings",,"3072.648","t CO2e",,,,,,,"kg/m3","3054497","1456","16695","45196fcf-eb15-4037-b763-33e4d33f04d6","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"6cf6f15d-536a-37dc-90c7-7d7ea75b5d01","I.1.2","Residential buildings",,"1076.02","t CO2e",,,,,,,"kg/TJ","1076020","0","0","810d6eef-7b15-4110-85de-566fdd72ae8e","Empresa de Pesquisa Energética"
+"2badf7fe-aa9c-357d-888e-7ac8b7979a50","I.1.3","Residential buildings",,"16.968","t CO2e",,,,,,,"kg/TJ","16968","0","0","68b94c84-eda6-4cff-8044-a5f7046bb995","Empresa de Pesquisa Energética"
+"942f2e36-ab1f-3fbf-af9e-31d997f518c7","I.2.1","Commercial and institutional buildings and facilities",,"1.538","t CO2e",,,,,,,"kg/m3","1538","0","0","54e965a4-3bd0-4f6a-a425-e843bb955712","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"942f2e36-ab1f-3fbf-af9e-31d997f518c7","I.2.1","Commercial and institutional buildings and facilities",,"70.85","t CO2e",,,,,,,"kg/m3","70557","28","265","54e965a4-3bd0-4f6a-a425-e843bb955712","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"94bd54aa-01e7-3a2f-a1c1-a49121d8dcea","I.2.2","Commercial and institutional buildings and facilities",,"663.593","t CO2e",,,,,,,"kg/TJ","663593","0","0","d187ac96-1b4e-4b44-91d1-a80f6570c9ef","Empresa de Pesquisa Energética"
+"32db3fd4-66f9-3d29-8cdd-9de719d3cdb7","I.2.3","Commercial and institutional buildings and facilities",,"10.464","t CO2e",,,,,,,"kg/TJ","10464","0","0","d7b00ee7-3432-49b0-8c17-c7dbb29722d6","Empresa de Pesquisa Energética"
+"N/A","I.3.1","Manufacturing industries and construction","NE",,"t CO2e",,,,,,,,"0","0","0",,
+"59e74d03-a234-38a3-9d8f-a13e8b424167","I.3.2","Manufacturing industries and construction",,"214.063","t CO2e",,,,,,,"kg/TJ","214063","0","0","5d120586-9eca-4ca9-8c5e-e7c2f04c129c","Empresa de Pesquisa Energética"
+"3ebc2363-43e5-3c1c-8270-dd6e5d823388","I.3.3","Manufacturing industries and construction",,"3.375","t CO2e",,,,,,,"kg/TJ","3375","0","0","9a8a6068-85eb-4cc5-9b14-2315e608b84e","Empresa de Pesquisa Energética"
+"N/A","I.4.1","Energy industries","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","I.4.2","Energy industries","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","I.4.3","Energy industries","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"c7025070-1f90-3034-b366-6ec4ac178666","I.5.1","Agriculture, forestry and fishing activities",,"226.114","t CO2e",,,,,,,"kg/m3","223087","112","2915","c1a1a270-172b-49aa-bc9c-e3aa7d7620a6","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"c7025070-1f90-3034-b366-6ec4ac178666","I.5.1","Agriculture, forestry and fishing activities",,"0.083","t CO2e",,,,,,,"kg/m3","83","0","0","c1a1a270-172b-49aa-bc9c-e3aa7d7620a6","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"25d0ad43-454f-34c2-ae83-03c095069891","I.5.2","Agriculture, forestry and fishing activities",,"188.642","t CO2e",,,,,,,"kg/TJ","188642","0","0","b29e69d0-679a-4922-9745-8102c10bcbc0","Empresa de Pesquisa Energética"
+"0f145a59-f3e3-3739-a970-9686e968e2b2","I.5.3","Agriculture, forestry and fishing activities",,"2.974","t CO2e",,,,,,,"kg/TJ","2974","0","0","6b7695bf-b321-412b-b873-17c2b979c9cb","Empresa de Pesquisa Energética"
+"N/A","I.6.1","Non-specified sources","NE",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","I.6.2","Non-specified sources","NE",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","I.6.3","Non-specified sources","NE",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","I.7.1","Fugitive emissions from mining, processing, storage, and transportation of coal","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","I.8.1","Fugitive emissions from oil and natural gas systems","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"064d8e7c-cddb-3766-8c70-579a1908c866","II.1.1","On-road transportation",,"84459.344","t CO2e",,,,,,,"kg/m3","83136841","133448","1189055","567bcd46-f6c4-499f-9597-6240592c1e35","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"064d8e7c-cddb-3766-8c70-579a1908c866","II.1.1","On-road transportation",,"33315.501","t CO2e",,,,,,,"kg/m3","32404110","103936","807455","567bcd46-f6c4-499f-9597-6240592c1e35","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","II.1.2","On-road transportation","NE",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","II.1.3","On-road transportation","NE",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","II.2.1","Railways","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","II.2.2","Railways","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","II.2.3","Railways","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","II.3.1","Waterborne navigation","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","II.3.2","Waterborne navigation","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","II.3.3","Waterborne navigation","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","II.4.1","Aviation","NE",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","II.4.2","Aviation","NE",,"t CO2e",,,,,,,,"0","0","0",,
+"ce889acf-9acd-3498-965a-3d4e5c88f57e","II.4.3","Aviation",,"126.28","t CO2e",,,,,,,"kg/TJ","125429","56","795","60ca4997-51a3-43de-9caa-ce5ec0d1ab19","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","II.5.1","Off-road transportation","NE",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","II.5.2","Off-road transportation","NE",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","III.1.1","Solid waste disposal","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"32acd829-2e87-38e9-aab3-8a495577ea7d","III.1.2","Solid waste disposal",,"9277.269","t CO2e",,,,,,,,"0","9277268","0","94b54d32-87e9-4220-a1cc-cf0058917c59","SINIR"
+"N/A","III.2.1","Biological treatment of waste","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","III.2.3","Biological treatment of waste","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","III.3.1","Incineration and open burning","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","III.3.3","Incineration and open burning","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"e0ba4eda-8fc4-33e6-beaf-6fc7c8f39e8b","III.4.1","Wastewater treatment and discharge",,"2654.105","t CO2e",,,,,,,,"0","2024680","629375","b7aa7f41-37a1-468e-9394-fc0b421964de","SNIS"
+"N/A","III.4.2","Wastewater treatment and discharge","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","IV.1","Emissions from industrial processes occurring within the city boundary","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","IV.2","Emissions from product use occurring within the city boundary","NO",,"t CO2e",,,,,,,,"0","0","0",,
+"N/A","V.1","Emissions from livestock within the city boundary",,"880539.912","t CO2e",,,,,,,,"0","880539912","0","3da1a62f-8cff-464b-bd5e-af70213f22c8","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","V.1","Emissions from livestock within the city boundary",,"22800.894","t CO2e",,,,,,,,"0","18925004","3875890","3da1a62f-8cff-464b-bd5e-af70213f22c8","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","V.2","Emissions from land within the city boundary",,"326315","t CO2e",,,,,,,,"326315000","0","0","56578539-5606-4fd7-88da-20a87b730af0","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","V.2","Emissions from land within the city boundary",,"3857","t CO2e",,,,,,,,"3857000","0","0","56578539-5606-4fd7-88da-20a87b730af0","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","V.2","Emissions from land within the city boundary",,"23179","t CO2e",,,,,,,,"23179000","0","0","56578539-5606-4fd7-88da-20a87b730af0","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","V.2","Emissions from land within the city boundary",,"2024","t CO2e",,,,,,,,"2024000","0","0","56578539-5606-4fd7-88da-20a87b730af0","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","V.3","Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary",,"2743.545","t CO2e",,,,,,,,"0","0","2743545","0891f485-942c-44f8-a398-09b9d050dabc","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","V.3","Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary",,"1119.36","t CO2e",,,,,,,,"0","0","1119360","0891f485-942c-44f8-a398-09b9d050dabc","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","V.3","Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary",,"7942.697","t CO2e",,,,,,,,"7942697","0","0","0891f485-942c-44f8-a398-09b9d050dabc","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","V.3","Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary",,"34883.275","t CO2e",,,,,,,,"0","0","34883275","0891f485-942c-44f8-a398-09b9d050dabc","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","V.3","Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary",,"1255.196","t CO2e",,,,,,,,"186451","0","1068745","0891f485-942c-44f8-a398-09b9d050dabc","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","V.3","Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary",,"126232.22","t CO2e",,,,,,,,"0","0","126232220","0891f485-942c-44f8-a398-09b9d050dabc","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","V.3","Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary",,"2951.305","t CO2e",,,,,,,,"0","0","2951305","0891f485-942c-44f8-a398-09b9d050dabc","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"

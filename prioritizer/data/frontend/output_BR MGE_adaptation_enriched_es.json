@@ -1,0 +1,1312 @@
+[
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0176",
+    "actionName": "Development of Climate Action Plan",
+    "actionPriority": 1,
+    "explanation": "El desarrollo de un Plan de Acción Climática es crucial para Maranguape debido a su alta vulnerabilidad frente a peligros relacionados con el clima, como sequías y olas de calor. Estos peligros representan riesgos significativos para los recursos hídricos, la seguridad alimentaria y la salud pública, que son áreas críticas para el bienestar de la ciudad. Al crear un plan integral, la ciudad puede abordar estratégicamente estos riesgos y fortalecer su resiliencia ante futuros impactos climáticos. Además, el plan ayudará a coordinar los esfuerzos entre diferentes sectores, garantizando un futuro más sostenible y seguro para la comunidad.",
+    "action": {
+      "ActionID": "icare_0176",
+      "ActionName": "Desarrollo del Plan de Acción Climática",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "wildfires",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Un plan integral que describe las estrategias y acciones de una ciudad para mitigar las emisiones de gases de efecto invernadero y adaptarse a los impactos del cambio climático, que típicamente incluye una evaluación de los riesgos y vulnerabilidades climáticas de la ciudad, el establecimiento de objetivos de reducción de emisiones y la implementación de acciones en varios sectores como energía, transporte, gestión de residuos y planificación urbana.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Voluntad política y compromiso del gobierno",
+        "Participación y colaboración de las partes interesadas",
+        "Financiación y recursos para la implementación"
+      ],
+      "KeyPerformanceIndicators": [
+        "Objetivos de reducción de emisiones de gases de efecto invernadero.",
+        "Número de acciones de adaptación al clima implementadas.",
+        "Inversión en proyectos de mitigación y adaptación al clima."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "medium",
+        "sea-level-rise": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "landslides": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0169",
+    "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+    "actionPriority": 2,
+    "explanation": "Establecer un plan de preparación y medidas de respuesta ante emergencias en Maranguape es crucial debido al alto riesgo de eventos climáticos extremos como sequías y olas de calor. La ciudad enfrenta desafíos significativos relacionados con los recursos hídricos, la seguridad alimentaria y la salud pública, todos los cuales se ven agravados por estos peligros. Al implementar un plan integral de respuesta ante emergencias, Maranguape puede proteger mejor a su población e infraestructura, reduciendo el impacto potencial de estos eventos. Además, dicho plan aumentaría la resiliencia de la ciudad y su capacidad para recuperarse rápidamente de las alteraciones relacionadas con el clima.",
+    "action": {
+      "ActionID": "icare_0169",
+      "ActionName": "Establecer un Plan de Preparación y Medidas de Respuesta de Emergencia en caso de eventos climáticos extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en preparar al municipio para responder a eventos extremos, con el objetivo de proporcionar una respuesta rápida que minimice los impactos en la población.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de un plan integral de respuesta a emergencias que incluya la coordinación entre las autoridades locales, los servicios de emergencia y las organizaciones comunitarias",
+        "Inversión en sistemas de alerta temprana e infraestructura para garantizar respuestas oportunas y efectivas a eventos extremos",
+        "Capacitación y desarrollo de capacidades para los respondedores locales y las comunidades para mejorar la preparación y la resiliencia ante eventos extremos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de asociaciones de respuesta de emergencia establecidas.",
+        "Tiempo promedio de respuesta durante eventos climáticos extremos (horas).",
+        "Porcentaje de reducción en víctimas y daños durante eventos climáticos extremos anualmente (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "wildfires": "high",
+        "sea-level-rise": "low",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0151",
+    "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+    "actionPriority": 3,
+    "explanation": "La acción de desarrollar diagnósticos y restaurar las áreas de Zonas Especiales de Interés Social (ZEIS) en Maranguape es crucial debido a los desafíos socioeconómicos moderados que enfrenta la ciudad. Estas zonas suelen albergar poblaciones vulnerables que pueden verse afectadas de manera desproporcionada por riesgos ambientales como sequías y olas de calor, los cuales representan amenazas significativas en la región. Al enfocarse en estas áreas, la ciudad puede mejorar las condiciones de vida y la resiliencia frente a los impactos climáticos, fortaleciendo así la salud y la seguridad públicas en general. Además, la restauración de estas zonas puede contribuir a la reducción de emisiones y a la mejora de la calidad de vida de los residentes, alineándose con los objetivos más amplios de sostenibilidad.",
+    "action": {
+      "ActionID": "icare_0151",
+      "ActionName": "Desarrollar diagnósticos y restaurar áreas de Zonas de Interés Social Especial (ZEIS)",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "sea-level-rise",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Prioridad a las áreas ZEIS en acciones de mejora de vivienda y la aplicación de recursos del Fondo de Urbanización, con la implementación de infraestructura urbana que considere la adaptación climática en estos espacios. Uso de Soluciones basadas en la Naturaleza (NbS) en la adaptación del saneamiento ambiental y las infraestructuras verdes y azules que potencian el ocio, la cultura, la agricultura urbana y actividades para fortalecer las asociaciones comunitarias.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de financiamiento del Fondo de Urbanización y otros mecanismos financieros para apoyar mejoras en la vivienda e infraestructura urbana en áreas ZEIS",
+        "Colaboración entre urbanistas, expertos ambientales y comunidades locales para diseñar e implementar soluciones basadas en la naturaleza (NbS) para la infraestructura urbana",
+        "Marcos de políticas y regulaciones que integren medidas de adaptación al clima en la planificación urbana, asegurando que las inversiones prioricen la sostenibilidad ambiental y la comunidad"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de áreas ZEIS diagnosticadas y restauradas.",
+        "Porcentaje de residentes beneficiados por las áreas restauradas (%).",
+        "Inversiones públicas asignadas a las áreas ZEIS (monto en moneda)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "sea-level-rise": "medium",
+        "floods": "medium",
+        "landslides": "low",
+        "diseases": "medium",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0152",
+    "actionName": "Recovery of degraded areas",
+    "actionPriority": 4,
+    "explanation": "La recuperación de las áreas degradadas en Maranguape es crucial debido a la vulnerabilidad de la ciudad frente a peligros ambientales como sequías y olas de calor. Restaurar estas áreas puede aumentar la biodiversidad y mejorar la resiliencia de los ecosistemas locales, que actualmente están en riesgo. Además, la rehabilitación de tierras degradadas puede contribuir a reducir las emisiones derivadas del uso del suelo, las cuales representan una parte significativa del total de emisiones de la ciudad. Esta acción apoya la sostenibilidad a largo plazo y ayuda a mitigar los impactos del cambio climático en la comunidad.",
+    "action": {
+      "ActionID": "icare_0152",
+      "ActionName": "Recuperación de áreas degradadas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar los ecosistemas dañados por actividades humanas mediante la replantación de vegetación nativa, la restauración del suelo, la eliminación de especies invasoras y la implementación de técnicas de gestión sostenible.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Desarrollar un plan de restauración claro y asegurar financiamiento para la gestión a largo plazo.",
+        "Asegurar el acceso a especies de plantas nativas y proporcionar capacitación en prácticas sostenibles.",
+        "Eliminar especies invasoras y colaborar con las comunidades locales para una restauración exitosa del ecosistema."
+      ],
+      "KeyPerformanceIndicators": [
+        "Hectáreas de tierra degradada restauradas anualmente",
+        "Aumento en la cobertura vegetal (%) en áreas restauradas",
+        "Número de comunidades locales involucradas en proyectos de restauración"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "ipcc_0094",
+    "actionName": "Access to health care",
+    "actionPriority": 5,
+    "explanation": "Mejorar el acceso a la atención médica en Maranguape es crucial debido al alto riesgo de impactos en la salud pública causados por olas de calor y enfermedades. La ciudad enfrenta desafíos significativos con estos peligros, que pueden agravar problemas de salud existentes y poner presión sobre los recursos médicos. Al priorizar el acceso a la atención médica, la ciudad puede prepararse mejor para mitigar los efectos de estos riesgos para la salud relacionados con el clima. Además, fortalecer la infraestructura de atención médica puede mejorar la resiliencia y el bienestar general de la comunidad, convirtiéndose en una acción vital para el desarrollo sostenible de la ciudad.",
+    "action": {
+      "ActionID": "ipcc_0094",
+      "ActionName": "Acceso a la atención médica",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "droughts"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar el acceso a los servicios de atención médica, incluidos los servicios de salud y nutrición, agua limpia, saneamiento y recursos de salud mental culturalmente apropiados. Ampliar las capacidades de telemedicina permite una entrega eficiente de servicios de salud, particularmente para poblaciones remotas y desatendidas. Fortalecer los sistemas básicos de salud pública y la preparación para desastres puede reducir rápidamente la vulnerabilidad a los riesgos de salud relacionados con el clima.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promueve el acceso equitativo a la atención médica para grupos marginados y vulnerables, incluidas las poblaciones sin hogar, las comunidades remotas y aquellos afectados por desigualdades en la vivienda.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en tecnologías de telemedicina",
+        "Fortalecimiento de la gobernanza de los sistemas de salud pública",
+        "Desarrollo de capacidades para los trabajadores de la salud",
+        "Mejoras en la infraestructura de las instalaciones de salud"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de la mortalidad relacionada con el clima",
+        "Mayor acceso a la telemedicina",
+        "Número de programas de salud adaptados culturalmente implementados",
+        "Mejora de los indicadores de acceso al agua y saneamiento"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "droughts": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "ipcc_0097",
+    "actionName": "Food storage/distribution improvements",
+    "actionPriority": 6,
+    "explanation": "Mejorar el almacenamiento y la distribución de alimentos es crucial para Maranguape debido a su alto riesgo de sequías que afectan la seguridad alimentaria. La ciudad enfrenta desafíos significativos para mantener un suministro estable de alimentos, y fortalecer estos sistemas puede mitigar los efectos de las interrupciones relacionadas con el clima. Además, una mejor distribución de alimentos puede ayudar a abordar los niveles de ingresos moderadamente bajos al garantizar un acceso más equitativo a los recursos alimentarios. Esta acción es esencial para aumentar la resiliencia frente a los riesgos ambientales y apoyar el bienestar general de la comunidad.",
+    "action": {
+      "ActionID": "ipcc_0097",
+      "ActionName": "Mejoras en el almacenamiento/distribución de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms",
+        "heatwaves"
+      ],
+      "Sector": [
+        "food_security",
+        "road_infrastructure"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar los sistemas de almacenamiento y distribución de alimentos mediante la mejora de la infraestructura de transporte, la optimización de las redes comerciales y el acortamiento de las cadenas de suministro para garantizar la disponibilidad local de alimentos y la resiliencia ante los impactos climáticos. Esta acción también incluye aumentar la capacidad de las instalaciones de almacenamiento de alimentos locales para reducir las pérdidas post-cosecha, abordar las ineficiencias en la logística y reforzar la infraestructura para productos perecederos. Su objetivo es mejorar la seguridad alimentaria y reducir la vulnerabilidad a eventos extremos, interrupciones e impactos en cascada, especialmente durante pandemias y otras crisis.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Apoya el acceso equitativo a alimentos para poblaciones marginadas y vulnerables al priorizar la producción local de alimentos y mejorar los sistemas de distribución que llegan a áreas desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en infraestructura",
+        "Incentivos políticos para la producción local de alimentos",
+        "Colaboración con los sectores de logística y comercio",
+        "Tecnología para la optimización de la cadena de suministro"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de pérdidas post-cosecha",
+        "Aumento de la disponibilidad de alimentos locales",
+        "Mejora de la eficiencia del transporte para la distribución de alimentos",
+        "Acortamiento de las cadenas de suministro"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0148",
+    "actionName": "Create the Municipal Climate Change Forum",
+    "actionPriority": 7,
+    "explanation": "La creación del Foro Municipal de Cambio Climático en Maranguape es un paso crucial para abordar los importantes desafíos ambientales de la ciudad. Maranguape enfrenta altos riesgos de sequías, olas de calor y enfermedades, que amenazan los recursos hídricos, la seguridad alimentaria y la salud pública. El establecimiento de un foro dedicado facilitará los esfuerzos coordinados entre las partes interesadas para desarrollar e implementar estrategias efectivas de adaptación y mitigación climática. Esta iniciativa también fortalecerá la participación y la conciencia comunitaria, empoderando a los residentes para contribuir a soluciones sostenibles.",
+    "action": {
+      "ActionID": "icare_0148",
+      "ActionName": "Crear el Foro Municipal de Cambio Climático",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "diseases",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Creación de un Foro Municipal de Cambio Climático con la participación de líderes comunitarios, científicos, colectivos, institutos de investigación, ONG y miembros de la administración municipal y estatal. El Foro servirá como referencia para acciones relacionadas con el Cambio Climático, con el objetivo de monitorear futuras políticas sobre el tema en el municipio, estimular el diálogo y crear una red de discusiones sobre la crisis climática.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Participación de diversos actores, incluidos líderes comunitarios, científicos, ONG y autoridades locales, para establecer y mantener el Foro.",
+        "Asignación de recursos para facilitar reuniones, talleres y eventos regulares para que el Foro permanezca activo e impactante.",
+        "Desarrollo de un marco claro y directrices para que el Foro monitoree y guíe las políticas e iniciativas de cambio climático dentro del municipio."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de partes interesadas clave participando activamente en el foro.",
+        "Número de políticas o acciones relacionadas con el clima propuestas a través del foro.",
+        "Participación pública en iniciativas del foro (medida por la asistencia a eventos o encuestas)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "landslides": "low",
+        "floods": "medium",
+        "wildfires": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "ipcc_0093",
+    "actionName": "Availability of health infrastructure",
+    "actionPriority": 8,
+    "explanation": "Mejorar la disponibilidad de infraestructura de salud en Maranguape es crucial debido al alto riesgo de impactos en la salud pública causados por olas de calor y enfermedades. La ciudad enfrenta desafíos significativos por la falta de saneamiento adecuado, lo que puede agravar los problemas de salud durante eventos climáticos extremos. Fortalecer la infraestructura de salud ayudará a mitigar estos riesgos y a mejorar la resiliencia general de la comunidad. Además, contar con mejores instalaciones de salud puede proporcionar servicios esenciales durante emergencias, garantizando el bienestar de la población.",
+    "action": {
+      "ActionID": "ipcc_0093",
+      "ActionName": "Disponibilidad de infraestructura sanitaria",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "sea-level-rise",
+        "diseases"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Garantizar el acceso a infraestructura de agua potable segura, proteger los servicios de salud y mejorar los sistemas de saneamiento para mitigar los impactos climáticos. Esto incluye desarrollar medidas adaptativas para la seguridad del agua frente a sequías, inundaciones y el aumento del nivel del mar. Fortalecer la resiliencia de la infraestructura asegura un acceso equitativo a los servicios de salud, reduce los riesgos de contaminación y aborda los impactos de los peligros inducidos por el clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Mejora el acceso a recursos críticos de salud y agua para comunidades vulnerables y desatendidas, mitigando las inequidades causadas por los impactos climáticos.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamiento adecuado",
+        "inversiones tecnológicas en infraestructura de salud y agua",
+        "gobernanza efectiva y coordinación intersectorial"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de enfermedades transmitidas por el agua",
+        "mejor acceso a agua potable",
+        "número de instalaciones de salud resilientes desarrolladas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "sea-level-rise": "high",
+        "diseases": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "ipcc_0096",
+    "actionName": "Farm/fishery improvements",
+    "actionPriority": 9,
+    "explanation": "Las mejoras en la agricultura y la pesca son cruciales para Maranguape debido al alto riesgo de sequías que afectan los recursos hídricos y la seguridad alimentaria. El fortalecimiento de las prácticas agrícolas puede ayudar a mitigar estos riesgos al aumentar la resiliencia frente a la variabilidad climática. Además, el mejoramiento de las pesquerías puede apoyar el suministro local de alimentos y la estabilidad económica, lo cual es importante dado el nivel de ingresos moderadamente bajos en la región. Esta acción está alineada con la necesidad de abordar las principales vulnerabilidades en el panorama socioeconómico y ambiental de la ciudad.",
+    "action": {
+      "ActionID": "ipcc_0096",
+      "ActionName": "Mejoras en granjas/pesquerías",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementar una serie de estrategias para adaptar granjas y pesquerías a los impactos climáticos. Esto incluye cambiar el equipo de pesca o la potencia de los barcos, adoptar nuevas variedades de cultivos o ajustar los calendarios de siembra, mejorar los sistemas de riego, integrar sistemas de cultivos y ganado, reubicar el ganado con una mejor gestión de pastizales y adoptar sistemas agroecológicos y de agroforestería. Innovaciones tecnológicas como la agricultura inteligente y medidas financieras como los subsidios apoyan estas adaptaciones.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garantiza el acceso a recursos para agricultores y pescadores marginados, promueve opciones diversas de sustento y fortalece la resiliencia en comunidades desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Apoyo político para la agricultura y pesca resilientes al clima",
+        "Acceso a financiamiento y subsidios",
+        "Capacitación para adoptar nuevas prácticas",
+        "Mejora de la infraestructura de mercado"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento de la productividad agrícola y pesquera",
+        "Tasa de adopción de sistemas integrados",
+        "Reducción de pérdidas de rendimiento relacionadas con el clima"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "wildfires": "low",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0162",
+    "actionName": "Strengthen programs for control and conservation of protected areas",
+    "actionPriority": 10,
+    "explanation": "El fortalecimiento de los programas para el control y la conservación de las áreas protegidas en Maranguape es crucial debido a la vulnerabilidad de la ciudad frente a peligros ambientales como sequías y olas de calor. Estos peligros representan riesgos significativos para la biodiversidad y la seguridad energética, que son vitales para la sostenibilidad de la ciudad. Al mejorar los esfuerzos de conservación, Maranguape puede proteger mejor sus recursos naturales y mitigar los impactos del cambio climático. Además, la preservación de las áreas protegidas puede ayudar a mantener el equilibrio ecológico y apoyar el bienestar de la población local.",
+    "action": {
+      "ActionID": "icare_0162",
+      "ActionName": "Fortalecer los programas de control y conservación de áreas protegidas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves",
+        "diseases"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en implementar una serie de estrategias integradas para mejorar la conservación ambiental y maximizar sus beneficios, como la expansión de áreas protegidas, el desarrollo de planes de manejo para unidades de conservación y la capacitación de guías de ecoturismo para fortalecer el turismo sostenible.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expansión de áreas protegidas para mejorar la conservación ambiental.",
+        "Desarrollo de planes de manejo para unidades de conservación.",
+        "Capacitación de guías de ecoturismo para promover el turismo sostenible."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de aumento en el área de regiones protegidas (%).",
+        "Reducción en las tasas de deforestación en áreas protegidas anualmente (%).",
+        "Número de programas de conservación fortalecidos anualmente."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high",
+        "heatwaves": "medium",
+        "diseases": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0157",
+    "actionName": "Maintenance and Revitalization of Riparian Forests",
+    "actionPriority": 11,
+    "explanation": "El mantenimiento y la revitalización de los bosques ribereños en Maranguape son cruciales debido a la vulnerabilidad de la ciudad a las sequías, las cuales afectan significativamente los recursos hídricos y la seguridad alimentaria. Los bosques ribereños desempeñan un papel vital en el mantenimiento de la calidad y disponibilidad del agua, lo cual es esencial tanto para el consumo humano como para las actividades agrícolas. Además, estos bosques ayudan a estabilizar el suelo, reduciendo el riesgo de deslizamientos y erosión, que son peligros potenciales en la región. Al mejorar la salud de las zonas ribereñas, la ciudad puede aumentar su resiliencia frente a los riesgos relacionados con el clima y apoyar la conservación de la biodiversidad.",
+    "action": {
+      "ActionID": "icare_0157",
+      "ActionName": "Mantenimiento y Revitalización de Bosques Ribereños",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mapeo y evaluación de bosques ribereños degradados, desarrollo de planes de revitalización con la plantación de especies nativas, control de especies invasoras, medidas de contención de la erosión y evaluaciones periódicas de los impactos en las condiciones ambientales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Asegurar la disponibilidad de datos geoespaciales y el mapeo previo de áreas degradadas.",
+        "Formar asociaciones con viveros locales y proporcionar equipo y mano de obra calificada para el control de especies invasoras.",
+        "Asegurar recursos financieros y establecer un sistema de monitoreo para evaluar los impactos ambientales."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total de bosques ribereños restaurados (ha).",
+        "Número de proyectos implementados.",
+        "Reducción de la erosión y sedimentación de cuerpos de agua (toneladas/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "ipcc_0092",
+    "actionName": "Social safety nets",
+    "actionPriority": 12,
+    "explanation": "La implementación de redes de protección social en Maranguape es crucial debido a la presencia de una población de ingresos bajos a moderados y a los desafíos socioeconómicos que enfrentan. Estas redes pueden proporcionar apoyo esencial durante períodos de inestabilidad económica, lo cual es especialmente importante dado el alto riesgo de sequías que afectan la seguridad hídrica y alimentaria. Además, ante la amenaza de enfermedades y olas de calor que impactan la salud pública, las redes de protección social pueden ayudar a garantizar que las poblaciones vulnerables reciban la asistencia necesaria para hacer frente a estos riesgos. En general, el fortalecimiento de las redes de protección social puede aumentar la resiliencia comunitaria y mejorar la calidad de vida de los residentes.",
+    "action": {
+      "ActionID": "ipcc_0092",
+      "ActionName": "Redes de seguridad social",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Las redes de seguridad social abarcan mecanismos de protección social adaptativa para reducir la inseguridad alimentaria y la malnutrición, especialmente para las poblaciones vulnerables. Estos incluyen transferencias de efectivo, programas de alimentación escolar, iniciativas de trabajo público, compensación por desempleo, reformas agrarias, esquemas de crédito y seguros. Los enfoques integrados combinan evaluaciones de riesgos climáticos con la reducción del riesgo de desastres, la educación y la equidad social para mejorar la resiliencia ante las tensiones climáticas.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Mejora el estatus social y los derechos de los grupos marginados, protege a las poblaciones vulnerables, reduce las desigualdades y promueve la educación y la equidad de género.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Integración del clima y el riesgo de desastres en la protección social",
+        "programas educativos",
+        "coordinación con iniciativas de medios de vida sostenibles e inclusión financiera"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en las tasas de malnutrición",
+        "Aumento en el acceso a la educación para grupos vulnerables",
+        "Participación en programas de protección social"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0149",
+    "actionName": "Encourage sustainable land use practices",
+    "actionPriority": 13,
+    "explanation": "Fomentar prácticas sostenibles de uso del suelo en Maranguape es crucial debido a las altas emisiones derivadas del uso del suelo, que constituyen el mayor contribuyente a las emisiones totales de la ciudad. Implementar prácticas sostenibles puede reducir significativamente estas emisiones, ayudando a mitigar los impactos del cambio climático. Además, el uso sostenible del suelo puede mejorar la resiliencia frente a las sequías, que representan un alto riesgo para los recursos hídricos, la seguridad alimentaria y la seguridad energética en la región. Al priorizar esta acción, Maranguape puede fortalecer su sostenibilidad ambiental y proteger su estabilidad socioeconómica.",
+    "action": {
+      "ActionID": "icare_0149",
+      "ActionName": "Fomentar prácticas sostenibles de uso de la tierra",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Promover métodos que garanticen la conservación y salud del suelo, preservando la biodiversidad, reduciendo la erosión y minimizando los impactos ambientales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Proporcionar acceso a conocimientos técnicos y capacitación sobre prácticas de manejo sostenible del suelo.",
+        "Ofrecer incentivos financieros y formar asociaciones con instituciones de investigación y agricultores locales.",
+        "Desarrollar sistemas de monitoreo para la salud del suelo y la biodiversidad, e implementar políticas para el control de la erosión."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de área de tierra gestionada bajo prácticas de uso sostenible de la tierra (%)",
+        "Reducción en las tasas de deforestación o degradación de la tierra (%)",
+        "Aumento en los indicadores de biodiversidad en tierras gestionadas (por ejemplo, conteo de especies, calidad del hábitat)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "medium",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0150",
+    "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+    "actionPriority": 14,
+    "explanation": "Implementar un Programa de Reducción y Control de Pérdidas para promover la seguridad hídrica es crucial para Maranguape debido a su alto riesgo de sequías que afectan los recursos hídricos. La ciudad enfrenta desafíos significativos relacionados con la escasez de agua, lo que puede afectar la salud pública y la seguridad alimentaria. Al enfocarse en la seguridad hídrica, el municipio puede mitigar los efectos adversos de las sequías y garantizar un suministro de agua estable para sus habitantes. Esta acción es esencial para aumentar la resiliencia frente a los riesgos relacionados con el clima y mejorar la calidad de vida de la comunidad.",
+    "action": {
+      "ActionID": "icare_0150",
+      "ActionName": "Implementar el Programa de Reducción y Control de Pérdidas promoviendo la seguridad hídrica para el municipio",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Asegurar la disponibilidad de agua en cantidad y calidad suficientes para la población de la ciudad. Implementar el Programa de Reducción y Control de Pérdidas, que tiene como objetivo reducir el consumo de agua per cápita, junto con la reducción de pérdidas físicas. Realizar estudios, regular y facilitar la reutilización de agua para fines no potables, e implementar equipos para el uso de agua de lluvia.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de financiamiento y experiencia técnica para implementar sistemas de reducción de pérdidas de agua, incluyendo mejoras en la infraestructura y tecnologías de monitoreo",
+        "Desarrollo de marcos regulatorios para apoyar la reutilización de agua para fines no potables y sistemas de recolección de agua de lluvia tanto en entornos residenciales como comerciales",
+        "Colaboración entre gobiernos locales, empresas de servicios públicos y comunidades para asegurar una gestión eficiente del agua y aumentar la conciencia sobre prácticas de conservación del agua"
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de reducción de pérdidas en el sistema de suministro de agua.",
+        "Índice de reducción del consumo de agua per cápita (litros).",
+        "Número de nuevas fuentes de suministro de agua implementadas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "diseases": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0144",
+    "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+    "actionPriority": 15,
+    "explanation": "La creación de un programa de apoyo financiero para hacer frente a eventos climáticos extremos es crucial para Maranguape debido a su alta vulnerabilidad a las sequías y olas de calor. Estos peligros representan riesgos significativos para los recursos hídricos, la seguridad alimentaria y la salud pública, según lo indica la evaluación de riesgos de cambio climático de la ciudad. La implementación de un apoyo financiero puede ayudar a mitigar el impacto económico en la comunidad, especialmente para aquellos con ingresos moderados o bajos. Este programa proporcionaría los recursos necesarios para fortalecer la resiliencia y los esfuerzos de recuperación, garantizando el bienestar de la población durante condiciones climáticas extremas.",
+    "action": {
+      "ActionID": "icare_0144",
+      "ActionName": "Creación de un Programa de Apoyo Financiero para Abordar Eventos Climáticos Extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "wildfires",
+        "floods",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Creación de un programa para mitigar los efectos de las tragedias climáticas, incluyendo asistencia financiera a las familias afectadas y esfuerzos para asegurar recursos adicionales para la recuperación y reconstrucción.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Recursos financieros",
+        "Planes de respuesta de emergencia",
+        "Coordinación institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de personas asistidas",
+        "Rentabilidad",
+        "Resiliencia comunitaria"
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "diseases": "medium",
+        "landslides": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0145",
+    "actionName": "Strengthen the healthcare network to attend to climate victims",
+    "actionPriority": 16,
+    "explanation": "Fortalecer la red de atención médica en Maranguape es crucial debido al alto riesgo de impactos en la salud relacionados con el clima. La ciudad enfrenta amenazas significativas por olas de calor y enfermedades, ambas con una alta puntuación de riesgo normalizado de 0,99. Estos peligros pueden afectar gravemente la salud pública, por lo que es esencial mejorar los servicios de salud para gestionar y mitigar eficazmente estos riesgos. Al priorizar esta acción, Maranguape podrá prepararse mejor y responder a los desafíos de salud que plantea el cambio climático, garantizando el bienestar de sus habitantes.",
+    "action": {
+      "ActionID": "icare_0145",
+      "ActionName": "Fortalecer la red de atención médica para atender a las víctimas del clima",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "storms",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar la infraestructura de las unidades de salud para asistir a las personas que requieren atención médica debido a impactos asociados con riesgos climáticos (víctimas del clima), como aquellos afectados por olas de calor o inundaciones, especialmente en áreas más vulnerables. Desarrollar planes de acción para preparar la red de salud para situaciones extremas relacionadas con el clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Inversión en la renovación y expansión de las instalaciones de salud, asegurando que estén equipadas para manejar los impactos en la salud relacionados con el clima, especialmente en áreas vulnerables.",
+        "Desarrollo de planes de acción y programas de capacitación para profesionales de la salud para responder a eventos climáticos extremos como olas de calor e inundaciones.",
+        "Colaboración con autoridades locales, equipos de respuesta a emergencias y expertos en clima para crear un marco integral para preparar la red de salud ante los riesgos climáticos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de instalaciones de salud mejoradas para emergencias relacionadas con el clima.",
+        "Aumento en el personal de salud capacitado en respuesta a emergencias climáticas (%).",
+        "Número de lesiones relacionadas con el clima tratadas con éxito. |||"
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "medium",
+        "floods": "high",
+        "storms": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "ipcc_0095",
+    "actionName": "Disaster early warning",
+    "actionPriority": 17,
+    "explanation": "Implementar un sistema de alerta temprana de desastres en Maranguape es crucial debido al alto riesgo de sequías y olas de calor, que afectan significativamente los recursos hídricos, la seguridad alimentaria y la salud pública. La vulnerabilidad de la ciudad ante estos peligros hace necesaria la emisión oportuna de alertas para mitigar posibles daños y proteger a la comunidad. Además, las alertas tempranas pueden mejorar las estrategias de preparación y respuesta, reduciendo los efectos adversos sobre la infraestructura y la seguridad energética. Dado el nivel socioeconómico moderado de la población, estos sistemas pueden brindar un apoyo fundamental para gestionar y adaptarse a los riesgos relacionados con el clima.",
+    "action": {
+      "ActionID": "ipcc_0095",
+      "ActionName": "Alerta temprana de desastres",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "droughts",
+        "storms"
+      ],
+      "Sector": [
+        "public_health",
+        "biodiversity",
+        "geo-hydrological_disasters"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Establecer y mantener sistemas de alerta temprana para desastres, incluidos las olas de calor marinas, brotes de plagas y olas de calor. Estos sistemas implican la difusión oportuna de información a individuos, comunidades y servicios de emergencia, permitiendo medidas proactivas para mitigar riesgos. Los Planes de Acción contra el Calor (HAPs) son parte de estos sistemas e incluyen estrategias detalladas como la planificación urbana con soluciones basadas en la naturaleza (por ejemplo, espacios verde-azules, materiales frescos), campañas de concienciación pública y medidas específicas para grupos vulnerables (por ejemplo, ancianos, niños, trabajadores al aire libre). Las acciones críticas también incluyen la evaluación de la efectividad del sistema después del desastre, el intercambio de lecciones y mejoras para una mejor preparación en eventos futuros.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Se centra en abordar las vulnerabilidades entre los grupos de bajos ingresos, personas mayores, mujeres embarazadas, niños y trabajadores al aire libre mediante la incorporación de comunicación dirigida, acceso a áreas frescas e intervenciones de salud específicas. Promueve la equidad involucrando a las comunidades marginadas en la planificación y asegurando el acceso a los recursos necesarios.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Coordinación entre los servicios de emergencia y las agencias de salud",
+        "Inversión en planificación urbana y soluciones basadas en la naturaleza",
+        "Educación comunitaria y campañas de concienciación pública",
+        "Infraestructura tecnológica para sistemas de alerta temprana"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de las tasas de mortalidad relacionadas con las olas de calor",
+        "Puntualidad de las advertencias",
+        "Niveles de concienciación pública",
+        "Adopción comunitaria de medidas de protección"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "droughts": "medium",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0156",
+    "actionName": "Implementation of urban gardens",
+    "actionPriority": 18,
+    "explanation": "La implementación de huertos urbanos en Maranguape es una acción estratégica para mejorar la seguridad alimentaria, la cual está en riesgo debido a las frecuentes sequías. Los huertos urbanos pueden proporcionar una fuente sostenible de productos frescos, reduciendo la dependencia de suministros alimentarios externos y mitigando el impacto de la escasez de alimentos. Además, estos huertos pueden mejorar la biodiversidad local y contribuir a la resiliencia comunitaria al fomentar la cohesión social y ofrecer oportunidades educativas. Dadas las dificultades socioeconómicas moderadas y el alto riesgo de sequías que afectan la seguridad alimentaria, esta acción representa un paso valioso hacia la construcción de una comunidad más autosuficiente y resiliente.",
+    "action": {
+      "ActionID": "icare_0156",
+      "ActionName": "Implementación de huertos urbanos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Identificar y evaluar la viabilidad de áreas adecuadas para la instalación de huertos urbanos y asegurar que los sitios elegidos cumplan con las expectativas de la comunidad.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Asegurar la disponibilidad de mapas detallados de uso del suelo y datos de planificación urbana.",
+        "Involucrarse con las comunidades locales para comprender sus necesidades y expectativas.",
+        "Evaluar la calidad del suelo, la disponibilidad de agua y formar asociaciones para apoyar el establecimiento y mantenimiento de jardines."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de huertos urbanos creados.",
+        "Cantidad de alimentos producidos localmente (kg/año).",
+        "Número de beneficiarios directos."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "landslides": "low",
+        "floods": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "ipcc_0098",
+    "actionName": "Behaviour change in diets and food waste",
+    "actionPriority": 19,
+    "explanation": "La promoción del cambio de comportamiento en las dietas y la reducción del desperdicio de alimentos es crucial para Maranguape debido a su riesgo moderado de inseguridad alimentaria, agravado por las sequías. Fomentar prácticas dietéticas sostenibles puede ayudar a mitigar el impacto de los peligros relacionados con el clima en la disponibilidad de alimentos. Además, reducir el desperdicio de alimentos puede contribuir a disminuir las emisiones totales, ya que las emisiones provenientes de los residuos representan una parte significativa del total de emisiones de la ciudad. Esta acción está alineada con la necesidad de mejorar la seguridad alimentaria y la sostenibilidad frente a los desafíos ambientales.",
+    "action": {
+      "ActionID": "ipcc_0098",
+      "ActionName": "Cambio de comportamiento en dietas y desperdicio de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Reducir la pérdida y el desperdicio de alimentos mediante la mejora de las prácticas de producción, distribución y consumo de alimentos. Las acciones incluyen mejorar las técnicas agrícolas, adoptar tecnologías de ahorro de agua, implementar soluciones de almacenamiento de bajo costo y promover dietas basadas en plantas. Los responsables de políticas pueden fomentar estos comportamientos con políticas de precios adecuadas, iniciativas de agricultura sostenible y apoyo a grupos desfavorecidos. La acción enfatiza el cambio hacia dietas más saludables, la reducción del consumo excesivo y el apoyo a los sistemas alimentarios locales para mitigar las emisiones de gases de efecto invernadero y garantizar la seguridad alimentaria ante el cambio climático.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promueve el acceso a alimentos asequibles y saludables para comunidades vulnerables, empoderando a mujeres, jóvenes y grupos socialmente desfavorecidos. Fomenta la participación equitativa en prácticas agrícolas sostenibles y redes alimentarias locales.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Educación y formación para agricultores",
+        "Acceso a insumos agrícolas sostenibles",
+        "Apoyo político para prácticas sostenibles",
+        "Infraestructura tecnológica para almacenamiento y procesamiento"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en los porcentajes de pérdida y desperdicio de alimentos",
+        "Aumento en la adopción de dietas basadas en plantas",
+        "Mejora en los indicadores de seguridad alimentaria",
+        "Reducción de emisiones de GEI de los sistemas alimentarios"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "medium",
+        "floods": "medium",
+        "wildfires": "low"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR MGE",
+    "cityName": "Maranguape",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0164",
+    "actionName": "Hydrological Monitoring System with Telemetry Stations",
+    "actionPriority": 20,
+    "explanation": "La implementación de un sistema de monitoreo hidrológico con estaciones de telemetría en Maranguape es crucial debido al alto riesgo de sequías que afectan los recursos hídricos, la seguridad alimentaria y la seguridad energética. El bioma desértico de la ciudad y su población de ingresos moderados y bajos la hacen vulnerable a la escasez de agua, lo que puede agravar los desafíos socioeconómicos. Al proporcionar datos en tiempo real sobre los niveles y el flujo de agua, este sistema puede ayudar a gestionar los recursos hídricos de manera más eficaz, garantizando un acceso sostenible para la población. Además, puede contribuir a los sistemas de alerta temprana, reduciendo el impacto de las sequías en la comunidad.",
+    "action": {
+      "ActionID": "icare_0164",
+      "ActionName": "Sistema de Monitoreo Hidrológico con Estaciones de Telemetría",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementación de un sistema de monitoreo hidrológico con estaciones de telemetría para monitorear la lluvia, los niveles de agua y las variables meteorológicas en tiempo real.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Equipamiento e infraestructura",
+        "Sistema robusto de gestión de datos",
+        "Coordinación institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Puntualidad de los datos",
+        "Rentabilidad",
+        "Efectividad de mitigación"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  }
+]

@@ -1,0 +1,182 @@
+[
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0042",
+        "actionName": "Biodiversity Expansion",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 20
+    }
+]

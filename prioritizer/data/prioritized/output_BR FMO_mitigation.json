@@ -1,0 +1,202 @@
+[
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1,
+        "explanation": "Implementing agroforestry systems is a high priority for Formosa due to its significant land use emissions and its location within a grassland/savanna biome. Agroforestry can help restore degraded land, enhance biodiversity, and sequester carbon, directly addressing the city's largest source of emissions. Additionally, this approach can improve food security and water retention, which are critical given the city's high risks from droughts and floods. By integrating trees with crops and livestock, agroforestry also supports local livelihoods and resilience to climate hazards."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 2,
+        "explanation": "Strengthening mechanisms for deforestation control is a critical priority for Formosa due to the city's significant land use emissions, which are the largest contributor to its total greenhouse gas emissions. The region's grassland and savanna biome is particularly vulnerable to deforestation, which can exacerbate climate risks such as droughts and threaten biodiversity and food security. By improving deforestation control, Formosa can help mitigate these risks, protect vital ecosystems, and contribute to long-term climate resilience. This action also supports the city's adaptation to hazards like droughts and floods, which have been identified as high risks for the area."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 3,
+        "explanation": "Promoting urban reforestation and green corridors is a significant priority for Formosa due to its vulnerability to heatwaves, droughts, and floods. Increasing green spaces can help mitigate urban heat, improve air quality, and enhance biodiversity, which is especially important in a grassland/savanna biome. These measures also contribute to better water management and can reduce the impacts of extreme weather events on public health and infrastructure. Given the city's high climate risk scores for public health and infrastructure, this action supports both climate adaptation and improved quality of life for residents."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 4,
+        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions is important for Formosa due to its large area and significant exposure to climate risks such as droughts, which threaten water resources and food security. By providing technical support and education to rural producers, the city can improve agricultural resilience, promote sustainable land use, and reduce emissions from land use change. These actions can help safeguard local livelihoods and food systems, which are particularly vulnerable in the region's grassland/savanna biome. Strengthening rural capacity also supports adaptation to climate hazards and enhances overall community well-being."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 5,
+        "explanation": "Facilitating technology transfer for conservation practices is important for Formosa, given its large area, grassland/savanna biome, and significant land use emissions. The city faces high risks from droughts, which threaten water resources, food security, and energy security, making improved conservation methods vital for resilience. By adopting advanced conservation technologies, Formosa can better manage its natural resources, reduce emissions, and protect biodiversity. This action supports long-term sustainability and helps mitigate the impacts of climate hazards that the city is currently facing."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 6,
+        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) is important for Formosa due to its significant land use emissions and its location within a grassland/savanna biome. PES programs can incentivize landowners to conserve and restore natural ecosystems, which helps reduce emissions and enhances resilience to climate hazards such as droughts and floods. Given the city's high risk from droughts and the importance of water and food security, supporting ecosystem services through PES can provide long-term environmental and socio-economic benefits. This action also aligns with the city's need to protect biodiversity and maintain ecosystem functions critical for public health and infrastructure stability."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 7,
+        "explanation": "Promoting sustainable agricultural practices is important for Formosa due to its large area and the significant role that land use emissions play in the city's total greenhouse gas output. The region faces high risks from droughts, which threaten both water resources and food security, making resilient agricultural methods essential. Sustainable agriculture can help reduce emissions, conserve water, and improve soil health, directly addressing key climate risks. This action supports long-term food security and environmental sustainability for the community."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 8,
+        "explanation": "Supporting regenerative agriculture practices is important for Formosa due to its location in a grassland/savanna biome and the significant impact of land use emissions on the city's total greenhouse gas output. Regenerative agriculture can help restore soil health, increase water retention, and improve resilience to droughts, which are a major risk for the city and threaten both water resources and food security. By promoting these practices, Formosa can enhance local food security, reduce emissions, and better adapt to climate hazards such as droughts and floods. This action also supports biodiversity and long-term sustainability of the region's agricultural sector."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 9,
+        "explanation": "Promoting organic farming in Formosa is important due to the city's vulnerability to droughts and its reliance on land use, which is a major source of emissions. Organic farming can improve soil health and water retention, making agriculture more resilient to climate hazards like droughts and floods. Additionally, it can help reduce the environmental impact of farming by minimizing chemical inputs and supporting biodiversity. This action aligns with the need to enhance food security and sustainability in the region."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 10,
+        "explanation": "Creating incentives for agroforestry practices in livestock systems is important for Formosa due to its large land area and significant land use emissions. Agroforestry can help restore degraded grassland and savanna biomes, improve soil health, and increase biodiversity. This approach also enhances resilience to droughts, which are a major risk for the city's water resources and food security. By integrating trees into livestock systems, the city can reduce emissions, support local livelihoods, and strengthen its adaptation to climate hazards."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 11,
+        "explanation": "Accelerating the environmental regularization of rural properties is important for Formosa due to its large area and significant land use emissions. Ensuring rural properties comply with environmental regulations can help reduce deforestation and protect the grassland/savanna biome, which is vital for biodiversity and climate resilience. This action also supports sustainable land management, which is crucial given the city's high risk from droughts and its reliance on natural resources for food and water security. By prioritizing regularization, Formosa can address a major source of emissions and enhance its capacity to adapt to climate hazards."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 12,
+        "explanation": "Encouraging the use of low-emission agricultural machinery is important for Formosa, given its large area and significant land use emissions. As a city in a grassland/savanna biome with a strong agricultural presence, transitioning to cleaner machinery can help reduce greenhouse gas emissions and improve air quality. This action also supports climate resilience by mitigating the impacts of droughts and heatwaves, which are high risks for the city. Promoting sustainable agricultural practices aligns with the city's need to protect food security and biodiversity in the face of climate hazards."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 13,
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases can strengthen local food systems and support sustainable agricultural practices in Formosa. Given the city's high risk to droughts impacting both water resources and food security, promoting agroecology can enhance resilience by encouraging farming methods that conserve water and improve soil health. This action also supports local farmers and reduces the carbon footprint associated with food transportation. By integrating these products into public procurement, the city can set an example for sustainable consumption and contribute to long-term food security."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 14,
+        "explanation": "Soil carbon management in croplands and grasslands is particularly relevant for Formosa, given its large area and location within a grassland/savanna biome. The city’s land use emissions are by far the largest contributor to its total greenhouse gas emissions, making improvements in soil management a key opportunity for mitigation. Enhancing soil carbon can also improve resilience to droughts, which are a major climate risk for Formosa, and support food security by maintaining soil fertility. This action aligns well with the city’s environmental context and addresses both mitigation and adaptation needs."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 15,
+        "explanation": "Supporting the implementation of ecological fiscal incentives in Formosa is important because the city faces significant environmental challenges, particularly related to land use emissions and risks from droughts and floods. Ecological fiscal incentives can encourage sustainable land management and conservation practices, which are crucial given the city's high land use emissions and its location in a grassland/savanna biome. By promoting environmentally friendly practices through financial mechanisms, the city can help protect water resources, food security, and biodiversity. This action also aligns with the need to build resilience against climate hazards that threaten public health and infrastructure."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 16,
+        "explanation": "Supporting agroecological certification programs in Formosa is important due to the city's vulnerability to droughts, which threaten both water resources and food security. Agroecological practices can enhance soil health, increase resilience to climate hazards, and promote sustainable food production. Certification programs encourage farmers to adopt these methods, contributing to long-term environmental and economic stability. This action aligns with the need to address high climate risks while supporting local livelihoods and biodiversity."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 17,
+        "explanation": "Encouraging local agroecological production and short supply chains is important for Formosa due to its vulnerability to droughts and food security risks. By promoting sustainable agricultural practices and reducing dependence on long supply chains, the city can enhance its resilience to climate hazards and ensure more reliable access to food. This approach also supports local farmers and can help preserve the region's grassland and savanna biome. Additionally, strengthening local food systems can reduce transportation emissions, contributing to overall climate mitigation efforts."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 18,
+        "explanation": "Promoting the adoption of agroecological pest control in Formosa is important due to the city's location in a grassland/savanna biome, where agriculture is likely a significant part of the local economy and land use. Agroecological methods can help reduce reliance on chemical pesticides, which benefits biodiversity and soil health. This approach also supports food security, a key impact area at high risk from droughts and floods in the region. By fostering more resilient and sustainable agricultural practices, the city can better adapt to climate hazards while protecting public health and the environment."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "icare_0045",
+        "actionName": "Promote organic and agroecological agriculture in the rural areas",
+        "actionPriority": 19,
+        "explanation": "Promoting organic and agroecological agriculture in Formosa's rural areas can help build resilience to climate hazards such as droughts, which are a significant risk for the city's water resources and food security. These practices improve soil health, increase biodiversity, and reduce dependence on chemical inputs, making agriculture more sustainable and less vulnerable to extreme weather. Additionally, shifting to organic methods can lower land use emissions, which are currently the largest source of greenhouse gases in Formosa. This action supports long-term food security and environmental health for the community."
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goiás",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 20,
+        "explanation": "Afforestation, reforestation, and forest ecosystem restoration are important for Formosa due to the city's significant land use emissions, which are the largest contributor to its total greenhouse gas emissions. Restoring and expanding forested areas can help sequester carbon, reduce emissions, and improve local biodiversity. Additionally, these actions can enhance resilience to climate hazards such as droughts and floods, which are high risks for the city. Implementing this action supports both climate mitigation and adaptation, making it a valuable priority for Formosa."
+    }
+]

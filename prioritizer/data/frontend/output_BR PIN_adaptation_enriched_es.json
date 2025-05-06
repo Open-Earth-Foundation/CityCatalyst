@@ -1,0 +1,1311 @@
+[
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0169",
+    "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+    "actionPriority": 1,
+    "explanation": "Establecer un plan de preparación y medidas de respuesta ante emergencias en Parintins es crucial debido a la alta vulnerabilidad de la ciudad frente a eventos climáticos extremos. La región enfrenta riesgos significativos de sequías, olas de calor e inundaciones, los cuales pueden afectar gravemente los recursos hídricos, la seguridad alimentaria y la salud pública. Dada la alta densidad poblacional y los desafíos socioeconómicos, como los elevados niveles de bajos ingresos y el saneamiento inadecuado, es esencial contar con un plan de respuesta ante emergencias sólido para mitigar estos riesgos y proteger a la comunidad. Además, la ubicación de la ciudad en un bioma de selva tropical la hace susceptible a cambios ambientales rápidos, lo que resalta aún más la necesidad de medidas proactivas.",
+    "action": {
+      "ActionID": "icare_0169",
+      "ActionName": "Establecer un Plan de Preparación y Medidas de Respuesta de Emergencia en caso de eventos climáticos extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en preparar al municipio para responder a eventos extremos, con el objetivo de proporcionar una respuesta rápida que minimice los impactos en la población.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desarrollo de un plan integral de respuesta a emergencias que incluya la coordinación entre las autoridades locales, los servicios de emergencia y las organizaciones comunitarias",
+        "Inversión en sistemas de alerta temprana e infraestructura para garantizar respuestas oportunas y efectivas a eventos extremos",
+        "Capacitación y desarrollo de capacidades para los respondedores locales y las comunidades para mejorar la preparación y la resiliencia ante eventos extremos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de asociaciones de respuesta de emergencia establecidas.",
+        "Tiempo promedio de respuesta durante eventos climáticos extremos (horas).",
+        "Porcentaje de reducción en víctimas y daños durante eventos climáticos extremos anualmente (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "wildfires": "high",
+        "sea-level-rise": "low",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0176",
+    "actionName": "Development of Climate Action Plan",
+    "actionPriority": 2,
+    "explanation": "El desarrollo de un Plan de Acción Climática es crucial para Parintins debido a su alta vulnerabilidad frente a peligros relacionados con el clima, como sequías, olas de calor e inundaciones. Estos peligros representan riesgos significativos para los recursos hídricos, la seguridad alimentaria, la seguridad energética y la salud pública, que son áreas críticas para el bienestar de la ciudad. Además, las altas emisiones totales de la ciudad y el acceso insuficiente a servicios de saneamiento resaltan la necesidad de una estrategia integral para mitigar los impactos ambientales y mejorar las condiciones de vida. La implementación de un Plan de Acción Climática ayudará a Parintins a abordar estos desafíos de manera sistemática y sostenible.",
+    "action": {
+      "ActionID": "icare_0176",
+      "ActionName": "Desarrollo del Plan de Acción Climática",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "wildfires",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Un plan integral que describe las estrategias y acciones de una ciudad para mitigar las emisiones de gases de efecto invernadero y adaptarse a los impactos del cambio climático, que típicamente incluye una evaluación de los riesgos y vulnerabilidades climáticas de la ciudad, el establecimiento de objetivos de reducción de emisiones y la implementación de acciones en varios sectores como energía, transporte, gestión de residuos y planificación urbana.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Voluntad política y compromiso del gobierno",
+        "Participación y colaboración de las partes interesadas",
+        "Financiación y recursos para la implementación"
+      ],
+      "KeyPerformanceIndicators": [
+        "Objetivos de reducción de emisiones de gases de efecto invernadero.",
+        "Número de acciones de adaptación al clima implementadas.",
+        "Inversión en proyectos de mitigación y adaptación al clima."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "medium",
+        "sea-level-rise": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "landslides": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0162",
+    "actionName": "Strengthen programs for control and conservation of protected areas",
+    "actionPriority": 3,
+    "explanation": "El fortalecimiento de los programas para el control y la conservación de las áreas protegidas en Parintins es crucial debido a su ubicación en la selva amazónica, un bioma vital para la biodiversidad global y la regulación del clima. La ciudad enfrenta importantes desafíos ambientales, incluyendo altas emisiones derivadas del uso del suelo y los residuos, que pueden ser mitigados mediante esfuerzos efectivos de conservación. Además, la protección de estas áreas puede ayudar a preservar los recursos hídricos y la biodiversidad, que están en riesgo debido a las sequías y otros peligros climáticos. Al priorizar esta acción, Parintins puede aumentar su resiliencia frente a las amenazas ambientales y contribuir a la sostenibilidad de la región amazónica.",
+    "action": {
+      "ActionID": "icare_0162",
+      "ActionName": "Fortalecer los programas de control y conservación de áreas protegidas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves",
+        "diseases"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta acción se centra en implementar una serie de estrategias integradas para mejorar la conservación ambiental y maximizar sus beneficios, como la expansión de áreas protegidas, el desarrollo de planes de manejo para unidades de conservación y la capacitación de guías de ecoturismo para fortalecer el turismo sostenible.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expansión de áreas protegidas para mejorar la conservación ambiental.",
+        "Desarrollo de planes de manejo para unidades de conservación.",
+        "Capacitación de guías de ecoturismo para promover el turismo sostenible."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de aumento en el área de regiones protegidas (%).",
+        "Reducción en las tasas de deforestación en áreas protegidas anualmente (%).",
+        "Número de programas de conservación fortalecidos anualmente."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high",
+        "heatwaves": "medium",
+        "diseases": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0152",
+    "actionName": "Recovery of degraded areas",
+    "actionPriority": 4,
+    "explanation": "La acción de ‘Recuperación de áreas degradadas’ es crucial para Parintins debido a su ubicación en la selva amazónica, la cual es vital para la biodiversidad y la regulación del clima. La ciudad enfrenta importantes desafíos ambientales, incluyendo altas emisiones por uso del suelo y riesgos para la biodiversidad debido a sequías y olas de calor. La restauración de áreas degradadas puede ayudar a mitigar estos riesgos al aumentar la captura de carbono y mejorar la resiliencia de los ecosistemas. Además, esta acción apoya la economía local al potencialmente generar empleos y mejorar la seguridad alimentaria, lo cual es fundamental dada la alta vulnerabilidad socioeconómica de la población.",
+    "action": {
+      "ActionID": "icare_0152",
+      "ActionName": "Recuperación de áreas degradadas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar los ecosistemas dañados por actividades humanas mediante la replantación de vegetación nativa, la restauración del suelo, la eliminación de especies invasoras y la implementación de técnicas de gestión sostenible.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Desarrollar un plan de restauración claro y asegurar financiamiento para la gestión a largo plazo.",
+        "Asegurar el acceso a especies de plantas nativas y proporcionar capacitación en prácticas sostenibles.",
+        "Eliminar especies invasoras y colaborar con las comunidades locales para una restauración exitosa del ecosistema."
+      ],
+      "KeyPerformanceIndicators": [
+        "Hectáreas de tierra degradada restauradas anualmente",
+        "Aumento en la cobertura vegetal (%) en áreas restauradas",
+        "Número de comunidades locales involucradas en proyectos de restauración"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0151",
+    "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+    "actionPriority": 5,
+    "explanation": "Desarrollar diagnósticos y restaurar las áreas de Zonas Especiales de Interés Social (ZEIS) en Parintins es crucial debido a los altos desafíos socioeconómicos que enfrenta la ciudad. Con una parte significativa de la población viviendo en condiciones de bajos ingresos y con acceso inadecuado al saneamiento, mejorar estas áreas puede elevar las condiciones de vida y la salud pública. Además, la restauración de las ZEIS puede ayudar a mitigar los impactos de peligros ambientales como inundaciones y deslizamientos de tierra, que representan un riesgo para la infraestructura y la seguridad pública. Esta acción está alineada con la necesidad de abordar las vulnerabilidades de la ciudad y mejorar la resiliencia frente a los riesgos relacionados con el clima.",
+    "action": {
+      "ActionID": "icare_0151",
+      "ActionName": "Desarrollar diagnósticos y restaurar áreas de Zonas de Interés Social Especial (ZEIS)",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "sea-level-rise",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Prioridad a las áreas ZEIS en acciones de mejora de vivienda y la aplicación de recursos del Fondo de Urbanización, con la implementación de infraestructura urbana que considere la adaptación climática en estos espacios. Uso de Soluciones basadas en la Naturaleza (NbS) en la adaptación del saneamiento ambiental y las infraestructuras verdes y azules que potencian el ocio, la cultura, la agricultura urbana y actividades para fortalecer las asociaciones comunitarias.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de financiamiento del Fondo de Urbanización y otros mecanismos financieros para apoyar mejoras en la vivienda e infraestructura urbana en áreas ZEIS",
+        "Colaboración entre urbanistas, expertos ambientales y comunidades locales para diseñar e implementar soluciones basadas en la naturaleza (NbS) para la infraestructura urbana",
+        "Marcos de políticas y regulaciones que integren medidas de adaptación al clima en la planificación urbana, asegurando que las inversiones prioricen la sostenibilidad ambiental y la comunidad"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de áreas ZEIS diagnosticadas y restauradas.",
+        "Porcentaje de residentes beneficiados por las áreas restauradas (%).",
+        "Inversiones públicas asignadas a las áreas ZEIS (monto en moneda)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "sea-level-rise": "medium",
+        "floods": "medium",
+        "landslides": "low",
+        "diseases": "medium",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "ipcc_0094",
+    "actionName": "Access to health care",
+    "actionPriority": 6,
+    "explanation": "Mejorar el acceso a la atención médica en Parintins es crucial debido al alto riesgo de impactos en la salud pública por peligros como olas de calor, enfermedades e inundaciones. La ciudad enfrenta desafíos significativos por la falta de saneamiento adecuado, lo que puede agravar los problemas de salud, especialmente durante eventos climáticos extremos. Abordar el acceso a la atención médica puede ayudar a mitigar estos riesgos y mejorar la resiliencia general de la población. Además, dado el alto porcentaje de residentes de bajos ingresos, garantizar un acceso equitativo a la atención médica es esencial para la equidad social y el bienestar de la comunidad.",
+    "action": {
+      "ActionID": "ipcc_0094",
+      "ActionName": "Acceso a la atención médica",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "droughts"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar el acceso a los servicios de atención médica, incluidos los servicios de salud y nutrición, agua limpia, saneamiento y recursos de salud mental culturalmente apropiados. Ampliar las capacidades de telemedicina permite una entrega eficiente de servicios de salud, particularmente para poblaciones remotas y desatendidas. Fortalecer los sistemas básicos de salud pública y la preparación para desastres puede reducir rápidamente la vulnerabilidad a los riesgos de salud relacionados con el clima.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promueve el acceso equitativo a la atención médica para grupos marginados y vulnerables, incluidas las poblaciones sin hogar, las comunidades remotas y aquellos afectados por desigualdades en la vivienda.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en tecnologías de telemedicina",
+        "Fortalecimiento de la gobernanza de los sistemas de salud pública",
+        "Desarrollo de capacidades para los trabajadores de la salud",
+        "Mejoras en la infraestructura de las instalaciones de salud"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de la mortalidad relacionada con el clima",
+        "Mayor acceso a la telemedicina",
+        "Número de programas de salud adaptados culturalmente implementados",
+        "Mejora de los indicadores de acceso al agua y saneamiento"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "droughts": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "ipcc_0097",
+    "actionName": "Food storage/distribution improvements",
+    "actionPriority": 7,
+    "explanation": "Mejorar el almacenamiento y la distribución de alimentos es crucial para Parintins debido a su alto riesgo de inseguridad alimentaria, especialmente por sequías e inundaciones. La ubicación de la ciudad en la región amazónica la hace vulnerable a las alteraciones relacionadas con el clima que pueden afectar las cadenas de suministro de alimentos. Fortalecer estos sistemas puede ayudar a mitigar el impacto de estos peligros, garantizando un suministro de alimentos más estable para la población. Además, una mejor distribución de alimentos puede apoyar el desarrollo socioeconómico de la zona, que se caracteriza por altos niveles de bajos ingresos.",
+    "action": {
+      "ActionID": "ipcc_0097",
+      "ActionName": "Mejoras en el almacenamiento/distribución de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms",
+        "heatwaves"
+      ],
+      "Sector": [
+        "food_security",
+        "road_infrastructure"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar los sistemas de almacenamiento y distribución de alimentos mediante la mejora de la infraestructura de transporte, la optimización de las redes comerciales y el acortamiento de las cadenas de suministro para garantizar la disponibilidad local de alimentos y la resiliencia ante los impactos climáticos. Esta acción también incluye aumentar la capacidad de las instalaciones de almacenamiento de alimentos locales para reducir las pérdidas post-cosecha, abordar las ineficiencias en la logística y reforzar la infraestructura para productos perecederos. Su objetivo es mejorar la seguridad alimentaria y reducir la vulnerabilidad a eventos extremos, interrupciones e impactos en cascada, especialmente durante pandemias y otras crisis.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Apoya el acceso equitativo a alimentos para poblaciones marginadas y vulnerables al priorizar la producción local de alimentos y mejorar los sistemas de distribución que llegan a áreas desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en infraestructura",
+        "Incentivos políticos para la producción local de alimentos",
+        "Colaboración con los sectores de logística y comercio",
+        "Tecnología para la optimización de la cadena de suministro"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de pérdidas post-cosecha",
+        "Aumento de la disponibilidad de alimentos locales",
+        "Mejora de la eficiencia del transporte para la distribución de alimentos",
+        "Acortamiento de las cadenas de suministro"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0157",
+    "actionName": "Maintenance and Revitalization of Riparian Forests",
+    "actionPriority": 8,
+    "explanation": "El mantenimiento y la revitalización de los bosques ribereños en Parintins es crucial debido a la ubicación de la ciudad en la región amazónica, caracterizada por un bioma de selva tropical. Los bosques ribereños desempeñan un papel vital en el mantenimiento de la biodiversidad, la prevención de la erosión del suelo y la regulación de los ciclos del agua, lo cual es esencial para la resiliencia de la ciudad frente a los impactos del cambio climático, como sequías e inundaciones. Dado el alto riesgo de que las sequías afecten los recursos hídricos y la seguridad alimentaria, revitalizar estos bosques puede ayudar a mitigar estos riesgos al mejorar la capacidad natural del ecosistema para retener y filtrar el agua. Además, las zonas ribereñas saludables pueden apoyar la biodiversidad local, que está amenazada tanto por las sequías como por las olas de calor, contribuyendo así a la estabilidad ecológica general de la región.",
+    "action": {
+      "ActionID": "icare_0157",
+      "ActionName": "Mantenimiento y Revitalización de Bosques Ribereños",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mapeo y evaluación de bosques ribereños degradados, desarrollo de planes de revitalización con la plantación de especies nativas, control de especies invasoras, medidas de contención de la erosión y evaluaciones periódicas de los impactos en las condiciones ambientales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Asegurar la disponibilidad de datos geoespaciales y el mapeo previo de áreas degradadas.",
+        "Formar asociaciones con viveros locales y proporcionar equipo y mano de obra calificada para el control de especies invasoras.",
+        "Asegurar recursos financieros y establecer un sistema de monitoreo para evaluar los impactos ambientales."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total de bosques ribereños restaurados (ha).",
+        "Número de proyectos implementados.",
+        "Reducción de la erosión y sedimentación de cuerpos de agua (toneladas/año)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0145",
+    "actionName": "Strengthen the healthcare network to attend to climate victims",
+    "actionPriority": 9,
+    "explanation": "Fortalecer la red de atención médica en Parintins es crucial debido al alto riesgo de impactos en la salud pública por peligros relacionados con el clima, como olas de calor, enfermedades e inundaciones. La ciudad enfrenta desafíos significativos debido a la falta de saneamiento adecuado y altos niveles de pobreza, lo que aumenta la vulnerabilidad de su población ante crisis sanitarias. Al mejorar los servicios de salud, la ciudad podrá gestionar y mitigar mejor los impactos de estos riesgos climáticos, asegurando que los residentes reciban atención oportuna y eficaz. Esta acción es esencial para mejorar la resiliencia y proteger el bienestar de la comunidad frente a las crecientes amenazas climáticas.",
+    "action": {
+      "ActionID": "icare_0145",
+      "ActionName": "Fortalecer la red de atención médica para atender a las víctimas del clima",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "storms",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mejorar la infraestructura de las unidades de salud para asistir a las personas que requieren atención médica debido a impactos asociados con riesgos climáticos (víctimas del clima), como aquellos afectados por olas de calor o inundaciones, especialmente en áreas más vulnerables. Desarrollar planes de acción para preparar la red de salud para situaciones extremas relacionadas con el clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Inversión en la renovación y expansión de las instalaciones de salud, asegurando que estén equipadas para manejar los impactos en la salud relacionados con el clima, especialmente en áreas vulnerables.",
+        "Desarrollo de planes de acción y programas de capacitación para profesionales de la salud para responder a eventos climáticos extremos como olas de calor e inundaciones.",
+        "Colaboración con autoridades locales, equipos de respuesta a emergencias y expertos en clima para crear un marco integral para preparar la red de salud ante los riesgos climáticos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de instalaciones de salud mejoradas para emergencias relacionadas con el clima.",
+        "Aumento en el personal de salud capacitado en respuesta a emergencias climáticas (%).",
+        "Número de lesiones relacionadas con el clima tratadas con éxito. |||"
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "medium",
+        "floods": "high",
+        "storms": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "ipcc_0093",
+    "actionName": "Availability of health infrastructure",
+    "actionPriority": 10,
+    "explanation": "Mejorar la disponibilidad de infraestructura de salud en Parintins es crucial debido al alto riesgo de impactos en la salud pública por amenazas como olas de calor, enfermedades e inundaciones. La ciudad enfrenta desafíos significativos debido a un saneamiento inadecuado y altos niveles de pobreza, lo que agrava las vulnerabilidades en la salud. Fortalecer la infraestructura de salud puede ayudar a mitigar estos riesgos al proporcionar un mejor acceso a la atención médica y mejorar la resiliencia general de la comunidad. Además, abordar la infraestructura de salud es fundamental para gestionar el posible aumento de problemas de salud relacionados con los impactos del cambio climático.",
+    "action": {
+      "ActionID": "ipcc_0093",
+      "ActionName": "Disponibilidad de infraestructura sanitaria",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "sea-level-rise",
+        "diseases"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Garantizar el acceso a infraestructura de agua potable segura, proteger los servicios de salud y mejorar los sistemas de saneamiento para mitigar los impactos climáticos. Esto incluye desarrollar medidas adaptativas para la seguridad del agua frente a sequías, inundaciones y el aumento del nivel del mar. Fortalecer la resiliencia de la infraestructura asegura un acceso equitativo a los servicios de salud, reduce los riesgos de contaminación y aborda los impactos de los peligros inducidos por el clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Mejora el acceso a recursos críticos de salud y agua para comunidades vulnerables y desatendidas, mitigando las inequidades causadas por los impactos climáticos.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamiento adecuado",
+        "inversiones tecnológicas en infraestructura de salud y agua",
+        "gobernanza efectiva y coordinación intersectorial"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de enfermedades transmitidas por el agua",
+        "mejor acceso a agua potable",
+        "número de instalaciones de salud resilientes desarrolladas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "sea-level-rise": "high",
+        "diseases": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0149",
+    "actionName": "Encourage sustainable land use practices",
+    "actionPriority": 11,
+    "explanation": "Fomentar prácticas sostenibles de uso del suelo en Parintins es crucial debido a las significativas emisiones derivadas del uso del suelo, que son las más altas entre todas las fuentes de emisiones en la ciudad. El bioma de selva tropical es sensible a prácticas no sostenibles, las cuales pueden conducir a la deforestación y a la pérdida de biodiversidad. Implementar prácticas sostenibles puede ayudar a mitigar estos impactos y contribuir a la preservación del ecosistema de la selva. Además, el uso sostenible del suelo puede mejorar la seguridad alimentaria, que está en alto riesgo debido a sequías e inundaciones, al promover prácticas agrícolas resilientes.",
+    "action": {
+      "ActionID": "icare_0149",
+      "ActionName": "Fomentar prácticas sostenibles de uso de la tierra",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Promover métodos que garanticen la conservación y salud del suelo, preservando la biodiversidad, reduciendo la erosión y minimizando los impactos ambientales.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Proporcionar acceso a conocimientos técnicos y capacitación sobre prácticas de manejo sostenible del suelo.",
+        "Ofrecer incentivos financieros y formar asociaciones con instituciones de investigación y agricultores locales.",
+        "Desarrollar sistemas de monitoreo para la salud del suelo y la biodiversidad, e implementar políticas para el control de la erosión."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de área de tierra gestionada bajo prácticas de uso sostenible de la tierra (%)",
+        "Reducción en las tasas de deforestación o degradación de la tierra (%)",
+        "Aumento en los indicadores de biodiversidad en tierras gestionadas (por ejemplo, conteo de especies, calidad del hábitat)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "medium",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0148",
+    "actionName": "Create the Municipal Climate Change Forum",
+    "actionPriority": 12,
+    "explanation": "La creación del Foro Municipal de Cambio Climático en Parintins es crucial debido a la alta vulnerabilidad de la ciudad frente a peligros relacionados con el clima, como sequías y olas de calor. El foro proporcionaría una plataforma para que las partes interesadas colaboren en estrategias para mitigar estos riesgos y fortalecer la resiliencia. Dada la elevada emisión de gases y los desafíos socioeconómicos de la ciudad, como el saneamiento inadecuado y los altos niveles de pobreza, el foro podría desempeñar un papel fundamental en la integración de la acción climática con el desarrollo socioeconómico. Además, facilitaría el intercambio de conocimientos y recursos, lo cual es esencial para la adaptación y mitigación climática efectiva.",
+    "action": {
+      "ActionID": "icare_0148",
+      "ActionName": "Crear el Foro Municipal de Cambio Climático",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "diseases",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Creación de un Foro Municipal de Cambio Climático con la participación de líderes comunitarios, científicos, colectivos, institutos de investigación, ONG y miembros de la administración municipal y estatal. El Foro servirá como referencia para acciones relacionadas con el Cambio Climático, con el objetivo de monitorear futuras políticas sobre el tema en el municipio, estimular el diálogo y crear una red de discusiones sobre la crisis climática.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Participación de diversos actores, incluidos líderes comunitarios, científicos, ONG y autoridades locales, para establecer y mantener el Foro.",
+        "Asignación de recursos para facilitar reuniones, talleres y eventos regulares para que el Foro permanezca activo e impactante.",
+        "Desarrollo de un marco claro y directrices para que el Foro monitoree y guíe las políticas e iniciativas de cambio climático dentro del municipio."
+      ],
+      "KeyPerformanceIndicators": [
+        "Porcentaje de partes interesadas clave participando activamente en el foro.",
+        "Número de políticas o acciones relacionadas con el clima propuestas a través del foro.",
+        "Participación pública en iniciativas del foro (medida por la asistencia a eventos o encuestas)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "landslides": "low",
+        "floods": "medium",
+        "wildfires": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "ipcc_0096",
+    "actionName": "Farm/fishery improvements",
+    "actionPriority": 13,
+    "explanation": "Las mejoras en la agricultura y la pesca son cruciales para Parintins debido al alto riesgo de sequías que afectan la seguridad alimentaria. La ciudad está ubicada en un bioma de selva tropical, que es vulnerable a los efectos del cambio climático, como la alteración de los patrones de lluvia. Mejorar las prácticas agrícolas y pesqueras puede ayudar a mitigar estos riesgos al aumentar la resiliencia y garantizar un suministro de alimentos estable. Además, estas mejoras pueden apoyar la economía local, lo cual es importante dado el alto nivel de bajos ingresos en la zona.",
+    "action": {
+      "ActionID": "ipcc_0096",
+      "ActionName": "Mejoras en granjas/pesquerías",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementar una serie de estrategias para adaptar granjas y pesquerías a los impactos climáticos. Esto incluye cambiar el equipo de pesca o la potencia de los barcos, adoptar nuevas variedades de cultivos o ajustar los calendarios de siembra, mejorar los sistemas de riego, integrar sistemas de cultivos y ganado, reubicar el ganado con una mejor gestión de pastizales y adoptar sistemas agroecológicos y de agroforestería. Innovaciones tecnológicas como la agricultura inteligente y medidas financieras como los subsidios apoyan estas adaptaciones.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garantiza el acceso a recursos para agricultores y pescadores marginados, promueve opciones diversas de sustento y fortalece la resiliencia en comunidades desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Apoyo político para la agricultura y pesca resilientes al clima",
+        "Acceso a financiamiento y subsidios",
+        "Capacitación para adoptar nuevas prácticas",
+        "Mejora de la infraestructura de mercado"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento de la productividad agrícola y pesquera",
+        "Tasa de adopción de sistemas integrados",
+        "Reducción de pérdidas de rendimiento relacionadas con el clima"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "wildfires": "low",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0144",
+    "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+    "actionPriority": 14,
+    "explanation": "La creación de un programa de apoyo financiero para hacer frente a eventos climáticos extremos es crucial para Parintins debido a su alta vulnerabilidad ante los peligros relacionados con el clima. La ciudad enfrenta riesgos significativos por sequías, olas de calor e inundaciones, que amenazan la seguridad alimentaria, la salud pública y la seguridad energética. Dadas las dificultades socioeconómicas, incluidos los altos niveles de bajos ingresos y el saneamiento inadecuado, un programa de apoyo financiero puede proporcionar los recursos esenciales para mitigar estos impactos. Esta acción es especialmente importante para fortalecer la resiliencia de la comunidad y garantizar un futuro más sostenible para sus habitantes.",
+    "action": {
+      "ActionID": "icare_0144",
+      "ActionName": "Creación de un Programa de Apoyo Financiero para Abordar Eventos Climáticos Extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "wildfires",
+        "floods",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Creación de un programa para mitigar los efectos de las tragedias climáticas, incluyendo asistencia financiera a las familias afectadas y esfuerzos para asegurar recursos adicionales para la recuperación y reconstrucción.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Recursos financieros",
+        "Planes de respuesta de emergencia",
+        "Coordinación institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de personas asistidas",
+        "Rentabilidad",
+        "Resiliencia comunitaria"
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "diseases": "medium",
+        "landslides": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0164",
+    "actionName": "Hydrological Monitoring System with Telemetry Stations",
+    "actionPriority": 15,
+    "explanation": "La implementación de un sistema de monitoreo hidrológico con estaciones de telemetría en Parintins es crucial debido a la vulnerabilidad de la ciudad frente a peligros relacionados con el agua. La ciudad enfrenta riesgos significativos por sequías, que afectan los recursos hídricos, la seguridad alimentaria y la seguridad energética. Al establecer un sistema de monitoreo, la ciudad puede gestionar mejor sus recursos hídricos y mitigar los efectos de estos peligros. Además, una mejor gestión del agua puede mejorar la salud pública y reducir los impactos socioeconómicos asociados con el acceso inadecuado al agua.",
+    "action": {
+      "ActionID": "icare_0164",
+      "ActionName": "Sistema de Monitoreo Hidrológico con Estaciones de Telemetría",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementación de un sistema de monitoreo hidrológico con estaciones de telemetría para monitorear la lluvia, los niveles de agua y las variables meteorológicas en tiempo real.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Equipamiento e infraestructura",
+        "Sistema robusto de gestión de datos",
+        "Coordinación institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Puntualidad de los datos",
+        "Rentabilidad",
+        "Efectividad de mitigación"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "ipcc_0092",
+    "actionName": "Social safety nets",
+    "actionPriority": 16,
+    "explanation": "La implementación de redes de protección social en Parintins es crucial debido al alto número de residentes de bajos ingresos en la zona. Estas redes pueden brindar apoyo esencial a las poblaciones vulnerables, especialmente en tiempos de inestabilidad económica o desastres naturales. Dada la exposición de la ciudad a riesgos como sequías e inundaciones, las redes de protección social pueden ayudar a mitigar los impactos en la seguridad alimentaria y la salud pública. Además, pueden desempeñar un papel significativo en el fortalecimiento de la resiliencia comunitaria y la reducción de las disparidades socioeconómicas. Por lo tanto, priorizar esta acción puede conducir a una mejor calidad de vida y mayor estabilidad para los habitantes de Parintins.",
+    "action": {
+      "ActionID": "ipcc_0092",
+      "ActionName": "Redes de seguridad social",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Las redes de seguridad social abarcan mecanismos de protección social adaptativa para reducir la inseguridad alimentaria y la malnutrición, especialmente para las poblaciones vulnerables. Estos incluyen transferencias de efectivo, programas de alimentación escolar, iniciativas de trabajo público, compensación por desempleo, reformas agrarias, esquemas de crédito y seguros. Los enfoques integrados combinan evaluaciones de riesgos climáticos con la reducción del riesgo de desastres, la educación y la equidad social para mejorar la resiliencia ante las tensiones climáticas.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Mejora el estatus social y los derechos de los grupos marginados, protege a las poblaciones vulnerables, reduce las desigualdades y promueve la educación y la equidad de género.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Integración del clima y el riesgo de desastres en la protección social",
+        "programas educativos",
+        "coordinación con iniciativas de medios de vida sostenibles e inclusión financiera"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en las tasas de malnutrición",
+        "Aumento en el acceso a la educación para grupos vulnerables",
+        "Participación en programas de protección social"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0156",
+    "actionName": "Implementation of urban gardens",
+    "actionPriority": 17,
+    "explanation": "La implementación de huertos urbanos en Parintins es una acción significativa debido al alto riesgo de inseguridad alimentaria en la ciudad, tal como lo indica la evaluación de riesgos por cambio climático. Los huertos urbanos pueden ayudar a mitigar este riesgo al proporcionar una fuente de alimentos local y sostenible, reduciendo la dependencia de suministros externos. Además, estos huertos pueden mejorar la resiliencia comunitaria al promover la participación local y la educación sobre prácticas sostenibles. Dadas las dificultades socioeconómicas de la ciudad, como los altos niveles de bajos ingresos, los huertos urbanos también pueden ofrecer oportunidades económicas y mejorar el acceso a productos frescos.",
+    "action": {
+      "ActionID": "icare_0156",
+      "ActionName": "Implementación de huertos urbanos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Identificar y evaluar la viabilidad de áreas adecuadas para la instalación de huertos urbanos y asegurar que los sitios elegidos cumplan con las expectativas de la comunidad.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Asegurar la disponibilidad de mapas detallados de uso del suelo y datos de planificación urbana.",
+        "Involucrarse con las comunidades locales para comprender sus necesidades y expectativas.",
+        "Evaluar la calidad del suelo, la disponibilidad de agua y formar asociaciones para apoyar el establecimiento y mantenimiento de jardines."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de huertos urbanos creados.",
+        "Cantidad de alimentos producidos localmente (kg/año).",
+        "Número de beneficiarios directos."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "landslides": "low",
+        "floods": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "icare_0175",
+    "actionName": "Recovery and preservation of green areas",
+    "actionPriority": 18,
+    "explanation": "La recuperación y preservación de las áreas verdes en Parintins es crucial debido a su ubicación en la región amazónica, que es una parte vital del bioma de selva tropical. Esta acción es importante para mantener la biodiversidad y combatir el alto riesgo de sequías y olas de calor que amenazan el ecosistema y la salud pública de la ciudad. Además, la preservación de las áreas verdes puede ayudar a mitigar los efectos del cambio climático al reducir las emisiones derivadas del uso del suelo, que son un contribuyente significativo a las emisiones totales de la ciudad. Asimismo, la mejora de los espacios verdes puede aumentar la calidad de vida de los residentes al proporcionar enfriamiento natural y áreas recreativas, lo cual es esencial dada la situación socioeconómica que enfrenta la comunidad.",
+    "action": {
+      "ActionID": "icare_0175",
+      "ActionName": "Recuperación y preservación de áreas verdes",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Rehabilitación y protección de los espacios verdes existentes, como parques, bosques y humedales, y expansión de áreas verdes mediante la plantación de árboles y vegetación en áreas urbanas y periurbanas. Estas áreas proporcionan soluciones naturales para la gestión de los recursos hídricos, la reducción del estrés térmico, la mejora de la calidad del aire y el aumento de la biodiversidad.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidad de terrenos adecuados para espacios verdes",
+        "Acceso a recursos hídricos para riego"
+      ],
+      "KeyPerformanceIndicators": [
+        "Área de espacios verdes creados o restaurados.",
+        "Índices de biodiversidad en áreas verdes.",
+        "Participación comunitaria en actividades de espacios verdes."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "ipcc_0098",
+    "actionName": "Behaviour change in diets and food waste",
+    "actionPriority": 19,
+    "explanation": "La promoción del cambio de comportamiento en las dietas y la reducción del desperdicio de alimentos es crucial para Parintins debido a su alto riesgo de inseguridad alimentaria, agravado por sequías e inundaciones. Con una parte significativa de la población con bajos ingresos, mejorar la eficiencia alimentaria puede ayudar a aliviar las presiones económicas y aumentar la disponibilidad de alimentos. Además, reducir el desperdicio de alimentos puede contribuir a disminuir las emisiones provenientes de los residuos, que representan una parte importante del total de emisiones de la ciudad. Esta acción está alineada con la necesidad de abordar tanto los desafíos ambientales como los socioeconómicos de la región.",
+    "action": {
+      "ActionID": "ipcc_0098",
+      "ActionName": "Cambio de comportamiento en dietas y desperdicio de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Reducir la pérdida y el desperdicio de alimentos mediante la mejora de las prácticas de producción, distribución y consumo de alimentos. Las acciones incluyen mejorar las técnicas agrícolas, adoptar tecnologías de ahorro de agua, implementar soluciones de almacenamiento de bajo costo y promover dietas basadas en plantas. Los responsables de políticas pueden fomentar estos comportamientos con políticas de precios adecuadas, iniciativas de agricultura sostenible y apoyo a grupos desfavorecidos. La acción enfatiza el cambio hacia dietas más saludables, la reducción del consumo excesivo y el apoyo a los sistemas alimentarios locales para mitigar las emisiones de gases de efecto invernadero y garantizar la seguridad alimentaria ante el cambio climático.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promueve el acceso a alimentos asequibles y saludables para comunidades vulnerables, empoderando a mujeres, jóvenes y grupos socialmente desfavorecidos. Fomenta la participación equitativa en prácticas agrícolas sostenibles y redes alimentarias locales.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Educación y formación para agricultores",
+        "Acceso a insumos agrícolas sostenibles",
+        "Apoyo político para prácticas sostenibles",
+        "Infraestructura tecnológica para almacenamiento y procesamiento"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción en los porcentajes de pérdida y desperdicio de alimentos",
+        "Aumento en la adopción de dietas basadas en plantas",
+        "Mejora en los indicadores de seguridad alimentaria",
+        "Reducción de emisiones de GEI de los sistemas alimentarios"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "medium",
+        "floods": "medium",
+        "wildfires": "low"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR PIN",
+    "cityName": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "actionId": "ipcc_0099",
+    "actionName": "Water capture/storage",
+    "actionPriority": 20,
+    "explanation": "La acción de captación y almacenamiento de agua es crucial para Parintins debido a su alto riesgo de sequías que afectan los recursos hídricos. Con un acceso inadecuado a los servicios de agua y una alta vulnerabilidad socioeconómica, mejorar la infraestructura hídrica puede aumentar significativamente la resiliencia. Además, abordar la escasez de agua es vital para mantener la salud pública y la seguridad alimentaria, ambas en riesgo debido a los peligros climáticos. Implementar esta acción puede ayudar a mitigar los efectos de las sequías y garantizar un suministro de agua estable para la comunidad.",
+    "action": {
+      "ActionID": "ipcc_0099",
+      "ActionName": "Captura/almacenamiento de agua",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms"
+      ],
+      "Sector": [
+        "water_resources",
+        "food_security",
+        "energy_security",
+        "geo-hydrological_disasters"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementar soluciones de captación y almacenamiento de agua, como estanques agrícolas, revitalización de cuerpos de agua, jardines de lluvia, bioswales, estanques de retención y tanques de almacenamiento de agua. Estas medidas tienen como objetivo mitigar los impactos inducidos por el clima mejorando la gestión del agua, reduciendo la escorrentía de aguas pluviales, mejorando la calidad del agua y apoyando la agricultura y la producción de energía bajo escenarios climáticos cambiantes. Los embalses y presas de usos múltiples proporcionan beneficios adicionales al abordar la escasez de agua y gestionar los riesgos asociados con los peligros naturales.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garantiza el acceso al agua para comunidades desatendidas, apoya medios de vida sostenibles en regiones con escasez de agua y promueve la distribución equitativa de recursos a través de procesos de toma de decisiones inclusivos.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Inversión en infraestructura verde",
+        "participación comunitaria",
+        "apoyo político para la gestión de recursos hídricos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Reducción de la escorrentía de aguas pluviales",
+        "aumento de la capacidad de almacenamiento de agua",
+        "mejora en la calidad del agua",
+        "estabilidad en los rendimientos agrícolas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  }
+]

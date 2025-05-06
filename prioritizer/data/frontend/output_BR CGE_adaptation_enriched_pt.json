@@ -1,0 +1,1306 @@
+[
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0169",
+    "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+    "actionPriority": 1,
+    "explanation": "Estabelecer um plano de preparação e medidas de resposta a emergências em caso de eventos climáticos extremos é crucial para Contagem devido ao seu alto risco de desastres naturais. A cidade enfrenta ameaças significativas de secas, ondas de calor, deslizamentos de terra e inundações, todos com altos índices de risco normalizados. Esses perigos representam sérios riscos à saúde pública, à infraestrutura e à segurança alimentar, tornando imprescindível a existência de um plano robusto de resposta a emergências. Ao priorizar essa ação, Contagem pode aumentar sua resiliência e proteger sua população e infraestrutura dos impactos adversos das mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0169",
+      "ActionName": "Estabelecer um Plano de Preparação e Medidas de Resposta a Emergências em caso de eventos climáticos extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta ação foca em preparar o município para responder a eventos extremos, visando fornecer uma resposta rápida que minimize os impactos na população.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de um plano abrangente de resposta a emergências que inclua a coordenação entre as autoridades locais, serviços de emergência e organizações comunitárias",
+        "Investimento em sistemas de alerta precoce e infraestrutura para garantir respostas oportunas e eficazes a eventos extremos",
+        "Treinamento e capacitação para socorristas locais e comunidades para melhorar a preparação e resiliência a eventos extremos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de parcerias de resposta a emergências estabelecidas.",
+        "Tempo médio de resposta durante eventos climáticos extremos (horas).",
+        "Percentual de redução de vítimas e danos durante eventos climáticos extremos anualmente (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "wildfires": "high",
+        "sea-level-rise": "low",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0176",
+    "actionName": "Development of Climate Action Plan",
+    "actionPriority": 2,
+    "explanation": "O desenvolvimento de um Plano de Ação Climática é crucial para Contagem devido às suas altas emissões totais e aos riscos significativos decorrentes de ameaças climáticas, como secas, ondas de calor e inundações. Com uma população de mais de 600 mil habitantes, a cidade enfrenta desafios na gestão das emissões provenientes do transporte e da energia estacionária, que são os principais contribuintes para sua pegada de carbono. Além disso, a vulnerabilidade da cidade a impactos climáticos, como deslizamentos de terra e riscos à saúde pública, exige uma abordagem estratégica para mitigar essas ameaças. A implementação de um Plano de Ação Climática abrangente ajudará Contagem a enfrentar essas questões de forma sistemática, garantindo o desenvolvimento sustentável e a resiliência diante das mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0176",
+      "ActionName": "Desenvolvimento do Plano de Ação Climática",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "wildfires",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Um plano abrangente que descreve as estratégias e ações de uma cidade para mitigar as emissões de gases de efeito estufa e se adaptar aos impactos das mudanças climáticas, que normalmente inclui uma avaliação dos riscos e vulnerabilidades climáticas da cidade, definição de metas de redução de emissões e implementação de ações em vários setores, como energia, transporte, gestão de resíduos e planejamento urbano.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e compromisso do governo",
+        "Envolvimento e colaboração das partes interessadas",
+        "Financiamento e recursos para implementação"
+      ],
+      "KeyPerformanceIndicators": [
+        "Metas de redução de emissões de gases de efeito estufa.",
+        "Número de ações de adaptação climática implementadas.",
+        "Investimento em projetos de mitigação e adaptação climática."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "medium",
+        "sea-level-rise": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "landslides": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0152",
+    "actionName": "Recovery of degraded areas",
+    "actionPriority": 3,
+    "explanation": "A recuperação de áreas degradadas em Contagem é crucial devido à alta densidade populacional da cidade e à necessidade de manter ecossistemas saudáveis. A restauração dessas áreas pode ajudar a mitigar os impactos das mudanças climáticas, como secas e inundações, que representam riscos significativos para os recursos hídricos, a segurança alimentar e a saúde pública. Além disso, a melhoria do uso do solo pode reduzir as emissões e aumentar a biodiversidade, contribuindo para um ambiente urbano mais sustentável. Essa ação está alinhada com a necessidade da cidade de enfrentar desafios ambientais e melhorar a qualidade de vida de seus habitantes.",
+    "action": {
+      "ActionID": "icare_0152",
+      "ActionName": "Recuperação de áreas degradadas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar ecossistemas danificados por atividades humanas através do replantio de vegetação nativa, restauração do solo, eliminação de espécies invasoras e implementação de técnicas de manejo sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Desenvolver um plano de restauração claro e garantir financiamento para a gestão a longo prazo.",
+        "Assegurar o acesso a espécies de plantas nativas e fornecer treinamento em práticas sustentáveis.",
+        "Remover espécies invasoras e colaborar com as comunidades locais para uma restauração bem-sucedida do ecossistema."
+      ],
+      "KeyPerformanceIndicators": [
+        "Hectares de terras degradadas restauradas anualmente",
+        "Aumento na cobertura vegetal (%) em áreas restauradas",
+        "Número de comunidades locais envolvidas em projetos de restauração"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0162",
+    "actionName": "Strengthen programs for control and conservation of protected areas",
+    "actionPriority": 4,
+    "explanation": "O fortalecimento de programas para o controle e a conservação de áreas protegidas é crucial para Contagem devido ao seu bioma de campos e savana, que é sensível a mudanças ambientais. A cidade enfrenta riscos significativos de secas e ondas de calor, que podem impactar severamente a biodiversidade. Ao intensificar os esforços de conservação, o município pode mitigar esses riscos e preservar seus habitats naturais. Além disso, a proteção dessas áreas pode contribuir para a manutenção do equilíbrio ecológico e o apoio à biodiversidade, o que é vital para a saúde geral do meio ambiente e da comunidade.",
+    "action": {
+      "ActionID": "icare_0162",
+      "ActionName": "Fortalecer programas de controle e conservação de áreas protegidas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves",
+        "diseases"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta ação foca na implementação de uma série de estratégias integradas para melhorar a conservação ambiental e maximizar seus benefícios, como a expansão de áreas protegidas, o desenvolvimento de planos de manejo para unidades de conservação e o treinamento de guias de ecoturismo para fortalecer o turismo sustentável.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expansão de áreas protegidas para melhorar a conservação ambiental.",
+        "Desenvolvimento de planos de manejo para unidades de conservação.",
+        "Treinamento de guias de ecoturismo para promover o turismo sustentável."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentual de aumento na área de regiões protegidas (%).",
+        "Redução nas taxas de desmatamento em áreas protegidas anualmente (%).",
+        "Número de programas de conservação fortalecidos anualmente."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high",
+        "heatwaves": "medium",
+        "diseases": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "ipcc_0097",
+    "actionName": "Food storage/distribution improvements",
+    "actionPriority": 5,
+    "explanation": "Melhorar o armazenamento e a distribuição de alimentos é crucial para Contagem devido à sua vulnerabilidade a secas e inundações, que representam riscos significativos para a segurança alimentar. A alta densidade populacional da cidade e os níveis de renda muito baixos agravam o impacto da escassez de alimentos, tornando essenciais sistemas de distribuição eficientes. O aprimoramento desses sistemas pode ajudar a mitigar os efeitos de perigos relacionados ao clima, garantindo um fornecimento estável de alimentos para a população. Além disso, um melhor armazenamento de alimentos pode reduzir as emissões provenientes do desperdício, contribuindo para os esforços gerais de redução de emissões.",
+    "action": {
+      "ActionID": "ipcc_0097",
+      "ActionName": "Melhorias no armazenamento/distribuição de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms",
+        "heatwaves"
+      ],
+      "Sector": [
+        "food_security",
+        "road_infrastructure"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Aprimorar os sistemas de armazenamento e distribuição de alimentos melhorando a infraestrutura de transporte, otimizando redes de comércio e encurtando cadeias de suprimento para garantir a disponibilidade local de alimentos e resiliência aos impactos climáticos. Esta ação também inclui aumentar a capacidade das instalações locais de armazenamento de alimentos para reduzir perdas pós-colheita, abordar ineficiências na logística e reforçar a infraestrutura para produtos perecíveis. O objetivo é melhorar a segurança alimentar e reduzir a vulnerabilidade a eventos extremos, interrupções e impactos em cascata, especialmente durante pandemias e outras crises.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Apoia o acesso equitativo a alimentos para populações marginalizadas e vulneráveis, priorizando a produção local de alimentos e melhorando os sistemas de distribuição que alcançam áreas desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento em infraestrutura",
+        "Incentivos políticos para a produção local de alimentos",
+        "Colaboração com os setores de logística e comércio",
+        "Tecnologia para otimização da cadeia de suprimentos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução das perdas pós-colheita",
+        "Aumento da disponibilidade de alimentos locais",
+        "Melhoria da eficiência do transporte para distribuição de alimentos",
+        "Cadeias de abastecimento encurtadas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "ipcc_0094",
+    "actionName": "Access to health care",
+    "actionPriority": 6,
+    "explanation": "Melhorar o acesso à saúde em Contagem é crucial devido ao alto risco de impactos na saúde pública causados por diversos perigos, como ondas de calor, deslizamentos de terra e inundações. A vulnerabilidade da cidade a esses riscos, combinada com seu baixíssimo status socioeconômico, torna imperativo o fortalecimento dos sistemas de saúde para garantir resiliência. Ampliar o acesso à saúde pode mitigar os efeitos adversos dos riscos à saúde relacionados ao clima, protegendo assim o bem-estar da população. Além disso, uma infraestrutura de saúde mais robusta pode melhorar os resultados gerais de saúde pública, tornando a cidade mais resiliente diante de desafios futuros.",
+    "action": {
+      "ActionID": "ipcc_0094",
+      "ActionName": "Acesso aos cuidados de saúde",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "droughts"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Melhorar o acesso aos serviços de saúde, incluindo serviços de saúde e nutrição, água limpa, saneamento e recursos de saúde mental culturalmente apropriados. A expansão das capacidades de telemedicina permite uma entrega eficiente de serviços de saúde, especialmente para populações remotas e carentes. Fortalecer os sistemas básicos de saúde pública e a preparação para desastres pode reduzir rapidamente a vulnerabilidade aos riscos de saúde relacionados ao clima.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promove o acesso equitativo aos cuidados de saúde para grupos marginalizados e vulneráveis, incluindo populações sem-teto, comunidades remotas e aqueles afetados por desigualdades habitacionais.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento em tecnologias de telemedicina",
+        "Governança fortalecida dos sistemas de saúde pública",
+        "Capacitação para trabalhadores da saúde",
+        "Melhorias na infraestrutura das instalações de saúde"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução na mortalidade relacionada ao clima",
+        "Aumento no acesso à telemedicina",
+        "Número de programas de saúde adaptados culturalmente implementados",
+        "Melhoria nas métricas de acesso à água e saneamento"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "droughts": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0149",
+    "actionName": "Encourage sustainable land use practices",
+    "actionPriority": 7,
+    "explanation": "Incentivar práticas sustentáveis de uso do solo em Contagem é fundamental devido às significativas emissões relacionadas ao uso da terra na cidade. Com uma densidade populacional de 3.193,2 pessoas por quilômetro quadrado, o uso eficiente do solo é essencial para minimizar o impacto ambiental e apoiar o crescimento populacional. Além disso, práticas sustentáveis podem ajudar a mitigar os riscos associados a secas e inundações, que são perigos relevantes na região. Ao promover essas práticas, Contagem pode aumentar sua resiliência às mudanças climáticas e melhorar a saúde ambiental como um todo.",
+    "action": {
+      "ActionID": "icare_0149",
+      "ActionName": "Incentivar práticas sustentáveis de uso da terra",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Promover métodos que garantam a conservação e a saúde do solo, preservando a biodiversidade, reduzindo a erosão e minimizando os impactos ambientais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecer acesso a conhecimento técnico e treinamento em práticas de manejo sustentável do solo.",
+        "Oferecer incentivos financeiros e formar parcerias com instituições de pesquisa e agricultores locais.",
+        "Desenvolver sistemas de monitoramento para a saúde do solo e biodiversidade, e implementar políticas para controle da erosão."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem da área de terra gerida sob práticas de uso sustentável da terra (%)",
+        "Redução nas taxas de desmatamento ou degradação da terra (%)",
+        "Aumento nos indicadores de biodiversidade em terras geridas (por exemplo, contagem de espécies, qualidade do habitat)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "medium",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0157",
+    "actionName": "Maintenance and Revitalization of Riparian Forests",
+    "actionPriority": 8,
+    "explanation": "A manutenção e revitalização das florestas ripárias em Contagem é crucial devido à vulnerabilidade da cidade a inundações e deslizamentos de terra, conforme indicado pelos altos índices de risco para esses perigos. As florestas ripárias desempenham um papel significativo na estabilização do solo e na redução do escoamento superficial, o que pode mitigar o impacto desses desastres naturais. Além disso, essas florestas contribuem para a conservação da biodiversidade e melhoram a qualidade da água, o que é essencial, considerando o acesso muito baixo da cidade a serviços adequados de água. Ao priorizar essa ação, Contagem pode aumentar sua resiliência frente aos riscos relacionados ao clima e melhorar a saúde ambiental geral da região.",
+    "action": {
+      "ActionID": "icare_0157",
+      "ActionName": "Manutenção e Revitalização de Florestas Ripárias",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mapeamento e avaliação de florestas ripárias degradadas, desenvolvimento de planos de revitalização com o plantio de espécies nativas, controle de espécies invasoras, medidas de contenção de erosão e avaliações periódicas dos impactos nas condições ambientais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Garantir a disponibilidade de dados geoespaciais e mapeamento prévio de áreas degradadas.",
+        "Formar parcerias com viveiros locais e fornecer equipamentos e mão de obra qualificada para o controle de espécies invasoras.",
+        "Garantir recursos financeiros e estabelecer um sistema de monitoramento para avaliar os impactos ambientais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total de florestas ripárias restauradas (ha).",
+        "Número de projetos implementados.",
+        "Redução da erosão e assoreamento de corpos d'água (toneladas/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0164",
+    "actionName": "Hydrological Monitoring System with Telemetry Stations",
+    "actionPriority": 9,
+    "explanation": "Implementar um Sistema de Monitoramento Hidrológico com Estações de Telemetria em Contagem é crucial devido ao alto risco de secas e inundações na cidade. Esses perigos representam ameaças significativas aos recursos hídricos, à segurança alimentar e à saúde pública, conforme indicado pela avaliação de risco de mudanças climáticas do município. Ao estabelecer um sistema de monitoramento robusto, a cidade poderá prever e gerenciar melhor os riscos relacionados à água, protegendo assim sua população e infraestrutura. Essa abordagem proativa é essencial para aumentar a resiliência diante dos impactos climáticos e garantir uma gestão sustentável dos recursos hídricos.",
+    "action": {
+      "ActionID": "icare_0164",
+      "ActionName": "Sistema de Monitoramento Hidrológico com Estações de Telemetria",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementação de um sistema de monitoramento hidrológico com estações de telemetria para monitorar a precipitação, os níveis de água e as variáveis meteorológicas em tempo real.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Equipamento e infraestrutura",
+        "Sistema robusto de gestão de dados",
+        "Coordenação institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Pontualidade dos dados",
+        "Custo-benefício",
+        "Eficácia da mitigação"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0151",
+    "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+    "actionPriority": 10,
+    "explanation": "Desenvolver diagnósticos e restaurar áreas das Zonas Especiais de Interesse Social (ZEIS) em Contagem é fundamental devido aos desafios socioeconômicos da cidade. Com uma população de renda muito baixa, a melhoria dessas áreas pode aumentar significativamente as condições de vida e o acesso a serviços essenciais. Além disso, a atenção a essas zonas pode ajudar a mitigar os impactos de riscos ambientais, como enchentes e deslizamentos de terra, que representam grandes ameaças à saúde pública e à infraestrutura. Essa ação apoia o desenvolvimento urbano sustentável e a resiliência diante de ameaças relacionadas ao clima.",
+    "action": {
+      "ActionID": "icare_0151",
+      "ActionName": "Desenvolver diagnósticos e restaurar áreas de Zonas Especiais de Interesse Social (ZEIS)",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "sea-level-rise",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Prioridade para áreas ZEIS nas ações de melhoria habitacional e na aplicação de recursos do Fundo de Urbanização, com a implementação de infraestrutura urbana que considere a adaptação climática nesses espaços. Uso de Soluções Baseadas na Natureza (NbS) na adaptação do saneamento ambiental e infraestruturas verdes e azuis que potencializem o lazer, a cultura, a agricultura urbana e atividades para fortalecer associações comunitárias.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento do Fundo de Urbanização e de outros mecanismos financeiros para apoiar melhorias habitacionais e infraestrutura urbana em áreas ZEIS",
+        "Colaboração entre planejadores urbanos, especialistas ambientais e comunidades locais para projetar e implementar soluções baseadas na natureza (NbS) para infraestrutura urbana",
+        "Políticas e estruturas regulatórias que integrem medidas de adaptação climática no planejamento urbano, garantindo que os investimentos priorizem a sustentabilidade ambiental e a comunidade"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de áreas ZEIS diagnosticadas e restauradas.",
+        "Percentual de residentes beneficiados por áreas restauradas (%).",
+        "Investimentos públicos alocados para áreas ZEIS (valor em moeda)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "sea-level-rise": "medium",
+        "floods": "medium",
+        "landslides": "low",
+        "diseases": "medium",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0156",
+    "actionName": "Implementation of urban gardens",
+    "actionPriority": 11,
+    "explanation": "A implementação de hortas urbanas em Contagem é uma ação estratégica para fortalecer a segurança alimentar, especialmente considerando a vulnerabilidade da cidade a secas e inundações. As hortas urbanas podem ajudar a mitigar o impacto desses riscos ao fornecer uma fonte de alimento local e sustentável, reduzindo a dependência de suprimentos alimentares externos. Além disso, elas podem melhorar a biodiversidade e contribuir para os espaços verdes da cidade, que são essenciais para manter o equilíbrio ecológico em uma área densamente povoada. Essa iniciativa também promove o engajamento e a educação da comunidade, estimulando o senso de pertencimento e responsabilidade em relação à sustentabilidade ambiental.",
+    "action": {
+      "ActionID": "icare_0156",
+      "ActionName": "Implementação de hortas urbanas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Identificar e avaliar a viabilidade de áreas adequadas para a instalação de hortas urbanas e garantir que os locais escolhidos atendam às expectativas da comunidade.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Garantir a disponibilidade de mapas detalhados de uso do solo e dados de planejamento urbano.",
+        "Envolver-se com as comunidades locais para entender suas necessidades e expectativas.",
+        "Avaliar a qualidade do solo, a disponibilidade de água e formar parcerias para apoiar o estabelecimento e a manutenção de jardins."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de hortas urbanas criadas.",
+        "Quantidade de alimentos produzidos localmente (kg/ano).",
+        "Número de beneficiários diretos."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "landslides": "low",
+        "floods": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0145",
+    "actionName": "Strengthen the healthcare network to attend to climate victims",
+    "actionPriority": 12,
+    "explanation": "Fortalecer a rede de saúde em Contagem é fundamental devido ao alto risco de impactos à saúde relacionados ao clima. A cidade enfrenta ameaças significativas de ondas de calor, enchentes e deslizamentos de terra, todos capazes de afetar gravemente a saúde pública. Ao aprimorar os serviços de saúde, o município pode gerenciar e mitigar melhor as consequências desses perigos, garantindo o bem-estar de seus habitantes. Além disso, um sistema de saúde robusto pode aumentar a resiliência diante de eventos climáticos futuros, proporcionando respostas rápidas e eficazes em situações de emergência.",
+    "action": {
+      "ActionID": "icare_0145",
+      "ActionName": "Fortalecer a rede de saúde para atender às vítimas do clima",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "storms",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Melhorar a infraestrutura das unidades de saúde para atender pessoas que necessitam de cuidados médicos devido a impactos associados a riscos climáticos (vítimas do clima), como aquelas afetadas por ondas de calor ou inundações, especialmente em áreas mais vulneráveis. Desenvolver planos de ação para preparar a rede de saúde para situações extremas relacionadas ao clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Investimento na renovação e expansão das instalações de saúde, garantindo que estejam equipadas para lidar com os impactos na saúde relacionados ao clima, especialmente em áreas vulneráveis.",
+        "Desenvolvimento de planos de ação e programas de treinamento para profissionais de saúde responderem a eventos climáticos extremos, como ondas de calor e inundações.",
+        "Colaboração com autoridades locais, equipes de resposta a emergências e especialistas em clima para criar uma estrutura abrangente para preparar a rede de saúde para os riscos climáticos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de instalações de saúde atualizadas para emergências relacionadas ao clima.",
+        "Aumento no percentual de profissionais de saúde treinados para resposta a emergências climáticas (%).",
+        "Número de lesões relacionadas ao clima tratadas com sucesso.",
+        "."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "medium",
+        "floods": "high",
+        "storms": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "ipcc_0096",
+    "actionName": "Farm/fishery improvements",
+    "actionPriority": 13,
+    "explanation": "Melhorias na agricultura e na pesca são cruciais para Contagem devido ao risco significativo de secas que afetam os recursos hídricos e a segurança alimentar. O aprimoramento das práticas agrícolas pode ajudar a mitigar esses riscos, aumentando a resiliência à escassez de água e garantindo um fornecimento estável de alimentos. Além disso, o desenvolvimento das pescarias pode contribuir para a conservação da biodiversidade, que está ameaçada tanto pelas secas quanto pelas ondas de calor. Essas melhorias também podem fortalecer a economia local, proporcionando meios de subsistência sustentáveis diante dos desafios relacionados ao clima.",
+    "action": {
+      "ActionID": "ipcc_0096",
+      "ActionName": "Melhorias na fazenda/pesqueira",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementar uma variedade de estratégias para adaptar fazendas e pescarias aos impactos climáticos. Isso inclui mudar o equipamento de pesca ou a potência dos barcos, adotar novas variedades de culturas ou ajustar os cronogramas de plantio, melhorar os esquemas de irrigação, integrar sistemas de cultivo e pecuária, realocar o gado com manejo de pastagens melhorado e adotar sistemas agroecológicos e agroflorestais. Inovações tecnológicas como a agricultura inteligente e medidas financeiras como subsídios apoiam essas adaptações.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garante o acesso a recursos para agricultores e pescadores marginalizados, promove opções diversificadas de subsistência e fortalece a resiliência em comunidades desfavorecidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Apoio político para agricultura e pesca resilientes ao clima",
+        "Acesso a financiamento e subsídios",
+        "Treinamento para adoção de novas práticas",
+        "Infraestrutura de mercado melhorada"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento na produtividade agrícola e pesqueira",
+        "Taxa de adoção de sistemas integrados",
+        "Redução nas perdas de rendimento relacionadas ao clima"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "wildfires": "low",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0148",
+    "actionName": "Create the Municipal Climate Change Forum",
+    "actionPriority": 14,
+    "explanation": "A criação do Fórum Municipal de Mudanças Climáticas em Contagem é um passo crucial para enfrentar os desafios ambientais da cidade. O município enfrenta riscos significativos decorrentes de perigos relacionados ao clima, como secas, ondas de calor e inundações, que afetam os recursos hídricos, a saúde pública e a infraestrutura. O estabelecimento de um fórum dedicado facilitará esforços coordenados entre as partes interessadas para desenvolver e implementar estratégias eficazes de adaptação e mitigação das mudanças climáticas. Essa iniciativa também aumentará o engajamento e a conscientização da comunidade, promovendo uma abordagem colaborativa para fortalecer a resiliência diante dos impactos das mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0148",
+      "ActionName": "Criar o Fórum Municipal de Mudanças Climáticas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "diseases",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Criação de um Fórum Municipal de Mudanças Climáticas com a participação de líderes comunitários, cientistas, coletivos, institutos de pesquisa, ONGs e membros da administração municipal e estadual. O Fórum servirá como referência para ações relacionadas às Mudanças Climáticas, com o objetivo de monitorar políticas futuras sobre o assunto no município, estimular o diálogo e criar uma rede de discussões sobre a crise climática.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Engajamento de diversas partes interessadas, incluindo líderes comunitários, cientistas, ONGs e autoridades locais, para estabelecer e sustentar o Fórum.",
+        "Alocação de recursos para facilitar reuniões regulares, workshops e eventos para que o Fórum permaneça ativo e impactante.",
+        "Desenvolvimento de uma estrutura clara e diretrizes para o Fórum monitorar e orientar políticas e iniciativas de mudança climática dentro do município."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de partes interessadas chave participando ativamente no fórum.",
+        "Número de políticas ou ações relacionadas ao clima propostas através do fórum.",
+        "Envolvimento público nas iniciativas do fórum (medido pela participação em eventos ou pesquisas)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "landslides": "low",
+        "floods": "medium",
+        "wildfires": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0181",
+    "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+    "actionPriority": 15,
+    "explanation": "A ação de realocar e restaurar áreas vulneráveis em Contagem é crucial devido ao alto risco de desastres naturais, como deslizamentos de terra e inundações, que representam ameaças significativas à saúde pública e à infraestrutura. Considerando a alta densidade populacional da cidade e os níveis de renda muito baixos, muitos moradores podem estar vivendo em áreas particularmente suscetíveis a esses riscos. A restauração ambiental pode ajudar a mitigar esses perigos ao estabilizar o solo e melhorar a resiliência dos ecossistemas. Além disso, essa ação contribui para a sustentabilidade e segurança a longo prazo da comunidade, alinhando-se com a necessidade da cidade de enfrentar suas vulnerabilidades socioeconômicas.",
+    "action": {
+      "ActionID": "icare_0181",
+      "ActionName": "Relocação e Restauração Ambiental em Áreas Vulneráveis",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Um projeto abrangente que aborda a vulnerabilidade socioambiental de um assentamento informal. Inclui a realocação de residentes de áreas propensas a inundações, a restauração do meio ambiente e o fornecimento de infraestrutura e serviços sociais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamento adequado",
+        "Coordenação interagências",
+        "Segurança da posse da terra"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de famílias realocadas.",
+        "Progresso da restauração ambiental.",
+        "Redução do risco de inundações."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "ipcc_0093",
+    "actionName": "Availability of health infrastructure",
+    "actionPriority": 16,
+    "explanation": "A disponibilidade de infraestrutura de saúde é crucial para Contagem, especialmente considerando o alto risco de impactos à saúde pública decorrentes de perigos como ondas de calor, deslizamentos de terra e inundações. Esses perigos foram identificados como tendo pontuações de risco significativas, indicando uma necessidade urgente de sistemas de saúde robustos para gerenciar possíveis crises. O aprimoramento da infraestrutura de saúde pode aumentar a resiliência da cidade diante desses desafios relacionados ao clima, garantindo melhor preparação e capacidade de resposta. Além disso, o fortalecimento da infraestrutura de saúde pode contribuir para o bem-estar geral da população, tornando-se um componente vital da estratégia de adaptação da cidade.",
+    "action": {
+      "ActionID": "ipcc_0093",
+      "ActionName": "Disponibilidade de infraestrutura de saúde",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "sea-level-rise",
+        "diseases"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Garantir o acesso a infraestrutura de água potável segura, proteger os serviços de saúde e melhorar os sistemas de saneamento para mitigar os impactos climáticos. Isso inclui desenvolver medidas adaptativas para a segurança hídrica contra secas, inundações e elevação do nível do mar. Fortalecer a resiliência da infraestrutura garante acesso equitativo aos serviços de saúde, reduz os riscos de contaminação e aborda os impactos dos perigos induzidos pelo clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Melhora o acesso a recursos críticos de saúde e água para comunidades vulneráveis e desatendidas, mitigando as desigualdades causadas pelos impactos climáticos.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamento adequado",
+        "investimentos tecnológicos em infraestrutura de saúde e água",
+        "governança eficaz e coordenação intersetorial"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução de doenças transmitidas pela água",
+        "melhor acesso a água potável",
+        "número de instalações de saúde resilientes desenvolvidas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "sea-level-rise": "high",
+        "diseases": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "ipcc_0098",
+    "actionName": "Behaviour change in diets and food waste",
+    "actionPriority": 17,
+    "explanation": "A promoção da mudança de comportamento em dietas e a redução do desperdício de alimentos são ações cruciais para Contagem devido ao seu potencial impacto na segurança alimentar e na redução de emissões. Considerando o alto risco de secas que afetam os recursos hídricos e a segurança alimentar da cidade, incentivar práticas alimentares sustentáveis pode ajudar a mitigar esses riscos. Além disso, a redução do desperdício de alimentos pode diminuir significativamente as emissões provenientes de resíduos, que são um contribuinte relevante para o total de emissões do município. Essa ação está alinhada com a necessidade de abordar tanto a sustentabilidade ambiental quanto as questões de saúde pública na região.",
+    "action": {
+      "ActionID": "ipcc_0098",
+      "ActionName": "Mudança de comportamento em dietas e desperdício de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Reduzir a perda e o desperdício de alimentos por meio de práticas aprimoradas de produção, distribuição e consumo de alimentos. As ações incluem o aprimoramento de técnicas agrícolas, a adoção de tecnologias de economia de água, a implementação de soluções de armazenamento de baixo custo e a promoção de dietas à base de plantas. Os formuladores de políticas podem incentivar esses comportamentos com políticas de preços adequadas, iniciativas de agricultura sustentável e apoio a grupos desfavorecidos. A ação enfatiza a mudança para dietas mais saudáveis, a redução do consumo excessivo e o apoio a sistemas alimentares locais para mitigar as emissões de gases de efeito estufa e garantir a segurança alimentar sob as mudanças climáticas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promove o acesso a alimentos saudáveis e acessíveis para comunidades vulneráveis, capacitando mulheres, jovens e grupos socialmente desfavorecidos. Incentiva a participação equitativa em práticas agrícolas sustentáveis e redes alimentares locais.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Educação e treinamento para agricultores",
+        "Acesso a insumos agrícolas sustentáveis",
+        "Apoio político para práticas sustentáveis",
+        "Infraestrutura tecnológica para armazenamento e processamento"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas porcentagens de perda e desperdício de alimentos",
+        "Aumento na adoção de dietas à base de plantas",
+        "Melhoria nos indicadores de segurança alimentar",
+        "Redução nas emissões de GEE dos sistemas alimentares"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "medium",
+        "floods": "medium",
+        "wildfires": "low"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "ipcc_0092",
+    "actionName": "Social safety nets",
+    "actionPriority": 18,
+    "explanation": "A implementação de redes de proteção social em Contagem é crucial devido aos desafios socioeconômicos da cidade, especialmente os níveis de renda muito baixos. Essas redes de proteção podem fornecer apoio essencial às populações vulneráveis, ajudando-as a lidar com a instabilidade econômica e com possíveis impactos relacionados ao clima. Considerando o alto risco de ameaças como secas e inundações, que podem afetar gravemente a saúde pública e a segurança alimentar, as redes de proteção social podem desempenhar um papel vital no fortalecimento da resiliência da comunidade. Ao priorizar essa ação, a cidade poderá proteger melhor seus moradores dos efeitos adversos das mudanças climáticas e das perturbações socioeconômicas.",
+    "action": {
+      "ActionID": "ipcc_0092",
+      "ActionName": "Redes de proteção social",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "As redes de segurança social englobam mecanismos de proteção social adaptativa para reduzir a insegurança alimentar e a desnutrição, especialmente para populações vulneráveis. Estes incluem transferências de dinheiro, programas de alimentação escolar, iniciativas de trabalho público, compensação de desemprego, reformas agrárias, esquemas de crédito e seguros. Abordagens integradas combinam avaliações de risco climático com redução de risco de desastres, educação e equidade social para aumentar a resiliência aos estresses climáticos.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Aumenta o status social e os direitos de grupos marginalizados, protege populações vulneráveis, reduz desigualdades e promove a educação e a equidade de gênero.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Integração do clima e risco de desastres na proteção social",
+        "programas educacionais",
+        "coordenação com iniciativas de meios de subsistência sustentáveis e inclusão financeira"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas taxas de desnutrição",
+        "Aumento no acesso à educação para grupos vulneráveis",
+        "Participação em programas de proteção social"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0144",
+    "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+    "actionPriority": 19,
+    "explanation": "A criação de um programa de apoio financeiro para enfrentar eventos climáticos extremos é crucial para Contagem devido à sua alta vulnerabilidade a esses riscos. A cidade enfrenta riscos significativos de secas, ondas de calor e inundações, que podem impactar severamente os recursos hídricos, a saúde pública e a infraestrutura. O estabelecimento de um programa de apoio financeiro proporcionaria os recursos necessários para mitigar esses impactos e aumentar a resiliência da cidade. Além disso, esse programa poderia ajudar a proteger as populações de baixa renda, que são particularmente vulneráveis aos efeitos adversos dos eventos climáticos extremos.",
+    "action": {
+      "ActionID": "icare_0144",
+      "ActionName": "Criação de um Programa de Apoio Financeiro para Abordar Eventos Climáticos Extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "wildfires",
+        "floods",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Criação de um programa para mitigar os efeitos das tragédias climáticas, incluindo assistência financeira às famílias afetadas e esforços para garantir recursos adicionais para recuperação e reconstrução.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Recursos financeiros",
+        "Planos de resposta a emergências",
+        "Coordenação institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de pessoas assistidas",
+        "Custo-benefício",
+        "Resiliência da comunidade"
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "diseases": "medium",
+        "landslides": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CGE",
+    "cityName": "Contagem",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0175",
+    "actionName": "Recovery and preservation of green areas",
+    "actionPriority": 20,
+    "explanation": "A recuperação e preservação das áreas verdes em Contagem é crucial devido à alta densidade populacional da cidade e às pressões ambientais associadas. Os espaços verdes podem ajudar a mitigar os efeitos das ilhas de calor urbanas, o que é particularmente importante considerando a vulnerabilidade da cidade a ondas de calor. Além disso, preservar áreas verdes pode aumentar a biodiversidade e melhorar a qualidade do ar, contribuindo para melhores resultados em saúde pública. Essa ação também fortalece a resiliência da cidade diante dos impactos das mudanças climáticas, como enchentes e deslizamentos de terra, ao melhorar a absorção natural da água e reduzir o escoamento superficial.",
+    "action": {
+      "ActionID": "icare_0175",
+      "ActionName": "Recuperação e preservação de áreas verdes",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Reabilitação e proteção de espaços verdes existentes, como parques, florestas e zonas húmidas, e expansão de áreas verdes através do plantio de árvores e vegetação em áreas urbanas e periurbanas. Estas áreas oferecem soluções naturais para a gestão dos recursos hídricos, redução do estresse térmico, melhoria da qualidade do ar e aumento da biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de terrenos adequados para espaços verdes",
+        "Acesso a recursos hídricos para irrigação"
+      ],
+      "KeyPerformanceIndicators": [
+        "Área de espaços verdes criados ou restaurados.",
+        "Índices de biodiversidade em áreas verdes.",
+        "Envolvimento da comunidade em atividades de espaços verdes."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  }
+]

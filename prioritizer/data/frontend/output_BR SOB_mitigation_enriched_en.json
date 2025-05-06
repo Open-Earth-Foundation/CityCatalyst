@@ -1,0 +1,1260 @@
+[
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0075",
+        "actionName": "Set carbon emissions reduction targets for industrial sectors",
+        "actionPriority": 1,
+        "explanation": "Setting carbon emissions reduction targets for industrial sectors in Sobral is crucial due to the high level of industrial process emissions, which are the largest contributor to the city's total emissions. By focusing on this sector, Sobral can significantly reduce its overall carbon footprint, aligning with global efforts to combat climate change. Additionally, reducing emissions can help mitigate the risks associated with climate-related hazards such as droughts and heatwaves, which pose significant threats to the city's water resources, food security, and public health. This action is a priority as it addresses the root cause of several environmental and socio-economic challenges faced by the city.",
+        "action": {
+            "ActionID": "icare_0075",
+            "ActionName": "Set carbon emissions reduction targets for industrial sectors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establish clear and achievable carbon emissions reduction goals for industries and require periodic reporting to ensure progress.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "80-100",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of a standardized carbon emissions measurement and reporting system.",
+                "Creation of regulatory frameworks to enforce emissions reduction goals.",
+                "Capacity-building for industries to monitor and report emissions effectively."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of industries with established carbon reduction targets (%).",
+                "Reduction in total sectoral GHG emissions compared to baseline (tons of CO\u2082e).",
+                "Increase in adoption of renewable energy sources by industries (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 2,
+        "explanation": "Encouraging renewable energy policies at the municipal level in Sobral is crucial due to the city's high stationary energy emissions, which contribute significantly to its total emissions. Transitioning to renewable energy sources can help reduce these emissions, thereby mitigating the impact of climate change. Additionally, renewable energy can enhance energy security, which is vital given the city's high risk of energy insecurity due to droughts and heatwaves. Implementing these policies can also promote sustainable development and improve the overall quality of life for residents.",
+        "action": {
+            "ActionID": "icare_0042",
+            "ActionName": "Encourage renewable energy policies at the municipal level",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "non-specified_sources"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
+                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
+                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of renewable energy projects approved or initiated annually at the municipal level.",
+                "Percentage of municipal energy demand met by renewable sources (%).",
+                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0074",
+        "actionName": "Support research into carbon-neutral manufacturing technologies",
+        "actionPriority": 3,
+        "explanation": "Supporting research into carbon-neutral manufacturing technologies is crucial for Sobral due to its high industrial process emissions, which are a significant contributor to the city's total emissions. By investing in carbon-neutral technologies, Sobral can reduce its industrial emissions, thereby contributing to a cleaner environment and aligning with global sustainability goals. Additionally, this action can foster innovation and economic growth within the region, potentially creating new job opportunities and enhancing the city's socio-economic status. Given the moderate low-income level in Sobral, such advancements could also help improve the overall quality of life for its residents.",
+        "action": {
+            "ActionID": "icare_0074",
+            "ActionName": "Support research into carbon-neutral manufacturing technologies",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Invest in research and development of carbon-neutral technologies and encourage their adoption in industrial production.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "60-79",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Funding for research and development of carbon-neutral technologies.",
+                "Partnerships between government, academia, and industry to foster innovation.",
+                "Incentive programs for industries to adopt new technologies."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of research projects funded or initiated.",
+                "Percentage of local industries adopting carbon-neutral technologies (%).",
+                "Reduction in carbon emissions in industries participating in research projects (tons of CO\u2082/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0078",
+        "actionName": "Develop and implement industrial waste management programs",
+        "actionPriority": 4,
+        "explanation": "Developing and implementing industrial waste management programs in Sobral is crucial due to the high industrial process emissions, which are a significant contributor to the city's total emissions. Effective waste management can help reduce these emissions, thereby mitigating environmental impact and improving air quality. Additionally, managing industrial waste efficiently can prevent potential health hazards associated with improper waste disposal, thus safeguarding public health. This action aligns with the city's need to address environmental challenges and enhance sustainability.",
+        "action": {
+            "ActionID": "icare_0078",
+            "ActionName": "Develop and implement industrial waste management programs",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establish systems to better manage industrial waste, reducing landfill emissions and encouraging recycling or reuse.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "60-79",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Clear waste management regulations for industries.",
+                "Availability of waste processing infrastructure.",
+                "Training programs for industrial workers on waste management."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in hazardous waste generation (tons/year).",
+                "Increase in the recycling rate of industrial waste materials (%).",
+                "Amount of waste-to-energy conversion achieved (MWh/year)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 5,
+        "explanation": "Integrating renewables into municipal water systems in Sobral is a high priority due to the city's vulnerability to droughts, which significantly impact water resources. By utilizing renewable energy, the city can ensure a more reliable and sustainable water supply, reducing dependency on traditional energy sources that may be affected by climate hazards. This action also aligns with the need to lower stationary energy emissions, contributing to overall emission reduction goals. Furthermore, it supports energy security, which is crucial given the high risk of energy-related impacts from climate change in the region.",
+        "action": {
+            "ActionID": "icare_0024",
+            "ActionName": "Integrate renewables into municipal water systems",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implement renewable energy sources, such as solar or wind power, to drive water treatment, pumping, and distribution systems, reducing energy costs and emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding or financial incentives to integrate renewable energy sources like solar or wind power into water treatment and distribution systems",
+                "Technical expertise and infrastructure to retrofit existing systems with renewable energy solutions or design new facilities powered by renewables",
+                "Policy and regulatory support to encourage the use of clean energy in water systems and ensure its integration into municipal energy grids"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of municipal water systems powered by renewables.",
+                "Reduction in energy consumption from non-renewable sources (kWh/year).",
+                "GHG emissions avoided (tons CO\u2082e)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0073",
+        "actionName": "Support the transition to low-emission industrial refrigeration",
+        "actionPriority": 6,
+        "explanation": "Supporting the transition to low-emission industrial refrigeration in Sobral is crucial due to the city's high industrial process emissions, which are a significant contributor to its total emissions. By focusing on reducing emissions from industrial refrigeration, Sobral can make substantial progress in lowering its overall carbon footprint. Additionally, this action aligns with the city's need to address energy security risks exacerbated by climate hazards such as droughts and heatwaves. Implementing low-emission technologies can also enhance energy efficiency, providing long-term economic and environmental benefits for the region.",
+        "action": {
+            "ActionID": "icare_0073",
+            "ActionName": "Support the transition to low-emission industrial refrigeration",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Replace high-GWP refrigerants with low-emission, energy-efficient alternatives in industrial refrigeration systems.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "60-79",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of lowGWP refrigerants and compatible equipment.",
+                "Regulatory support for phasing out highGWP refrigerants.",
+                "Training programs for industry professionals on new refrigerant systems."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of industrial refrigeration systems transitioned to low-emission alternatives.",
+                "Reduction in greenhouse gas emissions from refrigeration systems (tons of CO\u2082 equivalent/year).",
+                "Percentage of local businesses receiving support for transitioning (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0079",
+        "actionName": "Implement energy audits in industrial plants",
+        "actionPriority": 7,
+        "explanation": "Implementing energy audits in industrial plants in Sobral is crucial due to the high level of industrial process emissions, which are the largest contributor to the city's total emissions. By identifying inefficiencies and areas for improvement, these audits can significantly reduce energy consumption and emissions, aligning with the city's sustainability goals. Additionally, reducing energy use in industrial plants can help mitigate the risk of energy insecurity, which is a significant concern given the city's vulnerability to droughts. This action not only addresses environmental concerns but also supports economic efficiency and resilience in the industrial sector.",
+        "action": {
+            "ActionID": "icare_0079",
+            "ActionName": "Implement energy audits in industrial plants",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Conduct regular energy audits to identify opportunities for energy savings and reduction in emissions.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "20-39",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of qualified professionals or energy auditors to conduct thorough assessments across industries and buildings.",
+                "Development of a standardized framework for energy audits, ensuring consistency and accuracy in results.",
+                "Implementation of government or corporate incentives to encourage organizations to act on audit recommendations, such as rebates for energy-efficient upgrades."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of industrial plants conducting energy audits annually.",
+                "Cost savings achieved through audit-recommended improvements (%).",
+                "Average time to implement energy efficiency measures post-audit (months)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0081",
+        "actionName": "Enhance material recycling in manufacturing",
+        "actionPriority": 8,
+        "explanation": "Enhancing material recycling in manufacturing is crucial for Sobral due to its high industrial process emissions, which are a significant contributor to the city's total emissions. By improving recycling practices, the city can reduce waste and lower emissions, contributing to a more sustainable industrial sector. Additionally, this action can help mitigate the impact of resource scarcity, which is a concern given the city's vulnerability to droughts affecting water and energy security. Implementing this action aligns with the city's need to address environmental challenges while promoting economic sustainability.",
+        "action": {
+            "ActionID": "icare_0081",
+            "ActionName": "Enhance material recycling in manufacturing",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage recycling and reusing of materials in industrial production to reduce raw material extraction and emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "60-79",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Establishment of recycling programs tailored to specific industries, with clear guidelines for material separation and reuse.",
+                "Collaboration with waste management companies to create efficient recycling systems within industrial areas.",
+                "Development of policies that provide economic incentives for industries to invest in recycling technologies and sustainable production methods."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of waste materials recycled in manufacturing processes (%).",
+                "Reduction in raw material consumption due to recycling (tons/year).",
+                "Increase in the use of recycled materials in final products (%)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0076",
+        "actionName": "Encourage the use of low-emission fuels in industrial processes",
+        "actionPriority": 9,
+        "explanation": "Encouraging the use of low-emission fuels in industrial processes is a critical action for Sobral due to its high industrial process emissions, which are a significant contributor to the city's total emissions. By transitioning to cleaner fuels, the city can substantially reduce its carbon footprint, aligning with global sustainability goals. Additionally, this action can help mitigate the impact of climate-related hazards such as droughts and heatwaves, which pose a high risk to energy security and public health in the region. Implementing this measure can also enhance the city's resilience to climate change, ensuring a healthier environment for its residents.",
+        "action": {
+            "ActionID": "icare_0076",
+            "ActionName": "Encourage the use of low-emission fuels in industrial processes",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promote the transition to biofuels, hydrogen, and other low-carbon alternatives in industrial combustion processes.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "60-79",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of infrastructure for biofuel and hydrogen production and distribution.",
+                "Regulatory frameworks to support the transition to low-carbon fuels.",
+                "Availability of technology to integrate biofuels and hydrogen into industrial systems."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of industrial energy consumption from low-emission fuels (%).",
+                "Reduction in GHG emissions from fuel substitution (tons of CO\u2082e/year).",
+                "Number of facilities transitioning to low-emission fuel sources"
+            ],
+            "PowersAndMandates": [
+                "state"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0001",
+        "actionName": "Stimulate solar energy production in industrial facilities",
+        "actionPriority": 10,
+        "explanation": "Stimulating solar energy production in industrial facilities in Sobral is a crucial action due to the city's high stationary energy emissions. With a total emission of over two million metric tons, reducing reliance on traditional energy sources can significantly lower the carbon footprint. Additionally, Sobral's desert biome and high risk of droughts make solar energy a sustainable and reliable alternative, ensuring energy security even during extreme weather conditions. This action aligns with the need to mitigate climate risks and promote sustainable industrial practices in the region.",
+        "action": {
+            "ActionID": "icare_0001",
+            "ActionName": "Stimulate solar energy production in industrial facilities",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the installation of solar energy systems in factories to reduce dependence on fossil fuels and minimize associated emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "80-100",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Availability of funding or subsidies to support solar energy installations in industries.",
+                "Technical expertise and capacity for the installation of solar panels and related systems.",
+                "Regulatory frameworks that facilitate the integration of solar energy into industrial operations."
+            ],
+            "KeyPerformanceIndicators": [
+                "Total greenhouse gas emissions avoided through solar energy adoption in industries (tons of CO\u2082/year).",
+                "Average return on investment (ROI) period for industrial solar installations (years).",
+                "Percentage of industrial energy needs met by solar power systems (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0038",
+        "actionName": "Promote community solar farms",
+        "actionPriority": 11,
+        "explanation": "Promoting community solar farms in Sobral is a strategic action due to the city's high stationary energy emissions and its desert biome, which offers abundant sunlight. This initiative can significantly reduce reliance on traditional energy sources, thereby lowering emissions and enhancing energy security. Additionally, community solar farms can provide economic benefits by creating local jobs and reducing energy costs for residents, particularly important given the moderate low-income levels in the area. By investing in renewable energy, Sobral can also mitigate the impacts of climate change, such as heatwaves and droughts, which pose significant risks to public health and infrastructure.",
+        "action": {
+            "ActionID": "icare_0038",
+            "ActionName": "Promote community solar farms",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Develop and encourage the adoption of shared solar energy projects, enabling communities to collectively benefit from clean, renewable power.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of policies and regulatory frameworks to support community-based shared solar energy projects and ensure equitable access to clean energy",
+                "Availability of financial mechanisms or incentives to help communities invest in and maintain shared solar energy systems",
+                "Collaboration between local governments, energy providers, and community organizations to design and implement shared solar projects effectively"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of households served by community solar projects.",
+                "GHG emissions avoided through solar energy production (tons CO\u2082e)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0077",
+        "actionName": "Encourage the use of alternative materials in manufacturing",
+        "actionPriority": 12,
+        "explanation": "Encouraging the use of alternative materials in manufacturing is a priority for Sobral due to its high industrial process emissions, which are a significant contributor to the city's total emissions. By adopting alternative materials, the city can reduce its carbon footprint and mitigate the environmental impact of its manufacturing sector. Additionally, this action can help Sobral become more resilient to climate-related risks, such as droughts and heatwaves, by promoting sustainable practices that conserve resources and reduce dependency on traditional materials. This initiative aligns with the city's need to address its socio-economic challenges by potentially creating new economic opportunities and fostering innovation in the local industry.",
+        "action": {
+            "ActionID": "icare_0077",
+            "ActionName": "Encourage the use of alternative materials in manufacturing",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promote the use of low-emission or carbon-neutral materials in the production process to reduce overall emissions.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "60-79",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of low-emission or carbon-neutral materials in the market.",
+                "Incentives for industries to adopt these materials.",
+                "Research and development support for improving material efficiency and reducing costs."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of production using alternative materials (%).",
+                "Number of companies transitioning to alternative material use.",
+                "Cost reduction achieved through alternative material adoption (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0029",
+        "actionName": "Adopt policies for fossil fuel-free buildings",
+        "actionPriority": 13,
+        "explanation": "Adopting policies for fossil fuel-free buildings in Sobral is crucial due to the city's high stationary energy emissions, which contribute significantly to its total emissions. Transitioning to fossil fuel-free buildings can help reduce these emissions, aligning with global efforts to combat climate change. Additionally, Sobral faces high risks from heatwaves, which can be exacerbated by fossil fuel use, making this action a priority to improve energy efficiency and resilience. Implementing such policies can also enhance energy security, a key concern given the city's vulnerability to droughts.",
+        "action": {
+            "ActionID": "icare_0029",
+            "ActionName": "Adopt policies for fossil fuel-free buildings",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Enforce regulations requiring new constructions to utilize renewable energy systems, energy-efficient designs, and zero-emission technologies.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of building codes and regulatory frameworks that mandate the integration of renewable energy systems and energy-efficient designs in new constructions",
+                "Availability of incentives or support for developers to comply with regulations and adopt zero-emission technologies",
+                "Technical expertise and resources to ensure proper implementation and monitoring of renewable energy systems and energy-efficient designs in construction projects"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of buildings transitioning to renewable energy sources.",
+                "Total reduction in fossil fuel use for heating/cooling (m\u00b3 or liters).",
+                "Decrease in building-related GHG emissions (tons CO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0082",
+        "actionName": "Transition to renewable energy for industrial operations",
+        "actionPriority": 14,
+        "explanation": "Transitioning to renewable energy for industrial operations in Sobral is crucial due to the high industrial process emissions, which are a significant contributor to the city's total emissions. By adopting renewable energy sources, the city can significantly reduce its carbon footprint, aligning with global sustainability goals. Additionally, this transition can enhance energy security, which is vital given the high risk of energy-related impacts from droughts and heatwaves. Implementing this action can also stimulate local economic growth by creating green jobs and fostering innovation in the renewable energy sector.",
+        "action": {
+            "ActionID": "icare_0082",
+            "ActionName": "Transition to renewable energy for industrial operations",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the shift to renewable energy sources such as wind, solar, and hydroelectric power in industrial operations to reduce fossil fuel use.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "80-100",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Provision of incentives, such as tax breaks or subsidies, to make renewable energy technologies more affordable for industries.",
+                "Development of infrastructure for the integration of renewable energy into existing industrial operations, including energy storage solutions.",
+                "Technical assistance and training for industry stakeholders to facilitate the transition to renewable energy sources."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of industries adopting renewable energy sources.",
+                "Installed capacity of renewable energy in industrial operations (MW).",
+                "Reduction in average energy costs for industries that transitioned to renewables (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0040",
+        "actionName": "Adopt solar-powered street lighting in rural areas",
+        "actionPriority": 15,
+        "explanation": "Adopting solar-powered street lighting in rural areas of Sobral is a strategic action due to the city's high solar potential, given its desert biome and frequent heatwaves. This initiative can significantly reduce stationary energy emissions, which are a major contributor to the city's total emissions. Additionally, solar lighting can improve safety and accessibility in rural areas, enhancing the quality of life for residents. By reducing reliance on traditional energy sources, this action also supports energy security, which is crucial in a region facing frequent droughts.",
+        "action": {
+            "ActionID": "icare_0040",
+            "ActionName": "Adopt solar-powered street lighting in rural areas",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Install solar-powered streetlights to improve safety and accessibility in rural communities while reducing energy costs and environmental impact.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding or financial mechanisms to support the installation of solar-powered streetlights in rural communities",
+                "Access to technical expertise to design, install, and maintain solar-powered street lighting systems",
+                "Collaboration with local governments and communities to ensure the integration of solar streetlights into existing infrastructure and energy plans"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of streetlights powered by solar energy.",
+                "Annual reduction in electricity consumption (kWh).",
+                "GHG emissions avoided (tons CO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 16,
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Sobral due to its moderate low-income population and the high risk of droughts affecting food security. By supporting local agroecological producers, the city can enhance food security and resilience against climate impacts, such as droughts, which are a significant risk. This action also promotes sustainable agricultural practices, which can help reduce emissions from land use and support biodiversity. Additionally, it strengthens the local economy by providing income opportunities for local farmers, thereby addressing socio-economic challenges.",
+        "action": {
+            "ActionID": "icare_0131",
+            "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Focus on buying sustainable, locally produced food for public institutions.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of procurement policies and identification of reliable local suppliers.",
+                "Partnerships with producers and allocation of funding for sustainable procurement programs.",
+                "Establishment of monitoring systems to ensure compliance with sustainability criteria."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of the total volume of public purchases coming from local agroecological producers.",
+                "Amount of CO\u2082 emissions avoided due to reduced transport distance (tCO\u2082e).",
+                "Number of agroecological producers benefiting from public purchases."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0033",
+        "actionName": "Install biodigesters in rural properties",
+        "actionPriority": 17,
+        "explanation": "Installing biodigesters in rural properties in Sobral is a strategic action to address the high emissions from industrial processes and waste. Biodigesters can help reduce waste emissions by converting organic waste into biogas, which can be used as a renewable energy source, thus lowering the city's overall emissions. Additionally, this action supports energy security by providing an alternative energy source, which is crucial given the high risk of energy insecurity due to droughts. Furthermore, it can improve the socio-economic conditions by providing rural communities with access to clean energy and potentially reducing energy costs.",
+        "action": {
+            "ActionID": "icare_0033",
+            "ActionName": "Install biodigesters in rural properties",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Equip rural farms and properties with biodigesters to convert organic waste into biogas and nutrient-rich fertilizers, providing a sustainable energy source.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of funding or subsidies to support the installation of biodigesters on rural farms and properties",
+                "Access to technical expertise for the design, installation, and maintenance of biodigesters",
+                "Development of a supportive regulatory framework that encourages the use of biogas and organic waste management systems in rural agriculture"
+            ],
+            "KeyPerformanceIndicators": [
+                "Volume of biogas generated (m\u00b3/year).",
+                "GHG emissions avoided by replacing fossil fuels (tons CO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0071",
+        "actionName": "Promote the substitution of traditional materials with sustainable alternatives",
+        "actionPriority": 18,
+        "explanation": "Promoting the substitution of traditional materials with sustainable alternatives in Sobral is crucial due to the city's high emissions from industrial processes. By adopting sustainable materials, the city can significantly reduce its carbon footprint and contribute to mitigating climate change impacts. Additionally, this action aligns with the need to address the high risk of droughts and heatwaves, which are exacerbated by unsustainable practices. Implementing this action can also enhance energy security and public health by reducing reliance on resource-intensive materials.",
+        "action": {
+            "ActionID": "icare_0071",
+            "ActionName": "Promote the substitution of traditional materials with sustainable alternatives",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the replacement of traditional materials with low-impact, sustainable alternatives such as biodegradable or recyclable options.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "60-79",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of sustainable materials at competitive prices.",
+                "Supportive policies and regulations promoting material substitution.",
+                "Industry awareness and capacity to transition to new materials."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of public awareness campaigns or training sessions conducted to promote sustainable materials.",
+                "Percentage cost reduction in sustainable material production compared to traditional materials (%).",
+                "Market share of sustainable materials compared to traditional materials in local industries (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0097",
+        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+        "actionPriority": 19,
+        "explanation": "Supporting distributed energy generation in residences and businesses in Sobral is crucial due to the city's high stationary energy emissions. By promoting local energy production, Sobral can reduce its reliance on centralized energy sources, which are significant contributors to its overall emissions. Additionally, this action can enhance energy security, a key concern given the city's vulnerability to droughts and heatwaves, which can disrupt energy supply. Encouraging distributed energy generation also aligns with the city's need to improve resilience against climate-related risks, such as infrastructure damage from extreme weather events.",
+        "action": {
+            "ActionID": "icare_0097",
+            "ActionName": "Support Distributed Energy Generation in Residences and Businesses",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Facilitate the use of solar panels and other renewable energy technologies in homes and commercial buildings.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Provide financial incentives, clear installation regulations, and access to affordable technologies for solar panels.",
+                "Launch public awareness campaigns and offer training for homeowners and businesses.",
+                "Encourage adoption of renewable energy technologies to promote long-term energy savings."
+            ],
+            "KeyPerformanceIndicators": [
+                "Installed capacity of distributed energy generation (MW).",
+                "Percentage of homes and businesses generating their own energy (%).",
+                "Reduction in CO\u2082 emissions through distributed generation (tCO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SOB",
+        "cityName": "Sobral",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 20,
+        "explanation": "Creating credit lines for residential and community wind energy projects in Sobral is a strategic action due to the city's high stationary energy emissions. By promoting wind energy, Sobral can significantly reduce its reliance on traditional energy sources, thereby decreasing its overall emissions. Additionally, this initiative can enhance energy security, which is crucial given the city's vulnerability to droughts and heatwaves that can impact energy supply. Furthermore, supporting community wind projects can stimulate local economic development and provide a sustainable energy solution for residents.",
+        "action": {
+            "ActionID": "icare_0005",
+            "ActionName": "Create credit lines for residential and community wind energy projects",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
+                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
+                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of wind energy projects financed annually.",
+                "Installed capacity of wind energy systems from credit-supported projects (MW).",
+                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    }
+]

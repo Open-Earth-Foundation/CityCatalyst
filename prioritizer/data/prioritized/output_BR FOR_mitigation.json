@@ -1,0 +1,202 @@
+[
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 1,
+        "explanation": "Developing projects for renewable energy and waste reuse is a critical priority for Fortaleza due to its high total emissions, particularly from waste and energy sectors. The city faces significant climate risks, including droughts and heatwaves, which threaten energy security and public health. By investing in renewable energy and waste reuse, Fortaleza can reduce its greenhouse gas emissions, enhance energy resilience, and mitigate the impacts of climate hazards. This action also supports sustainable development and can improve the city's long-term environmental and economic stability."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 2,
+        "explanation": "Adopting biomethane in public fleets is a significant step for Fortaleza, given its high waste emissions and large urban population. Biomethane, produced from organic waste, can help reduce greenhouse gas emissions from transportation, which is a major contributor to the city's total emissions. This action also supports a circular economy by utilizing local waste resources, aligning with sustainability goals. Additionally, transitioning public fleets to cleaner fuels can improve air quality and public health, which is especially important in a densely populated city facing climate-related health risks."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 3,
+        "explanation": "Implementing an urban toll in Fortaleza can help manage traffic congestion and reduce transportation emissions, which are a significant contributor to the city's overall greenhouse gas output. With a high population density and substantial transportation emissions, measures that discourage excessive car use can have a meaningful impact on air quality and public health. Additionally, reducing vehicle traffic can help mitigate the risks associated with heatwaves and air pollution, both of which are high-priority hazards for the city. This action supports a shift toward more sustainable urban mobility and aligns with the city's need to address climate and health vulnerabilities."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 4,
+        "explanation": "Landfill management is a significant priority for Fortaleza due to the city's high waste emissions, which are a major contributor to its overall greenhouse gas output. Effective landfill management can help reduce methane emissions, improve public health, and mitigate environmental risks associated with improper waste disposal. Given the city's large population and high density, improving landfill practices will also support better living conditions and resilience to climate-related hazards. Addressing waste management is essential for sustainable urban development and climate adaptation in Fortaleza."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 5,
+        "explanation": "Expanding cycling infrastructure and building accessible sidewalks in Fortaleza is important due to the city's high population density and significant transportation emissions. By promoting active transportation, this action can help reduce greenhouse gas emissions and improve air quality. Prioritizing climate-resilient measures is crucial, as Fortaleza faces high risks from heatwaves, floods, and other climate hazards. Improved walkability and cycling options also enhance public health and urban mobility, making the city more livable and sustainable."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 6,
+        "explanation": "Improving waste efficiency is particularly important for Fortaleza, as waste emissions are a significant contributor to the city's total greenhouse gas emissions. By optimizing waste management, the city can reduce landfill emissions and promote recycling, which helps mitigate climate change impacts. Additionally, better waste efficiency can improve public health and environmental quality, both of which are crucial given the city's high population density. This action also supports resilience against climate risks by reducing pollution and enhancing resource use."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 7,
+        "explanation": "Implementing free public transportation during peak hours in Fortaleza can significantly reduce the use of individual vehicles, which is crucial given the city's high transportation emissions. With a dense population and substantial urban area, encouraging public transit can help alleviate traffic congestion and improve air quality. This action also supports climate resilience by reducing greenhouse gas emissions and mitigating the impacts of heatwaves and air pollution on public health. Additionally, making public transport more accessible can promote social equity and mobility for residents across income levels."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 8,
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets is highly relevant for Fortaleza, given its large population and high transportation emissions. Transitioning to electric vehicles can significantly reduce air pollution and greenhouse gas emissions, improving public health and environmental quality. The city's vulnerability to heatwaves and diseases further underscores the need for cleaner transportation options. Additionally, on-demand systems can enhance mobility and accessibility, supporting sustainable urban growth."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 9,
+        "explanation": "Promoting bike-sharing programs, especially with electric bikes, is important for Fortaleza due to its high population density and significant transportation emissions. Encouraging cycling can help reduce traffic congestion, lower greenhouse gas emissions, and improve air quality in urban areas. Electric bikes make cycling more accessible in a hot climate, helping residents overcome barriers related to heat and distance. This action also supports healthier lifestyles and can contribute to more sustainable urban mobility."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "c40_0040",
+        "actionName": "Volume-Based Collection",
+        "actionPriority": 10,
+        "explanation": "Volume-Based Collection can help Fortaleza manage its significant waste emissions, which are a major contributor to the city's total greenhouse gas output. By incentivizing residents and businesses to reduce waste generation, this action can lead to lower landfill use and associated emissions. Given the city's high population density, effective waste management is crucial for public health and environmental quality. However, while important, this action may not directly address the most urgent climate risks such as droughts and heatwaves, but it remains a valuable step toward overall sustainability."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 11,
+        "explanation": "The adoption of electric drones for last-mile deliveries in Fortaleza can help reduce transportation emissions, which are a significant contributor to the city's overall greenhouse gas output. As a densely populated urban area, Fortaleza faces challenges with traffic congestion and air pollution, both of which could be alleviated by shifting some deliveries to electric drones. This action also supports innovation and modernization of the local logistics sector. However, while beneficial, its impact may be more limited compared to actions targeting larger emission sources or critical climate risks such as droughts and heatwaves. Nonetheless, it represents a forward-thinking step towards sustainable urban mobility."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0122",
+        "actionName": "Establish eco-parks.",
+        "actionPriority": 12,
+        "explanation": "Establishing eco-parks in Fortaleza is important due to the city's high population density and vulnerability to climate hazards such as heatwaves, droughts, and floods. Eco-parks can provide much-needed green spaces that help mitigate urban heat, support biodiversity, and improve public health by offering recreational areas. Additionally, these parks can enhance resilience to climate impacts by managing stormwater and reducing flood risks. Given Fortaleza's desert biome and low elevation, increasing green infrastructure is a strategic adaptation to environmental challenges."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 13,
+        "explanation": "The development of micro-logistics hubs to encourage the use of electric cargo bikes is important for Fortaleza due to its high population density and significant transportation emissions. By promoting cleaner last-mile delivery solutions, this action can help reduce air pollution and greenhouse gas emissions in a densely populated urban environment. Additionally, electric cargo bikes can improve urban mobility and reduce traffic congestion, which is beneficial for public health and infrastructure resilience. This approach aligns with the city's need to address climate risks such as heatwaves and air quality issues, while supporting sustainable economic activity."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 14,
+        "explanation": "Expanding mass transit systems on rails, such as metros and light rail, is important for Fortaleza due to its high population density and significant transportation emissions. Improved rail transit can help reduce reliance on private vehicles, thereby lowering greenhouse gas emissions and alleviating traffic congestion. Additionally, efficient public transport enhances urban mobility and can improve air quality, which is crucial for public health. Given the city's vulnerability to heatwaves and other climate hazards, sustainable transit options also contribute to resilience by providing reliable transportation during extreme weather events."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 15,
+        "explanation": "Promoting the use of bicycles as a regular mode of transport in Fortaleza is important due to the city's high population density and significant transportation emissions. Expanding cycling infrastructure and raising awareness can help reduce air pollution and greenhouse gas emissions, improving public health and urban air quality. Additionally, cycling offers a resilient and affordable mobility option, which is valuable in a city facing climate risks such as heatwaves and floods. Encouraging active transport also supports healthier lifestyles and can alleviate congestion in a densely populated urban environment."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0053",
+        "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
+        "actionPriority": 16,
+        "explanation": "Supporting cooperatives of recyclable material collectors is important for Fortaleza, as waste emissions are a significant contributor to the city's total greenhouse gas emissions. By empowering these cooperatives, the city can improve recycling rates, reduce landfill use, and lower overall waste emissions. This action also provides social and economic benefits to low-income populations, aligning with the city's socioeconomic context. Additionally, strengthening waste management systems can enhance public health and resilience to climate risks."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 17,
+        "explanation": "Encouraging renewable energy policies at the municipal level is important for Fortaleza due to its high stationary energy emissions and vulnerability to energy security risks, especially from droughts and heatwaves. Transitioning to renewables can reduce greenhouse gas emissions and help stabilize the city's energy supply in the face of climate hazards. Additionally, renewable energy can support resilience by decreasing dependence on external energy sources and fossil fuels. This action aligns with the city's need to address both mitigation and adaptation challenges in a changing climate."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 18,
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases can strengthen Fortaleza's food security, which is especially important given the city's high risk from droughts and floods. Supporting local agroecological producers helps build resilience in the food system, reduces dependency on external supply chains, and can lower transportation emissions. This action also promotes sustainable agricultural practices, which can benefit biodiversity and public health. By leveraging public procurement, Fortaleza can stimulate the local economy and encourage environmentally friendly farming methods."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 19,
+        "explanation": "Increasing the attractiveness of the municipal bus system in Fortaleza is important due to the city's high population density and significant transportation emissions. By making public transport more appealing, the city can encourage a shift away from private vehicles, reducing congestion and air pollution. This action also supports equitable mobility, especially for lower-income residents, and can help mitigate public health risks associated with poor air quality and heatwaves. Additionally, improved public transport can enhance resilience to climate hazards by providing reliable mobility during extreme weather events."
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Ceará",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 20,
+        "explanation": "Addressing vehicle emissions is important for Fortaleza due to the city's high transportation emissions, which are a significant contributor to its overall greenhouse gas output. Reducing vehicle emissions can improve air quality and public health, especially given the city's vulnerability to heatwaves and diseases. Additionally, mitigating transportation emissions supports broader climate goals and can enhance the resilience of urban infrastructure. While not the top priority, this action remains relevant for long-term sustainability and quality of life improvements."
+    }
+]

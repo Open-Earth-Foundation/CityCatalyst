@@ -1,0 +1,1269 @@
+[
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0052",
+    "actionName": "Develop projects for renewable energy and waste reuse",
+    "actionPriority": 1,
+    "explanation": "Desenvolver projetos de energia renovável e de reutilização de resíduos em Fortaleza é fundamental devido às altas emissões estacionárias de energia e resíduos da cidade. Com uma densidade populacional de 7.775,52 pessoas por quilômetro quadrado, a demanda por energia é significativa, e a transição para fontes renováveis pode ajudar a reduzir a pegada de carbono. Além disso, projetos de reutilização de resíduos podem mitigar o impacto das substanciais emissões de resíduos da cidade, que são um dos principais contribuintes para o total de emissões. A implementação desses projetos também pode aumentar a segurança energética, o que é vital, considerando a vulnerabilidade da cidade a secas e ondas de calor.",
+    "action": {
+      "ActionID": "icare_0052",
+      "ActionName": "Desenvolver projetos para energia renovável e reutilização de resíduos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação visa desenvolver e implementar projetos de energia renovável, incluindo: um biodigestor para tratamento de resíduos orgânicos e uma usina de energia solar.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "60-79",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento e implementação de projetos de energia renovável.",
+        "Instalação de um biodigestor para tratamento de resíduos orgânicos.",
+        "Estabelecimento de uma usina solar para gerar energia limpa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia renovável e reutilização de resíduos implementados.",
+        "Quantidade de resíduos reutilizados ou reciclados (toneladas/ano).",
+        "Redução nos custos de energia para os municípios participantes (USD)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 2,
+    "explanation": "Incentivar políticas de energia renovável em nível municipal em Fortaleza é fundamental devido às altas emissões de energia estacionária da cidade. A transição para fontes de energia renovável pode reduzir significativamente essas emissões, contribuindo para um ambiente mais limpo. Além disso, a energia renovável pode aumentar a segurança energética, o que é vital considerando a vulnerabilidade da cidade a secas que afetam os recursos energéticos. A implementação dessas políticas também pode estimular o crescimento econômico local, criando empregos verdes e reduzindo a dependência de fontes de energia não renováveis.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Incentivar políticas de energia renovável a nível municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Defender e implementar políticas que priorizem o desenvolvimento e a integração de sistemas de energia renovável nas operações e no planejamento do governo local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e liderança para priorizar a energia renovável nas políticas e processos de planejamento do governo local",
+        "Desenvolvimento de políticas claras e estruturas regulatórias que facilitem a integração de sistemas de energia renovável nas operações governamentais",
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transição para a energia renovável na infraestrutura e operações municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia renovável aprovados ou iniciados anualmente a nível municipal.",
+        "Percentagem da demanda de energia municipal atendida por fontes renováveis (%).",
+        "Redução nas emissões de carbono municipais devido à adoção de energia renovável (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 3,
+    "explanation": "Integrar fontes de energia renovável aos sistemas municipais de água em Fortaleza é fundamental devido ao alto risco de secas na cidade, que impacta significativamente os recursos hídricos. Ao utilizar energia renovável, a cidade pode garantir um abastecimento de água mais confiável e sustentável, reduzindo a dependência de fontes de energia tradicionais que podem ser afetadas por riscos climáticos. Essa ação também está alinhada com a necessidade de reduzir as emissões de energia estacionária, contribuindo para as metas gerais de redução de emissões. Além disso, apoia a segurança energética ao diversificar as fontes de energia, o que é vital, considerando a vulnerabilidade da cidade a interrupções no fornecimento de energia causadas pelas mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energias renováveis nos sistemas municipais de água",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fontes de energia renovável, como energia solar ou eólica, para impulsionar sistemas de tratamento, bombeamento e distribuição de água, reduzindo custos de energia e emissões.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renovável, como energia solar ou eólica, em sistemas de tratamento e distribuição de água",
+        "Expertise técnica e infraestrutura para adaptar sistemas existentes com soluções de energia renovável ou projetar novas instalações alimentadas por energias renováveis",
+        "Apoio político e regulatório para incentivar o uso de energia limpa em sistemas de água e garantir sua integração nas redes de energia municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de sistemas municipais de água alimentados por energias renováveis.",
+        "Redução no consumo de energia de fontes não renováveis (kWh/ano).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 4,
+    "explanation": "A implementação de programas de transporte público gratuito durante os horários de pico em Fortaleza é uma ação crucial devido à alta densidade populacional da cidade e às significativas emissões provenientes do transporte. Ao incentivar o uso do transporte público, essa iniciativa visa reduzir a dependência de veículos individuais, diminuindo assim a congestão do tráfego e as emissões. Além disso, essa medida pode melhorar a qualidade do ar e contribuir para melhores resultados em saúde pública, enfrentando alguns dos principais riscos climáticos da cidade relacionados à saúde pública e à infraestrutura. Ademais, oferecer transporte gratuito nos horários de pico pode aumentar a acessibilidade para os moradores de baixa renda, promovendo a equidade social e a mobilidade econômica.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementação de programas de transporte público gratuito durante os horários de pico para reduzir o uso de veículos individuais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar o uso do transporte público oferecendo serviços gratuitos durante os horários de pico para trabalhadores e estudantes. Esta medida reduz a congestão urbana, diminui o número de veículos individuais nas estradas e, consequentemente, reduz as emissões de gases de efeito estufa associadas ao transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Alocação de financiamento para subsidiar serviços de transporte público gratuito durante as horas de pico.",
+        "Desenvolvimento de políticas para garantir a sustentabilidade e eficiência dos sistemas de transporte público diante do aumento da demanda.",
+        "Coordenação com empregadores e instituições educacionais para otimizar os horários de pico e promover a iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nos níveis de poluição do ar durante as horas de pico (concentração de PM2.5/PM10).",
+        "Número de veículos particulares removidos das estradas durante as horas de pico.",
+        "Taxa de satisfação pública com a iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0094",
+    "actionName": "Adoption of biomethane in public fleets.",
+    "actionPriority": 5,
+    "explanation": "A adoção do biometano nas frotas públicas de Fortaleza é um passo crucial para a redução das emissões do setor de transporte, que representam uma contribuição significativa para o perfil geral de emissões da cidade. Dada a alta densidade populacional e as necessidades de mobilidade associadas, a transição para fontes de combustível mais limpas pode reduzir substancialmente a pegada de carbono. Além disso, essa ação está alinhada com a necessidade da cidade de enfrentar riscos à segurança energética, agravados pelos impactos das mudanças climáticas, como as secas. Ao utilizar o biometano, Fortaleza também pode melhorar a qualidade do ar, o que é fundamental para a saúde pública, especialmente em um ambiente urbano densamente povoado.",
+    "action": {
+      "ActionID": "icare_0094",
+      "ActionName": "Adoção de biometano em frotas públicas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar biometano produzido a partir de resíduos urbanos e agroindustriais para abastecer ônibus e caminhões públicos, reduzindo as emissões de gases de efeito estufa nas frotas municipais",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de infraestrutura para a produção, processamento e distribuição de biometano a partir de resíduos urbanos e agroindustriais.",
+        "Retrofit ou aquisição de ônibus e caminhões públicos capazes de usar biometano como fonte de combustível.",
+        "Estabelecimento de políticas e incentivos financeiros para apoiar a produção de biometano e sua integração nas frotas municipais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Economia de custos na operação da frota devido ao uso de biometano (USD/ano).",
+        "Aumento na capacidade de produção de biometano (%).",
+        "Percentagem de biometano obtido localmente versus importado."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0121",
+    "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+    "actionPriority": 6,
+    "explanation": "A ação de incentivar programas de compartilhamento de bicicletas, especialmente com bicicletas elétricas, é crucial para Fortaleza devido à sua alta densidade populacional e às significativas emissões do setor de transporte. Ao promover o compartilhamento de bicicletas elétricas, a cidade pode reduzir sua dependência de veículos tradicionais, diminuindo assim as emissões do transporte e melhorando a qualidade do ar. Além disso, essa iniciativa pode ampliar as opções de mobilidade para os moradores, especialmente em áreas urbanas onde o congestionamento de trânsito é um problema comum. Ademais, as bicicletas elétricas oferecem um modo de transporte sustentável e eficiente, que está alinhado com a necessidade da cidade de enfrentar riscos climáticos, como ondas de calor e poluição do ar.",
+    "action": {
+      "ActionID": "icare_0121",
+      "ActionName": "Incentivo à criação de programas de compartilhamento de bicicletas em áreas urbanas, com foco em bicicletas elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação incentiva o estabelecimento de sistemas de compartilhamento de bicicletas nas cidades, promovendo especificamente o uso de bicicletas elétricas. Esses sistemas permitem que os residentes aluguem bicicletas elétricas para viagens curtas, reduzindo a dependência de carros para o transporte urbano. Ao integrar bicicletas elétricas, as cidades podem reduzir ainda mais as emissões de gases de efeito estufa, aliviar a congestão do tráfego e promover um modo de transporte mais saudável e sustentável tanto para áreas urbanas quanto rurais. Esta iniciativa também apoia a igualdade de mobilidade, pois torna as bicicletas mais acessíveis a uma gama mais ampla de pessoas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecimento de sistemas de compartilhamento de bicicletas com foco em bicicletas elétricas para reduzir a dependência de carros.",
+        "Integração de bicicletas elétricas para reduzir as emissões de gases de efeito estufa, aliviar o congestionamento do tráfego e promover o transporte sustentável.",
+        "Promoção da igualdade de mobilidade tornando as bicicletas elétricas acessíveis a uma população mais ampla."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de bicicletas elétricas disponíveis em programas de compartilhamento de bicicletas.",
+        "Aumento anual no número de usuários de compartilhamento de bicicletas.",
+        "Redução estimada nas emissões de CO₂ equivalente com a adoção do compartilhamento de bicicletas elétricas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "c40_0035",
+    "actionName": "Waste Efficiency",
+    "actionPriority": 7,
+    "explanation": "A ação de ‘Eficiência na Gestão de Resíduos’ é crucial para Fortaleza devido às suas emissões significativas de resíduos, que são as mais altas entre todas as fontes de emissão na cidade. Melhorar a gestão de resíduos pode reduzir substancialmente essas emissões, contribuindo para um ambiente mais limpo e para a melhoria da saúde pública. Além disso, uma gestão eficiente de resíduos pode mitigar os impactos de riscos climáticos, como enchentes, que representam um alto risco para a infraestrutura da cidade e para a saúde pública. Ao priorizar a eficiência na gestão de resíduos, Fortaleza pode aumentar sua resiliência diante dos desafios ambientais e melhorar a qualidade de vida de seus habitantes.",
+    "action": {
+      "ActionID": "c40_0035",
+      "ActionName": "Eficiência de Resíduos",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "all"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "As iniciativas de \"Eficiência de Resíduos\" visam melhorar a eficiência dos processos de coleta de resíduos, reduzindo o consumo de recursos e minimizando o impacto ambiental. Isso inclui a otimização dos sistemas de gestão de resíduos para aumentar a eficiência energética e promover práticas sustentáveis de descarte de resíduos.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "As iniciativas de \"Eficiência de Resíduos\" promovem equidade e inclusão ao focar em comunidades carentes que muitas vezes sofrem com sistemas de gestão de resíduos ineficientes. Ao otimizar os processos de coleta de resíduos, essas iniciativas podem reduzir o fardo ambiental sobre populações vulneráveis, que podem viver em áreas desproporcionalmente afetadas por resíduos e poluição.\n\nAlém disso, melhorar a eficiência energética na gestão de resíduos pode levar a economias de custos, que podem ser reinvestidas em serviços comunitários ou infraestrutura que beneficiem bairros de baixa renda. A promoção de práticas sustentáveis de descarte de resíduos também garante que todos os membros da comunidade, independentemente do status socioeconômico, tenham acesso a opções ambientalmente responsáveis, promovendo um senso de responsabilidade compartilhada e inclusão nos esforços de ação climática.\n\nNo geral, essas iniciativas reconhecem os desafios únicos enfrentados por comunidades carentes e visam criar um sistema de gestão de resíduos mais equitativo que beneficie todos os residentes.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "80-100",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Infraestrutura e tecnologia eficazes de gestão de resíduos",
+        "Colaboração com governos locais e autoridades de gestão de resíduos",
+        "Conscientização pública e educação sobre práticas de descarte de resíduos",
+        "Acesso a dados para monitorar e otimizar processos de coleta de resíduos",
+        "Investimento em instalações sustentáveis de processamento de resíduos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nos custos de coleta de resíduos",
+        "Percentual de redução de resíduos enviados para aterros sanitários",
+        "Aumento nas taxas de reciclagem",
+        "Consumo de energia por tonelada de resíduos coletados",
+        "Redução de emissões de carbono na gestão de resíduos",
+        "Satisfação do cliente com os serviços de coleta de resíduos",
+        "Volume de resíduos processados por métodos sustentáveis",
+        "Eficiência operacional das rotas de coleta de resíduos"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "c40_0036",
+    "actionName": "Landfill Management",
+    "actionPriority": 8,
+    "explanation": "Melhorar a gestão de aterros sanitários em Fortaleza é fundamental devido às significativas emissões de resíduos da cidade, que são um dos principais contribuintes para o seu perfil total de emissões. Com uma população de mais de 2,4 milhões de habitantes, uma gestão eficaz dos resíduos pode reduzir consideravelmente o impacto ambiental e melhorar a saúde pública. Além disso, práticas mais adequadas de manejo de aterros podem mitigar os riscos associados à falta de saneamento, que atualmente é uma preocupação para a cidade. Abordar a gestão de aterros está alinhado com a necessidade de Fortaleza de aumentar sua resiliência frente a riscos climáticos, como enchentes, que podem agravar os problemas relacionados ao manejo de resíduos.",
+    "action": {
+      "ActionID": "c40_0036",
+      "ActionName": "Gestão de Aterros Sanitários",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "waste"
+      ],
+      "Subsector": [
+        "all"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estratégias de \"Gestão de Aterros Sanitários\" focam em práticas responsáveis e sustentáveis de aterros para minimizar a degradação ambiental. Ao adotar técnicas de gestão eficazes, as cidades visam reduzir a pegada ecológica associada aos locais de aterro e incentivar a redução de resíduos.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": "As estratégias de \"Gestão de Aterros Sanitários\" promovem equidade e inclusão ao abordar os impactos ambientais dos locais de aterro, que muitas vezes afetam desproporcionalmente comunidades vulneráveis e carentes. Essas comunidades frequentemente residem perto de aterros e são mais suscetíveis a riscos de saúde associados à poluição e à degradação ambiental. Ao implementar práticas de aterro responsáveis e sustentáveis, a ação visa reduzir esses impactos negativos, melhorando assim a qualidade de vida dos residentes nessas áreas.\n\nAlém disso, técnicas eficazes de redução de resíduos podem criar oportunidades para o engajamento e a participação da comunidade, permitindo que populações carentes tenham voz nas decisões ambientais locais. Essa inclusão promove um senso de pertencimento e empoderamento entre os membros da comunidade, garantindo que suas necessidades e preocupações sejam consideradas na gestão dos locais de aterro. No geral, a ação reconhece e busca mitigar as desigualdades enfrentadas por comunidades marginalizadas em relação à gestão de resíduos e à saúde ambiental.",
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": "60-79",
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Práticas eficazes de segregação de resíduos para garantir o descarte e reciclagem adequados",
+        "Investimento em tecnologia para tratamento de resíduos e monitoramento de aterros sanitários",
+        "Envolvimento e educação da comunidade sobre redução de resíduos e reciclagem",
+        "Estruturas regulatórias e políticas que apoiam práticas sustentáveis de aterros sanitários",
+        "Colaboração com governos locais e organizações para compartilhamento de recursos e melhores práticas"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução do volume de resíduos em aterros",
+        "Percentagem de resíduos desviados de aterros",
+        "Taxa de captura de gás de aterro",
+        "Qualidade do solo e da água ao redor dos locais de aterro",
+        "Frequência das inspeções de aterros",
+        "Níveis de conscientização e engajamento público",
+        "Economia de custos com práticas aprimoradas de gestão de aterros",
+        "Conformidade com as regulamentações ambientais"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0038",
+    "actionName": "Promote community solar farms",
+    "actionPriority": 9,
+    "explanation": "Promover fazendas solares comunitárias em Fortaleza é uma ação crucial devido às altas emissões de energia estacionária da cidade, que contribuem significativamente para suas emissões totais. Ao aproveitar a energia solar, a cidade pode reduzir sua dependência de fontes tradicionais de energia, diminuindo assim sua pegada de carbono. Além disso, as fazendas solares podem oferecer uma solução energética sustentável que está alinhada com a necessidade da cidade de enfrentar riscos à segurança energética agravados por secas frequentes. Essa iniciativa também tem o potencial de melhorar as condições socioeconômicas locais, criando empregos e reduzindo os custos de energia para comunidades de baixa renda.",
+    "action": {
+      "ActionID": "icare_0038",
+      "ActionName": "Promover fazendas solares comunitárias",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Desenvolver e incentivar a adoção de projetos de energia solar compartilhada, permitindo que as comunidades se beneficiem coletivamente de energia limpa e renovável.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas e estruturas regulatórias para apoiar projetos de energia solar compartilhada baseados na comunidade e garantir o acesso equitativo à energia limpa",
+        "Disponibilidade de mecanismos financeiros ou incentivos para ajudar as comunidades a investir e manter sistemas de energia solar compartilhada",
+        "Colaboração entre governos locais, fornecedores de energia e organizações comunitárias para projetar e implementar projetos de energia solar compartilhada de forma eficaz"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de residências atendidas por projetos solares comunitários.",
+        "Emissões de GEE evitadas através da produção de energia solar (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 10,
+    "explanation": "Priorizar a aquisição de produtos agroecológicos produzidos localmente nas compras públicas é fundamental para Fortaleza, devido à sua significativa vulnerabilidade a riscos climáticos, como secas e inundações. Essa ação apoia os agricultores locais, fortalece a segurança alimentar e reduz a pegada de carbono associada às emissões do transporte. Ao focar em produtos agroecológicos, a cidade pode promover práticas agrícolas sustentáveis e resilientes aos impactos climáticos, contribuindo assim para a biodiversidade e a segurança energética. Além disso, essa iniciativa pode estimular a economia local e oferecer opções alimentares mais saudáveis para a comunidade, alinhando-se aos objetivos socioeconômicos e ambientais do município.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar a Aquisição de Produtos Agroecológicos Produzidos Localmente em Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Concentre-se em comprar alimentos sustentáveis e produzidos localmente para instituições públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas de aquisição e identificação de fornecedores locais confiáveis.",
+        "Parcerias com produtores e alocação de financiamento para programas de aquisição sustentável.",
+        "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os critérios de sustentabilidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem do volume total de compras públicas provenientes de produtores agroecológicos locais.",
+        "Quantidade de emissões de CO₂ evitadas devido à redução da distância de transporte (tCO₂e).",
+        "Número de produtores agroecológicos beneficiados pelas compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0033",
+    "actionName": "Install biodigesters in rural properties",
+    "actionPriority": 11,
+    "explanation": "A instalação de biodigestores em propriedades rurais de Fortaleza é uma ação estratégica para enfrentar as emissões de resíduos, que são um contribuinte significativo para o total de emissões da cidade. Os biodigestores podem ajudar a converter resíduos orgânicos em biogás, fornecendo uma fonte de energia renovável e reduzindo a dependência de fontes de energia tradicionais. Essa ação também contribui para a segurança energética, o que é crucial diante do alto risco de secas que afetam os recursos energéticos. Além disso, pode melhorar o saneamento em áreas rurais, alinhando-se à necessidade da cidade de ampliar o acesso a serviços públicos. De modo geral, essa iniciativa pode contribuir tanto para a sustentabilidade ambiental quanto para o desenvolvimento socioeconômico da região.",
+    "action": {
+      "ActionID": "icare_0033",
+      "ActionName": "Instalar biodigestores em propriedades rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Equipar fazendas e propriedades rurais com biodigestores para converter resíduos orgânicos em biogás e fertilizantes ricos em nutrientes, fornecendo uma fonte de energia sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou subsídios para apoiar a instalação de biodigestores em fazendas e propriedades rurais",
+        "Acesso a expertise técnica para o design, instalação e manutenção de biodigestores",
+        "Desenvolvimento de um quadro regulatório de apoio que incentive o uso de biogás e sistemas de gestão de resíduos orgânicos na agricultura rural"
+      ],
+      "KeyPerformanceIndicators": [
+        "Volume de biogás gerado (m³/ano).",
+        "Emissões de GEE evitadas pela substituição de combustíveis fósseis (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0029",
+    "actionName": "Adopt policies for fossil fuel-free buildings",
+    "actionPriority": 12,
+    "explanation": "A adoção de políticas para edifícios livres de combustíveis fósseis em Fortaleza é crucial devido às altas emissões de energia estacionária da cidade, que contribuem significativamente para suas emissões totais. A transição para edifícios livres de combustíveis fósseis pode ajudar a reduzir essas emissões, alinhando-se aos esforços globais para combater as mudanças climáticas. Além disso, Fortaleza enfrenta riscos significativos de perigos climáticos, como ondas de calor e secas, que podem ser agravados por altas emissões. A implementação dessas políticas também pode melhorar a segurança energética e a saúde pública, promovendo fontes de energia mais limpas e sustentáveis.",
+    "action": {
+      "ActionID": "icare_0029",
+      "ActionName": "Adotar políticas para edifícios sem combustíveis fósseis",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Impor regulamentos que exijam que novas construções utilizem sistemas de energia renovável, designs eficientes em termos de energia e tecnologias de emissão zero.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de códigos de construção e estruturas regulatórias que exijam a integração de sistemas de energia renovável e designs energeticamente eficientes em novas construções",
+        "Disponibilidade de incentivos ou apoio para que os desenvolvedores cumpram as regulamentações e adotem tecnologias de emissão zero",
+        "Expertise técnica e recursos para garantir a implementação adequada e o monitoramento de sistemas de energia renovável e designs energeticamente eficientes em projetos de construção"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de edifícios em transição para fontes de energia renovável.",
+        "Redução total no uso de combustíveis fósseis para aquecimento/resfriamento (m³ ou litros).",
+        "Diminuição nas emissões de GEE relacionadas a edifícios (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0139",
+    "actionName": "Implementation of urban toll.",
+    "actionPriority": 13,
+    "explanation": "A implementação de um pedágio urbano em Fortaleza é uma ação estratégica para enfrentar as altas emissões do setor de transporte na cidade, que contribuem significativamente para suas emissões totais. Ao introduzir um pedágio, a cidade pode gerenciar a congestão do tráfego, incentivando o uso do transporte público e reduzindo o número de veículos nas ruas. Essa ação é especialmente importante devido à alta densidade populacional da cidade, que agrava os problemas de trânsito e a poluição. Além disso, a redução das emissões de veículos pode melhorar a qualidade do ar, beneficiando a saúde pública e alinhando-se com os objetivos ambientais mais amplos da cidade.",
+    "action": {
+      "ActionID": "icare_0139",
+      "ActionName": "Implementação de pedágio urbano.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecimento de uma taxa de congestionamento e/ou rodízio de placas para veículos leves em áreas saturadas e em horários saturados",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro legal claro e investir em tecnologia para monitoramento e fiscalização (por exemplo, câmeras, sensores).",
+        "Lançar campanhas de conscientização e garantir a disponibilidade de transporte público eficiente ou soluções alternativas de mobilidade.",
+        "Colaborar com governos locais e agências de transporte, e estabelecer sistemas para monitorar e avaliar a eficácia da política."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução das emissões de CO₂ do transporte rodoviário urbano (tCO₂e/ano).",
+        "Receita gerada pela implementação da taxa de congestionamento urbano (R$)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0097",
+    "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+    "actionPriority": 14,
+    "explanation": "Apoiar a geração distribuída de energia em residências e empresas em Fortaleza é fundamental devido às altas emissões estacionárias de energia da cidade. Ao promover a produção local de energia, a cidade pode reduzir sua dependência de fontes centralizadas de eletricidade, que frequentemente contribuem de forma significativa para as emissões. Essa ação também aumenta a segurança energética, uma preocupação importante considerando a vulnerabilidade da cidade a secas e ondas de calor, que podem interromper o fornecimento tradicional de energia. Além disso, sistemas de energia distribuída podem oferecer maior resiliência contra riscos à infraestrutura causados por desastres naturais, como enchentes e deslizamentos de terra. De modo geral, essa iniciativa está alinhada com a necessidade da cidade de mitigar riscos climáticos ao mesmo tempo em que promove práticas energéticas sustentáveis.",
+    "action": {
+      "ActionID": "icare_0097",
+      "ActionName": "Apoiar a Geração de Energia Distribuída em Residências e Negócios",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Facilitar o uso de painéis solares e outras tecnologias de energia renovável em residências e edifícios comerciais.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecer incentivos financeiros, regulamentações claras de instalação e acesso a tecnologias acessíveis para painéis solares.",
+        "Lançar campanhas de conscientização pública e oferecer treinamento para proprietários de residências e empresas.",
+        "Incentivar a adoção de tecnologias de energia renovável para promover economias de energia a longo prazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Capacidade instalada de geração de energia distribuída (MW).",
+        "Percentual de residências e empresas gerando sua própria energia (%).",
+        "Redução nas emissões de CO₂ através da geração distribuída (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0005",
+    "actionName": "Create credit lines for residential and community wind energy projects",
+    "actionPriority": 15,
+    "explanation": "Criar linhas de crédito para projetos de energia eólica residenciais e comunitários em Fortaleza é uma ação estratégica para enfrentar as altas emissões estacionárias de energia da cidade. Ao promover a energia eólica, a cidade pode reduzir sua dependência de combustíveis fósseis, diminuindo assim sua pegada de carbono e contribuindo para um ar mais limpo. Além disso, essa iniciativa pode fortalecer as comunidades locais ao oferecer soluções energéticas sustentáveis, o que é fundamental dado o contexto socioeconômico de baixa renda na região. Ademais, projetos de energia eólica podem aumentar a segurança energética, uma preocupação importante devido ao alto risco de secas que afetam os recursos energéticos na área.",
+    "action": {
+      "ActionID": "icare_0005",
+      "ActionName": "Criar linhas de crédito para projetos de energia eólica residencial e comunitária",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecer programas de financiamento acessíveis para apoiar o desenvolvimento e a adoção de sistemas de energia eólica em residências e projetos comunitários, possibilitando uma transição para fontes de energia mais limpas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 2,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de programas financeiros, subsídios ou subvenções para tornar os sistemas de energia eólica acessíveis para residências e projetos comunitários",
+        "Acesso a expertise técnica e recursos para orientar a instalação e manutenção de sistemas de energia eólica em ambientes residenciais e comunitários",
+        "Apoio político e regulatório para incentivar a adoção de energia eólica, incluindo processos de licenciamento simplificados e incentivos para projetos de energia limpa"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia eólica financiados anualmente.",
+        "Capacidade instalada de sistemas de energia eólica de projetos apoiados por crédito (MW).",
+        "Redução estimada nas emissões equivalentes de CO₂ pela adoção de energia eólica."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0011",
+    "actionName": "Provide tax incentives for renewable energy in residential projects",
+    "actionPriority": 16,
+    "explanation": "Conceder incentivos fiscais para energias renováveis em projetos residenciais em Fortaleza é fundamental devido às altas emissões de energia estacionária da cidade. Ao incentivar a adoção de energia renovável, a cidade pode reduzir significativamente sua pegada de carbono e mitigar os impactos das mudanças climáticas. Além disso, essa ação pode ajudar a melhorar a segurança energética, que é uma preocupação importante, considerando o alto risco de secas que afetam os recursos energéticos. Ademais, promover a energia renovável está alinhado com a necessidade da cidade de enfrentar desafios socioeconômicos, ao potencialmente reduzir os custos de energia para os moradores.",
+    "action": {
+      "ActionID": "icare_0011",
+      "ActionName": "Fornecer incentivos fiscais para energia renovável em projetos residenciais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar os proprietários de imóveis a adotarem energia solar, eólica e outras fontes de energia limpa.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de incentivos financeiros, subsídios ou créditos fiscais para incentivar os proprietários a instalar sistemas de energia solar, eólica e outras energias limpas",
+        "Acesso a informações e recursos educacionais para ajudar os proprietários a entender os benefícios, custos e processos de instalação de sistemas de energia limpa",
+        "Desenvolvimento de regulamentos e políticas de apoio que facilitem a instalação de tecnologias de energia renovável em áreas residenciais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de residências beneficiadas por incentivos fiscais para a adoção de energia renovável.",
+        "Aumento anual nas instalações de energia renovável em projetos residenciais.",
+        "Redução estimada nas emissões de CO₂ equivalente devido à adoção de energia renovável."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0022",
+    "actionName": "Set municipal energy efficiency targets",
+    "actionPriority": 17,
+    "explanation": "Estabelecer metas municipais de eficiência energética em Fortaleza é fundamental devido às altas emissões de energia estacionária da cidade, que contribuem significativamente para o total de suas emissões. Ao definir metas claras, a cidade pode reduzir sistematicamente o consumo de energia, levando à diminuição das emissões e à melhoria da qualidade do ar. Além disso, a eficiência energética pode ajudar a mitigar os impactos das ondas de calor, que representam um risco significativo para a saúde pública e a infraestrutura. Essa ação está alinhada com a necessidade da cidade de fortalecer a segurança energética, especialmente diante das frequentes secas que ameaçam os recursos energéticos.",
+    "action": {
+      "ActionID": "icare_0022",
+      "ActionName": "Definir metas de eficiência energética municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Definir metas mensuráveis para economia de energia nas operações e infraestruturas municipais, promovendo responsabilidade e progresso em direção aos objetivos de sustentabilidade.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de metas claras e mensuráveis de economia de energia para operações e infraestrutura municipais",
+        "Acesso a dados e ferramentas para rastrear e avaliar o consumo de energia em diferentes setores municipais",
+        "Compromisso de políticas e liderança para integrar metas de economia de energia no planejamento, orçamento e operações municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Progresso anual em direção ao cumprimento das metas municipais de eficiência energética (%).",
+        "Redução no consumo de energia municipal (kWh/ano).",
+        "Redução estimada nas emissões equivalentes de CO₂ a partir dos esforços de eficiência energética municipal."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0040",
+    "actionName": "Adopt solar-powered street lighting in rural areas",
+    "actionPriority": 18,
+    "explanation": "A adoção de iluminação pública alimentada por energia solar em áreas rurais de Fortaleza é uma medida estratégica para aumentar a segurança energética e reduzir as emissões. Diante das altas emissões de energia estacionária da cidade, a transição para fontes renováveis como a solar pode diminuir significativamente a pegada de carbono. Além disso, a iluminação solar pode melhorar a segurança pública e a resiliência da infraestrutura, especialmente em áreas com acesso inadequado a serviços públicos. Essa ação também está alinhada com a necessidade da cidade de mitigar os impactos de ondas de calor e secas, que são agravados pelas mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0040",
+      "ActionName": "Adotar iluminação pública solar em áreas rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Instalar postes de iluminação pública movidos a energia solar para melhorar a segurança e acessibilidade em comunidades rurais, ao mesmo tempo que reduz os custos de energia e o impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a instalação de postes de iluminação pública solar em comunidades rurais",
+        "Acesso a expertise técnica para projetar, instalar e manter sistemas de iluminação pública solar",
+        "Colaboração com governos locais e comunidades para garantir a integração de postes de iluminação solar na infraestrutura existente e nos planos de energia"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de postes de iluminação pública alimentados por energia solar.",
+        "Redução anual no consumo de eletricidade (kWh).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0068",
+    "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+    "actionPriority": 19,
+    "explanation": "Implantar sistemas de transporte sob demanda com frotas 100% elétricas em Fortaleza é fundamental devido às altas emissões do setor de transporte na cidade, que contribuem significativamente para suas emissões totais. A transição para veículos elétricos pode ajudar a reduzir a poluição do ar e as emissões de gases de efeito estufa, melhorando a qualidade do ar e a saúde pública. Além disso, sistemas sob demanda podem aprimorar a mobilidade e a acessibilidade, especialmente em áreas com infraestrutura de transporte público inadequada. Essa ação está alinhada com a necessidade da cidade de enfrentar riscos climáticos, como ondas de calor e desafios de saúde pública, promovendo soluções de transporte urbano sustentáveis e resilientes.",
+    "action": {
+      "ActionID": "icare_0068",
+      "ActionName": "Implantar sistemas de transporte sob demanda com frotas 100% elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Serviços de transporte coletivo sob demanda, baseados em aplicativos, otimizam o uso de veículos elétricos, reduzindo as emissões por passageiro.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de plataformas digitais e aplicativos para gerenciar eficientemente serviços de transporte coletivo sob demanda.",
+        "Expansão de frotas de veículos elétricos adaptadas para soluções de transporte compartilhado.",
+        "Implementação de políticas e incentivos para incentivar a adoção e o uso de serviços de transporte elétrico compartilhado."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de usuários ativos do sistema de frota elétrica sob demanda.",
+        "Percentual da demanda de transporte urbano atendida por sistemas sob demanda.",
+        "Redução nos níveis de poluição sonora em áreas urbanas"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR FOR",
+    "cityName": "Fortaleza",
+    "region": "CE",
+    "regionName": "Ceará",
+    "actionId": "icare_0090",
+    "actionName": "Adoption of electric drones for last-mile deliveries.",
+    "actionPriority": 20,
+    "explanation": "A adoção de drones elétricos para entregas de última milha em Fortaleza é uma medida estratégica para reduzir as emissões do transporte, que são um dos principais contribuintes para o perfil geral de emissões da cidade. Dada a alta densidade populacional e o layout urbano, os drones elétricos podem navegar pela cidade de forma eficiente, reduzindo a congestão do tráfego e diminuindo as emissões de carbono. Além disso, essa ação está alinhada com a necessidade da cidade de enfrentar desafios ambientais, como a poluição do ar e a segurança energética, promovendo métodos de entrega mais limpos e sustentáveis. A implementação dessa tecnologia também pode aumentar a resiliência da infraestrutura logística da cidade diante de interrupções relacionadas ao clima.",
+    "action": {
+      "ActionID": "icare_0090",
+      "ActionName": "Adoção de drones elétricos para entregas de última milha.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "off-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Substituir veículos tradicionais por drones elétricos para entregas de curta distância em centros urbanos, reduzindo emissões e congestionamento de tráfego.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de regulamentos para o espaço aéreo urbano para garantir a operação segura e eficiente de drones de entrega.",
+        "Investimento em infraestrutura de carregamento e manutenção para apoiar uma frota de drones elétricos.",
+        "Colaboração com empresas de logística para integrar drones em redes de entrega de última milha."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução do tempo de entrega em comparação com métodos tradicionais (minutos).",
+        "Aumento na satisfação do cliente com entregas por drones (%).",
+        "Redução do congestionamento de tráfego causado por veículos de entrega (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
+]

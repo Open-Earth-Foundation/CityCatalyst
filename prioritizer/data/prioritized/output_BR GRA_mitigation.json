@@ -1,0 +1,202 @@
+[
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 1,
+        "explanation": "Implementing an urban toll in Gravataí can help manage transportation emissions, which are the largest contributor to the city's total greenhouse gas emissions. By discouraging excessive car use and encouraging public transportation or alternative mobility options, this action can reduce congestion and improve air quality. Additionally, it can generate revenue that may be reinvested in sustainable urban infrastructure. Given the city's moderate population density and significant transportation emissions, this measure is particularly relevant for advancing climate and public health goals."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 2,
+        "explanation": "Expanding cycling infrastructure and building accessible sidewalks in Gravataí is a significant priority due to the city's high transportation emissions, which are the largest contributor to its total emissions. By promoting active transportation, this action can help reduce greenhouse gas emissions and improve air quality. Additionally, prioritizing climate-resilient measures will help protect infrastructure and public health from hazards such as floods and heatwaves, which are notable risks for the city. Improved walkability and cycling options also enhance public health and social inclusion, especially in a city with moderate issues in water access and a growing population."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 3,
+        "explanation": "Adopting biomethane in public fleets is a significant step for Gravataí, given the city's high transportation emissions, which are the largest contributor to its total greenhouse gas output. Transitioning public vehicles to biomethane can substantially reduce these emissions, improving air quality and supporting climate goals. This action also leverages local waste resources, as biomethane can be produced from organic waste, creating a circular economy benefit. Additionally, it demonstrates municipal leadership in sustainable transport, potentially inspiring broader adoption across the community."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 4,
+        "explanation": "Promoting bike-sharing programs, especially with electric bikes, can help reduce transportation emissions, which are a significant source of Gravataí's total emissions. This action supports sustainable mobility and can alleviate urban congestion while providing an affordable transportation option for residents. Given the city's moderate population density and urban context, such programs can be effective in shifting travel behavior. Additionally, encouraging cycling can have co-benefits for public health by promoting physical activity and improving air quality."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 5,
+        "explanation": "Implementing free public transportation during peak hours in Gravataí can significantly reduce the use of individual vehicles, which is important given the city's high transportation emissions. This action can help lower air pollution and greenhouse gas emissions, contributing to improved public health and environmental quality. Additionally, providing free transit options supports social equity by making mobility more accessible, especially for low-income residents. Given the city's moderate risks related to public health and infrastructure from climate hazards, encouraging public transit use can also enhance community resilience."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 6,
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets is a significant step for Gravataí, given that transportation is the largest source of emissions in the city. This action can help reduce air pollution and greenhouse gas emissions, improving public health and contributing to climate goals. Additionally, electric on-demand transport can enhance mobility options for residents, especially in areas with limited public transit. By modernizing the transport sector, the city can also stimulate local innovation and create green jobs."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 7,
+        "explanation": "Addressing vehicle emissions is important for Gravataí, as transportation is the largest contributor to the city's greenhouse gas emissions. Reducing emissions from vehicles can improve air quality and public health, especially given the high risk of diseases and heatwaves identified in the city. Additionally, lowering transportation emissions supports climate resilience and aligns with broader sustainability goals. This action can also help mitigate the impacts of climate hazards such as floods and landslides, which are significant risks for the city."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 8,
+        "explanation": "The adoption of electric drones for last-mile deliveries in Gravataí can help reduce transportation emissions, which are a significant contributor to the city's total greenhouse gas output. By shifting to electric drones, the city can decrease reliance on conventional delivery vehicles, thus lowering air pollution and supporting cleaner urban air. This action also aligns with the city's need to address public health risks associated with air quality and climate hazards. Additionally, innovative delivery solutions can improve efficiency and resilience in local logistics, especially during extreme weather events that may disrupt traditional transport."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 9,
+        "explanation": "Expanding mass transit systems on rails, such as metros and light rail, can significantly reduce transportation emissions, which are the largest source of greenhouse gases in Gravataí. Improved public transit also enhances mobility and accessibility for residents, supporting sustainable urban growth. Given the city's moderate population density and growing population, investing in efficient rail systems can help alleviate traffic congestion and improve air quality. This action aligns with the city's need to address both environmental and public health challenges related to transportation."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 10,
+        "explanation": "Promoting the use of bicycles as a regular mode of transport in Gravataí can help reduce transportation emissions, which are a significant contributor to the city's total greenhouse gas output. Expanding cycling infrastructure and raising awareness can encourage more residents to choose this sustainable mode of travel, improving air quality and public health. Additionally, cycling can offer affordable mobility options, which is important even in a city with very low levels of low-income residents. This action also supports resilience by reducing reliance on fossil fuels and enhancing urban livability."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0059",
+        "actionName": "Modernization of ports and airports with zero-emission technologies",
+        "actionPriority": 11,
+        "explanation": "Modernizing ports and airports with zero-emission technologies can help reduce transportation-related emissions, which are a significant source of greenhouse gases in Gravataí. While the city is not a major port or airport hub, improvements in these sectors can still contribute to overall emission reductions and set an example for sustainable infrastructure. This action also aligns with broader goals of improving air quality and public health. However, given the city's profile and emission sources, the direct impact may be more limited compared to other sectors."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 12,
+        "explanation": "Encouraging local agroecological production and short supply chains is important for Gravataí because it can enhance food security, especially in the face of climate risks like droughts and floods. Localized food systems reduce dependency on long supply chains, making the city more resilient to disruptions. Agroecological practices also support biodiversity and can help mitigate land use emissions, which are significant in the city. This action aligns with the need to adapt to climate hazards while promoting sustainable development and community well-being."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 13,
+        "explanation": "Implementing agroforestry systems in Gravataí is important due to the city's grassland/savanna biome and significant land use emissions. Agroforestry can help sequester carbon, reduce land degradation, and enhance biodiversity, which is particularly relevant given the risks to biodiversity and food security from droughts and floods. Additionally, these systems can improve resilience to climate hazards by stabilizing soils and supporting local food production. This action aligns with the city's need to address both environmental and climate adaptation challenges."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 14,
+        "explanation": "Promoting urban reforestation and green corridors in Gravataí is important due to the city's exposure to climate hazards such as heatwaves, floods, and landslides, all of which can be mitigated by increased urban greenery. Green spaces help reduce urban heat island effects, improve air quality, and manage stormwater, which is particularly relevant given the high risk of floods and heat-related public health impacts. Additionally, enhancing biodiversity through reforestation supports ecosystem resilience in the grassland/savanna biome. This action also contributes to the overall well-being of residents by providing recreational spaces and improving the urban environment."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 15,
+        "explanation": "Facilitating technology transfer for conservation practices is important for Gravataí, given its grassland/savanna biome and significant land use emissions. By adopting advanced conservation technologies, the city can better protect its natural resources and biodiversity, which are at risk from hazards like droughts and floods. This action also supports long-term sustainability and resilience, especially as the city faces moderate risks to water resources and food security. Implementing such practices can help mitigate environmental impacts and enhance the city's adaptive capacity."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0021",
+        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
+        "actionPriority": 16,
+        "explanation": "Encouraging and promoting sustainable and rational use of individual motorized transportation is important for Gravataí, as transportation emissions are the largest contributor to the city's total greenhouse gas emissions. By addressing this sector, the city can make significant progress toward reducing its overall carbon footprint. Additionally, promoting sustainable transportation can improve air quality and public health, which is particularly relevant given the city's high risk from public health hazards such as floods and diseases. This action also supports long-term urban sustainability and resilience."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 17,
+        "explanation": "Strengthening mechanisms for deforestation control is important for Gravataí, as the city is located in a grassland/savanna biome and faces significant land use emissions. Effective deforestation control can help preserve local biodiversity and reduce greenhouse gas emissions, contributing to climate mitigation efforts. Additionally, maintaining healthy ecosystems can improve resilience to climate hazards such as droughts and floods, which are notable risks for the city. This action supports long-term environmental sustainability and helps protect vital natural resources for the community."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 18,
+        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) can play a significant role in protecting and restoring Gravataí's grassland and savanna biome. By incentivizing landowners and stakeholders to conserve natural resources, PES programs help maintain water resources and biodiversity, both of which are at risk from droughts and other climate hazards. These programs can also contribute to reducing land use emissions, which are a notable part of the city's total emissions profile. Additionally, PES initiatives can foster community engagement and sustainable land management practices, supporting long-term resilience against environmental threats."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 19,
+        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions is important for Gravataí, as the city is located in a grassland/savanna biome and may have significant rural and agricultural activities. These actions can help local farmers and rural communities adopt more sustainable and resilient practices, which is crucial given the risks of droughts and floods impacting food security and water resources. By providing technical support, the city can enhance agricultural productivity, reduce vulnerability to climate hazards, and promote sustainable land use. This contributes to both climate adaptation and the long-term well-being of rural populations."
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravataí",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 20,
+        "explanation": "Promoting organic farming in Gravataí is important due to the city's vulnerability to droughts and its grassland/savanna biome, which can be sensitive to unsustainable agricultural practices. Organic farming can help improve soil health, increase biodiversity, and reduce the use of chemical inputs that may harm local water resources. Additionally, supporting organic agriculture can enhance food security and resilience against climate-related hazards such as droughts and floods. This action aligns with the need to protect both the environment and public health in the face of climate risks."
+    }
+]

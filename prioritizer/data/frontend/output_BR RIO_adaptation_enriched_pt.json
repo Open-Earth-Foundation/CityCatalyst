@@ -1,0 +1,1317 @@
+[
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0169",
+    "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+    "actionPriority": 1,
+    "explanation": "Estabelecer um plano de preparação e medidas de resposta a emergências em caso de eventos climáticos extremos é crucial para o Rio de Janeiro devido à sua alta vulnerabilidade a desastres naturais. A cidade enfrenta riscos significativos de inundações, deslizamentos de terra e ondas de calor, todos capazes de causar impactos devastadores na saúde pública e na infraestrutura. Com uma grande população e um ambiente urbano denso, planos eficazes de resposta a emergências podem mitigar a possível perda de vidas e de bens materiais. Além disso, medidas proativas podem aumentar a resiliência da cidade, garantindo uma recuperação mais rápida e reduzindo os impactos socioeconômicos a longo prazo.",
+    "action": {
+      "ActionID": "icare_0169",
+      "ActionName": "Estabelecer um Plano de Preparação e Medidas de Resposta a Emergências em caso de eventos climáticos extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta ação foca em preparar o município para responder a eventos extremos, visando fornecer uma resposta rápida que minimize os impactos na população.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de um plano abrangente de resposta a emergências que inclua a coordenação entre as autoridades locais, serviços de emergência e organizações comunitárias",
+        "Investimento em sistemas de alerta precoce e infraestrutura para garantir respostas oportunas e eficazes a eventos extremos",
+        "Treinamento e capacitação para socorristas locais e comunidades para melhorar a preparação e resiliência a eventos extremos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de parcerias de resposta a emergências estabelecidas.",
+        "Tempo médio de resposta durante eventos climáticos extremos (horas).",
+        "Percentual de redução de vítimas e danos durante eventos climáticos extremos anualmente (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "wildfires": "high",
+        "sea-level-rise": "low",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0176",
+    "actionName": "Development of Climate Action Plan",
+    "actionPriority": 2,
+    "explanation": "O desenvolvimento de um Plano de Ação Climática é crucial para o Rio de Janeiro devido à sua alta vulnerabilidade a riscos relacionados ao clima, como ondas de calor, inundações e deslizamentos de terra. Esses riscos representam ameaças significativas à saúde pública, à infraestrutura e à segurança alimentar, tornando imprescindível a existência de um plano estratégico. Além disso, as emissões substanciais da cidade provenientes do setor de energia estacionária e do transporte destacam a necessidade de uma abordagem abrangente para reduzir sua pegada de carbono. A implementação de um Plano de Ação Climática ajudará a coordenar esforços entre os diversos setores para mitigar esses riscos e promover o desenvolvimento sustentável.",
+    "action": {
+      "ActionID": "icare_0176",
+      "ActionName": "Desenvolvimento do Plano de Ação Climática",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "wildfires",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Um plano abrangente que descreve as estratégias e ações de uma cidade para mitigar as emissões de gases de efeito estufa e se adaptar aos impactos das mudanças climáticas, que normalmente inclui uma avaliação dos riscos e vulnerabilidades climáticas da cidade, definição de metas de redução de emissões e implementação de ações em vários setores, como energia, transporte, gestão de resíduos e planejamento urbano.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e compromisso do governo",
+        "Envolvimento e colaboração das partes interessadas",
+        "Financiamento e recursos para implementação"
+      ],
+      "KeyPerformanceIndicators": [
+        "Metas de redução de emissões de gases de efeito estufa.",
+        "Número de ações de adaptação climática implementadas.",
+        "Investimento em projetos de mitigação e adaptação climática."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "medium",
+        "sea-level-rise": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "landslides": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0152",
+    "actionName": "Recovery of degraded areas",
+    "actionPriority": 3,
+    "explanation": "A ação ‘Recuperação de áreas degradadas’ é crucial para o Rio de Janeiro devido ao seu bioma de floresta tropical, que é altamente suscetível à degradação. A restauração dessas áreas pode aumentar a biodiversidade, que atualmente está em risco devido a ameaças como secas e ondas de calor. Além disso, os esforços de recuperação podem mitigar o impacto de deslizamentos de terra e inundações, que representam riscos significativos para a infraestrutura e a saúde pública. Ao priorizar essa ação, a cidade pode aumentar sua resiliência frente aos impactos das mudanças climáticas e apoiar o desenvolvimento sustentável.",
+    "action": {
+      "ActionID": "icare_0152",
+      "ActionName": "Recuperação de áreas degradadas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar ecossistemas danificados por atividades humanas através do replantio de vegetação nativa, restauração do solo, eliminação de espécies invasoras e implementação de técnicas de manejo sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Desenvolver um plano de restauração claro e garantir financiamento para a gestão a longo prazo.",
+        "Assegurar o acesso a espécies de plantas nativas e fornecer treinamento em práticas sustentáveis.",
+        "Remover espécies invasoras e colaborar com as comunidades locais para uma restauração bem-sucedida do ecossistema."
+      ],
+      "KeyPerformanceIndicators": [
+        "Hectares de terras degradadas restauradas anualmente",
+        "Aumento na cobertura vegetal (%) em áreas restauradas",
+        "Número de comunidades locais envolvidas em projetos de restauração"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0162",
+    "actionName": "Strengthen programs for control and conservation of protected areas",
+    "actionPriority": 4,
+    "explanation": "O fortalecimento de programas para o controle e a conservação de áreas protegidas no Rio de Janeiro é crucial devido ao bioma de floresta tropical da cidade, que é rico em biodiversidade. A preservação dessas áreas é essencial para mitigar os impactos das mudanças climáticas, como secas e ondas de calor, que representam riscos significativos para a biodiversidade e a saúde pública. Além disso, a manutenção dessas áreas protegidas pode ajudar a reduzir as emissões provenientes de mudanças no uso do solo e apoiar as metas gerais de sustentabilidade ambiental da cidade. Dada a alta densidade populacional e as pressões da urbanização, esforços eficazes de conservação são vitais para garantir o equilíbrio ecológico e a resiliência de longo prazo da região.",
+    "action": {
+      "ActionID": "icare_0162",
+      "ActionName": "Fortalecer programas de controle e conservação de áreas protegidas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "floods",
+        "landslides",
+        "heatwaves",
+        "diseases"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Esta ação foca na implementação de uma série de estratégias integradas para melhorar a conservação ambiental e maximizar seus benefícios, como a expansão de áreas protegidas, o desenvolvimento de planos de manejo para unidades de conservação e o treinamento de guias de ecoturismo para fortalecer o turismo sustentável.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Expansão de áreas protegidas para melhorar a conservação ambiental.",
+        "Desenvolvimento de planos de manejo para unidades de conservação.",
+        "Treinamento de guias de ecoturismo para promover o turismo sustentável."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentual de aumento na área de regiões protegidas (%).",
+        "Redução nas taxas de desmatamento em áreas protegidas anualmente (%).",
+        "Número de programas de conservação fortalecidos anualmente."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "floods": "high",
+        "landslides": "high",
+        "heatwaves": "medium",
+        "diseases": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0151",
+    "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+    "actionPriority": 5,
+    "explanation": "Desenvolver diagnósticos e restaurar áreas das Zonas Especiais de Interesse Social (ZEIS) no Rio de Janeiro é fundamental devido aos desafios socioeconômicos da cidade. Essas zonas frequentemente abrigam populações de baixa renda que são particularmente vulneráveis a riscos ambientais, como enchentes e deslizamentos de terra, que representam ameaças significativas na região. Ao concentrar esforços nessas áreas, a cidade pode melhorar as condições de vida, aumentar a resiliência frente aos impactos climáticos e promover a equidade social. Essa ação está alinhada com a necessidade de enfrentar o acesso inadequado a serviços públicos e mitigar os efeitos das mudanças climáticas sobre as comunidades vulneráveis.",
+    "action": {
+      "ActionID": "icare_0151",
+      "ActionName": "Desenvolver diagnósticos e restaurar áreas de Zonas Especiais de Interesse Social (ZEIS)",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "sea-level-rise",
+        "floods",
+        "landslides",
+        "diseases",
+        "heatwaves"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Prioridade para áreas ZEIS nas ações de melhoria habitacional e na aplicação de recursos do Fundo de Urbanização, com a implementação de infraestrutura urbana que considere a adaptação climática nesses espaços. Uso de Soluções Baseadas na Natureza (NbS) na adaptação do saneamento ambiental e infraestruturas verdes e azuis que potencializem o lazer, a cultura, a agricultura urbana e atividades para fortalecer associações comunitárias.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento do Fundo de Urbanização e de outros mecanismos financeiros para apoiar melhorias habitacionais e infraestrutura urbana em áreas ZEIS",
+        "Colaboração entre planejadores urbanos, especialistas ambientais e comunidades locais para projetar e implementar soluções baseadas na natureza (NbS) para infraestrutura urbana",
+        "Políticas e estruturas regulatórias que integrem medidas de adaptação climática no planejamento urbano, garantindo que os investimentos priorizem a sustentabilidade ambiental e a comunidade"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de áreas ZEIS diagnosticadas e restauradas.",
+        "Percentual de residentes beneficiados por áreas restauradas (%).",
+        "Investimentos públicos alocados para áreas ZEIS (valor em moeda)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "sea-level-rise": "medium",
+        "floods": "medium",
+        "landslides": "low",
+        "diseases": "medium",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0145",
+    "actionName": "Strengthen the healthcare network to attend to climate victims",
+    "actionPriority": 6,
+    "explanation": "Reforçar a rede de saúde no Rio de Janeiro é fundamental devido ao alto risco de impactos à saúde relacionados ao clima. A cidade enfrenta ameaças significativas de ondas de calor, enchentes e deslizamentos de terra, todos os quais podem afetar gravemente a saúde pública. Ao aprimorar os serviços de saúde, a cidade poderá gerenciar e mitigar melhor as consequências desses perigos climáticos. Essa ação é especialmente importante, considerando a grande população da cidade e o potencial para emergências de saúde em larga escala. Melhorar a infraestrutura de saúde garantirá que a cidade esteja mais bem preparada para responder e se recuperar de crises de saúde induzidas pelo clima.",
+    "action": {
+      "ActionID": "icare_0145",
+      "ActionName": "Fortalecer a rede de saúde para atender às vítimas do clima",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "floods",
+        "storms",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Melhorar a infraestrutura das unidades de saúde para atender pessoas que necessitam de cuidados médicos devido a impactos associados a riscos climáticos (vítimas do clima), como aquelas afetadas por ondas de calor ou inundações, especialmente em áreas mais vulneráveis. Desenvolver planos de ação para preparar a rede de saúde para situações extremas relacionadas ao clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Investimento na renovação e expansão das instalações de saúde, garantindo que estejam equipadas para lidar com os impactos na saúde relacionados ao clima, especialmente em áreas vulneráveis.",
+        "Desenvolvimento de planos de ação e programas de treinamento para profissionais de saúde responderem a eventos climáticos extremos, como ondas de calor e inundações.",
+        "Colaboração com autoridades locais, equipes de resposta a emergências e especialistas em clima para criar uma estrutura abrangente para preparar a rede de saúde para os riscos climáticos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de instalações de saúde atualizadas para emergências relacionadas ao clima.",
+        "Aumento no percentual de profissionais de saúde treinados para resposta a emergências climáticas (%).",
+        "Número de lesões relacionadas ao clima tratadas com sucesso.",
+        "."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "diseases": "medium",
+        "landslides": "medium",
+        "floods": "high",
+        "storms": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "ipcc_0094",
+    "actionName": "Access to health care",
+    "actionPriority": 7,
+    "explanation": "Melhorar o acesso à saúde no Rio de Janeiro é fundamental devido ao alto risco de impactos na saúde pública causados por perigos relacionados ao clima, como ondas de calor, deslizamentos de terra e inundações. A alta densidade populacional da cidade e os níveis muito baixos de renda agravam as vulnerabilidades, tornando essencial garantir que sistemas de saúde robustos estejam em funcionamento. Ampliar o acesso à saúde pode mitigar os efeitos adversos desses perigos, proteger as populações vulneráveis e aumentar a resiliência geral da comunidade. Diante dos riscos significativos para a saúde pública identificados, priorizar o acesso à saúde é uma estratégia fundamental para proteger o bem-estar dos moradores do Rio.",
+    "action": {
+      "ActionID": "ipcc_0094",
+      "ActionName": "Acesso aos cuidados de saúde",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "droughts"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Melhorar o acesso aos serviços de saúde, incluindo serviços de saúde e nutrição, água limpa, saneamento e recursos de saúde mental culturalmente apropriados. A expansão das capacidades de telemedicina permite uma entrega eficiente de serviços de saúde, especialmente para populações remotas e carentes. Fortalecer os sistemas básicos de saúde pública e a preparação para desastres pode reduzir rapidamente a vulnerabilidade aos riscos de saúde relacionados ao clima.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Promove o acesso equitativo aos cuidados de saúde para grupos marginalizados e vulneráveis, incluindo populações sem-teto, comunidades remotas e aqueles afetados por desigualdades habitacionais.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento em tecnologias de telemedicina",
+        "Governança fortalecida dos sistemas de saúde pública",
+        "Capacitação para trabalhadores da saúde",
+        "Melhorias na infraestrutura das instalações de saúde"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução na mortalidade relacionada ao clima",
+        "Aumento no acesso à telemedicina",
+        "Número de programas de saúde adaptados culturalmente implementados",
+        "Melhoria nas métricas de acesso à água e saneamento"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "droughts": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "ipcc_0097",
+    "actionName": "Food storage/distribution improvements",
+    "actionPriority": 8,
+    "explanation": "Melhorar o armazenamento e a distribuição de alimentos é fundamental para o Rio de Janeiro devido à sua vulnerabilidade a riscos de segurança alimentar, especialmente causados por secas e inundações. Esses perigos podem interromper as cadeias de abastecimento de alimentos, tornando essenciais sistemas eficientes de armazenamento e distribuição para garantir a disponibilidade de alimentos. Além disso, aprimorar esses sistemas pode ajudar a mitigar o impacto de eventos relacionados ao clima no abastecimento alimentar da cidade, apoiando o bem-estar de sua grande população. Ao priorizar essa ação, o Rio de Janeiro pode fortalecer sua resiliência contra a escassez de alimentos induzida pelo clima.",
+    "action": {
+      "ActionID": "ipcc_0097",
+      "ActionName": "Melhorias no armazenamento/distribuição de alimentos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms",
+        "heatwaves"
+      ],
+      "Sector": [
+        "food_security",
+        "road_infrastructure"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Aprimorar os sistemas de armazenamento e distribuição de alimentos melhorando a infraestrutura de transporte, otimizando redes de comércio e encurtando cadeias de suprimento para garantir a disponibilidade local de alimentos e resiliência aos impactos climáticos. Esta ação também inclui aumentar a capacidade das instalações locais de armazenamento de alimentos para reduzir perdas pós-colheita, abordar ineficiências na logística e reforçar a infraestrutura para produtos perecíveis. O objetivo é melhorar a segurança alimentar e reduzir a vulnerabilidade a eventos extremos, interrupções e impactos em cascata, especialmente durante pandemias e outras crises.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Apoia o acesso equitativo a alimentos para populações marginalizadas e vulneráveis, priorizando a produção local de alimentos e melhorando os sistemas de distribuição que alcançam áreas desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento em infraestrutura",
+        "Incentivos políticos para a produção local de alimentos",
+        "Colaboração com os setores de logística e comércio",
+        "Tecnologia para otimização da cadeia de suprimentos"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução das perdas pós-colheita",
+        "Aumento da disponibilidade de alimentos locais",
+        "Melhoria da eficiência do transporte para distribuição de alimentos",
+        "Cadeias de abastecimento encurtadas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high",
+        "heatwaves": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0149",
+    "actionName": "Encourage sustainable land use practices",
+    "actionPriority": 9,
+    "explanation": "Incentivar práticas sustentáveis de uso do solo no Rio de Janeiro é fundamental devido à vulnerabilidade da cidade a deslizamentos de terra e inundações, que são agravados pelo uso inadequado do solo. O bioma de floresta tropical e a alta densidade populacional tornam essencial o manejo sustentável da terra para proteger a biodiversidade e reduzir as emissões. Além disso, o uso sustentável do solo pode ajudar a mitigar os impactos das mudanças climáticas, como a elevação do nível do mar, que representa um risco para a infraestrutura. Ao priorizar essa ação, o Rio de Janeiro pode aumentar sua resiliência diante de riscos ambientais e melhorar a qualidade de vida de seus habitantes.",
+    "action": {
+      "ActionID": "icare_0149",
+      "ActionName": "Incentivar práticas sustentáveis de uso da terra",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Promover métodos que garantam a conservação e a saúde do solo, preservando a biodiversidade, reduzindo a erosão e minimizando os impactos ambientais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Fornecer acesso a conhecimento técnico e treinamento em práticas de manejo sustentável do solo.",
+        "Oferecer incentivos financeiros e formar parcerias com instituições de pesquisa e agricultores locais.",
+        "Desenvolver sistemas de monitoramento para a saúde do solo e biodiversidade, e implementar políticas para controle da erosão."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem da área de terra gerida sob práticas de uso sustentável da terra (%)",
+        "Redução nas taxas de desmatamento ou degradação da terra (%)",
+        "Aumento nos indicadores de biodiversidade em terras geridas (por exemplo, contagem de espécies, qualidade do habitat)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "medium",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0157",
+    "actionName": "Maintenance and Revitalization of Riparian Forests",
+    "actionPriority": 10,
+    "explanation": "A manutenção e revitalização das florestas ripárias no Rio de Janeiro é crucial devido à vulnerabilidade da cidade a inundações e deslizamentos de terra, conforme indicado pelos altos índices de risco para esses perigos. As florestas ripárias desempenham um papel significativo na estabilização do solo e na redução da erosão, o que pode mitigar o impacto desses desastres naturais. Além disso, essas florestas contribuem para a conservação da biodiversidade e melhoram a qualidade da água, o que é essencial para os recursos hídricos da cidade. Considerando o bioma de floresta tropical do Rio de Janeiro, preservar e fortalecer as zonas ripárias está alinhado com as características ecológicas da cidade e apoia o desenvolvimento urbano sustentável.",
+    "action": {
+      "ActionID": "icare_0157",
+      "ActionName": "Manutenção e Revitalização de Florestas Ripárias",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods",
+        "droughts"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Mapeamento e avaliação de florestas ripárias degradadas, desenvolvimento de planos de revitalização com o plantio de espécies nativas, controle de espécies invasoras, medidas de contenção de erosão e avaliações periódicas dos impactos nas condições ambientais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Garantir a disponibilidade de dados geoespaciais e mapeamento prévio de áreas degradadas.",
+        "Formar parcerias com viveiros locais e fornecer equipamentos e mão de obra qualificada para o controle de espécies invasoras.",
+        "Garantir recursos financeiros e estabelecer um sistema de monitoramento para avaliar os impactos ambientais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Área total de florestas ripárias restauradas (ha).",
+        "Número de projetos implementados.",
+        "Redução da erosão e assoreamento de corpos d'água (toneladas/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "medium",
+        "landslides": "high",
+        "floods": "high",
+        "droughts": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0148",
+    "actionName": "Create the Municipal Climate Change Forum",
+    "actionPriority": 11,
+    "explanation": "A criação do Fórum Municipal de Mudanças Climáticas no Rio de Janeiro é um passo crucial para enfrentar os significativos desafios ambientais da cidade. Com altas emissões provenientes de diversos setores e uma densidade populacional que agrava essas questões, um fórum dedicado pode facilitar esforços coordenados para reduzir as emissões e promover a sustentabilidade. Além disso, a cidade enfrenta riscos severos relacionados a perigos climáticos, como enchentes, ondas de calor e deslizamentos de terra, que ameaçam a saúde pública e a infraestrutura. O estabelecimento desse fórum permitirá que as partes interessadas desenvolvam e implementem, de forma colaborativa, estratégias para mitigar esses riscos e aumentar a resiliência.",
+    "action": {
+      "ActionID": "icare_0148",
+      "ActionName": "Criar o Fórum Municipal de Mudanças Climáticas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "diseases",
+        "heatwaves",
+        "landslides",
+        "floods",
+        "wildfires",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Criação de um Fórum Municipal de Mudanças Climáticas com a participação de líderes comunitários, cientistas, coletivos, institutos de pesquisa, ONGs e membros da administração municipal e estadual. O Fórum servirá como referência para ações relacionadas às Mudanças Climáticas, com o objetivo de monitorar políticas futuras sobre o assunto no município, estimular o diálogo e criar uma rede de discussões sobre a crise climática.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Engajamento de diversas partes interessadas, incluindo líderes comunitários, cientistas, ONGs e autoridades locais, para estabelecer e sustentar o Fórum.",
+        "Alocação de recursos para facilitar reuniões regulares, workshops e eventos para que o Fórum permaneça ativo e impactante.",
+        "Desenvolvimento de uma estrutura clara e diretrizes para o Fórum monitorar e orientar políticas e iniciativas de mudança climática dentro do município."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de partes interessadas chave participando ativamente no fórum.",
+        "Número de políticas ou ações relacionadas ao clima propostas através do fórum.",
+        "Envolvimento público nas iniciativas do fórum (medido pela participação em eventos ou pesquisas)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "diseases": "medium",
+        "heatwaves": "medium",
+        "landslides": "low",
+        "floods": "medium",
+        "wildfires": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "ipcc_0093",
+    "actionName": "Availability of health infrastructure",
+    "actionPriority": 12,
+    "explanation": "Melhorar a disponibilidade da infraestrutura de saúde no Rio de Janeiro é fundamental devido ao alto risco de impactos à saúde pública causados por ameaças como ondas de calor, deslizamentos de terra e inundações. A alta densidade populacional da cidade e os níveis de renda muito baixos agravam a vulnerabilidade de seus moradores a esses perigos. O fortalecimento da infraestrutura de saúde pode mitigar significativamente os efeitos adversos desses desafios ambientais, garantindo melhor preparação e capacidade de resposta. Essa ação é prioritária, pois atende diretamente à necessidade crítica de sistemas de saúde robustos para proteger o bem-estar da população diante dos riscos relacionados ao clima.",
+    "action": {
+      "ActionID": "ipcc_0093",
+      "ActionName": "Disponibilidade de infraestrutura de saúde",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "sea-level-rise",
+        "diseases"
+      ],
+      "Sector": [
+        "public_health",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Garantir o acesso a infraestrutura de água potável segura, proteger os serviços de saúde e melhorar os sistemas de saneamento para mitigar os impactos climáticos. Isso inclui desenvolver medidas adaptativas para a segurança hídrica contra secas, inundações e elevação do nível do mar. Fortalecer a resiliência da infraestrutura garante acesso equitativo aos serviços de saúde, reduz os riscos de contaminação e aborda os impactos dos perigos induzidos pelo clima.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Melhora o acesso a recursos críticos de saúde e água para comunidades vulneráveis e desatendidas, mitigando as desigualdades causadas pelos impactos climáticos.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamento adequado",
+        "investimentos tecnológicos em infraestrutura de saúde e água",
+        "governança eficaz e coordenação intersetorial"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução de doenças transmitidas pela água",
+        "melhor acesso a água potável",
+        "número de instalações de saúde resilientes desenvolvidas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "sea-level-rise": "high",
+        "diseases": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "ipcc_0096",
+    "actionName": "Farm/fishery improvements",
+    "actionPriority": 13,
+    "explanation": "Melhorias na agricultura e na pesca são cruciais para o Rio de Janeiro devido ao alto risco de secas que afetam a segurança alimentar. O aprimoramento das práticas agrícolas pode ajudar a mitigar esses riscos, aumentando a resiliência e a produtividade. Além disso, o desenvolvimento das pescas pode apoiar as economias locais e fornecer fontes sustentáveis de alimento, o que é vital considerando a grande população da cidade. Essas melhorias também podem contribuir para a redução das emissões provenientes do uso da terra, alinhando-se com objetivos ambientais mais amplos.",
+    "action": {
+      "ActionID": "ipcc_0096",
+      "ActionName": "Melhorias na fazenda/pesqueira",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "wildfires",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "biodiversity",
+        "water_resources"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementar uma variedade de estratégias para adaptar fazendas e pescarias aos impactos climáticos. Isso inclui mudar o equipamento de pesca ou a potência dos barcos, adotar novas variedades de culturas ou ajustar os cronogramas de plantio, melhorar os esquemas de irrigação, integrar sistemas de cultivo e pecuária, realocar o gado com manejo de pastagens melhorado e adotar sistemas agroecológicos e agroflorestais. Inovações tecnológicas como a agricultura inteligente e medidas financeiras como subsídios apoiam essas adaptações.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Garante o acesso a recursos para agricultores e pescadores marginalizados, promove opções diversificadas de subsistência e fortalece a resiliência em comunidades desfavorecidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Apoio político para agricultura e pesca resilientes ao clima",
+        "Acesso a financiamento e subsídios",
+        "Treinamento para adoção de novas práticas",
+        "Infraestrutura de mercado melhorada"
+      ],
+      "KeyPerformanceIndicators": [
+        "Aumento na produtividade agrícola e pesqueira",
+        "Taxa de adoção de sistemas integrados",
+        "Redução nas perdas de rendimento relacionadas ao clima"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "wildfires": "low",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "ipcc_0092",
+    "actionName": "Social safety nets",
+    "actionPriority": 14,
+    "explanation": "A implementação de redes de proteção social no Rio de Janeiro é crucial devido ao baixíssimo status socioeconômico da cidade, especialmente entre as populações de baixa renda. Essas redes de proteção podem fornecer apoio essencial durante perigos ambientais, como enchentes e deslizamentos de terra, que representam riscos significativos para a saúde pública e a infraestrutura. Ao fortalecer as redes de proteção social, a cidade pode aumentar a resiliência e reduzir a vulnerabilidade, garantindo que as populações mais afetadas recebam assistência em tempo hábil. Essa ação é vital para promover a equidade social e a estabilidade diante dos desafios relacionados ao clima.",
+    "action": {
+      "ActionID": "ipcc_0092",
+      "ActionName": "Redes de proteção social",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "floods",
+        "storms"
+      ],
+      "Sector": [
+        "food_security",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "As redes de segurança social englobam mecanismos de proteção social adaptativa para reduzir a insegurança alimentar e a desnutrição, especialmente para populações vulneráveis. Estes incluem transferências de dinheiro, programas de alimentação escolar, iniciativas de trabalho público, compensação de desemprego, reformas agrárias, esquemas de crédito e seguros. Abordagens integradas combinam avaliações de risco climático com redução de risco de desastres, educação e equidade social para aumentar a resiliência aos estresses climáticos.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": "Aumenta o status social e os direitos de grupos marginalizados, protege populações vulneráveis, reduz desigualdades e promove a educação e a equidade de gênero.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Integração do clima e risco de desastres na proteção social",
+        "programas educacionais",
+        "coordenação com iniciativas de meios de subsistência sustentáveis e inclusão financeira"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nas taxas de desnutrição",
+        "Aumento no acesso à educação para grupos vulneráveis",
+        "Participação em programas de proteção social"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "heatwaves": "high",
+        "floods": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0181",
+    "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+    "actionPriority": 15,
+    "explanation": "A ação ‘Realocação e Restauração Ambiental em Áreas Vulneráveis’ é crucial para o Rio de Janeiro devido ao alto risco de desastres naturais na cidade, como deslizamentos de terra e inundações. Esses perigos representam ameaças significativas à saúde pública e à infraestrutura, conforme indicado pelos altos índices de risco. Realocar populações vulneráveis e restaurar o meio ambiente pode mitigar esses riscos, aumentando a segurança e a resiliência. Além disso, tais medidas podem melhorar a qualidade de vida das comunidades de baixa renda, que geralmente são as mais afetadas por riscos ambientais.",
+    "action": {
+      "ActionID": "icare_0181",
+      "ActionName": "Relocação e Restauração Ambiental em Áreas Vulneráveis",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Um projeto abrangente que aborda a vulnerabilidade socioambiental de um assentamento informal. Inclui a realocação de residentes de áreas propensas a inundações, a restauração do meio ambiente e o fornecimento de infraestrutura e serviços sociais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 2,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamento adequado",
+        "Coordenação interagências",
+        "Segurança da posse da terra"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de famílias realocadas.",
+        "Progresso da restauração ambiental.",
+        "Redução do risco de inundações."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "landslides": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0144",
+    "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+    "actionPriority": 16,
+    "explanation": "A criação de um programa de apoio financeiro para enfrentar eventos climáticos extremos é crucial para o Rio de Janeiro devido à sua alta vulnerabilidade a riscos relacionados ao clima. A cidade enfrenta riscos significativos de ondas de calor, inundações e deslizamentos de terra, todos capazes de causar impactos devastadores na saúde pública e na infraestrutura. Ao estabelecer um programa de apoio financeiro, a cidade pode se preparar melhor para esses eventos e mitigar seus efeitos, garantindo uma recuperação mais rápida e maior resiliência. Essa ação é especialmente importante diante dos desafios socioeconômicos enfrentados pela população, que podem limitar sua capacidade de lidar com tais desastres sem assistência externa.",
+    "action": {
+      "ActionID": "icare_0144",
+      "ActionName": "Criação de um Programa de Apoio Financeiro para Abordar Eventos Climáticos Extremos",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "heatwaves",
+        "diseases",
+        "landslides",
+        "wildfires",
+        "floods",
+        "sea-level-rise",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Criação de um programa para mitigar os efeitos das tragédias climáticas, incluindo assistência financeira às famílias afetadas e esforços para garantir recursos adicionais para recuperação e reconstrução.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Recursos financeiros",
+        "Planos de resposta a emergências",
+        "Coordenação institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de pessoas assistidas",
+        "Custo-benefício",
+        "Resiliência da comunidade"
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "medium",
+        "heatwaves": "medium",
+        "diseases": "medium",
+        "landslides": "medium",
+        "wildfires": "medium",
+        "floods": "medium",
+        "sea-level-rise": "medium",
+        "storms": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0164",
+    "actionName": "Hydrological Monitoring System with Telemetry Stations",
+    "actionPriority": 17,
+    "explanation": "A implementação de um Sistema de Monitoramento Hidrológico com Estações de Telemetria no Rio de Janeiro é crucial devido à vulnerabilidade da cidade a inundações e deslizamentos de terra. A cidade enfrenta riscos significativos decorrentes desses perigos, que podem impactar gravemente a infraestrutura e a saúde pública. Ao estabelecer um sistema de monitoramento robusto, a cidade pode prever e gerenciar melhor desastres relacionados à água, reduzindo assim os danos potenciais e aumentando a segurança da população. Além disso, esse sistema pode fornecer dados valiosos para apoiar o gerenciamento e o planejamento de recursos hídricos a longo prazo, o que é essencial, considerando o bioma de floresta tropical da cidade e os desafios impostos pelas mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0164",
+      "ActionName": "Sistema de Monitoramento Hidrológico com Estações de Telemetria",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "droughts",
+        "floods",
+        "storms"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Implementação de um sistema de monitoramento hidrológico com estações de telemetria para monitorar a precipitação, os níveis de água e as variáveis meteorológicas em tempo real.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Equipamento e infraestrutura",
+        "Sistema robusto de gestão de dados",
+        "Coordenação institucional"
+      ],
+      "KeyPerformanceIndicators": [
+        "Pontualidade dos dados",
+        "Custo-benefício",
+        "Eficácia da mitigação"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "droughts": "high",
+        "floods": "high",
+        "storms": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0156",
+    "actionName": "Implementation of urban gardens",
+    "actionPriority": 18,
+    "explanation": "A implementação de hortas urbanas no Rio de Janeiro é uma ação significativa devido à alta densidade populacional da cidade e aos desafios socioeconômicos enfrentados por seus moradores. As hortas urbanas podem aumentar a segurança alimentar, o que é crucial, considerando a vulnerabilidade da cidade a secas e inundações que ameaçam o abastecimento de alimentos. Além disso, essas hortas podem melhorar a saúde pública ao proporcionar acesso a alimentos frescos e criar espaços verdes que ajudam a mitigar o efeito de ilha de calor urbana. Ademais, as hortas urbanas podem promover o engajamento comunitário e a resiliência, capacitando os moradores a participarem de práticas sustentáveis e a melhorarem sua qualidade de vida.",
+    "action": {
+      "ActionID": "icare_0156",
+      "ActionName": "Implementação de hortas urbanas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "landslides",
+        "floods"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Identificar e avaliar a viabilidade de áreas adequadas para a instalação de hortas urbanas e garantir que os locais escolhidos atendam às expectativas da comunidade.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "medium",
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Garantir a disponibilidade de mapas detalhados de uso do solo e dados de planejamento urbano.",
+        "Envolver-se com as comunidades locais para entender suas necessidades e expectativas.",
+        "Avaliar a qualidade do solo, a disponibilidade de água e formar parcerias para apoiar o estabelecimento e a manutenção de jardins."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de hortas urbanas criadas.",
+        "Quantidade de alimentos produzidos localmente (kg/ano).",
+        "Número de beneficiários diretos."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "landslides": "low",
+        "floods": "medium"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "ipcc_0086",
+    "actionName": "Ecosystem-based adaptation",
+    "actionPriority": 19,
+    "explanation": "A adaptação baseada em ecossistemas é crucial para o Rio de Janeiro devido ao seu bioma de floresta tropical, que é altamente sensível aos impactos das mudanças climáticas, como secas e ondas de calor. Essas soluções naturais podem aumentar a biodiversidade, melhorar a gestão da água e reduzir o risco de deslizamentos de terra e inundações, que são perigos significativos para a cidade. Ao priorizar essa ação, o Rio pode fortalecer sua resiliência contra riscos relacionados ao clima, ao mesmo tempo em que apoia o bem-estar de sua população. Além disso, abordagens baseadas em ecossistemas podem proporcionar co-benefícios, como a melhoria da qualidade do ar e a oferta de espaços recreativos, contribuindo para a qualidade de vida geral na cidade.",
+    "action": {
+      "ActionID": "ipcc_0086",
+      "ActionName": "Adaptação baseada em ecossistemas",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "storms",
+        "sea-level-rise",
+        "heatwaves",
+        "floods"
+      ],
+      "Sector": [
+        "biodiversity",
+        "geo-hydrological_disasters",
+        "water_resources",
+        "public_health"
+      ],
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Restaurar e gerir de forma sustentável os ecossistemas marinhos, costeiros, urbanos, fluviais e de zonas húmidas para proteger contra perigos climáticos, como tempestades, inundações e ondas de calor. Os esforços incluem agroecologia, vegetação costeira e marinha e recifes, corredores de vegetação, restauração de habitats de manguezais, espaços verdes urbanos para reduzir as temperaturas. Estas ações melhoram a biodiversidade, armazenam carbono, melhoram a qualidade da água e proporcionam co-benefícios socioeconômicos e culturais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 0,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": "Apoia comunidades vulneráveis ao melhorar a resiliência climática, promover o acesso equitativo aos serviços ecossistêmicos e criar oportunidades de subsistência, especialmente para populações marginalizadas e desatendidas.",
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Engajamento comunitário",
+        "Apoio regulatório",
+        "Investimento financeiro",
+        "Planejamento urbano",
+        "Vegetação resiliente ao clima",
+        "Avaliações de biodiversidade",
+        "Gestão de bacias hidrográficas",
+        "Planejamento a montante",
+        "Financiamento sustentável"
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução de danos causados por marés de tempestade",
+        "Taxas de sequestro de carbono",
+        "Aumento da biodiversidade",
+        "Redução da temperatura em áreas urbanas",
+        "Melhoria da qualidade da água",
+        "Acesso a espaços verdes por comunidades carentes",
+        "Redução de eventos de inundação",
+        "Melhoria da saúde dos ecossistemas"
+      ],
+      "PowersAndMandates": null,
+      "AdaptationEffectivenessPerHazard": {
+        "storms": "high",
+        "sea-level-rise": "high",
+        "heatwaves": "high",
+        "floods": "high"
+      },
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RIO",
+    "cityName": "Rio de Janeiro",
+    "region": "RJ",
+    "regionName": "Rio de Janeiro",
+    "actionId": "icare_0175",
+    "actionName": "Recovery and preservation of green areas",
+    "actionPriority": 20,
+    "explanation": "A recuperação e preservação das áreas verdes no Rio de Janeiro é crucial devido ao bioma de floresta tropical da cidade, que desempenha um papel significativo na manutenção da biodiversidade e do equilíbrio ecológico. As áreas verdes ajudam a mitigar os impactos das mudanças climáticas ao absorverem as emissões de carbono, o que é particularmente importante, considerando o alto volume de emissões totais da cidade. Além disso, a preservação dos espaços verdes pode melhorar a saúde pública ao proporcionar ar mais limpo e reduzir o efeito de ilha de calor urbana, uma preocupação devido ao alto risco de ondas de calor. Ademais, as áreas verdes podem ajudar na gestão dos recursos hídricos e na redução do risco de enchentes e deslizamentos de terra, que são perigos significativos para a infraestrutura e a saúde pública da cidade.",
+    "action": {
+      "ActionID": "icare_0175",
+      "ActionName": "Recuperação e preservação de áreas verdes",
+      "ActionType": [
+        "adaptation"
+      ],
+      "Hazard": [
+        "heatwaves",
+        "floods",
+        "wildfires"
+      ],
+      "Sector": null,
+      "Subsector": null,
+      "PrimaryPurpose": [
+        "climate_resilience"
+      ],
+      "Description": "Reabilitação e proteção de espaços verdes existentes, como parques, florestas e zonas húmidas, e expansão de áreas verdes através do plantio de árvores e vegetação em áreas urbanas e periurbanas. Estas áreas oferecem soluções naturais para a gestão dos recursos hídricos, redução do estresse térmico, melhoria da qualidade do ar e aumento da biodiversidade.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": null,
+      "AdaptationEffectiveness": "high",
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de terrenos adequados para espaços verdes",
+        "Acesso a recursos hídricos para irrigação"
+      ],
+      "KeyPerformanceIndicators": [
+        "Área de espaços verdes criados ou restaurados.",
+        "Índices de biodiversidade em áreas verdes.",
+        "Envolvimento da comunidade em atividades de espaços verdes."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": {
+        "heatwaves": "high",
+        "floods": "high",
+        "wildfires": "medium"
+      },
+      "biome": "none"
+    }
+  }
+]

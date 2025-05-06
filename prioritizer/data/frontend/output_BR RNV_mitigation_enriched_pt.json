@@ -1,0 +1,1259 @@
+[
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 1,
+    "explanation": "Incentivar políticas de energia renovável em nível municipal em Ribeirão das Neves é fundamental devido às significativas emissões de energia estacionária da cidade, que contribuem fortemente para suas emissões totais. Ao promover a energia renovável, a cidade pode reduzir sua dependência de combustíveis fósseis, diminuindo assim sua pegada de carbono e melhorando a qualidade do ar. Além disso, iniciativas de energia renovável podem estimular o crescimento econômico local e gerar novas oportunidades de emprego, o que é particularmente benéfico considerando o perfil socioeconômico de baixa renda da cidade. A implementação dessas políticas está alinhada com os objetivos globais de sustentabilidade e pode aumentar a resiliência da cidade frente aos riscos relacionados ao clima.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Incentivar políticas de energia renovável a nível municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Defender e implementar políticas que priorizem o desenvolvimento e a integração de sistemas de energia renovável nas operações e no planejamento do governo local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e liderança para priorizar a energia renovável nas políticas e processos de planejamento do governo local",
+        "Desenvolvimento de políticas claras e estruturas regulatórias que facilitem a integração de sistemas de energia renovável nas operações governamentais",
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transição para a energia renovável na infraestrutura e operações municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia renovável aprovados ou iniciados anualmente a nível municipal.",
+        "Percentagem da demanda de energia municipal atendida por fontes renováveis (%).",
+        "Redução nas emissões de carbono municipais devido à adoção de energia renovável (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 2,
+    "explanation": "Integrar fontes de energia renovável aos sistemas municipais de água em Ribeirão das Neves é um passo crucial para aumentar a resiliência da cidade diante dos impactos das mudanças climáticas. A cidade enfrenta riscos significativos de secas, que ameaçam os recursos hídricos e a segurança alimentar. Ao incorporar energia renovável, a cidade pode garantir um abastecimento de água mais confiável e sustentável, reduzindo a dependência de fontes tradicionais de energia que contribuem para as emissões. Essa ação também está alinhada com a necessidade da cidade de enfrentar suas altas emissões estacionárias de energia, promovendo um ambiente urbano mais limpo e sustentável.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energias renováveis nos sistemas municipais de água",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fontes de energia renovável, como energia solar ou eólica, para impulsionar sistemas de tratamento, bombeamento e distribuição de água, reduzindo custos de energia e emissões.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renovável, como energia solar ou eólica, em sistemas de tratamento e distribuição de água",
+        "Expertise técnica e infraestrutura para adaptar sistemas existentes com soluções de energia renovável ou projetar novas instalações alimentadas por energias renováveis",
+        "Apoio político e regulatório para incentivar o uso de energia limpa em sistemas de água e garantir sua integração nas redes de energia municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de sistemas municipais de água alimentados por energias renováveis.",
+        "Redução no consumo de energia de fontes não renováveis (kWh/ano).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0038",
+    "actionName": "Promote community solar farms",
+    "actionPriority": 3,
+    "explanation": "Promover fazendas solares comunitárias em Ribeirão das Neves é uma ação estratégica para enfrentar as altas emissões de energia estacionária da cidade. Ao aproveitar a energia solar, a cidade pode reduzir sua dependência de fontes tradicionais de energia, diminuindo assim sua pegada de carbono total. Além disso, essa iniciativa pode oferecer soluções energéticas acessíveis e sustentáveis para a população local, o que é fundamental, considerando os níveis de renda muito baixos da região. Ademais, as fazendas solares comunitárias podem fomentar a criação de empregos locais e o desenvolvimento econômico, contribuindo para a elevação socioeconômica da região.",
+    "action": {
+      "ActionID": "icare_0038",
+      "ActionName": "Promover fazendas solares comunitárias",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Desenvolver e incentivar a adoção de projetos de energia solar compartilhada, permitindo que as comunidades se beneficiem coletivamente de energia limpa e renovável.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas e estruturas regulatórias para apoiar projetos de energia solar compartilhada baseados na comunidade e garantir o acesso equitativo à energia limpa",
+        "Disponibilidade de mecanismos financeiros ou incentivos para ajudar as comunidades a investir e manter sistemas de energia solar compartilhada",
+        "Colaboração entre governos locais, fornecedores de energia e organizações comunitárias para projetar e implementar projetos de energia solar compartilhada de forma eficaz"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de residências atendidas por projetos solares comunitários.",
+        "Emissões de GEE evitadas através da produção de energia solar (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0033",
+    "actionName": "Install biodigesters in rural properties",
+    "actionPriority": 4,
+    "explanation": "A instalação de biodigestores em propriedades rurais em Ribeirão das Neves é uma ação estratégica para enfrentar as emissões de resíduos, que representam uma parte significativa do total de emissões do município. Os biodigestores podem ajudar a converter resíduos orgânicos em biogás, reduzindo as emissões de metano e fornecendo uma fonte de energia renovável. Essa ação é especialmente relevante considerando o status de baixa renda da cidade, pois pode oferecer soluções energéticas de baixo custo e melhorar a gestão de resíduos. Além disso, ao reduzir as emissões provenientes dos resíduos, o município pode mitigar alguns dos impactos ambientais associados às práticas atuais de manejo de resíduos.",
+    "action": {
+      "ActionID": "icare_0033",
+      "ActionName": "Instalar biodigestores em propriedades rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Equipar fazendas e propriedades rurais com biodigestores para converter resíduos orgânicos em biogás e fertilizantes ricos em nutrientes, fornecendo uma fonte de energia sustentável.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou subsídios para apoiar a instalação de biodigestores em fazendas e propriedades rurais",
+        "Acesso a expertise técnica para o design, instalação e manutenção de biodigestores",
+        "Desenvolvimento de um quadro regulatório de apoio que incentive o uso de biogás e sistemas de gestão de resíduos orgânicos na agricultura rural"
+      ],
+      "KeyPerformanceIndicators": [
+        "Volume de biogás gerado (m³/ano).",
+        "Emissões de GEE evitadas pela substituição de combustíveis fósseis (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0040",
+    "actionName": "Adopt solar-powered street lighting in rural areas",
+    "actionPriority": 5,
+    "explanation": "A adoção de iluminação pública alimentada por energia solar em áreas rurais de Ribeirão das Neves é uma medida estratégica para aumentar a eficiência energética e reduzir as emissões. A cidade apresenta emissões significativas de energia estacionária, e a transição para a energia solar pode ajudar a mitigar esse impacto. Além disso, a iluminação solar pode melhorar a segurança e a acessibilidade em áreas rurais, que atualmente podem carecer de infraestrutura adequada. Essa ação está alinhada com a necessidade da cidade de promover a segurança energética e reduzir sua pegada de carbono, contribuindo para uma comunidade mais sustentável e resiliente.",
+    "action": {
+      "ActionID": "icare_0040",
+      "ActionName": "Adotar iluminação pública solar em áreas rurais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Instalar postes de iluminação pública movidos a energia solar para melhorar a segurança e acessibilidade em comunidades rurais, ao mesmo tempo que reduz os custos de energia e o impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a instalação de postes de iluminação pública solar em comunidades rurais",
+        "Acesso a expertise técnica para projetar, instalar e manter sistemas de iluminação pública solar",
+        "Colaboração com governos locais e comunidades para garantir a integração de postes de iluminação solar na infraestrutura existente e nos planos de energia"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de postes de iluminação pública alimentados por energia solar.",
+        "Redução anual no consumo de eletricidade (kWh).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0029",
+    "actionName": "Adopt policies for fossil fuel-free buildings",
+    "actionPriority": 6,
+    "explanation": "A adoção de políticas para edifícios livres de combustíveis fósseis em Ribeirão das Neves é crucial devido à alta densidade populacional da cidade e às significativas emissões de energia estacionária. A transição para fontes de energia mais limpas nos edifícios pode reduzir substancialmente as emissões totais da cidade, contribuindo para a melhoria da qualidade do ar e da saúde pública. Além disso, essa ação está alinhada com a necessidade de mitigar os impactos das mudanças climáticas, como ondas de calor e inundações, que representam altos riscos para a saúde pública e a infraestrutura da região. A implementação dessas políticas também pode estabelecer um precedente para o desenvolvimento urbano sustentável, promovendo uma comunidade mais saudável e resiliente.",
+    "action": {
+      "ActionID": "icare_0029",
+      "ActionName": "Adotar políticas para edifícios sem combustíveis fósseis",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Impor regulamentos que exijam que novas construções utilizem sistemas de energia renovável, designs eficientes em termos de energia e tecnologias de emissão zero.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de códigos de construção e estruturas regulatórias que exijam a integração de sistemas de energia renovável e designs energeticamente eficientes em novas construções",
+        "Disponibilidade de incentivos ou apoio para que os desenvolvedores cumpram as regulamentações e adotem tecnologias de emissão zero",
+        "Expertise técnica e recursos para garantir a implementação adequada e o monitoramento de sistemas de energia renovável e designs energeticamente eficientes em projetos de construção"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de edifícios em transição para fontes de energia renovável.",
+        "Redução total no uso de combustíveis fósseis para aquecimento/resfriamento (m³ ou litros).",
+        "Diminuição nas emissões de GEE relacionadas a edifícios (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0097",
+    "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+    "actionPriority": 7,
+    "explanation": "Apoiar a geração distribuída de energia em residências e empresas é fundamental para Ribeirão das Neves devido às suas altas emissões estacionárias de energia. Ao promover a geração local de energia, a cidade pode reduzir sua dependência de fontes centralizadas de eletricidade, que frequentemente contribuem de forma significativa para as emissões. Essa ação também está alinhada com a necessidade de aumentar a segurança energética, especialmente em uma região onde as secas representam um risco para as fontes tradicionais de energia. Além disso, os sistemas de energia distribuída podem proporcionar resiliência contra quedas de energia, o que é vital para manter a saúde pública e a estabilidade da infraestrutura diante de riscos climáticos.",
+    "action": {
+      "ActionID": "icare_0097",
+      "ActionName": "Apoiar a Geração de Energia Distribuída em Residências e Negócios",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Facilitar o uso de painéis solares e outras tecnologias de energia renovável em residências e edifícios comerciais.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Fornecer incentivos financeiros, regulamentações claras de instalação e acesso a tecnologias acessíveis para painéis solares.",
+        "Lançar campanhas de conscientização pública e oferecer treinamento para proprietários de residências e empresas.",
+        "Incentivar a adoção de tecnologias de energia renovável para promover economias de energia a longo prazo."
+      ],
+      "KeyPerformanceIndicators": [
+        "Capacidade instalada de geração de energia distribuída (MW).",
+        "Percentual de residências e empresas gerando sua própria energia (%).",
+        "Redução nas emissões de CO₂ através da geração distribuída (tCO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0011",
+    "actionName": "Provide tax incentives for renewable energy in residential projects",
+    "actionPriority": 8,
+    "explanation": "Conceder incentivos fiscais para energia renovável em projetos residenciais é fundamental para Ribeirão das Neves devido às suas altas emissões de energia estacionária. Incentivar a adoção de energia renovável pode reduzir significativamente essas emissões, contribuindo para um ambiente mais limpo. Além disso, essa ação pode ajudar a mitigar o impacto das ondas de calor, que representam um alto risco para a saúde pública na cidade. Ao promover a energia renovável, o município também pode aumentar sua segurança energética, reduzindo a dependência de fontes não renováveis.",
+    "action": {
+      "ActionID": "icare_0011",
+      "ActionName": "Fornecer incentivos fiscais para energia renovável em projetos residenciais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar os proprietários de imóveis a adotarem energia solar, eólica e outras fontes de energia limpa.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de incentivos financeiros, subsídios ou créditos fiscais para incentivar os proprietários a instalar sistemas de energia solar, eólica e outras energias limpas",
+        "Acesso a informações e recursos educacionais para ajudar os proprietários a entender os benefícios, custos e processos de instalação de sistemas de energia limpa",
+        "Desenvolvimento de regulamentos e políticas de apoio que facilitem a instalação de tecnologias de energia renovável em áreas residenciais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de residências beneficiadas por incentivos fiscais para a adoção de energia renovável.",
+        "Aumento anual nas instalações de energia renovável em projetos residenciais.",
+        "Redução estimada nas emissões de CO₂ equivalente devido à adoção de energia renovável."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0105",
+    "actionName": "Reduce technical losses in energy distribution networks",
+    "actionPriority": 9,
+    "explanation": "Reduzir as perdas técnicas nas redes de distribuição de energia é fundamental para Ribeirão das Neves devido às suas significativas emissões estacionárias de energia. Ao melhorar a eficiência da distribuição de energia, a cidade pode diminuir suas emissões totais, contribuindo para um ambiente mais limpo. Além disso, essa ação pode aumentar a segurança energética, o que é vital considerando a vulnerabilidade da cidade a secas que afetam os recursos energéticos. A implementação dessa medida também pode gerar economia de custos tanto para os fornecedores de energia quanto para os consumidores, tornando-se uma iniciativa financeiramente vantajosa.",
+    "action": {
+      "ActionID": "icare_0105",
+      "ActionName": "Reduzir perdas técnicas nas redes de distribuição de energia",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_industries"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Atualizar e manter a infraestrutura elétrica para minimizar a perda de energia durante a transmissão e distribuição, melhorando a eficiência geral da rede.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento para investir na modernização da infraestrutura elétrica e na atualização das redes de transmissão e distribuição",
+        "Acesso a expertise técnica para implementar atualizações que reduzam perdas de energia e melhorem a eficiência da rede",
+        "Estruturas políticas e regulatórias para garantir a manutenção contínua e a integração de tecnologias energeticamente eficientes na infraestrutura da rede"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentual de redução nas perdas técnicas em relação à linha de base (%).",
+        "Economia de energia alcançada anualmente (kWh).",
+        "Emissões de GEE evitadas através da redução de perdas de energia (toneladas de CO₂e)."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0005",
+    "actionName": "Create credit lines for residential and community wind energy projects",
+    "actionPriority": 10,
+    "explanation": "Criar linhas de crédito para projetos de energia eólica residencial e comunitária em Ribeirão das Neves é uma ação estratégica para atender de forma sustentável às necessidades energéticas da cidade. Dada a alta densidade populacional e os baixos níveis de renda do município, oferecer apoio financeiro a projetos de energia renovável pode ajudar a reduzir os custos de energia para os moradores. Além disso, essa iniciativa pode contribuir para a redução das emissões de energia estacionária, que representam uma parte significativa do total de emissões da cidade. Ao promover a energia eólica, o município pode aumentar sua segurança energética e resiliência diante de riscos climáticos, como secas e ondas de calor.",
+    "action": {
+      "ActionID": "icare_0005",
+      "ActionName": "Criar linhas de crédito para projetos de energia eólica residencial e comunitária",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecer programas de financiamento acessíveis para apoiar o desenvolvimento e a adoção de sistemas de energia eólica em residências e projetos comunitários, possibilitando uma transição para fontes de energia mais limpas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 2,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de programas financeiros, subsídios ou subvenções para tornar os sistemas de energia eólica acessíveis para residências e projetos comunitários",
+        "Acesso a expertise técnica e recursos para orientar a instalação e manutenção de sistemas de energia eólica em ambientes residenciais e comunitários",
+        "Apoio político e regulatório para incentivar a adoção de energia eólica, incluindo processos de licenciamento simplificados e incentivos para projetos de energia limpa"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia eólica financiados anualmente.",
+        "Capacidade instalada de sistemas de energia eólica de projetos apoiados por crédito (MW).",
+        "Redução estimada nas emissões equivalentes de CO₂ pela adoção de energia eólica."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0020",
+    "actionName": "Promote sustainable construction practices and encourage green technologies in public, residential, commercial, industrial, and service buildings.",
+    "actionPriority": 11,
+    "explanation": "Promover práticas de construção sustentável e incentivar tecnologias verdes em Ribeirão das Neves é fundamental devido à alta densidade populacional da cidade e às emissões significativas provenientes de energia estacionária e transporte. A implementação dessas práticas pode ajudar a reduzir a pegada de carbono total da cidade, enfrentando as altas emissões totais de 473.401,459 toneladas. Além disso, a construção sustentável pode aumentar a resiliência contra riscos climáticos, como enchentes e ondas de calor, que representam ameaças significativas à saúde pública e à infraestrutura. Ao adotar tecnologias verdes, a cidade também pode melhorar sua eficiência energética, contribuindo para uma maior segurança energética e reduzindo o impacto socioeconômico sobre sua população de baixa renda.",
+    "action": {
+      "ActionID": "icare_0020",
+      "ActionName": "Promover práticas de construção sustentável e incentivar tecnologias verdes em edifícios públicos, residenciais, comerciais, industriais e de serviços.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação busca aumentar a participação de fontes de energia renováveis na matriz energética da cidade, com foco em edifícios residenciais, comerciais, industriais e de serviços.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de incentivos e subsídios para incentivar a adoção de tecnologias de energia renovável em edifícios",
+        "Desenvolvimento de um quadro regulatório de apoio para a instalação e integração de sistemas de energia renovável nos setores residencial, comercial e industrial",
+        "Investimento na infraestrutura necessária para apoiar a geração e distribuição de energia renovável dentro da cidade"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de empregos criados nos setores da economia circular.",
+        "Aumento na porcentagem de materiais reutilizados ou reciclados na cidade.",
+        "Redução anual nas emissões de CO₂ equivalente provenientes de iniciativas de economia circular."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0008",
+    "actionName": "Develop Smart Grids and Energy Storage Systems",
+    "actionPriority": 12,
+    "explanation": "Desenvolver redes inteligentes e sistemas de armazenamento de energia em Ribeirão das Neves é fundamental devido às altas emissões estacionárias de energia da cidade. Ao implementar essas tecnologias, a cidade pode aumentar a eficiência energética e reduzir as emissões, contribuindo para um ambiente mais sustentável. Além disso, as redes inteligentes podem melhorar a segurança energética, o que é vital considerando a vulnerabilidade da cidade a secas que afetam os recursos energéticos. Essa ação também está alinhada com a necessidade de enfrentar os riscos à saúde pública associados às ondas de calor, já que sistemas de energia aprimorados podem oferecer melhores soluções de resfriamento.",
+    "action": {
+      "ActionID": "icare_0008",
+      "ActionName": "Desenvolver Redes Inteligentes e Sistemas de Armazenamento de Energia",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_industries"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação foca no desenvolvimento de redes inteligentes e sistemas de armazenamento de energia para otimizar a gestão de energia e melhorar a integração de fontes de energia renovável. As redes inteligentes permitem uma distribuição e uso mais eficientes da eletricidade, enquanto os sistemas de armazenamento de energia ajudam a armazenar o excesso de energia renovável para uso posterior. Juntos, eles garantem um fornecimento de energia estável, confiável e sustentável, permitindo que os municípios gerenciem melhor a demanda de energia, reduzam a congestão da rede e apoiem a transição para energia limpa.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Investimento no desenvolvimento e implementação de redes inteligentes e tecnologias de armazenamento de energia para melhorar a gestão de energia",
+        "Expertise técnica e infraestrutura para integrar fontes de energia renovável na rede inteligente e garantir o armazenamento eficaz de energia",
+        "Estruturas políticas e regulatórias para apoiar a adoção generalizada de redes inteligentes e sistemas de armazenamento de energia, incluindo incentivos e padrões de integração de rede"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem da rede coberta por tecnologia de rede inteligente.",
+        "Capacidade instalada de sistemas de armazenamento de energia (MW ou MWh).",
+        "Redução nas perdas de energia na rede (%)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0002",
+    "actionName": "Encourage the Use of the Brazilian Labeling Program for Buildings",
+    "actionPriority": 13,
+    "explanation": "Incentivar o uso do Programa Brasileiro de Etiquetagem de Edificações em Ribeirão das Neves é uma ação estratégica para melhorar a eficiência energética e reduzir as emissões. A cidade apresenta emissões significativas de energia estacionária, e esse programa pode ajudar a mitigá-las ao promover práticas de construção mais eficientes em termos energéticos. Além disso, considerando o status de baixa renda do município, a melhoria da eficiência energética pode resultar em economia de custos para os moradores, tornando-se uma iniciativa socialmente benéfica. Essa ação também está alinhada com a necessidade de enfrentar os riscos à saúde pública associados às ondas de calor, já que edificações eficientes energeticamente podem proporcionar melhor conforto térmico.",
+    "action": {
+      "ActionID": "icare_0002",
+      "ActionName": "Incentivar o Uso do Programa Brasileiro de Etiquetagem para Edificações",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "residential_buildings"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover a rotulagem de eficiência energética em edifícios públicos, comerciais e de serviços.",
+      "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer padrões e regulamentos claros para a rotulagem de eficiência energética.",
+        "Lançar campanhas de conscientização pública e fornecer incentivos para que os edifícios obtenham rótulos.",
+        "Oferecer treinamento para gerentes de edifícios para melhorar o desempenho energético e a adoção de rótulos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de novos edifícios com classificação A no rótulo de eficiência energética.",
+        "Redução estimada nas emissões (tCO₂e/ano) devido à eficiência energética de edifícios rotulados."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0027",
+    "actionName": "Create financing programs for local renewable energy projects",
+    "actionPriority": 14,
+    "explanation": "Criar programas de financiamento para projetos locais de energia renovável em Ribeirão das Neves é fundamental devido às altas emissões de energia estacionária da cidade. Ao promover a energia renovável, a cidade pode reduzir significativamente sua pegada de carbono e melhorar a qualidade do ar. Além disso, esses programas podem estimular o crescimento econômico local, gerando empregos e fomentando a inovação no setor energético. Diante dos desafios socioeconômicos do município, esses programas também podem oferecer soluções energéticas acessíveis para famílias de baixa renda, melhorando sua qualidade de vida. De modo geral, essa ação está alinhada com a necessidade da cidade de enfrentar questões ambientais e socioeconômicas de forma simultânea.",
+    "action": {
+      "ActionID": "icare_0027",
+      "ActionName": "Criar programas de financiamento para projetos locais de energia renovável",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_industries"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecer mecanismos de financiamento, como subsídios e empréstimos a juros baixos, para apoiar o desenvolvimento de iniciativas de energia renovável em pequena escala nas comunidades.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 1,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de mecanismos financeiros acessíveis, incluindo subsídios e empréstimos a juros baixos, para apoiar projetos de energia renovável em pequena escala nas comunidades",
+        "Colaboração com instituições financeiras e governos locais para garantir a distribuição e gestão eficaz dos fundos para iniciativas de energia renovável",
+        "Diretrizes claras e apoio para organizações comunitárias e empresas locais acessarem financiamento e implementarem com sucesso projetos de energia renovável"
+      ],
+      "KeyPerformanceIndicators": [
+        "Total de fundos alocados para projetos de energia renovável (USD).",
+        "Número de projetos financiados anualmente.",
+        "Aumento na capacidade de energia renovável instalada (MW)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0043",
+    "actionName": "Integrate geothermal energy for heating where feasible",
+    "actionPriority": 15,
+    "explanation": "Integrar a energia geotérmica para aquecimento em Ribeirão das Neves poderia reduzir significativamente as emissões de energia estacionária, que atualmente são um dos principais contribuintes para o total de emissões da cidade. Dada a alta densidade populacional do município e a necessidade de soluções energéticas sustentáveis, a energia geotérmica oferece uma alternativa renovável e de baixa emissão. Embora os fatores socioeconômicos indiquem um nível de renda muito baixo, o que pode representar desafios para a implementação, os benefícios a longo prazo da redução das emissões e dos custos de energia podem superar o investimento inicial. Além disso, essa ação está alinhada com a necessidade da cidade de enfrentar os impactos das mudanças climáticas, especialmente na redução das emissões e no fortalecimento da segurança energética.",
+    "action": {
+      "ActionID": "icare_0043",
+      "ActionName": "Integrar energia geotérmica para aquecimento onde for viável",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar bombas de calor geotérmicas e sistemas geotérmicos de uso direto para fornecer soluções de aquecimento sustentáveis e eficientes em locais adequados.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Disponibilidade de expertise técnica e recursos para avaliar a viabilidade e instalar bombas de calor geotérmicas e sistemas de uso direto em locais adequados",
+        "Acesso a financiamento ou incentivos para apoiar a adoção de soluções de aquecimento geotérmico em instalações residenciais, comerciais ou públicas",
+        "Desenvolvimento de estruturas regulatórias para orientar a instalação e garantir a integração adequada dos sistemas geotérmicos na infraestrutura energética local"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de sistemas de aquecimento na cidade alimentados por energia geotérmica (%).",
+        "Redução anual no consumo de combustíveis fósseis para aquecimento (litros ou toneladas de CO₂e evitadas).",
+        "Economia de custos para residentes ou empresas que utilizam energia geotérmica em comparação com métodos de aquecimento tradicionais (USD/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0046",
+    "actionName": "Make efforts to promote socioeconomic development and improve the quality of life in the city from the perspective of a circular economy and zero carbon emissions.",
+    "actionPriority": 16,
+    "explanation": "Promover o desenvolvimento socioeconômico em Ribeirão das Neves é fundamental devido aos níveis muito baixos de renda na cidade, que podem prejudicar a qualidade de vida como um todo. Ao focar em uma economia circular e em emissões zero de carbono, a cidade pode enfrentar suas emissões significativas provenientes de energia estacionária e transporte, contribuindo para um ambiente mais sustentável. Essa abordagem não só busca melhorar as condições econômicas, mas também está alinhada com os objetivos globais de sustentabilidade, podendo atrair investimentos e fomentar a inovação. Além disso, melhorar a qualidade de vida por meio de práticas sustentáveis pode mitigar os riscos associados a perigos climáticos, como secas e inundações, que representam ameaças significativas à saúde pública e à infraestrutura.",
+    "action": {
+      "ActionID": "icare_0046",
+      "ActionName": "Esforce-se para promover o desenvolvimento socioeconômico e melhorar a qualidade de vida na cidade a partir da perspectiva de uma economia circular e emissões zero de carbono.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "commercial_and_institutional_buildings_and_facilities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "O governo da cidade deve empreender ações políticas consistentes com sua capacidade econômica e os desafios que enfrenta para apoiar o desenvolvimento de uma nova economia sustentável com emissões de carbono zero, que proteja as condições de trabalho, o empreendedorismo e a vitalidade econômica da cidade.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 1,
+        "mobility": 1,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Vontade política e liderança: Um governo local comprometido disposto a priorizar o desenvolvimento sustentável e a neutralidade de carbono.",
+        "Capacidade econômica e recursos: Recursos financeiros suficientes para investir em iniciativas verdes e infraestrutura sustentável.",
+        "Colaboração com as partes interessadas: Envolver-se com empresas, sindicatos e empreendedores para alinhar estratégias e garantir que a transição econômica seja inclusiva e equitativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentual de redução nas emissões municipais de carbono per capita (%).",
+        "Número de iniciativas de economia circular implementadas anualmente (por exemplo, programas de reciclagem, projetos de conversão de resíduos em energia).",
+        "Aumento no número de empregos verdes criados por meio de iniciativas de economia circular e de carbono zero (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0004",
+    "actionName": "Raise awareness to reduce peak-hour energy consumption",
+    "actionPriority": 17,
+    "explanation": "Aumentar a conscientização para reduzir o consumo de energia nos horários de pico é crucial para Ribeirão das Neves devido às suas altas emissões estacionárias de energia. Ao direcionar esforços para o consumo nesses horários, a cidade pode aliviar a pressão sobre a rede elétrica, potencialmente reduzindo as emissões e melhorando a segurança energética. Além disso, essa ação pode ajudar a mitigar o impacto das ondas de calor, que representam um risco significativo à saúde pública na região. Educar a população sobre a conservação de energia pode levar a mudanças comportamentais de longo prazo que apoiam o uso sustentável de energia.",
+    "action": {
+      "ActionID": "icare_0004",
+      "ActionName": "Aumentar a conscientização para reduzir o consumo de energia nas horas de pico",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_industries"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Lançar campanhas e iniciativas educacionais para incentivar os consumidores a deslocarem o uso de energia para fora dos horários de pico, aliviando a pressão na rede e reduzindo os custos gerais de energia.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de campanhas educativas direcionadas para aumentar a conscientização sobre os benefícios de mudar o uso de energia para horários fora de pico",
+        "Colaboração com empresas de serviços públicos para fornecer dados e ferramentas que ajudem os consumidores a entender os horários de pico e fora de pico de energia",
+        "Incentivos ou mecanismos de precificação, como tarifas de uso por tempo, para encorajar os consumidores a adotar padrões de consumo de energia que reduzam a pressão na rede durante as horas de pico"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentual de redução no consumo de energia durante as horas de pico.",
+        "Número de residências e empresas participando em programas de conscientização.",
+        "Redução estimada nas emissões de CO₂ equivalente devido à diminuição do uso de energia nas horas de pico."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0022",
+    "actionName": "Set municipal energy efficiency targets",
+    "actionPriority": 18,
+    "explanation": "Estabelecer metas municipais de eficiência energética é fundamental para Ribeirão das Neves devido às suas significativas emissões de energia estacionária, que contribuem fortemente para o total de emissões da cidade. Ao melhorar a eficiência energética, o município pode reduzir sua pegada de carbono, o que é essencial diante do alto risco de perigos relacionados ao clima, como ondas de calor e inundações, que ameaçam a saúde pública e a infraestrutura. Além disso, o aumento da eficiência energética pode gerar economia de custos e maior segurança energética, o que é particularmente importante em uma região com desafios socioeconômicos. Essa ação está alinhada com a necessidade da cidade de promover a sustentabilidade ambiental, ao mesmo tempo em que considera benefícios econômicos e sociais.",
+    "action": {
+      "ActionID": "icare_0022",
+      "ActionName": "Definir metas de eficiência energética municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Definir metas mensuráveis para economia de energia nas operações e infraestruturas municipais, promovendo responsabilidade e progresso em direção aos objetivos de sustentabilidade.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "60-79",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de metas claras e mensuráveis de economia de energia para operações e infraestrutura municipais",
+        "Acesso a dados e ferramentas para rastrear e avaliar o consumo de energia em diferentes setores municipais",
+        "Compromisso de políticas e liderança para integrar metas de economia de energia no planejamento, orçamento e operações municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Progresso anual em direção ao cumprimento das metas municipais de eficiência energética (%).",
+        "Redução no consumo de energia municipal (kWh/ano).",
+        "Redução estimada nas emissões equivalentes de CO₂ a partir dos esforços de eficiência energética municipal."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0121",
+    "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+    "actionPriority": 19,
+    "explanation": "O incentivo à criação de programas de compartilhamento de bicicletas, especialmente com bicicletas elétricas, é uma ação estratégica para Ribeirão das Neves. Esta cidade possui alta densidade populacional, o que a torna adequada para o compartilhamento de bicicletas como meio de reduzir as emissões do transporte, atualmente um dos principais contribuintes para as emissões totais do município. Além disso, a promoção de bicicletas elétricas pode ajudar a mitigar o impacto das ondas de calor na saúde pública, oferecendo uma opção de transporte mais fresca e sustentável. O incentivo ao compartilhamento de bicicletas também pode melhorar o acesso ao transporte para moradores de baixa renda, alinhando-se com as necessidades socioeconômicas da cidade.",
+    "action": {
+      "ActionID": "icare_0121",
+      "ActionName": "Incentivo à criação de programas de compartilhamento de bicicletas em áreas urbanas, com foco em bicicletas elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação incentiva o estabelecimento de sistemas de compartilhamento de bicicletas nas cidades, promovendo especificamente o uso de bicicletas elétricas. Esses sistemas permitem que os residentes aluguem bicicletas elétricas para viagens curtas, reduzindo a dependência de carros para o transporte urbano. Ao integrar bicicletas elétricas, as cidades podem reduzir ainda mais as emissões de gases de efeito estufa, aliviar a congestão do tráfego e promover um modo de transporte mais saudável e sustentável tanto para áreas urbanas quanto rurais. Esta iniciativa também apoia a igualdade de mobilidade, pois torna as bicicletas mais acessíveis a uma gama mais ampla de pessoas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecimento de sistemas de compartilhamento de bicicletas com foco em bicicletas elétricas para reduzir a dependência de carros.",
+        "Integração de bicicletas elétricas para reduzir as emissões de gases de efeito estufa, aliviar o congestionamento do tráfego e promover o transporte sustentável.",
+        "Promoção da igualdade de mobilidade tornando as bicicletas elétricas acessíveis a uma população mais ampla."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de bicicletas elétricas disponíveis em programas de compartilhamento de bicicletas.",
+        "Aumento anual no número de usuários de compartilhamento de bicicletas.",
+        "Redução estimada nas emissões de CO₂ equivalente com a adoção do compartilhamento de bicicletas elétricas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR RNV",
+    "cityName": "Ribeirão das Neves",
+    "region": "MG",
+    "regionName": "Minas Gerais",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 20,
+    "explanation": "Priorizar a aquisição de produtos agroecológicos produzidos localmente nas compras públicas é fundamental para Ribeirão das Neves devido ao seu status socioeconômico de baixa renda. Essa ação pode estimular a economia local ao apoiar agricultores e produtores locais, criando empregos e aumentando os níveis de renda. Além disso, pode fortalecer a segurança alimentar, que é uma preocupação significativa, dado o alto risco de secas e enchentes que afetam a disponibilidade de alimentos. Ao focar em produtos agroecológicos, o município também pode promover práticas agrícolas sustentáveis, mais adequadas ao bioma local e às condições ambientais.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar a Aquisição de Produtos Agroecológicos Produzidos Localmente em Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Concentre-se em comprar alimentos sustentáveis e produzidos localmente para instituições públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas de aquisição e identificação de fornecedores locais confiáveis.",
+        "Parcerias com produtores e alocação de financiamento para programas de aquisição sustentável.",
+        "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os critérios de sustentabilidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem do volume total de compras públicas provenientes de produtores agroecológicos locais.",
+        "Quantidade de emissões de CO₂ evitadas devido à redução da distância de transporte (tCO₂e).",
+        "Número de produtores agroecológicos beneficiados pelas compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
+]

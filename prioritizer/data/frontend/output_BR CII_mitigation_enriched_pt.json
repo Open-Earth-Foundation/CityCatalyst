@@ -1,0 +1,1261 @@
+[
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0075",
+    "actionName": "Set carbon emissions reduction targets for industrial sectors",
+    "actionPriority": 1,
+    "explanation": "Estabelecer metas de redução de emissões de carbono para os setores industriais em Cariacica é uma prioridade crítica devido à significativa contribuição dos processos industriais para o total de emissões da cidade. Com as emissões provenientes dos processos industriais representando uma parcela substancial da pegada de carbono do município, reduções direcionadas nesse setor podem resultar em diminuições significativas nas emissões totais. Além disso, abordar as emissões industriais está alinhado com objetivos ambientais mais amplos e pode ajudar a mitigar os impactos das mudanças climáticas, o que é fundamental considerando a vulnerabilidade da cidade a riscos como secas e inundações. A implementação dessas metas também pode impulsionar a inovação e a eficiência dentro do setor industrial, potencialmente gerando benefícios econômicos e melhores resultados para a saúde pública.",
+    "action": {
+      "ActionID": "icare_0075",
+      "ActionName": "Definir metas de redução de emissões de carbono para setores industriais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "ippu"
+      ],
+      "Subsector": [
+        "industrial_processes"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecer metas claras e alcançáveis de redução de emissões de carbono para as indústrias e exigir relatórios periódicos para garantir o progresso.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": "80-100",
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de um sistema padronizado de medição e relatório de emissões de carbono.",
+        "Criação de estruturas regulatórias para impor metas de redução de emissões.",
+        "Capacitação para indústrias monitorarem e relatarem emissões de forma eficaz."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de indústrias com metas estabelecidas de redução de carbono (%).",
+        "Redução nas emissões totais de GEE setoriais em comparação com a linha de base (toneladas de CO₂e).",
+        "Aumento na adoção de fontes de energia renovável pelas indústrias (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0078",
+    "actionName": "Develop and implement industrial waste management programs",
+    "actionPriority": 2,
+    "explanation": "Desenvolver e implementar programas de gestão de resíduos industriais em Cariacica é fundamental devido às significativas emissões provenientes dos processos industriais que contribuem para o total de emissões da cidade. Com as emissões industriais sendo um dos principais componentes, uma gestão eficaz dos resíduos pode ajudar a reduzir a poluição ambiental e melhorar a qualidade do ar. Além disso, melhores práticas de gestão de resíduos podem mitigar o risco de contaminação dos recursos hídricos, o que é vital considerando a vulnerabilidade da cidade a períodos de seca. Essa ação está alinhada com a necessidade de abordar questões de saúde pública, já que a redução dos resíduos industriais pode diminuir a incidência de doenças relacionadas à poluição.",
+    "action": {
+      "ActionID": "icare_0078",
+      "ActionName": "Desenvolver e implementar programas de gestão de resíduos industriais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "ippu"
+      ],
+      "Subsector": [
+        "industrial_processes"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecer sistemas para melhor gerenciar resíduos industriais, reduzindo as emissões de aterros sanitários e incentivando a reciclagem ou reutilização.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": "60-79",
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Regulamentações claras de gestão de resíduos para indústrias.",
+        "Disponibilidade de infraestrutura de processamento de resíduos.",
+        "Programas de treinamento para trabalhadores industriais sobre gestão de resíduos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução na geração de resíduos perigosos (toneladas/ano).",
+        "Aumento na taxa de reciclagem de materiais de resíduos industriais (%).",
+        "Quantidade de conversão de resíduos em energia alcançada (MWh/ano)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0081",
+    "actionName": "Enhance material recycling in manufacturing",
+    "actionPriority": 3,
+    "explanation": "Aumentar a reciclagem de materiais na indústria é fundamental para Cariacica devido às significativas emissões provenientes dos processos industriais, que são um dos principais contribuintes para o total de emissões da cidade. Ao aprimorar as práticas de reciclagem, o município pode reduzir as emissões de resíduos e diminuir o impacto ambiental do seu setor industrial. Essa ação também está alinhada com a necessidade de enfrentar desafios socioeconômicos, pois pode gerar oportunidades de emprego e promover um crescimento econômico sustentável. Além disso, a redução das emissões por meio da reciclagem pode ajudar a mitigar os riscos associados aos impactos das mudanças climáticas, como enchentes e deslizamentos de terra, que representam um alto risco para a infraestrutura e a saúde pública da cidade.",
+    "action": {
+      "ActionID": "icare_0081",
+      "ActionName": "Aprimorar a reciclagem de materiais na fabricação",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "ippu"
+      ],
+      "Subsector": [
+        "industrial_processes"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a reciclagem e reutilização de materiais na produção industrial para reduzir a extração de matérias-primas e emissões.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": "60-79",
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Estabelecimento de programas de reciclagem adaptados a indústrias específicas, com diretrizes claras para separação e reutilização de materiais.",
+        "Colaboração com empresas de gestão de resíduos para criar sistemas de reciclagem eficientes em áreas industriais.",
+        "Desenvolvimento de políticas que forneçam incentivos econômicos para que as indústrias invistam em tecnologias de reciclagem e métodos de produção sustentáveis."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de materiais de resíduos reciclados em processos de fabricação (%).",
+        "Redução no consumo de matérias-primas devido à reciclagem (toneladas/ano).",
+        "Aumento no uso de materiais reciclados em produtos finais (%)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0074",
+    "actionName": "Support research into carbon-neutral manufacturing technologies",
+    "actionPriority": 4,
+    "explanation": "Apoiar pesquisas em tecnologias de manufatura neutras em carbono é fundamental para Cariacica devido às suas significativas emissões provenientes de processos industriais. Como as emissões industriais são um dos principais contribuintes para o total de emissões da cidade, o avanço de tecnologias neutras em carbono pode ajudar a reduzir o impacto ambiental. Além disso, essa ação está alinhada com a necessidade da cidade de enfrentar os riscos das mudanças climáticas, como secas e ondas de calor, que podem ser agravados por altas emissões. Ao investir em pesquisa, Cariacica pode promover a inovação e, potencialmente, levar a práticas industriais mais sustentáveis, beneficiando tanto a economia local quanto o meio ambiente.",
+    "action": {
+      "ActionID": "icare_0074",
+      "ActionName": "Apoiar a pesquisa em tecnologias de fabricação neutras em carbono",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "ippu"
+      ],
+      "Subsector": [
+        "industrial_processes"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Investir em pesquisa e desenvolvimento de tecnologias neutras em carbono e incentivar sua adoção na produção industrial.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": "60-79",
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Financiamento para pesquisa e desenvolvimento de tecnologias neutras em carbono.",
+        "Parcerias entre governo, academia e indústria para fomentar a inovação.",
+        "Programas de incentivo para indústrias adotarem novas tecnologias."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de pesquisa financiados ou iniciados.",
+        "Percentual de indústrias locais adotando tecnologias neutras em carbono (%).",
+        "Redução nas emissões de carbono em indústrias participantes de projetos de pesquisa (toneladas de CO₂/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0001",
+    "actionName": "Stimulate solar energy production in industrial facilities",
+    "actionPriority": 5,
+    "explanation": "Estimular a produção de energia solar em instalações industriais em Cariacica é uma ação crucial devido às altas emissões dos processos industriais da cidade, que são um dos principais contribuintes para suas emissões totais. Ao promover a energia solar, a cidade pode reduzir sua dependência de combustíveis fósseis, diminuindo assim sua pegada de carbono e melhorando a qualidade do ar. Além disso, essa ação está alinhada com a necessidade de fortalecer a segurança energética, especialmente diante de possíveis escassezes de energia agravadas pelos impactos das mudanças climáticas, como as secas. A implementação de soluções de energia solar também pode trazer benefícios econômicos ao reduzir os custos de energia para as indústrias e criar empregos verdes, contribuindo para o desenvolvimento socioeconômico da cidade.",
+    "action": {
+      "ActionID": "icare_0001",
+      "ActionName": "Estimular a produção de energia solar em instalações industriais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "ippu"
+      ],
+      "Subsector": [
+        "industrial_processes"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a instalação de sistemas de energia solar em fábricas para reduzir a dependência de combustíveis fósseis e minimizar as emissões associadas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": "80-100",
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou subsídios para apoiar instalações de energia solar em indústrias.",
+        "Expertise técnica e capacidade para a instalação de painéis solares e sistemas relacionados.",
+        "Estruturas regulatórias que facilitam a integração da energia solar nas operações industriais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Total de emissões de gases de efeito estufa evitadas através da adoção de energia solar nas indústrias (toneladas de CO₂/ano).",
+        "Período médio de retorno sobre o investimento (ROI) para instalações solares industriais (anos).",
+        "Percentual das necessidades energéticas industriais atendidas por sistemas de energia solar (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0042",
+    "actionName": "Encourage renewable energy policies at the municipal level",
+    "actionPriority": 6,
+    "explanation": "Incentivar políticas de energia renovável em nível municipal em Cariacica é fundamental devido às altas emissões de energia estacionária da cidade. A transição para fontes de energia renovável pode reduzir significativamente essas emissões, contribuindo para um ambiente mais limpo. Além disso, a energia renovável pode aumentar a segurança energética, o que é vital considerando a vulnerabilidade da cidade a secas que podem impactar o fornecimento de energia. A implementação dessas políticas também pode estimular o crescimento econômico local, criando empregos verdes e reduzindo a dependência de fontes de energia não renováveis.",
+    "action": {
+      "ActionID": "icare_0042",
+      "ActionName": "Incentivar políticas de energia renovável a nível municipal",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "non-specified_sources"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Defender e implementar políticas que priorizem o desenvolvimento e a integração de sistemas de energia renovável nas operações e no planejamento do governo local.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Vontade política e liderança para priorizar a energia renovável nas políticas e processos de planejamento do governo local",
+        "Desenvolvimento de políticas claras e estruturas regulatórias que facilitem a integração de sistemas de energia renovável nas operações governamentais",
+        "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transição para a energia renovável na infraestrutura e operações municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de projetos de energia renovável aprovados ou iniciados anualmente a nível municipal.",
+        "Percentagem da demanda de energia municipal atendida por fontes renováveis (%).",
+        "Redução nas emissões de carbono municipais devido à adoção de energia renovável (toneladas de CO₂e/ano)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0082",
+    "actionName": "Transition to renewable energy for industrial operations",
+    "actionPriority": 7,
+    "explanation": "A transição para fontes de energia renovável nas operações industriais em Cariacica é crucial devido ao alto nível de emissões provenientes dos processos industriais, que representam uma contribuição significativa para o total de emissões da cidade. Ao adotar fontes de energia renovável, a cidade pode reduzir substancialmente sua pegada de carbono, alinhando-se com os objetivos globais de sustentabilidade. Além disso, essa transição pode aumentar a segurança energética, o que é vital considerando a vulnerabilidade da cidade a períodos de seca que podem impactar o fornecimento de energia. A implementação dessa medida também pode estimular o crescimento econômico local, por meio da criação de empregos verdes e do incentivo à inovação no setor de energia renovável.",
+    "action": {
+      "ActionID": "icare_0082",
+      "ActionName": "Transição para energia renovável nas operações industriais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "ippu"
+      ],
+      "Subsector": [
+        "industrial_processes"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a transição para fontes de energia renovável, como energia eólica, solar e hidrelétrica, nas operações industriais para reduzir o uso de combustíveis fósseis.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": "80-100",
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "high",
+      "TimelineForImplementation": ">10 years",
+      "Dependencies": [
+        "Fornecimento de incentivos, como isenções fiscais ou subsídios, para tornar as tecnologias de energia renovável mais acessíveis para as indústrias.",
+        "Desenvolvimento de infraestrutura para a integração de energia renovável nas operações industriais existentes, incluindo soluções de armazenamento de energia.",
+        "Assistência técnica e treinamento para partes interessadas da indústria para facilitar a transição para fontes de energia renovável."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de indústrias adotando fontes de energia renovável.",
+        "Capacidade instalada de energia renovável em operações industriais (MW).",
+        "Redução nos custos médios de energia para indústrias que fizeram a transição para renováveis (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0073",
+    "actionName": "Support the transition to low-emission industrial refrigeration",
+    "actionPriority": 8,
+    "explanation": "Apoiar a transição para a refrigeração industrial de baixa emissão em Cariacica é fundamental devido às significativas emissões dos processos industriais da cidade. Como as emissões industriais são um dos principais contribuintes para o total de emissões do município, reduzi-las pode ter um impacto substancial na saúde ambiental geral. Além disso, essa ação está alinhada com a necessidade de enfrentar os impactos das mudanças climáticas, já que a redução das emissões pode ajudar a mitigar riscos associados a ondas de calor e outros perigos relacionados ao clima. Ao priorizar essa transição, Cariacica pode melhorar a qualidade do ar e contribuir para os esforços globais de combate às mudanças climáticas.",
+    "action": {
+      "ActionID": "icare_0073",
+      "ActionName": "Apoiar a transição para a refrigeração industrial de baixa emissão",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "ippu"
+      ],
+      "Subsector": [
+        "industrial_processes"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Substituir refrigerantes de alto GWP por alternativas de baixa emissão e eficiência energética em sistemas de refrigeração industrial.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": "60-79",
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de refrigerantes de baixo GWP e equipamentos compatíveis.",
+        "Apoio regulatório para a eliminação gradual de refrigerantes de alto GWP.",
+        "Programas de treinamento para profissionais da indústria em novos sistemas de refrigerantes."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de sistemas de refrigeração industrial que foram convertidos para alternativas de baixa emissão.",
+        "Redução nas emissões de gases de efeito estufa de sistemas de refrigeração (toneladas de CO₂ equivalente/ano).",
+        "Percentual de empresas locais que recebem apoio para a transição (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0079",
+    "actionName": "Implement energy audits in industrial plants",
+    "actionPriority": 9,
+    "explanation": "A implementação de auditorias energéticas em plantas industriais em Cariacica é um passo crucial para reduzir as altas emissões dos processos industriais da cidade, que são um contribuinte significativo para suas emissões totais. Ao identificar ineficiências e áreas para melhorias, essas auditorias podem levar a um uso de energia mais sustentável e à redução de custos para as indústrias. Considerando o baixíssimo status socioeconômico da cidade, a redução dos custos de energia pode ter um impacto econômico positivo. Além disso, a melhoria da eficiência energética está alinhada com a necessidade da cidade de enfrentar riscos à segurança energética agravados por períodos de seca. De modo geral, essa ação apoia tanto a resiliência ambiental quanto a econômica em Cariacica.",
+    "action": {
+      "ActionID": "icare_0079",
+      "ActionName": "Implementar auditorias energéticas em plantas industriais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "ippu"
+      ],
+      "Subsector": [
+        "industrial_processes"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Realizar auditorias energéticas regulares para identificar oportunidades de economia de energia e redução de emissões.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": "20-39",
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Disponibilidade de profissionais qualificados ou auditores de energia para realizar avaliações completas em indústrias e edifícios.",
+        "Desenvolvimento de uma estrutura padronizada para auditorias de energia, garantindo consistência e precisão nos resultados.",
+        "Implementação de incentivos governamentais ou corporativos para encorajar as organizações a agirem com base nas recomendações das auditorias, como reembolsos para atualizações de eficiência energética."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de plantas industriais realizando auditorias energéticas anualmente.",
+        "Economia de custos alcançada através de melhorias recomendadas pela auditoria (%).",
+        "Tempo médio para implementar medidas de eficiência energética após a auditoria (meses)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0076",
+    "actionName": "Encourage the use of low-emission fuels in industrial processes",
+    "actionPriority": 10,
+    "explanation": "Incentivar o uso de combustíveis de baixa emissão nos processos industriais em Cariacica é fundamental devido às significativas emissões provenientes desse setor, que são as mais altas entre todos os setores da cidade. Essa ação pode reduzir substancialmente a pegada de carbono total do município, contribuindo para um ambiente mais saudável. Além disso, considerando a vulnerabilidade da cidade a riscos climáticos, como enchentes e deslizamentos de terra, a redução das emissões pode ajudar a mitigar alguns dos efeitos adversos das mudanças climáticas. Implementar essa medida está alinhado com a necessidade de melhorar a qualidade do ar e a saúde pública, dado o alto risco de doenças agravadas pela poluição.",
+    "action": {
+      "ActionID": "icare_0076",
+      "ActionName": "Incentivar o uso de combustíveis de baixa emissão em processos industriais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "ippu"
+      ],
+      "Subsector": [
+        "industrial_processes"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover a transição para biocombustíveis, hidrogênio e outras alternativas de baixo carbono nos processos de combustão industrial.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": "60-79",
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Desenvolvimento de infraestrutura para produção e distribuição de biocombustíveis e hidrogênio.",
+        "Estruturas regulatórias para apoiar a transição para combustíveis de baixo carbono.",
+        "Disponibilidade de tecnologia para integrar biocombustíveis e hidrogênio em sistemas industriais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem do consumo de energia industrial proveniente de combustíveis de baixa emissão (%).",
+        "Redução nas emissões de GEE pela substituição de combustíveis (toneladas de CO₂e/ano).",
+        "Número de instalações que estão fazendo a transição para fontes de combustível de baixa emissão"
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0077",
+    "actionName": "Encourage the use of alternative materials in manufacturing",
+    "actionPriority": 11,
+    "explanation": "Incentivar o uso de materiais alternativos na fabricação é crucial para Cariacica devido às suas altas emissões provenientes de processos industriais. Ao adotar materiais sustentáveis, a cidade pode reduzir significativamente sua pegada de carbono e mitigar os impactos ambientais. Essa ação também está alinhada com a necessidade de enfrentar os desafios socioeconômicos enfrentados pelo município, pois pode levar ao desenvolvimento de novas indústrias e oportunidades de emprego. Além disso, reduzir a dependência de materiais tradicionais pode aumentar a resiliência da cidade contra riscos relacionados ao clima, como secas e inundações, que ameaçam a infraestrutura e a saúde pública.",
+    "action": {
+      "ActionID": "icare_0077",
+      "ActionName": "Incentivar o uso de materiais alternativos na fabricação",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "ippu"
+      ],
+      "Subsector": [
+        "industrial_processes"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Promover o uso de materiais de baixa emissão ou neutros em carbono no processo de produção para reduzir as emissões totais.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": "60-79",
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de materiais de baixa emissão ou neutros em carbono no mercado.",
+        "Incentivos para que as indústrias adotem esses materiais.",
+        "Apoio à pesquisa e desenvolvimento para melhorar a eficiência dos materiais e reduzir custos."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de produção utilizando materiais alternativos (%).",
+        "Número de empresas em transição para o uso de materiais alternativos.",
+        "Redução de custos alcançada através da adoção de materiais alternativos (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0094",
+    "actionName": "Adoption of biomethane in public fleets.",
+    "actionPriority": 12,
+    "explanation": "A adoção do biometano nas frotas públicas de Cariacica é um passo significativo para a redução das emissões do setor de transporte, que são um dos principais contribuintes para o total de emissões da cidade. Diante dos altos níveis de emissões industriais e de transporte no município, a transição para fontes de combustível mais limpas pode reduzir substancialmente a pegada de carbono. Além disso, essa ação fortalece a segurança energética ao diversificar as fontes de energia, o que é fundamental em uma região que enfrenta riscos de secas e ondas de calor. A implementação do biometano também pode melhorar a saúde pública ao reduzir a poluição do ar, uma preocupação crítica considerando a vulnerabilidade da cidade aos impactos climáticos sobre a saúde.",
+    "action": {
+      "ActionID": "icare_0094",
+      "ActionName": "Adoção de biometano em frotas públicas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Utilizar biometano produzido a partir de resíduos urbanos e agroindustriais para abastecer ônibus e caminhões públicos, reduzindo as emissões de gases de efeito estufa nas frotas municipais",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 1,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de infraestrutura para a produção, processamento e distribuição de biometano a partir de resíduos urbanos e agroindustriais.",
+        "Retrofit ou aquisição de ônibus e caminhões públicos capazes de usar biometano como fonte de combustível.",
+        "Estabelecimento de políticas e incentivos financeiros para apoiar a produção de biometano e sua integração nas frotas municipais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Economia de custos na operação da frota devido ao uso de biometano (USD/ano).",
+        "Aumento na capacidade de produção de biometano (%).",
+        "Percentagem de biometano obtido localmente versus importado."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0121",
+    "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+    "actionPriority": 13,
+    "explanation": "A ação de incentivar programas de compartilhamento de bicicletas, especialmente com bicicletas elétricas, é crucial para Cariacica devido às suas altas emissões de transporte. Estimular o uso de bicicletas elétricas pode reduzir significativamente a pegada de carbono associada ao transporte urbano. Além disso, essa iniciativa pode melhorar a saúde pública ao promover a atividade física e reduzir a poluição do ar. Diante dos desafios da cidade com serviços públicos inadequados, tais programas também podem ampliar a mobilidade para os moradores de baixa renda, oferecendo opções de transporte acessíveis e sustentáveis.",
+    "action": {
+      "ActionID": "icare_0121",
+      "ActionName": "Incentivo à criação de programas de compartilhamento de bicicletas em áreas urbanas, com foco em bicicletas elétricas.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Esta ação incentiva o estabelecimento de sistemas de compartilhamento de bicicletas nas cidades, promovendo especificamente o uso de bicicletas elétricas. Esses sistemas permitem que os residentes aluguem bicicletas elétricas para viagens curtas, reduzindo a dependência de carros para o transporte urbano. Ao integrar bicicletas elétricas, as cidades podem reduzir ainda mais as emissões de gases de efeito estufa, aliviar a congestão do tráfego e promover um modo de transporte mais saudável e sustentável tanto para áreas urbanas quanto rurais. Esta iniciativa também apoia a igualdade de mobilidade, pois torna as bicicletas mais acessíveis a uma gama mais ampla de pessoas.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecimento de sistemas de compartilhamento de bicicletas com foco em bicicletas elétricas para reduzir a dependência de carros.",
+        "Integração de bicicletas elétricas para reduzir as emissões de gases de efeito estufa, aliviar o congestionamento do tráfego e promover o transporte sustentável.",
+        "Promoção da igualdade de mobilidade tornando as bicicletas elétricas acessíveis a uma população mais ampla."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de bicicletas elétricas disponíveis em programas de compartilhamento de bicicletas.",
+        "Aumento anual no número de usuários de compartilhamento de bicicletas.",
+        "Redução estimada nas emissões de CO₂ equivalente com a adoção do compartilhamento de bicicletas elétricas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0088",
+    "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+    "actionPriority": 14,
+    "explanation": "A implementação do transporte público gratuito durante os horários de pico em Cariacica pode reduzir significativamente a dependência de veículos individuais, diminuindo assim as emissões do setor de transporte, que são um dos principais contribuintes para o total de emissões da cidade. Essa ação é especialmente importante devido à alta densidade populacional do município, que pode agravar a congestão do trânsito e a poluição do ar. Ao incentivar o uso do transporte público, a cidade pode melhorar a qualidade do ar e reduzir as emissões de gases de efeito estufa, contribuindo para um ambiente urbano mais saudável. Além disso, essa iniciativa pode proporcionar alívio econômico para os moradores de baixa renda, alinhando-se às necessidades socioeconômicas da cidade.",
+    "action": {
+      "ActionID": "icare_0088",
+      "ActionName": "Implementação de programas de transporte público gratuito durante os horários de pico para reduzir o uso de veículos individuais",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar o uso do transporte público oferecendo serviços gratuitos durante os horários de pico para trabalhadores e estudantes. Esta medida reduz a congestão urbana, diminui o número de veículos individuais nas estradas e, consequentemente, reduz as emissões de gases de efeito estufa associadas ao transporte privado.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 2,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "60-79",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Alocação de financiamento para subsidiar serviços de transporte público gratuito durante as horas de pico.",
+        "Desenvolvimento de políticas para garantir a sustentabilidade e eficiência dos sistemas de transporte público diante do aumento da demanda.",
+        "Coordenação com empregadores e instituições educacionais para otimizar os horários de pico e promover a iniciativa."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução nos níveis de poluição do ar durante as horas de pico (concentração de PM2.5/PM10).",
+        "Número de veículos particulares removidos das estradas durante as horas de pico.",
+        "Taxa de satisfação pública com a iniciativa de transporte gratuito (%)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0131",
+    "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+    "actionPriority": 15,
+    "explanation": "Priorizar a aquisição de produtos agroecológicos produzidos localmente nas compras públicas é fundamental para Cariacica devido ao seu potencial de fortalecer a segurança alimentar, que está sob alto risco por ameaças como enchentes. Essa ação apoia os agricultores locais, reduz as emissões de transporte e fortalece a economia local, alinhando-se com a necessidade do município de enfrentar desafios socioeconômicos. Além disso, a promoção de práticas agroecológicas pode melhorar a biodiversidade e a resiliência diante dos impactos climáticos, como secas e ondas de calor, que representam riscos significativos para a região. Ao focar na aquisição local, o município também pode mitigar o impacto de interrupções nas cadeias globais de suprimentos, garantindo um abastecimento alimentar mais estável e sustentável.",
+    "action": {
+      "ActionID": "icare_0131",
+      "ActionName": "Priorizar a Aquisição de Produtos Agroecológicos Produzidos Localmente em Compras Públicas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Concentre-se em comprar alimentos sustentáveis e produzidos localmente para instituições públicas.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de políticas de aquisição e identificação de fornecedores locais confiáveis.",
+        "Parcerias com produtores e alocação de financiamento para programas de aquisição sustentável.",
+        "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os critérios de sustentabilidade."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem do volume total de compras públicas provenientes de produtores agroecológicos locais.",
+        "Quantidade de emissões de CO₂ evitadas devido à redução da distância de transporte (tCO₂e).",
+        "Número de produtores agroecológicos beneficiados pelas compras públicas."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0072",
+    "actionName": "Promote industry-government collaborations on emissions reduction",
+    "actionPriority": 16,
+    "explanation": "Promover colaborações entre a indústria e o governo para a redução de emissões é fundamental para Cariacica, devido às suas emissões significativas provenientes de processos industriais, que são as mais altas entre todos os setores. Ao fomentar parcerias, a cidade pode aproveitar recursos e expertise para implementar estratégias eficazes de redução de emissões. Essa colaboração também pode impulsionar a inovação e o investimento em tecnologias mais limpas, contribuindo para a sustentabilidade a longo prazo. Além disso, a redução das emissões está alinhada com a necessidade da cidade de enfrentar riscos climáticos, como secas e ondas de calor, que impactam a saúde pública e a infraestrutura.",
+    "action": {
+      "ActionID": "icare_0072",
+      "ActionName": "Promover colaborações entre a indústria e o governo para a redução de emissões",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "ippu"
+      ],
+      "Subsector": [
+        "industrial_processes"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Fomentar colaborações entre a indústria e o governo para criar políticas e incentivos para reduzir as emissões industriais e apoiar metas de sustentabilidade.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": "20-39",
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecimento de fóruns multissetoriais envolvendo a indústria e o governo.",
+        "Desenvolvimento de estruturas políticas claras para apoiar a redução de emissões.",
+        "Criação de incentivos financeiros para que as indústrias adotem práticas sustentáveis."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de acordos de colaboração assinados entre a indústria e o governo.",
+        "Quantidade de emissões reduzidas através de iniciativas colaborativas (toneladas de CO₂/ano).",
+        "Percentagem de indústrias-chave envolvidas em parcerias de redução de emissões (%)."
+      ],
+      "PowersAndMandates": [
+        "national"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0034",
+    "actionName": "Create tax incentives for companies adopting clean technologies",
+    "actionPriority": 17,
+    "explanation": "Criar incentivos fiscais para empresas que adotam tecnologias limpas em Cariacica é uma medida estratégica para enfrentar as altas emissões provenientes de processos industriais na cidade. Ao incentivar as empresas a migrarem para tecnologias mais limpas, o município pode reduzir significativamente sua pegada de carbono, contribuindo para um ambiente mais saudável. Além disso, essa ação pode estimular o crescimento econômico ao atrair empresas comprometidas com o meio ambiente e fomentar a inovação em práticas sustentáveis. Considerando a vulnerabilidade da cidade a riscos climáticos, como enchentes e deslizamentos de terra, a redução das emissões é fundamental para aumentar a resiliência e proteger a saúde pública e a infraestrutura.",
+    "action": {
+      "ActionID": "icare_0034",
+      "ActionName": "Criar incentivos fiscais para empresas que adotam tecnologias limpas",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "ippu"
+      ],
+      "Subsector": [
+        "industrial_processes"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar incentivos fiscais e subsídios para empresas que investem em tecnologias limpas, levando a reduções substanciais de emissões.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": "20-39",
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de um quadro de incentivos fiscais direcionado a investimentos em tecnologias limpas.",
+        "Disponibilidade de recursos financeiros para subsídios e incentivos fiscais.",
+        "Colaboração entre governo e empresas para identificar tecnologias limpas elegíveis."
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem média de poupança fiscal por empresa que adota tecnologias limpas (%).",
+        "Número de novas empresas de tecnologia limpa estabelecidas como resultado de incentivos fiscais.",
+        "Aumento no número de empregos relacionados a tecnologias limpas criados devido a incentivos fiscais."
+      ],
+      "PowersAndMandates": [
+        "state"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0099",
+    "actionName": "Support Agroecological Certification Programs",
+    "actionPriority": 18,
+    "explanation": "Apoiar programas de certificação agroecológica em Cariacica é fundamental devido à vulnerabilidade da cidade a riscos climáticos, como secas e inundações, que impactam diretamente a segurança alimentar. Ao promover práticas agrícolas sustentáveis, esses programas podem aumentar a resiliência dos sistemas alimentares locais diante desses desafios ambientais. Além disso, as práticas agroecológicas podem contribuir para a redução das emissões provenientes do uso da terra, que é uma fonte significativa de emissões na cidade. Essa ação está alinhada com a necessidade de melhorar as condições socioeconômicas, pois pode oferecer oportunidades econômicas para comunidades de baixa renda por meio da agricultura sustentável.",
+    "action": {
+      "ActionID": "icare_0099",
+      "ActionName": "Apoiar Programas de Certificação Agroecológica",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "afolu"
+      ],
+      "Subsector": [
+        "agriculture_forestry_and_fishing_activities"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Incentivar a certificação de produtos agroecológicos que atendam a critérios de sustentabilidade e tenham baixo impacto ambiental.",
+      "CoBenefits": {
+        "air_quality": 1,
+        "water_quality": 1,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 2
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "20-39"
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Desenvolvimento de padrões de certificação claros e acessíveis para produtos agroecológicos que enfatizem a sustentabilidade e o baixo impacto ambiental.",
+        "Apoio a agricultores e produtores para atender aos requisitos de certificação por meio de treinamento, assistência financeira ou orientação técnica.",
+        "Criação de estratégias de marketing e parcerias para aumentar a visibilidade e a demanda por produtos agroecológicos certificados nos mercados locais e globais."
+      ],
+      "KeyPerformanceIndicators": [
+        "Número de agricultores ou produtores obtendo certificações agroecológicas.",
+        "Percentual de produtos agrícolas certificados no mercado (%).",
+        "Redução no uso de insumos sintéticos (por exemplo, fertilizantes, pesticidas)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0139",
+    "actionName": "Implementation of urban toll.",
+    "actionPriority": 19,
+    "explanation": "A implementação de um pedágio urbano em Cariacica é uma ação estratégica para enfrentar as altas emissões do setor de transporte, que são um dos principais contribuintes para o total de emissões da cidade. Ao introduzir um pedágio, a cidade pode incentivar o uso do transporte público e reduzir o número de veículos nas ruas, diminuindo assim as emissões. Além disso, essa medida pode gerar receitas que podem ser reinvestidas na melhoria da infraestrutura do transporte público, tornando-o uma opção mais atraente para os moradores. Diante dos desafios da cidade com serviços públicos inadequados e altas emissões, essa ação representa um passo em direção à criação de um ambiente urbano mais sustentável.",
+    "action": {
+      "ActionID": "icare_0139",
+      "ActionName": "Implementação de pedágio urbano.",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "transportation"
+      ],
+      "Subsector": [
+        "on-road"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Estabelecimento de uma taxa de congestionamento e/ou rodízio de placas para veículos leves em áreas saturadas e em horários saturados",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": -1,
+        "housing": 0,
+        "mobility": 2,
+        "stakeholder_engagement": 0
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": "80-100",
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "low",
+      "TimelineForImplementation": "<5 years",
+      "Dependencies": [
+        "Estabelecer um quadro legal claro e investir em tecnologia para monitoramento e fiscalização (por exemplo, câmeras, sensores).",
+        "Lançar campanhas de conscientização e garantir a disponibilidade de transporte público eficiente ou soluções alternativas de mobilidade.",
+        "Colaborar com governos locais e agências de transporte, e estabelecer sistemas para monitorar e avaliar a eficácia da política."
+      ],
+      "KeyPerformanceIndicators": [
+        "Redução das emissões de CO₂ do transporte rodoviário urbano (tCO₂e/ano).",
+        "Receita gerada pela implementação da taxa de congestionamento urbano (R$)."
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  },
+  {
+    "locode": "BR CII",
+    "cityName": "Cariacica",
+    "region": "ES",
+    "regionName": "Espírito Santo",
+    "actionId": "icare_0024",
+    "actionName": "Integrate renewables into municipal water systems",
+    "actionPriority": 20,
+    "explanation": "Integrar fontes renováveis aos sistemas municipais de água em Cariacica é um passo crucial para reduzir as emissões totais da cidade. Considerando o acesso muito limitado da população a serviços de água adequados, essa ação pode melhorar o acesso à água ao mesmo tempo em que diminui a dependência de combustíveis fósseis. Além disso, a região enfrenta riscos significativos de secas, que podem impactar os recursos hídricos e a segurança energética. Ao incorporar energia renovável, a cidade pode aumentar sua resiliência diante desses riscos climáticos, garantindo um abastecimento de água mais sustentável e confiável.",
+    "action": {
+      "ActionID": "icare_0024",
+      "ActionName": "Integrar energias renováveis nos sistemas municipais de água",
+      "ActionType": [
+        "mitigation"
+      ],
+      "Hazard": null,
+      "Sector": [
+        "stationary_energy"
+      ],
+      "Subsector": [
+        "energy_generation_supplied_to_the_grid"
+      ],
+      "PrimaryPurpose": [
+        "ghg_reduction"
+      ],
+      "Description": "Implementar fontes de energia renovável, como energia solar ou eólica, para impulsionar sistemas de tratamento, bombeamento e distribuição de água, reduzindo custos de energia e emissões.",
+      "CoBenefits": {
+        "air_quality": 2,
+        "water_quality": 2,
+        "habitat": 2,
+        "cost_of_living": 1,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 1
+      },
+      "EquityAndInclusionConsiderations": null,
+      "GHGReductionPotential": {
+        "stationary_energy": "80-100",
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": null
+      },
+      "AdaptationEffectiveness": null,
+      "CostInvestmentNeeded": "medium",
+      "TimelineForImplementation": "5-10 years",
+      "Dependencies": [
+        "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renovável, como energia solar ou eólica, em sistemas de tratamento e distribuição de água",
+        "Expertise técnica e infraestrutura para adaptar sistemas existentes com soluções de energia renovável ou projetar novas instalações alimentadas por energias renováveis",
+        "Apoio político e regulatório para incentivar o uso de energia limpa em sistemas de água e garantir sua integração nas redes de energia municipais"
+      ],
+      "KeyPerformanceIndicators": [
+        "Percentagem de sistemas municipais de água alimentados por energias renováveis.",
+        "Redução no consumo de energia de fontes não renováveis (kWh/ano).",
+        "Emissões de GEE evitadas (toneladas de CO₂e)"
+      ],
+      "PowersAndMandates": [
+        "local"
+      ],
+      "AdaptationEffectivenessPerHazard": null,
+      "biome": "none"
+    }
+  }
+]

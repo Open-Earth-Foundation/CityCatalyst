@@ -33,7 +33,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
       {
         model: db.models.City,
         as: "city",
-        attributes: ["locode", "inventoryId", "name", "country", "region"],
+        attributes: ["locode", "name", "country", "region"],
         where: { projectId },
       },
     ],

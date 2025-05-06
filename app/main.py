@@ -1,11 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from prioritizer.api import router as prioritizer_router
+
+# from prioritizer.api import router as prioritizer_router
 from plan_creator.api import router as plan_creator_router
 from utils.logging_config import setup_logger
 import httpx
 import uvicorn
 import logging
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI(
     title="Climate Action Selection and Prioritization",
@@ -47,7 +51,7 @@ async def root():
 
 
 # Mount feature routers
-app.include_router(prioritizer_router, prefix="/prioritizer", tags=["Prioritizer"])
+# app.include_router(prioritizer_router, prefix="/prioritizer", tags=["Prioritizer"])
 app.include_router(plan_creator_router, prefix="/plan-creator", tags=["Plan Creator"])
 
 if __name__ == "__main__":

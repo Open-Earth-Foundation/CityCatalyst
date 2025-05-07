@@ -65,10 +65,6 @@ export async function middleware(req: NextRequestWithAuth) {
     response = await next(req);
   }
 
-  if (response instanceof NextResponse) {
-    logger.info({ status: response.status, url: req.url, method: req.method });
-  }
-
   return response;
 }
 

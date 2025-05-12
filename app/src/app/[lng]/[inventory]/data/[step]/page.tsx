@@ -597,7 +597,7 @@ export default function AddDataSteps({
     };
   }, []);
 
-  const MotionBox = motion(
+  const MotionBox = motion.create(
     // the display name is added below, but the linter isn't picking it up
     // eslint-disable-next-line react/display-name
     forwardRef<HTMLDivElement, any>((props, ref) => (

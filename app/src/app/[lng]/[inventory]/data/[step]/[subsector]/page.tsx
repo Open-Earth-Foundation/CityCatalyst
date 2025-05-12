@@ -38,7 +38,7 @@ import {
   BreadcrumbRoot,
 } from "@/components/ui/breadcrumb";
 
-const MotionBox = motion(
+const MotionBox = motion.create(
   // the display name is added below, but the linter isn't picking it up
   // eslint-disable-next-line react/display-name
   forwardRef<HTMLDivElement, any>((props, ref) => <Box ref={ref} {...props} />),
@@ -147,7 +147,7 @@ function SubSectorPage({
   };
   const scopes = getFilteredSubsectorScopes();
 
-  const MotionTabList = motion(
+  const MotionTabList = motion.create(
     // the display name is added below, but the linter isn't picking it up
     // eslint-disable-next-line react/display-name
     forwardRef<HTMLDivElement, any>((props, ref) => (

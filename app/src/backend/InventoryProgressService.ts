@@ -61,6 +61,7 @@ export default class InventoryProgressService {
               referenceNumber: subcategory.referenceNumber,
               subsectorId: subcategory.subsectorId,
               scopeId: subcategory.scopeId,
+              scopeName: subcategory.scope.scopeName,
               reportinglevelId: subcategory.reportinglevelId,
               created: new Date(0),
               lastUpdated: new Date(0),
@@ -72,17 +73,23 @@ export default class InventoryProgressService {
                 return true;
               }
 
-              const lastDigit = parseInt(
-                subCategory.referenceNumber?.split(".")[2] as string,
-              );
-              if (!lastDigit) {
-                // sectors IV and V don't have a scopeId and should only be returned for BASIC_PLUS
+              const scope =
+                subCategory.scopeName && /^\d+$/.test(subCategory.scopeName)
+                  ? Number(subCategory.scopeName)
+                  : null;
+              if (
+                scope === null ||
+                !inventory.inventoryType ||
+                !sector.referenceNumber
+              ) {
+                // sectors IV and V don't have an associated scope and should only be returned for GPC_BASIC_PLUS
                 return false;
               }
+
               return getScopesForInventoryAndSector(
-                inventory.inventoryType!,
-                sector.referenceNumber!,
-              )!.includes(lastDigit);
+                inventory.inventoryType,
+                sector.referenceNumber,
+              )!.includes(scope);
             }),
         })),
       }));
@@ -230,14 +237,24 @@ export default class InventoryProgressService {
       return Inventory_Sector_Hierarchy;
     }
     let sectors: Sector[] = await db.models.Sector.findAll({
+      attributes: { exclude: ["created", "last_updated"] },
       include: [
         {
           model: db.models.SubSector,
           as: "subSectors",
+          attributes: { exclude: ["created", "last_updated"] },
           include: [
             {
               model: db.models.SubCategory,
               as: "subCategories",
+              attributes: { exclude: ["created", "last_updated"] },
+              include: [
+                {
+                  model: db.models.Scope,
+                  attributes: { exclude: ["created", "last_updated"] },
+                  as: "scope",
+                },
+              ],
             },
           ],
         },
@@ -246,17 +263,33 @@ export default class InventoryProgressService {
 
     sectors = sectors.sort(this.romanNumeralComparison);
     for (const sector of sectors) {
-      sector.subSectors = sector.subSectors.sort((a, b) => {
-        const ra = Number((a.referenceNumber ?? "X.9").split(".")[1]);
-        const rb = Number((b.referenceNumber ?? "X.9").split(".")[1]);
-        return ra - rb;
-      });
-      for (const subSector of sector.subSectors) {
-        subSector.subCategories = subSector.subCategories.sort((a, b) => {
-          const ra = Number((a.referenceNumber ?? "X.9.9").split(".")[2]);
-          const rb = Number((b.referenceNumber ?? "X.9.9").split(".")[2]);
+      sector.sectorName = this.toTranslationString(sector.sectorName);
+      sector.subSectors = sector.subSectors
+        .sort((a, b) => {
+          const ra = Number((a.referenceNumber ?? "X.9").split(".")[1]);
+          const rb = Number((b.referenceNumber ?? "X.9").split(".")[1]);
           return ra - rb;
+        })
+        .map((subSector) => {
+          // transform name to translation string
+          subSector.subsectorName = this.toTranslationString(
+            subSector.subsectorName,
+          );
+          return subSector;
         });
+      for (const subSector of sector.subSectors) {
+        subSector.subCategories = subSector.subCategories
+          .sort((a, b) => {
+            const ra = Number((a.referenceNumber ?? "X.9.9").split(".")[2]);
+            const rb = Number((b.referenceNumber ?? "X.9.9").split(".")[2]);
+            return ra - rb;
+          })
+          .map((subCategory) => {
+            subCategory.subcategoryName = this.toTranslationString(
+              subCategory.subcategoryName,
+            );
+            return subCategory;
+          });
       }
     }
 
@@ -264,5 +297,12 @@ export default class InventoryProgressService {
       this.writeHierarchyToCache(sectors);
     }
     return sectors;
+  }
+
+  private static toTranslationString(str?: string): string {
+    return (str ?? "")
+      .toLowerCase()
+      .replaceAll(" ", "-")
+      .replaceAll(/[^a-zA-Z\d-]/g, "");
   }
 }

@@ -1,41 +1,8 @@
 [
   {
-    "sectorId": "86a70970-6559-4d31-bafc-fcd1b51bc8e3",
-    "sectorName": "XX_DATASOURCE_TEST_1",
-    "referenceNumber": "X",
-    "created": "2024-10-10T21:40:11.800Z",
-    "last_updated": "2024-10-10T21:40:11.800Z",
-    "subSectors": [
-      {
-        "subsectorId": "60c0b6c9-7208-439b-a27a-44599297cc1c",
-        "subsectorName": "xx-datasource-test-1",
-        "sectorId": "86a70970-6559-4d31-bafc-fcd1b51bc8e3",
-        "referenceNumber": "X.9",
-        "scopeId": null,
-        "created": "2024-10-10T21:40:11.803Z",
-        "last_updated": "2024-10-10T21:40:11.803Z",
-        "subCategories": [
-          {
-            "subcategoryId": "ed24c944-118c-427b-9dd2-c6d0bab0959b",
-            "subcategoryName": "XX_DATASOURCE_TEST_1",
-            "activityName": null,
-            "referenceNumber": "X.9.9",
-            "subsectorId": "60c0b6c9-7208-439b-a27a-44599297cc1c",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:11.807Z",
-            "last_updated": "2024-10-10T21:40:11.807Z"
-          }
-        ]
-      }
-    ]
-  },
-  {
     "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
-    "sectorName": "Stationary Energy",
+    "sectorName": "stationary-energy",
     "referenceNumber": "I",
-    "created": "2023-10-09T23:00:00.000Z",
-    "last_updated": "2023-10-09T23:00:00.000Z",
     "subSectors": [
       {
         "subsectorId": "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
@@ -43,41 +10,45 @@
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.1",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "58a9822a-fae0-3831-9f8b-4ec1fb48a54f",
-            "subcategoryName": "Emissions from fuel combustion within the city boundary",
+            "subcategoryName": "emissions-from-fuel-combustion-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.1.1",
             "subsectorId": "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "6cf6f15d-536a-37dc-90c7-7d7ea75b5d01",
-            "subcategoryName": "Emissions from grid-supplied energy consumed within the city boundary",
+            "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.1.2",
             "subsectorId": "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
             "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
+              "scopeName": "2"
+            }
           },
           {
             "subcategoryId": "2badf7fe-aa9c-357d-888e-7ac8b7979a50",
-            "subcategoryName": "Emissions from transmission and distribution losses from grid-supplied energy consumption",
+            "subcategoryName": "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
             "activityName": null,
             "referenceNumber": "I.1.3",
             "subsectorId": "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "2782d240-65fb-3af2-865d-c408f70a826f",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           }
         ]
       },
@@ -87,41 +58,45 @@
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.2",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "942f2e36-ab1f-3fbf-af9e-31d997f518c7",
-            "subcategoryName": "Emissions from fuel combustion within the city boundary",
+            "subcategoryName": "emissions-from-fuel-combustion-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.2.1",
             "subsectorId": "a235005c-f223-3c64-a0d2-f55d6f22f32f",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "94bd54aa-01e7-3a2f-a1c1-a49121d8dcea",
-            "subcategoryName": "Emissions from grid-supplied energy consumed within the city boundary",
+            "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.2.2",
             "subsectorId": "a235005c-f223-3c64-a0d2-f55d6f22f32f",
             "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
+              "scopeName": "2"
+            }
           },
           {
             "subcategoryId": "32db3fd4-66f9-3d29-8cdd-9de719d3cdb7",
-            "subcategoryName": "Emissions from transmission and distribution losses from grid-supplied energy consumption",
+            "subcategoryName": "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
             "activityName": null,
             "referenceNumber": "I.2.3",
             "subsectorId": "a235005c-f223-3c64-a0d2-f55d6f22f32f",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "2782d240-65fb-3af2-865d-c408f70a826f",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           }
         ]
       },
@@ -131,41 +106,45 @@
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.3",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "7752e771-bd0f-35ee-b016-c592c6d52338",
-            "subcategoryName": "Emissions from fuel combustion within the city boundary",
+            "subcategoryName": "emissions-from-fuel-combustion-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.3.1",
             "subsectorId": "8de1d11d-4146-35f3-a973-e66930e68a50",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "59e74d03-a234-38a3-9d8f-a13e8b424167",
-            "subcategoryName": "Emissions from grid-supplied energy consumed within the city boundary",
+            "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.3.2",
             "subsectorId": "8de1d11d-4146-35f3-a973-e66930e68a50",
             "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
+              "scopeName": "2"
+            }
           },
           {
             "subcategoryId": "3ebc2363-43e5-3c1c-8270-dd6e5d823388",
-            "subcategoryName": "Emissions from transmission and distribution losses from grid-supplied energy consumption",
+            "subcategoryName": "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
             "activityName": null,
             "referenceNumber": "I.3.3",
             "subsectorId": "8de1d11d-4146-35f3-a973-e66930e68a50",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "2782d240-65fb-3af2-865d-c408f70a826f",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           }
         ]
       },
@@ -175,52 +154,58 @@
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.4",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "5b799042-8ab0-3056-9166-5c74db8756a4",
-            "subcategoryName": "Emissions from energy used in power plant auxiliary operations within the city boundary",
+            "subcategoryName": "emissions-from-energy-used-in-power-plant-auxiliary-operations-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.4.1",
             "subsectorId": "4f342e84-0269-3f04-aceb-1d6cd0a183bc",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "ac047081-bd46-3fb9-8b6b-426f20fad176",
-            "subcategoryName": "Emissions from grid-supplied energy consumed in power plant auxiliary operations within the city boundary",
+            "subcategoryName": "emissions-from-grid-supplied-energy-consumed-in-power-plant-auxiliary-operations-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.4.2",
             "subsectorId": "4f342e84-0269-3f04-aceb-1d6cd0a183bc",
             "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
+              "scopeName": "2"
+            }
           },
           {
             "subcategoryId": "7f927890-ddf7-3d85-8931-6da122215938",
-            "subcategoryName": "Emissions from transmission and distribution losses from grid-supplied energy consumption in power plant auxiliary operations",
+            "subcategoryName": "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption-in-power-plant-auxiliary-operations",
             "activityName": null,
             "referenceNumber": "I.4.3",
             "subsectorId": "4f342e84-0269-3f04-aceb-1d6cd0a183bc",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "2782d240-65fb-3af2-865d-c408f70a826f",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           },
           {
             "subcategoryId": "06922c49-a18e-3b86-a947-2dc833aec949",
-            "subcategoryName": "Emissions from energy generation supplied to the grid",
+            "subcategoryName": "emissions-from-energy-generation-supplied-to-the-grid",
             "activityName": null,
             "referenceNumber": "I.4.4",
             "subsectorId": "4f342e84-0269-3f04-aceb-1d6cd0a183bc",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "7b8bd2cf-13a0-3a76-8d50-e08b4321703a",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           }
         ]
       },
@@ -230,41 +215,45 @@
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.5",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "c7025070-1f90-3034-b366-6ec4ac178666",
-            "subcategoryName": "Emissions from fuel combustion within the city boundary",
+            "subcategoryName": "emissions-from-fuel-combustion-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.5.1",
             "subsectorId": "95c049d1-eff9-3b26-af49-2b32982e7dd9",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "25d0ad43-454f-34c2-ae83-03c095069891",
-            "subcategoryName": "Emissions from grid-supplied energy consumed within the city boundary",
+            "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.5.2",
             "subsectorId": "95c049d1-eff9-3b26-af49-2b32982e7dd9",
             "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
+              "scopeName": "2"
+            }
           },
           {
             "subcategoryId": "0f145a59-f3e3-3739-a970-9686e968e2b2",
-            "subcategoryName": "Emissions from transmission and distribution losses from grid-supplied energy consumption",
+            "subcategoryName": "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
             "activityName": null,
             "referenceNumber": "I.5.3",
             "subsectorId": "95c049d1-eff9-3b26-af49-2b32982e7dd9",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "2782d240-65fb-3af2-865d-c408f70a826f",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           }
         ]
       },
@@ -274,41 +263,45 @@
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.6",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "758d20ca-7085-3bd5-ac65-96299b28358e",
-            "subcategoryName": "Emissions from fuel combustion within the city boundary",
+            "subcategoryName": "emissions-from-fuel-combustion-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.6.1",
             "subsectorId": "cfc4d8de-2b90-376c-b9d7-446aaf2d8eeb",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "75ca6ffd-7696-31b8-961a-45fa54ba970f",
-            "subcategoryName": "Emissions from grid-supplied energy consumed within the city boundary",
+            "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.6.2",
             "subsectorId": "cfc4d8de-2b90-376c-b9d7-446aaf2d8eeb",
             "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
+              "scopeName": "2"
+            }
           },
           {
             "subcategoryId": "1c64a6fc-ae52-3473-b00c-beaf646d8cb6",
-            "subcategoryName": "Emissions from transmission and distribution losses from grid-supplied energy consumption",
+            "subcategoryName": "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
             "activityName": null,
             "referenceNumber": "I.6.3",
             "subsectorId": "cfc4d8de-2b90-376c-b9d7-446aaf2d8eeb",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "2782d240-65fb-3af2-865d-c408f70a826f",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           }
         ]
       },
@@ -318,19 +311,19 @@
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.7",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "1bcaf3f3-5c94-3dfa-9e58-fa2f1e5e38f9",
-            "subcategoryName": "Emissions from fugitive emissions within the city boundary",
+            "subcategoryName": "emissions-from-fugitive-emissions-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.7.1",
             "subsectorId": "b69c4ec7-a3c7-37a2-af4f-634d5a06a512",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           }
         ]
       },
@@ -340,19 +333,19 @@
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.8",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "1483cc0a-dad1-34ed-81ef-5913ee3be6d1",
-            "subcategoryName": "Emissions from fugitive emissions within the city boundary",
+            "subcategoryName": "emissions-from-fugitive-emissions-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "I.8.1",
             "subsectorId": "b32f56a1-3a4e-3cd5-9052-e06284468700",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           }
         ]
       }
@@ -360,10 +353,8 @@
   },
   {
     "sectorId": "73eb7b71-159c-3eda-b7fc-f6eb53754dc3",
-    "sectorName": "Transportation",
+    "sectorName": "transportation",
     "referenceNumber": "II",
-    "created": "2023-10-09T23:00:00.000Z",
-    "last_updated": "2023-10-09T23:00:00.000Z",
     "subSectors": [
       {
         "subsectorId": "48fcfadb-90ed-34aa-80d9-fa31a90bef80",
@@ -371,41 +362,45 @@
         "sectorId": "73eb7b71-159c-3eda-b7fc-f6eb53754dc3",
         "referenceNumber": "II.1",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "064d8e7c-cddb-3766-8c70-579a1908c866",
-            "subcategoryName": "Emissions from fuel combustion on-road transportation occurring within the city boundary",
+            "subcategoryName": "emissions-from-fuel-combustion-on-road-transportation-occurring-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "II.1.1",
             "subsectorId": "48fcfadb-90ed-34aa-80d9-fa31a90bef80",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "53a0b057-27fb-36f2-96a1-1facca177dc4",
-            "subcategoryName": "Emissions from grid-supplied energy consumed within the city boundary for on-road transportation",
+            "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-on-road-transportation",
             "activityName": null,
             "referenceNumber": "II.1.2",
             "subsectorId": "48fcfadb-90ed-34aa-80d9-fa31a90bef80",
             "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
+              "scopeName": "2"
+            }
           },
           {
             "subcategoryId": "8a8e2b69-459e-3c7c-b978-aeddf82026e2",
-            "subcategoryName": "Emissions from portion of transboundary journeys occurring outside the city boundary, and transmission and distribution losses from grid-supplied energy consumption",
+            "subcategoryName": "emissions-from-portion-of-transboundary-journeys-occurring-outside-the-city-boundary-and-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
             "activityName": null,
             "referenceNumber": "II.1.3",
             "subsectorId": "48fcfadb-90ed-34aa-80d9-fa31a90bef80",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "2782d240-65fb-3af2-865d-c408f70a826f",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           }
         ]
       },
@@ -415,41 +410,45 @@
         "sectorId": "73eb7b71-159c-3eda-b7fc-f6eb53754dc3",
         "referenceNumber": "II.2",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "fc7d08ad-184e-3ecf-a5b6-17039d74915f",
-            "subcategoryName": "Emissions from fuel combustion for railway transportation occurring within the city boundary",
+            "subcategoryName": "emissions-from-fuel-combustion-for-railway-transportation-occurring-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "II.2.1",
             "subsectorId": "8cf35b86-9ed2-36bd-b04d-eddc47db6676",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "9c36256a-80e5-31a4-a3fa-a9a641135a61",
-            "subcategoryName": "Emissions from grid-supplied energy consumed within the city boundary for railways",
+            "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-railways",
             "activityName": null,
             "referenceNumber": "II.2.2",
             "subsectorId": "8cf35b86-9ed2-36bd-b04d-eddc47db6676",
             "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
+              "scopeName": "2"
+            }
           },
           {
             "subcategoryId": "5d5851fc-aca9-36fa-9db4-74e330165e1e",
-            "subcategoryName": "Emissions from portion of transboundary journeys occurring outside the city boundary, and transmission and distribution losses from grid-supplied energy consumption",
+            "subcategoryName": "emissions-from-portion-of-transboundary-journeys-occurring-outside-the-city-boundary-and-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
             "activityName": null,
             "referenceNumber": "II.2.3",
             "subsectorId": "8cf35b86-9ed2-36bd-b04d-eddc47db6676",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "2782d240-65fb-3af2-865d-c408f70a826f",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           }
         ]
       },
@@ -459,41 +458,45 @@
         "sectorId": "73eb7b71-159c-3eda-b7fc-f6eb53754dc3",
         "referenceNumber": "II.3",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "97330bfb-b19a-3987-97e1-bb754b26e5b8",
-            "subcategoryName": "Emissions from fuel combustion for waterborne navigation occurring within the city boundary",
+            "subcategoryName": "emissions-from-fuel-combustion-for-waterborne-navigation-occurring-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "II.3.1",
             "subsectorId": "ab32c321-e9e1-31b3-9dde-f93ade472219",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "9dff7279-966a-30f9-976a-8caccfa24f9f",
-            "subcategoryName": "Emissions from grid-supplied energy consumed within the city boundary for waterborne navigation",
+            "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-waterborne-navigation",
             "activityName": null,
             "referenceNumber": "II.3.2",
             "subsectorId": "ab32c321-e9e1-31b3-9dde-f93ade472219",
             "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
+              "scopeName": "2"
+            }
           },
           {
             "subcategoryId": "320d7a15-59a9-351c-b7c3-c8053e63b8b1",
-            "subcategoryName": "Emissions from portion of transboundary journeys occurring outside the city boundary, and transmission and distribution losses from grid-supplied energy consumption",
+            "subcategoryName": "emissions-from-portion-of-transboundary-journeys-occurring-outside-the-city-boundary-and-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
             "activityName": null,
             "referenceNumber": "II.3.3",
             "subsectorId": "ab32c321-e9e1-31b3-9dde-f93ade472219",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "2782d240-65fb-3af2-865d-c408f70a826f",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           }
         ]
       },
@@ -503,41 +506,45 @@
         "sectorId": "73eb7b71-159c-3eda-b7fc-f6eb53754dc3",
         "referenceNumber": "II.4",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "e47f1e6b-ca6c-32a7-a705-d2ee77424ef9",
-            "subcategoryName": "Emissions from fuel combustion for aviation occurring within the city boundary",
+            "subcategoryName": "emissions-from-fuel-combustion-for-aviation-occurring-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "II.4.1",
             "subsectorId": "5b84b809-1878-3b1b-bf6b-250c64d5e920",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "96640a23-487f-3e28-86fa-0fd822f855ec",
-            "subcategoryName": "Emissions from grid-supplied energy consumed within the city boundary for aviation",
+            "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-aviation",
             "activityName": null,
             "referenceNumber": "II.4.2",
             "subsectorId": "5b84b809-1878-3b1b-bf6b-250c64d5e920",
             "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
+              "scopeName": "2"
+            }
           },
           {
             "subcategoryId": "ce889acf-9acd-3498-965a-3d4e5c88f57e",
-            "subcategoryName": "Emissions from portion of transboundary journeys occurring outside the city boundary, and transmission and distribution losses from grid-supplied energy consumption",
+            "subcategoryName": "emissions-from-portion-of-transboundary-journeys-occurring-outside-the-city-boundary-and-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
             "activityName": null,
             "referenceNumber": "II.4.3",
             "subsectorId": "5b84b809-1878-3b1b-bf6b-250c64d5e920",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "2782d240-65fb-3af2-865d-c408f70a826f",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           }
         ]
       },
@@ -547,30 +554,32 @@
         "sectorId": "73eb7b71-159c-3eda-b7fc-f6eb53754dc3",
         "referenceNumber": "II.5",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "b83d0cea-bb45-3b43-b5ad-62aaafcc9c5e",
-            "subcategoryName": "Emissions from fuel combustion for off-road transportation occurring within the city boundary",
+            "subcategoryName": "emissions-from-fuel-combustion-for-off-road-transportation-occurring-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "II.5.1",
             "subsectorId": "e20ace37-9ba4-3a80-9d88-8cac5253c0b0",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "af0b4e08-07a1-366d-b7b8-4407614c386b",
-            "subcategoryName": "Emissions from grid-supplied energy consumed within the city boundary for off-road transportation",
+            "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-off-road-transportation",
             "activityName": null,
             "referenceNumber": "II.5.2",
             "subsectorId": "e20ace37-9ba4-3a80-9d88-8cac5253c0b0",
             "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "81cac15d-01d5-3d51-8bde-0f7a383585ae",
+              "scopeName": "2"
+            }
           }
         ]
       }
@@ -578,10 +587,8 @@
   },
   {
     "sectorId": "d5acb72e-d915-310f-b3a3-77f634bcbf5e",
-    "sectorName": "Waste",
+    "sectorName": "waste",
     "referenceNumber": "III",
-    "created": "2023-10-09T23:00:00.000Z",
-    "last_updated": "2023-10-09T23:00:00.000Z",
     "subSectors": [
       {
         "subsectorId": "172d10c0-6b80-3173-902e-eca5c0af84c8",
@@ -589,41 +596,32 @@
         "sectorId": "d5acb72e-d915-310f-b3a3-77f634bcbf5e",
         "referenceNumber": "III.1",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "d4fc29ec-a073-34fb-abdb-3c27066451f3",
-            "subcategoryName": "Emissions from solid waste generated within the city boundary and disposed in landfills or open dumps within the city boundary",
+            "subcategoryName": "emissions-from-solid-waste-generated-within-the-city-boundary-and-disposed-in-landfills-or-open-dumps-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "III.1.1",
             "subsectorId": "172d10c0-6b80-3173-902e-eca5c0af84c8",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "32acd829-2e87-38e9-aab3-8a495577ea7d",
-            "subcategoryName": "Emissions from solid waste generated within the city boundary but disposed in landfills or open dumps outside the city boundary",
+            "subcategoryName": "emissions-from-solid-waste-generated-within-the-city-boundary-but-disposed-in-landfills-or-open-dumps-outside-the-city-boundary",
             "activityName": null,
             "referenceNumber": "III.1.2",
             "subsectorId": "172d10c0-6b80-3173-902e-eca5c0af84c8",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
-          },
-          {
-            "subcategoryId": "e7218f77-9896-30db-8a47-afb6b1d084a8",
-            "subcategoryName": "Emissions from waste generated outside the city boundary and disposed in landfills or open dumps within the city boundary",
-            "activityName": null,
-            "referenceNumber": "III.1.3",
-            "subsectorId": "172d10c0-6b80-3173-902e-eca5c0af84c8",
-            "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
-            "reportinglevelId": "7b8bd2cf-13a0-3a76-8d50-e08b4321703a",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           }
         ]
       },
@@ -633,41 +631,32 @@
         "sectorId": "d5acb72e-d915-310f-b3a3-77f634bcbf5e",
         "referenceNumber": "III.2",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "ac10b696-5b44-303a-b6f9-2a1906be76b1",
-            "subcategoryName": "Emissions from solid waste generated within the city boundary that is treated biologically within the city boundary",
+            "subcategoryName": "emissions-from-solid-waste-generated-within-the-city-boundary-that-is-treated-biologically-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "III.2.1",
             "subsectorId": "a8baeb06-0ab2-3215-a93e-2fcbe0e8f8a9",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "65440ef4-1749-33ee-9cc2-7dcf62e1850a",
-            "subcategoryName": "Emissions from solid waste generated within the city boundary but treated biologically outside of the city boundary",
+            "subcategoryName": "emissions-from-solid-waste-generated-within-the-city-boundary-but-treated-biologically-outside-of-the-city-boundary",
             "activityName": null,
             "referenceNumber": "III.2.2",
             "subsectorId": "a8baeb06-0ab2-3215-a93e-2fcbe0e8f8a9",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
-          },
-          {
-            "subcategoryId": "70d968e6-e9f7-37d8-94e1-8197e6f8332b",
-            "subcategoryName": "Emissions from waste generated outside the city boundary but treated biologically within the city boundary",
-            "activityName": null,
-            "referenceNumber": "III.2.3",
-            "subsectorId": "a8baeb06-0ab2-3215-a93e-2fcbe0e8f8a9",
-            "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
-            "reportinglevelId": "7b8bd2cf-13a0-3a76-8d50-e08b4321703a",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           }
         ]
       },
@@ -677,41 +666,32 @@
         "sectorId": "d5acb72e-d915-310f-b3a3-77f634bcbf5e",
         "referenceNumber": "III.3",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "32680435-8d8b-3037-9c12-929776a7beaa",
-            "subcategoryName": "Emissions from solid waste generated and treated within the city boundary",
+            "subcategoryName": "emissions-from-solid-waste-generated-and-treated-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "III.3.1",
             "subsectorId": "0ed16605-c76a-3c07-892d-4383a7618943",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "cabb1b2e-546d-3fa0-bb05-975733480fb3",
-            "subcategoryName": "Emissions from solid waste generated within the city boundary but treated outside of the city boundary",
+            "subcategoryName": "emissions-from-solid-waste-generated-within-the-city-boundary-but-treated-outside-of-the-city-boundary",
             "activityName": null,
             "referenceNumber": "III.3.2",
             "subsectorId": "0ed16605-c76a-3c07-892d-4383a7618943",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
-          },
-          {
-            "subcategoryId": "7582e783-dfd5-3caa-a06a-e10bcc75e089",
-            "subcategoryName": "Emissions from waste generated outside the city boundary but treated within the city boundary",
-            "activityName": null,
-            "referenceNumber": "III.3.3",
-            "subsectorId": "0ed16605-c76a-3c07-892d-4383a7618943",
-            "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
-            "reportinglevelId": "7b8bd2cf-13a0-3a76-8d50-e08b4321703a",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           }
         ]
       },
@@ -721,41 +701,32 @@
         "sectorId": "d5acb72e-d915-310f-b3a3-77f634bcbf5e",
         "referenceNumber": "III.4",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": [
           {
             "subcategoryId": "e0ba4eda-8fc4-33e6-beaf-6fc7c8f39e8b",
-            "subcategoryName": "Emissions from wastewater generated and treated within the city boundary",
+            "subcategoryName": "emissions-from-wastewater-generated-and-treated-within-the-city-boundary",
             "activityName": null,
             "referenceNumber": "III.4.1",
             "subsectorId": "c465e7a2-1634-337f-819a-2dfbe147927e",
             "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+              "scopeName": "1"
+            }
           },
           {
             "subcategoryId": "4dc4b184-2d1e-3b4a-9515-9cd1a2cc03ac",
-            "subcategoryName": "Emissions from wastewater generated within the city boundary but treated outside of the city boundary",
+            "subcategoryName": "emissions-from-wastewater-generated-within-the-city-boundary-but-treated-outside-of-the-city-boundary",
             "activityName": null,
             "referenceNumber": "III.4.2",
             "subsectorId": "c465e7a2-1634-337f-819a-2dfbe147927e",
             "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
             "reportinglevelId": "3e54a15f-7857-3878-9a60-b2c28e3c60fa",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
-          },
-          {
-            "subcategoryId": "af68e0d7-f55a-3827-aa53-369d98e210f8",
-            "subcategoryName": "Emissions from wastewater generated outside the city boundary but treated within the city boundary",
-            "activityName": null,
-            "referenceNumber": "III.4.3",
-            "subsectorId": "c465e7a2-1634-337f-819a-2dfbe147927e",
-            "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
-            "reportinglevelId": "7b8bd2cf-13a0-3a76-8d50-e08b4321703a",
-            "created": "2023-10-09T23:00:00.000Z",
-            "last_updated": "2023-10-09T23:00:00.000Z"
+            "scope": {
+              "scopeId": "ce09d866-a134-35a8-88b8-e4f08b21af3a",
+              "scopeName": "3"
+            }
           }
         ]
       }
@@ -763,10 +734,8 @@
   },
   {
     "sectorId": "6e986105-3df9-30de-8997-041d93537278",
-    "sectorName": "Industrial Processes and Product Uses (IPPU)",
+    "sectorName": "industrial-processes-and-product-uses-ippu",
     "referenceNumber": "IV",
-    "created": "2023-10-09T23:00:00.000Z",
-    "last_updated": "2023-10-09T23:00:00.000Z",
     "subSectors": [
       {
         "subsectorId": "6b23cb0a-a1c1-35f5-835e-dca1d009ae9b",
@@ -774,8 +743,6 @@
         "sectorId": "6e986105-3df9-30de-8997-041d93537278",
         "referenceNumber": "IV.1",
         "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
-        "created": null,
-        "last_updated": null,
         "subCategories": []
       },
       {
@@ -784,18 +751,14 @@
         "sectorId": "6e986105-3df9-30de-8997-041d93537278",
         "referenceNumber": "IV.2",
         "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
-        "created": null,
-        "last_updated": null,
         "subCategories": []
       }
     ]
   },
   {
     "sectorId": "b7845aa4-e50b-3b8c-8941-77d098a73e82",
-    "sectorName": "Agriculture, Forestry, and Other Land Use (AFOLU)",
+    "sectorName": "agriculture-forestry-and-other-land-use-afolu",
     "referenceNumber": "V",
-    "created": "2023-10-09T23:00:00.000Z",
-    "last_updated": "2023-10-09T23:00:00.000Z",
     "subSectors": [
       {
         "subsectorId": "52ec93fa-99d8-3cea-8d26-e8c9d3b4afaa",
@@ -803,8 +766,6 @@
         "sectorId": "b7845aa4-e50b-3b8c-8941-77d098a73e82",
         "referenceNumber": "V.1",
         "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
-        "created": null,
-        "last_updated": null,
         "subCategories": []
       },
       {
@@ -813,8 +774,6 @@
         "sectorId": "b7845aa4-e50b-3b8c-8941-77d098a73e82",
         "referenceNumber": "V.2",
         "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
-        "created": null,
-        "last_updated": null,
         "subCategories": []
       },
       {
@@ -823,18 +782,14 @@
         "sectorId": "b7845aa4-e50b-3b8c-8941-77d098a73e82",
         "referenceNumber": "V.3",
         "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
-        "created": null,
-        "last_updated": null,
         "subCategories": []
       }
     ]
   },
   {
     "sectorId": "501ace3b-f63f-3267-bd57-69ad6ff5ab77",
-    "sectorName": "Other Scope 3",
+    "sectorName": "other-scope-3",
     "referenceNumber": "VI",
-    "created": "2023-10-09T23:00:00.000Z",
-    "last_updated": "2023-10-09T23:00:00.000Z",
     "subSectors": [
       {
         "subsectorId": "401a7571-4951-3e40-be4c-f8b5ea41583f",
@@ -842,430 +797,317 @@
         "sectorId": "501ace3b-f63f-3267-bd57-69ad6ff5ab77",
         "referenceNumber": "VI.1",
         "scopeId": null,
-        "created": null,
-        "last_updated": null,
         "subCategories": []
       }
     ]
   },
   {
-    "sectorId": "47243e5f-15c3-4ff3-8b8f-388c2da11ca6",
-    "sectorName": "XX_INVENTORY_PROGRESS_TEST1",
+    "sectorId": "cd9dc3bf-48d9-4c14-ac9d-2096337627e3",
+    "sectorName": "sectorname",
     "referenceNumber": null,
-    "created": "2024-10-10T21:40:13.305Z",
-    "last_updated": "2024-10-10T21:40:13.305Z",
     "subSectors": [
       {
-        "subsectorId": "2a0c2005-f99e-4773-b26c-2f326525b6f6",
-        "subsectorName": "xx-inventory-progress-test1-progress-test1",
-        "sectorId": "47243e5f-15c3-4ff3-8b8f-388c2da11ca6",
-        "referenceNumber": null,
+        "subsectorId": "fc01400c-9ff2-41ee-aa42-42d40f1084aa",
+        "subsectorName": "datasourceservicetest",
+        "sectorId": "cd9dc3bf-48d9-4c14-ac9d-2096337627e3",
+        "referenceNumber": "I.4.4",
         "scopeId": null,
-        "created": "2024-10-10T21:40:13.305Z",
-        "last_updated": "2024-10-10T21:40:13.305Z",
         "subCategories": [
           {
-            "subcategoryId": "de03ffb9-6e5e-41ba-88d8-f3fd177d242b",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST1_PROGRESS_TEST1",
+            "subcategoryId": "654784fd-e221-489b-a90d-10670dfbf1f5",
+            "subcategoryName": "datasourceservicetest",
             "activityName": null,
             "referenceNumber": null,
-            "subsectorId": "2a0c2005-f99e-4773-b26c-2f326525b6f6",
+            "subsectorId": "fc01400c-9ff2-41ee-aa42-42d40f1084aa",
             "scopeId": null,
             "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "75a796d3-1347-4125-bb4f-91315e8a0694",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST1_PROGRESS_TEST2",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "2a0c2005-f99e-4773-b26c-2f326525b6f6",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "0388cd47-33fc-4474-85bf-fded6f9b1408",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST1_PROGRESS_TEST3",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "2a0c2005-f99e-4773-b26c-2f326525b6f6",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          }
-        ]
-      },
-      {
-        "subsectorId": "2d4f4d8b-631f-4b57-8a27-d0e045706dcf",
-        "subsectorName": "xx-inventory-progress-test1-progress-test2",
-        "sectorId": "47243e5f-15c3-4ff3-8b8f-388c2da11ca6",
-        "referenceNumber": null,
-        "scopeId": null,
-        "created": "2024-10-10T21:40:13.305Z",
-        "last_updated": "2024-10-10T21:40:13.305Z",
-        "subCategories": [
-          {
-            "subcategoryId": "f96ffb73-acc2-42c0-9b24-89f4090b4544",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST2_PROGRESS_TEST1",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "2d4f4d8b-631f-4b57-8a27-d0e045706dcf",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "832191ff-34c9-41a8-a2d1-d7e5327a6755",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST2_PROGRESS_TEST2",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "2d4f4d8b-631f-4b57-8a27-d0e045706dcf",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "346fbaec-8d8a-4d89-90cc-2445e56356d4",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST2_PROGRESS_TEST3",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "2d4f4d8b-631f-4b57-8a27-d0e045706dcf",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          }
-        ]
-      },
-      {
-        "subsectorId": "18d600c7-7402-4f4c-9be1-cf89cfd550af",
-        "subsectorName": "xx-inventory-progress-test1-progress-test3",
-        "sectorId": "47243e5f-15c3-4ff3-8b8f-388c2da11ca6",
-        "referenceNumber": null,
-        "scopeId": null,
-        "created": "2024-10-10T21:40:13.305Z",
-        "last_updated": "2024-10-10T21:40:13.305Z",
-        "subCategories": [
-          {
-            "subcategoryId": "5cd03560-fec2-4665-a04f-be725c4a74c4",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST3_PROGRESS_TEST1",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "18d600c7-7402-4f4c-9be1-cf89cfd550af",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "2e5ef0f5-9ad5-473c-bb2c-b80a9cb09f1a",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST3_PROGRESS_TEST2",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "18d600c7-7402-4f4c-9be1-cf89cfd550af",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "fdaee7b8-8807-46dd-8b29-0deb45735969",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST3_PROGRESS_TEST3",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "18d600c7-7402-4f4c-9be1-cf89cfd550af",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
+            "scope": null
           }
         ]
       }
     ]
   },
   {
-    "sectorId": "00f4189c-dfe0-4b5b-9ddb-820b268588d7",
-    "sectorName": "XX_INVENTORY_PROGRESS_TEST2",
+    "sectorId": "e48915db-a1ed-49f8-955d-b1a84980eb48",
+    "sectorName": "sectorname",
     "referenceNumber": null,
-    "created": "2024-10-10T21:40:13.305Z",
-    "last_updated": "2024-10-10T21:40:13.305Z",
     "subSectors": [
       {
-        "subsectorId": "22baab3a-e970-426e-90ea-e2d45a5aed91",
-        "subsectorName": "xx-inventory-progress-test2-progress-test1",
-        "sectorId": "00f4189c-dfe0-4b5b-9ddb-820b268588d7",
-        "referenceNumber": null,
+        "subsectorId": "b9405863-0fda-44fb-ba06-97354b7fa96f",
+        "subsectorName": "datasourceservicetest",
+        "sectorId": "e48915db-a1ed-49f8-955d-b1a84980eb48",
+        "referenceNumber": "I.4.4",
         "scopeId": null,
-        "created": "2024-10-10T21:40:13.305Z",
-        "last_updated": "2024-10-10T21:40:13.305Z",
         "subCategories": [
           {
-            "subcategoryId": "cd2ffdd5-0ef9-49b0-adb6-e8cb5f824861",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST1_PROGRESS_TEST1",
+            "subcategoryId": "93d9768d-7076-46c4-9f93-18c5569e6a82",
+            "subcategoryName": "datasourceservicetest",
             "activityName": null,
             "referenceNumber": null,
-            "subsectorId": "22baab3a-e970-426e-90ea-e2d45a5aed91",
+            "subsectorId": "b9405863-0fda-44fb-ba06-97354b7fa96f",
             "scopeId": null,
             "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "3df3954c-316d-4add-8968-c55b285b50c7",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST1_PROGRESS_TEST2",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "22baab3a-e970-426e-90ea-e2d45a5aed91",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "c61ad9dd-8023-4e0c-9a4f-b16fc633da30",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST1_PROGRESS_TEST3",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "22baab3a-e970-426e-90ea-e2d45a5aed91",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          }
-        ]
-      },
-      {
-        "subsectorId": "c9769b66-b5d3-4c07-b72d-e44884f0223a",
-        "subsectorName": "xx-inventory-progress-test2-progress-test2",
-        "sectorId": "00f4189c-dfe0-4b5b-9ddb-820b268588d7",
-        "referenceNumber": null,
-        "scopeId": null,
-        "created": "2024-10-10T21:40:13.305Z",
-        "last_updated": "2024-10-10T21:40:13.305Z",
-        "subCategories": [
-          {
-            "subcategoryId": "c6d844d5-1f4d-4229-970f-06bc208f1c11",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST2_PROGRESS_TEST1",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "c9769b66-b5d3-4c07-b72d-e44884f0223a",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "1e1b5268-c85c-45af-8d3f-159ae6ae1019",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST2_PROGRESS_TEST2",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "c9769b66-b5d3-4c07-b72d-e44884f0223a",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "1e704b39-dcbe-49f8-8b6f-4fafa5d9e4eb",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST2_PROGRESS_TEST3",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "c9769b66-b5d3-4c07-b72d-e44884f0223a",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          }
-        ]
-      },
-      {
-        "subsectorId": "9289e347-ae37-4bcd-8666-4559efb01347",
-        "subsectorName": "xx-inventory-progress-test2-progress-test3",
-        "sectorId": "00f4189c-dfe0-4b5b-9ddb-820b268588d7",
-        "referenceNumber": null,
-        "scopeId": null,
-        "created": "2024-10-10T21:40:13.305Z",
-        "last_updated": "2024-10-10T21:40:13.305Z",
-        "subCategories": [
-          {
-            "subcategoryId": "30b4c0b3-826e-4cfc-ad7f-8cc30b7ea527",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST3_PROGRESS_TEST1",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "9289e347-ae37-4bcd-8666-4559efb01347",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "fbe3bdc0-010b-4421-a353-a46f5173548e",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST3_PROGRESS_TEST2",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "9289e347-ae37-4bcd-8666-4559efb01347",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "7568b861-400c-4212-926c-a2f0501797c1",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST3_PROGRESS_TEST3",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "9289e347-ae37-4bcd-8666-4559efb01347",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
+            "scope": null
           }
         ]
       }
     ]
   },
   {
-    "sectorId": "e800e0e1-951b-4310-abf6-bc400cfd3841",
-    "sectorName": "XX_INVENTORY_PROGRESS_TEST3",
+    "sectorId": "d34ddb95-486d-4ed7-86cf-63a7b96ab29f",
+    "sectorName": "sectorname",
     "referenceNumber": null,
-    "created": "2024-10-10T21:40:13.305Z",
-    "last_updated": "2024-10-10T21:40:13.305Z",
     "subSectors": [
       {
-        "subsectorId": "7cf66270-0a07-4aec-ab58-f18d952ff527",
-        "subsectorName": "xx-inventory-progress-test3-progress-test1",
-        "sectorId": "e800e0e1-951b-4310-abf6-bc400cfd3841",
-        "referenceNumber": null,
+        "subsectorId": "f150852f-c218-4e86-a274-686dc56e370b",
+        "subsectorName": "datasourceservicetest",
+        "sectorId": "d34ddb95-486d-4ed7-86cf-63a7b96ab29f",
+        "referenceNumber": "I.4.4",
         "scopeId": null,
-        "created": "2024-10-10T21:40:13.305Z",
-        "last_updated": "2024-10-10T21:40:13.305Z",
         "subCategories": [
           {
-            "subcategoryId": "ecc73418-aec2-48f0-bf1c-bb190d5b1ea3",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST1_PROGRESS_TEST1",
+            "subcategoryId": "41b20cea-4b0f-47d9-8eef-e24ef8e091a4",
+            "subcategoryName": "datasourceservicetest",
             "activityName": null,
             "referenceNumber": null,
-            "subsectorId": "7cf66270-0a07-4aec-ab58-f18d952ff527",
+            "subsectorId": "f150852f-c218-4e86-a274-686dc56e370b",
             "scopeId": null,
             "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "42e6c302-a59b-408f-b07a-15a6da7dfbf8",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST1_PROGRESS_TEST2",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "7cf66270-0a07-4aec-ab58-f18d952ff527",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "8fc19aee-f948-4670-95a4-4c66312fd074",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST1_PROGRESS_TEST3",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "7cf66270-0a07-4aec-ab58-f18d952ff527",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
+            "scope": null
           }
         ]
-      },
+      }
+    ]
+  },
+  {
+    "sectorId": "bc869308-4aa3-4c40-8d50-e7c39c03da47",
+    "sectorName": "sectorname",
+    "referenceNumber": null,
+    "subSectors": [
       {
-        "subsectorId": "ba30d625-0585-47dc-8d01-ec9f91eab138",
-        "subsectorName": "xx-inventory-progress-test3-progress-test2",
-        "sectorId": "e800e0e1-951b-4310-abf6-bc400cfd3841",
-        "referenceNumber": null,
+        "subsectorId": "d632aab9-a61a-45a5-9a58-caa4c5c7c177",
+        "subsectorName": "datasourceservicetest",
+        "sectorId": "bc869308-4aa3-4c40-8d50-e7c39c03da47",
+        "referenceNumber": "I.4.4",
         "scopeId": null,
-        "created": "2024-10-10T21:40:13.305Z",
-        "last_updated": "2024-10-10T21:40:13.305Z",
         "subCategories": [
           {
-            "subcategoryId": "b5a15cd5-dbe5-422e-b168-faa3142f4c44",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST2_PROGRESS_TEST1",
+            "subcategoryId": "a399c795-04be-4e81-9086-e942b7a2db66",
+            "subcategoryName": "datasourceservicetest",
             "activityName": null,
             "referenceNumber": null,
-            "subsectorId": "ba30d625-0585-47dc-8d01-ec9f91eab138",
+            "subsectorId": "d632aab9-a61a-45a5-9a58-caa4c5c7c177",
             "scopeId": null,
             "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "59238fba-9a3e-439c-ba32-e174d002bb59",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST2_PROGRESS_TEST2",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "ba30d625-0585-47dc-8d01-ec9f91eab138",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
-          {
-            "subcategoryId": "fb77061d-6094-4c2d-b0bd-a09e0f452318",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST2_PROGRESS_TEST3",
-            "activityName": null,
-            "referenceNumber": null,
-            "subsectorId": "ba30d625-0585-47dc-8d01-ec9f91eab138",
-            "scopeId": null,
-            "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
+            "scope": null
           }
         ]
-      },
+      }
+    ]
+  },
+  {
+    "sectorId": "58650581-f2c3-442f-aebc-a1129cb51b82",
+    "sectorName": "sectorname",
+    "referenceNumber": null,
+    "subSectors": [
       {
-        "subsectorId": "cc605439-431e-4597-9233-6d3868d76a3e",
-        "subsectorName": "xx-inventory-progress-test3-progress-test3",
-        "sectorId": "e800e0e1-951b-4310-abf6-bc400cfd3841",
-        "referenceNumber": null,
+        "subsectorId": "f129eb31-aac7-4449-8df8-2cd2d847df37",
+        "subsectorName": "datasourceservicetest",
+        "sectorId": "58650581-f2c3-442f-aebc-a1129cb51b82",
+        "referenceNumber": "I.4.4",
         "scopeId": null,
-        "created": "2024-10-10T21:40:13.305Z",
-        "last_updated": "2024-10-10T21:40:13.305Z",
         "subCategories": [
           {
-            "subcategoryId": "dbb85828-4636-4b6b-ac3b-3f3ec5158356",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST3_PROGRESS_TEST1",
+            "subcategoryId": "69a04221-cc57-47e3-ba93-5451b4fd1e79",
+            "subcategoryName": "datasourceservicetest",
             "activityName": null,
             "referenceNumber": null,
-            "subsectorId": "cc605439-431e-4597-9233-6d3868d76a3e",
+            "subsectorId": "f129eb31-aac7-4449-8df8-2cd2d847df37",
             "scopeId": null,
             "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
+            "scope": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sectorId": "cabf3002-baac-4a57-8036-9cc5efb170b3",
+    "sectorName": "sectorname",
+    "referenceNumber": null,
+    "subSectors": [
+      {
+        "subsectorId": "dbf1d97c-6fbd-4aec-91b7-6312cab3eb60",
+        "subsectorName": "datasourceservicetest",
+        "sectorId": "cabf3002-baac-4a57-8036-9cc5efb170b3",
+        "referenceNumber": "I.4.4",
+        "scopeId": null,
+        "subCategories": [
           {
-            "subcategoryId": "0395f3e3-6a4f-4f90-abf2-d16c2e3e3691",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST3_PROGRESS_TEST2",
+            "subcategoryId": "d4da54f2-2faa-4cb2-8ff6-859ace2f339b",
+            "subcategoryName": "datasourceservicetest",
             "activityName": null,
             "referenceNumber": null,
-            "subsectorId": "cc605439-431e-4597-9233-6d3868d76a3e",
+            "subsectorId": "dbf1d97c-6fbd-4aec-91b7-6312cab3eb60",
             "scopeId": null,
             "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
-          },
+            "scope": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sectorId": "9e23934c-8389-46dc-8ea0-0390ba80c6d5",
+    "sectorName": "sectorname",
+    "referenceNumber": null,
+    "subSectors": [
+      {
+        "subsectorId": "455c6a72-4c4c-490a-b878-5bd8fd9f18fa",
+        "subsectorName": "datasourceservicetest",
+        "sectorId": "9e23934c-8389-46dc-8ea0-0390ba80c6d5",
+        "referenceNumber": "I.4.4",
+        "scopeId": null,
+        "subCategories": [
           {
-            "subcategoryId": "b624c18d-9c07-48db-a1d0-b268d1c0d70f",
-            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST3_PROGRESS_TEST3",
+            "subcategoryId": "a0628389-9b77-490e-a7ce-c4a0e791cac2",
+            "subcategoryName": "datasourceservicetest",
             "activityName": null,
             "referenceNumber": null,
-            "subsectorId": "cc605439-431e-4597-9233-6d3868d76a3e",
+            "subsectorId": "455c6a72-4c4c-490a-b878-5bd8fd9f18fa",
             "scopeId": null,
             "reportinglevelId": null,
-            "created": "2024-10-10T21:40:13.305Z",
-            "last_updated": "2024-10-10T21:40:13.305Z"
+            "scope": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sectorId": "d57717d2-c27f-40d3-82aa-a24634fdb8cf",
+    "sectorName": "sectorname",
+    "referenceNumber": null,
+    "subSectors": [
+      {
+        "subsectorId": "147ba7bf-8668-4493-874d-485134706b35",
+        "subsectorName": "datasourceservicetest",
+        "sectorId": "d57717d2-c27f-40d3-82aa-a24634fdb8cf",
+        "referenceNumber": "I.4.4",
+        "scopeId": null,
+        "subCategories": [
+          {
+            "subcategoryId": "04fd75c6-4955-4e04-856c-55a3ad684f32",
+            "subcategoryName": "datasourceservicetest",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "147ba7bf-8668-4493-874d-485134706b35",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "scope": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sectorId": "d35a4366-0d20-489f-886e-15f96f7c9c2c",
+    "sectorName": "sectorname",
+    "referenceNumber": null,
+    "subSectors": [
+      {
+        "subsectorId": "fcfb173d-1514-4b51-95c1-60c3a4d9dc06",
+        "subsectorName": "datasourceservicetest",
+        "sectorId": "d35a4366-0d20-489f-886e-15f96f7c9c2c",
+        "referenceNumber": "I.4.4",
+        "scopeId": null,
+        "subCategories": [
+          {
+            "subcategoryId": "fa01c70b-9c78-4a30-88a1-843b3392e1ed",
+            "subcategoryName": "datasourceservicetest",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "fcfb173d-1514-4b51-95c1-60c3a4d9dc06",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "scope": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sectorId": "ff8b7ab3-731e-40d7-9082-a0a34222688b",
+    "sectorName": "sectorname",
+    "referenceNumber": null,
+    "subSectors": [
+      {
+        "subsectorId": "f27b5567-6136-4df6-8ee4-fd9b576a75c8",
+        "subsectorName": "datasourceservicetest",
+        "sectorId": "ff8b7ab3-731e-40d7-9082-a0a34222688b",
+        "referenceNumber": "I.4.4",
+        "scopeId": null,
+        "subCategories": [
+          {
+            "subcategoryId": "da03575a-20f0-463c-93b1-753d46e7bdc7",
+            "subcategoryName": "datasourceservicetest",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "f27b5567-6136-4df6-8ee4-fd9b576a75c8",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "scope": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sectorId": "6db003fe-7379-47fd-9875-ff7e83b7df6c",
+    "sectorName": "sectorname",
+    "referenceNumber": null,
+    "subSectors": [
+      {
+        "subsectorId": "68d18fd6-8ab0-41f5-ace3-4a1addb47169",
+        "subsectorName": "datasourceservicetest",
+        "sectorId": "6db003fe-7379-47fd-9875-ff7e83b7df6c",
+        "referenceNumber": "I.4.4",
+        "scopeId": null,
+        "subCategories": [
+          {
+            "subcategoryId": "888bdfa2-5d4b-4af1-a1a8-a0170ae32df1",
+            "subcategoryName": "datasourceservicetest",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "68d18fd6-8ab0-41f5-ace3-4a1addb47169",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "scope": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sectorId": "60bec88d-e467-45f6-8ab8-f57cabe8b252",
+    "sectorName": "sectorname",
+    "referenceNumber": null,
+    "subSectors": [
+      {
+        "subsectorId": "3ff08b54-76b3-4b4d-94fd-60827ba4a79c",
+        "subsectorName": "datasourceservicetest",
+        "sectorId": "60bec88d-e467-45f6-8ab8-f57cabe8b252",
+        "referenceNumber": "I.4.4",
+        "scopeId": null,
+        "subCategories": [
+          {
+            "subcategoryId": "7da0d34b-2c86-49d8-94b3-43632539ddb3",
+            "subcategoryName": "datasourceservicetest",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "3ff08b54-76b3-4b4d-94fd-60827ba4a79c",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "scope": null
           }
         ]
       }

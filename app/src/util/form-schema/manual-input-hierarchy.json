@@ -4043,7 +4043,13 @@
                   "waste-composition-paper",
                   "waste-composition-wood",
                   "waste-composition-textiles",
-                  "waste-composition-industrial"
+                  "waste-composition-industrial",
+                  "waste-composition-leather",
+                  "waste-composition-plastics",
+                  "waste-composition-metal",
+                  "waste-composition-glass",
+                  "waste-composition-nappies",
+                  "waste-composition-other"
                 ],
                 "required": false
               },

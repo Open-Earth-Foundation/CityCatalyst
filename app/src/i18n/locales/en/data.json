@@ -1231,5 +1231,11 @@
   "type-flaring-recovered-ch4": "Flaring of recovered CH4",
   "type-abandoned-mines": "Abandoned mines",
   "vehicle-type-national-flights": "National flights",
-  "vehicle-type-international-flights": "International flights"
+  "vehicle-type-international-flights": "International flights",
+  "waste-composition-leather": "Leather",
+  "waste-composition-plastics": "Plastics",
+  "waste-composition-metal": "Metal",
+  "waste-composition-glass": "Glass",
+  "waste-composition-nappies": "Nappies",
+  "waste-composition-other": "Other"
 }

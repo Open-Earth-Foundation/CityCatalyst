@@ -227,12 +227,12 @@ export default class InventoryProgressService {
   }
 
   public static async getSortedInventoryStructure() {
-    /* if (
+    if (
       Inventory_Sector_Hierarchy.length > 0 &&
       process.env.NODE_ENV !== "test"
     ) {
       return Inventory_Sector_Hierarchy;
-    } */
+    }
     let sectors: Sector[] = await db.models.Sector.findAll({
       include: [
         {

@@ -130,7 +130,7 @@ const ActivityModalBody = ({
     useState<boolean>(true);
 
   useEffect(() => {
-    setIsEmissionFactorInputDisabled(emissionsFactorTypeValue === "custom");
+    setIsEmissionFactorInputDisabled(emissionsFactorTypeValue !== "custom");
   }, [emissionsFactorTypeValue]);
 
   useEffect(() => {

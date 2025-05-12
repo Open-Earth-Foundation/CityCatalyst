@@ -73,16 +73,19 @@ export default class InventoryProgressService {
                 return true;
               }
 
+              const scope =
+                subCategory.scopeName && /^\d+$/.test(subCategory.scopeName)
+                  ? Number(subCategory.scopeName)
+                  : null;
               if (
-                !subCategory.scopeName ||
+                scope === null ||
                 !inventory.inventoryType ||
                 !sector.referenceNumber
               ) {
-                // sectors IV and V don't have a scopeId and should only be returned for BASIC_PLUS
+                // sectors IV and V don't have an associated scope and should only be returned for GPC_BASIC_PLUS
                 return false;
               }
 
-              const scope = Number(subCategory.scopeName);
               return getScopesForInventoryAndSector(
                 inventory.inventoryType,
                 sector.referenceNumber,

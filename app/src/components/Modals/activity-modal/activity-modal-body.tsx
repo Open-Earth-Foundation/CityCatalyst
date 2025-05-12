@@ -9,7 +9,6 @@ import {
   Spinner,
   Text,
   Textarea,
-  useRadioGroup,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
@@ -123,7 +122,6 @@ const ActivityModalBody = ({
     control,
     defaultValue: selectedActivity?.prefills?.[0].value,
   });
-  const { getRootProps, getItemProps, value } = useRadioGroup(field);
 
   let prefix = "";
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =

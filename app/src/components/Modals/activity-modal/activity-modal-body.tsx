@@ -113,7 +113,7 @@ const ActivityModalBody = ({
     name: `activity.${title}-unit` as any,
   });
 
-  const emissionFactorTypeValue = useWatch({
+  const emissionsFactorTypeValue = useWatch({
     control,
     name: "activity.emissionFactorType",
   });
@@ -130,12 +130,15 @@ const ActivityModalBody = ({
     useState<boolean>(true);
 
   useEffect(() => {
-    if (emissionsFactorTypes.length > 0 && emissionFactorTypeValue) {
+    setIsEmissionFactorInputDisabled(emissionsFactorTypeValue === "custom");
+  }, [emissionsFactorTypeValue]);
+
+  useEffect(() => {
+    if (emissionsFactorTypes.length > 0 && emissionsFactorTypeValue) {
       const emissionFactor = emissionsFactorTypes.find(
-        (factor) => factor.id === emissionFactorTypeValue,
+        (factor) => factor.id === emissionsFactorTypeValue,
       );
-      const emissionFactorType = emissionFactorTypeValue;
-      if (emissionFactorType === "custom") {
+      if (emissionsFactorTypeValue === "custom") {
         setValue(
           "activity.emissionFactorReference",
           t("custom-emission-factor-reference"),
@@ -174,7 +177,7 @@ const ActivityModalBody = ({
         setIsEmissionFactorInputDisabled(true);
       }
     }
-  }, [emissionsFactorTypes, emissionFactorTypeValue, setValue, t]);
+  }, [emissionsFactorTypes, emissionsFactorTypeValue, setValue, t]);
 
   const filteredFields = fields.filter((f) => {
     return !(f.id.includes("-source") && f.type === "text");
@@ -690,11 +693,10 @@ const ActivityModalBody = ({
                       miniAddon
                       t={t}
                       control={control}
-                      name={`activity.CO2EmissionFactor`}
+                      name="activity.CO2EmissionFactor"
                       defaultValue="0"
                       w="110px"
-                      h="full"
-                      disabled={isEmissionFactorInputDisabled}
+                      isDisabled={isEmissionFactorInputDisabled}
                     >
                       {areEmissionFactorsLoading ? (
                         <Spinner size="sm" color="border.neutral" />
@@ -736,7 +738,7 @@ const ActivityModalBody = ({
                     miniAddon
                     t={t}
                     control={control}
-                    name={`activity.N2OEmissionFactor`}
+                    name="activity.N2OEmissionFactor"
                     defaultValue="0"
                     isDisabled={isEmissionFactorInputDisabled}
                   >
@@ -774,7 +776,7 @@ const ActivityModalBody = ({
                     control={control}
                     miniAddon
                     t={t}
-                    name={`activity.CH4EmissionFactor`}
+                    name="activity.CH4EmissionFactor"
                     defaultValue="0"
                     isDisabled={isEmissionFactorInputDisabled}
                   >

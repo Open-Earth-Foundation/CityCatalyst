@@ -61,6 +61,7 @@ export default class InventoryProgressService {
               referenceNumber: subcategory.referenceNumber,
               subsectorId: subcategory.subsectorId,
               scopeId: subcategory.scopeId,
+              scopeName: subcategory.scope.scopeName,
               reportinglevelId: subcategory.reportinglevelId,
               created: new Date(0),
               lastUpdated: new Date(0),
@@ -72,17 +73,20 @@ export default class InventoryProgressService {
                 return true;
               }
 
-              const lastDigit = parseInt(
-                subCategory.referenceNumber?.split(".")[2] as string,
-              );
-              if (!lastDigit) {
+              if (
+                !subCategory.scopeName ||
+                !inventory.inventoryType ||
+                !sector.referenceNumber
+              ) {
                 // sectors IV and V don't have a scopeId and should only be returned for BASIC_PLUS
                 return false;
               }
+
+              const scope = Number(subCategory.scopeName);
               return getScopesForInventoryAndSector(
-                inventory.inventoryType!,
-                sector.referenceNumber!,
-              )!.includes(lastDigit);
+                inventory.inventoryType,
+                sector.referenceNumber,
+              )!.includes(scope);
             }),
         })),
       }));
@@ -223,12 +227,12 @@ export default class InventoryProgressService {
   }
 
   public static async getSortedInventoryStructure() {
-    if (
+    /* if (
       Inventory_Sector_Hierarchy.length > 0 &&
       process.env.NODE_ENV !== "test"
     ) {
       return Inventory_Sector_Hierarchy;
-    }
+    } */
     let sectors: Sector[] = await db.models.Sector.findAll({
       include: [
         {
@@ -238,6 +242,7 @@ export default class InventoryProgressService {
             {
               model: db.models.SubCategory,
               as: "subCategories",
+              include: [{ model: db.models.Scope, as: "scope" }],
             },
           ],
         },

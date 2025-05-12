@@ -56,7 +56,7 @@ export default class GPCService {
       };
     }
     throw new createHttpError.BadRequest(
-      "Couldn't find sector/ subsector/ subcategory for given GPC reference number",
+      `Couldn't find sector/ subsector/ subcategory for given GPC reference number: ${gpcReferenceNumber}`,
     );
   }
 

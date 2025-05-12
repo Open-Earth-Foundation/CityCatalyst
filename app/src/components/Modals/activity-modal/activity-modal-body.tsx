@@ -108,8 +108,6 @@ const ActivityModalBody = ({
   getValues,
   areEmissionFactorsLoading,
 }: AddActivityModalBodyProps) => {
-  //
-
   const unitValue = useWatch({
     control,
     name: `activity.${title}-unit` as any,
@@ -129,7 +127,7 @@ const ActivityModalBody = ({
 
   let prefix = "";
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
-    useState<boolean>(false);
+    useState<boolean>(true);
 
   useEffect(() => {
     if (emissionsFactorTypes.length > 0 && emissionFactorTypeValue) {

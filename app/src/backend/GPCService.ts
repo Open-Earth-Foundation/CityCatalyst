@@ -55,8 +55,14 @@ export default class GPCService {
         subCategoryId: null,
       };
     }
+
+    // clean user input to prevent log injection with malicious content like CRLF characters
+    const cleanedGpcReferenceNumber = gpcReferenceNumber.replaceAll(
+      /[^A-Z\d\.]/,
+      "",
+    );
     throw new createHttpError.BadRequest(
-      `Couldn't find sector/ subsector/ subcategory for given GPC reference number: ${gpcReferenceNumber}`,
+      `Couldn't find sector/ subsector/ subcategory for given GPC reference number: ${cleanedGpcReferenceNumber}`,
     );
   }
 

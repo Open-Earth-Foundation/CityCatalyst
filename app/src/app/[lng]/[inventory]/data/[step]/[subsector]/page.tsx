@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useState } from "react";
 import { MdArrowBack, MdChevronRight, MdOutlineHomeWork } from "react-icons/md";
 import {
   AnimatePresence,

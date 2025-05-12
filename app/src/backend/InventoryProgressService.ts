@@ -234,15 +234,24 @@ export default class InventoryProgressService {
       return Inventory_Sector_Hierarchy;
     }
     let sectors: Sector[] = await db.models.Sector.findAll({
+      attributes: { exclude: ["created", "last_updated"] },
       include: [
         {
           model: db.models.SubSector,
           as: "subSectors",
+          attributes: { exclude: ["created", "last_updated"] },
           include: [
             {
               model: db.models.SubCategory,
               as: "subCategories",
-              include: [{ model: db.models.Scope, as: "scope" }],
+              attributes: { exclude: ["created", "last_updated"] },
+              include: [
+                {
+                  model: db.models.Scope,
+                  attributes: { exclude: ["created", "last_updated"] },
+                  as: "scope",
+                },
+              ],
             },
           ],
         },
@@ -251,17 +260,33 @@ export default class InventoryProgressService {
 
     sectors = sectors.sort(this.romanNumeralComparison);
     for (const sector of sectors) {
-      sector.subSectors = sector.subSectors.sort((a, b) => {
-        const ra = Number((a.referenceNumber ?? "X.9").split(".")[1]);
-        const rb = Number((b.referenceNumber ?? "X.9").split(".")[1]);
-        return ra - rb;
-      });
-      for (const subSector of sector.subSectors) {
-        subSector.subCategories = subSector.subCategories.sort((a, b) => {
-          const ra = Number((a.referenceNumber ?? "X.9.9").split(".")[2]);
-          const rb = Number((b.referenceNumber ?? "X.9.9").split(".")[2]);
+      sector.sectorName = this.toTranslationString(sector.sectorName);
+      sector.subSectors = sector.subSectors
+        .sort((a, b) => {
+          const ra = Number((a.referenceNumber ?? "X.9").split(".")[1]);
+          const rb = Number((b.referenceNumber ?? "X.9").split(".")[1]);
           return ra - rb;
+        })
+        .map((subSector) => {
+          // transform name to translation string
+          subSector.subsectorName = this.toTranslationString(
+            subSector.subsectorName,
+          );
+          return subSector;
         });
+      for (const subSector of sector.subSectors) {
+        subSector.subCategories = subSector.subCategories
+          .sort((a, b) => {
+            const ra = Number((a.referenceNumber ?? "X.9.9").split(".")[2]);
+            const rb = Number((b.referenceNumber ?? "X.9.9").split(".")[2]);
+            return ra - rb;
+          })
+          .map((subCategory) => {
+            subCategory.subcategoryName = this.toTranslationString(
+              subCategory.subcategoryName,
+            );
+            return subCategory;
+          });
       }
     }
 
@@ -269,5 +294,12 @@ export default class InventoryProgressService {
       this.writeHierarchyToCache(sectors);
     }
     return sectors;
+  }
+
+  private static toTranslationString(str?: string): string {
+    return (str ?? "")
+      .toLowerCase()
+      .replaceAll(" ", "-")
+      .replaceAll(/[^a-zA-Z\d-]/g, "");
   }
 }

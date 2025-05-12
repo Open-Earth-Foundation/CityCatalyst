@@ -201,7 +201,7 @@
   "no-occurrance": "La actividad o proceso no ocurre o existe dentro de la ciudad",
   "not-estimated": "Las emisiones para esta actividad no están estimadas",
   "confidential-information": "Las emisiones podrían llevar a la divulgación de información confidencial",
-  "presented-elsewhere": "Las emisiones de esta actividad se estiman y se presentan en otro lugar",
+  "included-elsewhere": "Las emisiones de esta actividad se estiman y se presentan en otro lugar",
   "unavailable-explanation": "Explicación/ Justificación",
   "unavailable-explanation-placeholder": "Escriba en detalle por qué este valor no está incluido",
   "unavailable-explanation-required": "Por favor, añade una explicación/justificación",

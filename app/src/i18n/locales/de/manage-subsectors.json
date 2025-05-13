@@ -1217,5 +1217,6 @@
   "no-unfinished-subsectors": "Keine unfertigen Teilsektoren.",
   "changes-undone": "Änderungen rückgängig gemacht",
   "industrial-processes-and-product-uses": "Industrielle Prozesse und Produktverwendung (IPPU)",
-  "agriculture-forestry-and-other-land-use": "Landwirtschaft, Forstwirtschaft und andere Landnutzung (AFOLU)"
+  "agriculture-forestry-and-other-land-use": "Landwirtschaft, Forstwirtschaft und andere Landnutzung (AFOLU)",
+  "pe": "PE (Andernorts vorgestellt)"
 }

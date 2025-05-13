@@ -2,16 +2,24 @@ from pathlib import Path
 import json
 import sys
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 # ACTION_DATA_PATH = BASE_DIR / "CAP_data/long_actions.json"
 # CITY_DATA_PATH = BASE_DIR / "CAP_data/city_data.json"
 # OUTPUT_FILE = BASE_DIR / "new_output.json"
 
 # Set constants for file paths
 # BASE_DIR = Path("../data")
-ACTION_DATA_PATH = BASE_DIR / "../data/climate_actions/output/merged.json"
-CITY_DATA_PATH = BASE_DIR / "../data/cities/city_data.json"
-OUTPUT_PATH = BASE_DIR / "../data/prioritized/"
+ACTION_DATA_PATH = (
+    BASE_DIR
+    / "app"
+    / "prioritizer"
+    / "data"
+    / "climate_actions"
+    / "output"
+    / "merged.json"
+)
+CITY_DATA_PATH = BASE_DIR / "app" / "prioritizer" / "data" / "cities" / "city_data.json"
+OUTPUT_PATH = BASE_DIR / "app" / "prioritizer" / "data" / "prioritized"
 
 
 def read_city_inventory(locode: str) -> dict:

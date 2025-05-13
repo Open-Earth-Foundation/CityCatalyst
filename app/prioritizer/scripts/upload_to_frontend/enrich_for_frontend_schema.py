@@ -98,7 +98,7 @@ def main(locode: str, action_type: str) -> None:
 
 
 if __name__ == "__main__":
-    from logger_config import setup_logger
+    from utils.logging_config import setup_logger
 
     # Set up logging
     setup_logger(level=logging.INFO)

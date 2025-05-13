@@ -68,7 +68,7 @@ def get_actions(language: str = "en") -> Optional[list[dict]]:
 
 
 if __name__ == "__main__":
-    from logger_config import setup_logger
+    from utils.logging_config import setup_logger
 
     setup_logger(level=logging.INFO)
 

@@ -56,7 +56,12 @@ class PrioritizeResponse(BaseModel):
     ranked_actions: List[RankedAction]
 
 
-@router.post("/v1/prioritize", response_model=PrioritizeResponse)
+@router.post(
+    "/v1/prioritize_city",
+    response_model=PrioritizeResponse,
+    summary="Prioritize climate actions for a single city",
+    description="This endpoint receives city context and emissions data, and returns a ranked list of climate actions.",
+)
 async def prioritize(request: PrioritizeRequest):
     logger.info(f"Received prioritization request for city: {request.city_data.locode}")
     # Placeholder logic

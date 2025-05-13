@@ -366,17 +366,6 @@ def filter_actions_by_biome(actions: list[dict], city: dict) -> list[dict]:
     return actions_final
 
 
-def ML_compare(actionA, actionB, city):
-    """
-    Uses the ML model to compare two actions in a given city context.
-    Returns:
-       1 if actionA is better
-      -1 if actionB is better
-    """
-    result = ml_compare(city, actionA, actionB)
-    return result
-
-
 def single_elimination_bracket(actions, city):
     """
     Performs a single-elimination bracket on the given list of actions,
@@ -413,7 +402,7 @@ def single_elimination_bracket(actions, city):
 
             try:
                 # Use your ML model to compare
-                result = ML_compare(actionA, actionB, city)
+                result = ml_compare(actionA, actionB, city)
                 if result == 1:
                     winners.append(actionA)
                     losers.append(actionB)

@@ -1217,5 +1217,6 @@
   "no-unfinished-subsectors": "No hay subsectores sin terminar.",
   "changes-undone": "Cambios deshechos",
   "industrial-processes-and-product-uses": "Procesos industriales y usos de productos (IPPU)",
-  "agriculture-forestry-and-other-land-use": "Agricultura, Silvicultura y Otro Uso de la Tierra (ASOUT)"
+  "agriculture-forestry-and-other-land-use": "Agricultura, Silvicultura y Otro Uso de la Tierra (ASOUT)",
+  "pe": "PE (Presentado en otro lugar)"
 }

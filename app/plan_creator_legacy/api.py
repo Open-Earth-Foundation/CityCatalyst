@@ -13,62 +13,16 @@ import uuid
 import threading
 from typing import Optional, List, Dict, Any
 
-# import httpx
-# import uvicorn
 from utils.logging_config import setup_logger
 
 # Import the existing plan generation components
-from plan_creator.graph_definition import create_graph
-from plan_creator.state.agent_state import AgentState
+from plan_creator_legacy.graph_definition import create_graph
+from plan_creator_legacy.state.agent_state import AgentState
 from langchain_core.messages import AIMessage
 
 logger = logging.getLogger(__name__)
 
-# Configure logging
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-#     handlers=[logging.StreamHandler(), logging.FileHandler("app.log")],
-# )
-# logger = logging.getLogger(__name__)
-
 router = APIRouter()
-
-# Configure longer timeout for external requests
-# httpx._config.DEFAULT_TIMEOUT_CONFIG.connect = 3000.0  # 300 seconds
-# httpx._config.DEFAULT_TIMEOUT_CONFIG.read = 3000.0  # 300 seconds
-
-# app = FastAPI(
-#     title="Climate Action Plan Creator API",
-#     description="API for generating climate action implementation plans",
-#     version="1.0.0",
-# )
-
-# # Add CORS middleware configuration with more explicit settings
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=[
-#         "https://cap.openearth.dev",
-#         "https://cap-plan-creator.openearth.dev",
-#         "http://localhost:3000",
-#         "http://localhost:8000",
-#     ],
-#     allow_credentials=True,
-#     allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
-#     allow_headers=[
-#         "Content-Type",
-#         "Authorization",
-#         "Access-Control-Allow-Headers",
-#         "Access-Control-Allow-Origin",
-#         "Access-Control-Allow-Methods",
-#         "Access-Control-Allow-Credentials",
-#         "Accept",
-#         "Origin",
-#         "X-Requested-With",
-#     ],
-#     expose_headers=["*"],
-#     max_age=3600,  # Cache preflight requests for 1 hour
-# )
 
 # Define output directory
 output_dir = Path(__file__).parent / "data" / "output"
@@ -400,14 +354,3 @@ async def create_plan(request: PlanRequest):
             f"Unexpected error during plan generation: {str(e)}", exc_info=True
         )
         raise HTTPException(status_code=500, detail=f"Error generating plan: {str(e)}")
-
-
-# if __name__ == "__main__":
-#     logger.info("Configuring Uvicorn logging")
-#     log_config = uvicorn.config.LOGGING_CONFIG
-#     log_config["formatters"]["access"][
-#         "fmt"
-#     ] = "%(asctime)s - %(name)s - %(levelname)s - %(client_addr)s - '%(request_line)s' %(status_code)s"
-
-#     logger.info("Starting Uvicorn server")
-#     uvicorn.run(app, host="0.0.0.0", port=8000, log_config=log_config)

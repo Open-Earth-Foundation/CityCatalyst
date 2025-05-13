@@ -75,11 +75,15 @@ import xgboost as xgb
 from pathlib import Path
 import shap
 
-root_path = Path(__file__).resolve().parent.parent.parent
+root_path = Path(__file__).resolve().parent.parent.parent.parent
 
 loaded_model = xgb.XGBClassifier()
 # Load hyperparameters and trained weights
-loaded_model.load_model(root_path / "data" / "ml" / "model" / "xgb_model.json")
+loaded_model.load_model(
+    root_path / "app" / "prioritizer" / "data" / "ml" / "model" / "xgb_model.json"
+)
+
+print(loaded_model.get_booster().feature_names)
 # loaded_model.load_model(
 #     root_path / "data" / "ml" / "model" / "xgb_model_train_test_split.json"
 # )

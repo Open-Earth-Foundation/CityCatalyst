@@ -13,7 +13,7 @@ Usage:
 python prioritizer.py --locode <locode>
 
 Example:
-Run it from the root level of the project with the following command:
+Run it from the /app folder of the project with the following command:
 
 python -m prioritizer.prioritizer --locode "BR CXL"
 """
@@ -38,8 +38,9 @@ from prioritizer.utils.additional_scoring_functions import (
 )
 from prioritizer.utils.prompt import return_prompt
 from prioritizer.utils.ml_comparator import ml_compare
-from scripts.get_actions import get_actions
+from prioritizer.scripts.get_actions import get_actions
 import logging
+from prioritizer.utils.tournament import tournament_ranking
 
 logger = logging.getLogger(__name__)
 
@@ -366,162 +367,6 @@ def filter_actions_by_biome(actions: list[dict], city: dict) -> list[dict]:
     return actions_final
 
 
-def single_elimination_bracket(actions, city):
-    """
-    Performs a single-elimination bracket on the given list of actions,
-    with a wildcard if there's an odd number of participants.
-
-    Returns:
-      winner  - the single best from this bracket
-      losers  - all other participants (who lost at some stage)
-    """
-    if not actions:
-        return None, []
-
-    # print(f"\n--- Starting bracket with {len(actions)} actions ---")
-
-    # Shuffle to randomize the pairs
-    random.shuffle(actions)
-
-    # If odd number of actions, pick one as wildcard (auto-advance)
-    wildcard = None
-    if len(actions) % 2 == 1:
-        wildcard = actions.pop()
-        # print(
-        #     f"  Odd number of actions, wildcard: {wildcard.get('ActionID', 'Unknown')}"
-        # )
-
-    winners = []
-    losers = []
-
-    # Pair up
-    for i in range(0, len(actions), 2):
-        if i + 1 < len(actions):  # Make sure we have a pair
-            actionA = actions[i]
-            actionB = actions[i + 1]
-
-            try:
-                # Use your ML model to compare
-                result = ml_compare(actionA, actionB, city)
-                if result == 1:
-                    winners.append(actionA)
-                    losers.append(actionB)
-                else:
-                    winners.append(actionB)
-                    losers.append(actionA)
-            except Exception as e:
-                logging.error(f"Error comparing actions: {e}")
-                # If there's an error, continue to the next pair
-                # This way we ignore pairs with one or both actions containing missing values
-                # Since actions get shuffled, over time we will have enough pairings without missing values
-                # Valid actions that were initially paired with actions containing missing values will be paired later again
-                # This way no valid actions are excluded from the tournament
-                continue
-
-    # If there was a wildcard, it automatically advances
-    if wildcard:
-        winners.append(wildcard)
-        # print(
-        #     f"  Wildcard {wildcard.get('ActionID', 'Unknown')} automatically advances"
-        # )
-
-    # print(f"  Round complete. {len(winners)} winners advancing to next round")
-
-    # If exactly one winner, we found the bracket winner
-    if len(winners) == 1:
-        # print(f"  Final winner of bracket: {winners[0].get('ActionID', 'Unknown')}")
-        return winners[0], losers
-    else:
-        # Otherwise, recursively determine a single winner
-        # print(f"  Moving to next round with {len(winners)} actions")
-        # Recursive call to fihishn round
-        final_winner, final_losers = single_elimination_bracket(winners, city)
-        return final_winner, losers + final_losers
-
-
-def final_bracket_for_ranking(actions, city):
-    """
-    When we have fewer than 40 participants left, we do a final bracket
-    that fully orders them from best to worst.
-
-    This simply calls single_elimination_bracket repeatedly until no
-    participants remain, collecting winners in order.
-
-    Returns:
-      ranking (list): from best to worst among the given actions.
-    """
-    # print(
-    #     f"\n=== Starting final bracket for complete ranking with {len(actions)} actions ==="
-    # )
-    participants = actions[:]
-    ranking = []
-    rank = 1
-
-    while participants:
-        # print(
-        #     f"\n--- Finding #{rank} ranked action from {len(participants)} remaining ---"
-        # )
-        winner, losers = single_elimination_bracket(participants, city)
-        if not winner:
-            logging.debug("  No winner found, breaking")
-            break  # no more participants
-
-        logging.debug(f"  Rank #{rank}: {winner.get('ActionID', 'Unknown')}")
-        ranking.append(winner)
-        participants = losers
-        rank += 1
-
-    logging.debug(f"=== Final bracket complete. Ranked {len(ranking)} actions ===")
-    return ranking
-
-
-def tournament_ranking(actions, city):
-    """
-    Repeatedly runs single elimination brackets, where losers compete in subsequent brackets
-    to determine the next ranks. Continues until we have top 20 ranked actions.
-
-    Returns:
-      A list of (action, rank_index).
-    """
-    logging.info(
-        f"\n\n========== STARTING TOURNAMENT RANKING WITH {len(actions)} ACTIONS =========="
-    )
-    remaining = actions[:]
-    full_ranking = []
-    current_rank = 1
-
-    while remaining and current_rank <= 20:
-        # print(
-        #     f"\n--- Running bracket for rank #{current_rank} with {len(remaining)} actions ---"
-        # )
-        winner, losers = single_elimination_bracket(remaining, city)
-
-        if not winner:
-            # TODO is there a normal thing that this can happen ?or should this be error
-            logging.debug("No winner found, breaking")
-            break
-
-        # Add the winner with their rank
-        logging.debug(f"Rank #{current_rank}: {winner.get('ActionID', 'Unknown')}")
-        full_ranking.append((winner, current_rank))
-        current_rank += 1
-
-        # Losers compete in the next bracket
-        remaining = losers
-        # print(f"{len(remaining)} actions will compete for rank #{current_rank}")
-
-    logging.info(
-        f"\n========== TOURNAMENT RANKING COMPLETE. RANKED {len(full_ranking)} ACTIONS =========="
-    )
-
-    # Print final ranking summary
-    logging.info("\nFinal Ranking Summary:")
-    for action, rank in full_ranking:
-        logging.info(f"  #{rank}: {action.get('ActionID', 'Unknown')}")
-
-    return full_ranking
-
-
 def main(locode: str):
     try:
         city = read_city_inventory(locode)
@@ -571,7 +416,9 @@ def main(locode: str):
 
     # Apply tournament ranking for adaptation actions
     logging.info("Starting tournament ranking for adaptation actions...")
-    adaptation_ranking = tournament_ranking(adaptation_actions, city)
+    adaptation_ranking = tournament_ranking(
+        city, adaptation_actions, comparator=ml_compare
+    )
 
     # Format adaptation results
     top_ml_adaptation = []
@@ -591,7 +438,9 @@ def main(locode: str):
 
     # Apply tournament ranking for mitigation actions
     logging.debug("Starting tournament ranking for mitigation actions...")
-    mitigation_ranking = tournament_ranking(mitigation_actions, city)
+    mitigation_ranking = tournament_ranking(
+        city, mitigation_actions, comparator=ml_compare
+    )
 
     # Format mitigation results
     top_ml_mitigation = []
@@ -616,7 +465,7 @@ def main(locode: str):
 
 
 if __name__ == "__main__":
-    from logger_config import setup_logger
+    from utils.logging_config import setup_logger
 
     setup_logger(level=logging.INFO)
 

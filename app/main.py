@@ -1,8 +1,17 @@
+"""
+This is the main file for the CASP API.
+It is responsible for setting up the FastAPI app and adding middleware.
+It also mounts the routers for the different features of the API.
+
+Run it from the /app directory with:
+python main.py
+"""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # from prioritizer.api import router as prioritizer_router
-from plan_creator.api import router as plan_creator_router
+from plan_creator_legacy.api import router as plan_creator_router
 from utils.logging_config import setup_logger
 import httpx
 import uvicorn

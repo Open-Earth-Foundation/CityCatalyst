@@ -1241,5 +1241,11 @@
   "type-flaring-recovered-ch4": "Quema de CH4 recuperado",
   "type-abandoned-mines": "Minas abandonadas",
   "vehicle-type-national-flights": "Vuelos nacionales",
-  "vehicle-type-international-flights": "Vuelos internacionales"
+  "vehicle-type-international-flights": "Vuelos internacionales",
+  "waste-composition-leather": "Cuero",
+  "waste-composition-plastics": "Plásticos",
+  "waste-composition-metal": "Metal",
+  "waste-composition-glass": "Vidrio",
+  "waste-composition-nappies": "Pañales",
+  "waste-composition-other": "Otro"
 }

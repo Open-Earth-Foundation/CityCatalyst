@@ -4,19 +4,19 @@ the ccra API and add them to the city data stored inside 'data/cities'.
 
 Inputs: locode of the city to add the emissions data to
 
-Execute:
-python scripts/create_city_data/add_ccras_to_city_data.py --locode "BR MGE"
+Execute it from the app/prioritizer folder of the project with the following command:
+python prioritizer/scripts/create_city_data/add_ccras_to_city_data.py --locode "BR MGE"
 """
 
 from pathlib import Path
 import argparse
 import json
 from typing import List, Dict, Any
-from services.get_ccra import get_ccra
+from prioritizer.services.get_ccra import get_ccra
 
 # Define the base path to the project root
-BASE_DIR = Path(__file__).parent.parent.parent
-BASE_PATH_CITIES = BASE_DIR / "data" / "cities"
+BASE_DIR = Path(__file__).parent.parent.parent.parent.parent
+BASE_PATH_CITIES = BASE_DIR / "app" / "prioritizer" / "data" / "cities"
 
 
 def extract_ccras(ccra_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:

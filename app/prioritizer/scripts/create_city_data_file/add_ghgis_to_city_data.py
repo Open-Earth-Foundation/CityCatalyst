@@ -5,8 +5,8 @@ The GHGI emissions data is provided via csv export and stored in the data/ghgi f
 
 The city data is stored in the data/cities folder.
 
-Run it from the root of the project with the following command:
-python scripts/create_city_data/add_ghgis_to_city_data.py --file_name "inventory-BR CCI-2022.csv" --locode "BR CCI"
+Run it from the app/ folder of the project with the following command:
+python prioritizer/scripts/create_city_data/add_ghgis_to_city_data.py --file_name "inventory-BR CCI-2022.csv" --locode "BR CCI"
 """
 
 import sys
@@ -16,9 +16,9 @@ import argparse
 import json
 
 # Load the city data from the CSV file
-BASE_DIR = Path(__file__).parent.parent.parent
-BASE_PATH_GHGIS = BASE_DIR / "data" / "ghgi"
-BASE_PATH_CITIES = BASE_DIR / "data" / "cities"
+BASE_DIR = Path(__file__).parent.parent.parent.parent.parent
+BASE_PATH_GHGIS = BASE_DIR / "app" / "prioritizer" / "data" / "ghgi"
+BASE_PATH_CITIES = BASE_DIR / "app" / "prioritizer" / "data" / "cities"
 
 
 # Initialize emissions values to extract
@@ -26,8 +26,8 @@ dict_emissions = {
     "stationaryEnergyEmissions": 0.0,
     "transportationEmissions": 0.0,
     "wasteEmissions": 0.0,
-    "industrialProcessEmissions": 0.0,
-    "landUseEmissions": 0.0,
+    "ippuEmissions": 0.0,
+    "afoluEmissions": 0.0,
     "scope1Emissions": 0.0,
     "scope2Emissions": 0.0,
     "scope3Emissions": 0.0,
@@ -38,8 +38,8 @@ GPC_TO_SECTOR = {
     "I": "stationaryEnergyEmissions",
     "II": "transportationEmissions",
     "III": "wasteEmissions",
-    "IV": "industrialProcessEmissions",
-    "V": "landUseEmissions",
+    "IV": "ippuEmissions",
+    "V": "afoluEmissions",
 }
 
 GPC_TO_SCOPE = {
@@ -158,8 +158,8 @@ def add_emissions_to_city_data(locode: str, dict_extracted_emissions: dict) -> N
                 dict_extracted_emissions["stationaryEnergyEmissions"]
                 + dict_extracted_emissions["transportationEmissions"]
                 + dict_extracted_emissions["wasteEmissions"]
-                + dict_extracted_emissions["industrialProcessEmissions"]
-                + dict_extracted_emissions["landUseEmissions"]
+                + dict_extracted_emissions["ippuEmissions"]
+                + dict_extracted_emissions["afoluEmissions"]
             )
             updated = True
             break

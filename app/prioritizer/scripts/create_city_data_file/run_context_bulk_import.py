@@ -1,26 +1,26 @@
-# run_ccra_pipeline.py
-
 """
-This script runs the CCRA pipeline for multiple cities in bulk.
+This script runs the city context pipeline for multiple cities in bulk.
 
 The pipeline processes all cities listed in a JSON file containing locodes.
 For each city, it will:
-1. Get the CCRA data for the given scenario
-2. Extract the CCRA data
-3. Add the CCRA data to the city_data.json file
+1. Get the city context data
+2. Add or update the city context data in the city_data.json file
 
 Usage:
-    python scripts/create_city_data/run_ccra_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json
+    Run it from the app/ folder of the project with the following command:
+    python -m prioritizer.scripts.create_city_data_file.run_context_bulk_import --bulk_file app/prioritizer/data/cities/brazil_city_locodes.json
 """
 
 import argparse
 import json
 from pathlib import Path
-from services.get_ccra import get_ccra
-from add_ccras_to_city_data import extract_ccras, add_extracted_ccras_to_city_data
+from prioritizer.services.get_context import get_context
+from prioritizer.scripts.create_city_data_file.add_context_to_city_data import (
+    add_context_to_city_data,
+)
 
 # Base directory for the project
-BASE_DIR = Path(__file__).parent.parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent.parent.parent
 
 
 def load_locodes_from_file(file_name: Path) -> list:
@@ -47,32 +47,27 @@ def load_locodes_from_file(file_name: Path) -> list:
             )
 
 
-def process_city(locode: str, scenario_name: str) -> tuple[bool, str]:
+def process_city(locode: str) -> tuple[bool, str]:
     """
-    Process a single city through the CCRA pipeline.
+    Process a single city through the context pipeline.
 
     Args:
         locode (str): The city locode to process
-        scenario_name (str): The scenario name to use
 
     Returns:
         tuple[bool, str]: (success status, error message if failed)
     """
-    print(f"\nProcessing {locode} with scenario {scenario_name}")
+    print(f"\nProcessing {locode}")
 
     try:
-        print("Getting CCRA data...")
-        ccra_data = get_ccra(locode, scenario_name)
-        if ccra_data is None:
-            return False, "Failed to fetch CCRA data"
+        print("Getting city context data...")
+        context_data = get_context(locode)
+        if context_data is None:
+            return False, "Failed to fetch city context data"
         print("Done...")
 
-        print("Extracting CCRA data...")
-        list_extracted_ccras = extract_ccras(ccra_data)
-        print("Done...")
-
-        print("Adding CCRA data to city data...")
-        add_extracted_ccras_to_city_data(locode, list_extracted_ccras)
+        print("Adding/updating city context data...")
+        add_context_to_city_data(locode, context_data)
         print("Done...")
 
         print(f"Successfully processed {locode}")
@@ -83,13 +78,12 @@ def process_city(locode: str, scenario_name: str) -> tuple[bool, str]:
         return False, error_msg
 
 
-def main(bulk_file: Path, scenario_name: str = "current") -> None:
+def main(bulk_file: Path) -> None:
     """
-    Main function to run the CCRA pipeline for multiple cities.
+    Main function to run the context pipeline for multiple cities.
 
     Args:
         bulk_file (Path): Path to JSON file containing list of locodes
-        scenario_name (str): The scenario name to use
     """
     successful_cities = []
     failed_cities = []
@@ -104,7 +98,7 @@ def main(bulk_file: Path, scenario_name: str = "current") -> None:
                 failed_cities.append((city_locode, "Invalid locode type"))
                 continue
 
-            success, error_msg = process_city(city_locode, scenario_name)
+            success, error_msg = process_city(city_locode)
             if success:
                 successful_cities.append(city_locode)
             else:
@@ -132,7 +126,7 @@ def main(bulk_file: Path, scenario_name: str = "current") -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Run the CCRA pipeline for multiple cities."
+        description="Run the city context pipeline for multiple cities."
     )
     parser.add_argument(
         "--bulk_file",
@@ -140,12 +134,6 @@ if __name__ == "__main__":
         required=True,
         help="Path to JSON file containing list of locodes for bulk processing",
     )
-    parser.add_argument(
-        "--scenario_name",
-        type=str,
-        default="current",
-        help="The scenario name (e.g., current).",
-    )
 
     args = parser.parse_args()
-    main(args.bulk_file, args.scenario_name)
+    main(args.bulk_file)

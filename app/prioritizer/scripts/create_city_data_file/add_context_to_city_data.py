@@ -9,19 +9,19 @@ The city context data includes information such as:
 
 Inputs: locode of the city to add/update the context data for
 
-Execute:
-python scripts/create_city_data/add_context_to_city_data.py --locode "BR SER"
+Execute it from the app/prioritizer folder of the project with the following command:
+python prioritizer/scripts/create_city_data/add_context_to_city_data.py --locode "BR SER"
 """
 
 from pathlib import Path
 import argparse
 import json
 from typing import Dict, Any
-from services.get_context import get_context
+from prioritizer.services.get_context import get_context
 
 # Define the base path to the project root
-BASE_DIR = Path(__file__).parent.parent.parent
-BASE_PATH_CITIES = BASE_DIR / "data" / "cities"
+BASE_DIR = Path(__file__).parent.parent.parent.parent.parent
+BASE_PATH_CITIES = BASE_DIR / "app" / "prioritizer" / "data" / "cities"
 
 
 def add_context_to_city_data(locode: str, context_data: Dict[str, Any]) -> None:

@@ -1,50 +1,37 @@
-"use client";
-
-import { api, useGetOrganizationQuery } from "@/services/api";
-import {
-  Box,
-  Button,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  Text,
-} from "@chakra-ui/react";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
-import React, { useEffect } from "react";
-import { useTranslation } from "@/i18n/client";
-import { MdReplay, MdWarning } from "react-icons/md";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Box, HStack, Text, Input, Icon } from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { MdWarning } from "react-icons/md";
+import { useParams } from "next/navigation";
+import { useTranslation } from "@/i18n/client";
+import { OrganizationResponse } from "@/util/types";
+import { useUpdateOrganizationMutation } from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
-import { OrganizationRole } from "@/util/types";
 import { Trans } from "react-i18next";
 import ProgressLoader from "@/components/ProgressLoader";
 
-const AdminOrganizationIdProfilePage = ({
-  params: { lng, id },
+const AccountDetailsTab = ({
+  organization,
 }: {
-  params: { lng: string; id: string };
+  organization: OrganizationResponse | undefined;
 }) => {
-  const { t } = useTranslation(lng, "admin");
-
-  const { data: organization, isLoading: isOrganizationLoading } =
-    useGetOrganizationQuery(id);
-
-  const [updateOrganization, { isLoading }] =
-    api.useUpdateOrganizationMutation();
-
-  const [createOrganizationInvite, { isLoading: isInviteLoading }] =
-    api.useCreateOrganizationInviteMutation();
+  const { lng } = useParams();
+  const { t } = useTranslation(lng as string, "admin");
 
   const schema = z.object({
     email: z.string().email("invalid-email").min(1, "required"),
     name: z.string().min(3, "required"),
+  });
+
+  const { showErrorToast } = UseErrorToast({
+    title: t("error-message"),
+  });
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("organization-updated"),
+    duration: 1200,
   });
 
   type Schema = z.infer<typeof schema>;
@@ -56,25 +43,14 @@ const AdminOrganizationIdProfilePage = ({
     formState: { errors, isDirty },
   } = useForm<Schema>({
     mode: "all",
+    defaultValues: {
+      email: organization?.contactEmail,
+      name: organization?.name,
+    },
     resolver: zodResolver(schema),
   });
 
-  useEffect(() => {
-    if (organization) {
-      reset({
-        email: organization.contactEmail,
-        name: organization.name,
-      });
-    }
-  }, [reset, organization]);
-
-  const { showErrorToast } = UseErrorToast({
-    title: t("error-message"),
-  });
-  const { showSuccessToast } = UseSuccessToast({
-    title: t("organization-updated"),
-    duration: 1200,
-  });
+  const [updateOrganization, { isLoading }] = useUpdateOrganizationMutation();
 
   const handleFormSubmit = async (data: Schema) => {
     const { name, email } = data;
@@ -94,58 +70,9 @@ const AdminOrganizationIdProfilePage = ({
     showSuccessToast();
   };
 
-  const resendInvite = async () => {
-    const response = await createOrganizationInvite({
-      organizationId: organization?.organizationId as string,
-      inviteeEmail: organization?.contactEmail as string,
-      role: OrganizationRole.ORG_ADMIN,
-    });
-
-    if (response.error) {
-      showErrorToast();
-      return;
-    }
-
-    showSuccessToast({
-      title: t("invite-sent"),
-    });
-  };
-
-  if (isOrganizationLoading) {
-    return <ProgressLoader />;
-  }
-
   return (
     <Box>
-      <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Box>
-          <Heading
-            fontSize="headline.sm"
-            mb={2}
-            fontWeight="semibold"
-            lineHeight="32px"
-            fontStyle="normal"
-            textTransform="capitalize"
-            color="content.secondary"
-          >
-            {t("org-profile-heading", { name: organization?.name })}
-          </Heading>
-          <Text color="content.tertiary" fontSize="body.lg">
-            {t("org-profile-caption", { name: organization?.name })}
-          </Text>
-        </Box>
-        <Button
-          onClick={resendInvite}
-          variant="outline"
-          h="48px"
-          mt="auto"
-          loading={isInviteLoading}
-        >
-          <Icon as={MdReplay} h={8} w={8} />
-          {t("resend-invite")}
-        </Button>
-      </Box>
-      <Box backgroundColor="white" p={6} marginTop={12}>
+      <Box backgroundColor="white" p={6}>
         <Text fontSize="title.md" fontWeight="semibold">
           {t("account-details")}
         </Text>
@@ -174,8 +101,9 @@ const AdminOrganizationIdProfilePage = ({
               </Box>
             )}
           </Field>
-          <Field labelClassName="font-semibold" label={t("email")}>
+          <Field disabled labelClassName="font-semibold" label={t("email")}>
             <Input
+              disabled
               borderColor={errors?.email ? "sentiment.negativeDefault" : ""}
               {...register("email")}
             />
@@ -241,4 +169,4 @@ const AdminOrganizationIdProfilePage = ({
   );
 };
 
-export default AdminOrganizationIdProfilePage;
+export default AccountDetailsTab;

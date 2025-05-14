@@ -38,7 +38,7 @@ from prioritizer.utils.additional_scoring_functions import (
 )
 from prioritizer.utils.prompt import return_prompt
 from prioritizer.utils.ml_comparator import ml_compare
-from services.get_actions import get_actions
+from prioritizer.services.get_actions import get_actions
 import logging
 from prioritizer.utils.tournament import tournament_ranking
 from prioritizer.utils.filter_actions_by_biome import filter_actions_by_biome
@@ -434,15 +434,6 @@ if __name__ == "__main__":
     from utils.logging_config import setup_logger
 
     setup_logger(level=logging.INFO)
-
-    logging.warning(
-        """
-        Running this script locally is loading the city data from the city_data.json file.
-        The local file is using different key names for ippuEmissions (industrialProcessEmissions)
-        and afoluEmissions (landUseEmissions). Therefore currently this script cannot be run locally.
-        """
-    )
-    exit()
 
     parser = argparse.ArgumentParser(
         description="Prioritize climate actions for a given city."

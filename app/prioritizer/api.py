@@ -8,7 +8,7 @@ from prioritizer.utils.tournament import tournament_ranking
 from prioritizer.utils.ml_comparator import ml_compare
 from prioritizer.scripts.get_actions import get_actions
 from prioritizer.scripts.create_city_data.get_context import get_context
-from prioritizer.prioritizer import filter_actions_by_biome
+from prioritizer.utils.filter_actions_by_biome import filter_actions_by_biome
 
 logger = logging.getLogger(__name__)
 
@@ -168,7 +168,6 @@ async def prioritize(request: PrioritizeRequest):
         )
 
     # 4. Filter actions by biome if applicable
-    # Currently 239 mitigation actions and 86 adaptation actions - no biome filtering yet because of missing biome data
     filteredActions = filter_actions_by_biome(cityData, actions)
     logger.info(f"After biome filtering: {len(filteredActions)} actions remain")
 

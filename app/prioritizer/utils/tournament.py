@@ -31,10 +31,6 @@ def single_elimination_bracket(
             actionA = actions[i]
             actionB = actions[i + 1]
             try:
-                print(
-                    f"Comparing actions: {actionA['ActionID']} and {actionB['ActionID']}"
-                )
-                print(f"City: {city['locode']}")
                 result = comparator(city, actionA, actionB)
                 if result == 1:
                     winners.append(actionA)
@@ -56,35 +52,6 @@ def single_elimination_bracket(
             city, winners, comparator
         )
         return final_winner, losers + final_losers
-
-
-# def final_bracket_for_ranking(
-#     actions: List[dict], city: dict, comparator: Callable[[dict, dict, dict], int]
-# ) -> List[dict]:
-#     """
-#     When we have fewer than 40 participants left, we do a final bracket
-#     that fully orders them from best to worst.
-#     This simply calls single_elimination_bracket repeatedly until no
-#     participants remain, collecting winners in order.
-#     Returns:
-#       ranking (list): from best to worst among the given actions.
-#     """
-#     participants = actions[:]
-#     ranking = []
-#     rank = 1
-
-#     while participants:
-#         winner, losers = single_elimination_bracket(participants, city, comparator)
-#         if not winner:
-#             logging.debug("  No winner found, breaking")
-#             break
-#         logging.debug(f"  Rank #{rank}: {winner.get('ActionID', 'Unknown')}")
-#         ranking.append(winner)
-#         participants = losers
-#         rank += 1
-
-#     logging.debug(f"=== Final bracket complete. Ranked {len(ranking)} actions ===")
-#     return ranking
 
 
 def tournament_ranking(

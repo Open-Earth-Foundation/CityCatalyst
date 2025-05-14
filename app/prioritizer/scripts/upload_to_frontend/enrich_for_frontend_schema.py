@@ -11,7 +11,7 @@ import argparse
 import logging
 from pathlib import Path
 from typing import Optional, Dict, List
-from scripts.get_actions import get_actions
+from services.get_actions import get_actions
 
 # Configure logging
 logger = logging.getLogger(__name__)

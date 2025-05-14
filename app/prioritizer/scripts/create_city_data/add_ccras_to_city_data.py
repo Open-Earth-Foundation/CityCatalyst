@@ -12,7 +12,7 @@ from pathlib import Path
 import argparse
 import json
 from typing import List, Dict, Any
-from get_ccra import get_ccra
+from services.get_ccra import get_ccra
 
 # Define the base path to the project root
 BASE_DIR = Path(__file__).parent.parent.parent

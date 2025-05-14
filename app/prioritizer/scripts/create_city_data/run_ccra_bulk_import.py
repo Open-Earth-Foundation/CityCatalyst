@@ -16,7 +16,7 @@ Usage:
 import argparse
 import json
 from pathlib import Path
-from get_ccra import get_ccra
+from services.get_ccra import get_ccra
 from add_ccras_to_city_data import extract_ccras, add_extracted_ccras_to_city_data
 
 # Base directory for the project

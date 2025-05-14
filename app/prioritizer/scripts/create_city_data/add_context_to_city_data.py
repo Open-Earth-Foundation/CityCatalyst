@@ -17,7 +17,7 @@ from pathlib import Path
 import argparse
 import json
 from typing import Dict, Any
-from get_context import get_context
+from services.get_context import get_context
 
 # Define the base path to the project root
 BASE_DIR = Path(__file__).parent.parent.parent

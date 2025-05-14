@@ -13,7 +13,7 @@ Usage:
 import argparse
 import json
 from pathlib import Path
-from get_context import get_context
+from services.get_context import get_context
 from add_context_to_city_data import add_context_to_city_data
 
 # Base directory for the project

@@ -6,8 +6,8 @@ import logging
 from datetime import datetime
 from prioritizer.utils.tournament import tournament_ranking
 from prioritizer.utils.ml_comparator import ml_compare
-from prioritizer.scripts.get_actions import get_actions
-from prioritizer.scripts.create_city_data.get_context import get_context
+from services.get_actions import get_actions
+from services.get_context import get_context
 from prioritizer.utils.filter_actions_by_biome import filter_actions_by_biome
 
 logger = logging.getLogger(__name__)

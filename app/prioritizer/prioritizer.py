@@ -38,7 +38,7 @@ from prioritizer.utils.additional_scoring_functions import (
 )
 from prioritizer.utils.prompt import return_prompt
 from prioritizer.utils.ml_comparator import ml_compare
-from prioritizer.scripts.get_actions import get_actions
+from services.get_actions import get_actions
 import logging
 from prioritizer.utils.tournament import tournament_ranking
 from prioritizer.utils.filter_actions_by_biome import filter_actions_by_biome

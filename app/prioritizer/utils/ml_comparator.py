@@ -25,16 +25,12 @@ City:
 - StationaryEnergyEmissions
 - TransportationEmissions
 - WasteEmissions
-- IndustrialProcessEmissions
-- LandUseEmissions
+- ippuEmissions
+- afoluEmissions
 - CCRA
 
 After the transformation, the following fields are being used for the comparison:
-- [GHGReductionPotential, StationaryEnergyEmissions] > EmissionReduction_Diff_stationary_energy
-- [GHGReductionPotential, TransportationEmissions] > EmissionReduction_Diff_transportation
-- [GHGReductionPotential, WasteEmissions] > EmissionReduction_Diff_waste
-- [GHGReductionPotential, IndustrialProcessEmissions] > EmissionReduction_Diff_ippu
-- [GHGReductionPotential, LandUseEmissions] > EmissionReduction_Diff_afolu
+- [action_GHGReductionPotential, city_stationaryEnergyEmissions, city_transportationEmissions, city_wasteEmissions, city_ippuEmissions, city_afoluEmissions] > EmissionReduction_Percentage_Diff
 - CostInvestmentNeeded > CostInvestmentNeeded_Diff
 - TimelineForImplementation > TimelineForImplementation_Diff
 - [Hazard,AdaptationEffectiveness, CCRA] > weighted_risk_score_diff
@@ -74,6 +70,11 @@ import pandas as pd
 import xgboost as xgb
 from pathlib import Path
 import shap
+import logging
+from utils.logging_config import setup_logger
+
+# Set up logger for this module
+logger = logging.getLogger(__name__)
 
 root_path = Path(__file__).resolve().parent.parent.parent.parent
 
@@ -82,11 +83,10 @@ loaded_model = xgb.XGBClassifier()
 loaded_model.load_model(
     root_path / "app" / "prioritizer" / "data" / "ml" / "model" / "xgb_model.json"
 )
-
-print(loaded_model.get_booster().feature_names)
-# loaded_model.load_model(
-#     root_path / "data" / "ml" / "model" / "xgb_model_train_test_split.json"
-# )
+logger.debug(
+    "Loaded XGBoost model from %s",
+    root_path / "app" / "prioritizer" / "data" / "ml" / "model" / "xgb_model.json",
+)
 
 
 def create_shap_waterfall(df: pd.DataFrame, model: xgb.XGBClassifier) -> None:
@@ -126,6 +126,12 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         ValueError: If the transformed dataframe contains keys with missing values.
         E.g. if fields like "CostInvestmentNeeded" are missing.
     """
+    logger.debug(
+        "Comparing actions: %s vs %s for city %s",
+        action_A.get("ActionID"),
+        action_B.get("ActionID"),
+        city.get("locode"),
+    )
 
     def build_df(city, action_A, action_B):
         """
@@ -146,8 +152,8 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             "stationaryEnergyEmissions",
             "transportationEmissions",
             "wasteEmissions",
-            "industrialProcessEmissions",
-            "landUseEmissions",
+            "ippuEmissions",
+            "afoluEmissions",
             "ccra",
         ]
         for key in city_keys:
@@ -187,12 +193,14 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         This normalization makes the result independent of the absolute magnitude of city emissions.
         """
 
+        # Sector mapping between the column names in the action data and
+        # the column namees in the city data received in the response body
         sector_mapping = {
             "stationary_energy": "city_stationaryEnergyEmissions",
             "transportation": "city_transportationEmissions",
             "waste": "city_wasteEmissions",
-            "ippu": "city_industrialProcessEmissions",
-            "afolu": "city_landUseEmissions",
+            "ippu": "city_ippuEmissions",
+            "afolu": "city_afoluEmissions",
         }
 
         # Function to extract reduction potential safely
@@ -258,203 +266,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             "actionB_Percentage_Reduction",
         ] + list(sector_mapping.values())
         df.drop(columns=intermediate_cols, inplace=True)
-
-        return df
-
-    # def prepare_emission_reduction_data_single_diff(df: pd.DataFrame) -> pd.DataFrame:
-    #     """
-    #     This function combines the city emissions per sector and the GHG emission reduction potential into one overall
-    #     column containing the absolute reduction difference between two actions.
-
-    #     For example:
-    #     - Action A has a 10% reduction potential for transportation on 1000 kg CO2 → reduction of 100 kg CO2.
-    #     - Action B has a 20% reduction potential for transportation on 1000 kg CO2 → reduction of 200 kg CO2.
-    #     The difference (actionA - actionB) is -100 kg CO2.
-
-    #     The overall column 'EmissionReduction_Diff_total' will sum these differences across all sectors.
-    #     A positive value indicates Action A has a higher overall reduction potential,
-    #     a negative value indicates Action A has a lower overall reduction potential,
-    #     and 0 means both actions have the same overall reduction.
-    #     """
-
-    #     # Create a local copy
-    #     df_copy = df.copy()
-
-    #     sector_mapping = {
-    #         "stationary_energy": "city_stationaryEnergyEmissions",
-    #         "transportation": "city_transportationEmissions",
-    #         "waste": "city_wasteEmissions",
-    #         "ippu": "city_industrialProcessEmissions",
-    #         "afolu": "city_landUseEmissions",
-    #     }
-
-    #     # Function to extract reduction potential safely
-    #     def extract_ghg_value(ghg_dict, sector):
-    #         """Extract numeric GHG reduction percentage for a given sector."""
-    #         if isinstance(ghg_dict, dict) and sector in ghg_dict:
-    #             value = ghg_dict[sector]
-    #             if (
-    #                 isinstance(value, str) and "-" in value
-    #             ):  # Convert range "40-59" → 49.5
-    #                 low, high = map(float, value.split("-"))
-    #                 return (low + high) / 2
-    #             elif isinstance(value, (int, float)):
-    #                 return value  # Use numeric values directly
-    #         return 0  # Default to 0 if missing or null
-
-    #     # Extract GHG Reduction values and compute absolute reductions
-    #     for action in ["actionA", "actionB"]:
-    #         ghg_column = (
-    #             f"{action}_GHGReductionPotential"  # This column contains the dictionary
-    #         )
-
-    #         for sector, city_column in sector_mapping.items():
-    #             if city_column in df_copy.columns:
-    #                 # Extract GHG reduction percentage
-    #                 df_copy[f"{action}_GHGReduction_{sector}"] = df_copy[
-    #                     ghg_column
-    #                 ].apply(lambda x: extract_ghg_value(x, sector))
-    #                 # Compute absolute reduction impact
-    #                 df_copy[f"{action}_EmissionReduction_{sector}"] = (
-    #                     df_copy[f"{action}_GHGReduction_{sector}"]
-    #                     * df_copy[city_column]
-    #                     / 100
-    #                 )
-
-    #     # Compute differences in emission reductions between Action A and B for each sector
-    #     for sector in sector_mapping.keys():
-    #         df_copy[f"EmissionReduction_Diff_{sector}"] = (
-    #             df_copy[f"actionA_EmissionReduction_{sector}"]
-    #             - df_copy[f"actionB_EmissionReduction_{sector}"]
-    #         )
-
-    #     # Sum all individual sector differences to create one overall reduction difference column
-    #     diff_columns = [
-    #         f"EmissionReduction_Diff_{sector}" for sector in sector_mapping.keys()
-    #     ]
-    #     df_copy["EmissionReduction_Diff_total"] = df_copy[diff_columns].sum(axis=1)
-
-    #     # Drop the original GHG Reduction Potential columns (nested dictionaries)
-    #     df_copy.drop(
-    #         columns=["actionA_GHGReductionPotential", "actionB_GHGReductionPotential"],
-    #         inplace=True,
-    #     )
-
-    #     # Drop intermediate extracted GHG percentage columns
-    #     drop_columns = [
-    #         f"{action}_GHGReduction_{sector}"
-    #         for action in ["actionA", "actionB"]
-    #         for sector in sector_mapping.keys()
-    #     ]
-    #     df_copy.drop(columns=drop_columns, inplace=True)
-
-    #     # Drop intermediate computed emission reduction columns
-    #     drop_columns = [
-    #         f"{action}_EmissionReduction_{sector}"
-    #         for action in ["actionA", "actionB"]
-    #         for sector in sector_mapping.keys()
-    #     ]
-    #     df_copy.drop(columns=drop_columns, inplace=True)
-
-    #     # Drop the individual per-sector difference columns
-    #     df_copy.drop(columns=diff_columns, inplace=True)
-
-    #     # Optionally, drop the original city emissions columns if they are no longer needed
-    #     df_copy.drop(columns=list(sector_mapping.values()), inplace=True)
-
-    #     return df_copy
-
-    def prepare_emission_reduction_data(df: pd.DataFrame) -> pd.DataFrame:
-        """
-        This function combines the city emissions per sector and the GHG emission reduction potential into one column
-        containing the absolute reduction difference between two actions.
-
-        E.g.
-        actionA has reduction potential of 10% for transportation
-        actionB has reduction potential of 20% for transportation
-        city has 1000 kg CO2 in transportation
-
-        actionA reduces by 100 kg CO2
-        actionB reduces by 200 kg CO2
-        The difference is actionA - actionB = -100
-        This will be in a dedicated column
-
-        >>> If a field is missing, the initial reduction potential it will be set to 0 per default.
-        """
-        sector_mapping = {
-            "stationary_energy": "city_stationaryEnergyEmissions",
-            "transportation": "city_transportationEmissions",
-            "waste": "city_wasteEmissions",
-            "ippu": "city_industrialProcessEmissions",
-            "afolu": "city_landUseEmissions",
-        }
-
-        # Function to extract reduction potential safely
-        def extract_ghg_value(ghg_dict, sector):
-            """Extract numeric GHG reduction percentage for a given sector."""
-            if isinstance(ghg_dict, dict) and sector in ghg_dict:
-                value = ghg_dict[sector]
-                if (
-                    isinstance(value, str) and "-" in value
-                ):  # Convert range "40-59" → 49.5
-                    low, high = map(float, value.split("-"))
-                    return (low + high) / 2
-                elif isinstance(value, (int, float)):
-                    return value  # Use numeric values directly
-            return 0  # Default to 0 if missing or null
-
-        # Extract GHG Reduction values and compute absolute reductions
-        for action in ["actionA", "actionB"]:
-            ghg_column = (
-                f"{action}_GHGReductionPotential"  # This column contains the dictionary
-            )
-
-            for (
-                sector,
-                city_column,
-            ) in sector_mapping.items():  # Map GHG sector names to city emission names
-                if city_column in df.columns:  # Ensure the city emissions column exists
-
-                    # Extract GHG reduction percentage
-                    df[f"{action}_GHGReduction_{sector}"] = df[ghg_column].apply(
-                        lambda x: extract_ghg_value(x, sector)
-                    )
-
-                    # Compute absolute reduction impact
-                    df[f"{action}_EmissionReduction_{sector}"] = (
-                        df[f"{action}_GHGReduction_{sector}"] * df[city_column] / 100
-                    )
-        # Compute differences in emission reductions between Action A and B
-        # A positive value means that action A has higher emissions reduction
-        # A negative value means that action B has higher emissions reduction
-        for sector in sector_mapping.keys():
-            df[f"EmissionReduction_Diff_{sector}"] = (
-                df[f"actionA_EmissionReduction_{sector}"]
-                - df[f"actionB_EmissionReduction_{sector}"]
-            )
-
-        # Drop the original GHG Reduction Potential columns (nested dictionaries)
-        df.drop(
-            columns=["actionA_GHGReductionPotential", "actionB_GHGReductionPotential"],
-            inplace=True,
-        )
-
-        # Drop intermediate extracted GHG percentage columns
-        drop_columns = [
-            f"{action}_GHGReduction_{sector}"
-            for action in ["actionA", "actionB"]
-            for sector in sector_mapping.keys()
-        ]
-        df.drop(columns=drop_columns, inplace=True)
-        drop_columns = [
-            f"{action}_EmissionReduction_{sector}"
-            for action in ["actionA", "actionB"]
-            for sector in sector_mapping.keys()
-        ]
-        df.drop(columns=drop_columns, inplace=True)
-
-        # Drop the original emissions columns (if they are not needed anymore)
-        df.drop(columns=list(sector_mapping.values()), inplace=True)
 
         return df
 
@@ -891,9 +702,11 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             f"Action B: {action_B['ActionID']}\n"
             f"Columns with missing values: {missing_columns}"
         )
+        logger.error(error_message)
         raise ValueError(error_message)
 
-    # print(df_transformed.T)
+    logger.debug("DataFrame input for model: \n%s", df_transformed.T)
+    # input("Press Enter to continue...")
 
     # Make a prediction with the model
     prediction = predict_xgb(df_transformed)
@@ -901,18 +714,16 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
     # (Optional for explanation) Create a SHAP waterfall plot
     # create_shap_waterfall(df_transformed, loaded_model)
 
-    # print(f"City: {city['locode']}")
-    # print(f"Action A: {action_A['ActionID']}")
-    # print(f"Action B: {action_B['ActionID']}")
-    # print(f"Prediction: {prediction}")
-    # print(df_transformed.T)
-    # input("Press Enter to continue...")
-
     return prediction
 
 
 if __name__ == "__main__":
+    # Set up logging configuration
+    setup_logger(level=logging.DEBUG)
+
     # Calling it with test data
+    logger.info("Starting ml_comparator test run")
+
     # This is the same data used as in colab.
     # Notice: We changed the city data and the data we now use in production is different.
     # We cannot use the new city data for training, because the experts ranked on the old city data.
@@ -937,8 +748,8 @@ if __name__ == "__main__":
         "stationaryEnergyEmissions": 176766789.0,
         "transportationEmissions": 295693000.0,
         "wasteEmissions": 1124796988.0,
-        "industrialProcessEmissions": 1720470000,
-        "landUseEmissions": 72418882.0,
+        "ippuEmissions": 1720470000,
+        "afoluEmissions": 72418882.0,
         "scope1Emissions": 3214434494.0,
         "scope2Emissions": 171982146.0,
         "scope3Emissions": 3729019.0,
@@ -1310,6 +1121,6 @@ if __name__ == "__main__":
     }
 
     # result = ml_compare(dict_brcci, dict_icare_0145, dict_icare_0140)
-    result = ml_compare(dict_brcci, dict_c40_0009, dict_c40_0023)
+    result = ml_compare(dict_brcci, dict_c40_0009, dict_icare_0075)
     # result = ml_compare(dict_brcci, dict_icare_0141, dict_icare_0142)
-    print(f"Preferred Action: {result}")
+    logger.info("Test completed. Preferred Action: %s", result)

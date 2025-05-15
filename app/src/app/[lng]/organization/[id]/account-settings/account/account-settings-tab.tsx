@@ -32,6 +32,9 @@ import ProgressLoader from "@/components/ProgressLoader";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useTheme } from "next-themes";
 import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
+import ManagePasswordTabContent from "@/components/Tabs/MyProfileTab/ManagePasswordTabContent";
+import AccountDetailsTab from "./account-details-tab";
+import OrganizationDetailsTab from "./organization-details-tab";
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const { showErrorToast } = UseErrorToast({
@@ -60,11 +63,11 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
     return createListCollection({
       items: themeOptions
         ? themeOptions?.map((theme) => ({
-            value: theme.themeId,
-            key: theme.themeKey,
-            label: t(theme.themeKey),
-            color: KeyColorMapping[theme.themeKey as themeType],
-          }))
+          value: theme.themeId,
+          key: theme.themeKey,
+          label: t(theme.themeKey),
+          color: KeyColorMapping[theme.themeKey as themeType],
+        }))
         : [],
     });
   }, [themeOptions]);
@@ -143,6 +146,54 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
     >
       <Tabs.List display="flex" flexDirection="column" gap="12px">
         <Tabs.Trigger
+          value="account-details"
+          fontFamily="heading"
+          justifyContent={"left"}
+          letterSpacing={"wide"}
+          color="content.secondary"
+          lineHeight="20px"
+          fontStyle="normal"
+          fontSize="label.lg"
+          height="52px"
+          w={"223px"}
+          _selected={{
+            color: "content.link",
+            fontSize: "label.lg",
+            fontWeight: "medium",
+            backgroundColor: "background.neutral",
+            borderRadius: "8px",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: "content.link",
+          }}
+        >
+          {t("account-details")}
+        </Tabs.Trigger>
+        <Tabs.Trigger
+          value="organization-details"
+          fontFamily="heading"
+          justifyContent={"left"}
+          letterSpacing={"wide"}
+          color="content.secondary"
+          lineHeight="20px"
+          fontStyle="normal"
+          fontSize="label.lg"
+          height="52px"
+          w={"223px"}
+          _selected={{
+            color: "content.link",
+            fontSize: "label.lg",
+            fontWeight: "medium",
+            backgroundColor: "background.neutral",
+            borderRadius: "8px",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: "content.link",
+          }}
+        >
+          {t("organization-details")}
+        </Tabs.Trigger>
+        <Tabs.Trigger
           value="brand-settings"
           fontFamily="heading"
           justifyContent={"left"}
@@ -166,7 +217,55 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
         >
           {t("brand-settings")}
         </Tabs.Trigger>
+        <Tabs.Trigger
+          value="manage-password"
+          fontFamily="heading"
+          justifyContent={"left"}
+          letterSpacing={"wide"}
+          color="content.secondary"
+          lineHeight="20px"
+          fontStyle="normal"
+          fontSize="label.lg"
+          height="52px"
+          w={"223px"}
+          _selected={{
+            color: "content.link",
+            fontSize: "label.lg",
+            fontWeight: "medium",
+            backgroundColor: "background.neutral",
+            borderRadius: "8px",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: "content.link",
+          }}
+        >
+          {t("manage-password")}
+        </Tabs.Trigger>
       </Tabs.List>
+      <Tabs.Content
+        value="account-details"
+        display="flex"
+        padding={0}
+        flexDirection="column"
+        gap="36px"
+        borderRadius="8px"
+      >
+        <Box p={6} rounded={2} w="full">
+          <AccountDetailsTab />
+        </Box>
+      </Tabs.Content>
+      <Tabs.Content
+        value="organization-details"
+        display="flex"
+        padding={0}
+        flexDirection="column"
+        gap="36px"
+        borderRadius="8px"
+      >
+        <Box p={6} rounded={2} w="full">
+          <OrganizationDetailsTab organization={organization} />
+        </Box>
+      </Tabs.Content>
       <Tabs.Content
         value="brand-settings"
         display="flex"
@@ -306,6 +405,19 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
           </Box>
         </Box>
       </Tabs.Content>
+      <Tabs.Content
+        value="manage-password"
+        display="flex"
+        padding={0}
+        flexDirection="column"
+        gap="36px"
+        borderRadius="8px"
+      >
+        <Box bg="background.default" p={6} rounded={2} w="full">
+          <ManagePasswordTabContent t={t} />
+        </Box>
+      </Tabs.Content>
+
     </Tabs.Root>
   );
 };

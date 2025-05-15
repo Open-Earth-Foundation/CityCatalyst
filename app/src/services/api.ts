@@ -436,6 +436,7 @@ export const api = createApi({
           name: string;
           email: string;
           userId: string;
+          title?: string;
         }
       >({
         query: (data) => ({

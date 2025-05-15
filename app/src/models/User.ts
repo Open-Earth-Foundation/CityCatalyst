@@ -18,6 +18,7 @@ export interface UserAttributes {
   created?: Date;
   lastUpdated?: Date;
   defaultInventoryId?: string;
+  title?: string;
 }
 
 export type UserPk = "userId";
@@ -30,7 +31,8 @@ export type UserOptionalAttributes =
   | "role"
   | "created"
   | "lastUpdated"
-  | "defaultInventoryId";
+  | "defaultInventoryId"
+  | "title";
 export type UserCreationAttributes = Optional<
   UserAttributes,
   UserOptionalAttributes
@@ -38,8 +40,7 @@ export type UserCreationAttributes = Optional<
 
 export class User
   extends Model<UserAttributes, UserCreationAttributes>
-  implements Partial<UserAttributes>
-{
+  implements Partial<UserAttributes> {
   userId!: string;
   name?: string;
   pictureUrl?: string;
@@ -49,6 +50,7 @@ export class User
   created?: Date;
   lastUpdated?: Date;
   defaultInventoryId?: string;
+  title?: string;
 
   // User belongsTo Inventory via defaultInventoryId
   defaultInventory!: Inventory;
@@ -150,6 +152,10 @@ export class User
           field: "user_id",
         },
         name: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+        },
+        title: {
           type: DataTypes.STRING(255),
           allowNull: true,
         },

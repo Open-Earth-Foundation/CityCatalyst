@@ -12,6 +12,7 @@ interface FormInputProps {
   error: FieldError | undefined;
   register: Function;
   id: string;
+  required?: boolean;
 }
 
 const FormInput: FC<FormInputProps> = ({
@@ -21,6 +22,7 @@ const FormInput: FC<FormInputProps> = ({
   error,
   register,
   id,
+  required = true,
 }) => {
   const [inputValue, setInputValue] = useState<string | undefined | null>(
     value,
@@ -58,9 +60,9 @@ const FormInput: FC<FormInputProps> = ({
         background={isDisabled ? "background.neutral" : "background.default"}
         color={isDisabled ? "content.tertiary" : "content.secondary"}
         readOnly={isDisabled}
-        {...register(id, {
+        {...register(id, required ? {
           required: `This is a required field!`,
-        })}
+        } : {})}
         onChange={onInputChange2}
         placeholder={label}
       />

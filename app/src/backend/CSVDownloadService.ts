@@ -9,6 +9,31 @@ import createHttpError from "http-errors";
 
 type InventoryLine = (string | number | null | undefined)[];
 
+export type CSVDataEntry = {
+  inventory_reference?: string;
+  gpc_reference_number?: string;
+  subsector_name?: string;
+  notation_key?: string;
+  activityValues: CSVActivityEntry[];
+};
+
+export type CSVActivityEntry = {
+  emission_factor_unit?: string | null;
+  emission_factor_co2?: number | null;
+  emission_factor_ch4?: number | null;
+  emission_factor_n2o?: number | null;
+  emission_co2?: bigint | null;
+  emission_ch4?: bigint | null;
+  emission_n2o?: bigint | null;
+  activity_type?: string | null;
+  activity_amount?: string | null;
+  activity_unit?: string | null;
+  data_source_id?: string;
+  data_source_name?: string;
+  data_quality?: string;
+  total_co2e?: number;
+};
+
 export default class CSVDownloadService {
   public static async extractCSVData(
     output: InventoryWithInventoryValuesAndActivityValues,
@@ -60,6 +85,28 @@ export default class CSVDownloadService {
     const inventoryLines: InventoryLine[] = sortedKeys.flatMap((key) => {
       const value = dataDictionary[key];
       return value.activityValues.map((activityValue) => {
+        const co2Amount =
+          activityValue?.emission_co2 != null
+            ? Decimal.mul(
+                (activityValue?.emission_co2 as any) ?? 0,
+                gwps["CO2"].co2eqPerKg ?? 0,
+              ).toNumber()
+            : "";
+        const ch4Amount =
+          activityValue?.emission_ch4 != null
+            ? Decimal.mul(
+                (activityValue?.emission_ch4 as any) ?? 0,
+                gwps["CH4"].co2eqPerKg ?? 0,
+              ).toNumber()
+            : "";
+        const n2oAmount =
+          activityValue?.emission_n2o != null
+            ? Decimal.mul(
+                (activityValue?.emission_n2o as any) ?? 0,
+                gwps["N2O"].co2eqPerKg ?? 0,
+              ).toNumber()
+            : "";
+
         return [
           value.inventory_reference || "N/A",
           value.gpc_reference_number,
@@ -74,18 +121,9 @@ export default class CSVDownloadService {
           activityValue.emission_factor_ch4,
           activityValue.emission_factor_n2o,
           activityValue.emission_factor_unit,
-          Decimal.mul(
-            (activityValue?.emission_co2 as any) ?? 0,
-            gwps["CO2"].co2eqPerKg ?? 0,
-          ).toNumber(),
-          Decimal.mul(
-            (activityValue?.emission_ch4 as any) ?? 0,
-            gwps["CH4"].co2eqPerKg ?? 0,
-          ).toNumber(),
-          Decimal.mul(
-            (activityValue?.emission_n2o as any) ?? 0,
-            gwps["N2O"].co2eqPerKg ?? 0,
-          ).toNumber(),
+          co2Amount,
+          ch4Amount,
+          n2oAmount,
           activityValue.data_source_id,
           activityValue.data_source_name,
         ];
@@ -122,30 +160,7 @@ export default class CSVDownloadService {
     const inventoryValues = output.inventoryValues;
     const activityTypeKeyMapping = this.extractActivityTypeKey();
 
-    const dataDictionary: Record<
-      string,
-      {
-        inventory_reference?: string;
-        gpc_reference_number?: string;
-        subsector_name?: string;
-        notation_key?: string;
-        activityValues: {
-          emission_factor_unit?: string | null;
-          emission_factor_co2?: number | null;
-          emission_factor_ch4?: number | null;
-          emission_factor_n2o?: number | null;
-          emission_co2?: bigint | null;
-          emission_ch4?: bigint | null;
-          emission_n2o?: bigint | null;
-          activity_type?: string | null;
-          activity_amount?: string | null;
-          activity_unit?: string | null;
-          data_source_id?: string;
-          data_source_name?: string;
-          total_co2e?: number;
-        }[];
-      }
-    > = {};
+    const dataDictionary: Record<string, CSVDataEntry> = {};
     inventoryValues.forEach((inventoryValue) => {
       const gpcRefNo = inventoryValue.gpcReferenceNumber;
       const activityValues = inventoryValue.activityValues || [];
@@ -155,24 +170,21 @@ export default class CSVDownloadService {
           inventoryValue.inputMethodology as string
         ];
 
-      dataDictionary[gpcRefNo as string] = {
-        // InventoryValue fields
-        inventory_reference: inventoryValue.subCategoryId,
-        gpc_reference_number: inventoryValue.gpcReferenceNumber,
-        subsector_name: inventoryValue.subSector.subsectorName,
-        notation_key: inventoryValue.unavailableReason?.split("-")?.[1],
-        activityValues: activityValues.map((activityValue) => {
+      const finalActivityValues: CSVActivityEntry[] = activityValues.map(
+        (activityValue) => {
           let activityTitleKey = activityValue.metadata?.activityTitle;
-          let activityType = activityValue.metadata?.activityId;
-          let dataQuality = activityValue.metadata?.dataQuality;
+          let data_quality = activityValue.metadata?.dataQuality;
           let dataSource = activityValue.activityData?.["data-source"];
-          let activityAmount =
+
+          let activity_type = t(activityValue?.activityData?.[activityTypeKey]); // activityValue.metadata?.activityId;
+          let activity_amount =
             activityValue.activityData?.[activityTitleKey] ??
             activityValue.activityData?.["activity-value"];
-          let activityUnit = t(
+          let activity_unit = t(
             activityValue.activityData?.[`${activityTitleKey}-unit`] ??
               activityValue.activityData?.["activity-unit"],
           );
+
           let emission_factor_ch4 = null;
           let emission_factor_co2 = null;
           let emission_factor_n2o = null;
@@ -207,7 +219,7 @@ export default class CSVDownloadService {
           }
 
           return {
-            activity_type: t(activityValue?.activityData?.[activityTypeKey]),
+            activity_type,
             emission_factor_unit,
             emission_factor_co2,
             emission_factor_ch4,
@@ -215,16 +227,47 @@ export default class CSVDownloadService {
             emission_co2,
             emission_ch4,
             emission_n2o,
-            activity_amount: activityAmount,
-            activity_unit: activityUnit,
+            activity_amount,
+            activity_unit,
             data_source_id: inventoryValue.dataSource?.datasourceId,
             data_source_name:
               inventoryValue.dataSource?.datasourceName ?? dataSource,
+            data_quality,
             total_co2e: toDecimal(activityValue.co2eq as bigint)
               ?.div(new Decimal("1e3"))
               ?.toNumber(),
           };
-        }),
+        },
+      );
+
+      if (finalActivityValues.length === 0) {
+        finalActivityValues.push({
+          activity_type: null,
+          emission_factor_unit: null,
+          emission_factor_co2: null,
+          emission_factor_ch4: null,
+          emission_factor_n2o: null,
+          emission_co2: null,
+          emission_ch4: null,
+          emission_n2o: null,
+          activity_amount: null,
+          activity_unit: null,
+          data_source_id: inventoryValue.dataSource?.datasourceId,
+          data_source_name: inventoryValue.dataSource?.datasourceName,
+          data_quality: inventoryValue.dataSource?.dataQuality,
+          total_co2e: toDecimal(inventoryValue.co2eq as bigint)
+            ?.div(new Decimal("1e3"))
+            ?.toNumber(),
+        });
+      }
+
+      dataDictionary[gpcRefNo as string] = {
+        // InventoryValue fields
+        inventory_reference: inventoryValue.subCategoryId,
+        gpc_reference_number: inventoryValue.gpcReferenceNumber,
+        subsector_name: inventoryValue.subSector.subsectorName,
+        notation_key: inventoryValue.unavailableReason?.split("-")?.[1],
+        activityValues: finalActivityValues,
       };
 
       if (dataDictionary[gpcRefNo as string].notation_key) {

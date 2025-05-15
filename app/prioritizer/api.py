@@ -1,69 +1,37 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
 from typing import Any, Dict, Optional, List
 import logging
 from datetime import datetime
 from prioritizer.utils.tournament import tournament_ranking
 from prioritizer.utils.ml_comparator import ml_compare
-from services.get_actions import get_actions
-from services.get_context import get_context
+from prioritizer.services.get_actions import get_actions
+from prioritizer.services.get_context import get_context
 from prioritizer.utils.filter_actions_by_biome import filter_actions_by_biome
+from prioritizer.models import (
+    PrioritizeRequest,
+    PrioritizeResponse,
+    RankedAction,
+)
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# --- Request models ---
-
-
-class CityContext(BaseModel):
-    locode: str = Field(..., min_length=1)  # Make sure its not an empty string
-    populationSize: Optional[int] = Field(default=None, ge=0)
-
-
-class CityEmissionsData(BaseModel):
-    stationaryEnergyEmissions: Optional[float] = Field(default=None, ge=0)
-    transportationEmissions: Optional[float] = Field(default=None, ge=0)
-    wasteEmissions: Optional[float] = Field(default=None, ge=0)
-    ippuEmissions: Optional[float] = Field(default=None, ge=0)
-    afoluEmissions: Optional[float] = Field(default=None, ge=0)
-
-
-class PrioritizeRequest(BaseModel):
-    cityContext: CityContext
-    cityEmissionsData: CityEmissionsData
-
-
-# --- Response models ---
-
-
-class RankedAction(BaseModel):
-    actionID: str
-    rank: int
-    explanation: str
-
-
-class PrioritizeResponse(BaseModel):
-    locode: str
-    rankedDate: datetime
-    rankedActionsMitigation: List[RankedAction]
-    rankedActionsAdaptation: List[RankedAction]
-
 
 def build_city_data(
-    contextData: dict, requestBody: dict, ccra: Optional[dict] = None
+    contextData: dict, requestData: dict, ccra: Optional[List[dict]] = None
 ) -> dict:
     """
     Build the city_data dictionary as required.
     - Use all fields from contextData except scope1/2/3 emissions.
-    - Override populationSize with value from requestBody.
+    - Override populationSize with value from requestData.
     - Calculate totalEmissions as the sum of the other 5 emissions.
     - Initiates ccra as empty list (for now)
 
     Input:
         contextData: general city context data from global api
-        requestBody: the full request body dict (with cityContext and cityEmissionsData)
+        requestData: flat dict with keys: locode, populationSize, stationaryEnergyEmissions, transportationEmissions, wasteEmissions, ippuEmissions, afoluEmissions
         ccra: ccra data from global api
 
     Returns:
@@ -106,11 +74,9 @@ def build_city_data(
         cityData[key] = contextData.get(key)
 
     # Step 3: Override populationSize with value from requestBody
-    cityData["populationSize"] = requestBody.get("cityContext", {}).get(
-        "populationSize"
-    )
+    cityData["populationSize"] = requestData.get("populationSize")
 
-    # Step 4: Copy emissions fields from nested cityEmissionsData
+    # Step 4: Copy emissions fields from flat requestBody
     emissionFields = [
         "stationaryEnergyEmissions",
         "transportationEmissions",
@@ -119,9 +85,8 @@ def build_city_data(
         "afoluEmissions",
     ]
     totalEmissions = 0
-    emissions = requestBody.get("cityEmissionsData", {})
     for field in emissionFields:
-        value = emissions.get(field)
+        value = requestData.get(field)
         if value is None:
             value = 0  # Default to 0 if missing
         cityData[field] = value
@@ -130,7 +95,7 @@ def build_city_data(
     # Step 5: Set totalEmissions as the sum of the above emissions
     cityData["totalEmissions"] = totalEmissions
 
-    # Step 6: Initialize ccra data to empty list
+    # Step 6: Set the CCRA data
     cityData["ccra"] = ccra
 
     # Step 7: Return the constructed dictionary
@@ -145,25 +110,39 @@ def build_city_data(
 )
 async def prioritize(request: PrioritizeRequest):
     logger.info(
-        f"Received prioritization request for city: {request.cityContext.locode}"
+        f"Received prioritization request for city: {request.cityData.cityContextData.locode}"
     )
 
+    # 1. Extract needed data from request into requestData
+    requestData = {}
+    requestData["locode"] = request.cityData.cityContextData.locode
+    requestData["populationSize"] = request.cityData.cityContextData.populationSize
+    requestData["stationaryEnergyEmissions"] = (
+        request.cityData.cityEmissionsData.stationaryEnergyEmissions
+    )
+    requestData["transportationEmissions"] = (
+        request.cityData.cityEmissionsData.transportationEmissions
+    )
+    requestData["wasteEmissions"] = request.cityData.cityEmissionsData.wasteEmissions
+    requestData["ippuEmissions"] = request.cityData.cityEmissionsData.ippuEmissions
+    requestData["afoluEmissions"] = request.cityData.cityEmissionsData.afoluEmissions
+
     # 1. Fetch general city context data from global API
-    cityContext = get_context(request.cityContext.locode)
+    cityContext = get_context(requestData["locode"])
     if not cityContext:
         return JSONResponse(
-            status_code=500,
+            status_code=404,
             content={"detail": "No city context data found from global API."},
         )
 
     # 2. Combine city context and city data
-    cityData = build_city_data(cityContext, request.model_dump())
+    cityData = build_city_data(cityContext, requestData)
 
     # 3. Fetch actions from API
     actions = get_actions()
     if not actions:
         return JSONResponse(
-            status_code=500,
+            status_code=404,
             content={"detail": "No actions data found from global API."},
         )
 
@@ -202,7 +181,7 @@ async def prioritize(request: PrioritizeRequest):
     # 7. Format results for API response (top 20)
     rankedActionsMitigation = [
         RankedAction(
-            actionID=action.get("ActionID", "Unknown"),
+            actionId=action.get("ActionID", "Unknown"),
             rank=rank,
             explanation=f"Ranked #{rank} by tournament ranking algorithm",
         )
@@ -210,7 +189,7 @@ async def prioritize(request: PrioritizeRequest):
     ]
     rankedActionsAdaptation = [
         RankedAction(
-            actionID=action.get("ActionID", "Unknown"),
+            actionId=action.get("ActionID", "Unknown"),
             rank=rank,
             explanation=f"Ranked #{rank} by tournament ranking algorithm",
         )
@@ -218,7 +197,7 @@ async def prioritize(request: PrioritizeRequest):
     ]
 
     return PrioritizeResponse(
-        locode=request.cityContext.locode,
+        locode=request.cityData.cityContextData.locode,
         rankedDate=datetime.now(),
         rankedActionsMitigation=rankedActionsMitigation,
         rankedActionsAdaptation=rankedActionsAdaptation,

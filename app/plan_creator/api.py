@@ -1,9 +1,3 @@
-from fastapi import HTTPException, APIRouter
-from fastapi.responses import FileResponse, JSONResponse
-import httpx
-
-# from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
 from pathlib import Path
 import json
 from datetime import datetime
@@ -13,16 +7,22 @@ import uuid
 import threading
 from typing import Optional, List, Dict, Any
 
-# Import the existing plan generation components
-from plan_creator_legacy.graph_definition import create_graph
-from plan_creator_legacy.state.agent_state import AgentState
+from fastapi import HTTPException, APIRouter
+from fastapi.responses import FileResponse
 from langchain_core.messages import AIMessage
 
+from utils.build_city_data import build_city_data
 from services.get_context import get_context
 from services.get_actions import get_actions
 
+from plan_creator.graph_definition import create_graph
+from plan_creator.state.agent_state import AgentState
+from plan_creator.models import (
+    PlanRequest,
+    StartPlanCreationResponse,
+    CheckProgressResponse,
+)
 
-from utils.build_city_data import build_city_data
 
 logger = logging.getLogger(__name__)
 
@@ -40,120 +40,16 @@ logger.info(f"City data path set to: {city_data_path}")
 task_storage = {}
 
 
-# --- Request models ---
-
-
-class CityContextData(BaseModel):
-    locode: str = Field(..., min_length=1, description="UN/LOCODE identifier")
-    populationSize: Optional[int] = Field(
-        default=None, ge=0, description="Population size of the city"
-    )
-
-
-class CityEmissionsData(BaseModel):
-    stationaryEnergyEmissions: Optional[float] = Field(
-        default=None, ge=0, description="Stationary energy emissions"
-    )
-    transportationEmissions: Optional[float] = Field(
-        default=None, ge=0, description="Transportation emissions"
-    )
-    wasteEmissions: Optional[float] = Field(
-        default=None, ge=0, description="Waste emissions"
-    )
-    ippuEmissions: Optional[float] = Field(
-        default=None, ge=0, description="Industrial processes and product use emissions"
-    )
-    afoluEmissions: Optional[float] = Field(
-        default=None,
-        ge=0,
-        description="Agriculture, forestry, and other land use emissions",
-    )
-
-
-class CityData(BaseModel):
-    cityContextData: CityContextData
-    cityEmissionsData: CityEmissionsData
-
-
-class PlanRequest(BaseModel):
-    cityData: CityData
-    actionId: str = Field(..., min_length=1, description="Action ID")
-    language: str = Field(
-        default="en", min_length=2, max_length=2, description="ISO Language code"
-    )
-
-
-# class PlanRequest(BaseModel):
-#     locode: str = Field(..., min_length=1, description="UN/LOCODE identifier")
-#     actionId: str = Field(..., min_length=1, description="Action ID")
-#     language: str = Field(
-#         default="en", min_length=2, max_length=2, description="ISO Language code"
-#     )
-
-
-class StartPlanCreationResponse(BaseModel):
-    taskId: str
-    status: str
-
-
-class CheckProgressResponse(BaseModel):
-    status: str
-    error: Optional[str] = None
-
-
-def load_city_data():
-    """Load city data from JSON file."""
-    try:
-        logger.info(f"Loading city data from {city_data_path}")
-        with open(city_data_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception as e:
-        logger.error(f"Error loading city data: {str(e)}", exc_info=True)
-        raise
-
-
-# def get_city_by_name(city_name: str) -> Dict[str, Any]:
-#     """Get city data by name."""
-#     city_data = load_city_data()
-
-#     # Case-insensitive search
-#     city_name_lower = city_name.lower()
-
-#     for city in city_data:
-#         if city["name"].lower() == city_name_lower:
-#             logger.info(f"Found city data for: {city['name']}")
-#             return city
-
-#     logger.error(f"City not found: {city_name}")
-#     raise ValueError(f"City not found: {city_name}")
-
-
-# def get_city_by_locode(locode: str) -> Dict[str, Any]:
-#     """Get city data by locode."""
-#     city_data = load_city_data()
-
-#     # Case-insensitive search
-#     locode_lower = locode.lower()
-
-#     for city in city_data:
-#         if city["locode"].lower() == locode_lower:
-#             logger.info(f"Found city data for: {city['name']}")
-#             return city
-
-#     logger.error(f"City not found: {locode}")
-#     raise ValueError(f"City not found: {locode}")
-
-
-def _execute_plan_creation(task_uuid: str, dict_for_background_task: Dict[str, Any]):
+def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]):
     """Background task to execute plan creation"""
     try:
         # Update status to running
         task_storage[task_uuid]["status"] = "running"
         logger.info(
             f"""Task {task_uuid}: Starting plan creation for: 
-            locode {dict_for_background_task["cityData"]["locode"]}, 
-            action: {dict_for_background_task["action"]}
-            language: {dict_for_background_task["language"]}
+            locode {background_task_input["cityData"]["locode"]}, 
+            action: {background_task_input["action"]}
+            language: {background_task_input["language"]}
             """
         )
 
@@ -166,8 +62,8 @@ def _execute_plan_creation(task_uuid: str, dict_for_background_task: Dict[str, A
 
         logger.info(f"Task {task_uuid}: Initializing agent state")
         initial_state = AgentState(
-            climate_action_data=dict_for_background_task["action"],
-            city_data=dict_for_background_task["cityData"],
+            climate_action_data=background_task_input["action"],
+            city_data=background_task_input["cityData"],
             response_agent_1=AIMessage(""),
             response_agent_2=AIMessage(""),
             response_agent_3=AIMessage(""),
@@ -180,7 +76,7 @@ def _execute_plan_creation(task_uuid: str, dict_for_background_task: Dict[str, A
             response_agent_10=AIMessage(""),
             response_agent_combine="",
             response_agent_translate="",
-            language=dict_for_background_task["language"],
+            language=background_task_input["language"],
             messages=[],
         )
         logger.info(f"Task {task_uuid}: Agent state initialized successfully")
@@ -203,8 +99,8 @@ def _execute_plan_creation(task_uuid: str, dict_for_background_task: Dict[str, A
 
         # 3. Save the plan
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-        action_id = dict_for_background_task["action"].get("ActionID", "unknown")
-        filename = f"{timestamp}_{action_id}_{dict_for_background_task["cityData"]["locode"].replace(' ', '_')}_{dict_for_background_task["language"]}_climate_action_implementation_plan.md"
+        action_id = background_task_input["action"].get("ActionID", "unknown")
+        filename = f"{timestamp}_{action_id}_{background_task_input["cityData"]["locode"]}_{background_task_input["language"]}_climate_action_implementation_plan.md"
         output_path = output_dir / filename
         output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -243,10 +139,21 @@ async def start_plan_creation(request: PlanRequest):
     logger.info(f"Locode: {request.cityData.cityContextData.locode}")
     logger.info(f"Requested language: {request.language}")
 
-    # 1. Extract needed data from request into requestData
+    # 1. Initialize task status
+    task_storage[task_uuid] = {
+        "status": "pending",
+        "created_at": datetime.now().isoformat(),
+        "action_id": request.actionId,
+        "locode": request.cityData.cityContextData.locode,
+    }
+
+    # 2. Extract needed data from request into requestData
     requestData = {}
+    # Extract city context data
     requestData["locode"] = request.cityData.cityContextData.locode
     requestData["populationSize"] = request.cityData.cityContextData.populationSize
+
+    # Extract city emissions data
     requestData["stationaryEnergyEmissions"] = (
         request.cityData.cityEmissionsData.stationaryEnergyEmissions
     )
@@ -257,23 +164,21 @@ async def start_plan_creation(request: PlanRequest):
     requestData["ippuEmissions"] = request.cityData.cityEmissionsData.ippuEmissions
     requestData["afoluEmissions"] = request.cityData.cityEmissionsData.afoluEmissions
 
-    # 1. Fetch general city context data from global API
+    # 3. Fetch general city context data from global API
     cityContext = get_context(requestData["locode"])
     if not cityContext:
-        return JSONResponse(
-            status_code=404,
-            content={"detail": "No city context data found from global API."},
+        raise HTTPException(
+            status_code=404, detail="No city context data found from global API."
         )
 
-    # 2. Combine city context and city data
+    # 4. Combine city context and city data
     cityData = build_city_data(cityContext, requestData)
 
-    # 3. Fetch actions from API and filter by actionId
+    # 5. Fetch actions from API and filter by actionId
     actions = get_actions()
     if not actions:
-        return JSONResponse(
-            status_code=404,
-            content={"detail": "No actions data found from global API."},
+        raise HTTPException(
+            status_code=404, detail="No actions data found from global API."
         )
 
     action = None
@@ -282,37 +187,20 @@ async def start_plan_creation(request: PlanRequest):
             action = item
             break
     if not action:
-        return JSONResponse(
+        raise HTTPException(
             status_code=404,
-            content={
-                "detail": "Action not found within retrieved actions from global API."
-            },
+            detail="Action not found within retrieved actions from global API.",
         )
 
-    # # Validate city name
-    # try:
-    #     get_city_by_name(request.city_name)
-    # except ValueError as e:
-    #     logger.error(f"Invalid city name: {request.city_name}")
-    #     raise HTTPException(status_code=404, detail=str(e))
-
-    # Initialize task status
-    task_storage[task_uuid] = {
-        "status": "pending",
-        "created_at": datetime.now().isoformat(),
-        "action_id": request.actionId,
-        "locode": request.cityData.cityContextData.locode,
-    }
-
-    # 4. Build dictionary with data for background task
-    dict_for_background_task = {
+    # 6. Build dictionary with data for background task
+    background_task_input = {
         "cityData": cityData,
         "action": action,
         "language": request.language,
     }
-    # Start background thread for processing
+    # 7. Start background thread for processing
     thread = threading.Thread(
-        target=_execute_plan_creation, args=(task_uuid, dict_for_background_task)
+        target=_execute_plan_creation, args=(task_uuid, background_task_input)
     )
     thread.daemon = True
     thread.start()
@@ -370,12 +258,13 @@ async def get_plan(task_uuid: str):
     logger.info(f"Returning plan file for task {task_uuid}: {output_path}")
 
     # Return the file and then clean up the task data
-    response = FileResponse(
-        path=output_path, filename=filename, media_type="text/markdown"
-    )
-
-    # Clean up task data after successful retrieval
-    del task_storage[task_uuid]
-    logger.info(f"Task {task_uuid} data cleaned up after successful retrieval")
-
-    return response
+    try:
+        response = FileResponse(
+            path=output_path, filename=filename, media_type="text/markdown"
+        )
+        return response
+    finally:
+        # Clean up task data after attempt to return the file,
+        # even if an error occurred (e.g., file not found, disk error, etc.)
+        del task_storage[task_uuid]
+        logger.info(f"Task {task_uuid} data cleaned up after retrieval attempt")

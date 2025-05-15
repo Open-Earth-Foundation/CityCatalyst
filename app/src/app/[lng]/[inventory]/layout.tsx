@@ -38,6 +38,8 @@ export default function DataLayout({
     if (inventoryOrgData) {
       setLogoUrl(inventoryOrgData?.logoUrl as string);
       setTheme(inventoryOrgData?.theme?.themeKey ?? ("blue_theme" as string));
+    } else {
+      setTheme("blue_theme");
     }
   }, [isInventoryOrgDataLoading, inventoryOrgData]);
 

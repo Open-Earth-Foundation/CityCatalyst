@@ -41,7 +41,7 @@ interface RequiredInventoryAttributes extends Required<InventoryAttributes> {}
 
 export type FullInventoryValue = InventoryValue & {
   activityValues: (ActivityValue & {
-    gasValues: (GasValue & { emissionsFactor: EmissionsFactor })[];
+    gasValues: (GasValue & { emissionsFactor?: EmissionsFactor })[];
   })[];
   dataSource: DataSourceAttributes;
 };

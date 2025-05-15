@@ -31,7 +31,7 @@ export type CSVActivityEntry = {
   data_source_id?: string;
   data_source_name?: string;
   data_quality?: string;
-  total_co2e?: number;
+  total_co2e?: number | null;
 };
 
 export default class CSVDownloadService {
@@ -218,6 +218,13 @@ export default class CSVDownloadService {
             emission_factor_unit = scope === "1" ? "kg/m3" : "kg/TJ";
           }
 
+          const total_co2e =
+            activityValue.co2eq != null
+              ? toDecimal(activityValue.co2eq as bigint)
+                  ?.div(new Decimal("1e3"))
+                  ?.toNumber()
+              : null;
+
           return {
             activity_type,
             emission_factor_unit,
@@ -233,14 +240,18 @@ export default class CSVDownloadService {
             data_source_name:
               inventoryValue.dataSource?.datasourceName ?? dataSource,
             data_quality,
-            total_co2e: toDecimal(activityValue.co2eq as bigint)
-              ?.div(new Decimal("1e3"))
-              ?.toNumber(),
+            total_co2e,
           };
         },
       );
 
       if (finalActivityValues.length === 0) {
+        const total_co2e =
+          inventoryValue.co2eq != null
+            ? toDecimal(inventoryValue.co2eq as bigint)
+                ?.div(new Decimal("1e3"))
+                ?.toNumber()
+            : null;
         finalActivityValues.push({
           activity_type: null,
           emission_factor_unit: null,
@@ -255,9 +266,7 @@ export default class CSVDownloadService {
           data_source_id: inventoryValue.dataSource?.datasourceId,
           data_source_name: inventoryValue.dataSource?.datasourceName,
           data_quality: inventoryValue.dataSource?.dataQuality,
-          total_co2e: toDecimal(inventoryValue.co2eq as bigint)
-            ?.div(new Decimal("1e3"))
-            ?.toNumber(),
+          total_co2e,
         });
       }
 

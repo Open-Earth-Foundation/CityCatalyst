@@ -1,0 +1,99 @@
+{
+  "locode": "BRSER",
+  "name": "Serra",
+  "region": "BR-ES",
+  "regionName": "Espírito Santo",
+  "populationSize": 520653,
+  "populationDensity": 950.74,
+  "area": 553.0,
+  "elevation": 60,
+  "biome": "tropical_rainforest",
+  "socioEconomicFactors": {
+    "lowIncome": "very_high"
+  },
+  "accessToPublicServices": {
+    "inadequateWaterAccess": "very_low",
+    "inadequateSanitation": "very_low"
+  },
+  "totalEmissions": 14833157058.0,
+  "stationaryEnergyEmissions": 199992647.0,
+  "transportationEmissions": 738428743.0,
+  "wasteEmissions": 3122542631.0,
+  "industrialProcessEmissions": 10676849598,
+  "landUseEmissions": 95343439.0,
+  "scope1Emissions": 14692790785.0,
+  "scope2Emissions": 131730706.0,
+  "scope3Emissions": 8635567.0,
+  "ccra": [
+    {
+      "keyimpact": "water resources",
+      "hazard": "drought",
+      "normalised_risk_score": 0.393364562837403
+    },
+    {
+      "keyimpact": "food security",
+      "hazard": "drought",
+      "normalised_risk_score": 0.216454282106855
+    },
+    {
+      "keyimpact": "energy security",
+      "hazard": "drought",
+      "normalised_risk_score": 0.263081023808263
+    },
+    {
+      "keyimpact": "biodiversity",
+      "hazard": "drought",
+      "normalised_risk_score": 0.0470174593732926
+    },
+    {
+      "keyimpact": "public health",
+      "hazard": "heatwaves",
+      "normalised_risk_score": 0.807349999122291
+    },
+    {
+      "keyimpact": "infrastructure",
+      "hazard": "heatwaves",
+      "normalised_risk_score": 0.99
+    },
+    {
+      "keyimpact": "biodiversity",
+      "hazard": "heatwaves",
+      "normalised_risk_score": 0.109633048287441
+    },
+    {
+      "keyimpact": "energy security",
+      "hazard": "heatwaves",
+      "normalised_risk_score": 0.61515032910354
+    },
+    {
+      "keyimpact": "public health",
+      "hazard": "diseases",
+      "normalised_risk_score": 0.725108056025108
+    },
+    {
+      "keyimpact": "geo-hydrological disasters",
+      "hazard": "landslide",
+      "normalised_risk_score": 0.99
+    },
+    {
+      "keyimpact": "infrastructure",
+      "hazard": "landslide",
+      "normalised_risk_score": 0.99
+    },
+    {
+      "keyimpact": "geo-hydrological disasters",
+      "hazard": "flooding",
+      "normalised_risk_score": 0.99
+    },
+    {
+      "keyimpact": "food security",
+      "hazard": "flooding",
+      "normalised_risk_score": 0.807131991419737
+    },
+    {
+      "keyimpact": "infrastructure",
+      "hazard": "sea level rise",
+      "normalised_risk_score": null
+    }
+  ]
+}

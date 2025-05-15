@@ -1,0 +1,65 @@
+{
+    "ActionID": "ipcc_0053",
+    "ActionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+    "ActionType": [
+        "mitigation"
+    ],
+    "AdaptationCategory": null,
+    "Hazard": null,
+    "Sector": [
+        "afolu"
+    ],
+    "Subsector": [
+        "land"
+    ],
+    "PrimaryPurpose": [
+        "ghg_reduction"
+    ],
+    "InterventionType": [
+        "programs_and_initiatives",
+        "infrastructure_investments",
+        "incentives_and_subsidies"
+    ],
+    "Description": "Activities focused on converting land to forests, restoring degraded forests, and prioritizing ecological integrity. Afforestation targets historically non-forested land, while reforestation targets previously forested areas. Efforts include enhancing biodiversity, improving ecosystem services, and increasing carbon sequestration.",
+    "BehavioralChangeTargeted": "Encourages sustainable land management, restoration of degraded ecosystems, and adoption of forest-friendly agricultural practices.",
+    "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 1,
+        "habitat": 1,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0
+    },
+    "EquityAndInclusionConsiderations": "Supports local livelihoods, promotes land-use equity, and ensures inclusive stakeholder participation in afforestation and restoration programs.",
+    "GHGReductionPotential": {
+        "stationary_energy": null,
+        "transportation": null,
+        "waste": null,
+        "ippu": null,
+        "afolu": "60-79"
+    },
+    "AdaptationEffectiveness": null,
+    "CostInvestmentNeeded": "high",
+    "TimelineForImplementation": "5-10 years",
+    "Dependencies": [
+        "Requires funding for land restoration",
+        "access to suitable species for planting",
+        "local community engagement",
+        "monitoring systems for ecosystem integrity and carbon sequestration"
+    ],
+    "KeyPerformanceIndicators": [
+        "Area of land reforested or afforested",
+        "carbon sequestration rates",
+        "improvement in biodiversity indices",
+        "ecosystem service metrics such as water regulation and soil quality"
+    ],
+    "Impacts": [
+        "Increased carbon sequestration",
+        "improved biodiversity",
+        "enhanced ecosystem resilience",
+        "better water regulation",
+        "soil stabilization",
+        "support for local communities through sustainable resource use"
+    ]
+}

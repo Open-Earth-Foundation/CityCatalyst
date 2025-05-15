@@ -1,0 +1,99 @@
+{
+  "locode": "BRRBR",
+  "name": "Rio Branco",
+  "region": "BR-AC",
+  "regionName": "Acre",
+  "populationSize": 364756,
+  "populationDensity": 41.28,
+  "area": 9222.6,
+  "elevation": 153,
+  "biome": "tropical_rainforest",
+  "socioEconomicFactors": {
+    "lowIncome": "very_high"
+  },
+  "accessToPublicServices": {
+    "inadequateWaterAccess": "high",
+    "inadequateSanitation": "low"
+  },
+  "totalEmissions": 6474195194.6,
+  "stationaryEnergyEmissions": 58762012.0,
+  "transportationEmissions": 257493969.0,
+  "wasteEmissions": 622974542.6,
+  "industrialProcessEmissions": 0,
+  "landUseEmissions": 5534964671.0,
+  "scope1Emissions": 1949018303.6,
+  "scope2Emissions": 4340980317.0,
+  "scope3Emissions": 184196574.0,
+  "ccra": [
+    {
+      "keyimpact": "water resources",
+      "hazard": "drought",
+      "normalised_risk_score": 0.140832091214848
+    },
+    {
+      "keyimpact": "food security",
+      "hazard": "drought",
+      "normalised_risk_score": 0.0771128527010097
+    },
+    {
+      "keyimpact": "energy security",
+      "hazard": "drought",
+      "normalised_risk_score": 0.898966123142098
+    },
+    {
+      "keyimpact": "biodiversity",
+      "hazard": "drought",
+      "normalised_risk_score": 0.491526765122525
+    },
+    {
+      "keyimpact": "public health",
+      "hazard": "heatwaves",
+      "normalised_risk_score": 0.257104203756764
+    },
+    {
+      "keyimpact": "infrastructure",
+      "hazard": "heatwaves",
+      "normalised_risk_score": 0.99
+    },
+    {
+      "keyimpact": "biodiversity",
+      "hazard": "heatwaves",
+      "normalised_risk_score": 0.700601098386768
+    },
+    {
+      "keyimpact": "energy security",
+      "hazard": "heatwaves",
+      "normalised_risk_score": 0.99
+    },
+    {
+      "keyimpact": "public health",
+      "hazard": "diseases",
+      "normalised_risk_score": 0.142296654617249
+    },
+    {
+      "keyimpact": "geo-hydrological disasters",
+      "hazard": "landslide",
+      "normalised_risk_score": 0.358550077540592
+    },
+    {
+      "keyimpact": "infrastructure",
+      "hazard": "landslide",
+      "normalised_risk_score": 0.99
+    },
+    {
+      "keyimpact": "geo-hydrological disasters",
+      "hazard": "flooding",
+      "normalised_risk_score": 0.143960069330218
+    },
+    {
+      "keyimpact": "food security",
+      "hazard": "flooding",
+      "normalised_risk_score": 0.0886000289413955
+    },
+    {
+      "keyimpact": "infrastructure",
+      "hazard": "sea level rise",
+      "normalised_risk_score": null
+    }
+  ]
+}

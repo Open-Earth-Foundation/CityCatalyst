@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from prioritizer.api import router as prioritizer_router
 from plan_creator_legacy.api import router as plan_creator_legacy_router
+from plan_creator.api import router as plan_creator_router
 from utils.logging_config import setup_logger
 import httpx
 import uvicorn
@@ -61,9 +62,13 @@ async def root():
 
 # Mount feature routers
 app.include_router(prioritizer_router, prefix="/prioritizer", tags=["Prioritizer"])
+app.include_router(plan_creator_router, prefix="/plan-creator", tags=["Plan Creator"])
 app.include_router(
-    plan_creator_legacy_router, prefix="/plan-creator", tags=["Plan Creator"]
+    plan_creator_legacy_router,
+    prefix="/plan-creator-legacy",
+    tags=["Plan Creator Legacy"],
 )
+
 
 if __name__ == "__main__":
     setup_logger()

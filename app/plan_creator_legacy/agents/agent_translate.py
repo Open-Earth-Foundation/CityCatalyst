@@ -133,4 +133,17 @@ def custom_agent_translate(state: AgentState) -> AgentState:
         result_state = AgentState(state)
         result_state["response_agent_translate"] = response_agent_combine
 
+        print("Saving English text to file...")
+
+        # Save the English text to a file
+        OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
+        current_time = datetime.now().strftime("%Y%m%d_%H%M")
+        file_name = (
+            f"{current_time}_{city_locode}_{climate_action_id}_implementation_plan.md"
+        )
+        with open(OUTPUT_PATH / file_name, "w", encoding="utf-8") as md_file:
+            md_file.write(response_agent_combine)
+
+        print(f"English text saved to {OUTPUT_PATH / file_name}\n")
+
         return result_state

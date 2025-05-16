@@ -2,13 +2,19 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import OpenAI from 'openai';
+import semver from 'semver';
 
-function getLastTwoTags() {
-  const tags = execSync('git tag --sort=-creatordate')
+function getSortedSemverTags() {
+  const tags = execSync('git tag')
     .toString()
     .split('\n')
-    .filter((tag) => tag.startsWith('v') && tag.trim() !== '');
-  return tags.slice(0, 2); // [latest, previous]
+    .map(tag => tag.trim())
+    .filter(tag => {
+      const v = semver.coerce(tag);
+      return v && semver.valid(v) && !semver.prerelease(v);
+    });
+  // Sort tags using semver precedence
+  return tags.sort((a, b) => semver.rcompare(semver.coerce(a), semver.coerce(b)));
 }
 
 function getGitLogBetweenTags(fromTag, toTag) {
@@ -37,7 +43,7 @@ async function main() {
     process.exit(1);
   }
 
-  const [latestTag, previousTag] = getLastTwoTags();
+  const [latestTag, previousTag] = getSortedSemverTags().slice(-2);
   if (!latestTag || !previousTag) {
     console.error('Not enough tags to generate changelog.');
     process.exit(1);

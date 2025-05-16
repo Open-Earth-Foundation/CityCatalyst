@@ -2,6 +2,7 @@ import { useParams } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import AccountDetailsTabPanel from "@/components/Tabs/MyProfileTab/AccountDetailsTabPanel";
+import { ProgressLoader } from "@/components/ProgressLoader";
 
 const AccountDetailsTab = () => {
   const { lng } = useParams();
@@ -10,7 +11,11 @@ const AccountDetailsTab = () => {
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   return (
-    <AccountDetailsTabPanel t={t} userInfo={userInfo} showTitle />
+    isUserInfoLoading ? (
+      <ProgressLoader />
+    ) : (
+      <AccountDetailsTabPanel t={t} userInfo={userInfo} showTitle />
+    )
   );
 };
 

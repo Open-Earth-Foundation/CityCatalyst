@@ -1,4 +1,4 @@
-# utils/load_vectorstore.py
+# plan_creator_legacy/utils/OLD_get_vectorstore.py
 
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).parent.parent.parent
-VECTOR_STORE_PATH = BASE_DIR / "vector_stores"
+VECTOR_STORE_PATH = BASE_DIR / "plan_creator_legacy" / "vector_stores"
 
 # Global dictionary to store loaded vector stores
 VECTOR_STORES = {}

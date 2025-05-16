@@ -9,6 +9,9 @@ import logging
 # Configure logging
 logger = logging.getLogger(__name__)
 
+BASE_DIR = Path(__file__).parent.parent.parent
+VECTOR_STORE_PATH = BASE_DIR / "vector_stores"
+
 # Global dictionary to store loaded vector stores
 VECTOR_STORES = {}
 
@@ -32,7 +35,7 @@ def load_vectorstore(
     Returns: vector_store (Chroma)
     """
 
-    vector_store_path = Path(__file__).parent.parent / "vector_stores" / collection_name
+    vector_store_path = VECTOR_STORE_PATH / collection_name
 
     if vector_store_path.exists():
         logger.info(f"Loading vector store {collection_name}...")
@@ -56,7 +59,9 @@ def load_vectorstore(
             return vector_store
 
         except Exception as e:
-            logger.error(f"Error loading vector store {collection_name}: {str(e)}", exc_info=True)
+            logger.error(
+                f"Error loading vector store {collection_name}: {str(e)}", exc_info=True
+            )
             return None
 
     else:

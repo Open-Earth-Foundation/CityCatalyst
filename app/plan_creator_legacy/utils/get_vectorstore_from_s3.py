@@ -1,4 +1,4 @@
-# utils/load_vectorstore.py
+# plan_creator_legacy/utils/get_vectorstore_from_s3.py
 
 """
 This module provides functionality to download a vector store from S3 and check if it is valid.
@@ -28,7 +28,7 @@ load_dotenv()
 S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 # Get project root directory
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 
 def log_error(message: str):

@@ -1,9 +1,22 @@
-# utils/load_vectorstore.py
+# plan_creator_legacy/utils/get_vectorstore_local.py
+
+"""
+This module provides functionality to load a vector store from a local directory.
+
+Args:
+    collection_name: Name of the collection to load
+
+Returns:
+    vector_store: Chroma vector store
+"""
 
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from pathlib import Path
 from typing import Optional
+
+BASE_DIR = Path(__file__).parent.parent.parent
+VECTOR_STORE_PATH = BASE_DIR / "vector_stores"
 
 # Global dictionary to store loaded vector stores
 VECTOR_STORES = {}
@@ -27,7 +40,7 @@ def load_vectorstore(
     Returns: vector_store (Chroma)
     """
 
-    vector_store_path = Path(__file__).parent.parent / "vector_stores" / collection_name
+    vector_store_path = VECTOR_STORE_PATH / collection_name
 
     if vector_store_path.exists():
         print(f"Loading vector store {collection_name}...")

@@ -10,6 +10,7 @@ import { UseSuccessToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { MdInfoOutline } from "react-icons/md";
 import { BodyMedium } from "@/components/Texts/Body";
+import { UpdateUserPayload } from "@/util/types";
 
 interface AccountDetailsFormProps {
   t: TFunction;
@@ -44,10 +45,10 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
   }, [setValue, userInfo]);
 
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
-    const payload: any = {
+    const payload: UpdateUserPayload = {
       userId: userInfo.userId,
-      name: data.name,
-      email: data.email,
+      name: data.name ?? "",
+      email: data.email ?? "",
     };
     if (data.title) {
       payload.title = data.title;

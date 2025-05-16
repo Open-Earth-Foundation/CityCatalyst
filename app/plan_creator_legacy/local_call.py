@@ -1,10 +1,24 @@
+"""
+This module provides functionality to create a climate action plan.
+
+Args:
+    climate_action_id: ID of the climate action
+    locode: Locode of the city
+    language: Language of the response
+
+Example:
+Run the script with the following command from the app/ directory:
+
+python -m plan_creator_legacy.local_call --climate_action_id "c40_0028" --locode "BRCCI" --language "en"
+"""
+
 import json
 import argparse
-from graph_definition import create_graph
-from state.agent_state import AgentState
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from pathlib import Path
-from utils.get_vectorstore_from_s3 import get_vectorstore
+from plan_creator_legacy.graph_definition import create_graph
+from plan_creator_legacy.state.agent_state import AgentState
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from plan_creator_legacy.utils.get_vectorstore_from_s3 import get_vectorstore
 
 
 def mock_api_body(climate_action_id: str, locode: str):
@@ -86,10 +100,12 @@ if __name__ == "__main__":
         climate_action_id=args.climate_action_id, locode=args.locode
     )
 
+    vector_store_path = Path(__file__).parent / "vector_stores"
+
     print("Loading vector store...")
     # Attempt to get the vector store
     success = get_vectorstore(
-        collection_name="all_docs_db_small_chunks", local_path="vector_stores"
+        collection_name="all_docs_db_small_chunks", local_path=str(vector_store_path)
     )
 
     if success:

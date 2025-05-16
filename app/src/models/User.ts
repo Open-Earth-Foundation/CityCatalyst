@@ -18,6 +18,7 @@ export interface UserAttributes {
   created?: Date;
   lastUpdated?: Date;
   defaultInventoryId?: string;
+  // Professional title or position of the user within their organization
   title?: string;
 }
 

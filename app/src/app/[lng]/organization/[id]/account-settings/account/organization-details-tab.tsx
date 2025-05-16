@@ -11,7 +11,7 @@ import { OrganizationResponse } from "@/util/types";
 import { useGetUserAccessStatusQuery, useUpdateOrganizationMutation } from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { Trans } from "react-i18next";
-
+import { useMemo } from "react";
 const OrganizationDetailsTab = ({
   organization,
 }: {
@@ -64,6 +64,7 @@ const OrganizationDetailsTab = ({
     });
 
     if (response.error) {
+      console.error(response.error);
       showErrorToast();
       return;
     }
@@ -71,14 +72,16 @@ const OrganizationDetailsTab = ({
     showSuccessToast();
   };
 
-  const { numCities, totalCities } = organization?.projects.reduce(
-    (acc, proj) => ({
-      numCities: acc.numCities + (proj?.cities.length ?? 0),
-      totalCities: acc.totalCities + BigInt(proj.cityCountLimit)
-    }),
-    { numCities: 0, totalCities: BigInt(0) }
-  ) ?? { numCities: 0, totalCities: BigInt(0) };
-
+  const { numCities, totalCities } = useMemo(() =>
+    organization?.projects.reduce(
+      (acc, proj) => ({
+        numCities: acc.numCities + (proj?.cities.length ?? 0),
+        totalCities: acc.totalCities + BigInt(proj.cityCountLimit)
+      }),
+      { numCities: 0, totalCities: BigInt(0) }
+    ) ?? { numCities: 0, totalCities: BigInt(0) },
+    [organization?.projects]
+  );
   return (
     <Box>
       <Box backgroundColor="white" p={6}>

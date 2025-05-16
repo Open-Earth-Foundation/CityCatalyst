@@ -1,0 +1,17 @@
+.git
+__pycache__
+*.pyc
+.env
+.venv
+Dockerfile
+*.log
+
+# plan_creator
+
+
+# plan_creator_legacy
+plan_creator_legacy/data/input/
+plan_creator_legacy/data/output/
+plan_creator_legacy/vector_stores/
+
+# prioritizer

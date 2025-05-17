@@ -3,6 +3,7 @@ import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import AccountDetailsTabPanel from "@/components/Tabs/MyProfileTab/AccountDetailsTabPanel";
 import ProgressLoader from "@/components/ProgressLoader";
+import { Box } from "@chakra-ui/react";
 
 const AccountDetailsTab = () => {
   const { lng } = useParams();
@@ -12,7 +13,9 @@ const AccountDetailsTab = () => {
     api.useGetUserInfoQuery();
   return (
     isUserInfoLoading ? (
-      <ProgressLoader />
+      <Box backgroundColor="white" p={6}>
+        <ProgressLoader />
+      </Box>
     ) : (
       <AccountDetailsTabPanel t={t} userInfo={userInfo} showTitle />
     )

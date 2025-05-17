@@ -61,7 +61,7 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
   };
 
   return (
-    <Box display="flex" flexDirection="column" gap="24px">
+    <Box backgroundColor="white" p={6} display="flex" flexDirection="column" gap="24px">
       {!userInfo ? (
         <ProgressLoader />
       ) : (

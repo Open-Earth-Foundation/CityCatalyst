@@ -167,7 +167,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
         <OrganizationDetailsTab organization={organization} />
       </TabContent>
       <TabContent value="brand-settings">
-        <Box bg="background.default">
+        <Box backgroundColor="white" p={6}>
           <Text
             color="content.primary"
             fontWeight="semibold"

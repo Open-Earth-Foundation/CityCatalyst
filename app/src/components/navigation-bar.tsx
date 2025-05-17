@@ -43,6 +43,7 @@ import ProjectDrawer from "@/components/HomePage/ProjectDrawer";
 import { TbSettingsCog } from "react-icons/tb";
 import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 import { useTheme } from "next-themes";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -371,7 +372,7 @@ export function NavigationBar({
                     </MenuItem>
                   </>
                 )}
-                {!restrictAccess && !userAccessStatus?.isOrgOwner && (
+                {(!restrictAccess && !userAccessStatus?.isOrgOwner) || !hasFeatureFlag(FeatureFlags.ACCOUNT_SETTINGS_ENABLED) && (
                   <MenuItem
                     value="settings"
                     paddingTop="12px"
@@ -399,7 +400,7 @@ export function NavigationBar({
                     </Box>
                   </MenuItem>
                 )}
-                {userAccessStatus?.isOrgOwner && !restrictAccess && (
+                {userAccessStatus?.isOrgOwner && !restrictAccess && hasFeatureFlag(FeatureFlags.ACCOUNT_SETTINGS_ENABLED) && (
                   <MenuItem
                     paddingTop="12px"
                     paddingBottom="12px"

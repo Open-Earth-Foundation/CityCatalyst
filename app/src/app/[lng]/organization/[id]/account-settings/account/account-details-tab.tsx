@@ -2,7 +2,7 @@ import { useParams } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import AccountDetailsTabPanel from "@/components/Tabs/MyProfileTab/AccountDetailsTabPanel";
-import { ProgressLoader } from "@/components/ProgressLoader";
+import ProgressLoader from "@/components/ProgressLoader";
 
 const AccountDetailsTab = () => {
   const { lng } = useParams();

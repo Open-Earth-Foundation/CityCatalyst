@@ -31,8 +31,8 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 });
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsAdmin(session);
   const { organizationId } = params;
+  await UserService.validateIsAdminOrOrgAdmin(session, organizationId);
   const validatedData = updateOrganizationRequest.parse(await req.json());
   const org = await Organization.findByPk(organizationId as string);
   if (!org) {

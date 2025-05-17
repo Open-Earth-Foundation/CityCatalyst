@@ -262,6 +262,29 @@ export default class UserService {
       throw new createHttpError.Forbidden("Forbidden");
   }
 
+  public static async validateIsAdminOrOrgAdmin(
+    session: AppSession | null,
+    organizationId: string,
+  ) {
+    if (!session) throw new createHttpError.Forbidden("Forbidden");
+
+    const isAdminUser = session.user.role === Roles.Admin;
+
+    if (isAdminUser) {
+      return;
+    }
+
+    const orgOwner = await db.models.OrganizationAdmin.findOne({
+      where: { userId: session.user.id, organizationId: organizationId },
+    });
+
+    if (orgOwner) {
+      return;
+    }
+
+    throw new createHttpError.Forbidden("Forbidden");
+  }
+
   private static async findAllProjectForAdminAndOwner(organizationId: string) {
     return await Project.findAll({
       where: { organizationId },
@@ -635,7 +658,7 @@ export default class UserService {
     return responseObject;
   }
 
-  public async fetchUserProjects(userId: string) {}
+  public async fetchUserProjects(userId: string) { }
 
   public static ensureIsAdmin(session: AppSession | null) {
     // Ensure user is signed in

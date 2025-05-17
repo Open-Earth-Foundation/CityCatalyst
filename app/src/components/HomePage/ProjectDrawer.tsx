@@ -248,7 +248,7 @@ const ProjectDrawer = ({
           <DrawerTitle>
             <Box className="flex justify-between">
               <Text fontSize="headline.sm" color="base.dark">
-                Go to...
+                {t("go-to")}
               </Text>
               <IconButton
                 onClick={onClose}

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Box, Button } from "@chakra-ui/react";
+import { Box, Button, HStack } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { ProfileInputs } from "@/app/[lng]/[inventory]/settings/page";
 import FormInput from "../../form-input";
@@ -8,15 +8,20 @@ import { useSetCurrentUserDataMutation } from "@/services/api";
 import { TFunction } from "i18next";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
+import { MdInfoOutline } from "react-icons/md";
+import { BodyMedium } from "@/components/Texts/Body";
+import { UpdateUserPayload } from "@/util/types";
 
 interface AccountDetailsFormProps {
   t: TFunction;
   userInfo: any;
+  showTitle?: boolean;
 }
 
 const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
   t,
   userInfo,
+  showTitle,
 }) => {
   const { showSuccessToast } = UseSuccessToast({
     title: t("user-details-updated"),
@@ -35,15 +40,20 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
     if (userInfo) {
       setValue("name", userInfo.name);
       setValue("email", userInfo.email);
+      setValue("title", userInfo.title);
     }
   }, [setValue, userInfo]);
 
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
-    await setCurrentUserData({
+    const payload: UpdateUserPayload = {
       userId: userInfo.userId,
-      name: data.name,
-      email: data.email,
-    }).then(() => showSuccessToast());
+      name: data.name ?? "",
+      email: data.email ?? "",
+    };
+    if (data.title) {
+      payload.title = data.title;
+    }
+    await setCurrentUserData(payload).then(() => showSuccessToast());
   };
 
   const onInputChange = (e: any) => {
@@ -51,7 +61,7 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
   };
 
   return (
-    <Box display="flex" flexDirection="column" gap="24px">
+    <Box backgroundColor="white" p={6} display="flex" flexDirection="column" gap="24px">
       {!userInfo ? (
         <ProgressLoader />
       ) : (
@@ -73,6 +83,25 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
             error={errors.email}
             id="email"
           />
+          {showTitle && (
+            <>
+              <FormInput
+                label={t("position")}
+                register={register}
+                error={errors.title}
+                id="title"
+                required={false}
+              />
+              <HStack>
+                <BodyMedium color={"content.link"}>
+                  <MdInfoOutline />
+                </BodyMedium>
+                <BodyMedium >
+                  {t("position-description")}
+                </BodyMedium>
+              </HStack>
+            </>
+          )}
           <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
             <Button
               type="submit"
@@ -91,8 +120,9 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
             </Button>
           </Box>
         </form>
-      )}
-    </Box>
+      )
+      }
+    </Box >
   );
 };
 

@@ -6,6 +6,7 @@ import { z } from "zod";
 
 const updateUserRequest = z.object({
   name: z.string(),
+  title: z.string().optional(),
 });
 
 export const PATCH = apiHandler(async (_req, { params, session }) => {

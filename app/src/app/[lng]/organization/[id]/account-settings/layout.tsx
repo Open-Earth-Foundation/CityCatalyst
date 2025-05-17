@@ -16,7 +16,7 @@ export default function OrganizationSettingsLayout({
     <Box className="h-full flex flex-col" bg="background.backgroundLight">
       <NavigationBar showMenu lng={lng} />
       <Toaster />
-      <div className="w-full h-full">{children}</div>
+      <Box className="w-full h-full">{children}</Box>
       <ChatPopover inventoryId={inventory} />
     </Box>
   );

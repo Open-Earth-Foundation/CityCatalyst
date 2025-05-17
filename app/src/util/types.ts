@@ -34,7 +34,7 @@ export interface CityYearData {
   lastUpdate: Date;
 }
 
-interface RequiredInventoryAttributes extends Required<InventoryAttributes> {}
+interface RequiredInventoryAttributes extends Required<InventoryAttributes> { }
 
 export type InventoryResponse = RequiredInventoryAttributes & {
   city: CityAttributes & {
@@ -336,10 +336,10 @@ export interface GroupedActivity {
 
 export interface ActivityBreakdown {
   [subSector: string]:
-    | {
-        [activity: string]: GroupedActivity;
-      }
-    | SubsectorTotals;
+  | {
+    [activity: string]: GroupedActivity;
+  }
+  | SubsectorTotals;
 }
 
 export type BreakdownByActivity = Record<
@@ -494,3 +494,10 @@ export type OrganizationWithThemeResponse = {
     themeKey: string;
   };
 };
+
+export interface UpdateUserPayload {
+  name: string;
+  email: string;
+  userId: string;
+  title?: string;
+}

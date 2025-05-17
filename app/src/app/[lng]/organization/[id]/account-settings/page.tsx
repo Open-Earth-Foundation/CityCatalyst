@@ -10,7 +10,7 @@ const AccountSettingsPage = ({
 }: {
   params: { lng: string };
 }) => {
-  const { t } = useTranslation(lng, "account-settings");
+  const { t } = useTranslation(lng, "settings");
 
   return (
     <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">

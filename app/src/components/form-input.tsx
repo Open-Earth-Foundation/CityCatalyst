@@ -4,6 +4,7 @@ import { Input, Text } from "@chakra-ui/react";
 import React, { FC, useEffect, useState } from "react";
 import { FieldError } from "react-hook-form";
 import { Field } from "@/components/ui/field";
+import { useTranslation } from "react-i18next";
 
 interface FormInputProps {
   label: string;
@@ -24,6 +25,7 @@ const FormInput: FC<FormInputProps> = ({
   id,
   required = true,
 }) => {
+  const { t } = useTranslation("inputs");
   const [inputValue, setInputValue] = useState<string | undefined | null>(
     value,
   );
@@ -61,7 +63,7 @@ const FormInput: FC<FormInputProps> = ({
         color={isDisabled ? "content.tertiary" : "content.secondary"}
         readOnly={isDisabled}
         {...register(id, required ? {
-          required: `This is a required field!`,
+          required: t("required-field"),
         } : {})}
         onChange={onInputChange2}
         placeholder={label}

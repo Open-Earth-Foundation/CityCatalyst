@@ -56,7 +56,7 @@ const OrganizationDetailsTab = ({
   const handleFormSubmit = async (data: Schema) => {
     const { name, email } = data;
 
-    // TODO prevent users from editing the default organization
+    // [ON-3932] TODO prevent users from editing the default organization
     const response = await updateOrganization({
       id: organization?.organizationId as string,
       name,
@@ -75,8 +75,8 @@ const OrganizationDetailsTab = ({
   const { numCities, totalCities } = useMemo(() =>
     organization?.projects.reduce(
       (acc, proj) => ({
-        numCities: acc.numCities + (proj?.cities.length ?? 0),
-        totalCities: acc.totalCities + BigInt(proj.cityCountLimit)
+        numCities: acc.numCities + (proj?.cities?.length ?? 0),
+        totalCities: acc.totalCities + BigInt(proj?.cityCountLimit)
       }),
       { numCities: 0, totalCities: BigInt(0) }
     ) ?? { numCities: 0, totalCities: BigInt(0) },
@@ -160,7 +160,7 @@ const OrganizationDetailsTab = ({
               t={t}
               values={{
                 name: organization?.name,
-                num_projects: organization?.projects.length ?? 0,
+                num_projects: organization?.projects?.length ?? 0,
                 num_cities: numCities,
                 total_cities: totalCities ?? 0,
               }}

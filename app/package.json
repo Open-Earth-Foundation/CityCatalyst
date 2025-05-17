@@ -69,7 +69,7 @@
     "ai": "^3.4.7",
     "autoprefixer": "10.4.21",
     "bcrypt": "^5.1.1",
-    "chakra-react-select": "^4.9.1",
+    "chakra-react-select": "^6.1.0",
     "char-regex": "^2.0.2",
     "csv-parse": "^5.6.0",
     "csv-stringify": "^6.5.2",

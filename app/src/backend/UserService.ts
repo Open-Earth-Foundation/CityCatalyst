@@ -268,9 +268,9 @@ export default class UserService {
   ) {
     if (!session) throw new createHttpError.Forbidden("Forbidden");
 
-    const isAdminUser = session.user.role === Roles.Admin;
+    const adminUser = !session || session.user.role !== Roles.Admin;
 
-    if (isAdminUser) {
+    if (adminUser) {
       return;
     }
 

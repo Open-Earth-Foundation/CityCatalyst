@@ -3,7 +3,8 @@
 import { useTranslation } from "@/i18n/client";
 import { Box, Heading, HStack, Tabs, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import AccountSettingsTab from "./account/account-settings-tab";
+import AccountSettingsTab from "./account
+import TeamSettings from "./team";
 
 const AccountSettingsPage = ({
   params: { lng },
@@ -89,6 +90,9 @@ const AccountSettingsPage = ({
                   <AccountSettingsTab t={t} />
                 </Box>
               </Box>
+            </Tabs.Content>
+            <Tabs.Content value="team">
+              <TeamSettings lng={lng} t={t}/>
             </Tabs.Content>
           </Tabs.Root>
         </Box>

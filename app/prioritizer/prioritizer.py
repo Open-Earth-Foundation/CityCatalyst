@@ -21,7 +21,6 @@ python -m prioritizer.prioritizer --locode "BR CII"
 import argparse
 import sys
 import os
-import random
 from dotenv import load_dotenv
 from openai import OpenAI
 import json
@@ -38,11 +37,14 @@ from prioritizer.utils.additional_scoring_functions import (
 )
 from prioritizer.utils.prompt import return_prompt
 from prioritizer.utils.ml_comparator import ml_compare
-from prioritizer.services.get_actions import get_actions
+from services.get_actions import get_actions
 import logging
 from prioritizer.utils.tournament import tournament_ranking
 from prioritizer.utils.filter_actions_by_biome import filter_actions_by_biome
+from utils.logging_config import setup_logger
 
+# Setup logging configuration
+setup_logger()
 logger = logging.getLogger(__name__)
 
 load_dotenv()
@@ -130,13 +132,11 @@ def quantitative_score(city, action):
     """
 
     def load_weights():
-        # Get the directory of the current script (prioritizer.py)
         script_dir = Path(__file__).resolve().parent
 
         # Construct the full path to the weights.json file
-        weights_path = script_dir / "CAP_data" / "weights.json"
+        weights_path = script_dir / "ml" / "heuristic" / "weights.json"
 
-        # weights_path = "CAP_data/weights.json"
         with open(weights_path, "r", encoding="utf-8") as f:
             weights = json.load(f)
         return weights
@@ -431,10 +431,6 @@ def main(locode: str):
 
 
 if __name__ == "__main__":
-    from utils.logging_config import setup_logger
-
-    setup_logger(level=logging.INFO)
-
     parser = argparse.ArgumentParser(
         description="Prioritize climate actions for a given city."
     )

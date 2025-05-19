@@ -14,7 +14,10 @@ from prioritizer.models import (
     PrioritizeResponse,
     RankedAction,
 )
+from utils.logging_config import setup_logger
 
+# Setup logging configuration
+setup_logger()
 logger = logging.getLogger(__name__)
 
 router = APIRouter()

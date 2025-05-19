@@ -1,5 +1,10 @@
 import logging
 from typing import List, Dict
+from utils.logging_config import setup_logger
+
+# Setup logging configuration
+setup_logger()
+logger = logging.getLogger(__name__)
 
 
 def filter_actions_by_biome(city: dict, actions: List[dict]) -> List[dict]:
@@ -15,11 +20,11 @@ def filter_actions_by_biome(city: dict, actions: List[dict]) -> List[dict]:
     if not city_biome:
         return actions
     else:
-        logging.debug(f"City biome: {city_biome}")
+        logger.debug(f"City biome: {city_biome}")
 
         for action in actions:
             action_biome = action.get("biome")
-            logging.debug(f"Action biome: {action_biome}")
+            logger.debug(f"Action biome: {action_biome}")
             if action_biome:
                 # If the action biome matches the city biome, add the action to the list
                 if action_biome == city_biome:
@@ -33,5 +38,5 @@ def filter_actions_by_biome(city: dict, actions: List[dict]) -> List[dict]:
                 # If there is no biome, add the action to the list
                 actions_final.append(action)
 
-    logging.debug(f"actions skipped: {skipped_actions}")
+    logger.debug(f"actions skipped: {skipped_actions}")
     return actions_final

@@ -1,13 +1,13 @@
 {
-  "locode": "BRCMG",
-  "name": "Corumbá",
-  "region": "BR-MS",
-  "regionName": "Mato Grosso do Sul",
-  "populationSize": 96268,
-  "populationDensity": 1.49,
-  "area": 64962.0,
-  "elevation": 118,
-  "biome": "grassland_savanna",
+  "locode": "BR CCI",
+  "name": "Camaçari",
+  "region": "BR-BA",
+  "regionName": "Bahia",
+  "populationSize": 300372,
+  "populationDensity": 382.43,
+  "area": 758.73,
+  "elevation": 36,
+  "biome": "tropical_rainforest",
   "socioEconomicFactors": {
     "lowIncome": "very_high"
   },
@@ -15,40 +15,40 @@
     "inadequateWaterAccess": "very_low",
     "inadequateSanitation": "low"
   },
-  "totalEmissions": 9118053991.9,
-  "stationaryEnergyEmissions": 22358041.0,
-  "transportationEmissions": 62605669.0,
-  "wasteEmissions": 424544630.9,
-  "industrialProcessEmissions": 303800000,
-  "landUseEmissions": 8304745651.0,
-  "scope1Emissions": 4290411784.9,
-  "scope2Emissions": 4249033923.0,
-  "scope3Emissions": 578608284.0,
+  "totalEmissions": 3390145659.0,
+  "stationaryEnergyEmissions": 176766789.0,
+  "transportationEmissions": 295693000.0,
+  "wasteEmissions": 1124796988.0,
+  "industrialProcessEmissions": 1720470000,
+  "landUseEmissions": 72418882.0,
+  "scope1Emissions": 3214434494.0,
+  "scope2Emissions": 171982146.0,
+  "scope3Emissions": 3729019.0,
   "ccra": [
     {
       "keyimpact": "water resources",
       "hazard": "drought",
-      "normalised_risk_score": 0.130592519044881
+      "normalised_risk_score": 0.0691499925093502
     },
     {
       "keyimpact": "food security",
       "hazard": "drought",
-      "normalised_risk_score": 0.26014790334445
+      "normalised_risk_score": 0.746632751444509
     },
     {
       "keyimpact": "energy security",
       "hazard": "drought",
-      "normalised_risk_score": 0.404744908132571
+      "normalised_risk_score": 0.292401372797575
     },
     {
       "keyimpact": "biodiversity",
       "hazard": "drought",
-      "normalised_risk_score": 0.709574869214129
+      "normalised_risk_score": 0.0625445839710777
     },
     {
       "keyimpact": "public health",
       "hazard": "heatwaves",
-      "normalised_risk_score": 0.01
+      "normalised_risk_score": 0.99
     },
     {
       "keyimpact": "infrastructure",
@@ -58,22 +58,22 @@
     {
       "keyimpact": "biodiversity",
       "hazard": "heatwaves",
-      "normalised_risk_score": 0.574941108928747
+      "normalised_risk_score": 0.223576599435519
     },
     {
       "keyimpact": "energy security",
       "hazard": "heatwaves",
-      "normalised_risk_score": 0.332856442675346
+      "normalised_risk_score": 0.99
     },
     {
       "keyimpact": "public health",
       "hazard": "diseases",
-      "normalised_risk_score": 0.01
+      "normalised_risk_score": 0.99
     },
     {
       "keyimpact": "geo-hydrological disasters",
       "hazard": "landslide",
-      "normalised_risk_score": 0.328172670047703
+      "normalised_risk_score": 0.911797685441872
     },
     {
       "keyimpact": "infrastructure",
@@ -83,12 +83,12 @@
     {
       "keyimpact": "geo-hydrological disasters",
       "hazard": "flooding",
-      "normalised_risk_score": 0.0188833448585691
+      "normalised_risk_score": 0.99
     },
     {
       "keyimpact": "food security",
       "hazard": "flooding",
-      "normalised_risk_score": 0.361631466951212
+      "normalised_risk_score": 0.99
     },
     {
       "keyimpact": "infrastructure",

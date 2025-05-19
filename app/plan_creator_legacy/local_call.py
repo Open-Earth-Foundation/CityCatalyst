@@ -9,7 +9,7 @@ Args:
 Example:
 Run the script with the following command from the app/ directory:
 
-python -m plan_creator_legacy.local_call --climate_action_id "c40_0028" --locode "BRCCI" --language "en"
+python -m plan_creator_legacy.local_call --climate_action_id "c40_0028" --locode "BR CCI" --language "en"
 """
 
 import json
@@ -27,9 +27,14 @@ def mock_api_body(climate_action_id: str, locode: str):
     """
     # Path to data
     climate_action_data_path = (
-        Path(__file__).parent / "data" / "input" / (climate_action_id + ".json")
+        Path(__file__).parent
+        / "data"
+        / "input_local_testing"
+        / (climate_action_id + ".json")
     )
-    city_data_path = Path(__file__).parent / "data" / "input" / (locode + ".json")
+    city_data_path = (
+        Path(__file__).parent / "data" / "input_local_testing" / (locode + ".json")
+    )
 
     with open(climate_action_data_path, "r") as f:
         climate_action_data = json.load(f)
@@ -84,7 +89,7 @@ if __name__ == "__main__":
         "--locode",
         type=str,
         required=True,
-        help="The locode of the city data for the climate action. E.g. BRCCI",
+        help="The locode of the city data for the climate action. E.g. BR CCI",
     )
     parser.add_argument(
         "--language",

@@ -9,8 +9,7 @@ import pandas as pd
 from pathlib import Path
 import json
 import concurrent.futures
-from prioritizer.prioritizer import quantitative_score, qualitative_score
-from prioritizer.utils.reading_writing_data import read_city_inventory, read_actions
+from prioritizer.local_call import quantitative_score, qualitative_score
 from prioritizer.utils.ml_comparator import ml_compare
 import numpy as np
 from typing import Tuple

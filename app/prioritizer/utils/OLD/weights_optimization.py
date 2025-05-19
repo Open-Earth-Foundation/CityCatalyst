@@ -11,7 +11,7 @@ from pathlib import Path
 import torch
 import torch.optim as optim
 import json
-from prioritizer.prioritizer import (
+from prioritizer.local_call import (
     quantitative_score,
     count_matching_hazards,
     calculate_emissions_reduction,
@@ -19,7 +19,6 @@ from prioritizer.prioritizer import (
     scale_adaptation_effectiveness,
     timeline_mapping,
 )
-from prioritizer.utils.reading_writing_data import read_city_inventory, read_actions
 
 
 # Initialize weights as torch tensors

@@ -17,6 +17,7 @@ import { InputGroup } from "@/components/ui/input-group";
 import { MdSearch } from "react-icons/md";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckedChangeDetails } from "@zag-js/checkbox";
+import { Trans } from "react-i18next";
 
 type FilterOption<TValue> = TValue | { label: string; value: TValue };
 
@@ -35,6 +36,7 @@ type DataTableProps<T> = {
   selectedRowKeys?: Array<T[keyof T]>;
   onSelectRow?: (selectedRowKeys: Array<T[keyof T]>) => void;
   selectKey?: keyof T;
+  subtitle?: string | React.ReactNode;
 };
 
 function isLabelValueOption<TValue>(
@@ -63,6 +65,7 @@ function DataTable<T extends Record<string, any>>({
   selectedRowKeys = [],
   onSelectRow,
   selectKey,
+  subtitle,
 }: DataTableProps<T>) {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -132,6 +135,9 @@ function DataTable<T extends Record<string, any>>({
     <Box className="bg-white" p={6} rounded={2} mt={12}>
       <Text fontWeight="bold" fontSize="title.md" mb={6}>
         {title}
+      </Text>
+      <Text fontSize="title.md" mb={6}>
+        {subtitle}
       </Text>
       <Flex mb={4} justifyContent="space-between">
         <Flex mb={4} gap={2}>

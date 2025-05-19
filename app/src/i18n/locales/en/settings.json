@@ -111,5 +111,11 @@
   "green": "Green",
   "go-back": "Go Back",
   "account-brand-updated": "Account and brand settings updated successfully",
-  "error-message": "An Error occurred"
+  "error-message": "An Error occurred",
+  "team": "Team",
+  "teams": "Teams",
+  "teams-description": "Here you can invite or assign roles to your collaborators",
+  "invite-collaborator": "Invite Collaborator",
+  "no-cities": "No cities",
+  "collaborators-subheading": "<bold>Collaborators</bold> on {{name}}"
 }

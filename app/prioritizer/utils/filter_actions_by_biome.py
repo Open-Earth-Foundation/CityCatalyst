@@ -38,5 +38,6 @@ def filter_actions_by_biome(city: dict, actions: List[dict]) -> List[dict]:
                 # If there is no biome, add the action to the list
                 actions_final.append(action)
 
-    logger.debug(f"actions skipped: {skipped_actions}")
+    logger.info(f"actions skipped: {skipped_actions}")
+    logger.info(f"actions final: {len(actions_final)}")
     return actions_final

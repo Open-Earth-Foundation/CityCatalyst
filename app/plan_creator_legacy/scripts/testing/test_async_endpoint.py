@@ -133,8 +133,8 @@ def test_async_plan_creation(city_name="Aracruz", language="pt"):
                 return
 
             # Save the response to test_output directory
-            output_dir = Path("test_output")
-            output_dir.mkdir(exist_ok=True)
+            output_dir = Path("plan_creator_legacy/data/output")
+            output_dir.mkdir(exist_ok=True, parents=True)
 
             # Save with timestamp and action ID
             timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")

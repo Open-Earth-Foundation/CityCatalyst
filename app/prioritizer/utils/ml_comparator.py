@@ -73,7 +73,8 @@ import shap
 import logging
 from utils.logging_config import setup_logger
 
-# Set up logger for this module
+# Setup logging configuration
+setup_logger()
 logger = logging.getLogger(__name__)
 
 root_path = Path(__file__).resolve().parent.parent.parent.parent
@@ -81,11 +82,25 @@ root_path = Path(__file__).resolve().parent.parent.parent.parent
 loaded_model = xgb.XGBClassifier()
 # Load hyperparameters and trained weights
 loaded_model.load_model(
-    root_path / "app" / "prioritizer" / "data" / "ml" / "model" / "xgb_model.json"
+    root_path
+    / "app"
+    / "prioritizer"
+    / "data"
+    / "ml"
+    / "xgboost"
+    / "model"
+    / "xgb_model.json"
 )
 logger.debug(
     "Loaded XGBoost model from %s",
-    root_path / "app" / "prioritizer" / "data" / "ml" / "model" / "xgb_model.json",
+    root_path
+    / "app"
+    / "prioritizer"
+    / "data"
+    / "ml"
+    / "xgboost"
+    / "model"
+    / "xgb_model.json",
 )
 
 

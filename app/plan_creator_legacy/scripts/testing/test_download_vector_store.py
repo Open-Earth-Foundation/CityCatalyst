@@ -1,13 +1,25 @@
 #!/usr/bin/env python3
 
+"""
+Test downloading a vector store from S3.
+It will check if the vector store exists locally, and if not, it will download it from S3.
+The location of the vector store is plan_creator_legacy/vector_stores/
+
+Run with:
+python -m plan_creator_legacy.scripts.testing.test_download_vector_store --collection all_docs_db_small_chunks --local_path vector_stores
+"""
+
 import argparse
-from utils.get_vectorstore_from_s3 import get_vectorstore
 from dotenv import load_dotenv
 import os
 from pathlib import Path
+from plan_creator_legacy.utils.get_vectorstore_from_s3 import get_vectorstore
+
+# Load environment variables
+load_dotenv()
 
 # Get project root directory
-PROJECT_ROOT = Path(__file__).parent
+PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 
 def test_vector_store_download(collection_name: str, path: str):
@@ -20,9 +32,6 @@ def test_vector_store_download(collection_name: str, path: str):
         path: Directory to download vector stores to (relative to project root)
     """
     print("\n=== Vector Store Download Test ===\n")
-
-    # Load environment variables
-    load_dotenv()
 
     # Ensure path is relative to project root
     # relative_path = path.lstrip("/")  # Remove leading slashes to ensure relative path

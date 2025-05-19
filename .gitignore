@@ -94,7 +94,7 @@ Dockerfile
 .venv
 
 # Prioritizer
-
+app/prioritizer/data/prioritized_local_testing/*
 
 # Plan creator
 app/plan_creator/k8s/*

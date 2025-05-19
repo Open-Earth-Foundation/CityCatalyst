@@ -3,7 +3,7 @@ import json
 import sys
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-OUTPUT_PATH = BASE_DIR / "app" / "prioritizer" / "data" / "prioritized"
+OUTPUT_PATH = BASE_DIR / "app" / "prioritizer" / "data" / "prioritized_local_testing"
 
 
 def write_output(top_actions, filename):

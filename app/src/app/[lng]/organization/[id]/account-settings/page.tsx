@@ -4,6 +4,7 @@ import { useTranslation } from "@/i18n/client";
 import { Box, Heading, HStack, Tabs, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import AccountSettingsTab from "./account/account-settings-tab";
+import TeamsTab from "./teams";
 
 const AccountSettingsPage = ({
   params: { lng },
@@ -65,6 +66,22 @@ const AccountSettingsPage = ({
                   {t("account")}
                 </Text>
               </Tabs.Trigger>
+              <Tabs.Trigger
+                value="teams"
+                _selected={{
+                  borderColor: "content.link",
+                  borderBottomWidth: "2px",
+                  boxShadow: "none",
+                  fontWeight: "bold",
+                  borderRadius: "0",
+                  color: "content.link",
+                  backgroundColor: "background.backgroundLight",
+                }}
+              >
+                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
+                  {t("teams")}
+                </Text>
+              </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="account">
               <Box
@@ -87,6 +104,30 @@ const AccountSettingsPage = ({
                     {t("account")}
                   </Heading>
                   <AccountSettingsTab t={t} />
+                </Box>
+              </Box>
+            </Tabs.Content>
+            <Tabs.Content value="teams">
+              <Box
+                w="full"
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <Box w="full">
+                  <Heading
+                    fontSize="headline.sm"
+                    mb={2}
+                    fontWeight="semibold"
+                    lineHeight="32px"
+                    fontStyle="normal"
+                    textTransform="capitalize"
+                    color="content.secondary"
+                    mt={12}
+                  >
+                    {t("teams")}
+                  </Heading>
+                  <TeamsTab t={t} />
                 </Box>
               </Box>
             </Tabs.Content>

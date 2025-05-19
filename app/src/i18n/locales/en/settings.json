@@ -114,5 +114,9 @@
   "account-brand-updated": "Account and brand settings updated successfully",
   "error-message": "An Error occurred",
   "position": "Title",
-  "position-description": "Indicate your title or profession."
+  "position-description": "Indicate your title or profession.",
+  "teams": "Teams",
+  "projects": "Projects",
+  "project-collaborators": "Project Collaborators for {{projectName}}",
+  "search-collaborators": "Search by name or email address"
 }

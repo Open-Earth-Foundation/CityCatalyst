@@ -16,7 +16,10 @@ import argparse
 import json
 import logging
 from typing import Optional
+from utils.logging_config import setup_logger
 
+# Setup logging configuration
+setup_logger()
 logger = logging.getLogger(__name__)
 
 # Configure retry strategy
@@ -68,10 +71,6 @@ def get_actions(language: str = "en") -> Optional[list[dict]]:
 
 
 if __name__ == "__main__":
-    from utils.logging_config import setup_logger
-
-    setup_logger(level=logging.INFO)
-
     parser = argparse.ArgumentParser(description="Fetch climate actions data.")
 
     args = parser.parse_args()

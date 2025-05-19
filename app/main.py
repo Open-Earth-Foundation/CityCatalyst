@@ -7,6 +7,10 @@ Run it from the /app directory with:
 python main.py
 """
 
+import httpx
+import uvicorn
+import logging
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -14,10 +18,7 @@ from prioritizer.api import router as prioritizer_router
 from plan_creator_legacy.api import router as plan_creator_legacy_router
 from plan_creator.api import router as plan_creator_router
 from utils.logging_config import setup_logger
-import httpx
-import uvicorn
-import logging
-from dotenv import load_dotenv
+
 
 load_dotenv()
 

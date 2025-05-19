@@ -98,6 +98,7 @@ app/prioritizer/data/prioritized_local_testing/*
 
 # Plan creator
 app/plan_creator/k8s/*
+app/plan_creator/data/output/*
 
 # Plan creator legacy
 # Output files

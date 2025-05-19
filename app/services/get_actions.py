@@ -55,6 +55,9 @@ def get_actions(language: str = "en") -> Optional[list[dict]]:
         response.raise_for_status()
         logger.info("Data fetched successfully")
 
+        num_actions = len(response.json())
+        logger.info(f"Number of actions returned: {num_actions}")
+
         # Parse and return the JSON response
         return response.json()
     except requests.exceptions.Timeout:

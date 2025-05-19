@@ -1,10 +1,9 @@
-from plan_creator_legacy.state.agent_state import AgentState
 from pathlib import Path
 from datetime import datetime
-
-# from styles.styles import styles_block
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+
+from plan_creator_legacy.state.agent_state import AgentState
 
 # Create the agents
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)

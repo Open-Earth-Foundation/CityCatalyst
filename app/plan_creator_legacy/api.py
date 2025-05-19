@@ -20,6 +20,8 @@ from plan_creator_legacy.graph_definition import create_graph
 from plan_creator_legacy.state.agent_state import AgentState
 from langchain_core.messages import AIMessage
 
+# Setup logging configuration
+setup_logger()
 logger = logging.getLogger(__name__)
 
 router = APIRouter()

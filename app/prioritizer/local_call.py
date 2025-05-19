@@ -15,22 +15,19 @@ python prioritizer.py --locode <locode>
 Example:
 Run it from the /app folder of the project with the following command:
 
-python -m prioritizer.prioritizer --locode "BR CII"
+python -m prioritizer.local_call
 """
 
-import argparse
 import sys
 import os
+import logging
 from dotenv import load_dotenv
 from openai import OpenAI
 import json
 from pydantic import BaseModel
 from typing import List
 from pathlib import Path
-from prioritizer.utils.reading_writing_data import (
-    read_city_inventory,
-    write_output,
-)
+from prioritizer.utils.writing_data import write_output
 from prioritizer.utils.additional_scoring_functions import (
     count_matching_hazards,
     find_highest_emission,
@@ -38,10 +35,22 @@ from prioritizer.utils.additional_scoring_functions import (
 from prioritizer.utils.prompt import return_prompt
 from prioritizer.utils.ml_comparator import ml_compare
 from services.get_actions import get_actions
-import logging
+from services.get_context import get_context
+from services.get_ccra import get_ccra
 from prioritizer.utils.tournament import tournament_ranking
 from prioritizer.utils.filter_actions_by_biome import filter_actions_by_biome
 from utils.logging_config import setup_logger
+from utils.build_city_data import build_city_data
+
+# from prioritizer.scripts.create_city_data_file.add_ccras_to_city_data import (
+#     extract_ccras,
+# )
+from prioritizer.models import (
+    PrioritizeRequest,
+    CityData,
+    CityContextData,
+    CityEmissionsData,
+)
 
 # Setup logging configuration
 setup_logger()
@@ -206,7 +215,7 @@ def quantitative_score(city, action):
         time_score = timeline_mapping[timeline_str]
         score += time_score * time_score_weight
     else:
-        logging.debug("Invalid timeline:", timeline_str)
+        logger.debug(f"Invalid timeline: {timeline_str}")
 
     # print("Score after time in years:", score)
 
@@ -326,39 +335,56 @@ def qualitative_prioritizer(top_quantitative, actions, city):
                     "explanation": action.explanation,
                 }
             )
-        logging.debug("Qualitative prioritization completed.")
+        logger.debug("Qualitative prioritization completed.")
         return qualitative_scores
     else:
-        logging.debug("No qualitative prioritization data.")
+        logger.debug("No qualitative prioritization data.")
         return []
 
 
-def main(locode: str):
-    try:
-        city = read_city_inventory(locode)
+def main(request: PrioritizeRequest):
+    # Extract needed data from request into requestData (match api.py)
+    requestData = {}
+    requestData["locode"] = request.cityData.cityContextData.locode
+    requestData["populationSize"] = request.cityData.cityContextData.populationSize
+    requestData["stationaryEnergyEmissions"] = (
+        request.cityData.cityEmissionsData.stationaryEnergyEmissions
+    )
+    requestData["transportationEmissions"] = (
+        request.cityData.cityEmissionsData.transportationEmissions
+    )
+    requestData["wasteEmissions"] = request.cityData.cityEmissionsData.wasteEmissions
+    requestData["ippuEmissions"] = request.cityData.cityEmissionsData.ippuEmissions
+    requestData["afoluEmissions"] = request.cityData.cityEmissionsData.afoluEmissions
 
-        # Create function here that gets all the city data from the APIs and stores it in 'city' object
-        # This will substitute the city_data.json file
+    locode = requestData["locode"]
+    try:
+        # Fetch city context data from API
+        cityContext = get_context(locode)
+        if not cityContext:
+            logger.error("No city context data found from global API.")
+            sys.exit(1)
+
+        # Build city data on the fly
+        city_data = build_city_data(cityContext, requestData)
 
         # Use the API to get the actions
         actions = get_actions()
-        logging.debug(json.dumps(actions, indent=2))
 
     except Exception as e:
-        logging.error("Error reading data:", e)
+        logger.error(f"Error reading data: {e}")
         sys.exit(1)
 
     if not actions:
-        logging.error("No actions data found from API.")
+        logger.error("No actions data found from API.")
         sys.exit(1)
 
-    if not city:
-        logging.error("No city data found")
+    if not city_data:
+        logger.error("No city data found")
         sys.exit(1)
 
     # Filter actions by biome if applicable
-    filtered_actions = filter_actions_by_biome(city, actions)
-    logging.info(f"After biome filtering: {len(filtered_actions)} actions remain")
+    filtered_actions = filter_actions_by_biome(city_data, actions)
 
     # Separate adaptation and mitigation actions
     adaptation_actions = [
@@ -376,14 +402,14 @@ def main(locode: str):
         and "mitigation" in action["ActionType"]
     ]
 
-    logging.info(
+    logger.info(
         f"Found {len(adaptation_actions)} adaptation actions and {len(mitigation_actions)} mitigation actions"
     )
 
     # Apply tournament ranking for adaptation actions
-    logging.info("Starting tournament ranking for adaptation actions...")
+    logger.info("Starting tournament ranking for adaptation actions...")
     adaptation_ranking = tournament_ranking(
-        city, adaptation_actions, comparator=ml_compare
+        city_data, adaptation_actions, comparator=ml_compare
     )
 
     # Format adaptation results
@@ -391,10 +417,10 @@ def main(locode: str):
     for action, rank in adaptation_ranking:
         top_ml_adaptation.append(
             {
-                "locode": city.get("locode", "Unknown"),
-                "cityName": city.get("name", "Unknown City"),
-                "region": city.get("region", "Unknown"),
-                "regionName": city.get("regionName", "Unknown"),
+                "locode": city_data.get("locode", "Unknown"),
+                "cityName": city_data.get("name", "Unknown City"),
+                "region": city_data.get("region", "Unknown"),
+                "regionName": city_data.get("regionName", "Unknown"),
                 "actionId": action.get("ActionID", "Unknown"),
                 "actionName": action.get("ActionName", "Unknown"),
                 "actionPriority": rank,
@@ -403,9 +429,9 @@ def main(locode: str):
         )
 
     # Apply tournament ranking for mitigation actions
-    logging.debug("Starting tournament ranking for mitigation actions...")
+    logger.debug("Starting tournament ranking for mitigation actions...")
     mitigation_ranking = tournament_ranking(
-        city, mitigation_actions, comparator=ml_compare
+        city_data, mitigation_actions, comparator=ml_compare
     )
 
     # Format mitigation results
@@ -413,10 +439,10 @@ def main(locode: str):
     for action, rank in mitigation_ranking:
         top_ml_mitigation.append(
             {
-                "locode": city.get("locode", "Unknown"),
-                "cityName": city.get("name", "Unknown City"),
-                "region": city.get("region", "Unknown"),
-                "regionName": city.get("regionName", "Unknown"),
+                "locode": city_data.get("locode", "Unknown"),
+                "cityName": city_data.get("name", "Unknown City"),
+                "region": city_data.get("region", "Unknown"),
+                "regionName": city_data.get("regionName", "Unknown"),
                 "actionId": action.get("ActionID", "Unknown"),
                 "actionName": action.get("ActionName", "Unknown"),
                 "actionPriority": rank,
@@ -427,19 +453,26 @@ def main(locode: str):
     # Save outputs to separate files
     write_output(top_ml_adaptation, f"output_{locode}_adaptation.json")
     write_output(top_ml_mitigation, f"output_{locode}_mitigation.json")
-    logging.debug("Prioritization complete!")
+    logger.debug("Prioritization complete!")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Prioritize climate actions for a given city."
+    # Demo request data
+    # The emissions values are made up
+    # The population size is made up and will override the retrieved population size from the context API
+    demo_request = PrioritizeRequest(
+        cityData=CityData(
+            cityContextData=CityContextData(
+                locode="BR CII",
+                populationSize=1000000,
+            ),
+            cityEmissionsData=CityEmissionsData(
+                stationaryEnergyEmissions=10000.0,
+                transportationEmissions=8000.0,
+                wasteEmissions=2000.0,
+                ippuEmissions=500.0,
+                afoluEmissions=1500.0,
+            ),
+        )
     )
-    parser.add_argument(
-        "--locode",
-        type=str,
-        required=True,
-        help="The UN/LOCODE of the city for which to prioritize actions.",
-    )
-    args = parser.parse_args()
-
-    main(locode=args.locode)
+    main(request=demo_request)

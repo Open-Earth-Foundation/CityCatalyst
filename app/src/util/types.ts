@@ -37,7 +37,7 @@ export interface CityYearData {
   lastUpdate: Date;
 }
 
-interface RequiredInventoryAttributes extends Required<InventoryAttributes> { }
+interface RequiredInventoryAttributes extends Required<InventoryAttributes> {}
 
 export type FullInventoryValue = InventoryValue & {
   activityValues: (ActivityValue & {
@@ -347,10 +347,10 @@ export interface GroupedActivity {
 
 export interface ActivityBreakdown {
   [subSector: string]:
-  | {
-    [activity: string]: GroupedActivity;
-  }
-  | SubsectorTotals;
+    | {
+        [activity: string]: GroupedActivity;
+      }
+    | SubsectorTotals;
 }
 
 export type BreakdownByActivity = Record<
@@ -434,6 +434,7 @@ export type ProjectWithCities = {
   cities: {
     cityId: string;
     name: string;
+    countryLocode: string;
     inventories: {
       inventoryId: string;
       year: number;

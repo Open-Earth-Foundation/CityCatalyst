@@ -3,13 +3,14 @@
 import { useTranslation } from "@/i18n/client";
 import { Box, Heading, HStack, Tabs, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import AccountSettingsTab from "./account"
+import AccountSettingsTab from "./account";
 import TeamSettings from "./team";
+import ProjectSettings from "./project/index";
 
 const AccountSettingsPage = ({
   params: { lng, id },
 }: {
-  params: { lng: string, id: string };
+  params: { lng: string; id: string };
 }) => {
   const { t } = useTranslation(lng, "settings");
 
@@ -82,6 +83,22 @@ const AccountSettingsPage = ({
                   {t("team")}
                 </Text>
               </Tabs.Trigger>
+              <Tabs.Trigger
+                value="project"
+                _selected={{
+                  borderColor: "content.link",
+                  borderBottomWidth: "2px",
+                  boxShadow: "none",
+                  fontWeight: "bold",
+                  borderRadius: "0",
+                  color: "content.link",
+                  backgroundColor: "background.backgroundLight",
+                }}
+              >
+                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
+                  {t("projects")}
+                </Text>
+              </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="account">
               <Box
@@ -109,6 +126,9 @@ const AccountSettingsPage = ({
             </Tabs.Content>
             <Tabs.Content value="team">
               <TeamSettings lng={lng} id={id} />
+            </Tabs.Content>
+            <Tabs.Content value="project">
+              <ProjectSettings lng={lng} id={id} />
             </Tabs.Content>
           </Tabs.Root>
         </Box>

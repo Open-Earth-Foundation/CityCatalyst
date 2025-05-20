@@ -27,7 +27,7 @@
   "contributor": "Contributor",
   "save-changes": "Save Changes",
   "my-files-sub-title": "Here you can find all your files uploaded, pending request harmonization, and included in the GHG Inventory",
-  "all-inventory-years": "all inventory years",
+  "all-inventory-years": "All inventory years",
   "inventory-year": "Inventory Year",
   "files": "Files",
   "last-updated": "Last updated",
@@ -117,5 +117,11 @@
   "teams-description": "Here you can invite or assign roles to your collaborators",
   "invite-collaborator": "Invite Collaborator",
   "no-cities": "No cities",
-  "collaborators-subheading": "<bold>Collaborators</bold> on {{name}}"
+  "collaborators-subheading": "<bold>Collaborators</bold> on {{name}}",
+  "projects": "Projects",
+  "projects-description": "{{orgName}} can currently set up to {{projectCount}} projects with {{cityCount}} cities",
+  "all-cities": "All Cities ({{count}})",
+  "all-collaborators": "All Collaborators ({{count}})",
+  "all-inventories": "Inventories ({{count}})",
+  "delete-city": "Delete City"
 }

@@ -319,7 +319,6 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
           ) : (
             <DataTable
               data={userList}
-              t={t}
               searchable={true}
               pagination={true}
               filterOptions={Object.keys(TagMapping).map((item) => ({

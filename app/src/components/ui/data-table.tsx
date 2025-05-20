@@ -1,29 +1,20 @@
+// DataTable.tsx
 import React, { useMemo, useState } from "react";
-import {
-  Box,
-  Flex,
-  Icon,
-  IconButton,
-  Input,
-  Table,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Flex, Icon, IconButton, Input, Text } from "@chakra-ui/react";
+import { IoIosArrowBack } from "react-icons/io";
+import { MdSearch } from "react-icons/md";
+import { InputGroup } from "@/components/ui/input-group";
 import {
   NativeSelectField,
   NativeSelectRoot,
 } from "@/components/ui/native-select";
-import { IoIosArrowBack } from "react-icons/io";
-import { InputGroup } from "@/components/ui/input-group";
-import { MdSearch } from "react-icons/md";
-import { Checkbox } from "@/components/ui/checkbox";
-import { CheckedChangeDetails } from "@zag-js/checkbox";
-import { Trans } from "react-i18next";
+
+import DataTableCore from "./data-table-core";
 
 type FilterOption<TValue> = TValue | { label: string; value: TValue };
 
 type DataTableProps<T> = {
   data: T[];
-  t: Function;
   title: string;
   columns: { header: string; accessor: keyof T | null }[];
   searchable?: boolean;
@@ -53,7 +44,6 @@ function isLabelValueOption<TValue>(
 function DataTable<T extends Record<string, any>>({
   data,
   title,
-  t,
   columns,
   searchable = false,
   pagination = false,
@@ -97,50 +87,19 @@ function DataTable<T extends Record<string, any>>({
   const totalPages =
     filteredData.length > 0 ? Math.ceil(filteredData.length / itemsPerPage) : 1;
 
-  const currentRowKeys =
-    selectable && selectKey ? paginatedData.map((item) => item[selectKey]) : [];
-  const allSelected =
-    currentRowKeys.length > 0 &&
-    currentRowKeys.every((key) => selectedRowKeys.includes(key));
-  const someSelected =
-    currentRowKeys.some((key) => selectedRowKeys.includes(key)) && !allSelected;
-
-  const toggleSelectAll = (e: CheckedChangeDetails) => {
-    let newSelected: Array<T[keyof T]> = [];
-    if (allSelected) {
-      // Deselect all rows on this page:
-      newSelected = selectedRowKeys.filter(
-        (key) => !currentRowKeys.includes(key),
-      );
-    } else {
-      // Select all rows on this page (avoiding duplicates):
-      newSelected = Array.from(
-        new Set([...selectedRowKeys, ...currentRowKeys]),
-      );
-    }
-    onSelectRow?.(newSelected);
-  };
-
-  const handleSelect = (e: CheckedChangeDetails, rowKey: T[keyof T]) => {
-    let newSelected: Array<T[keyof T]> = [];
-    if (!e.checked) {
-      newSelected = selectedRowKeys.filter((key) => key !== rowKey);
-    } else {
-      newSelected = [...selectedRowKeys, rowKey];
-    }
-    onSelectRow?.(newSelected);
-  };
-
   return (
     <Box className="bg-white" p={6} rounded={2} mt={12}>
-      <Text fontWeight="bold" fontSize="title.md" mb={6}>
+      <Text fontWeight="bold" fontSize="title.md" mb={2}>
         {title}
       </Text>
-      <Text fontSize="title.md" mb={6}>
-        {subtitle}
-      </Text>
+      {subtitle && (
+        <Text fontSize="title.md" mb={4}>
+          {subtitle}
+        </Text>
+      )}
+
       <Flex mb={4} justifyContent="space-between">
-        <Flex mb={4} gap={2}>
+        <Flex gap={2} alignItems="center">
           {searchable && (
             <InputGroup
               startElement={
@@ -149,7 +108,7 @@ function DataTable<T extends Record<string, any>>({
             >
               <Input
                 minWidth="350px"
-                placeholder={t("search-records")}
+                placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -157,21 +116,9 @@ function DataTable<T extends Record<string, any>>({
           )}
 
           {filterProperty && filterOptions.length > 0 && (
-            <NativeSelectRoot
-              shadow="1dp"
-              borderRadius="4px"
-              border="inpu/tBox"
-              fontSize="body.lg"
-              h="full"
-              w="full"
-              _focus={{
-                borderWidth: "1px",
-                borderColor: "content.link",
-                shadow: "none",
-              }}
-            >
+            <NativeSelectRoot>
               <NativeSelectField
-                placeholder={t("all")}
+                placeholder="All"
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
               >
@@ -180,11 +127,7 @@ function DataTable<T extends Record<string, any>>({
                   const value = isObj ? option.value : option;
                   const label = isObj ? option.label : String(option);
                   return (
-                    <option
-                      className="!capitalize"
-                      key={idx}
-                      value={String(value)}
-                    >
+                    <option key={idx} value={String(value)}>
                       {label}
                     </option>
                   );
@@ -193,15 +136,15 @@ function DataTable<T extends Record<string, any>>({
             </NativeSelectRoot>
           )}
         </Flex>
+
         {pagination && (
-          <Flex mt={4} gap={2} justify="space-between" align="center">
+          <Flex mt={4} gap={2} align="center">
             <Text fontSize="body.md" color="content.tertiary">
               {(currentPage - 1) * itemsPerPage + 1} -{" "}
-              {Math.min(filteredData.length, currentPage * itemsPerPage)}{" "}
-              {t("of")} {filteredData.length}
+              {Math.min(filteredData.length, currentPage * itemsPerPage)} of{" "}
+              {filteredData.length}
             </Text>
             <IconButton
-              color="interactive.control"
               variant="plain"
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -209,7 +152,6 @@ function DataTable<T extends Record<string, any>>({
               <Icon as={IoIosArrowBack} />
             </IconButton>
             <IconButton
-              color="interactive.control"
               variant="plain"
               disabled={currentPage === totalPages}
               onClick={() =>
@@ -222,84 +164,15 @@ function DataTable<T extends Record<string, any>>({
         )}
       </Flex>
 
-      <Table.Root
-        px={0}
-        variant="line"
-        overflowX="hidden"
-        rounded="20px"
-        borderWidth="1px"
-      >
-        <Table.Header bg="background.backgroundLight">
-          <Table.Row>
-            {selectable && (
-              <Table.ColumnHeader>
-                <Checkbox
-                  checked={someSelected ? "indeterminate" : allSelected}
-                  onCheckedChange={toggleSelectAll}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </Table.ColumnHeader>
-            )}
-            {columns.map((col) => (
-              <Table.ColumnHeader
-                truncate
-                fontWeight="bold"
-                fontFamily="heading"
-                textTransform="uppercase"
-                fontSize="body.sm"
-                color="content.secondary"
-                key={String(col.accessor)}
-              >
-                {col.header}
-              </Table.ColumnHeader>
-            ))}
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {filteredData.length === 0 && (
-            <Table.Row>
-              <Table.Cell colSpan={columns.length}>
-                <Text fontSize="body.md" color="content.tertiary">
-                  {t("no-data")}
-                </Text>
-              </Table.Cell>
-            </Table.Row>
-          )}
-          {paginatedData.map((item, idx) => {
-            const renderedRow = renderRow(item, idx);
-            // If selectable is enabled and renderRow returns a <Table.Row>,
-            // clone it to prepend a cell with a checkbox.
-            if (
-              selectable &&
-              selectKey &&
-              React.isValidElement(renderedRow) &&
-              renderedRow.type === Table.Row
-            ) {
-              const rowKey = item[selectKey];
-              const isSelected =
-                selectable && selectKey
-                  ? selectedRowKeys.includes(rowKey)
-                  : false;
-              const cells = React.Children.toArray(renderedRow.props.children);
-              return React.cloneElement(
-                renderedRow,
-                { key: rowKey },
-                <>
-                  <Table.Cell>
-                    <Checkbox
-                      checked={isSelected}
-                      onCheckedChange={(e) => handleSelect(e, rowKey)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </Table.Cell>
-                  {cells}
-                </>,
-              );
-            }
-            return renderedRow;
-          })}
-        </Table.Body>
-      </Table.Root>
+      <DataTableCore<T>
+        data={paginatedData}
+        columns={columns}
+        renderRow={renderRow}
+        selectable={selectable}
+        selectedRowKeys={selectedRowKeys}
+        onSelectRow={onSelectRow}
+        selectKey={selectKey}
+      />
     </Box>
   );
 }

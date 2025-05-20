@@ -1217,5 +1217,6 @@
   "changes-undone": "Changes undone",
   "industrial-processes-and-product-uses": "Industrial processes and product uses (IPPU)",
   "agriculture-forestry-and-other-land-use": "Agriculture, Forestry and Other Land Use (AFOLU)",
-  "transport": "Transport"
+  "transport": "Transport",
+  "update": "Update"
 }

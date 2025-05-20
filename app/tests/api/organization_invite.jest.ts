@@ -23,14 +23,14 @@ import EmailService from "@/backend/EmailService";
 import { SentMessageInfo } from "nodemailer"; // Import the correct type
 
 const organizationData = {
-  name: "Test Organization",
-  contactEmail: "test22@organization.com",
+  name: "Test Organization - Org Invite Test",
+  contactEmail: "test22invitetest@organization.com",
   contactNumber: "1234567890",
 };
 
 const inviteData: CreateOrganizationInviteRequest = {
   organizationId: randomUUID(),
-  inviteeEmail: "consultant22@example.org",
+  inviteeEmail: "consultantinvitetest22@example.org",
   role: OrganizationRole.COLLABORATOR,
 };
 

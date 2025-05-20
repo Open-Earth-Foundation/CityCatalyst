@@ -1,4 +1,3 @@
-// DataTable.tsx
 import React, { useMemo, useState } from "react";
 import { Box, Flex, Icon, IconButton, Input, Text } from "@chakra-ui/react";
 import { IoIosArrowBack } from "react-icons/io";
@@ -111,7 +110,7 @@ function DataTable<T extends Record<string, any>>({
             >
               <Input
                 minWidth="350px"
-                placeholder="Search..."
+                placeholder={t("search-records")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />

@@ -29,7 +29,11 @@ import {
 import { LuChevronDown } from "react-icons/lu";
 import ProgressLoader from "@/components/ProgressLoader";
 import DataTableCore from "@/components/ui/data-table-core";
-import { OrganizationRole, ProjectWithCities } from "@/util/types";
+import {
+  OrganizationRole,
+  ProjectUserResponse,
+  ProjectWithCities,
+} from "@/util/types";
 import { Trans } from "react-i18next";
 import { Tag } from "@/components/ui/tag";
 import {
@@ -319,10 +323,21 @@ interface ProjectDetailsProps {
   router: any;
   selectedCity: string | null;
   selectedProjectData: ProjectWithCities | null | undefined;
-  selectedCityData: any; // Define a more specific type if possible
+  selectedCityData:
+    | {
+        cityId: string;
+        name: string;
+        countryLocode: string;
+        inventories: {
+          inventoryId: string;
+          year: number;
+          lastUpdated: string;
+        }[];
+      }
+    | undefined;
   organizationName?: string;
-  projectUsers: any[]; // Define a more specific type if possible
-  userList: any[]; // Define a more specific type if possible
+  projectUsers: ProjectUserResponse[] | undefined;
+  userList: ProjectUserResponse[] | undefined;
   isLoadingProjectUsers: boolean;
   tabValue: string;
   setTabValue: (value: string) => void;
@@ -554,7 +569,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
           </Tabs.Content>
           <Tabs.Content value="collaborators">
             <DataTableCore
-              data={userList}
+              data={userList ?? []}
               columns={[
                 { header: t("email"), accessor: "email" },
                 { header: t("role"), accessor: "role" },

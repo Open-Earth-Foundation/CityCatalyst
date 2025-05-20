@@ -7,6 +7,7 @@ import AccountSettingsTab from "./account";
 import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
 
+// TODO create tabs component with recipe
 const AccountSettingsPage = ({
   params: { lng, id },
 }: {

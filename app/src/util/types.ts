@@ -14,14 +14,17 @@ import {
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { CityAttributes } from "@/models/City";
-import type { GasValueAttributes } from "@/models/GasValue";
-import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
+import type { GasValue, GasValueAttributes } from "@/models/GasValue";
+import type {
+  EmissionsFactor,
+  EmissionsFactorAttributes,
+} from "@/models/EmissionsFactor";
+import type { ActivityValue } from "@/models/ActivityValue";
 import Decimal from "decimal.js";
 import {
   FailedSourceResult,
   RemovedSourceResult,
 } from "@/backend/DataSourceService";
-import { ActivityValue } from "@/models/ActivityValue";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -36,6 +39,13 @@ export interface CityYearData {
 
 interface RequiredInventoryAttributes extends Required<InventoryAttributes> { }
 
+export type FullInventoryValue = InventoryValue & {
+  activityValues: (ActivityValue & {
+    gasValues: (GasValue & { emissionsFactor?: EmissionsFactor })[];
+  })[];
+  dataSource: DataSourceAttributes;
+};
+
 export type InventoryResponse = RequiredInventoryAttributes & {
   city: CityAttributes & {
     populationYear: number;
@@ -46,6 +56,7 @@ export type InventoryResponse = RequiredInventoryAttributes & {
       organizationId: string;
     };
   };
+  inventoryValues: FullInventoryValue[];
 };
 
 export interface InventoryPopulationsResponse {

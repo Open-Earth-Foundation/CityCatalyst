@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/native-select";
 
 import DataTableCore from "./data-table-core";
+import { useParams } from "next/navigation";
+import { useTranslation } from "@/i18n/client";
 
 type FilterOption<TValue> = TValue | { label: string; value: TValue };
 
@@ -60,7 +62,8 @@ function DataTable<T extends Record<string, any>>({
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [filterValue, setFilterValue] = useState<string | number>("");
-
+  const { lng } = useParams();
+  const { t } = useTranslation(lng as string, "data");
   const filteredData = useMemo(() => {
     return data.filter((item) => {
       const matchesSearch = searchable
@@ -140,9 +143,11 @@ function DataTable<T extends Record<string, any>>({
         {pagination && (
           <Flex mt={4} gap={2} align="center">
             <Text fontSize="body.md" color="content.tertiary">
-              {(currentPage - 1) * itemsPerPage + 1} -{" "}
-              {Math.min(filteredData.length, currentPage * itemsPerPage)} of{" "}
-              {filteredData.length}
+              {t("table-pagination", {
+                start: (currentPage - 1) * itemsPerPage + 1,
+                end: Math.min(filteredData.length, currentPage * itemsPerPage),
+                total: filteredData.length,
+              })}
             </Text>
             <IconButton
               variant="plain"

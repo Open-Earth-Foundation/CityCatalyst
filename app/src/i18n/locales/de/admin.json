@@ -117,5 +117,6 @@
   "city-transfer-error": "Stadtübertragung fehlgeschlagen",
   "search-city-placeholder": "Stadt suchen",
   "n-a": "N/V",
-  "cities": "Städte"
+  "cities": "Städte",
+  "save-changes": "Änderungen Speichern"
 }

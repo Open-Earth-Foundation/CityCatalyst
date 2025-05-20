@@ -79,7 +79,9 @@ const ProjectList = ({
               fontWeight="regular"
               color="content.primary"
             >
-              {project.name}
+              {project.name === "cc_project_default"
+                ? t("default-project")
+                : project.name}
             </Text>
             <Icon color="content.primary" as={MdKeyboardArrowRight} />
           </Button>

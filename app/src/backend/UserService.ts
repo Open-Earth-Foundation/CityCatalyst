@@ -268,9 +268,9 @@ export default class UserService {
   ) {
     if (!session) throw new createHttpError.Forbidden("Forbidden");
 
-    const isAdminUser = session.user.role === Roles.Admin;
+    const adminUser = !session || session.user.role !== Roles.Admin;
 
-    if (isAdminUser) {
+    if (adminUser) {
       return;
     }
 
@@ -305,7 +305,7 @@ export default class UserService {
         {
           model: db.models.City,
           as: "cities",
-          attributes: ["cityId", "name"],
+          attributes: ["cityId", "name", "countryLocode"],
           include: [
             {
               model: db.models.Inventory,
@@ -332,7 +332,7 @@ export default class UserService {
           {
             model: db.models.City,
             as: "cities",
-            attributes: ["cityId", "name"],
+            attributes: ["cityId", "name", "countryLocode"],
             include: [
               {
                 model: db.models.Inventory,
@@ -353,7 +353,7 @@ export default class UserService {
       include: {
         model: db.models.City,
         as: "city",
-        attributes: ["cityId", "name"],
+        attributes: ["cityId", "name", "countryLocode"],
         include: [
           {
             model: db.models.Project,
@@ -416,6 +416,7 @@ export default class UserService {
         name: city.name as string,
         cityId: city.cityId as string,
         inventories: city.inventories as any,
+        countryLocode: city.countryLocode as string,
       });
     }
 
@@ -658,7 +659,7 @@ export default class UserService {
     return responseObject;
   }
 
-  public async fetchUserProjects(userId: string) { }
+  public async fetchUserProjects(userId: string) {}
 
   public static ensureIsAdmin(session: AppSession | null) {
     // Ensure user is signed in

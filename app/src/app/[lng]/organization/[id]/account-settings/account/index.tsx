@@ -37,6 +37,7 @@ import AccountDetailsTab from "./account-details-tab";
 import OrganizationDetailsTab from "./organization-details-tab";
 import TabContent from "@/components/ui/tab-content";
 import TabTrigger from "@/components/ui/tab-trigger";
+import { Trans } from "react-i18next";
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const { showErrorToast } = UseErrorToast({
@@ -65,11 +66,11 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
     return createListCollection({
       items: themeOptions
         ? themeOptions?.map((theme) => ({
-          value: theme.themeId,
-          key: theme.themeKey,
-          label: t(theme.themeKey),
-          color: KeyColorMapping[theme.themeKey as themeType],
-        }))
+            value: theme.themeId,
+            key: theme.themeKey,
+            label: t(theme.themeKey),
+            color: KeyColorMapping[theme.themeKey as themeType],
+          }))
         : [],
     });
   }, [themeOptions]);
@@ -135,6 +136,18 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
     );
   }, [selectedTheme, organization?.themeId, file, clearImage]);
 
+  const { numCities, totalCities } = useMemo(
+    () =>
+      organization?.projects.reduce(
+        (acc, proj) => ({
+          numCities: acc.numCities + (proj?.cities?.length ?? 0),
+          totalCities: acc.totalCities + BigInt(proj?.cityCountLimit),
+        }),
+        { numCities: 0, totalCities: BigInt(0) },
+      ) ?? { numCities: 0, totalCities: BigInt(0) },
+    [organization?.projects],
+  );
+
   if (isLoading || isOrganizationLoading) return <ProgressLoader />;
 
   return (
@@ -147,22 +160,10 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
       defaultValue="account-details"
     >
       <Tabs.List display="flex" flexDirection="column" gap="12px">
-        <TabTrigger value="account-details">
-          {t("account-details")}
-        </TabTrigger>
-        <TabTrigger value="organization-details">
-          {t("organization-details")}
-        </TabTrigger>
-        <TabTrigger value="brand-settings">
-          {t("brand-settings")}
-        </TabTrigger>
-        <TabTrigger value="manage-password">
-          {t("manage-password")}
-        </TabTrigger>
+        <TabTrigger value="account-details">{t("account-details")}</TabTrigger>
+        <TabTrigger value="brand-settings">{t("brand-settings")}</TabTrigger>
+        <TabTrigger value="manage-password">{t("manage-password")}</TabTrigger>
       </Tabs.List>
-      <TabContent value="account-details">
-        <AccountDetailsTab />
-      </TabContent>
       <TabContent value="organization-details">
         <OrganizationDetailsTab organization={organization} />
       </TabContent>
@@ -297,6 +298,39 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
             </Box>
           </Box>
         </Box>
+      </TabContent>
+      <TabContent value="account-details">
+        <AccountDetailsTab />
+        {userAccessStatus?.isOrgOwner && (
+          <Box backgroundColor="white" p={6} marginTop={4}>
+            <Text
+              fontSize="title.md"
+              color="content.secondary"
+              fontWeight="semibold"
+            >
+              {t("plan-details")}
+            </Text>
+            <Text
+              fontSize="body.lg"
+              fontWeight="normal"
+              color="content.tertiary"
+            >
+              <Trans
+                i18nKey="plan-details-caption"
+                t={t}
+                values={{
+                  name: organization?.name,
+                  num_projects: organization?.projects?.length ?? 0,
+                  num_cities: numCities,
+                  total_cities: totalCities ?? 0,
+                }}
+                components={{
+                  bold: <strong />,
+                }}
+              />
+            </Text>
+          </Box>
+        )}
       </TabContent>
       <TabContent value="manage-password">
         <Box bg="background.default">

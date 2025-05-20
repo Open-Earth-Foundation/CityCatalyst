@@ -1237,5 +1237,8 @@
   "waste-composition-metal": "Metal",
   "waste-composition-glass": "Glass",
   "waste-composition-nappies": "Nappies",
-  "waste-composition-other": "Other"
+  "waste-composition-other": "Other",
+  "no-data": "No data",
+  "table-pagination": "{{start}} - {{end}} of {{total}}",
+  "search-records": "Search records"
 }

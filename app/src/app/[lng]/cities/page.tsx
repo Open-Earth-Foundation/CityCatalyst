@@ -131,7 +131,6 @@ const CitiesPage = ({ params: { lng } }: { params: { lng: string } }) => {
             searchable
             pagination
             itemsPerPage={20}
-            t={t}
             title={t("manage-cities-heading")}
             columns={[
               { header: t("city"), accessor: "name" },

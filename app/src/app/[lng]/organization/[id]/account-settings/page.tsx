@@ -3,12 +3,15 @@
 import { useTranslation } from "@/i18n/client";
 import { Box, Heading, HStack, Tabs, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import AccountSettingsTab from "./account/account-settings-tab";
+import AccountSettingsTab from "./account";
+import TeamSettings from "./team";
+import ProjectSettings from "./project/index";
 
+// TODO create tabs component with recipe
 const AccountSettingsPage = ({
-  params: { lng },
+  params: { lng, id },
 }: {
-  params: { lng: string };
+  params: { lng: string; id: string };
 }) => {
   const { t } = useTranslation(lng, "settings");
 
@@ -65,6 +68,38 @@ const AccountSettingsPage = ({
                   {t("account")}
                 </Text>
               </Tabs.Trigger>
+              <Tabs.Trigger
+                value="team"
+                _selected={{
+                  borderColor: "content.link",
+                  borderBottomWidth: "2px",
+                  boxShadow: "none",
+                  fontWeight: "bold",
+                  borderRadius: "0",
+                  color: "content.link",
+                  backgroundColor: "background.backgroundLight",
+                }}
+              >
+                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
+                  {t("team")}
+                </Text>
+              </Tabs.Trigger>
+              <Tabs.Trigger
+                value="project"
+                _selected={{
+                  borderColor: "content.link",
+                  borderBottomWidth: "2px",
+                  boxShadow: "none",
+                  fontWeight: "bold",
+                  borderRadius: "0",
+                  color: "content.link",
+                  backgroundColor: "background.backgroundLight",
+                }}
+              >
+                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
+                  {t("projects")}
+                </Text>
+              </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="account">
               <Box
@@ -89,6 +124,12 @@ const AccountSettingsPage = ({
                   <AccountSettingsTab t={t} />
                 </Box>
               </Box>
+            </Tabs.Content>
+            <Tabs.Content value="team">
+              <TeamSettings lng={lng} id={id} />
+            </Tabs.Content>
+            <Tabs.Content value="project">
+              <ProjectSettings lng={lng} id={id} />
             </Tabs.Content>
           </Tabs.Root>
         </Box>

@@ -275,7 +275,10 @@ export default class CSVDownloadService {
         inventory_reference: inventoryValue.subCategoryId,
         gpc_reference_number: inventoryValue.gpcReferenceNumber,
         subsector_name: inventoryValue.subSector.subsectorName,
-        notation_key: inventoryValue.unavailableReason?.split("-")?.[1],
+        notation_key: inventoryValue.unavailableReason
+          ?.split("-")
+          .map((word) => word.charAt(0).toUpperCase())
+          .join(""),
         activityValues: finalActivityValues,
       };
 

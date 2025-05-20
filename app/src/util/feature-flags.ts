@@ -3,7 +3,8 @@ import { env } from "next-runtime-env";
 export enum FeatureFlags {
   ENTERPRISE_MODE = "ENTERPRISE_MODE",
   CAP_TAB_ENABLED = "CAP_TAB_ENABLED",
-  PROJECT_OVERVIEW_ENABLED = "PROJECT_OVERVIEW_ENABLED"
+  PROJECT_OVERVIEW_ENABLED = "PROJECT_OVERVIEW_ENABLED",
+  ACCOUNT_SETTINGS_ENABLED = "ACCOUNT_SETTINGS_ENABLED"
 }
 
 let cachedFeatureFlags: string[] | null = null;

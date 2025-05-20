@@ -190,5 +190,6 @@
   "dashboard": "Dashboard",
   "about": "About",
   "collaborators": "Collaborators",
-  "go-to": "Go to..."
+  "go-to": "Go to...",
+  "default-project": "Default Project"
 }

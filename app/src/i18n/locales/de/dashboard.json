@@ -190,5 +190,6 @@
   "dashboard": "Armaturenbrett",
   "about": "Über",
   "collaborators": "Mitarbeiter",
-  "go-to": "Geh zu..."
+  "default-project": "Standardprojekt",
+  "go-to": "Gehe zu..."
 }

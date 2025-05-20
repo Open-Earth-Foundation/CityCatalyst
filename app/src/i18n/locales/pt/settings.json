@@ -114,5 +114,17 @@
   "account-brand-updated": "Configurações de conta e marca atualizadas com sucesso",
   "error-message": "Ocorreu um erro",
   "position": "Título",
-  "position-description": "Indique o seu título ou profissão."
+  "position-description": "Indique o seu título ou profissão.",
+  "team": "Equipe",
+  "teams": "Equipes",
+  "teams-description": "Aqui você pode convidar ou atribuir funções aos seus colaboradores",
+  "invite-collaborator": "Convidar Colaborador",
+  "no-cities": "Sem cidades",
+  "collaborators-subheading": "<bold>Colaboradores</bold> em {{name}}",
+  "projects": "Projetos",
+  "projects-description": "{{orgName}} pode atualmente configurar até {{projectCount}} projetos com {{cityCount}} cidades",
+  "all-cities": "Todas as Cidades ({{count}})",
+  "all-collaborators": "Todos os Colaboradores ({{count}})",
+  "all-inventories": "Inventários ({{count}})",
+  "delete-city": "Excluir Cidade"
 }

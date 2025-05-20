@@ -372,7 +372,8 @@ export function NavigationBar({
                     </MenuItem>
                   </>
                 )}
-                {(!restrictAccess && !userAccessStatus?.isOrgOwner) || !hasFeatureFlag(FeatureFlags.ACCOUNT_SETTINGS_ENABLED) && (
+
+                {!restrictAccess && !userAccessStatus?.isOrgOwner && (
                   <MenuItem
                     value="settings"
                     paddingTop="12px"
@@ -400,33 +401,35 @@ export function NavigationBar({
                     </Box>
                   </MenuItem>
                 )}
-                {userAccessStatus?.isOrgOwner && !restrictAccess && hasFeatureFlag(FeatureFlags.ACCOUNT_SETTINGS_ENABLED) && (
-                  <MenuItem
-                    paddingTop="12px"
-                    paddingBottom="12px"
-                    value="account-settings"
-                    px="16px"
-                    onClick={() => {
-                      router.push(
-                        `/organization/${userAccessStatus.organizationId}/account-settings`,
-                      );
-                    }}
-                  >
-                    <Box display="flex" alignItems="center">
-                      <Icon
-                        as={TbSettingsCog}
-                        boxSize={6}
-                        color={
-                          userMenuHighlight === "account-settings"
-                            ? "background.neutral"
-                            : "content.alternative"
-                        }
-                        mr={4}
-                      />
-                      <Text fontSize="title.md">{t("account-settings")}</Text>
-                    </Box>
-                  </MenuItem>
-                )}
+                {userAccessStatus?.isOrgOwner &&
+                  !restrictAccess &&
+                  hasFeatureFlag(FeatureFlags.ACCOUNT_SETTINGS_ENABLED) && (
+                    <MenuItem
+                      paddingTop="12px"
+                      paddingBottom="12px"
+                      value="account-settings"
+                      px="16px"
+                      onClick={() => {
+                        router.push(
+                          `/organization/${userAccessStatus.organizationId}/account-settings`,
+                        );
+                      }}
+                    >
+                      <Box display="flex" alignItems="center">
+                        <Icon
+                          as={TbSettingsCog}
+                          boxSize={6}
+                          color={
+                            userMenuHighlight === "account-settings"
+                              ? "background.neutral"
+                              : "content.alternative"
+                          }
+                          mr={4}
+                        />
+                        <Text fontSize="title.md">{t("account-settings")}</Text>
+                      </Box>
+                    </MenuItem>
+                  )}
                 <MenuItem
                   paddingTop="12px"
                   paddingBottom="12px"

@@ -267,7 +267,7 @@
   "no-occurrance": "Die Aktivität oder der Prozess findet nicht statt oder existiert nicht innerhalb der Stadt",
   "not-estimated": "Die Emissionen für diese Aktivität werden nicht geschätzt",
   "confidential-information": "Die Emissionen könnten zur Offenlegung vertraulicher Informationen führen",
-  "presented-elsewhere": "Die Emissionen für diese Aktivität werden geschätzt und anderswo präsentiert",
+  "included-elsewhere": "Die Emissionen für diese Aktivität werden geschätzt und anderswo präsentiert",
   "unavailable-explanation": "Erklärung/ Rechtfertigung",
   "unavailable-explanation-placeholder": "Schreiben Sie detailliert, warum dieser Wert nicht enthalten ist",
   "unavailable-explanation-required": "Bitte fügen Sie eine Erklärung/ Rechtfertigung hinzu",
@@ -1256,5 +1256,14 @@
   "type-flaring-recovered-ch4": "Ausflammen von zurückgewonnenem CH4",
   "type-abandoned-mines": "Verlassene Minen",
   "vehicle-type-national-flights": "Inlandsflüge",
-  "vehicle-type-international-flights": "Internationale Flüge"
+  "vehicle-type-international-flights": "Internationale Flüge",
+  "waste-composition-leather": "Leder",
+  "waste-composition-plastics": "Kunststoffe",
+  "waste-composition-metal": "Metall",
+  "waste-composition-glass": "Glas",
+  "waste-composition-nappies": "Windeln",
+  "waste-composition-other": "Andere",
+  "no-data": "Keine Daten",
+  "table-pagination": "{{start}} - {{end}} von {{total}}",
+  "search-records": "Aufzeichnungen suchen"
 }

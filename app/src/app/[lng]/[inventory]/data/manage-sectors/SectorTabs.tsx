@@ -321,8 +321,8 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         value: "confidential-information",
       },
       {
-        label: t("pe"),
-        value: "presented-elsewhere",
+        label: t("ie"),
+        value: "included-elsewhere",
       },
     ],
   });

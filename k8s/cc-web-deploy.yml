@@ -55,3 +55,15 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /api/v0/check/liveness
+              port: 3000
+          readinessProbe:
+            httpGet:
+              path: /api/v0/check/health
+              port: 3000
+          startupProbe:
+            httpGet:
+              path: /api/v0/check/liveness
+              port: 3000

@@ -17,7 +17,7 @@ const notationKeyMapping: { [key: string]: string } = {
   "no-occurrance": "NO",
   "not-estimated": "NE",
   "confidential-information": "C",
-  "presented-elsewhere": "IE",
+  "included-elsewhere": "IE",
 };
 
 // converts sector GPC reference number to index of sheet in CIRIS file

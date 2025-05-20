@@ -201,7 +201,7 @@
   "no-occurrance": "La actividad o proceso no ocurre o existe dentro de la ciudad",
   "not-estimated": "Las emisiones para esta actividad no están estimadas",
   "confidential-information": "Las emisiones podrían llevar a la divulgación de información confidencial",
-  "presented-elsewhere": "Las emisiones de esta actividad se estiman y se presentan en otro lugar",
+  "included-elsewhere": "Las emisiones de esta actividad se estiman y se presentan en otro lugar",
   "unavailable-explanation": "Explicación/ Justificación",
   "unavailable-explanation-placeholder": "Escriba en detalle por qué este valor no está incluido",
   "unavailable-explanation-required": "Por favor, añade una explicación/justificación",
@@ -1208,7 +1208,6 @@
   "emissions-from-grid-supplied-energy-consumed-in-power-plant-auxiliary-operations-within-the-city-boundary": "Emisiones de energía suministrada por la red consumida en operaciones auxiliares de la planta de energía dentro del límite de la ciudad",
   "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-railways": "Emisiones de energía suministrada por la red consumida dentro del límite de la ciudad para ferrocarriles",
   "deselect-all": "Deseleccionar todo",
-  "pe": "PE (Presentado en otro lugar)",
   "success": "Éxito",
   "notation-keys-updated": "Claves de notación actualizadas",
   "quick-action-applied": "Acción rápida aplicada",
@@ -1218,5 +1217,6 @@
   "no-unfinished-subsectors": "No hay subsectores sin terminar.",
   "changes-undone": "Cambios deshechos",
   "industrial-processes-and-product-uses": "Procesos industriales y usos de productos (IPPU)",
-  "agriculture-forestry-and-other-land-use": "Agricultura, Silvicultura y Otro Uso de la Tierra (ASOUT)"
+  "agriculture-forestry-and-other-land-use": "Agricultura, Silvicultura y Otro Uso de la Tierra (ASOUT)",
+  "pe": "PE (Presentado en otro lugar)"
 }

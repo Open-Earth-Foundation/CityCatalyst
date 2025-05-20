@@ -4043,7 +4043,13 @@
                   "waste-composition-paper",
                   "waste-composition-wood",
                   "waste-composition-textiles",
-                  "waste-composition-industrial"
+                  "waste-composition-industrial",
+                  "waste-composition-leather",
+                  "waste-composition-plastics",
+                  "waste-composition-metal",
+                  "waste-composition-glass",
+                  "waste-composition-nappies",
+                  "waste-composition-other"
                 ],
                 "required": false
               },
@@ -4096,7 +4102,7 @@
       ]
     }
   },
-  "III.1.3": {
+  "III.1.2": {
     "scope": 3,
     "activityTypeField": "total-municipal-solid-waste-disposed",
     "methodologies": [
@@ -4308,7 +4314,7 @@
       ]
     }
   },
-  "III.2.3": {
+  "III.2.2": {
     "scope": 3,
     "methodologies": [
       {
@@ -4516,7 +4522,7 @@
       ]
     }
   },
-  "III.3.3": {
+  "III.3.2": {
     "scope": 3,
     "methodologies": [
       {

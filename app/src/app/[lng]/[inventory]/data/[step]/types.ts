@@ -72,7 +72,7 @@ export type SubcategoryData = {
     | "no-occurrance"
     | "not-estimated"
     | "confidential-information"
-    | "presented-elsewhere"
+    | "included-elsewhere"
     | "";
   unavailableExplanation: string;
   activity: ActivityData;

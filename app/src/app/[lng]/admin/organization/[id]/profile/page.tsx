@@ -24,6 +24,7 @@ import { Field } from "@/components/ui/field";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { OrganizationRole } from "@/util/types";
 import { Trans } from "react-i18next";
+import ProgressLoader from "@/components/ProgressLoader";
 
 const AdminOrganizationIdProfilePage = ({
   params: { lng, id },
@@ -111,13 +112,7 @@ const AdminOrganizationIdProfilePage = ({
   };
 
   if (isOrganizationLoading) {
-    return (
-      <Box className="w-full py-12 flex items-center justify-center">
-        <ProgressCircleRoot value={null}>
-          <ProgressCircleRing cap="round" />
-        </ProgressCircleRoot>
-      </Box>
-    );
+    return <ProgressLoader />;
   }
 
   return (

@@ -262,6 +262,29 @@ export default class UserService {
       throw new createHttpError.Forbidden("Forbidden");
   }
 
+  public static async validateIsAdminOrOrgAdmin(
+    session: AppSession | null,
+    organizationId: string,
+  ) {
+    if (!session) throw new createHttpError.Forbidden("Forbidden");
+
+    const adminUser = !session || session.user.role !== Roles.Admin;
+
+    if (adminUser) {
+      return;
+    }
+
+    const orgOwner = await db.models.OrganizationAdmin.findOne({
+      where: { userId: session.user.id, organizationId: organizationId },
+    });
+
+    if (orgOwner) {
+      return;
+    }
+
+    throw new createHttpError.Forbidden("Forbidden");
+  }
+
   private static async findAllProjectForAdminAndOwner(organizationId: string) {
     return await Project.findAll({
       where: { organizationId },
@@ -282,7 +305,7 @@ export default class UserService {
         {
           model: db.models.City,
           as: "cities",
-          attributes: ["cityId", "name"],
+          attributes: ["cityId", "name", "countryLocode"],
           include: [
             {
               model: db.models.Inventory,
@@ -309,7 +332,7 @@ export default class UserService {
           {
             model: db.models.City,
             as: "cities",
-            attributes: ["cityId", "name"],
+            attributes: ["cityId", "name", "countryLocode"],
             include: [
               {
                 model: db.models.Inventory,
@@ -330,7 +353,7 @@ export default class UserService {
       include: {
         model: db.models.City,
         as: "city",
-        attributes: ["cityId", "name"],
+        attributes: ["cityId", "name", "countryLocode"],
         include: [
           {
             model: db.models.Project,
@@ -393,6 +416,7 @@ export default class UserService {
         name: city.name as string,
         cityId: city.cityId as string,
         inventories: city.inventories as any,
+        countryLocode: city.countryLocode as string,
       });
     }
 

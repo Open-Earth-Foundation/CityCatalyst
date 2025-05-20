@@ -32,6 +32,12 @@ import ProgressLoader from "@/components/ProgressLoader";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useTheme } from "next-themes";
 import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
+import ManagePasswordTabContent from "@/components/Tabs/MyProfileTab/ManagePasswordTabContent";
+import AccountDetailsTab from "./account-details-tab";
+import OrganizationDetailsTab from "./organization-details-tab";
+import TabContent from "@/components/ui/tab-content";
+import TabTrigger from "@/components/ui/tab-trigger";
+import { Trans } from "react-i18next";
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const { showErrorToast } = UseErrorToast({
@@ -130,6 +136,18 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
     );
   }, [selectedTheme, organization?.themeId, file, clearImage]);
 
+  const { numCities, totalCities } = useMemo(
+    () =>
+      organization?.projects.reduce(
+        (acc, proj) => ({
+          numCities: acc.numCities + (proj?.cities?.length ?? 0),
+          totalCities: acc.totalCities + BigInt(proj?.cityCountLimit),
+        }),
+        { numCities: 0, totalCities: BigInt(0) },
+      ) ?? { numCities: 0, totalCities: BigInt(0) },
+    [organization?.projects],
+  );
+
   if (isLoading || isOrganizationLoading) return <ProgressLoader />;
 
   return (
@@ -139,43 +157,18 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
       flexDirection="row"
       variant="subtle"
       gap="36px"
-      defaultValue="brand-settings"
+      defaultValue="account-details"
     >
       <Tabs.List display="flex" flexDirection="column" gap="12px">
-        <Tabs.Trigger
-          value="brand-settings"
-          fontFamily="heading"
-          justifyContent={"left"}
-          letterSpacing={"wide"}
-          color="content.secondary"
-          lineHeight="20px"
-          fontStyle="normal"
-          fontSize="label.lg"
-          height="52px"
-          w={"223px"}
-          _selected={{
-            color: "content.link",
-            fontSize: "label.lg",
-            fontWeight: "medium",
-            backgroundColor: "background.neutral",
-            borderRadius: "8px",
-            borderWidth: "1px",
-            borderStyle: "solid",
-            borderColor: "content.link",
-          }}
-        >
-          {t("brand-settings")}
-        </Tabs.Trigger>
+        <TabTrigger value="account-details">{t("account-details")}</TabTrigger>
+        <TabTrigger value="brand-settings">{t("brand-settings")}</TabTrigger>
+        <TabTrigger value="manage-password">{t("manage-password")}</TabTrigger>
       </Tabs.List>
-      <Tabs.Content
-        value="brand-settings"
-        display="flex"
-        padding={0}
-        flexDirection="column"
-        gap="36px"
-        borderRadius="8px"
-      >
-        <Box bg="background.default" p={6} rounded={2} w="full">
+      <TabContent value="organization-details">
+        <OrganizationDetailsTab organization={organization} />
+      </TabContent>
+      <TabContent value="brand-settings">
+        <Box backgroundColor="white" p={6}>
           <Text
             color="content.primary"
             fontWeight="semibold"
@@ -305,7 +298,45 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
             </Box>
           </Box>
         </Box>
-      </Tabs.Content>
+      </TabContent>
+      <TabContent value="account-details">
+        <AccountDetailsTab />
+        {userAccessStatus?.isOrgOwner && (
+          <Box backgroundColor="white" p={6} marginTop={4}>
+            <Text
+              fontSize="title.md"
+              color="content.secondary"
+              fontWeight="semibold"
+            >
+              {t("plan-details")}
+            </Text>
+            <Text
+              fontSize="body.lg"
+              fontWeight="normal"
+              color="content.tertiary"
+            >
+              <Trans
+                i18nKey="plan-details-caption"
+                t={t}
+                values={{
+                  name: organization?.name,
+                  num_projects: organization?.projects?.length ?? 0,
+                  num_cities: numCities,
+                  total_cities: totalCities ?? 0,
+                }}
+                components={{
+                  bold: <strong />,
+                }}
+              />
+            </Text>
+          </Box>
+        )}
+      </TabContent>
+      <TabContent value="manage-password">
+        <Box bg="background.default">
+          <ManagePasswordTabContent t={t} />
+        </Box>
+      </TabContent>
     </Tabs.Root>
   );
 };

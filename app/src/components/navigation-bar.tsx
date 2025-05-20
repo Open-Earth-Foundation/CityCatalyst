@@ -43,6 +43,7 @@ import ProjectDrawer from "@/components/HomePage/ProjectDrawer";
 import { TbSettingsCog } from "react-icons/tb";
 import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 import { useTheme } from "next-themes";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -371,7 +372,8 @@ export function NavigationBar({
                     </MenuItem>
                   </>
                 )}
-                {!restrictAccess && (
+
+                {!restrictAccess && !userAccessStatus?.isOrgOwner && (
                   <MenuItem
                     value="settings"
                     paddingTop="12px"
@@ -399,33 +401,35 @@ export function NavigationBar({
                     </Box>
                   </MenuItem>
                 )}
-                {userAccessStatus?.isOrgOwner && !restrictAccess && (
-                  <MenuItem
-                    paddingTop="12px"
-                    paddingBottom="12px"
-                    value="account-settings"
-                    px="16px"
-                    onClick={() => {
-                      router.push(
-                        `/organization/${userAccessStatus.organizationId}/account-settings`,
-                      );
-                    }}
-                  >
-                    <Box display="flex" alignItems="center">
-                      <Icon
-                        as={TbSettingsCog}
-                        boxSize={6}
-                        color={
-                          userMenuHighlight === "account-settings"
-                            ? "background.neutral"
-                            : "content.alternative"
-                        }
-                        mr={4}
-                      />
-                      <Text fontSize="title.md">{t("account-settings")}</Text>
-                    </Box>
-                  </MenuItem>
-                )}
+                {userAccessStatus?.isOrgOwner &&
+                  !restrictAccess &&
+                  hasFeatureFlag(FeatureFlags.ACCOUNT_SETTINGS_ENABLED) && (
+                    <MenuItem
+                      paddingTop="12px"
+                      paddingBottom="12px"
+                      value="account-settings"
+                      px="16px"
+                      onClick={() => {
+                        router.push(
+                          `/organization/${userAccessStatus.organizationId}/account-settings`,
+                        );
+                      }}
+                    >
+                      <Box display="flex" alignItems="center">
+                        <Icon
+                          as={TbSettingsCog}
+                          boxSize={6}
+                          color={
+                            userMenuHighlight === "account-settings"
+                              ? "background.neutral"
+                              : "content.alternative"
+                          }
+                          mr={4}
+                        />
+                        <Text fontSize="title.md">{t("account-settings")}</Text>
+                      </Box>
+                    </MenuItem>
+                  )}
                 <MenuItem
                   paddingTop="12px"
                   paddingBottom="12px"

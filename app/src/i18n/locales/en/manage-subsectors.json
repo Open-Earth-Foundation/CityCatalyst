@@ -201,7 +201,7 @@
   "no-occurrance": "The activity or process does not occur or exist within the city",
   "not-estimated": "The emissions for this activity are not estimated",
   "confidential-information": "The emissions could lead to the disclosure of confidential information",
-  "presented-elsewhere": "The emissions for this activity are estimated and presented elsewhere",
+  "included-elsewhere": "The emissions for this activity are estimated and presented elsewhere",
   "unavailable-explanation": "Explanation/ Justification",
   "unavailable-explanation-placeholder": "Write in detail why this value is not included",
   "unavailable-explanation-required": "Please add an explanation/ justification",

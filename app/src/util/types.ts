@@ -434,6 +434,7 @@ export type ProjectWithCities = {
   cities: {
     cityId: string;
     name: string;
+    countryLocode: string;
     inventories: {
       inventoryId: string;
       year: number;
@@ -505,3 +506,10 @@ export type OrganizationWithThemeResponse = {
     themeKey: string;
   };
 };
+
+export interface UpdateUserPayload {
+  name: string;
+  email: string;
+  userId: string;
+  title?: string;
+}

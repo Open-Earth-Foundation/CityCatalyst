@@ -117,5 +117,8 @@
   "city-transfer-error": "Falló la transferencia de la ciudad",
   "search-city-placeholder": "Buscar ciudad",
   "n-a": "N/D",
-  "cities": "Ciudades"
+  "cities": "Ciudades",
+  "save-changes": "Guardar Cambios",
+  "no-cities": "Sin ciudades",
+  "no-cities-available": "No hay ciudades disponibles"
 }

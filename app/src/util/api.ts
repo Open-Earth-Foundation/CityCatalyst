@@ -11,6 +11,7 @@ import OpenAI from "openai";
 import { db } from "@/models";
 import { ValidationError } from "sequelize";
 import { ManualInputValidationError } from "@/lib/custom-errors/manual-input-error";
+import { logger } from "@/services/logger";
 
 export type ApiResponse = NextResponse | StreamingTextResponse;
 
@@ -24,21 +25,45 @@ export function apiHandler(handler: NextHandler) {
     req: NextRequest,
     props: { params: Record<string, string> },
   ) => {
+    const startTime = Date.now();
+    let result: ApiResponse;
+    let session: AppSession | null = null;
+    let error: Error | null = null;
     try {
       if (!db.initialized) {
         await db.initialize();
       }
 
-      const session = await Auth.getServerSession();
+      session = await Auth.getServerSession();
       const context = {
         ...props,
         session,
       };
 
-      return await handler(req, context);
+      result = await handler(req, context);
     } catch (err) {
-      return errorHandler(err, req);
+      error = err as Error;
+      result = errorHandler(err, req);
     }
+
+    const record = {
+      method: req.method,
+      path: new URL(req.url).pathname,
+      status: result.status,
+      user: session?.user?.email,
+      duration: Date.now() - startTime,
+      error: error ? error.message : undefined,
+    };
+
+    if (result.status >= 500) {
+      logger.error(record);
+    } else if (result.status >= 400) {
+      logger.warn(record);
+    } else {
+      logger.info(record);
+    }
+
+    return result;
   };
 }
 

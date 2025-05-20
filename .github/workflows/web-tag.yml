@@ -164,10 +164,12 @@ jobs:
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://app.openclimate.network" \
             "OPENCLIMATE_API_URL=https://app.openclimate.network" \
             "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE" \
+            "AWS_FILE_UPLOAD_S3_BUCKET_ID=citycatalyst-files-prod" \
+            "AWS_FILE_UPLOAD_REGION=us-east-1" \
             "AWS_REGION"=${{secrets.AWS_REGION}} \
-            "AWS_ACCESS_KEY_ID"=${{secrets.AWS_ACCESS_KEY_ID}} \
-            "AWS_SECRET_ACCESS_KEY"=${{secrets.AWS_SECRET_ACCESS_KEY}} \
-            "AWS_S3_BUCKET_ID"=${{secrets.AWS_S3_BUCKET_ID}} \
+            "AWS_ACCESS_KEY_ID"=${{secrets.AWS_ACCESS_KEY_ID_PROD}} \
+            "AWS_SECRET_ACCESS_KEY"=${{secrets.AWS_SECRET_ACCESS_KEY_PROD}} \
+            "AWS_S3_BUCKET_ID"=${{secrets.AWS_S3_BUCKET_ID_PROD}} \
             CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}}
           kubectl create -f k8s/prod/cc-prod-create-admin.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default

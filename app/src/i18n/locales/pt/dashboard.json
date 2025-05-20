@@ -191,5 +191,6 @@
   "dashboard": "Painel de controle",
   "about": "Sobre",
   "collaborators": "Colaboradores",
-  "go-to": "Vá para..."
+  "go-to": "Vá para...",
+  "default-project": "Projeto padrão"
 }

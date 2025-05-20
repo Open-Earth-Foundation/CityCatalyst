@@ -68,9 +68,7 @@ const AdminOrganizationProjectsPage = ({
   }, [projects]);
 
   if (isOrganizationLoading) {
-    return (
-        <ProgressLoader/>
-    );
+    return <ProgressLoader />;
   }
 
   return (
@@ -123,7 +121,6 @@ const AdminOrganizationProjectsPage = ({
 
       {!isProjectDataLoading && projects && projects.length > 0 && (
         <DataTable
-          t={t}
           searchable={true}
           pagination={true}
           data={[...transformedProjects].reverse()}

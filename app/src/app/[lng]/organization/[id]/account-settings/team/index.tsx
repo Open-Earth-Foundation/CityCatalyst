@@ -47,13 +47,10 @@ import { Tag } from "@/components/ui/tag";
 import AddCollaboratorsModal from "@/components/HomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
+import { Trans } from "react-i18next";
 
-const AdminOrganizationTeamPage = ({
-  params: { lng, id },
-}: {
-  params: { lng: string; id: string };
-}) => {
-  const { t } = useTranslation(lng, "admin");
+const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
+  const { t } = useTranslation(lng, "settings");
 
   const TagMapping = {
     [OrganizationRole.ORG_ADMIN]: {
@@ -128,6 +125,14 @@ const AdminOrganizationTeamPage = ({
     );
   }, [selectedCity, selectedProject, projectsData]);
 
+  const selectedProjectData = useMemo(() => {
+    if (!projectsData) return null;
+    const selectedProjectData = projectsData.find(
+      (project) => project.projectId === selectedProject[0],
+    );
+    return selectedProjectData;
+  }, [selectedProject, projectsData]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToRemove, setUserToRemove] = useState<ProjectUserResponse | null>(
@@ -150,10 +155,10 @@ const AdminOrganizationTeamPage = ({
             textTransform="capitalize"
             color="content.secondary"
           >
-            {t("org-project-heading", { name: organization?.name })}
+            {t("teams")}
           </Heading>
           <Text color="content.tertiary" fontSize="body.lg">
-            {t("org-project-caption", { name: organization?.name })}
+            {t("teams-description")}
           </Text>
         </Box>
         <Button
@@ -321,12 +326,19 @@ const AdminOrganizationTeamPage = ({
                 label: TagMapping[item as OrganizationRole].text,
               }))}
               filterProperty={"role"}
-              title={`${selectedCityData ? selectedCityData.name + " ," : ""} ${t(
-                "org-team-heading",
-                {
-                  name: organization?.name,
-                },
-              )}`}
+              title={organization?.name as string}
+              subtitle={
+                <Trans
+                  i18nKey="collaborators-subheading"
+                  t={t}
+                  values={{
+                    name: selectedCityData?.name || selectedProjectData?.name,
+                  }}
+                  components={{
+                    bold: <strong />,
+                  }}
+                />
+              }
               columns={[
                 { header: t("email"), accessor: "email" },
                 { header: t("role"), accessor: "role" },
@@ -430,4 +442,4 @@ const AdminOrganizationTeamPage = ({
   );
 };
 
-export default AdminOrganizationTeamPage;
+export default TeamSettings;

@@ -79,10 +79,10 @@ export function Hero({
                     <Link
                       href={`/public/project/${inventory?.city?.project?.projectId}`}
                     >
-                      <ProjectTitle inventory={inventory} />
+                      <ProjectTitle inventory={inventory} t={t} />
                     </Link>
                   ) : (
-                    <ProjectTitle inventory={inventory} />
+                    <ProjectTitle inventory={inventory} t={t} />
                   )}
                   <Box className="flex items-center gap-4">
                     {inventory?.city ? (
@@ -309,7 +309,13 @@ export function Hero({
   );
 }
 
-function ProjectTitle({ inventory }: { inventory: InventoryResponse }) {
+function ProjectTitle({
+  inventory,
+  t,
+}: {
+  inventory: InventoryResponse;
+  t: TFunction;
+}) {
   return (
     <Text
       fontSize="title.md"
@@ -317,7 +323,9 @@ function ProjectTitle({ inventory }: { inventory: InventoryResponse }) {
       fontWeight="semibold"
       color="white"
     >
-      {inventory?.city?.project?.name}
+      {inventory?.city?.project?.name === "cc_project_default"
+        ? t("default-project")
+        : inventory?.city?.project?.name}
     </Text>
   );
 }

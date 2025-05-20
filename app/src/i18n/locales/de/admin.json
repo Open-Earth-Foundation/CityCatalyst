@@ -118,5 +118,7 @@
   "search-city-placeholder": "Stadt suchen",
   "n-a": "N/V",
   "cities": "Städte",
-  "save-changes": "Änderungen Speichern"
+  "save-changes": "Änderungen Speichern",
+  "no-cities": "Keine Städte",
+  "no-cities-available": "Keine Städte verfügbar"
 }

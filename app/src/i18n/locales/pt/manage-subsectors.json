@@ -11,7 +11,7 @@
   "na-description": "A categoria não se aplica neste contexto.",
   "no": "NO (Não Ocorrendo)",
   "no-description": "Esta atividade não ocorre na cidade (por exemplo, não há transporte marítimo em uma cidade sem acesso ao mar).",
-  "ie": "IE (Incluído em outro lugar)",
+  "ie": "IE (Incluído em Outro Lugar)",
   "ie-description": "As emissões são relatadas sob uma categoria diferente",
   "c": "IC (Informação Confidencial)",
   "c-description": "Os dados existem, mas não podem ser relatados devido a restrições de confidencialidade.",

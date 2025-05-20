@@ -136,17 +136,6 @@ export function NavigationBar({
     setTheme("blue_theme");
   }
 
-  console.log(
-    restrictAccess,
-    userAccessStatus?.isOrgOwner,
-    isPublic,
-    "the data",
-  );
-  console.log(
-    (!restrictAccess && !userAccessStatus?.isOrgOwner) ||
-      !hasFeatureFlag(FeatureFlags.ACCOUNT_SETTINGS_ENABLED),
-  );
-
   return (
     <Box
       className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50 w-full"

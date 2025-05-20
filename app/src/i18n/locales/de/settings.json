@@ -114,5 +114,17 @@
   "account-brand-updated": "Konto- und Markeneinstellungen erfolgreich aktualisiert",
   "error-message": "Ein Fehler ist aufgetreten",
   "position": "Titel",
-  "position-description": "Geben Sie Ihren Titel oder Beruf an."
+  "position-description": "Geben Sie Ihren Titel oder Beruf an.",
+  "team": "Mannschaft",
+  "teams": "Mannschaften",
+  "teams-description": "Hier können Sie Ihren Mitarbeitern Rollen zuweisen oder sie einladen",
+  "invite-collaborator": "Mitarbeiter einladen",
+  "no-cities": "Keine Städte",
+  "collaborators-subheading": "<bold>Mitwirkende</bold> an {{name}}",
+  "projects": "Projekte",
+  "projects-description": "{{orgName}} kann derzeit bis zu {{projectCount}} Projekte mit {{cityCount}} Städten einrichten",
+  "all-cities": "Alle Städte ({{count}})",
+  "all-collaborators": "Alle Mitarbeiter ({{count}})",
+  "all-inventories": "Inventar ({{count}})",
+  "delete-city": "Stadt löschen"
 }

@@ -193,5 +193,6 @@
   "dashboard": "Tablero",
   "about": "Acerca de",
   "collaborators": "Colaboradores",
-  "default-project": "Proyecto predeterminado"
+  "default-project": "Proyecto predeterminado",
+  "go-to": "Ve a..."
 }

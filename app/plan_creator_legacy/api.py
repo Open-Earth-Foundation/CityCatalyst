@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse, JSONResponse
 import httpx
 
 # from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pathlib import Path
 import json
 from datetime import datetime
@@ -39,8 +39,8 @@ task_storage = {}
 
 
 class PlanRequest(BaseModel):
-    action: Dict[str, Any]
-    city_name: str
+    action: Dict[str, Any] = Field(..., description="The action dictionary")
+    city_name: str = Field(..., description="The actual city name and not the locode")
     language: str = "en"  # Default to English
 
 

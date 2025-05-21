@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 # --- Request models ---
 
@@ -55,3 +55,43 @@ class StartPlanCreationResponse(BaseModel):
 class CheckProgressResponse(BaseModel):
     status: str
     error: Optional[str] = None
+
+
+### WIP for the plan creation response ###
+
+
+class PlanMetadata(BaseModel):
+    locode: str
+    cityName: str
+    actionId: str
+    actionName: str
+
+
+class PlanContent(BaseModel):
+    title: str
+    description: str
+    subactions: List[dict] = Field(
+        description="List of subactions with their descriptions"
+    )
+    municipalInstitutions: List[dict] = Field(
+        description="List of institutions with their roles and sources"
+    )
+    milestones: List[dict] = Field(
+        description="List of milestones with their descriptions"
+    )
+    merIndicators: List[dict] = Field(
+        description="List of MER indicators with their descriptions"
+    )
+    climateRisks: List[dict] = Field(
+        description="List of climate risks with their descriptions"
+    )
+    mitigationSectors: List[dict] = Field(
+        description="List of mitigation sectors with their descriptions"
+    )
+
+
+class Plan(BaseModel):
+    metadata: PlanMetadata
+    content: Dict[str, PlanContent] = Field(
+        description="Plan content in different languages, keyed by language code (e.g. 'en', 'es')"
+    )

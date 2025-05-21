@@ -1,5 +1,5 @@
 """
-This is the main file for the CASP API.
+This is the main file for the HIAP API.
 It is responsible for setting up the FastAPI app and adding middleware.
 It also mounts the routers for the different features of the API.
 
@@ -7,7 +7,7 @@ Run it from the /app directory with:
 python main.py
 """
 
-import httpx
+import os
 import uvicorn
 import logging
 from dotenv import load_dotenv
@@ -75,5 +75,8 @@ if __name__ == "__main__":
     setup_logger()
     logger = logging.getLogger(__name__)
 
+    host = os.getenv("API_HOST", "0.0.0.0")
+    port = int(os.getenv("API_PORT", 8000))
+
     logger.info("Starting Uvicorn server")
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_config=None)
+    uvicorn.run(app, host=host, port=port, log_config=None)

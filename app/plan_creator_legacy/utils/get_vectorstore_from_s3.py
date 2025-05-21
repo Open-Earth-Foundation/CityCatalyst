@@ -125,6 +125,7 @@ def get_vectorstore(collection_name: str, local_path: str) -> bool:
 
     # No valid local copy, try to download from S3
     print(f"No valid vector store found at {vector_store_path}")
+    print(f"Looking for S3 bucket name: {S3_BUCKET_NAME}")
     if not S3_BUCKET_NAME:
         print("S3 bucket not configured")
         return False

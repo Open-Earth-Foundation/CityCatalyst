@@ -291,7 +291,6 @@ export default class ManualInputValidationService {
         });
         code = ManualInputValidationErrorCodes.EXCLUSIVE_CONFLICT;
       }
-      console.log("existing record", existingRecord);
 
       if (existingRecord) {
         errorBody = {

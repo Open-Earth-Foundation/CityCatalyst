@@ -57,6 +57,10 @@ app.add_middleware(
 )
 
 
+setup_logger()
+logger = logging.getLogger(__name__)
+
+
 @app.get("/")
 async def root():
     logger.info("Health check endpoint called")
@@ -74,9 +78,6 @@ app.include_router(
 
 
 if __name__ == "__main__":
-    setup_logger()
-    logger = logging.getLogger(__name__)
-
     host = os.getenv("API_HOST", "0.0.0.0")
     port = int(os.getenv("API_PORT", 8000))
 

@@ -100,7 +100,7 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
         # 3. Save the plan
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
         action_id = background_task_input["action"].get("ActionID", "unknown")
-        filename = f"{timestamp}_{action_id}_{background_task_input["cityData"]["locode"]}_{background_task_input["language"]}_climate_action_implementation_plan.md"
+        filename = f"{timestamp}_{action_id}_{background_task_input['cityData']['locode']}_{background_task_input['language']}_climate_action_implementation_plan.md"
         output_path = output_dir / filename
         output_dir.mkdir(parents=True, exist_ok=True)
 

@@ -92,18 +92,16 @@ Dockerfile
 .dockerignore
 .env
 .venv
+k8s/
 
 # Prioritizer
-app/prioritizer/data/prioritized_local_testing/*
+app/prioritizer/data/prioritized_local_testing/
 
 # Plan creator
-app/plan_creator/k8s/*
-app/plan_creator/data/output/*
+app/plan_creator/data/output/
 
 # Plan creator legacy
 # Output files
-app/plan_creator_legacy/data/output/*
+app/plan_creator_legacy/data/output/
 # vector stores
-app/plan_creator_legacy/vector_stores/*
-# k8s
-app/plan_creator_legacy/k8s/*
+app/plan_creator_legacy/vector_stores/

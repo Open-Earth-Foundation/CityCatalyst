@@ -12,5 +12,5 @@ There are 3 subfolders:
 
 Run the following commands:
 
-`docker build -t casp-app .`
-`docker run -it --rm -p 8000:8000 casp-app`
+`docker build -t hiap-app .`
+`docker run -it --rm -p 8000:8000 hiap-app`

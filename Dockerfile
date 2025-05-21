@@ -1,5 +1,5 @@
 # Start with a minimal Python image
-FROM python:3.11-slim
+FROM python:3.13-slim
 
 # Set the working directory
 WORKDIR /app
@@ -9,6 +9,9 @@ COPY requirements.txt ./requirements.txt
 
 # Install dependencies without caching pip files
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the .env file
+COPY .env .env
 
 # Copy the entire app directory (including all subfolders)
 COPY app/ ./

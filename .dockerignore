@@ -1,10 +1,9 @@
+# global
 .git
 __pycache__
 *.pyc
-.env
 .venv
 Dockerfile
-*.log
 
 # plan_creator
 

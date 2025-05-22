@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hiap
+  namespace: default
+  labels:
+    app: hiap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hiap
+  template:
+    metadata:
+      labels:
+        app: hiap
+    spec:
+      containers:
+        - name: hiap
+          image: ghcr.io/open-earth-foundation/hiap:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: API_HOST
+              value: "0.0.0.0"
+            - name: API_PORT
+              value: "8000"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          volumeMounts:
+            - name: output-storage
+              mountPath: /app/plan_creator_legacy/data/output
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: output-storage
+          persistentVolumeClaim:
+            claimName: hiap-plan-output-pvc

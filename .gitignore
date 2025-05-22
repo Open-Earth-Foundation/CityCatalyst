@@ -87,12 +87,10 @@ my_db.*
 .cap/Scripts/langsmith.exe
 
 # global
-.github/
 Dockerfile
 .dockerignore
 .env
 .venv
-k8s/
 
 # Prioritizer
 app/prioritizer/data/prioritized_local_testing/

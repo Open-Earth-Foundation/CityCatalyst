@@ -17,3 +17,6 @@ app/plan_creator_legacy/vector_stores/
 
 # Prioritizer
 app/prioritizer/data/prioritized_local_testing/
+
+# testing
+manual_k8s.yaml

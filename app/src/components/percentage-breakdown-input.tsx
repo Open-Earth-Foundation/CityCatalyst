@@ -122,7 +122,9 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
     const total = Object.values(breakDownValues).reduce<number>(
       (acc: number, val) =>
         acc +
-        parseFloat(val.toString()?.trim().length > 0 ? (val as string) : "0"),
+        parseFloat(
+          (val ?? "").toString().trim().length > 0 ? (val as string) : "0",
+        ),
       0,
     );
     if (total === 100) {

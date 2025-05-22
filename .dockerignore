@@ -1,16 +1,17 @@
 # global
 .git
 __pycache__
-*.pyc
 .venv
 Dockerfile
 
 # plan_creator
-
+app/plan_creator/data/output/
 
 # plan_creator_legacy
-plan_creator_legacy/data/input/
-plan_creator_legacy/data/output/
-plan_creator_legacy/vector_stores/
+app/plan_creator_legacy/data/input_local_testing/
+app/plan_creator_legacy/data/output/
+app/plan_creator_legacy/vector_stores/
 
 # prioritizer
+app/prioritizer/data/prioritized_local_testing/
+app/prioritizer/data/schema/

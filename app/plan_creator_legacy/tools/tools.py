@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from typing import Tuple, Union
 from langchain.tools import tool
 from langchain_community.tools.tavily_search import TavilySearchResults

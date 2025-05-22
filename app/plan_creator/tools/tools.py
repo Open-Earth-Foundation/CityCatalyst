@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from typing import Tuple, Union
 from langchain.tools import tool
 from plan_creator_legacy.utils.get_vectorstore_local import get_vectorstore

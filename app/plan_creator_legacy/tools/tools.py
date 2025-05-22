@@ -1,10 +1,5 @@
-from dotenv import load_dotenv
-
-load_dotenv()
-
 from typing import Tuple, Union
 from langchain.tools import tool
-from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain.schema import Document
@@ -168,15 +163,19 @@ def retriever_indicators_tool(
     return docs_and_scores
 
 
-search_municipalities_tool = TavilySearchResults(
-    max_results=2,
-    search_depth="advanced",  # change between 'basic' for testing and 'advanced' for production
-    description="""
-    Search for municipal institutions that might be relevant for the implementation of the specific climate action for the given city.
-    
-    Input: A search query in the national language.
-    """,
-)
+def get_search_municipalities_tool():
+    # Lazily import because of API issues
+    from langchain_community.tools.tavily_search import TavilySearchResults
+
+    return TavilySearchResults(
+        max_results=2,
+        search_depth="advanced",  # change between 'basic' for testing and 'advanced' for production
+        description="""
+        Search for municipal institutions that might be relevant for the implementation of the specific climate action for the given city.
+        
+        Input: A search query in the national language.
+        """,
+    )
 
 
 # The reasoning_tool is experimental. It increases the time a lot but could be used to make sure that the retrieved chunks are relevant.

@@ -61,15 +61,15 @@ jobs:
 
       - name: Re-deploying service
         run: |
-          kubectl apply -f k8s/deployment.yaml \
+          kubectl apply -f k8s/
           kubectl set env deployment/hiap \
             LANGCHAIN_PROJECT=${{ vars.LANGCHAIN_PROJECT }} \
             LANGCHAIN_ENDPOINT=${{ vars.LANGCHAIN_ENDPOINT }} \
             LANGCHAIN_TRACING_V2=${{ vars.LANGCHAIN_TRACING_V2 }} \
-            S3_BUCKET_NAME=${{ vars.S3_BUCKET_NAME }}
+            S3_BUCKET_NAME=${{ vars.S3_BUCKET_NAME }} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
             LANGCHAIN_API_KEY=${{secrets.LANGCHAIN_API_KEY}} \
             TAVILY_API_KEY=${{secrets.TAVILY_API_KEY}} \
             AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} \
-            AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}} \
+            AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
           kubectl rollout restart deployment hiap -n default

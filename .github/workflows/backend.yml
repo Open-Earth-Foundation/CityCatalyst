@@ -60,13 +60,18 @@ jobs:
         run: kubectl get pods -n default
 
       - name: Re-deploying service
+        env:
+          LANGCHAIN_PROJECT: ${{vars.LANGCHAIN_PROJECT}}
+          LANGCHAIN_ENDPOINT: ${{vars.LANGCHAIN_ENDPOINT}}
+          LANGCHAIN_TRACING_V2: ${{vars.LANGCHAIN_TRACING_V2}}
+          S3_BUCKET_NAME: ${{vars.S3_BUCKET_NAME}}
         run: |
           kubectl apply -f k8s/
           kubectl set env deployment/hiap \
-            LANGCHAIN_PROJECT=${{ vars.LANGCHAIN_PROJECT }} \
-            LANGCHAIN_ENDPOINT=${{ vars.LANGCHAIN_ENDPOINT }} \
-            LANGCHAIN_TRACING_V2=${{ vars.LANGCHAIN_TRACING_V2 }} \
-            S3_BUCKET_NAME=${{ vars.S3_BUCKET_NAME }} \
+            LANGCHAIN_PROJECT=$LANGCHAIN_PROJECT \
+            LANGCHAIN_ENDPOINT=$LANGCHAIN_ENDPOINT \
+            LANGCHAIN_TRACING_V2=$LANGCHAIN_TRACING_V2 \
+            S3_BUCKET_NAME=$S3_BUCKET_NAME \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
             LANGCHAIN_API_KEY=${{secrets.LANGCHAIN_API_KEY}} \
             TAVILY_API_KEY=${{secrets.TAVILY_API_KEY}} \

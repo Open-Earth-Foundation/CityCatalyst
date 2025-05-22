@@ -1,0 +1,8 @@
+{
+  "not-found-description": "On dirait que nous nous sommes égarés dans le brouillard des émissions. Veuillez retourner au tableau de bord",
+  "goto-dashboard": "Accéder au tableau de bord",
+  "invite-not-valid": "Cette invitation n'est pas valide",
+  "invite-not-valid-description": "\"Le lien que vous utilisez est soit expiré, soit revendiqué, soit vous n'avez pas la permission d'y accéder.\nVeuillez demander à l'invitant de vous le renvoyer.\nSi vous pensez que c'est une erreur, veuillez\"",
+  "contact-us": "contactez-nous.",
+  "go-back": "Retourner"
+}

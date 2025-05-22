@@ -1,6 +1,7 @@
 # global
 .git
 __pycache__
+.env
 .venv
 Dockerfile
 

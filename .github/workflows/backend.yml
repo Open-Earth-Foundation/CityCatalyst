@@ -61,6 +61,7 @@ jobs:
 
       - name: Re-deploying service
         run: |
+          kubectl apply -f k8s/deployment.yaml \
           kubectl set env deployment/hiap \
             LANGCHAIN_PROJECT=${{ vars.LANGCHAIN_PROJECT }} \
             LANGCHAIN_ENDPOINT=${{ vars.LANGCHAIN_ENDPOINT }} \

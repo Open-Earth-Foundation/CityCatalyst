@@ -25,8 +25,8 @@ from utils.logging_config import setup_logger
 
 
 app = FastAPI(
-    title="Climate Action Selection and Prioritization",
-    description="Unified API for plan creation and prioritization",
+    title="High Impact Actions Prioritizer",
+    description="API for prioritizing high impact actions",
     version="1.0.0",
 )
 

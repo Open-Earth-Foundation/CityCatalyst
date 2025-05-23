@@ -24,18 +24,12 @@ from pathlib import Path
 import boto3
 import os
 import sys
-import logging
-from app.utils.logging_config import setup_logger
 
 # S3 Configuration
 S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 # Get project root directory
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-
-# Setup logging configuration
-setup_logger()
-logger = logging.getLogger(__name__)
 
 
 def is_valid_vectorstore(path: Path) -> bool:
@@ -71,21 +65,21 @@ def download_from_s3(collection_name: str, local_path: Path) -> bool:
         try:
             s3_client = boto3.client("s3")
             s3_client.list_buckets()
-            logger.info("S3 connection: OK")
+            print("S3 connection: OK")
         except Exception as e:
-            logger.error(f"S3 connection failed: {e}", exc_info=True)
+            print(f"S3 connection failed: {e}")
 
         # Create the local directory if it doesn't exist
         local_path.mkdir(parents=True, exist_ok=True)
 
         # List objects in the S3 bucket with the collection prefix
         s3_prefix = f"data/vector_stores/{collection_name}/"
-        logger.info(f"Looking for vector store in S3 at: {S3_BUCKET_NAME}/{s3_prefix}")
+        print(f"Looking for vector store in S3 at: {S3_BUCKET_NAME}/{s3_prefix}")
 
         response = s3_client.list_objects_v2(Bucket=S3_BUCKET_NAME, Prefix=s3_prefix)
 
         if "Contents" not in response:
-            logger.warning(f"No vector store found in S3 at {s3_prefix}")
+            print(f"No vector store found in S3 at {s3_prefix}")
             return False
 
         # Download each file
@@ -99,15 +93,15 @@ def download_from_s3(collection_name: str, local_path: Path) -> bool:
             local_file_path = local_path / relative_path
             local_file_path.parent.mkdir(parents=True, exist_ok=True)
 
-            logger.info(f"Downloading: {obj['Key']} -> {local_file_path}")
+            print(f"Downloading: {obj['Key']} -> {local_file_path}")
             # Download the file
             s3_client.download_file(S3_BUCKET_NAME, obj["Key"], str(local_file_path))
 
-        logger.info(f"Successfully downloaded vector store from S3 to {local_path}")
+        print(f"Successfully downloaded vector store from S3 to {local_path}")
         return True
 
     except Exception as e:
-        logger.error(f"Error downloading from S3: {e}", exc_info=True)
+        print(f"Error downloading from S3: {e}")
         return False
 
 
@@ -128,19 +122,19 @@ def get_vectorstore(collection_name: str, local_path: str) -> bool:
 
     # Check if we have a valid vector store locally
     if vector_store_path.exists() and is_valid_vectorstore(vector_store_path):
-        logger.info(f"Found existing vector store at {vector_store_path}")
+        print(f"Found existing vector store at {vector_store_path}")
         return True
 
     # No valid local copy, try to download from S3
-    logger.info(f"No valid vector store found at {vector_store_path}")
-    logger.info(f"Looking for S3 bucket name: {S3_BUCKET_NAME}")
+    print(f"No valid vector store found at {vector_store_path}")
+    print(f"Looking for S3 bucket name: {S3_BUCKET_NAME}")
     if not S3_BUCKET_NAME:
-        logger.error(
+        print(
             "S3 bucket name not configured. Please set the S3_BUCKET_NAME environment variable. Terminate execution..."
         )
         return False
 
-    logger.info(f"Attempting to download from S3...")
+    print(f"Attempting to download from S3...")
     return download_from_s3(collection_name, vector_store_path)
 
 
@@ -148,10 +142,10 @@ def check_s3_connection():
     try:
         s3_client = boto3.client("s3")
         s3_client.list_buckets()
-        logger.info("S3 connection: OK")
+        print("S3 connection: OK")
         return True
     except Exception as e:
-        logger.error(f"S3 connection failed: {e}", exc_info=True)
+        print(f"S3 connection failed: {e}")
         return False
 
 
@@ -163,7 +157,7 @@ if __name__ == "__main__":
             collection_name="all_docs_db_small_chunks", local_path="vector_stores"
         )
         if not success:
-            logger.error("Failed to load or create vector store")
+            print("Failed to load or create vector store")
         sys.exit(0)
     except Exception as e:
-        logger.error(f"Unexpected error: {str(e)}", exc_info=True)
+        print(f"Unexpected error: {str(e)}")

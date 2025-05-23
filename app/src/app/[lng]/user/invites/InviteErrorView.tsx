@@ -2,11 +2,9 @@
 import { DisplaySmall } from "@/components/Texts/Display";
 import { useTranslation } from "@/i18n/client";
 import { MdArrowBack } from "react-icons/md";
-import { Box, Link } from "@chakra-ui/layout";
-import { Button, Center, Icon } from "@chakra-ui/react";
+import { Button, Center, Icon, Box, Link } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { BodyXLarge } from "@/components/Texts/Body";
 
 interface InviteErrorViewProps {

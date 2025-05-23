@@ -1239,5 +1239,8 @@
   "waste-composition-metal": "Metal",
   "waste-composition-glass": "Vidro",
   "waste-composition-nappies": "Fraldas",
-  "waste-composition-other": "Outro"
+  "waste-composition-other": "Outro",
+  "no-data": "Sem dados",
+  "table-pagination": "{{start}} - {{end}} de {{total}}",
+  "search-records": "Pesquisar registros"
 }

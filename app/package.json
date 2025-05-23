@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "0.48.0-dev.0",
+  "version": "0.49.0-dev.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -31,6 +31,7 @@
     "prettier": "npx prettier . --write",
     "email": "email dev --dir src/lib/emails",
     "create-admin": "tsx scripts/create-admin.ts",
+    "generate:changelog": "node scripts/generate-changelog.js",
     "upgrade:ui": "npm uninstall @emotion/styled framer-motion && npm install @chakra-ui/react@latest @emotion/react@latest",
     "i18n:update": "for lang in de es pt; do node scripts/update-translation.js $lang; done"
   },
@@ -102,7 +103,7 @@
     "openai": "^4.68.1",
     "pg": "^8.13.0",
     "pg-hstore": "^2.3.4",
-    "pigeon-maps": "^0.21.6",
+    "pigeon-maps": "^0.22.1",
     "pino": "^9.6.0",
     "postcss": "8.4.31",
     "react": "18.3.1",

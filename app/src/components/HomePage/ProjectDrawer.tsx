@@ -79,7 +79,9 @@ const ProjectList = ({
               fontWeight="regular"
               color="content.primary"
             >
-              {project.name}
+              {project.name === "cc_project_default"
+                ? t("default-project")
+                : project.name}
             </Text>
             <Icon color="content.primary" as={MdKeyboardArrowRight} />
           </Button>
@@ -248,7 +250,7 @@ const ProjectDrawer = ({
           <DrawerTitle>
             <Box className="flex justify-between">
               <Text fontSize="headline.sm" color="base.dark">
-                Go to...
+                {t("go-to")}
               </Text>
               <IconButton
                 onClick={onClose}

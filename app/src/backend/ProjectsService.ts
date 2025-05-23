@@ -74,7 +74,6 @@ export class ProjectService {
         ],
       });
 
-
     const cityUserAssociations = await db.models.CityUser.findAll({
       where: {
         userId: userId,
@@ -117,22 +116,23 @@ export class ProjectService {
             name: city.name as string,
             cityId: city.cityId as string,
             inventories: city.inventories as any,
+            countryLocode: city.countryLocode as string,
           })),
         })),
       ...organizationAdminAssociations.flatMap((assoc) =>
-        assoc.organization?.projects
-          .map((project) => ({
-            projectId: project.projectId,
-            name: project.name,
-            organizationId: assoc.organization.organizationId,
-            description: project.description,
-            cityCountLimit: project.cityCountLimit,
-            cities: project.cities.map((city) => ({
-              name: city.name as string,
-              cityId: city.cityId as string,
-              inventories: city.inventories as any,
-            })),
+        assoc.organization?.projects.map((project) => ({
+          projectId: project.projectId,
+          name: project.name,
+          organizationId: assoc.organization.organizationId,
+          description: project.description,
+          cityCountLimit: project.cityCountLimit,
+          cities: project.cities.map((city) => ({
+            name: city.name as string,
+            cityId: city.cityId as string,
+            inventories: city.inventories as any,
+            countryLocode: city.countryLocode as string,
           })),
+        })),
       ),
     ];
 
@@ -170,7 +170,6 @@ export class ProjectService {
           }
           return acc;
         }, {});
-
 
     const projectList = dataList.concat(Object.values(cityUserDataList));
 

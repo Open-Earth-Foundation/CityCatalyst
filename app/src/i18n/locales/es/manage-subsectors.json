@@ -11,7 +11,7 @@
   "na-description": "La categoría no aplica en este contexto.",
   "no": "NO (No Ocurre)",
   "no-description": "Esta actividad no tiene lugar en la ciudad (por ejemplo, no hay transporte marítimo en una ciudad sin acceso al mar).",
-  "ie": "IE (Incluido en otro lugar)",
+  "ie": "IE (Incluido En Otro Lugar)",
   "ie-description": "Las emisiones se informan bajo una categoría diferente",
   "c": "IC (Información Confidencial)",
   "c-description": "Los datos existen pero no pueden ser reportados debido a restricciones de confidencialidad.",
@@ -1218,5 +1218,6 @@
   "changes-undone": "Cambios deshechos",
   "industrial-processes-and-product-uses": "Procesos industriales y usos de productos (IPPU)",
   "agriculture-forestry-and-other-land-use": "Agricultura, Silvicultura y Otro Uso de la Tierra (ASOUT)",
-  "pe": "PE (Presentado en otro lugar)"
+  "pe": "PE (Presentado en otro lugar)",
+  "update": "Actualizar"
 }

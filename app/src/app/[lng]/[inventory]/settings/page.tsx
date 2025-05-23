@@ -19,6 +19,7 @@ export type ProfileInputs = {
   role: string;
   locode: string;
   userId: string;
+  title?: string | null;
 };
 
 export type UserDetails = {

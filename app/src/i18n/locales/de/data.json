@@ -1262,5 +1262,8 @@
   "waste-composition-metal": "Metall",
   "waste-composition-glass": "Glas",
   "waste-composition-nappies": "Windeln",
-  "waste-composition-other": "Andere"
+  "waste-composition-other": "Andere",
+  "no-data": "Keine Daten",
+  "table-pagination": "{{start}} - {{end}} von {{total}}",
+  "search-records": "Aufzeichnungen suchen"
 }

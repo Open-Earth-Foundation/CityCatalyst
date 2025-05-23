@@ -48,9 +48,11 @@ import {
   ACTION_TYPES,
   ThemeResponse,
   OrganizationWithThemeResponse,
+  UpdateUserPayload
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 
 export const api = createApi({
   reducerPath: "api",
@@ -432,11 +434,7 @@ export const api = createApi({
 
       setCurrentUserData: builder.mutation<
         UserAttributes,
-        {
-          name: string;
-          email: string;
-          userId: string;
-        }
+        UpdateUserPayload
       >({
         query: (data) => ({
           url: `/user/${data.userId}`,

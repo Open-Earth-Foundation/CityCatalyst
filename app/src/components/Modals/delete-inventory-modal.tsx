@@ -44,7 +44,7 @@ const DeleteInventoryDialog: FC<DeleteInventoryDialogProps> = ({
     reset,
   } = useForm<{ password: string }>();
   const [requestPasswordConfirm] = api.useRequestVerificationMutation();
-  const { data: token } = api.useGetVerifcationTokenQuery({
+  const { data: token } = api.useGetVerificationTokenQuery({
     skip: !userData,
   });
   const [deleteInventory, { isLoading }] = api.useDeleteInventoryMutation();

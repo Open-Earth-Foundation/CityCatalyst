@@ -18,7 +18,7 @@ spec:
       containers:
         - name: hiap
           image: ghcr.io/open-earth-foundation/hiap:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
               name: http

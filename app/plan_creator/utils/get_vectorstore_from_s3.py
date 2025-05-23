@@ -15,26 +15,28 @@ Example:
     True
 """
 
-from pathlib import Path
-import boto3
-import os
-import sys
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
+from pathlib import Path
+import boto3
+import os
+import sys
+import logging
+from app.utils.logging_config import setup_logger
+
+
 # S3 Configuration
 S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 # Get project root directory
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = Path(__file__).parent.parent.parent
 
-
-def log_error(message: str):
-    """Log error message and exit with error code 1"""
-    print(f"ERROR: {message}", file=sys.stderr)
-    sys.exit(1)
+# Setup logging configuration
+setup_logger()
+logger = logging.getLogger(__name__)
 
 
 def is_valid_vectorstore(path: Path) -> bool:
@@ -66,6 +68,13 @@ def download_from_s3(collection_name: str, local_path: Path) -> bool:
     try:
         # Initialize S3 client
         s3_client = boto3.client("s3")
+        # Check if connection is successful
+        try:
+            s3_client = boto3.client("s3")
+            s3_client.list_buckets()
+            logger.info("S3 connection: OK")
+        except Exception as e:
+            logger.error(f"S3 connection failed: {e}", exc_info=True)
 
         # Create the local directory if it doesn't exist
         local_path.mkdir(parents=True, exist_ok=True)
@@ -140,7 +149,7 @@ if __name__ == "__main__":
             collection_name="all_docs_db_small_chunks", local_path="vector_stores"
         )
         if not success:
-            log_error("Failed to load or create vector store")
+            logger.error("Failed to load or create vector store")
         sys.exit(0)
     except Exception as e:
-        log_error(f"Unexpected error: {str(e)}")
+        logger.error(f"Unexpected error: {str(e)}")

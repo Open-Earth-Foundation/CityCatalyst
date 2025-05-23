@@ -25,7 +25,7 @@ import boto3
 import os
 import sys
 import logging
-from utils.logging_config import setup_logger
+from app.utils.logging_config import setup_logger
 
 # S3 Configuration
 S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
@@ -67,6 +67,13 @@ def download_from_s3(collection_name: str, local_path: Path) -> bool:
     try:
         # Initialize S3 client
         s3_client = boto3.client("s3")
+        # Check if connection is successful
+        try:
+            s3_client = boto3.client("s3")
+            s3_client.list_buckets()
+            logger.info("S3 connection: OK")
+        except Exception as e:
+            logger.error(f"S3 connection failed: {e}", exc_info=True)
 
         # Create the local directory if it doesn't exist
         local_path.mkdir(parents=True, exist_ok=True)
@@ -137,14 +144,6 @@ def get_vectorstore(collection_name: str, local_path: str) -> bool:
     return download_from_s3(collection_name, vector_store_path)
 
 
-def log_env_vars():
-    logger.info(f"S3_BUCKET_NAME: {os.getenv('S3_BUCKET_NAME')}")
-    logger.info(f"AWS_ACCESS_KEY_ID set: {bool(os.getenv('AWS_ACCESS_KEY_ID'))}")
-    logger.info(
-        f"AWS_SECRET_ACCESS_KEY set: {bool(os.getenv('AWS_SECRET_ACCESS_KEY'))}"
-    )
-
-
 def check_s3_connection():
     try:
         s3_client = boto3.client("s3")
@@ -158,7 +157,6 @@ def check_s3_connection():
 
 # Execute the script when called directly
 if __name__ == "__main__":
-    log_env_vars()
     check_s3_connection()
     try:
         success = get_vectorstore(

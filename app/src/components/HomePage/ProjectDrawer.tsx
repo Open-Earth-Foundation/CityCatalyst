@@ -45,11 +45,13 @@ const ProjectList = ({
 }) => {
   const [searchTerm, setSearchTerm] = React.useState("");
 
+  console.log("data", data);
+
   const filteredProjectList = useMemo(() => {
     if (!searchTerm) return data;
 
     return data.filter((project) =>
-      project.name.toLowerCase().includes(searchTerm.toLowerCase()),
+      project?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [data, searchTerm]);
 
@@ -71,17 +73,17 @@ const ProjectList = ({
             rounded={0}
             className="flex justify-between"
             w="full"
-            key={project.projectId}
-            onClick={() => selectProject(project.projectId)}
+            key={project?.projectId}
+            onClick={() => selectProject(project?.projectId)}
           >
             <Text
               fontSize="body.lg"
               fontWeight="regular"
               color="content.primary"
             >
-              {project.name === "cc_project_default"
+              {project?.name === "cc_project_default"
                 ? t("default-project")
-                : project.name}
+                : project?.name}
             </Text>
             <Icon color="content.primary" as={MdKeyboardArrowRight} />
           </Button>
@@ -108,14 +110,16 @@ const SingleProjectView = ({
   const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
   const goToOnboarding = () => {
     if (
-      BigInt(project.cities.length) ===
-      BigInt(project.cityCountLimit as unknown as string)
+      BigInt(project?.cities?.length) ===
+      BigInt(project?.cityCountLimit as unknown as string)
     ) {
       setIsProjectLimitModalOpen(true);
     } else {
-      router.push(`/onboarding/setup?project=${project.projectId}`);
+      router.push(`/onboarding/setup?project=${project?.projectId}`);
     }
   };
+
+  console.log("inventoryId", currentInventoryId);
 
   const goToInventory = (inventoryId: string, lng: string) => {
     router.push(`/${lng}/${inventoryId}`);
@@ -124,9 +128,9 @@ const SingleProjectView = ({
   const [searchTerm, setSearchTerm] = React.useState("");
 
   const filteredCitiesList = useMemo(() => {
-    if (!searchTerm) return project.cities;
+    if (!searchTerm) return project?.cities;
 
-    return project.cities.filter((city) =>
+    return project?.cities?.filter((city) =>
       city.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [project, searchTerm]);
@@ -138,7 +142,7 @@ const SingleProjectView = ({
         rounded={0}
         className="flex gap-2 justify-start"
         w="full"
-        key={project.projectId}
+        key={project?.projectId}
         onClick={backToProjects}
       >
         <Icon
@@ -147,7 +151,7 @@ const SingleProjectView = ({
           as={MdKeyboardArrowRight}
         />
         <Text fontSize="body.lg" color={"content.tertiary"}>
-          {project.name}
+          {project?.name}
         </Text>
       </Button>
       <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
@@ -218,6 +222,7 @@ const ProjectDrawer = ({
 }) => {
   const { t } = useTranslation(lng, "dashboard");
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
+  console.log("projectsData", projectsData);
 
   const [selectedProject, setSelectedProject] = React.useState<string | null>();
 

@@ -6,6 +6,8 @@ metadata:
   labels:
     app: hiap
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:

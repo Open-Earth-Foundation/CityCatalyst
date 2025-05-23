@@ -4,7 +4,7 @@ from graph_definition import create_graph
 from state.agent_state import AgentState
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from pathlib import Path
-from utils.get_vectorstore_from_s3 import get_vectorstore
+from plan_creator.utils.OLD_get_vectorstore_from_s3 import get_vectorstore
 
 
 def mock_api_body(climate_action_id: str, locode: str):

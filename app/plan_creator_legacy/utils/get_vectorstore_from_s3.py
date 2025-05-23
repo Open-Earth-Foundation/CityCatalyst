@@ -151,20 +151,8 @@ def get_vectorstore(collection_name: str, local_path: str) -> bool:
     return download_from_s3(collection_name, vector_store_path)
 
 
-def check_s3_connection():
-    try:
-        s3_client = boto3.client("s3")
-        s3_client.list_buckets()
-        print("S3 connection: OK")
-        return True
-    except Exception as e:
-        print(f"S3 connection failed: {e}")
-        return False
-
-
 # Execute the script when called directly
 if __name__ == "__main__":
-    check_s3_connection()
     try:
         success = get_vectorstore(
             collection_name="all_docs_db_small_chunks", local_path="vector_stores"

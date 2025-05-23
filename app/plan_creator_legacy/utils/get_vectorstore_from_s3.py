@@ -22,6 +22,7 @@ load_dotenv()
 
 from pathlib import Path
 import boto3
+from botocore.exceptions import NoCredentialsError, EndpointConnectionError, ClientError
 import os
 import sys
 
@@ -61,14 +62,6 @@ def download_from_s3(collection_name: str, local_path: Path) -> bool:
     try:
         # Initialize S3 client
         s3_client = boto3.client("s3")
-        # Check if connection is successful
-        try:
-            s3_client = boto3.client("s3")
-            s3_client.list_buckets()
-            print("S3 connection: OK")
-        except Exception as e:
-            print(f"S3 connection failed: {e}")
-
         # Create the local directory if it doesn't exist
         local_path.mkdir(parents=True, exist_ok=True)
 
@@ -76,10 +69,30 @@ def download_from_s3(collection_name: str, local_path: Path) -> bool:
         s3_prefix = f"data/vector_stores/{collection_name}/"
         print(f"Looking for vector store in S3 at: {S3_BUCKET_NAME}/{s3_prefix}")
 
-        response = s3_client.list_objects_v2(Bucket=S3_BUCKET_NAME, Prefix=s3_prefix)
+        try:
+            response = s3_client.list_objects_v2(
+                Bucket=S3_BUCKET_NAME, Prefix=s3_prefix
+            )
+        except NoCredentialsError:
+            print(
+                "Error: No AWS credentials found. Please configure your AWS credentials."
+            )
+            return False
+        except EndpointConnectionError as e:
+            print(f"Error: Could not connect to S3 endpoint. Details: {e}")
+            return False
+        except ClientError as e:
+            print(f"Error: S3 client error occurred: {e}")
+            return False
+        except Exception as e:
+            print(f"Error: Unexpected error when connecting to S3: {e}")
+            return False
 
+        # Connection succeeded, but check if collection exists
         if "Contents" not in response:
-            print(f"No vector store found in S3 at {s3_prefix}")
+            print(
+                f"S3 connection succeeded, but no vector store found in S3 at {s3_prefix}"
+            )
             return False
 
         # Download each file

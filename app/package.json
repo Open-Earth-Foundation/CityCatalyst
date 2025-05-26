@@ -146,7 +146,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "prettier": "3.2.5",
     "sequelize-auto": "^0.8.8",
-    "start-server-and-test": "^2.0.3",
+    "start-server-and-test": "^2.0.12",
     "storybook": "^8.2.7",
     "ts-node": "^10.9.2"
   },

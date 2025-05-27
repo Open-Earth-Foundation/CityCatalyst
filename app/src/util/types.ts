@@ -513,3 +513,15 @@ export interface UpdateUserPayload {
   userId: string;
   title?: string;
 }
+
+export interface FormulaInputValuesResponse {
+  gas: string;
+  parameterCode: string;
+  parameterName: string;
+  methodologyName: string;
+  gpcRefno: string;
+  formulaInputValue: string;
+  formulaTnputUnit: string;
+  formulaName: string;
+  region: string;
+}

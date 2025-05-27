@@ -63,6 +63,7 @@ interface AddActivityModalBodyProps {
   getValues: UseFormGetValues<Inputs>;
   title: string; // Title of the field
   areEmissionFactorsLoading: boolean;
+  inventoryId?: string;
 }
 
 export type Inputs = {
@@ -106,6 +107,7 @@ const ActivityModalBody = ({
   setValue,
   getValues,
   areEmissionFactorsLoading,
+  inventoryId,
 }: AddActivityModalBodyProps) => {
   const unitValue = useWatch({
     control,
@@ -251,6 +253,7 @@ const ActivityModalBody = ({
                   <PercentageBreakdownInput
                     id={f.id}
                     label={t(f.id)}
+                    tooltipInfo={t(f["info-text"] as string)}
                     register={register}
                     getValues={getValues}
                     control={control}
@@ -260,6 +263,8 @@ const ActivityModalBody = ({
                     breakdownCategories={f.subtypes as string[]}
                     error={errors?.activity?.[f.id]}
                     t={t}
+                    inventoryId={inventoryId}
+                    methodologyName={methodology.id}
                   />
                 )}
                 {f.type === "text" && (

@@ -30,6 +30,7 @@ export interface ExtraField {
   multiselect?: boolean;
   "default-units"?: string;
   required?: boolean;
+  "info-text"?: string;
   totalRequired?: number;
   subtypes?: string[];
   "emission-factor-dependency"?: boolean;

@@ -4035,6 +4035,7 @@
               },
               {
                 "id": "methane-commitment-solid-waste-inboundary-waste-composition",
+                "info-text": "waste-composition-info",
                 "type": "percentage-breakdown",
                 "total-required": 100,
                 "subtypes": [

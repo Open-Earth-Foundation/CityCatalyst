@@ -296,6 +296,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           <DialogCloseTrigger />
           <ActivityModalBody
             emissionsFactorTypes={emissionsFactorTypes}
+            inventoryId={inventoryId}
             areEmissionFactorsLoading={areEmissionFactorsLoading}
             title={title}
             hideEmissionFactors={hideEmissionFactors}

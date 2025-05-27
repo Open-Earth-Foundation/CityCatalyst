@@ -282,7 +282,9 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                     colorScheme="blue"
                     borderRadius="lg"
                   >
-                    <TagLabel>{t(activity?.metadata?.dataQuality)}</TagLabel>
+                    <TagLabel textTransform="capitalize">
+                      {t(activity?.metadata?.dataQuality)}
+                    </TagLabel>
                   </Tag>
                 </Table.Cell>
                 <Table.Cell maxWidth="100px" truncate>

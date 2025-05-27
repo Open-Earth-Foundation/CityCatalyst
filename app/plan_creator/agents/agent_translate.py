@@ -100,25 +100,6 @@ def custom_agent_translate(state: AgentState) -> AgentState:
         result_state["response_agent_translate"] = response_str
 
         print(f"Translation into {language} complete.\n")
-        print("Saving translated text to file...")
-
-        # Save the translated text to a file
-
-        # File output
-        OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
-
-        # Get current date/time in hh:mm format
-        current_time = datetime.now().strftime("%Y%m%d_%H%M")
-
-        file_name = (
-            f"{current_time}_{city_locode}_{climate_action_id}_implementation_plan.md"
-        )
-
-        # Write the combined Markdown text to a local file
-        with open(OUTPUT_PATH / file_name, "w", encoding="utf-8") as md_file:
-            md_file.write(response_str)
-
-        print(f"Translated text saved to {OUTPUT_PATH / file_name}\n")
 
         return result_state
 

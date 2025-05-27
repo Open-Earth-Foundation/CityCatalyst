@@ -1,9 +1,16 @@
+import logging
 from typing import Tuple, Union
 from langchain.tools import tool
-from utils.get_vectorstore_local import get_vectorstore
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain.schema import Document
+from langchain_community.tools.tavily_search import TavilySearchResults
+
+from utils.get_vectorstore_local import get_vectorstore
+from utils.logging_config import setup_logger
+
+setup_logger()
+logger = logging.getLogger(__name__)
 
 
 # Define tools for each agent
@@ -163,19 +170,30 @@ def retriever_indicators_tool(
     return docs_and_scores
 
 
-def get_search_municipalities_tool():
-    # Lazily import because of API issues
-    from langchain_community.tools.tavily_search import TavilySearchResults
+@tool
+def get_search_municipalities_tool(search_query: str):
+    """
+    Search for municipal institutions that might be relevant for the implementation of the specific climate action for the given city.
+    Input: A search query in the national language.
+    """
 
-    return TavilySearchResults(
+    logger.info(f"get_search_municipalities_tool called with query: {search_query}")
+
+    tavily_tool = TavilySearchResults(
         max_results=2,
         search_depth="advanced",  # change between 'basic' for testing and 'advanced' for production
         description="""
-        Search for municipal institutions that might be relevant for the implementation of the specific climate action for the given city.
-        
-        Input: A search query in the national language.
+        Search for municipal institutions that might be relevant for the implementation of the specific climate action for the given city.\n\nInput: A search query in the national language.
         """,
     )
+    try:
+        logger.info("Invoking TavilySearchResults...")
+        result = tavily_tool.invoke(search_query)
+        logger.info(f"TavilySearchResults returned: {result}")
+        return result
+    except Exception as e:
+        logger.error(f"Error in TavilySearchResults: {str(e)}", exc_info=True)
+        return f"Error during search: {str(e)}"
 
 
 # The reasoning_tool is experimental. It increases the time a lot but could be used to make sure that the retrieved chunks are relevant.

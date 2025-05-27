@@ -13,7 +13,7 @@ import argparse
 from dotenv import load_dotenv
 import os
 from pathlib import Path
-from plan_creator_legacy.utils.get_vectorstore_from_s3 import get_vectorstore
+from scripts.download_vectorstore_from_s3 import get_vectorstore
 
 # Load environment variables
 load_dotenv()

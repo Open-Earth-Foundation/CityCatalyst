@@ -18,7 +18,7 @@ from pathlib import Path
 from plan_creator_legacy.graph_definition import create_graph
 from plan_creator_legacy.state.agent_state import AgentState
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from plan_creator_legacy.utils.get_vectorstore_from_s3 import get_vectorstore
+from scripts.download_vectorstore_from_s3 import get_vectorstore
 
 
 def mock_api_body(climate_action_id: str, locode: str):

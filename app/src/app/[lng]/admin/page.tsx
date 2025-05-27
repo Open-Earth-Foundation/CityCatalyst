@@ -227,7 +227,6 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
 
               {!isOrgDataLoading && orgData && orgData?.length > 0 && (
                 <DataTable
-                  t={t}
                   searchable={true}
                   pagination={true}
                   filterProperty={"status"}

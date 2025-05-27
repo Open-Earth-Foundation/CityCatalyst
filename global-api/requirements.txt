@@ -1,5 +1,5 @@
 aiohttp==3.11.*
-alembic==1.15.2
+alembic==1.16.1
 black==25.1.0
 fastapi==0.115.12
 flake8==7.2.0
@@ -14,7 +14,7 @@ pytest==8.3.5
 rioxarray==0.15.*
 scipy==1.13.*
 shapely==2.0.7
-SQLAlchemy==2.0.40
+SQLAlchemy==2.0.41
 tqdm==4.67.*
 uvicorn==0.34.2
 xarray==2024.*

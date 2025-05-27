@@ -122,8 +122,6 @@ export default function HomePage({
   const { setLogoUrl } = useLogo();
   const { setTheme } = useTheme();
 
-  console.log(inventoryIdFromParam);
-
   useEffect(() => {
     if (inventoryOrgData) {
       setLogoUrl(inventoryOrgData?.logoUrl as string);

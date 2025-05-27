@@ -5,12 +5,13 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 
 export const GET = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsAdmin(session);
   const { projectId } = params;
   const project = await Project.findByPk(projectId as string);
   if (!project) {
     throw new createHttpError.NotFound("project-not-found");
   }
+
+  UserService.validateIsAdminOrOrgAdmin(session, project?.organizationId);
 
   // Fetch users associated with the project
   const users = await UserService.findUsersInProject(projectId as string);

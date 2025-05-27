@@ -3,7 +3,7 @@ from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from plan_creator_legacy.state.agent_state import AgentState
 from langchain_openai import ChatOpenAI
-from plan_creator_legacy.tools.tools import (
+from tools.tools import (
     get_search_municipalities_tool,
 )
 

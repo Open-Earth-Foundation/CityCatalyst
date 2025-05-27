@@ -3,7 +3,7 @@ from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from plan_creator_legacy.state.agent_state import AgentState
 from langchain_openai import ChatOpenAI
-from plan_creator_legacy.tools.tools import (
+from tools.tools import (
     get_search_municipalities_tool,
 )
 
@@ -11,7 +11,7 @@ from plan_creator_legacy.tools.tools import (
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
 
 # Define tools for the agent
-tools = [get_search_municipalities_tool()]
+tools = [get_search_municipalities_tool]
 
 system_prompt_agent_3 = SystemMessage(
     """

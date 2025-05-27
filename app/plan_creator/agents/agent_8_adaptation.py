@@ -4,7 +4,7 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from plan_creator_legacy.state.agent_state import AgentState
 from plan_creator_legacy.data.context import adaptation
 from langchain_openai import ChatOpenAI
-from plan_creator_legacy.tools.tools import (
+from tools.tools import (
     placeholder_tool,
 )
 

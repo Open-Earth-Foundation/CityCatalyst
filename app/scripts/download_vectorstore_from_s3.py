@@ -18,7 +18,7 @@ Example:
 """
 
 from dotenv import load_dotenv
-from app.utils import logging_config
+from utils import logging_config
 import logging
 
 # Load environment variables

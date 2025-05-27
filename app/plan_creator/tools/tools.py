@@ -1,6 +1,6 @@
 from typing import Tuple, Union
 from langchain.tools import tool
-from plan_creator_legacy.utils.get_vectorstore_local import get_vectorstore
+from utils.get_vectorstore_local import get_vectorstore
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain.schema import Document

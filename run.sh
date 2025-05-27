@@ -2,12 +2,22 @@
 
 set -e
 
+# Set collection name and local path (update these as needed)
+# Collection name is the name of the vector store in S3
+COLLECTION_NAME="all_docs_db_small_chunks"
+# Local path is the path to the directory where the vector store will be stored
+# It is relative to the app directory e.g. app/vector_stores
+LOCAL_PATH="vector_stores"
+
 echo "Checking if vector store exists."
 echo "If not, creating vector store..."
 echo "This may take a while..."
 
+echo "Collection name: $COLLECTION_NAME"
+echo "Local path: $LOCAL_PATH"
+
 # Run the vector store script and capture its exit code
-python plan_creator_legacy/utils/get_vectorstore_from_s3.py
+python -m app.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME" "$LOCAL_PATH"
 VECTOR_STORE_STATUS=$?
 
 # Check if the script failed

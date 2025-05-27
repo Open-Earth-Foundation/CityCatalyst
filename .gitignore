@@ -7,16 +7,13 @@ __pycache__/
 # global
 .env
 .venv
+app/vector_stores/
 
 # Plan creator
 app/plan_creator/data/output/
 
 # Plan creator legacy
 app/plan_creator_legacy/data/output/
-app/plan_creator_legacy/vector_stores/
 
 # Prioritizer
 app/prioritizer/data/prioritized_local_testing/
-
-# testing
-manual_k8s.yaml

@@ -56,6 +56,17 @@ export default class UserService {
           model: db.models.User,
           as: "users",
         },
+        {
+          model: db.models.Project,
+          as: "project",
+          include: [
+            {
+              model: db.models.Organization,
+              as: "organization",
+              attributes: ["organizationId", "name"],
+            },
+          ],
+        },
       ],
     });
 
@@ -66,6 +77,16 @@ export default class UserService {
       return city;
     }
     if (!session) throw new createHttpError.Unauthorized("Not signed in");
+
+    const hasOrgLevelAccess = await hasOrgOwnerLevelAccess(
+      city.project?.organizationId,
+      session.user.id,
+    );
+
+    if (hasOrgLevelAccess) {
+      return city;
+    }
+
     if (
       (city.users.length === 0 ||
         !city.users.map((u) => u.userId).includes(session?.user?.id)) &&
@@ -159,16 +180,70 @@ export default class UserService {
         type: QueryTypes.SELECT,
       },
     )) as { inventory_id: string }[];
-    if (!inventory) {
-      throw new createHttpError.NotFound("Inventory not found");
+
+    if (inventory) {
+      await db.models.User.update(
+        {
+          defaultInventoryId: inventory?.inventory_id,
+        },
+        { where: { userId } },
+      );
+      return inventory?.inventory_id;
     }
-    await db.models.User.update(
-      {
-        defaultInventoryId: inventory?.inventory_id,
+
+    // throw new createHttpError.NotFound("Inventory not found");
+
+    const adminData = await db.models.OrganizationAdmin.findOne({
+      where: {
+        userId: userId,
       },
-      { where: { userId } },
-    );
-    return inventory?.inventory_id;
+      include: {
+        model: db.models.Organization,
+        as: "organization",
+        include: {
+          model: db.models.Project,
+          as: "projects",
+          include: [
+            {
+              model: db.models.City,
+              as: "cities",
+              include: [
+                {
+                  model: db.models.Inventory,
+                  as: "inventories",
+                  attributes: ["inventoryId"],
+                },
+              ],
+            },
+          ],
+        },
+      },
+    });
+
+    let newDefaultInventoryId: string | null = null;
+
+    if (adminData) {
+      // if the user is an org owner, they can pick any of the inventories belonging to his organization
+      const inventories = adminData.organization.projects.flatMap((project) =>
+        project.cities.flatMap((city) => city.inventories),
+      );
+
+      if (inventories.length > 0) {
+        newDefaultInventoryId = inventories[0].inventoryId;
+      }
+    }
+
+    if (newDefaultInventoryId) {
+      await db.models.User.update(
+        {
+          defaultInventoryId: newDefaultInventoryId,
+        },
+        { where: { userId } },
+      );
+      return newDefaultInventoryId;
+    }
+
+    throw new createHttpError.NotFound("Inventory not found");
   }
 
   /**
@@ -192,6 +267,9 @@ export default class UserService {
     if (!user.defaultInventoryId) {
       await UserService.updateDefaultInventoryId(user.userId);
     }
+
+    // check if you can find any city attached to this user
+
     if (!user.defaultInventoryId) {
       throw new createHttpError.NotFound("Inventory not found");
     }

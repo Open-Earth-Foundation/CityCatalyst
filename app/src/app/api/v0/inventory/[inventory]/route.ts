@@ -27,6 +27,7 @@ export const GET = apiHandler(async (req, { session, params }) => {
   if ("default" === inventoryId) {
     inventoryId = await UserService.findUserDefaultInventory(session);
   }
+
   inventory = await UserService.findUserInventory(
     inventoryId,
     session,

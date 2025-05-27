@@ -4,6 +4,7 @@ __pycache__
 .env
 .venv
 Dockerfile
+app/vector_stores/
 
 # plan_creator
 app/plan_creator/data/output/
@@ -11,7 +12,6 @@ app/plan_creator/data/output/
 # plan_creator_legacy
 app/plan_creator_legacy/data/input_local_testing/
 app/plan_creator_legacy/data/output/
-app/plan_creator_legacy/vector_stores/
 
 # prioritizer
 app/prioritizer/data/prioritized_local_testing/

@@ -8,9 +8,9 @@ There are 3 subfolders:
 2. plan_creator_legacy
 3. prioritizer
 
-## Build Docker
+## Build Docker and test locally
 
 Run the following commands:
 
 `docker build -t hiap-app .`
-`docker run -it --rm -p 8000:8000 hiap-app`
+`docker run -it --rm -p 8000:8000 --env-file .env hiap-app`

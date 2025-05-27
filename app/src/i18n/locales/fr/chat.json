@@ -1,0 +1,16 @@
+{
+  "ask-ai-expert": "Demander à un expert en IA",
+  "ai-expert": "Expert en IA",
+  "ask-ai": "Demander à l'IA",
+  "ask-assistant": "Posez n'importe quelle question à l'assistant...",
+  "initial-message": "Bonjour! Je suis Clima, votre assistant virtuel. Je suis ici pour vous guider à travers le processus de mesure précise et de rapport de vos émissions de gaz à effet de serre de votre ville. Comment puis-je vous aider aujourd'hui?",
+  "regenerate": "Régénérer",
+  "send-message": "Envoyer le message",
+  "stop-generation": "Arrêt de la Génération",
+  "chat-suggestion-gpc": "Qu'est-ce que le GPC ?",
+  "chat-suggestion-gpc-message": "Qu'est-ce que le Protocole GES pour les villes (GPC) ?",
+  "chat-suggestion-collect-data": "Comment puis-je collecter des données ?",
+  "chat-suggestion-collect-data-message": "Comment puis-je ajouter de nouvelles sources de données à CityCatalyst ?",
+  "chat-suggestion-ipcc": "Qu'est-ce que le GIEC ?",
+  "chat-suggestion-ipcc-message": "Qu'est-ce que le Groupe d'experts intergouvernemental sur l'évolution du climat ?"
+}

@@ -15,11 +15,17 @@ import {
   ClinicalWasteIcon,
   FoodIcon,
   GardenIcon,
+  GlassWasteIcon,
   HazardousWasteIcon,
   IndustrialIcon,
   IndustrialSolidWasteIcon,
+  LeatherWasteIcon,
+  MetalWasteIcon,
   MunicipalSolidWasteIcon,
+  NappiesWasteIcon,
+  OtherWasteIcon,
   PaperIcon,
+  PlasticsWasteIcon,
   SewageWasteIcon,
   TextilesIcon,
   WoodIcon,
@@ -48,6 +54,12 @@ const categoryIconMapping: Record<string, any> = {
   "waste-composition-wood": WoodIcon,
   "waste-composition-textiles": TextilesIcon,
   "waste-composition-industrial": IndustrialIcon,
+  "waste-composition-leather": LeatherWasteIcon,
+  "waste-composition-plastics": PlasticsWasteIcon,
+  "waste-composition-metal": MetalWasteIcon,
+  "waste-composition-glass": GlassWasteIcon,
+  "waste-composition-nappies": NappiesWasteIcon,
+  "waste-composition-other": OtherWasteIcon,
 };
 
 interface FormInputProps {
@@ -108,7 +120,11 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
 
   const totalPercent = useMemo(() => {
     const total = Object.values(breakDownValues).reduce<number>(
-      (acc: number, val) => acc + parseFloat(val as string),
+      (acc: number, val) =>
+        acc +
+        parseFloat(
+          (val ?? "").toString().trim().length > 0 ? (val as string) : "0",
+        ),
       0,
     );
     if (total === 100) {

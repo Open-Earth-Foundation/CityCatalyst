@@ -81,14 +81,19 @@ export default class ManualInputValidationService {
 
       // extract extra fields from the methodology
       let extraFields: ExtraField[] = [];
+      const activityTypeField = methodology.activityTypeField;
+      if (!activityTypeField) {
+        throw new createHttpError.InternalServerError(
+          `Activity type field missing for methodology ${methodologyId}`,
+        );
+      }
 
       if (methodologyId === "direct-measure") {
-        extraFields = (methodology as DirectMeasure)[
-          "extra-fields"
-        ] as ExtraField[];
+        const scopedDirectMeasure = methodology as DirectMeasure;
+        extraFields = scopedDirectMeasure["extra-fields"] as ExtraField[];
       } else {
-        let scopedMethodology = methodology as Methodology;
-        let selectedActivityOption =
+        const scopedMethodology = methodology as Methodology;
+        const selectedActivityOption =
           activityValueParams.metadata?.[
             scopedMethodology.activitySelectionField?.id as string
           ];
@@ -122,6 +127,7 @@ export default class ManualInputValidationService {
             .map((f) => ({ id: f.id, value: f.exclusive as string })),
           inventoryValueId,
           activityValueId: activityValueId as string,
+          activityTypeField,
         });
       }
 
@@ -247,23 +253,28 @@ export default class ManualInputValidationService {
     exclusiveFieldValue,
     inventoryValueId,
     activityValueId,
+    activityTypeField,
   }: {
     activityData: Record<string, any>;
     exclusiveFieldValue: { id: string; value: string }[];
     inventoryValueId: string;
     activityValueId?: string;
+    activityTypeField: string;
   }) {
     for (const field of exclusiveFieldValue) {
       const exclusiveValue = field.value;
       let errorBody: ManualValidationErrorDetails;
       let existingRecord: ActivityValue | null;
       let code: ManualInputValidationErrorCodes;
+      const newActivityType = activityData[activityTypeField];
 
       if (activityData[field.id] === exclusiveValue) {
         // check that a record exists with the field that is supposed to be exclusive
+        // activity type is used to confirm this is the same sub-category (e.g. fuel type) as the newly added value
         existingRecord = await ActivityValue.findOne({
           where: {
             [`activityData.${field.id}`]: { [Op.ne]: null },
+            [`activityData.${activityTypeField}`]: newActivityType,
             inventoryValueId: inventoryValueId,
             ...(activityValueId && { id: { [Op.ne]: activityValueId } }),
           },
@@ -273,6 +284,7 @@ export default class ManualInputValidationService {
         existingRecord = await ActivityValue.findOne({
           where: {
             [`activityData.${field.id}`]: exclusiveValue, // Check for the exclusive value
+            [`activityData.${activityTypeField}`]: newActivityType,
             inventoryValueId: inventoryValueId,
             ...(activityValueId && { id: { [Op.ne]: activityValueId } }),
           },

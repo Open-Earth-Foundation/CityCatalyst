@@ -1,0 +1,20 @@
+{
+  "account-settings": "Paramètres du compte",
+  "account": "Compte",
+  "brand-settings": "Paramètres de la Marque",
+  "brand-settings-description": "Configurez votre propre marque",
+  "logo": "Logo",
+  "logo-recommendation": "Nous recommandons d'utiliser un logo horizontal avec un arrière-plan transparent au format png",
+  "primary-color": "Couleur Primaire",
+  "primary-color-recommendation": "Nous recommandons d'utiliser la valeur par défaut",
+  "blue_theme": "Bleu (Par défaut)",
+  "light_brown_theme": "Marron Clair",
+  "dark_orange_theme": "Orange Foncé",
+  "light_blue_theme": "Bleu Clair",
+  "violet_theme": "Violet",
+  "green": "Vert",
+  "go-back": "Retourner",
+  "save-changes": "Enregistrer les modifications",
+  "account-brand-updated": "Paramètres du compte et de la marque mis à jour avec succès",
+  "error-message": "Une erreur s'est produite"
+}

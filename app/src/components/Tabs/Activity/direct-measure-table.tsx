@@ -162,9 +162,9 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                 )}
                 <Table.Cell>
                   <Tag
-                    p="8px"
-                    minW="50px"
                     variant="surface"
+                    size="lg"
+                    borderRadius="lg"
                     colorPalette={
                       activity?.metadata?.dataQuality === "high"
                         ? "green"

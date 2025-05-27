@@ -11,7 +11,7 @@ from tools.tools import (
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
 
 # Define tools for the agent
-tools = [get_search_municipalities_tool()]
+tools = [get_search_municipalities_tool]
 
 system_prompt_agent_3 = SystemMessage(
     """

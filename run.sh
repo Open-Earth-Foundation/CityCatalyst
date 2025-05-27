@@ -17,7 +17,7 @@ echo "Collection name: $COLLECTION_NAME"
 echo "Local path: $LOCAL_PATH"
 
 # Run the vector store script and capture its exit code
-python -m app.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME" "$LOCAL_PATH"
+python -m scripts.download_vectorstore_from_s3 "$COLLECTION_NAME" "$LOCAL_PATH"
 VECTOR_STORE_STATUS=$?
 
 # Check if the script failed

@@ -66,7 +66,11 @@ logger = logging.getLogger(__name__)
 @app.get("/")
 async def root():
     logger.info("Health check endpoint called")
-    return {"message": "Hello World"}
+    return {
+        "message": "High Impact Actions Prioritizer API",
+        "docs_url": "/docs",
+        "status": "healthy",
+    }
 
 
 # Mount feature routers

@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { DisplayLarge } from "@/components/Texts/Display";
 
 export function GrowthRatesExplanationModal({
   t,
@@ -52,40 +53,36 @@ export function GrowthRatesExplanationModal({
         </DialogHeader>
         <Box divideX="1px" borderColor="border.overlay" borderWidth="1px" />
         <DialogBody>
-          <Text
-            color="content.primary"
-            fontWeight="bold"
-            lineHeight="headline.sm"
-            fontSize="24px"
-            fontFamily="heading"
-            fontStyle="normal"
-          >
-            {t("city-typology-and-clusters")}
-          </Text>
-          <Text
-            my={"12px"}
-            color="content.primary"
-            lineHeight="24px"
-            fontSize="16px"
-            fontStyle="normal"
-            fontWeight="regular"
-          >
-            {t("city-typology-and-clusters-description")}
-          </Text>
+          <VStack alignItems={"left"} justifyItems={"end"} p="24px">
+            <Text
+              color="content.primary"
+              fontWeight="bold"
+              lineHeight="headline.sm"
+              fontSize="24px"
+              fontFamily="heading"
+              fontStyle="normal"
+            >
+              {t("city-typology-and-clusters")}
+            </Text>
+            <Text
+              my={"12px"}
+              color="content.primary"
+              lineHeight="24px"
+              fontSize="16px"
+              fontStyle="normal"
+              fontWeight="regular"
+            >
+              {t("city-typology-and-clusters-description")}
+            </Text>
+          </VStack>
           <HStack
             my={"12px"}
             mx={"24px"}
             marginTop={"48px"}
             alignItems={"flex-end"}
           >
-            <VStack alignItems={"center"}>
-              <Heading
-                fontSize="display.lg"
-                textAlign="center"
-                color="content.primary"
-              >
-                {cluster?.id}
-              </Heading>
+            <VStack alignItems={"left"} justifyItems={"end"} p="24px">
+              <DisplayLarge color="black">{cluster?.id}</DisplayLarge>
               <Text
                 fontSize="label.lg"
                 fontStyle="normal"
@@ -99,15 +96,15 @@ export function GrowthRatesExplanationModal({
                 {t("cluster-#")}
               </Text>
             </VStack>
-            <VStack alignItems={"left"} justifyItems={"end"}>
-              <Heading
+            <VStack alignItems={"left"} justifyItems={"end"} p="24px">
+              <DisplayLarge
                 fontSize="body.xl"
                 color="content.primary"
                 lineHeight="32px"
                 fontWeight="regular"
               >
                 {cluster?.description?.[lng]}
-              </Heading>
+              </DisplayLarge>
               <Text
                 fontFamily="Poppins"
                 fontSize="label.lg"
@@ -122,28 +119,30 @@ export function GrowthRatesExplanationModal({
               </Text>
             </VStack>
           </HStack>
-          <Text
-            color="content.primary"
-            fontWeight="bold"
-            lineHeight="headline.sm"
-            fontSize="24px"
-            fontFamily="heading"
-            fontStyle="normal"
-          >
-            {t("methodology-and-assumptions")}
-          </Text>
-          <Text
-            my={"12px"}
-            color="content.primary"
-            lineHeight="24px"
-            fontSize="16px"
-            fontStyle="normal"
-            fontWeight="regular"
-          >
-            {t("methodology-and-assumptions-description")}
-          </Text>
+          <VStack alignItems={"left"} justifyItems={"end"} p="24px">
+            <Text
+              color="content.primary"
+              fontWeight="bold"
+              lineHeight="headline.sm"
+              fontSize="24px"
+              fontFamily="heading"
+              fontStyle="normal"
+            >
+              {t("methodology-and-assumptions")}
+            </Text>
+            <Text
+              my={"12px"}
+              color="content.primary"
+              lineHeight="24px"
+              fontSize="16px"
+              fontStyle="normal"
+              fontWeight="regular"
+            >
+              {t("methodology-and-assumptions-description")}
+            </Text>
+          </VStack>
           <Box>
-            <Box display="flex" justifySelf={"center"}>
+            <Box display="flex" justifySelf={"center"} width="100%" px="24px">
               <GrowthRatesExplanationModalTable
                 growthRates={growthRates}
                 t={t}

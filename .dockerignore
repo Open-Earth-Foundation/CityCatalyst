@@ -4,7 +4,7 @@ __pycache__
 .env
 .venv
 Dockerfile
-app/vector_stores/
+app/plan_creator_bundle/vector_stores/
 
 # plan_creator
 app/plan_creator/data/output/

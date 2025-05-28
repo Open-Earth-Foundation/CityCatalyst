@@ -10,7 +10,8 @@ const nextConfig = {
   trailingSlash: true,
   experimental: {
     serverComponentsExternalPackages: ["sequelize"],
-    optimizePackageImports: ['@chakra-ui/react']
+    optimizePackageImports: ["@chakra-ui/react"],
+    serverActions: true,
   },
   env: {
     APP_VERSION: packageInfo.version,

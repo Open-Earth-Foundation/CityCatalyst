@@ -1,3 +1,5 @@
+"use client";
+
 import {
   DrawerBackdrop,
   DrawerBody,
@@ -119,7 +121,7 @@ const SingleProjectView = ({
     }
   };
 
-  console.log("inventoryId", currentInventoryId);
+  console.log("project", project);
 
   const goToInventory = (inventoryId: string, lng: string) => {
     router.push(`/${lng}/${inventoryId}`);
@@ -221,7 +223,11 @@ const ProjectDrawer = ({
   currentInventoryId?: string;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
-  const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
+  const {
+    data: projectsData,
+    isLoading,
+    refetch,
+  } = useGetUserProjectsQuery({});
   console.log("projectsData", projectsData);
 
   const [selectedProject, setSelectedProject] = React.useState<string | null>();

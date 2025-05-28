@@ -36,7 +36,10 @@ export const GET = apiHandler(async (req, { session, params }) => {
     throw new createHttpError.NotFound("Inventory not found");
   }
 
-  const organization = inventory.city?.project?.organization;
+  const inventoryData = JSON.parse(JSON.stringify(inventory));
+  console.log("Parsed inventory data:", inventoryData);
+
+  const organization = inventoryData.city?.project?.organization;
 
   if (!organization) {
     throw new createHttpError.NotFound("Organization not found");

@@ -169,10 +169,17 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     }
   }, [error, isSectorDataLoading, sectorData]);
 
+  // Check if any inputs have changed from their original values
   useEffect(() => {
-    // Adjust the dirty check as needed (e.g., also include quickActionValues)
-    setIsDirty(Object.keys(cardInputs).length > 0);
-  }, [cardInputs]);
+    const hasChanges = Object.entries(cardInputs).some(([id, currentValue]) => {
+      const originalValue = originalCardInputs[id];
+      return (
+        currentValue.notationKey !== originalValue?.notationKey ||
+        currentValue.explanation !== originalValue?.explanation
+      );
+    });
+    setIsDirty(hasChanges);
+  }, [cardInputs, originalCardInputs]);
 
   // Listen to Next.js route changes for in-app navigation
   useEffect(() => {
@@ -180,8 +187,8 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       if (isDirty) {
         setNextRoute(pathname);
         setShowDialog(true);
-        // Revert to previous path.
-        router.push(prevPathname);
+        // Prevent navigation by pushing back to previous path
+        router.replace(prevPathname);
       } else {
         setPrevPathname(pathname);
       }
@@ -193,8 +200,8 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isDirty) {
         e.preventDefault();
-        e.returnValue = "";
         setShowDialog(true);
+        return "";
       }
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -262,13 +269,22 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     if (nextRoute) {
       setPrevPathname(nextRoute);
       router.push(nextRoute);
+      setNextRoute(null);
     }
     setShowDialog(false);
   };
 
-  const cancelNavigation = () => {
+  const resetFormData = (): void => {
+    // Reset all form data to original values
+    setCardInputs(originalCardInputs);
+    setIsDirty(false);
+    setQuickActionValues({});
+    setSelectedCardsBySector({});
     setNextRoute(null);
     setShowDialog(false);
+
+    // Force a re-render of the form by resetting the selected sector
+    setSelectedSector(selectedSector);
   };
 
   // --- Grouping the new API structure ---
@@ -328,10 +344,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   });
   // handle undo changes
   const handleUndoChanges = () => {
-    setCardInputs(originalCardInputs); // Restore to original values
-    setIsDirty(false);
-    setQuickActionValues({});
-    setSelectedCardsBySector({});
+    resetFormData();
     toaster.create({
       title: t("success"),
       description: t("changes-undone"),
@@ -750,8 +763,8 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         t={t}
         showDialog={showDialog}
         setShowDialog={setShowDialog}
-        confirmNavigation={confirmNavigation}
-        cancelNavigation={cancelNavigation}
+        confirmNavigation={resetFormData}
+        cancelNavigation={() => setShowDialog(false)}
       />
     </>
   );

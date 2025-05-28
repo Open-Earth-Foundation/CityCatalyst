@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon, PopoverHeader, useDisclosure } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ChatBot from "./chat-bot";
 import { useTranslation } from "@/i18n/client";
 import { AskAiIcon } from "../icons";
@@ -37,6 +37,31 @@ export default function ChatPopover({
     }
   };
 
+  // adjust the position of the popover based on the scroll position (i.e when the user scrolls to the bottom of the page)
+  const [scrollPosition, setScrollPosition] = useState(0);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY;
+    setScrollPosition(scrollPosition);
+  };
+
+  const getDynamicBottomPosition = () => {
+    const maxScroll =
+      document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercentage = (scrollPosition / maxScroll) * 100;
+    if (scrollPercentage > 90) {
+      // Move up when near bottom
+      return "bottom-28";
+    }
+    // Default position
+    return "bottom-8";
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
       <PopoverRoot
@@ -49,7 +74,7 @@ export default function ChatPopover({
       >
         <PopoverTrigger asChild>
           <Button
-            className="fixed z-30 bottom-16 right-16"
+            className={`fixed z-30 ${getDynamicBottomPosition()} right-16 transition-all duration-300`}
             fontSize="button.md"
             fontStyle="normal"
             fontWeight="600"

@@ -37,11 +37,16 @@ class CityData(BaseModel):
     cityEmissionsData: CityEmissionsData
 
 
-class PrioritizeRequest(BaseModel):
+class PrioritizerRequest(BaseModel):
     cityData: CityData
 
 
 # --- Response models ---
+
+
+class MetaData(BaseModel):
+    locode: str
+    rankedDate: datetime
 
 
 class RankedAction(BaseModel):
@@ -50,8 +55,11 @@ class RankedAction(BaseModel):
     explanation: str
 
 
-class PrioritizeResponse(BaseModel):
-    locode: str
-    rankedDate: datetime
-    rankedActionsMitigation: List[RankedAction]
-    rankedActionsAdaptation: List[RankedAction]
+class PrioritizerResponse(BaseModel):
+    metadata: MetaData = Field(description="Metadata for the prioritizer")
+    rankedActionsMitigation: List[RankedAction] = Field(
+        description="List of ranked mitigation actions"
+    )
+    rankedActionsAdaptation: List[RankedAction] = Field(
+        description="List of ranked adaptation actions"
+    )

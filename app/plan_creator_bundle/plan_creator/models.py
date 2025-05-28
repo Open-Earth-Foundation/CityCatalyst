@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict
+from datetime import datetime, date
 
 # --- Request models ---
 
@@ -60,38 +61,77 @@ class CheckProgressResponse(BaseModel):
 ### WIP for the plan creation response ###
 
 
-class PlanMetadata(BaseModel):
-    locode: str
-    cityName: str
-    actionId: str
-    actionName: str
+class Subaction(BaseModel):
+    number: int
+    title: str
+    description: str
+
+
+class Institution(BaseModel):
+    name: str
+    description: str
+
+
+class Milestone(BaseModel):
+    number: int
+    title: str
+    description: str
+
+
+class Timeline(BaseModel):
+    pass
+
+
+class CostBudget(BaseModel):
+    pass
+
+
+class MerIndicator(BaseModel):
+    description: str
+
+
+class Mitigation(BaseModel):
+    title: str
+    description: str
+
+
+class Adaptation(BaseModel):
+    title: str
+    description: str
+
+
+class SDG(BaseModel):
+    title: str
+    description: str
 
 
 class PlanContent(BaseModel):
     title: str
     description: str
-    subactions: List[dict] = Field(
-        description="List of subactions with their descriptions"
-    )
-    municipalInstitutions: List[dict] = Field(
-        description="List of institutions with their roles and sources"
-    )
-    milestones: List[dict] = Field(
-        description="List of milestones with their descriptions"
-    )
-    merIndicators: List[dict] = Field(
-        description="List of MER indicators with their descriptions"
-    )
-    climateRisks: List[dict] = Field(
-        description="List of climate risks with their descriptions"
-    )
-    mitigationSectors: List[dict] = Field(
-        description="List of mitigation sectors with their descriptions"
-    )
+    subactions: List[Subaction] = Field(default_factory=list)
+    institutions: List[Institution] = Field(default_factory=list)
+    milestones: List[Milestone] = Field(default_factory=list)
+    timeline: List[Timeline] = Field(default_factory=list)
+    costBudget: List[CostBudget] = Field(default_factory=list)
+    merIndicators: List[MerIndicator] = Field(default_factory=list)
+    mitigations: List[Mitigation] = Field(default_factory=list)
+    adaptations: List[Adaptation] = Field(default_factory=list)
+    sdgs: List[SDG] = Field(default_factory=list)
 
 
-class Plan(BaseModel):
-    metadata: PlanMetadata
-    content: Dict[str, PlanContent] = Field(
-        description="Plan content in different languages, keyed by language code (e.g. 'en', 'es')"
+class PlanCreatorMetadata(BaseModel):
+    locode: str
+    cityName: str
+    actionId: str
+    actionName: str
+    createdAt: datetime
+
+
+LanguageCode = str  # should be ISO 639-1 codes like 'en', 'es', 'pt'
+
+
+class PlanResponse(BaseModel):
+    metadata: PlanCreatorMetadata = Field(description="Metadata for the plan creator")
+    content: Dict[LanguageCode, PlanContent] = Field(
+        description="Dictionary of PlanContent, keyed by ISO 639-1 language code (e.g., 'en', 'es', 'pt')"
     )

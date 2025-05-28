@@ -1,8 +1,4 @@
 #!/bin/sh
-# Note: This script is intended to be run within docker container.
-# Docker will mount the app directory to /app.
-# This way the paths will be resolved correctly.
-# Running this script outside of docker will not work.
 
 set -e
 

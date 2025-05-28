@@ -12,7 +12,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the entire app directory (including all subfolders)
 COPY app/ ./
-COPY run.sh ./run.sh
 
 # Make the run.sh file executable
 RUN chmod +x run.sh

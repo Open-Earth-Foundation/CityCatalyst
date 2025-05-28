@@ -15,6 +15,9 @@ Returns:
 Example:
     >>> get_vectorstore("my_collection", "vector_stores")
     True
+
+Call with (from app/ directory):
+    python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "all_docs_db_small_chunks" "plan_creator_bundle/vector_stores"
 """
 
 from dotenv import load_dotenv

@@ -1,3 +1,4 @@
+import os
 import logging
 from typing import Tuple, Union
 from langchain.tools import tool
@@ -11,6 +12,9 @@ from utils.logging_config import setup_logger
 
 setup_logger()
 logger = logging.getLogger(__name__)
+
+# Get TAVILY SEARCH MODE from environment variable
+TAVILY_SEARCH_MODE = os.getenv("TAVILY_SEARCH_MODE", "basic")
 
 
 # Define tools for each agent
@@ -181,7 +185,7 @@ def get_search_municipalities_tool(search_query: str):
 
     tavily_tool = TavilySearchResults(
         max_results=2,
-        search_depth="advanced",  # change between 'basic' for testing and 'advanced' for production
+        search_depth=TAVILY_SEARCH_MODE,  # change between 'basic' for testing and 'advanced' for production
         description="""
         Search for municipal institutions that might be relevant for the implementation of the specific climate action for the given city.\n\nInput: A search query in the national language.
         """,

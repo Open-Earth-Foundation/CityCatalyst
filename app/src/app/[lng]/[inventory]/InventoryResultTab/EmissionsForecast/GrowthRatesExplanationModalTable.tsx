@@ -24,7 +24,7 @@ export const GrowthRatesExplanationModalTable = ({
   ];
 
   return (
-    <Table.Root striped>
+    <Table.Root>
       <Table.Header>
         <Table.Row>
           <Table.ColumnHeader>
@@ -46,8 +46,11 @@ export const GrowthRatesExplanationModalTable = ({
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {emissionsSectors.map((sector) => (
-          <Table.Row key={sector.name}>
+        {emissionsSectors.map((sector, i) => (
+          <Table.Row
+            backgroundColor={i % 2 === 0 ? "background.neutral" : "white"}
+            key={sector.name}
+          >
             <Table.Cell>{t(getNameTranslationString(sector))}</Table.Cell>
             {Object.keys(growthRates)
               .slice(0, 4)

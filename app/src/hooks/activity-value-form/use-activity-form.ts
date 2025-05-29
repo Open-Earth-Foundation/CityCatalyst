@@ -40,6 +40,7 @@ export const generateDefaultActivityFormValues = (
     co2EmissionFactorUnit: "",
     n2oEmissionFactorUnit: "",
     ch4EmissionFactorUnit: "",
+    wasteCompositionType: null,
   };
 };
 
@@ -155,6 +156,8 @@ const useActivityForm = ({
             .units,
           ch4EmissionFactorUnit: extractGasAmount("CH4", targetActivityValue)
             .units,
+          wasteCompositionType:
+            targetActivityValue.metadata?.wasteCompositionType || null,
         },
       });
     } else {

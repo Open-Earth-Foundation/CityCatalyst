@@ -191,5 +191,7 @@
   "about": "About",
   "collaborators": "Collaborators",
   "go-to": "Go to...",
-  "default-project": "Default Project"
+  "default-project": "Default Project",
+  "industrial-processes-and-product-uses-ippu": "IPPU",
+  "agriculture-forestry-and-other-land-use-afolu": "AFOLU"
 }

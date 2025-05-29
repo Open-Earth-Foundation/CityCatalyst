@@ -44,7 +44,7 @@ const DeleteCityDialog: FC<DeleteCityDialogProps> = ({
   } = useForm<{ password: string }>();
 
   const [requestPasswordConfirm] = api.useRequestVerificationMutation();
-  const { data: token } = api.useGetVerifcationTokenQuery({});
+  const { data: token } = api.useGetVerificationTokenQuery({});
   const [removeCity] = api.useRemoveCityMutation();
   const [isPasswordCorrect, setIsPasswordCorrect] = useState<boolean>(true);
   const { showSuccessToast } = UseSuccessToast({

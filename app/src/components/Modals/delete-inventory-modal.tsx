@@ -44,7 +44,7 @@ const DeleteInventoryDialog: FC<DeleteInventoryDialogProps> = ({
     reset,
   } = useForm<{ password: string }>();
   const [requestPasswordConfirm] = api.useRequestVerificationMutation();
-  const { data: token } = api.useGetVerifcationTokenQuery({
+  const { data: token } = api.useGetVerificationTokenQuery({
     skip: !userData,
   });
   const [deleteInventory, { isLoading }] = api.useDeleteInventoryMutation();
@@ -56,6 +56,11 @@ const DeleteInventoryDialog: FC<DeleteInventoryDialogProps> = ({
   });
 
   const onSubmit: SubmitHandler<{ password: string }> = async (data) => {
+    if (!token?.verificationToken) {
+      console.error("No verification token found");
+      return;
+    }
+
     await requestPasswordConfirm({
       password: data.password!,
       token: token?.verificationToken!,

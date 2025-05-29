@@ -57,10 +57,16 @@ export default function HomePage({
   const inventoryIdFromParam =
     inventoryId || inventoryParam || userInfo?.defaultInventoryId;
 
-  const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery((inventoryIdFromParam as string) || "default");
+  const {
+    data: inventory,
+    isLoading: isInventoryLoading,
+    error: inventoryError,
+  } = api.useGetInventoryQuery((inventoryIdFromParam as string) || "default");
 
   useEffect(() => {
+    if (inventoryError) {
+      setTimeout(() => router.push("/onboarding"), 0);
+    }
     if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
         // fix inventoryId in URL without reloading page
@@ -76,11 +82,17 @@ export default function HomePage({
         }
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
-
-        setTimeout(() => router.push(`/onboarding`), 0);
+        setTimeout(() => router.push("/onboarding"), 0);
       }
     }
-  }, [isInventoryLoading, inventory, inventoryIdFromParam, language, router]);
+  }, [
+    isInventoryLoading,
+    inventory,
+    inventoryIdFromParam,
+    language,
+    router,
+    inventoryError,
+  ]);
 
   // query API data
   // TODO maybe rework this logic into one RTK query:

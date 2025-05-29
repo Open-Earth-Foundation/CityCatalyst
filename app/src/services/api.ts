@@ -368,6 +368,7 @@ export const api = createApi({
           "InventoryValue",
           "ReportResults",
           "YearlyReportResults",
+          "UserInfo",
         ],
       }),
       deleteInventoryValue: builder.mutation<
@@ -496,9 +497,9 @@ export const api = createApi({
         transformResponse: (response: { data: any }) => response.data,
         invalidatesTags: ["Invites"],
       }),
-      getVerifcationToken: builder.query({
+      getVerificationToken: builder.query({
         query: () => ({
-          url: "auth/verify",
+          url: "/auth/verify",
           method: "GET",
         }),
       }),
@@ -1228,7 +1229,7 @@ export const {
   useCancelInviteMutation,
   useResetInviteMutation,
   useRequestVerificationMutation,
-  useGetVerifcationTokenQuery,
+  useGetVerificationTokenQuery,
   useGetCitiesQuery,
   useGetInventoriesQuery,
   useAddUserFileMutation,

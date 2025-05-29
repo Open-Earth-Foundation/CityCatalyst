@@ -194,5 +194,7 @@
   "about": "Acerca de",
   "collaborators": "Colaboradores",
   "default-project": "Proyecto predeterminado",
-  "go-to": "Ve a..."
+  "go-to": "Ve a...",
+  "industrial-processes-and-product-uses-ippu": "IPPU",
+  "agriculture-forestry-and-other-land-use-afolu": "AFOLU"
 }

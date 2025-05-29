@@ -1250,5 +1250,14 @@
   "waste-composition-other": "Otro",
   "no-data": "Sin datos",
   "table-pagination": "{{start}} - {{end}} de {{total}}",
-  "search-records": "Buscar registros"
+  "search-records": "Buscar registros",
+  "enter-custom-values": "Tengo mis propios datos de composición de residuos.",
+  "enter-default-values": "No tengo datos sobre la composición de residuos. Preferiría usar los valores predeterminados recomendados",
+  "waste-composition-default-values-heading": "¿Qué son los valores predeterminados?",
+  "waste-composition-default-values-description": "Cuando no hay datos disponibles sobre la composición de los residuos, es obligatorio utilizar estos valores predeterminados. Te animamos a revisar la metodología de la fuente",
+  "waste-composition-info": "La composición de los residuos es uno de los principales factores que influyen en las emisiones del tratamiento de residuos sólidos, ya que diferentes tipos de residuos contienen diferentes cantidades de carbono orgánico degradable (DOC) y carbono fósil. Las composiciones de residuos, así como las clasificaciones utilizadas para recopilar datos sobre la composición de residuos en los RSU varían ampliamente en diferentes regiones y países.",
+  "waste-composition-total-percentage": "{{percent}} / 100%",
+  "waste-composition-percentage": "{{percent}}%",
+  "categories": "Categorías",
+  "percentage": "Porcentaje"
 }

@@ -33,7 +33,7 @@ import {
 } from "./icons";
 import type { TFunction } from "i18next";
 import { Field } from "./ui/field";
-import { InputAddon, InputGroup } from "@/components/ui/input-group";
+import { InputGroup } from "@/components/ui/input-group";
 import { ValueChangeDetails } from "@zag-js/radio-group";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import {
@@ -256,7 +256,6 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                             }
                             background={isDisabled ? "gray.100" : "white"}
                             px={3}
-                            // Use text type to allow formatted input
                           />
                         </InputGroup>
                       </NumberInputRoot>
@@ -416,7 +415,6 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                       }
                       background={isDisabled ? "gray.100" : "white"}
                       px={3}
-                      // Use text type to allow formatted input
                     />
                   </InputGroup>
                 </NumberInputRoot>

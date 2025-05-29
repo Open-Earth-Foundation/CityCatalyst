@@ -521,7 +521,7 @@ export interface FormulaInputValuesResponse {
   methodologyName: string;
   gpcRefno: string;
   formulaInputValue: string;
-  formulaTnputUnit: string;
+  formulaInputUnit: string;
   formulaName: string;
   region: string;
 }

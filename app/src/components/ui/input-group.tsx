@@ -71,6 +71,10 @@ export const InputGroup = React.forwardRef<HTMLDivElement, InputGroupProps>(
 export const InputAddon = React.forwardRef<HTMLDivElement, InputElementProps>(
   function InputAddon(props, ref) {
     const { children, ...rest } = props;
-    return <Box backgroundColor="border.overlay" ref={ref} {...rest}></Box>;
+    return (
+      <Box backgroundColor="border.overlay" ref={ref} {...rest}>
+        {children}
+      </Box>
+    );
   },
 );

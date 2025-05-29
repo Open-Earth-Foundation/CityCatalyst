@@ -1,6 +1,6 @@
 import { Field as ChakraField } from "@chakra-ui/react";
 import * as React from "react";
-import { InfoTip } from "@/components/ui/info-tooltip";
+import { InfoTip } from "@/components/ui/tooltips";
 
 export interface FieldProps extends Omit<ChakraField.RootProps, "label"> {
   label?: React.ReactNode;

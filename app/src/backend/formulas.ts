@@ -451,7 +451,7 @@ export async function handleMethaneCommitmentFormula(
 
   let methodologyIdentifier = inputMethodology;
 
-  if (inputMethodology.endsWith("methodology")) {
+  if (inputMethodology.endsWith("-methodology")) {
     methodologyIdentifier = inputMethodology.slice(0, -"-methodology".length); // Remove the suffix from the end
   }
 

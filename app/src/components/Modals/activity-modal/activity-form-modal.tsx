@@ -198,6 +198,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         }),
         dataQuality: activity.dataQuality,
         sourceExplanation: activity.dataComments,
+        ...(activity.wasteCompositionType && {
+          wasteCompositionType: activity.wasteCompositionType,
+        }),
       },
       ...(inventoryValue ? { inventoryValueId: inventoryValue.id } : {}),
       ...(!inventoryValue

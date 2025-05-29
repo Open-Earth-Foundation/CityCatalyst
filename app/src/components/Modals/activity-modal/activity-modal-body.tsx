@@ -83,6 +83,7 @@ export type Inputs = {
     co2EmissionFactorUnit: string;
     n2oEmissionFactorUnit: string;
     ch4EmissionFactorUnit: string;
+    wasteCompositionType?: string;
   };
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
@@ -254,6 +255,7 @@ const ActivityModalBody = ({
                     id={f.id}
                     label={t(f.id)}
                     tooltipInfo={t(f["info-text"] as string)}
+                    defaultMode={f["default-composition-available"]}
                     register={register}
                     getValues={getValues}
                     control={control}

@@ -31,6 +31,7 @@ export interface ExtraField {
   "default-units"?: string;
   required?: boolean;
   "info-text"?: string;
+  "default-composition-available"?: boolean;
   totalRequired?: number;
   subtypes?: string[];
   "emission-factor-dependency"?: boolean;

@@ -40,15 +40,17 @@ export const GET = apiHandler(async (_req: Request, context) => {
     ],
   });
 
-  const parsedLocode = "world"; // TODO extend to use city Country locode;
+  const parsedLocode = city?.countryLocode ?? "world"; // TODO extend to use city Country locode;
+
+  console.log(parsedLocode, "this");
 
   const formulaValues = await db.models.FormulaInput.findAll({
     where: {
       parameterCode: {
-        [Op.iLike]: `%cc_%`,
+        [Op.iLike]: `%WCF_%`,
       },
       methodologyName: methodologyName,
-      region: parsedLocode,
+      actorId: parsedLocode,
     },
   });
 

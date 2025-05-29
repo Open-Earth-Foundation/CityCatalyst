@@ -58,9 +58,6 @@ class CheckProgressResponse(BaseModel):
     error: Optional[str] = None
 
 
-### WIP for the plan creation response ###
-
-
 class Subaction(BaseModel):
     number: int
     title: str

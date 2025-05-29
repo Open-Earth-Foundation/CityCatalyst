@@ -48,11 +48,10 @@ import {
   ACTION_TYPES,
   ThemeResponse,
   OrganizationWithThemeResponse,
-  UpdateUserPayload
+  UpdateUserPayload,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
 
 export const api = createApi({
   reducerPath: "api",
@@ -368,6 +367,7 @@ export const api = createApi({
           "InventoryValue",
           "ReportResults",
           "YearlyReportResults",
+          "UserInfo",
         ],
       }),
       deleteInventoryValue: builder.mutation<
@@ -432,10 +432,7 @@ export const api = createApi({
         providesTags: ["UserData"],
       }),
 
-      setCurrentUserData: builder.mutation<
-        UserAttributes,
-        UpdateUserPayload
-      >({
+      setCurrentUserData: builder.mutation<UserAttributes, UpdateUserPayload>({
         query: (data) => ({
           url: `/user/${data.userId}`,
           method: "PATCH",
@@ -499,9 +496,9 @@ export const api = createApi({
         transformResponse: (response: { data: any }) => response.data,
         invalidatesTags: ["Invites"],
       }),
-      getVerifcationToken: builder.query({
+      getVerificationToken: builder.query({
         query: () => ({
-          url: "auth/verify",
+          url: "/auth/verify",
           method: "GET",
         }),
       }),
@@ -1213,7 +1210,7 @@ export const {
   useCancelInviteMutation,
   useResetInviteMutation,
   useRequestVerificationMutation,
-  useGetVerifcationTokenQuery,
+  useGetVerificationTokenQuery,
   useGetCitiesQuery,
   useGetInventoriesQuery,
   useAddUserFileMutation,

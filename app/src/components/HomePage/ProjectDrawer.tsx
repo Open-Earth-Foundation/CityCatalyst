@@ -147,7 +147,9 @@ const SingleProjectView = ({
           as={MdKeyboardArrowRight}
         />
         <Text fontSize="body.lg" color={"content.tertiary"}>
-          {project.name}
+          {project.name === "cc_project_default"
+            ? t("default-project")
+            : project.name}
         </Text>
       </Button>
       <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />

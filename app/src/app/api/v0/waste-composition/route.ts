@@ -42,8 +42,6 @@ export const GET = apiHandler(async (_req: Request, context) => {
 
   const parsedLocode = city?.countryLocode ?? "world"; // TODO extend to use city Country locode;
 
-  console.log(parsedLocode, "this");
-
   const formulaValues = await db.models.FormulaInput.findAll({
     where: {
       parameterCode: {

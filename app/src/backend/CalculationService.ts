@@ -122,11 +122,17 @@ export default class CalculationService {
         );
         break;
       case "methane-commitment":
-        gases = await handleMethaneCommitmentFormula(
-          activityValue,
-          inventoryValue,
-          inputMethodology,
-        );
+        try {
+          gases = await handleMethaneCommitmentFormula(
+            activityValue,
+            inventoryValue,
+            inputMethodology,
+          );
+        } catch (error) {
+          throw new createHttpError.InternalServerError(
+            `Error calculating methane commitment`,
+          );
+        }
         break;
       case "incineration-waste":
         const incinerationFormulaMapping =

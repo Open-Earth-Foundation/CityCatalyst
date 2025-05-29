@@ -81,7 +81,7 @@ interface FormInputProps {
   breakdownCategories: string[];
   inventoryId?: string;
   methodologyName?: string;
-  defaultMode: boolean;
+  defaultMode?: boolean;
 }
 
 interface CustomValueDetail extends ValueChangeDetails {

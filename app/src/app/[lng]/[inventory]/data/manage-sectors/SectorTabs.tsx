@@ -36,6 +36,7 @@ import ProgressLoader from "@/components/ProgressLoader";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
+import { logger } from "@/services/logger";
 
 interface SubcategoryItem {
   subSectorId: string;
@@ -259,7 +260,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         title: t("error"),
         description: t("error-updating-notation-keys"),
       });
-      console.error("Failed to update notation keys", error);
+      logger.error({ err: error }, "Failed to update notation keys");
     }
   };
 

@@ -104,12 +104,12 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
       whereClause.methodologyName = "energy-consumption";
   }
 
-  const emissionsFactors = await db.models.EmissionsFactor.findAll({ 
+  const emissionsFactors = await db.models.EmissionsFactor.findAll({
     where: whereClause,
     include: [{ model: db.models.DataSource, as: "dataSources" }],
   });
 
-  logger.info("actor Id used to filter emissionsFactors ", parsedLocode);
+  logger.info({ locode: parsedLocode }, "actor Id used to filter emissionsFactors ");
 
   let output = emissionsFactors.filter(({ actorId }) =>
     ["world", parsedLocode].includes(actorId as string),

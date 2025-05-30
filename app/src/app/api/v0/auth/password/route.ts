@@ -5,12 +5,13 @@ import bcrypt from "bcrypt";
 import createHttpError from "http-errors";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
+import { logger } from "@/services/logger";
 
 export const POST = apiHandler(async (req: Request) => {
   const body = resetPasswordRequest.parse(await req.json());
 
   if (!process.env.RESET_TOKEN_SECRET) {
-    console.error("Need to assign RESET_TOKEN_SECRET in env!");
+    logger.error("Need to assign RESET_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
 

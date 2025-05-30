@@ -50,6 +50,7 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { logger } from "@/services/logger"
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -187,7 +188,7 @@ export default function SelectCityStep({
         numberOfYearsDisplayed,
       );
       if (!population) {
-        console.error("Failed to find population data for city");
+        logger.error("Failed to find population data for city");
         return;
       }
       setValue("cityPopulation", population.population);
@@ -204,7 +205,7 @@ export default function SelectCityStep({
         numberOfYearsDisplayed,
       );
       if (!population) {
-        console.error("Failed to find population data for region");
+        logger.error("Failed to find population data for region");
         return;
       }
       setValue("regionPopulation", population.population);
@@ -220,7 +221,7 @@ export default function SelectCityStep({
         numberOfYearsDisplayed,
       );
       if (!population) {
-        console.error("Failed to find population data for region");
+        logger.error("Failed to find population data for region");
         return;
       }
       setValue("countryPopulation", population.population);
@@ -235,7 +236,7 @@ export default function SelectCityStep({
           (e) => e.year === year,
         )?.total_emissions;
         if (emissions == null) {
-          console.error("Failed to find country emissions for ", year);
+          logger.error({ year: year }, "Failed to find country emissions for ");
         }
         setValue("totalCountryEmissions", emissions);
       }

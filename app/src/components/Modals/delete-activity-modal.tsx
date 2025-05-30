@@ -19,6 +19,7 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { logger } from "@/services/logger";
 
 interface DeleteAllActivitiesModalProps {
   isOpen: boolean;
@@ -51,7 +52,7 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
   // define the function to delete all activities
   const handleDeleteActivity = async () => {
     if (!selectedActivityValue) {
-      console.error("Selected activity value missing when deleting activity!");
+      logger.error("Selected activity value missing when deleting activity!");
       return;
     }
 

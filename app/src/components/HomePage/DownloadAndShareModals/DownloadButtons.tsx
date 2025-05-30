@@ -5,6 +5,7 @@ import { MdCheckCircleOutline, MdInfoOutline } from "react-icons/md";
 import { FiDownload } from "react-icons/fi";
 
 import { Toaster, toaster } from "@/components/ui/toaster";
+import { logger } from "@/services/logger";
 
 const DownloadButtons = ({
   t,
@@ -141,7 +142,7 @@ const DownloadButtons = ({
         }
       })
       .catch((error) => {
-        console.error("Download error:", error);
+        logger.error({ err: error }, "Download error:");
         showToast(
           "download-failed",
           "download-error",

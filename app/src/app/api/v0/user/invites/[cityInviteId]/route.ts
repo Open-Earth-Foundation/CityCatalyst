@@ -6,6 +6,7 @@ import { InviteStatus } from "@/util/types";
 import { CityUser } from "@/models/CityUser";
 import { QueryTypes } from "sequelize";
 import UserService from "@/backend/UserService";
+import { logger } from "@/services/logger";
 
 export const DELETE = apiHandler(async (req, { params, session }) => {
   if (!session) {
@@ -20,7 +21,7 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
     },
   });
   if (!invite) {
-    console.error(
+    logger.error(
       "error in invites/[cityInviteId]/route DELETE: ",
       "CityInvite not found",
       cityInviteId,
@@ -67,7 +68,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   });
 
   if (!invite) {
-    console.error(
+    logger.error(
       "error in invites/[cityInviteId]/route DELETE: ",
       "CityInvite not found",
       cityInviteId,

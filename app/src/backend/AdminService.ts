@@ -109,7 +109,7 @@ export default class AdminService {
 
       for (const inventory of inventories) {
         if (!inventory.year) {
-          console.error("No year for inventory", inventory.inventoryId);
+          logger.error({ inventoryId: inventory.inventoryId }, "No year for inventory");
           errors.push({
             locode: cityLocode,
             error: "No year for inventory " + inventory.inventoryId,

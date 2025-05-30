@@ -38,6 +38,7 @@ import OrganizationDetailsTab from "./organization-details-tab";
 import TabContent from "@/components/ui/tab-content";
 import TabTrigger from "@/components/ui/tab-trigger";
 import { Trans } from "react-i18next";
+import { logger } from "@/services/logger";
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const { showErrorToast } = UseErrorToast({
@@ -126,7 +127,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
       setLogoUrl(response?.logoUrl as string);
       showSuccessToast();
     } catch (err) {
-      console.error("Failed to update white label settings:", err);
+      logger.error({ err: err }, "Failed to update white label settings:");
     }
   };
 

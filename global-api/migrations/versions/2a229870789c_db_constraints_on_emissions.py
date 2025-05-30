@@ -64,7 +64,7 @@ def upgrade() -> None:
     op.create_check_constraint(
         'check_gas_name_list',
         'emissions',
-        "gas_name IN ('C2F6', 'CF4', 'CH4', 'CO', 'CO2', 'N20', 'N2O', 'NOx')",
+        "gas_name IN ('C2F6', 'CF4', 'CH4', 'CO', 'CO2', 'N2O', 'NOx')",
         schema='modelled'
     )
 
@@ -89,7 +89,7 @@ def downgrade() -> None:
         'emissions',
         'emissions_value',
         type_=sa.Float(),
-        existing_type=sa.Numeric(18, 8),
+        existing_type=sa.Numeric(20, 8),
         schema='modelled',
         nullable=True,
         postgresql_using='emissions_value::float'

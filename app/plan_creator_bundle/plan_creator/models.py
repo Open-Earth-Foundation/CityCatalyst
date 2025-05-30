@@ -78,10 +78,18 @@ class Institution(BaseModel):
     description: str
 
 
+class InstitutionList(BaseModel):
+    institutions: List[Institution]
+
+
 class Milestone(BaseModel):
     number: int
     title: str
     description: str
+
+
+class MilestoneList(BaseModel):
+    milestones: List[Milestone]
 
 
 class Timeline(BaseModel):
@@ -96,9 +104,17 @@ class MerIndicator(BaseModel):
     description: str
 
 
+class MerIndicatorList(BaseModel):
+    merIndicators: List[MerIndicator]
+
+
 class Mitigation(BaseModel):
     title: str
     description: str
+
+
+class MitigationList(BaseModel):
+    mitigations: List[Mitigation]
 
 
 class Adaptation(BaseModel):
@@ -106,9 +122,17 @@ class Adaptation(BaseModel):
     description: str
 
 
+class AdaptationList(BaseModel):
+    adaptations: List[Adaptation]
+
+
 class SDG(BaseModel):
     title: str
     description: str
+
+
+class SDGList(BaseModel):
+    sdgs: List[SDG]
 
 
 class PlanContent(BaseModel):
@@ -119,12 +143,12 @@ class PlanContent(BaseModel):
         default_factory=lambda: SubactionList(subactions=[]),
         description="List of subactions, each with a number, title, and description",
     )
-    institutions: List[Institution] = Field(
-        default_factory=list,
+    institutions: InstitutionList = Field(
+        default_factory=lambda: InstitutionList(institutions=[]),
         description="List of institutions, each with a name and description",
     )
-    milestones: List[Milestone] = Field(
-        default_factory=list,
+    milestones: MilestoneList = Field(
+        default_factory=lambda: MilestoneList(milestones=[]),
         description="List of milestones, each with a number, title, and description",
     )
     timeline: List[Timeline] = Field(
@@ -135,20 +159,20 @@ class PlanContent(BaseModel):
         default_factory=list,
         description="List of cost budgets, each with a title and description",
     )
-    merIndicators: List[MerIndicator] = Field(
-        default_factory=list,
+    merIndicators: MerIndicatorList = Field(
+        default_factory=lambda: MerIndicatorList(merIndicators=[]),
         description="List of MER indicators, each with a description",
     )
-    mitigations: List[Mitigation] = Field(
-        default_factory=list,
+    mitigations: MitigationList = Field(
+        default_factory=lambda: MitigationList(mitigations=[]),
         description="List of mitigations, each with a title and description",
     )
-    adaptations: List[Adaptation] = Field(
-        default_factory=list,
+    adaptations: AdaptationList = Field(
+        default_factory=lambda: AdaptationList(adaptations=[]),
         description="List of adaptations, each with a title and description",
     )
-    sdgs: List[SDG] = Field(
-        default_factory=list,
+    sdgs: SDGList = Field(
+        default_factory=lambda: SDGList(sdgs=[]),
         description="List of SDGs, each with a title and description",
     )
 

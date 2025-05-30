@@ -78,6 +78,7 @@ export function NavigationBar({
       skip: isPublic,
     },
   );
+
   const onChangeLanguage = (language: string) => {
     Cookies.set("i18next", language);
     const cookieLanguage = Cookies.get("i18next");

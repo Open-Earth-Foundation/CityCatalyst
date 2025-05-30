@@ -13,7 +13,7 @@ This migration enforces stricter data integrity and consistency on the modelled.
 - These changes may require data cleaning if existing values do not conform to the new types or constraints.
 
 """
-from typing import Sequence, Unions
+from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa

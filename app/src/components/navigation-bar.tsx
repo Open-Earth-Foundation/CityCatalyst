@@ -78,6 +78,15 @@ export function NavigationBar({
       skip: isPublic,
     },
   );
+
+  useEffect(() => {
+    if (!inventory && !isInventoryLoading && userAccessStatus?.isOrgOwner) {
+      // Redirect to inventory creation page if no inventory is found and user is an org owner
+      router.replace("/onboarding");
+      return;
+    }
+  }, [inventory, isInventoryLoading, userAccessStatus]);
+
   const onChangeLanguage = (language: string) => {
     Cookies.set("i18next", language);
     const cookieLanguage = Cookies.get("i18next");

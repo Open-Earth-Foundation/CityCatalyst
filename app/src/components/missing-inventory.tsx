@@ -1,4 +1,4 @@
-import { Box, Link, Text } from "@chakra-ui/layout";
+import { Box, Link, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import { Heading } from "@chakra-ui/react";
 import React, { useEffect } from "react";

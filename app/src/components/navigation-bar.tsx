@@ -79,18 +79,6 @@ export function NavigationBar({
     },
   );
 
-  useEffect(() => {
-    if (
-      !inventory &&
-      !isInventoryLoading &&
-      userAccessStatus?.isOrgOwner &&
-      !inventoryIdFromParam
-    ) {
-      router.replace("/onboarding");
-      return;
-    }
-  }, [inventory, isInventoryLoading, userAccessStatus]);
-
   const onChangeLanguage = (language: string) => {
     Cookies.set("i18next", language);
     const cookieLanguage = Cookies.get("i18next");

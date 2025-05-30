@@ -29,6 +29,7 @@ import { DisplayMedium } from "@/components/Texts/Display";
 import { Action } from "./types";
 import { ButtonMedium } from "@/components/Texts/Button";
 import { BarVisualization } from "./CapActionTab";
+import { logger } from "@/services/logger";
 
 export function ActionDrawer({
   action,

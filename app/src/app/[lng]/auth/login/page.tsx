@@ -13,6 +13,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import { Trans } from "react-i18next/TransWithoutContext";
+import { logger } from "@/services/logger";
 
 export type LoginInputs = {
   email: string;

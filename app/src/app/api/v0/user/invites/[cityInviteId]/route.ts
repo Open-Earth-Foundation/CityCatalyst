@@ -6,6 +6,7 @@ import { InviteStatus } from "@/util/types";
 import { CityUser } from "@/models/CityUser";
 import { QueryTypes } from "sequelize";
 import UserService from "@/backend/UserService";
+import { logger } from "@/services/logger";
 
 export const DELETE = apiHandler(async (req, { params, session }) => {
   if (!session) {

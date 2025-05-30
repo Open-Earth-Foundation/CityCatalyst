@@ -17,6 +17,7 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/components/ui/dialog";
+import { logger } from "@/services/logger";
 
 interface DeleteFileDialogProps {
   isOpen: boolean;

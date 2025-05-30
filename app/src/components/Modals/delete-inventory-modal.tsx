@@ -21,6 +21,7 @@ import PasswordInput from "@/components/password-input";
 
 import type { UserAttributes } from "@/models/User";
 import { api } from "@/services/api";
+import { logger } from "@/services/logger";
 
 interface DeleteInventoryDialogProps {
   isOpen: boolean;

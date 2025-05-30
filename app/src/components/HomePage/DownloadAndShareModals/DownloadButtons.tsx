@@ -5,6 +5,7 @@ import { MdCheckCircleOutline, MdInfoOutline } from "react-icons/md";
 import { FiDownload } from "react-icons/fi";
 
 import { Toaster, toaster } from "@/components/ui/toaster";
+import { logger } from "@/services/logger";
 
 const DownloadButtons = ({
   t,

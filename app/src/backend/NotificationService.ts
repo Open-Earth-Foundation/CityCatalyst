@@ -4,6 +4,7 @@ import { City } from "@/models/City";
 import { UserFileResponse } from "@/util/types";
 import { render } from "@react-email/components";
 import nodemailer, { Transporter } from "nodemailer";
+import { logger } from "@/services/logger";
 
 export interface EmailOptions {
   to: string;

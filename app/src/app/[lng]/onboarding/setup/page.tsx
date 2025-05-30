@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { UseErrorToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { logger } from "@/services/logger";
 
 export type Inputs = {
   city: string;

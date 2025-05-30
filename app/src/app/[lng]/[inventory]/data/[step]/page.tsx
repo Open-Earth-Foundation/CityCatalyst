@@ -401,12 +401,12 @@ export default function AddDataSteps({
     // this is printed to debug missing data sources more easily,
     // TODO consider putting this behind a "dev mode" flag of some kind
     if (removedSources.length > 0) {
-      console.info("Removed data sources");
-      console.dir(removedSources);
+      logger.info("Removed data sources");
+      logger.info({removedSources});
     }
     if (failedSources.length > 0) {
-      console.info("Failed data sources");
-      console.dir(failedSources);
+      logger.info("Failed data sources");
+      logger.info({failedSources});
     }
   }
 

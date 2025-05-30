@@ -32,6 +32,7 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { MdCheck, MdKeyboardArrowRight } from "react-icons/md";
 import SearchInput from "@/components/SearchInput";
+import { logger } from "@/services/logger";
 
 interface MoveCityModalProps {
   isOpen: boolean;

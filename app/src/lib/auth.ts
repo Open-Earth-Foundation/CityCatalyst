@@ -7,6 +7,7 @@ import {
   CredentialsConfig,
 } from "next-auth/providers/credentials";
 import { Roles } from "@/util/types";
+import { logger } from "@/services/logger";
 
 // extracted from next-auth/providers/credentials
 // added here since the node test runner/ tsx wouldn't properly import ESM modules

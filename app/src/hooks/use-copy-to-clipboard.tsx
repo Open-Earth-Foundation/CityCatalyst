@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { logger } from "@/services/logger";
 
 export function useCopyToClipboard({ timeout = 2000 }: { timeout?: number }) {
   const [isCopied, setIsCopied] = useState<boolean>(false);

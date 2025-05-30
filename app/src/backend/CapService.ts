@@ -1,6 +1,7 @@
 import { LANGUAGES, ACTION_TYPES } from "@/util/types";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
+import { logger } from "@/services/logger";
 
 const getClient = (() => {
   let client: S3Client | null = null;

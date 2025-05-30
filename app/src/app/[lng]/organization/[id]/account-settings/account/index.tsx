@@ -38,6 +38,7 @@ import OrganizationDetailsTab from "./organization-details-tab";
 import TabContent from "@/components/ui/tab-content";
 import TabTrigger from "@/components/ui/tab-trigger";
 import { Trans } from "react-i18next";
+import { logger } from "@/services/logger";
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const { showErrorToast } = UseErrorToast({

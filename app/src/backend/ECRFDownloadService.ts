@@ -68,7 +68,7 @@ export default class ECRFDownloadService {
         city.locode as string,
       );
     } catch (e) {
-      console.warn("Failed to fetch city boundary or population");
+      logger.warn("Failed to fetch city boundary or population");
     }
 
     // prepare the data for sheet 1
@@ -477,7 +477,7 @@ export default class ECRFDownloadService {
             } else if (replacementValue !== undefined) {
               cell.value = replacementValue;
             } else {
-              console.warn(
+              logger.warn(
                 `No data found for field '${fieldName}' at row ${rowNumber}, column ${colNumber}`,
               );
               cell.value = ""; // remove the placeholder when done

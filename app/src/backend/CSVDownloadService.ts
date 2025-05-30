@@ -6,6 +6,7 @@ import { stringify } from "csv-stringify/sync";
 import { db } from "@/models";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import createHttpError from "http-errors";
+import { logger } from "@/services/logger";
 
 type InventoryLine = (string | number | null | undefined)[];
 

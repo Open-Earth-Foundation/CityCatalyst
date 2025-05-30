@@ -11,6 +11,7 @@ import { Decimal } from "decimal.js";
 import { findMethodology } from "@/util/form-schema";
 import UnitConversionService from "@/backend/UnitConversionService";
 import { literal, Op } from "sequelize";
+import { logger } from "@/services/logger";
 
 type GasValueWithEmissionsFactor = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?:
@@ -346,19 +347,19 @@ export async function handleIncinerationWasteFormula(
         : fractionOfCarbonInput;
 
     if (dryMatterInput == null) {
-      console.warn(
+      logger.warn(
         `dryMatterContentI is missing for ${wasteType} a default of 1 used`,
       );
     }
 
     if (fractionOfCarbonInput == null) {
-      console.warn(
+      logger.warn(
         `fractionOfCarbonI is missing for ${wasteType} a default of 1 used`,
       );
     }
 
     if (fractionOfFossilCarbonInput == null) {
-      console.warn(
+      logger.warn(
         `fractionOfFossilCarbonI is missing for ${wasteType} a default of 1 used`,
       );
     }

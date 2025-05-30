@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { sendEmail } from "@/lib/email";
 import { render } from "@react-email/components";
 import InviteToOrganizationTemplate from "@/lib/emails/InviteToOrganizationTemplate";
+import { logger } from "@/services/logger";
 
 export default class EmailService {
   public static async sendOrganizationInvitationEmail(

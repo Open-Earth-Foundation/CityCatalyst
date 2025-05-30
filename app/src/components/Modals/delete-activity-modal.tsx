@@ -19,6 +19,7 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { logger } from "@/services/logger";
 
 interface DeleteAllActivitiesModalProps {
   isOpen: boolean;

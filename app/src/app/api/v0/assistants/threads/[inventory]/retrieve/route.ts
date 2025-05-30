@@ -1,6 +1,7 @@
 import { apiHandler } from "@/util/api";
 import { setupOpenAI } from "@/util/openai";
 import { NextResponse } from "next/server";
+import { logger } from "@/services/logger";
 
 export const POST = apiHandler(async (req) => {
   try {

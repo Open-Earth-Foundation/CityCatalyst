@@ -10,6 +10,7 @@ import { bigIntToDecimal } from "@/util/big_int";
 import createHttpError from "http-errors";
 import GlobalAPIService from "./GlobalAPIService";
 import { Inventory } from "@/models/Inventory";
+import { logger } from "@/services/logger";
 
 function multiplyBigIntByFraction(
   stringValue: string,

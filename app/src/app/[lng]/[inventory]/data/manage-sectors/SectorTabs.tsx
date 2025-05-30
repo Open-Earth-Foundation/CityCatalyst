@@ -36,6 +36,7 @@ import ProgressLoader from "@/components/ProgressLoader";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
+import { logger } from "@/services/logger";
 
 interface SubcategoryItem {
   subSectorId: string;

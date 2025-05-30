@@ -159,16 +159,70 @@ export default class UserService {
         type: QueryTypes.SELECT,
       },
     )) as { inventory_id: string }[];
-    if (!inventory) {
-      throw new createHttpError.NotFound("Inventory not found");
+
+    if (inventory) {
+      await db.models.User.update(
+        {
+          defaultInventoryId: inventory?.inventory_id,
+        },
+        { where: { userId } },
+      );
+      return inventory?.inventory_id;
     }
-    await db.models.User.update(
-      {
-        defaultInventoryId: inventory?.inventory_id,
+
+    // throw new createHttpError.NotFound("Inventory not found");
+
+    const adminData = await db.models.OrganizationAdmin.findOne({
+      where: {
+        userId: userId,
       },
-      { where: { userId } },
-    );
-    return inventory?.inventory_id;
+      include: {
+        model: db.models.Organization,
+        as: "organization",
+        include: {
+          model: db.models.Project,
+          as: "projects",
+          include: [
+            {
+              model: db.models.City,
+              as: "cities",
+              include: [
+                {
+                  model: db.models.Inventory,
+                  as: "inventories",
+                  attributes: ["inventoryId"],
+                },
+              ],
+            },
+          ],
+        },
+      },
+    });
+
+    let newDefaultInventoryId: string | null = null;
+
+    if (adminData) {
+      // if the user is an org owner, they can pick any of the inventories belonging to his organization
+      const inventories = adminData.organization.projects.flatMap((project) =>
+        project.cities.flatMap((city) => city.inventories),
+      );
+
+      if (inventories.length > 0) {
+        newDefaultInventoryId = inventories[0].inventoryId;
+      }
+    }
+
+    if (newDefaultInventoryId) {
+      await db.models.User.update(
+        {
+          defaultInventoryId: newDefaultInventoryId,
+        },
+        { where: { userId } },
+      );
+      return newDefaultInventoryId;
+    }
+
+    throw new createHttpError.NotFound("Inventory not found");
   }
 
   /**
@@ -192,12 +246,70 @@ export default class UserService {
     if (!user.defaultInventoryId) {
       await UserService.updateDefaultInventoryId(user.userId);
     }
+
+    // check if you can find any city attached to this user
+
     if (!user.defaultInventoryId) {
       throw new createHttpError.NotFound("Inventory not found");
     }
 
     return user.defaultInventoryId;
   }
+
+  // public static async updateDefaultInventoryId(userId: string) {
+  //   const [inventory] = (await db.sequelize!.query(
+  //     `
+  //           SELECT i.inventory_id
+  //           FROM "Inventory" i
+  //                    JOIN "CityUser" cu ON i.city_id = cu.city_id
+  //           WHERE cu.user_id = :userId
+  //           ORDER BY i.last_updated DESC
+  //           LIMIT 1
+  //       `,
+  //     {
+  //       replacements: { userId },
+  //       type: QueryTypes.SELECT,
+  //     },
+  //   )) as { inventory_id: string }[];
+  //   if (!inventory) {
+  //     throw new createHttpError.NotFound("Inventory not found");
+  //   }
+  //   await db.models.User.update(
+  //     {
+  //       defaultInventoryId: inventory?.inventory_id,
+  //     },
+  //     { where: { userId } },
+  //   );
+  //   return inventory?.inventory_id;
+  // }
+
+  /**
+   * Load inventory information and perform access control
+   */
+  // public static async findUserDefaultInventory(
+  //   session: AppSession | null,
+  // ): Promise<string> {
+  //   if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+  //   const userId = session.user.id;
+  //   const user = await db.models.User.findOne({
+  //     attributes: ["defaultInventoryId", "userId"],
+  //     where: {
+  //       userId,
+  //     },
+  //   });
+  //   if (!user) {
+  //     throw new createHttpError.NotFound("User not found");
+  //   }
+  //
+  //   if (!user.defaultInventoryId) {
+  //     await UserService.updateDefaultInventoryId(user.userId);
+  //   }
+  //   if (!user.defaultInventoryId) {
+  //     throw new createHttpError.NotFound("Inventory not found");
+  //   }
+  //
+  //   return user.defaultInventoryId;
+  // }
 
   /**
    * Load inventory information and perform access control

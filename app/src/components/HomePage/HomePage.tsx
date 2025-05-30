@@ -131,12 +131,14 @@ export default function HomePage({
     }
   }, [isInventoryOrgDataLoading, inventoryOrgData]);
 
+  console.log(inventory, isInventoryLoading, isUserInfoLoading);
+
   return (
     <>
       {(isInventoryLoading ||
         isInventoryOrgDataLoading ||
         isUserInfoLoading) && <ProgressLoader />}
-      {inventory === null && !isInventoryLoading && !isUserInfoLoading && (
+      {!inventory && !isInventoryLoading && !isUserInfoLoading && (
         <>
           {isPublic ? (
             <NotAvailable lng={language} />

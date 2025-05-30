@@ -80,8 +80,12 @@ export function NavigationBar({
   );
 
   useEffect(() => {
-    if (!inventory && !isInventoryLoading && userAccessStatus?.isOrgOwner) {
-      // Redirect to inventory creation page if no inventory is found and user is an org owner
+    if (
+      !inventory &&
+      !isInventoryLoading &&
+      userAccessStatus?.isOrgOwner &&
+      !inventoryIdFromParam
+    ) {
       router.replace("/onboarding");
       return;
     }

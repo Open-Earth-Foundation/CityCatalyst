@@ -192,5 +192,7 @@
   "about": "Sobre",
   "collaborators": "Colaboradores",
   "default-project": "Projeto padrão",
-  "go-to": "Vá para..."
+  "go-to": "Vá para...",
+  "industrial-processes-and-product-uses-ippu": "IPPU",
+  "agriculture-forestry-and-other-land-use-afolu": "AFOLU"
 }

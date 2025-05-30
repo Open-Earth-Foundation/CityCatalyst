@@ -6,6 +6,7 @@ import createHttpError from "http-errors";
 import UserService from "@/backend/UserService";
 import { upsertInventoryRequest } from "@/util/validation";
 import { QueryTypes } from "sequelize";
+import { validate } from "uuid";
 
 function hasIsPublicProperty(
   inventory:
@@ -23,11 +24,22 @@ function hasIsPublicProperty(
 export const GET = apiHandler(async (req, { session, params }) => {
   let inventoryId = params.inventory;
 
-  let inventory;
+  if (inventoryId === 'null') {
+    throw new createHttpError.BadRequest("'null' is an invalid inventory id");
+  }
+
   if ("default" === inventoryId) {
     inventoryId = await UserService.findUserDefaultInventory(session);
+    if (!inventoryId) {
+      throw new createHttpError.NotFound("user has no default inventory");
+    }
   }
-  inventory = await UserService.findUserInventory(
+
+  if (!validate(inventoryId)) {
+    throw new createHttpError.BadRequest(`'${inventoryId}' is not a valid inventory id (uuid)`);
+  }
+
+  const inventory = await UserService.findUserInventory(
     inventoryId,
     session,
     [
@@ -51,10 +63,10 @@ export const GET = apiHandler(async (req, { session, params }) => {
   }
 
   // TODO [ON-2429]: Save total emissions for inventory every time activity data is modified
-  const rawQuery = `  
-    SELECT SUM(co2eq)  
-    FROM "InventoryValue"  
-    WHERE inventory_id = :inventoryId  
+  const rawQuery = `
+    SELECT SUM(co2eq)
+    FROM "InventoryValue"
+    WHERE inventory_id = :inventoryId
   `;
 
   const [{ sum }] = (await db.sequelize!.query(rawQuery, {

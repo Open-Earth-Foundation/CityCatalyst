@@ -450,4 +450,38 @@ describe("Inventory API", () => {
     const json = await res.json();
     expect(json.success).toBe(true);
   });
+
+  it("should return 400 for a 'null' inventory ID", async () => {
+    const req = mockRequest();
+    const res = await findInventory(req, {
+      params: { inventory: 'null' },
+    });
+    expect(res.status).toEqual(400);
+  });
+
+  // TODO: set up a default inventory for the test user
+
+  it.skip("should return 200 for the default inventory", async () => {
+    const req = mockRequest();
+    const res = await findInventory(req, {
+      params: { inventory: 'default' },
+    });
+    expect(res.status).toEqual(200);
+  });
+
+  it("should return 400 for a non-UUID string in inventory ID", async () => {
+    const req = mockRequest();
+    const res = await findInventory(req, {
+      params: { inventory: 'not-an-inventory-id' },
+    });
+    expect(res.status).toEqual(400);
+  });
+
+  it("should return 404 for a uuid string in that doesn't exist", async () => {
+    const req = mockRequest();
+    const res = await findInventory(req, {
+      params: { inventory: 'D8802AA9-F9DA-460F-86FE-F45F7D8D23F9' },
+    });
+    expect(res.status).toEqual(404);
+  });
 });

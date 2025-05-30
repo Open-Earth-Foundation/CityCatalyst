@@ -259,7 +259,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         title: t("error"),
         description: t("error-updating-notation-keys"),
       });
-      console.error("Failed to update notation keys", error);
+      logger.error({ err: error }, "Failed to update notation keys");
     }
   };
 

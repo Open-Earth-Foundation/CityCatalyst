@@ -486,7 +486,7 @@ export const getEmissionsBreakdownBatch = async (
     );
     return { byScope: resultsByScope };
   } catch (error) {
-    console.error("Error in getEmissionsBreakdownBatch:", error);
+    logger.error({ err: error }, "Error in getEmissionsBreakdownBatch:");
     throw error;
   }
 };

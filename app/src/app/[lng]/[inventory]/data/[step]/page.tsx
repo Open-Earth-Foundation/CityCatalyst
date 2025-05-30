@@ -378,7 +378,7 @@ export default function AddDataSteps({
         onSourceDrawerClose();
       }
     } catch (error: any) {
-      console.error("Failed to connect data source", source, error);
+      logger.error({ err: error, source: source }, "Failed to connect data source");
       showError("data-source-connect-failed", error.data?.error?.message);
     } finally {
       setConnectingDataSourceId(null);

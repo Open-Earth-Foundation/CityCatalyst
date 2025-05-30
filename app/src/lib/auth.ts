@@ -75,7 +75,7 @@ export const authOptions: NextAuthOptions = {
             where: { email: credentials.email },
           });
         } catch (err: any) {
-          console.error("Failed to login:", err);
+          logger.error({ err: err }, "Failed to login:");
           return null;
         }
 

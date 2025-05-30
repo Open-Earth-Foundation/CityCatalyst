@@ -18,7 +18,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
     session,
   );
   //console.log(JSON.stringify(inventory, null, 2));
-  
+
   if (!type || !lng) {
     throw new Error("Missing required parameters: type and lang");
   }
@@ -28,7 +28,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
     const data = await readFile(inventory.city.locode!, type, lng);
     return Response.json({ data });
   } catch (error) {
-    console.error("Error fetching CAP data:", error);
+    logger.error({ err: error }, "Error fetching CAP data:");
     throw new Error(`Failed to fetch CAP data for city ${inventory.city.locode}: ${(error as Error).message}`, { cause: error });
   }
-}); 
+});

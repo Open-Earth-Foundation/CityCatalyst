@@ -106,7 +106,7 @@ function SectorTabs({
 
   if (error) {
     showErrorToast();
-    console.error("Error fetching sector breakdown:", error);
+    logger.error({ err: error }, "Error fetching sector breakdown:");
   }
 
   useEffect(() => {

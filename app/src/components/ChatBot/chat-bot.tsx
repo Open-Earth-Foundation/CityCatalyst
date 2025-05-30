@@ -169,7 +169,7 @@ export default function ChatBot({
 
       if (!response.ok) {
         const data = await response.text();
-        console.error("HTTP response text", data);
+        logger.error({ err: data }, "HTTP response text");
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       if (response.body == null) {
@@ -246,7 +246,7 @@ export default function ChatBot({
 
       if (!response.ok) {
         const data = await response.text();
-        console.error("HTTP response text", data);
+        logger.error({ err: data }, "HTTP response text");
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       if (response.body == null) {
@@ -387,7 +387,7 @@ export default function ChatBot({
       ) {
         console.log("Stream processing was aborted.");
       } else {
-        console.error("An error occurred while processing the stream:", error);
+        logger.error({ err: error }, "An error occurred while processing the stream:");
       }
     }
   };
@@ -464,7 +464,7 @@ export default function ChatBot({
             });
             if (!response.ok) {
               const data = await response.text();
-              console.error("HTTP response text", data);
+              logger.error({ err: data }, "HTTP response text");
               throw new Error(`HTTP error! status: ${response.status}`);
             }
             if (response.body == null) {
@@ -479,7 +479,7 @@ export default function ChatBot({
               `【${data.file.filename}】`,
             );
           } catch (error) {
-            console.error("Error fetching file:", error);
+            logger.error({ err: error }, "Error fetching file:");
           }
         }
       });

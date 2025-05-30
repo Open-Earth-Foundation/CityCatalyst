@@ -50,6 +50,7 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { logger } from "@/services/logger"
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -235,7 +236,7 @@ export default function SelectCityStep({
           (e) => e.year === year,
         )?.total_emissions;
         if (emissions == null) {
-          console.error("Failed to find country emissions for ", year);
+          logger.error({ year: year }, "Failed to find country emissions for ");
         }
         setValue("totalCountryEmissions", emissions);
       }

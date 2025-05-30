@@ -141,7 +141,7 @@ const DownloadButtons = ({
         }
       })
       .catch((error) => {
-        console.error("Download error:", error);
+        logger.error({ err: error }, "Download error:");
         showToast(
           "download-failed",
           "download-error",

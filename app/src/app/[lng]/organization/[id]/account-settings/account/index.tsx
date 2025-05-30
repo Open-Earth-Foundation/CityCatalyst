@@ -126,7 +126,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
       setLogoUrl(response?.logoUrl as string);
       showSuccessToast();
     } catch (err) {
-      console.error("Failed to update white label settings:", err);
+      logger.error({ err: err }, "Failed to update white label settings:");
     }
   };
 

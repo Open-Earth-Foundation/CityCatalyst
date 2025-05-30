@@ -13,7 +13,7 @@ export const POST = apiHandler(async (req) => {
 
     return NextResponse.json({ thread: thread });
   } catch (error) {
-    console.error("Error retrieving thread:", error);
+    logger.error({ err: error }, "Error retrieving thread:");
     return NextResponse.json(
       { error: "Failed to retrieve thread." },
       { status: 500 },

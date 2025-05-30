@@ -4,10 +4,10 @@ import { Readable } from "stream";
 
 const getClient = (() => {
   let client: S3Client | null = null;
-  
+
   return () => {
     if (client) return client;
-    
+
     const region = process.env.AWS_REGION;
     const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
     const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
@@ -31,10 +31,10 @@ const getClient = (() => {
       },
       forcePathStyle: false,
     });
-    
+
     return client;
   };
-})(); 
+})();
 
 const streamToString = async (stream: Readable): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -71,7 +71,7 @@ export const readFile = async (
     const data = await streamToString(response.Body as Readable);
     return JSON.parse(data);
   } catch (err) {
-    console.error("Error reading file from S3:", err);
+    logger.error({ err: err }, "Error reading file from S3:");
     throw err;
   }
-}; 
+};

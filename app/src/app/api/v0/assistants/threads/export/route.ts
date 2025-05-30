@@ -25,7 +25,7 @@ export const POST = apiHandler(async (req) => {
 
     return NextResponse.json({ data: response });
   } catch (error) {
-    console.error("Error writing AssistantThread to the DB:", error);
+    logger.error({ err: error }, "Error writing AssistantThread to the DB:");
     throw createHttpError(500, "Server error");
   }
 });

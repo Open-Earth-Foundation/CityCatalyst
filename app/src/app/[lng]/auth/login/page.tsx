@@ -93,11 +93,11 @@ export default function Login({
         setError("");
         return;
       } else {
-        console.error("Sign in failure:", res?.error);
+        logger.error({ err: res?.error }, "Sign in failure:");
         setError(t("invalid-email-password"));
       }
     } catch (error: any) {
-      console.error("Failed to sign in:", error);
+      logger.error({ err: error }, "Failed to sign in:");
       setError(error);
     }
   };

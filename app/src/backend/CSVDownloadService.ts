@@ -145,7 +145,7 @@ export default class CSVDownloadService {
     try {
       return Buffer.from(csvContent);
     } catch (e) {
-      console.error("Error creating CSV", e);
+      logger.error({ err: e }, "Error creating CSV");
       const message = e instanceof Error ? e.message : "Unknown error";
       throw new createHttpError.InternalServerError(
         "Error creating CSV: " + message,

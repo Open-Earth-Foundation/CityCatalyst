@@ -31,6 +31,7 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { InputGroup } from "../ui/input-group";
+import { logger } from "@/services/logger";
 
 export default function SetPopulationDataStep({
   t,
@@ -131,7 +132,7 @@ export default function SetPopulationDataStep({
           (e) => e.year === year,
         )?.total_emissions;
         if (emissions == null) {
-          console.error("Failed to find country emissions for ", year);
+          logger.error({ year: year }, "Failed to find country emissions for ");
         }
         setValue("totalCountryEmissions", emissions);
       }

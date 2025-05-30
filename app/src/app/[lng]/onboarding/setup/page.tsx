@@ -215,7 +215,7 @@ export default function OnboardingSetup({
         `/onboarding/done/${data.locode}/${data.year}/${inventory.inventoryId}?project=${projectId}`,
       );
     } catch (err: any) {
-      console.error("Failed to create new inventory!", err);
+      logger.error({ err: err }, "Failed to create new inventory!");
       makeErrorToast("failed-to-create-inventory", err.data?.error?.message);
       setConfirming(false);
     }

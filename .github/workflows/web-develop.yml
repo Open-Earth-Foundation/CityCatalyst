@@ -39,6 +39,24 @@ jobs:
           cache: "npm"
           cache-dependency-path: app/package-lock.json
 
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Check version and bump if dev prerelease
+        run: |
+          version=$(node -p "require('./package.json').version")
+          prerelease=$(echo "$version" | grep -o '\-.*' || true)
+
+          if [[ "$prerelease" == dev.* || "$prerelease" == "-dev."* ]]; then
+            echo "Current version $version is a dev prerelease. Bumping..."
+            npm version prerelease --preid dev -m "ci: bump dev tag to %s [skip ci]"
+            git push --follow-tags
+          else
+            echo "Current version $version is not a dev prerelease. Skipping bump."
+          fi
+
       - name: Install dependencies
         run: npm ci
 

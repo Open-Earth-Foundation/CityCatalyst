@@ -54,11 +54,22 @@ export default function HomePage({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
-  const inventoryIdFromParam =
-    inventoryId || inventoryParam || userInfo?.defaultInventoryId;
+  // make sure that the inventory ID is using valid values
+  let inventoryIdFromParam: string | undefined;
+  if (inventoryId && inventoryId != "null") {
+    inventoryIdFromParam = inventoryId;
+  } else if (inventoryParam && inventoryParam != "null") {
+    if (typeof inventoryParam !== "string") {
+      inventoryIdFromParam = inventoryParam[0];
+    } else {
+      inventoryIdFromParam = inventoryParam;
+    }
+  } else {
+    inventoryIdFromParam = userInfo?.defaultInventoryId ?? undefined;
+  }
 
   const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery((inventoryIdFromParam as string) || "default");
+    api.useGetInventoryQuery(inventoryIdFromParam ?? "default");
 
   useEffect(() => {
     if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
@@ -76,7 +87,6 @@ export default function HomePage({
         }
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
-
         setTimeout(() => router.push(`/onboarding`), 0);
       }
     }
@@ -87,9 +97,7 @@ export default function HomePage({
   // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#performing-multiple-requests-with-a-single-query
 
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
-    api.useGetInventoryProgressQuery(
-      (inventoryIdFromParam as string) || "default",
-    );
+    api.useGetInventoryProgressQuery(inventoryIdFromParam ?? "default");
 
   const { data: city } = api.useGetCityQuery(inventory?.cityId!, {
     skip: !inventory?.cityId,
@@ -115,14 +123,12 @@ export default function HomePage({
   }, [cityYears]);
 
   const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
-    useGetOrganizationForInventoryQuery(inventoryIdFromParam as string, {
+    useGetOrganizationForInventoryQuery(inventoryIdFromParam!, {
       skip: !inventoryIdFromParam,
     });
 
   const { setLogoUrl } = useLogo();
   const { setTheme } = useTheme();
-
-  console.log(inventoryIdFromParam);
 
   useEffect(() => {
     if (inventoryOrgData) {

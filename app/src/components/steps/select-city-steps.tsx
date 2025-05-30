@@ -188,7 +188,7 @@ export default function SelectCityStep({
         numberOfYearsDisplayed,
       );
       if (!population) {
-        logger.error("Failed to find population data for city");
+        logger.error({locode, year}, "Failed to find population data for city");
         return;
       }
       setValue("cityPopulation", population.population);

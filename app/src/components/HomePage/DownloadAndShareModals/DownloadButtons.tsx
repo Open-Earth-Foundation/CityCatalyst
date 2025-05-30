@@ -142,7 +142,16 @@ const DownloadButtons = ({
         }
       })
       .catch((error) => {
-        logger.error({ err: error }, "Download error:");
+        logger.error(
+          {
+            err: error,
+            inventoryId,
+            format,
+            cityLocode,
+            inventoryYear
+          },
+          "Failed to download inventory"
+        );
         showToast(
           "download-failed",
           "download-error",

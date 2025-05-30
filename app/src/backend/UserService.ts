@@ -538,7 +538,7 @@ export default class UserService {
         });
       });
     } catch (error) {
-      logger.error({ err: error }, "Error removing user from project:");
+      logger.error({ projectId, email, err: error }, "Error removing user from project");
       throw new createHttpError.InternalServerError(
         "failed-to-remove-user-from-project",
       );

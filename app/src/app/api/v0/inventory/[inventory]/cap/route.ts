@@ -24,7 +24,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
   }
 
   try {
-    logger.info({"locode": inventory.city.locode});
+    logger.info({"locode": inventory.city.locode!});
     const data = await readFile(inventory.city.locode!, type, lng);
     return Response.json({ data });
   } catch (error) {

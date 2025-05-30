@@ -41,7 +41,7 @@ export function ActionDrawer({
   onClose: () => void;
   t: TFunction;
 }) {
-  console.log(action)
+  logger.info(action)
   return (
     <DrawerRoot
       open={isOpen}

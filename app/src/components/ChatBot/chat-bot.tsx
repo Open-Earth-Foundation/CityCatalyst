@@ -36,6 +36,7 @@ interface Message {
   role: "user" | "assistant" | "code";
   text: string;
 }
+import { logger } from "@/services/logger"
 
 const SUGGESTION_KEYS = ["gpc", "collect-data", "ipcc"];
 
@@ -181,7 +182,7 @@ export default function ChatBot({
       handleReadableStream(stream);
     } catch (error: any) {
       if (error.name === "AbortError") {
-        console.log("Request was aborted");
+        logger.info("Request was aborted");
       } else {
         handleError(error, "Failed to send message. Please try again.");
       }
@@ -256,13 +257,13 @@ export default function ChatBot({
 
       const stream = AssistantStream.fromReadableStream(response.body);
       handleReadableStream(stream);
-      console.log("Tool output submitted successfully");
+      logger.info("Tool output submitted successfully");
     } catch (error: any) {
       if (
         error.name === "AbortError" ||
         error.name === "Request was aborted."
       ) {
-        console.log("Fetch aborted by the user");
+        logger.info("Fetch aborted by the user");
       } else {
         handleError(error, "Failed to submit tool output. Please try again.");
       }
@@ -385,7 +386,7 @@ export default function ChatBot({
         error.name === "APIUserAbortError" ||
         error.message === "Request was aborted."
       ) {
-        console.log("Stream processing was aborted.");
+        logger.info("Stream processing was aborted.");
       } else {
         logger.error({ err: error }, "An error occurred while processing the stream:");
       }

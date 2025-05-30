@@ -108,7 +108,6 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
   console.time("load_ciris");
   workbook = await workbook.xlsx.readFile(CIRIS_TEMPLATE_PATH); // TODO load once and keep in memory?
   console.timeEnd("load_ciris");
-  // workbook.eachSheet((sheet, i) => console.log(sheet.name, i));
 
   console.time("edit_ciris");
   for (const { sector, values } of inventorySectors) {

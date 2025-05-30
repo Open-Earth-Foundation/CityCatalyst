@@ -42,6 +42,7 @@ import { BsDownload } from "react-icons/bs";
 import { TagMapping } from "./index";
 import DeleteCityModal from "@/app/[lng]/organization/[id]/account-settings/project/deleteCityModal";
 import { TFunction } from "i18next";
+import DownloadButton from "@/components/HomePage/DownloadButton";
 
 const getInventoryLastUpdated = (lastUpdated: Date, t: Function) => {
   if (!lastUpdated || isNaN(new Date(lastUpdated).getTime())) {
@@ -413,7 +414,6 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                 data={selectedCityData?.inventories ?? []}
                 columns={[
                   { header: t("year"), accessor: "year" },
-                  { header: t("status"), accessor: null },
                   { header: t("last-updated"), accessor: "lastUpdated" },
                   { header: "", accessor: null },
                   { header: "", accessor: null },
@@ -438,31 +438,25 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                       </Flex>
                     </Table.Cell>
                     <Table.Cell>
-                      <Progress.Root
-                        maxW="137px"
-                        value={0}
-                        borderRadius="8px"
-                        colorScheme="baseStyle"
-                        height="8px"
-                        width="137px"
-                      >
-                        <Progress.Track>
-                          <Progress.Range />
-                        </Progress.Track>
-                      </Progress.Root>
-                    </Table.Cell>
-                    <Table.Cell>
                       {getInventoryLastUpdated(new Date(item.lastUpdated), t)}
                     </Table.Cell>
                     <Table.Cell>
-                      <IconButton
-                        data-testid="download-inventory-icon"
-                        aria-label="more-icon"
-                        variant="ghost"
-                        color="content.tertiary"
+                      <DownloadButton
+                        lng={lng}
+                        t={t}
+                        inventoryId={item.inventoryId}
+                        city={selectedCityData}
+                        inventory={item}
                       >
-                        <Icon as={BsDownload} size="lg" />
-                      </IconButton>
+                        <IconButton
+                          data-testid="download-inventory-icon"
+                          aria-label="more-icon"
+                          variant="ghost"
+                          color="content.tertiary"
+                        >
+                          <Icon as={BsDownload} size="lg" />
+                        </IconButton>
+                      </DownloadButton>
                     </Table.Cell>
                     <Table.Cell className="w-10">
                       <MenuRoot>

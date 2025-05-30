@@ -12,6 +12,7 @@ interface DownloadButtonProps {
   inventory: any;
   lng: string;
   t: TFunction;
+  children?: React.ReactNode;
 }
 
 const DownloadButton: React.FC<DownloadButtonProps> = ({
@@ -20,6 +21,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
   lng,
   inventory,
   t,
+  children,
 }) => {
   const {
     open: isDownloadShareOpen,
@@ -54,11 +56,15 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         inventoryId={inventoryId}
         inventory={inventory}
       />
-      <ActionCardSmall
-        onClick={onDownloadShareOpen}
-        icon={<FiDownload className="text-white" size={24} />}
-        title={t("download-and-report")}
-      />
+      {children ? (
+        <button onClick={onDownloadShareOpen}>{children}</button>
+      ) : (
+        <ActionCardSmall
+          onClick={onDownloadShareOpen}
+          icon={<FiDownload className="text-white" size={24} />}
+          title={t("download-and-report")}
+        />
+      )}
     </>
   );
 };

@@ -1,12 +1,14 @@
 from datetime import datetime
 import time
-import logging
 import uuid
 import threading
 from typing import Dict, Any
 
 from fastapi import HTTPException, APIRouter
 from langchain_core.messages import AIMessage
+
+import logging
+from utils.logging_config import setup_logger
 
 from utils.build_city_data import build_city_data
 from services.get_context import get_context
@@ -19,9 +21,11 @@ from plan_creator_bundle.plan_creator.models import (
     StartPlanCreationResponse,
     CheckProgressResponse,
     PlanResponse,
+    Introduction,
+    SubactionList,
 )
 
-
+setup_logger()
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
@@ -37,7 +41,7 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
         # Update status to running
         task_storage[task_uuid]["status"] = "running"
         logger.info(
-            f"[{task_uuid}] Starting plan creation for locode={background_task_input['cityData']['locode']} action={background_task_input['action']} language={background_task_input['language']}"
+            f"Task {task_uuid}: Starting plan creation for locode={background_task_input['cityData']['locode']} action={background_task_input['action']['ActionID']} language={background_task_input['language']}"
         )
 
         start_time = time.time()
@@ -48,8 +52,8 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
         initial_state = AgentState(
             climate_action_data=background_task_input["action"],
             city_data=background_task_input["cityData"],
-            response_agent_1=AIMessage(""),
-            response_agent_2=AIMessage(""),
+            response_agent_1=Introduction(title="", description=""),
+            response_agent_2=SubactionList(subactions=[]),
             response_agent_3=AIMessage(""),
             response_agent_4=AIMessage(""),
             # response_agent_5=AIMessage(""),
@@ -66,7 +70,7 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
 
         # 2. Generate the plan
         try:
-            logger.info(f"[{task_uuid}] Executing graph for plan generation")
+            logger.info(f"Task {task_uuid}: Executing graph for plan generation")
             result = graph.invoke(input=initial_state)
             logger.info(f"Task {task_uuid}: Graph execution completed successfully")
         except Exception as e:

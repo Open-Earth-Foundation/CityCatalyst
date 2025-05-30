@@ -58,10 +58,19 @@ class CheckProgressResponse(BaseModel):
     error: Optional[str] = None
 
 
+class Introduction(BaseModel):
+    title: str
+    description: str
+
+
 class Subaction(BaseModel):
     number: int
     title: str
     description: str
+
+
+class SubactionList(BaseModel):
+    subactions: List[Subaction]
 
 
 class Institution(BaseModel):
@@ -103,17 +112,45 @@ class SDG(BaseModel):
 
 
 class PlanContent(BaseModel):
-    title: str
-    description: str
-    subactions: List[Subaction] = Field(default_factory=list)
-    institutions: List[Institution] = Field(default_factory=list)
-    milestones: List[Milestone] = Field(default_factory=list)
-    timeline: List[Timeline] = Field(default_factory=list)
-    costBudget: List[CostBudget] = Field(default_factory=list)
-    merIndicators: List[MerIndicator] = Field(default_factory=list)
-    mitigations: List[Mitigation] = Field(default_factory=list)
-    adaptations: List[Adaptation] = Field(default_factory=list)
-    sdgs: List[SDG] = Field(default_factory=list)
+    introduction: Introduction = Field(
+        description="Introduction of the plan, including title and description"
+    )
+    subactions: SubactionList = Field(
+        default_factory=lambda: SubactionList(subactions=[]),
+        description="List of subactions, each with a number, title, and description",
+    )
+    institutions: List[Institution] = Field(
+        default_factory=list,
+        description="List of institutions, each with a name and description",
+    )
+    milestones: List[Milestone] = Field(
+        default_factory=list,
+        description="List of milestones, each with a number, title, and description",
+    )
+    timeline: List[Timeline] = Field(
+        default_factory=list,
+        description="List of timelines, each with a title and description",
+    )
+    costBudget: List[CostBudget] = Field(
+        default_factory=list,
+        description="List of cost budgets, each with a title and description",
+    )
+    merIndicators: List[MerIndicator] = Field(
+        default_factory=list,
+        description="List of MER indicators, each with a description",
+    )
+    mitigations: List[Mitigation] = Field(
+        default_factory=list,
+        description="List of mitigations, each with a title and description",
+    )
+    adaptations: List[Adaptation] = Field(
+        default_factory=list,
+        description="List of adaptations, each with a title and description",
+    )
+    sdgs: List[SDG] = Field(
+        default_factory=list,
+        description="List of SDGs, each with a title and description",
+    )
 
 
 class PlanCreatorMetadata(BaseModel):

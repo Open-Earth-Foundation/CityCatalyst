@@ -1,12 +1,20 @@
 import json
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from plan_creator_bundle.plan_creator_legacy.state.agent_state import AgentState
+from plan_creator_bundle.plan_creator.state.agent_state import AgentState
 from langchain_openai import ChatOpenAI
 
-from tools.tools import (
+import logging
+from utils.logging_config import setup_logger
+
+from plan_creator_bundle.tools.tools import (
     retriever_main_action_tool,
 )
+
+from plan_creator_bundle.plan_creator.models import Introduction
+
+setup_logger()
+logger = logging.getLogger(__name__)
 
 # Create the agents
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
@@ -93,30 +101,42 @@ def build_custom_agent_1():
     """Wrap create_react_agent to store final output in AgentState."""
 
     # The chain returned by create_react_agent
-    react_chain = create_react_agent(model, tools, prompt=system_prompt_agent_1)
+    react_chain = create_react_agent(
+        model, tools, prompt=system_prompt_agent_1, response_format=Introduction
+    )
 
     def custom_agent_1(state: AgentState) -> AgentState:
 
-        print("Agent 1 start...")
+        logger.info("Agent 1 start...")
 
         result_state = react_chain.invoke(
             {
                 "messages": HumanMessage(
                     f"""
                     This is the climate action (main action) data: 
-                    {json.dumps(state['climate_action_data'], indent=4)}
+                    {json.dumps(state['climate_action_data'], indent=2)}
 
                     This is the city data: 
-                    {json.dumps(state['city_data'], indent=4)}
+                    {json.dumps(state['city_data'], indent=2)}
+
+                    # INSTRUCTIONS FOR OUTPUT FORMAT
+                    Please output your response as a JSON object with the following fields:
+                    {{
+                        \"title\": <headline for the plan>,
+                        \"description\": <the introduction for the climate action implementation plan, as described in the system prompt>
+                    }}
+                    Only output valid JSON format without any additional text or formatting like ```json ```.
                     """
                 )
             }
         )
 
-        agent_output = result_state["messages"][-1].content
-        result_state["response_agent_1"] = AIMessage(agent_output)
+        # Extract the structured response from the AIMessage containing the Introduction model
+        agent_output_structured: Introduction = result_state["structured_response"]
 
-        print("Agent 1 done\n")
+        result_state["response_agent_1"] = agent_output_structured
+
+        logger.info("Agent 1 done\n")
         return AgentState(**result_state)
 
     return custom_agent_1

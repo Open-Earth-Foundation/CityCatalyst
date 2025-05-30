@@ -3,7 +3,7 @@ from datetime import datetime
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 
-from plan_creator_bundle.plan_creator_legacy.state.agent_state import AgentState
+from plan_creator_bundle.plan_creator.state.agent_state import AgentState
 
 # Create the agents
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)

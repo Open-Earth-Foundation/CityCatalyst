@@ -1,9 +1,9 @@
 import json
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from plan_creator_bundle.plan_creator_legacy.state.agent_state import AgentState
+from plan_creator_bundle.plan_creator.state.agent_state import AgentState
 from langchain_openai import ChatOpenAI
-from tools.tools import placeholder_tool
+from plan_creator_bundle.tools.tools import placeholder_tool
 
 # Create the agents
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)

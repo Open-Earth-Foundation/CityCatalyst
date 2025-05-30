@@ -16,7 +16,7 @@ export default class EmailService {
     const { inviteeEmail: email, organizationId, role } = request;
 
     if (!process.env.VERIFICATION_TOKEN_SECRET) {
-      console.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
+      logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
       throw createHttpError.InternalServerError("configuration-error");
     }
 

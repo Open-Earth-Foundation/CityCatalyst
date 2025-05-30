@@ -82,7 +82,7 @@ export default function SetPopulationDataStep({
         numberOfYearsDisplayed,
       );
       if (!population) {
-        console.error("Failed to find population data for city");
+        logger.error("Failed to find population data for city");
         return;
       }
       setValue("cityPopulation", population.population);
@@ -99,7 +99,7 @@ export default function SetPopulationDataStep({
         numberOfYearsDisplayed,
       );
       if (!population) {
-        console.error("Failed to find population data for region");
+        logger.error("Failed to find population data for region");
         return;
       }
       setValue("regionPopulation", population.population);
@@ -115,7 +115,7 @@ export default function SetPopulationDataStep({
         numberOfYearsDisplayed,
       );
       if (!population) {
-        console.error("Failed to find population data for region");
+        logger.error("Failed to find population data for region");
         return;
       }
       let [{ datasource }] = countryData.population;

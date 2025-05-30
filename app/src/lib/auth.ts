@@ -80,7 +80,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         if (!user || !user.passwordHash) {
-          console.error("No user found!");
+          logger.error("No user found!");
           return null;
         }
 
@@ -89,7 +89,7 @@ export const authOptions: NextAuthOptions = {
           user.passwordHash,
         );
         if (!isValid) {
-          console.error("Invalid password!");
+          logger.error("Invalid password!");
           return null;
         }
         return {

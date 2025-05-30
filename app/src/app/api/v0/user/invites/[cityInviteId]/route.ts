@@ -20,7 +20,7 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
     },
   });
   if (!invite) {
-    console.error(
+    logger.error(
       "error in invites/[cityInviteId]/route DELETE: ",
       "CityInvite not found",
       cityInviteId,
@@ -67,7 +67,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   });
 
   if (!invite) {
-    console.error(
+    logger.error(
       "error in invites/[cityInviteId]/route DELETE: ",
       "CityInvite not found",
       cityInviteId,

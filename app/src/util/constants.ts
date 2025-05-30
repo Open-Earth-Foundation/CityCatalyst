@@ -4,6 +4,7 @@ import { TbBuildingCommunity } from "react-icons/tb";
 import { IconBaseProps } from "react-icons";
 import { LiaIndustrySolid } from "react-icons/lia";
 import { SectorColors, SubSectorColors } from "@/lib/theme/custom-colors";
+import { logger } from "@/services/logger";
 
 export const maxPopulationYearDifference = 5;
 
@@ -60,7 +61,7 @@ export const getScopesForInventoryAndSector = (
   if (!inventoryType) return [];
   const sector = findBy("referenceNumber", referenceNumber);
   if (!sector) {
-    console.error(
+    logger.error(
       `Sector ${referenceNumber} for inventoryType ${inventoryType} not found`,
     );
     return [];

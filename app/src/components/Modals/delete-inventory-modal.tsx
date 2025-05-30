@@ -57,7 +57,7 @@ const DeleteInventoryDialog: FC<DeleteInventoryDialogProps> = ({
 
   const onSubmit: SubmitHandler<{ password: string }> = async (data) => {
     if (!token?.verificationToken) {
-      console.error("No verification token found");
+      logger.error("No verification token found");
       return;
     }
 

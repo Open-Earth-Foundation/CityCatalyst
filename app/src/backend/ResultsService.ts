@@ -513,7 +513,7 @@ const getActivityDataValues = (
       );
 
   if (!methodologyFields) {
-    console.error(
+    logger.error(
       `Methodology fields not found for ${reference_number}, ${input_methodology}`,
     );
     return null;

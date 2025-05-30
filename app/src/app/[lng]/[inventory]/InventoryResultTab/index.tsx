@@ -48,6 +48,7 @@ import {
 import { TooltipProvider } from "@nivo/tooltip";
 import { UseErrorToast } from "@/hooks/Toasts";
 import Decimal from "decimal.js";
+import { logger } from "@/services/logger";
 
 enum TableView {
   BY_ACTIVITY = "by-activity",
@@ -337,7 +338,7 @@ export function EmissionPerSectors({
         .map((inventoryId) => {
           const year = targetYears[inventoryId]?.year;
           if (!year) {
-            console.error("Target year missing for inventory " + inventoryId);
+            logger.error("Target year missing for inventory " + inventoryId);
             return null;
           }
           const totalEmissions = yearlyGhgResult[inventoryId].totalEmissions;
@@ -358,7 +359,7 @@ export function EmissionPerSectors({
           const yearWithPercentageIncrease = data.bySector.map((sectorData) => {
             const inventoryEmissions = totalInventoryEmissions[data.year];
             if (!inventoryEmissions) {
-              console.error(
+              logger.error(
                 "Total inventory emissions missing for year " + data.year,
               );
             }

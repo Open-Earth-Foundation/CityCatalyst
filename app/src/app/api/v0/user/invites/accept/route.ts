@@ -44,7 +44,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   const inviteCityIds = invites.map((i) => i.cityId!);
   const citiesNotFound = difference(cityIds, inviteCityIds);
   if (citiesNotFound.length > 0) {
-    console.error(
+    logger.error(
       "error in invites/accept/route PATCH: ",
       "City not found",
       citiesNotFound,
@@ -52,7 +52,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     throw createHttpError.Unauthorized("Unauthorized");
   }
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
-    console.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
+    logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
   const failedInvites: { cityId: string }[] = [];

@@ -14,7 +14,7 @@ const getClient = (() => {
     const bucketId = process.env.AWS_S3_BUCKET_ID;
 
     if (!region || !accessKeyId || !secretAccessKey || !bucketId) {
-      console.error("Missing AWS credentials:", {
+      logger.error("Missing AWS credentials:", {
         region: !!region,
         accessKeyId: !!accessKeyId,
         secretAccessKey: !!secretAccessKey,
@@ -64,7 +64,7 @@ export const readFile = async (
     });
     const response = await getClient().send(command);
     if (!response.Body) {
-      console.error('S3 response body is empty', { locode, type, lang });
+      logger.error('S3 response body is empty', { locode, type, lang });
       throw new Error("No data returned from S3");
     }
 

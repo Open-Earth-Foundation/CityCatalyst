@@ -42,12 +42,12 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   const organization = await db.models.Organization.findByPk(organizationId);
 
   if (!organization) {
-    console.error("Organization not found");
+    logger.error("Organization not found");
     throw createHttpError.Unauthorized("Unauthorized");
   }
 
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
-    console.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
+    logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
 

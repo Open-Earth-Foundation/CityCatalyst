@@ -51,7 +51,7 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
   // define the function to delete all activities
   const handleDeleteActivity = async () => {
     if (!selectedActivityValue) {
-      console.error("Selected activity value missing when deleting activity!");
+      logger.error("Selected activity value missing when deleting activity!");
       return;
     }
 

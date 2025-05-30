@@ -36,7 +36,7 @@ const DeleteFileDialog: FC<DeleteFileDialogProps> = ({
     try {
       await deleteUserFile({ fileId: fileData?.id, cityId: fileData?.cityId });
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     } finally {
       onClose();
     }

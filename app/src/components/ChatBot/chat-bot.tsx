@@ -174,7 +174,7 @@ export default function ChatBot({
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       if (response.body == null) {
-        console.error("HTTP response is null");
+        logger.error("HTTP response is null");
         throw new Error("HTTP response is null");
       }
 
@@ -251,7 +251,7 @@ export default function ChatBot({
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       if (response.body == null) {
-        console.error("HTTP response is null");
+        logger.error("HTTP response is null");
         throw new Error("HTTP response is null");
       }
 
@@ -469,7 +469,7 @@ export default function ChatBot({
               throw new Error(`HTTP error! status: ${response.status}`);
             }
             if (response.body == null) {
-              console.error("HTTP response is null");
+              logger.error("HTTP response is null");
               throw new Error("HTTP response is null");
             }
 

@@ -248,7 +248,7 @@ export default function AddDataSteps({
         (p) => p.sector.referenceNumber === step.referenceNumber,
       );
       if (!sectorProgress) {
-        console.error(
+        logger.error(
           "No progress entry found for sector",
           step.referenceNumber,
         );
@@ -344,7 +344,7 @@ export default function AddDataSteps({
     useState<string[]>([]);
   const onConnectClick = async (source: DataSourceWithRelations) => {
     if (!inventoryProgress) {
-      console.error(
+      logger.error(
         "Tried to assign data source while inventory progress was not yet loaded!",
       );
       return;
@@ -537,7 +537,7 @@ export default function AddDataSteps({
       setDisconnectingDataSourceId(null);
       onSearchDataSourcesClicked();
     } else {
-      console.error("Something went wrong when disconnecting data source");
+      logger.error("Something went wrong when disconnecting data source");
     }
   };
 

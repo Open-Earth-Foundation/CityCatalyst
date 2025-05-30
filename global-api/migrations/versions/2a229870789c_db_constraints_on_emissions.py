@@ -1,11 +1,19 @@
-"""db constraints on emissions
+"""
+db constraints on emissions
 
 Revision ID: 2a229870789c
 Revises: e3c866a57c19
 Create Date: 2025-05-29 16:30:45.121774
 
+This migration enforces stricter data integrity and consistency on the modelled.emissions table by:
+- Converting several columns to VARCHAR (String) type for better compatibility and consistency.
+- Changing emissions_year to Integer and both activity_value and emissions_value to NUMERIC(20, 8) for precision and range.
+- Adding NOT NULL constraints to key columns to ensure required data is always present.
+- Adding check constraints to enforce that emissions_units is always 'kg' and gas_name is restricted to a specific set of valid values.
+- These changes may require data cleaning if existing values do not conform to the new types or constraints.
+
 """
-from typing import Sequence, Union
+from typing import Sequence, Unions
 
 from alembic import op
 import sqlalchemy as sa

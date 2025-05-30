@@ -88,6 +88,8 @@ export default function HomePage({
       ) {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
         setTimeout(() => router.push("/onboarding"), 0);
+      } else {
+        return;
       }
     }
   }, [

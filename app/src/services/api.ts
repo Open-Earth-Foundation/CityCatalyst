@@ -227,7 +227,11 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: InventoryAttributes }) =>
           response.data,
-        invalidatesTags: ["UserInventories", "CitiesAndInventories"],
+        invalidatesTags: [
+          "UserInventories",
+          "CitiesAndInventories",
+          "Projects",
+        ],
       }),
       setUserInfo: builder.mutation<
         UserAttributes,

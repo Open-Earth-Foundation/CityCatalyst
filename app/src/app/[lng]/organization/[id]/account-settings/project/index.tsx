@@ -193,7 +193,7 @@ const ProjectSettings = ({ lng, id }: { lng: string; id: string }) => {
       {projectsData?.length === 0 && (
         <Text
           mt={12}
-          fontSize="body.lg"
+          fontSize="Heading.sm"
           fontWeight={600}
           color="content.primary"
         >
@@ -208,30 +208,32 @@ const ProjectSettings = ({ lng, id }: { lng: string; id: string }) => {
         justifyContent="space-between"
       >
         {projectsData && projectsData.length > 0 && (
-          <ProjectList
-            t={t}
-            projects={projectsData}
-            selectedProjectId={selectedProjectId}
-            setSelectedProject={setSelectedProjectId}
-            setSelectedCity={setSelectedCityId}
-            selectedCity={selectedCityId}
-          />
+          <>
+            <ProjectList
+              t={t}
+              projects={projectsData}
+              selectedProjectId={selectedProjectId}
+              setSelectedProject={setSelectedProjectId}
+              setSelectedCity={setSelectedCityId}
+              selectedCity={selectedCityId}
+            />
+            <ProjectDetails
+              t={t}
+              lng={lng}
+              router={router}
+              selectedCity={selectedCityId}
+              selectedProjectData={selectedProjectData}
+              selectedCityData={selectedCityData}
+              organizationName={organization?.name}
+              projectUsers={projectUsers || []}
+              userList={userList}
+              isLoadingProjectUsers={isProjectUsersLoading}
+              tabValue={tabValue}
+              setTabValue={setTabValue}
+              setSelectedCity={setSelectedCityId}
+            />
+          </>
         )}
-        <ProjectDetails
-          t={t}
-          lng={lng}
-          router={router}
-          selectedCity={selectedCityId}
-          selectedProjectData={selectedProjectData}
-          selectedCityData={selectedCityData}
-          organizationName={organization?.name}
-          projectUsers={projectUsers || []}
-          userList={userList}
-          isLoadingProjectUsers={isProjectUsersLoading}
-          tabValue={tabValue}
-          setTabValue={setTabValue}
-          setSelectedCity={setSelectedCityId}
-        />
       </Box>
     </Box>
   );

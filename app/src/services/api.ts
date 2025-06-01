@@ -49,7 +49,6 @@ import {
   ThemeResponse,
   OrganizationWithThemeResponse,
   UpdateUserPayload,
-  UpdateUserPayload,
   FormulaInputValuesResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";

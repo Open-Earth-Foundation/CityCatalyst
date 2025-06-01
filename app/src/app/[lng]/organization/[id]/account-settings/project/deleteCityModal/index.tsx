@@ -15,10 +15,7 @@ import { Button } from "@/components/ui/button";
 import { FiTrash2 } from "react-icons/fi";
 import { Trans } from "react-i18next";
 import { Field } from "@/components/ui/field";
-import {
-  useDeleteCityMutation,
-  useDeleteProjectMutation,
-} from "@/services/api";
+import { useDeleteCityMutation } from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
 interface DeleteCityModalProps {
@@ -38,7 +35,7 @@ const DeleteCityModal = (props: DeleteCityModalProps) => {
     title: t("error-message"),
   });
   const { showSuccessToast } = UseSuccessToast({
-    title: t("project-deleted"),
+    title: t("city-deleted"),
     duration: 1200,
   });
 

@@ -201,23 +201,25 @@ export default class UserService {
       include: {
         model: db.models.Organization,
         as: "organization",
-        include: {
-          model: db.models.Project,
-          as: "projects",
-          include: [
-            {
-              model: db.models.City,
-              as: "cities",
-              include: [
-                {
-                  model: db.models.Inventory,
-                  as: "inventories",
-                  attributes: ["inventoryId"],
-                },
-              ],
-            },
-          ],
-        },
+        include: [
+          {
+            model: db.models.Project,
+            as: "projects",
+            include: [
+              {
+                model: db.models.City,
+                as: "cities",
+                include: [
+                  {
+                    model: db.models.Inventory,
+                    as: "inventories",
+                    attributes: ["inventoryId"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
     });
 
@@ -496,6 +498,7 @@ export default class UserService {
         cityId: city.cityId as string,
         inventories: city.inventories as any,
         countryLocode: city.countryLocode as string,
+        locode: city.locode as string,
       });
     }
 
@@ -616,7 +619,10 @@ export default class UserService {
         });
       });
     } catch (error) {
-      logger.error({ projectId, email, err: error }, "Error removing user from project");
+      logger.error(
+        { projectId, email, err: error },
+        "Error removing user from project",
+      );
       throw new createHttpError.InternalServerError(
         "failed-to-remove-user-from-project",
       );

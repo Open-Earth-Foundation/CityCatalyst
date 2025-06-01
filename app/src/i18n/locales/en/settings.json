@@ -138,5 +138,6 @@
   "total-population": "Total population",
   "total-land-area": "Total land area",
   "files-uploaded": "Files uploaded",
-  "n-a": "N/A"
+  "n-a": "N/A",
+  "no-data": "No data available"
 }

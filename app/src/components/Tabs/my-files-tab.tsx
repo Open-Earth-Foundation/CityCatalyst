@@ -1,42 +1,15 @@
 "use client";
 
-import {
-  Badge,
-  Box,
-  Icon,
-  IconButton,
-  List,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  Tabs,
-  Table,
-  Text,
-  useDisclosure,
-  PopoverTrigger,
-} from "@chakra-ui/react";
+import { Box, Icon, Tabs, Table, Text, useDisclosure } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
 
-import {
-  MdMoreVert,
-  MdOutlineCheck,
-  MdOutlineFileDownload,
-  MdOutlineFolder,
-  MdChevronRight,
-} from "react-icons/md";
-import { FiTrash2 } from "react-icons/fi";
-import { FaFileCsv } from "react-icons/fa";
-
-import { Session } from "next-auth";
+import { MdOutlineFolder, MdChevronRight } from "react-icons/md";
 
 import DeleteFileModal from "@/components/Modals/delete-file-modal";
 
 import { TFunction } from "i18next";
-import { UserAttributes } from "@/models/User";
 import { UserFileAttributes } from "@/models/UserFile";
 
-import Link from "next/link";
 import { InventoryResponse } from "@/util/types";
 import { CircleFlag } from "react-circle-flags";
 import SettingsSkeleton from "../Skeletons/settings-skeleton";

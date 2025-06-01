@@ -8,7 +8,6 @@ import {
   AccordionRoot,
 } from "@/components/ui/accordion";
 import { LuChevronDown } from "react-icons/lu";
-import DeleteCityModal from "./deleteCityModal/index";
 import { TFunction } from "i18next";
 
 interface ProjectListProps {
@@ -44,7 +43,6 @@ const ProjectList: React.FC<ProjectListProps> = ({
         onValueChange={(val) => {
           setSelectedProject(val.value);
           setSelectedCity(null);
-          setSelectedProject(val.value);
         }}
       >
         {projects.map((item) => (
@@ -106,7 +104,7 @@ const ProjectList: React.FC<ProjectListProps> = ({
                     variant="subtle"
                     w="full"
                     gap="12px"
-                    value={selectedCity} // Use selectedProjectId[0] as value to indicate selected project
+                    value={selectedCity}
                     onValueChange={(val) => setSelectedCity(val.value)}
                   >
                     <Tabs.List

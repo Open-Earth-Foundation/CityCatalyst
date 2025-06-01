@@ -3,7 +3,10 @@ import dynamic from "next/dynamic";
 import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
 import type { InventoryResponse } from "@/util/types";
-import { useGetOCCityDataQuery } from "@/services/api";
+import {
+  useGetCityPopulationQuery,
+  useGetOCCityDataQuery,
+} from "@/services/api";
 import { useMemo } from "react";
 import { Box, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
@@ -43,6 +46,8 @@ export function Hero({
   const { data: cityData } = useGetOCCityDataQuery(inventory.city?.locode!, {
     skip: !inventory.city?.locode,
   });
+
+
 
   const popWithDS = useMemo(
     () =>

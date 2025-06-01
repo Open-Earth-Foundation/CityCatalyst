@@ -5,13 +5,13 @@ import type { TFunction } from "i18next";
 import ModalDownloadReport from "./DownloadAndShareModals/ModalDownloadReport";
 import ModalPublish from "./DownloadAndShareModals/ModalPublish";
 import ActionCardSmall from "./ActionCardSmall";
+import { useTranslation } from "@/i18n/client";
 
 interface DownloadButtonProps {
   inventoryId: string;
   city: any;
   inventory: any;
   lng: string;
-  t: TFunction;
   children?: React.ReactNode;
 }
 
@@ -20,7 +20,6 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
   city,
   lng,
   inventory,
-  t,
   children,
 }) => {
   const {
@@ -34,6 +33,8 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
     onOpen: onPublishOpen,
     onClose: onPublishClose,
   } = useDisclosure();
+
+  const { t } = useTranslation(lng, "dashboard");
 
   return (
     <>

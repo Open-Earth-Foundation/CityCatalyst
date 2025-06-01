@@ -1,14 +1,16 @@
 import {
+  CityResponse,
   OrganizationRole,
   ProjectUserResponse,
   ProjectWithCities,
 } from "@/util/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   BreadcrumbItem,
   Button,
   Flex,
+  HStack,
   Icon,
   IconButton,
   Progress,
@@ -43,6 +45,9 @@ import { TagMapping } from "./index";
 import DeleteCityModal from "@/app/[lng]/organization/[id]/account-settings/project/deleteCityModal";
 import { TFunction } from "i18next";
 import DownloadButton from "@/components/HomePage/DownloadButton";
+import InventoryView from "./InventoryView";
+import { FiFolder } from "react-icons/fi";
+import ProjectHeader from "./projectHeader";
 
 const getInventoryLastUpdated = (lastUpdated: Date, t: Function) => {
   if (!lastUpdated || isNaN(new Date(lastUpdated).getTime())) {
@@ -57,18 +62,7 @@ interface ProjectDetailsProps {
   router: any;
   selectedCity: string | null;
   selectedProjectData: ProjectWithCities | null | undefined;
-  selectedCityData:
-    | {
-        cityId: string;
-        name: string;
-        countryLocode: string;
-        inventories: {
-          inventoryId: string;
-          year: number;
-          lastUpdated: string;
-        }[];
-      }
-    | undefined;
+  selectedCityData: CityResponse | undefined;
   organizationName?: string;
   projectUsers: ProjectUserResponse[] | undefined;
   userList: ProjectUserResponse[] | undefined;
@@ -99,82 +93,47 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
     cityId: string;
     countryName: string;
   } | null>(null);
+
+  const [selectedInventory, setSelectedInventory] = useState<{
+    inventoryId: string;
+    year: number;
+  } | null>(null);
+
+  useEffect(() => {
+    setSelectedCity(null);
+  }, [selectedProjectData, setSelectedCity]);
+
+  useEffect(() => {
+    setSelectedInventory(null);
+  }, [selectedCityData]);
+
+  if (isLoadingProjectUsers) {
+    return <ProgressLoader />;
+  }
+
   return (
     <Box w="full">
-      {isLoadingProjectUsers ? (
-        <ProgressLoader />
-      ) : (
-        <Box className="bg-white" p={6} rounded={2} mt={12}>
-          <Flex justifyContent="space-between" alignItems="center" mb={6}>
-            {selectedCity ? (
-              <Box>
-                <BreadcrumbRoot
-                  gap="8px"
-                  fontFamily="heading"
-                  fontWeight="bold"
-                  letterSpacing="widest"
-                  fontSize="14px"
-                  textTransform="uppercase"
-                  separator={
-                    <Icon
-                      as={MdChevronRight}
-                      boxSize={4}
-                      color="content.primary"
-                      h="32px"
-                    />
-                  }
-                >
-                  <BreadcrumbItem>
-                    <BreadcrumbLink
-                      onClick={() => {
-                        setSelectedCity(null);
-                        setTabValue("city");
-                      }}
-                      color="content.tertiary"
-                      fontWeight="normal"
-                      truncate
-                      cursor="pointer"
-                      className="capitalize"
-                    >
-                      {selectedProjectData?.name}
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbCurrentLink color="content.link">
-                    <Text truncate lineClamp={1} className="capitalize">
-                      {selectedCityData?.name}
-                    </Text>
-                  </BreadcrumbCurrentLink>
-                </BreadcrumbRoot>
-                <Flex mt={2} gap={2}>
-                  <CircleFlag
-                    countryCode={
-                      selectedCityData?.countryLocode
-                        ?.substring(0, 2)
-                        .toLowerCase() || ""
-                    }
-                    width={32}
-                  />
-                  <Text fontWeight="bold" fontSize="title.md" mb={2}>
-                    {selectedCityData?.name}
-                  </Text>
-                </Flex>
-              </Box>
-            ) : (
-              <Text fontWeight="bold" fontSize="title.md" mb={2}>
-                {organizationName}
-              </Text>
-            )}
-            <Button
-              onClick={() => router.push(`/${lng}/onboarding/setup`)}
-              variant="outline"
-              ml="auto"
-              h="48px"
-              mt="auto"
-            >
-              <Icon as={MdAdd} h={8} w={8} />
-              {t("add-city")}
-            </Button>
-          </Flex>
+      <Box className="bg-white" p={6} rounded={2} mt={12}>
+        <ProjectHeader
+          t={t}
+          lng={lng}
+          selectedProjectData={selectedProjectData}
+          selectedInventory={selectedInventory}
+          selectedCityData={selectedCityData}
+          onSetSelectedCity={setSelectedCity}
+          setSelectedInventory={setSelectedInventory}
+        />
+        {selectedInventory ? (
+          <InventoryView
+            inventoryId={selectedInventory.inventoryId}
+            cityLocode={selectedCityData?.locode as string}
+            inventoryYear={selectedInventory.year}
+            cityId={selectedCityData?.cityId as string}
+            t={t}
+            city={selectedCityData as CityResponse} // Still need to pass full city data
+            lng={lng}
+          />
+        ) : (
           <Tabs.Root
             value={tabValue}
             onValueChange={(val) => setTabValue(val.value)}
@@ -415,102 +374,137 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                 columns={[
                   { header: t("year"), accessor: "year" },
                   { header: t("last-updated"), accessor: "lastUpdated" },
-                  { header: "", accessor: null },
-                  { header: "", accessor: null },
                 ]}
                 renderRow={(item, idx) => (
                   <Table.Row key={idx}>
                     <Table.Cell>
-                      <Flex gap={2} alignItems="center">
-                        <Icon
-                          as={MdOutlineFolder}
-                          color="content.tertiary"
-                          size="lg"
-                        />
-                        <Text
-                          color="content.link"
-                          fontWeight="normal"
-                          className="truncate capitalize underline"
-                          fontSize="label.lg"
-                        >
-                          {item.year}
-                        </Text>
-                      </Flex>
-                    </Table.Cell>
-                    <Table.Cell>
-                      {getInventoryLastUpdated(new Date(item.lastUpdated), t)}
-                    </Table.Cell>
-                    <Table.Cell>
-                      <DownloadButton
-                        lng={lng}
-                        t={t}
-                        inventoryId={item.inventoryId}
-                        city={selectedCityData}
-                        inventory={item}
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setSelectedInventory({
+                            inventoryId: item.inventoryId,
+                            year: item.year,
+                          });
+                        }}
                       >
-                        <IconButton
-                          data-testid="download-inventory-icon"
-                          aria-label="more-icon"
-                          variant="ghost"
-                          color="content.tertiary"
-                        >
-                          <Icon as={BsDownload} size="lg" />
-                        </IconButton>
-                      </DownloadButton>
+                        <Flex gap={2} alignItems="center" w="300px">
+                          <Icon
+                            as={MdOutlineFolder}
+                            color="content.tertiary"
+                            size="lg"
+                          />
+                          <Text
+                            color="content.link"
+                            fontWeight="normal"
+                            className="truncate capitalize underline"
+                            fontSize="label.lg"
+                          >
+                            {item.year}
+                          </Text>
+                        </Flex>
+                      </Button>
                     </Table.Cell>
-                    <Table.Cell className="w-10">
-                      <MenuRoot>
-                        <MenuTrigger>
+                    <Table.Cell>
+                      <HStack gap={6} justifyContent="space-between">
+                        {getInventoryLastUpdated(new Date(item.lastUpdated), t)}
+                        <DownloadButton
+                          lng={lng}
+                          inventoryId={item.inventoryId}
+                          city={selectedCityData}
+                          inventory={item}
+                        >
                           <IconButton
-                            data-testid="activity-more-icon"
+                            data-testid="download-inventory-icon"
                             aria-label="more-icon"
                             variant="ghost"
                             color="content.tertiary"
                           >
-                            <Icon as={MdMoreVert} size="lg" />
+                            <Icon as={BsDownload} size="lg" />
                           </IconButton>
-                        </MenuTrigger>
-                        <MenuContent
-                          w="auto"
-                          borderRadius="8px"
-                          shadow="2dp"
-                          px="0"
-                        >
-                          <MenuItem
-                            value={t("delete-inventory")}
-                            valueText={t("delete-inventory")}
-                            p="16px"
-                            display="flex"
-                            alignItems="center"
-                            gap="16px"
-                            _hover={{ bg: "content.link", cursor: "pointer" }}
-                            className="group"
-                            onClick={() => {}}
-                          >
-                            <Icon
-                              className="group-hover:text-white"
-                              color="sentiment.negativeDefault"
-                              as={RiDeleteBin6Line}
-                              h="24px"
-                              w="24px"
-                            />
-                            <Text
-                              className="group-hover:text-white"
-                              color="content.primary"
+                        </DownloadButton>
+                        <MenuRoot>
+                          <MenuTrigger>
+                            <IconButton
+                              data-testid="activity-more-icon"
+                              aria-label="more-icon"
+                              variant="ghost"
+                              color="content.tertiary"
                             >
-                              {t("delete-inventory")}
-                            </Text>
-                          </MenuItem>
-                        </MenuContent>
-                      </MenuRoot>
+                              <Icon as={MdMoreVert} size="lg" />
+                            </IconButton>
+                          </MenuTrigger>
+                          <MenuContent
+                            w="auto"
+                            borderRadius="8px"
+                            shadow="2dp"
+                            px="0"
+                          >
+                            <MenuItem
+                              value={t("open-inventory")}
+                              valueText={t("open-inventory")}
+                              p="16px"
+                              display="flex"
+                              alignItems="center"
+                              gap="16px"
+                              _hover={{ bg: "content.link", cursor: "pointer" }}
+                              className="group"
+                              onClick={() => {
+                                setSelectedInventory({
+                                  inventoryId: item.inventoryId,
+                                  year: item.year,
+                                });
+                              }}
+                            >
+                              <Icon
+                                className="group-hover:text-white"
+                                color="content.secondary"
+                                as={FiFolder}
+                                h="24px"
+                                w="24px"
+                              />
+                              <Text
+                                className="group-hover:text-white"
+                                color="content.primary"
+                              >
+                                {t("open-inventory")}
+                              </Text>
+                            </MenuItem>
+                            <MenuItem
+                              value={t("delete-inventory")}
+                              valueText={t("delete-inventory")}
+                              p="16px"
+                              display="flex"
+                              alignItems="center"
+                              gap="16px"
+                              _hover={{ bg: "content.link", cursor: "pointer" }}
+                              className="group"
+                              onClick={() => {}}
+                            >
+                              <Icon
+                                className="group-hover:text-white"
+                                color="sentiment.negativeDefault"
+                                as={RiDeleteBin6Line}
+                                h="24px"
+                                w="24px"
+                              />
+                              <Text
+                                className="group-hover:text-white"
+                                color="content.primary"
+                              >
+                                {t("delete-inventory")}
+                              </Text>
+                            </MenuItem>
+                          </MenuContent>
+                        </MenuRoot>
+                      </HStack>
                     </Table.Cell>
                   </Table.Row>
                 )}
               />
             </Tabs.Content>
           </Tabs.Root>
-        </Box>
-      )}
+        )}
+      </Box>
       <DeleteCityModal
         t={t}
         cityName={cityToDelete?.cityName as string}

@@ -69,7 +69,7 @@ export function apiHandler(handler: NextHandler) {
 
 function errorHandler(err: unknown, _req: NextRequest) {
   // TODO log structured request info like route here
-  console.error(err);
+  logger.error(err);
   if (err instanceof ManualInputValidationError) {
     return NextResponse.json(
       {

@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { UseErrorToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { logger } from "@/services/logger";
 
 export type Inputs = {
   city: string;
@@ -215,7 +216,7 @@ export default function OnboardingSetup({
         `/onboarding/done/${data.locode}/${data.year}/${inventory.inventoryId}?project=${projectId}`,
       );
     } catch (err: any) {
-      console.error("Failed to create new inventory!", err);
+      logger.error({ err: err }, "Failed to create new inventory!");
       makeErrorToast("failed-to-create-inventory", err.data?.error?.message);
       setConfirming(false);
     }

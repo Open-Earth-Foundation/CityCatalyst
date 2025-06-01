@@ -12,6 +12,7 @@ import { useGetUserAccessStatusQuery, useUpdateOrganizationMutation } from "@/se
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { Trans } from "react-i18next";
 import { useMemo } from "react";
+import { logger } from "@/services/logger";
 const OrganizationDetailsTab = ({
   organization,
 }: {
@@ -64,7 +65,7 @@ const OrganizationDetailsTab = ({
     });
 
     if (response.error) {
-      console.error(response.error);
+      logger.error(response.error);
       showErrorToast();
       return;
     }

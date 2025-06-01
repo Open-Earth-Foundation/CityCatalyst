@@ -29,6 +29,7 @@ import { DisplayMedium } from "@/components/Texts/Display";
 import { Action } from "./types";
 import { ButtonMedium } from "@/components/Texts/Button";
 import { BarVisualization } from "./CapActionTab";
+import { logger } from "@/services/logger";
 
 export function ActionDrawer({
   action,
@@ -41,7 +42,7 @@ export function ActionDrawer({
   onClose: () => void;
   t: TFunction;
 }) {
-  console.log(action)
+  logger.info(action)
   return (
     <DrawerRoot
       open={isOpen}

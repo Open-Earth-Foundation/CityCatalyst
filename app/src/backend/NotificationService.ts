@@ -4,6 +4,7 @@ import { City } from "@/models/City";
 import { UserFileResponse } from "@/util/types";
 import { render } from "@react-email/components";
 import nodemailer, { Transporter } from "nodemailer";
+import { logger } from "@/services/logger";
 
 export interface EmailOptions {
   to: string;
@@ -52,7 +53,7 @@ class NotificationService {
       const info = await transporter.sendMail(mailOptions);
       return { success: true, messageId: info.messageId };
     } catch (error) {
-      console.error("Error sending email:", error);
+      logger.error({ err: error }, "Error sending email:");
       return { success: false, error };
     }
   }

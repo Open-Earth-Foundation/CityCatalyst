@@ -1240,5 +1240,14 @@
   "waste-composition-other": "Other",
   "no-data": "No data",
   "table-pagination": "{{start}} - {{end}} of {{total}}",
-  "search-records": "Search records"
+  "search-records": "Search records",
+  "enter-custom-values": "I have my own waste composition data.",
+  "enter-default-values": "I don’t have waste composition data. I’d prefer to use the recommended default values",
+  "waste-composition-default-values-heading": "What are default values?",
+  "waste-composition-default-values-description": "When there isn’t waste composition data available, it is mandatory to use these default values. We encourage you to check the source methodology",
+  "waste-composition-info": "Waste composition is one of the main factors influencing emissions from solid waste treatment, as different waste types contain different amount of degradable organic carbon (DOC) and fossil carbon. Waste compositions, as well as the classifications used to collect data on waste composition in MSW vary widely in different regions and countries.",
+  "waste-composition-total-percentage": "{{percent}} / 100%",
+  "waste-composition-percentage": "{{percent}}%",
+  "categories": "Categories",
+  "percentage": "Percentage"
 }

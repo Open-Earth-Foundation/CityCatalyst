@@ -10,6 +10,7 @@ import { getTranslationFromDictionary, keyBy } from "@/util/helpers";
 import ECRFDownloadService from "@/backend/ECRFDownloadService";
 import CSVDownloadService from "@/backend/CSVDownloadService";
 import InventoryDownloadService from "@/backend/InventoryDownloadService";
+import { logger } from "@/services/logger";
 
 const CIRIS_TEMPLATE_PATH = "./templates/CIRIS_template.xlsm";
 
@@ -105,12 +106,11 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
     .filter(({ values }) => values.length > 0);
 
   let workbook = new Excel.Workbook();
-  console.time("load_ciris");
+  logger.debug({ time: Date.now() }, "load_ciris");
   workbook = await workbook.xlsx.readFile(CIRIS_TEMPLATE_PATH); // TODO load once and keep in memory?
-  console.timeEnd("load_ciris");
-  // workbook.eachSheet((sheet, i) => console.log(sheet.name, i));
+  logger.debug({ timeEnd: Date.now() }, "load_ciris");
 
-  console.time("edit_ciris");
+  logger.debug({ time: Date.now() }, "edit_ciris");
   for (const { sector, values } of inventorySectors) {
     if (!sector.referenceNumber) {
       throw new createHttpError.BadRequest(
@@ -223,12 +223,12 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
       row.commit();
     }
   }
-  console.timeEnd("edit_ciris");
+  logger.debug({ timeEnd: Date.now() }, "edit_ciris");
 
   // await workbook.xlsx.writeFile("test.xlsx");
-  console.time("save_ciris");
+  logger.debug({ time: Date.now() }, "save_ciris");
   const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
-  console.timeEnd("save_ciris");
+  logger.debug({ timeEnd: Date.now() }, "save_ciris");
   return buffer;
   // return Buffer.from("Not implemented");
 }

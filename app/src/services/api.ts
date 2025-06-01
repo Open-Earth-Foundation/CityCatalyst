@@ -49,6 +49,8 @@ import {
   ThemeResponse,
   OrganizationWithThemeResponse,
   UpdateUserPayload,
+  UpdateUserPayload,
+  FormulaInputValuesResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -367,7 +369,8 @@ export const api = createApi({
           "InventoryValue",
           "ReportResults",
           "YearlyReportResults",
-          "Projects"
+          "Projects",
+          "UserInfo",
         ],
       }),
       deleteInventoryValue: builder.mutation<
@@ -496,9 +499,9 @@ export const api = createApi({
         transformResponse: (response: { data: any }) => response.data,
         invalidatesTags: ["Invites"],
       }),
-      getVerifcationToken: builder.query({
+      getVerificationToken: builder.query({
         query: () => ({
-          url: "auth/verify",
+          url: "/auth/verify",
           method: "GET",
         }),
       }),
@@ -647,9 +650,21 @@ export const api = createApi({
               body: data,
             };
           },
-
           transformResponse: (response: { data: AcceptInviteResponse }) =>
             response.data,
+          invalidatesTags: [
+            "Invites",
+            "UserData",
+            "CitiesAndInventories",
+            "UserInfo",
+            "CityData",
+            "Cities",
+            "Inventories",
+            "Project",
+            "Projects",
+            "ProjectUsers",
+            "UserAccessStatus",
+          ],
         },
       ),
       acceptOrganizationAdminInvite: builder.mutation({
@@ -1160,6 +1175,24 @@ export const api = createApi({
           response,
         providesTags: ["Organization"],
       }),
+      getWasteCompositionValues: builder.query({
+        query: ({
+          methodologyName,
+          inventoryId,
+        }: {
+          methodologyName: string;
+          inventoryId: string;
+        }) => ({
+          method: "GET",
+          url: `/waste-composition`,
+          params: {
+            methodologyName,
+            inventoryId,
+          },
+        }),
+        transformResponse: (response: { data: FormulaInputValuesResponse[] }) =>
+          response.data,
+      }),
       deleteCity: builder.mutation({
         query: (cityId: string) => ({
           method: "DELETE",
@@ -1224,7 +1257,7 @@ export const {
   useCancelInviteMutation,
   useResetInviteMutation,
   useRequestVerificationMutation,
-  useGetVerifcationTokenQuery,
+  useGetVerificationTokenQuery,
   useGetCitiesQuery,
   useGetInventoriesQuery,
   useAddUserFileMutation,
@@ -1274,5 +1307,6 @@ export const {
   useSetOrgWhiteLabelMutation,
   useGetOrganizationForInventoryQuery,
   useDeleteCityMutation,
+  useGetWasteCompositionValuesQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

@@ -1,3 +1,4 @@
+import { logger } from "@/services/logger";
 import { db } from "@/models";
 import type { ActivityValue } from "@/models/ActivityValue";
 import type { GasToCO2Eq } from "@/models/GasToCO2Eq";
@@ -122,7 +123,18 @@ export default class CalculationService {
         );
         break;
       case "methane-commitment":
-        gases = handleMethaneCommitmentFormula(activityValue, inventoryValue);
+        try {
+          gases = await handleMethaneCommitmentFormula(
+            activityValue,
+            inventoryValue,
+            inputMethodology,
+          );
+        } catch (error) {
+          logger.error(error);
+          throw new createHttpError.InternalServerError(
+            `Error calculating methane commitment`,
+          );
+        }
         break;
       case "incineration-waste":
         const incinerationFormulaMapping =

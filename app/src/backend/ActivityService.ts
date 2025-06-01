@@ -200,8 +200,8 @@ export default class ActivityService {
           );
 
         const currentCO2e =
-          BigInt(inventoryValue.co2eq as bigint) -
-            BigInt(activityValue.co2eq as bigint) ?? 0n;
+          BigInt((inventoryValue.co2eq ?? 0n) as bigint) -
+          BigInt((activityValue.co2eq ?? 0n) as bigint);
 
         const calculatedCO2e = decimalToBigInt(totalCO2e); // Ensure totalCO2e is BigInt
 

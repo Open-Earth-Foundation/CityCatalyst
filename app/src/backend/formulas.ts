@@ -11,6 +11,7 @@ import { Decimal } from "decimal.js";
 import { findMethodology } from "@/util/form-schema";
 import UnitConversionService from "@/backend/UnitConversionService";
 import { literal, Op } from "sequelize";
+import { logger } from "@/services/logger";
 
 type GasValueWithEmissionsFactor = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?:
@@ -346,19 +347,19 @@ export async function handleIncinerationWasteFormula(
         : fractionOfCarbonInput;
 
     if (dryMatterInput == null) {
-      console.warn(
+      logger.warn(
         `dryMatterContentI is missing for ${wasteType} a default of 1 used`,
       );
     }
 
     if (fractionOfCarbonInput == null) {
-      console.warn(
+      logger.warn(
         `fractionOfCarbonI is missing for ${wasteType} a default of 1 used`,
       );
     }
 
     if (fractionOfFossilCarbonInput == null) {
-      console.warn(
+      logger.warn(
         `fractionOfFossilCarbonI is missing for ${wasteType} a default of 1 used`,
       );
     }
@@ -438,15 +439,23 @@ export function handleVkt1Formula(
   return gases;
 }
 
-export function handleMethaneCommitmentFormula(
+export async function handleMethaneCommitmentFormula(
   activityValue: ActivityValue,
   inventoryValue: InventoryValue,
-): Gas[] {
+  inputMethodology: string,
+): Promise<Gas[]> {
   if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
     throw new createHttpError.BadRequest(
       "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
     );
   }
+
+  let methodologyIdentifier = inputMethodology;
+
+  if (inputMethodology.endsWith("-methodology")) {
+    methodologyIdentifier = inputMethodology.slice(0, -"-methodology".length); // Remove the suffix from the end
+  }
+
   const data = convertDataToDefaultUnit(
     // use convert all the values
     activityValue,
@@ -461,43 +470,63 @@ export function handleMethaneCommitmentFormula(
   }
 
   const percentageBreakdown =
-    data["methane-commitment-solid-waste-inboundary-waste-composition"] ?? {};
-  const getFraction = (key: string) => (percentageBreakdown[key] || 0) / 100.0;
-  const [
-    foodFraction,
-    gardenWasteFraction,
-    paperFraction,
-    woodFraction,
-    textilesFraction,
-    industrialWasteFraction,
-  ] = [
-    "waste-composition-food",
-    "waste-composition-garden",
-    "waste-composition-paper",
-    "waste-composition-wood",
-    "waste-composition-textiles",
-    "waste-composition-industrial",
-  ].map(getFraction);
+    data[`${methodologyIdentifier}-waste-composition`] ?? {};
 
   // TODO this dropdown input is not part of manual input spec for III.1.1
   const landfillType = data["landfill-type"];
 
   const recoveredMethaneFraction = data["methane-collected-and-removed"] || 0;
   const oxidationFactor =
-    data["methane-commitment-solid-waste-inboundary-oxidation-factor"] ===
+    data[`${methodologyIdentifier}-oxidation-factor`] ===
     "oxidation-factor-well-managed-landfill"
       ? 0.1
       : 0;
   const totalSolidWaste = data["total-municipal-solid-waste-disposed"] || 0;
 
-  // Degradable organic carbon in year of deposition, fraction (tonnes C/tonnes waste)
-  const degradableOrganicCarbon =
-    FOOD_FACTOR * foodFraction +
-    GARDEN_WASTE_FACTOR * gardenWasteFraction +
-    PAPER_FACTOR * paperFraction +
-    WOOD_FACTOR * woodFraction +
-    TEXTILES_FACTOR * textilesFraction +
-    INDUSTRIAL_WASTE_FACTOR * industrialWasteFraction;
+  const wasteCategories = {
+    "waste-composition-food": "carbon-content-food",
+    "waste-composition-garden": "carbon-content-garden",
+    "waste-composition-paper": "carbon-content-paper",
+    "waste-composition-wood": "carbon-content-wood",
+    "waste-composition-textiles": "carbon-content-textiles",
+    "waste-composition-industrial": "carbon-content-industrial",
+    "waste-composition-leather": "carbon-content-leather",
+    "waste-composition-plastics": "carbon-content-plastics",
+    "waste-composition-metal": "carbon-content-metal",
+    "waste-composition-glass": "carbon-content-glass",
+    "waste-composition-nappies": "carbon-content-nappies",
+    "waste-composition-other": "carbon-content-other",
+  };
+
+  // Fetch all necessary waste factors
+  const wasteFactorsData = await db.models.FormulaInput.findAll({
+    where: {
+      parameterCode: {
+        [Op.iLike]: `%cc_%`,
+      },
+      methodologyName: inputMethodology,
+      actorId: "world",
+    },
+  });
+
+  const carbonFactorMap = new Map<string, number>();
+  for (const item of wasteFactorsData) {
+    carbonFactorMap.set(item.parameterName, item.formulaInputValue);
+  }
+
+  // Calculate degradable organic carbon
+  let degradableOrganicCarbon = 0;
+
+  for (const key of Object.keys(wasteCategories)) {
+    const carbonContentKey =
+      wasteCategories[key as keyof typeof wasteCategories];
+    const factor = carbonFactorMap.get(carbonContentKey) || 0;
+    const fraction = (percentageBreakdown[key] || 0) / 100.0;
+
+    if (factor !== undefined) {
+      degradableOrganicCarbon += factor * fraction;
+    }
+  }
 
   // if the oxidation type is well managed, then the landfill is well managed and the methane correction factor is 1.0
   // otherwise, get the methane correction factor from the METHANE_CORRECTION_FACTORS object

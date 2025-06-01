@@ -32,6 +32,7 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { MdCheck, MdKeyboardArrowRight } from "react-icons/md";
 import SearchInput from "@/components/SearchInput";
+import { logger } from "@/services/logger";
 
 interface MoveCityModalProps {
   isOpen: boolean;
@@ -241,7 +242,7 @@ const MoveCityModal = (props: MoveCityModalProps) => {
         clearSelections();
       })
       .catch((error) => {
-        console.error("Failed to transfer city", error);
+        logger.error({ err: error }, "Failed to transfer city");
         showErrorToast({
           title: t("city-transfer-error"),
           description: t(error?.data?.error?.message),

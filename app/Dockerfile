@@ -1,23 +1,25 @@
-# Set the base image to Node
-FROM node:20-alpine
-
-# Set working directory
+# Build stage
+FROM node:20-alpine AS build
 WORKDIR /app
-
-# Copy package.json and package-lock.json
 COPY package*.json ./
-
-# Install dependencies
-RUN npm install --omit=dev
-
-# Copy source code
+RUN npm ci
 COPY . .
-
-# Build the application
 RUN npm run build
 
-# Expose the application on port 3000
+# Production stage
+FROM node:20-alpine AS release
+WORKDIR /app
+
+# Copy package files and install only production dependencies
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy built application from build stage
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/public ./public
+
+# Expose port
 EXPOSE 3000
 
 # Start the application
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]

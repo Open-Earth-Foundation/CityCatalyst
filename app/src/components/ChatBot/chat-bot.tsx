@@ -36,6 +36,7 @@ interface Message {
   role: "user" | "assistant" | "code";
   text: string;
 }
+import { logger } from "@/services/logger"
 
 const SUGGESTION_KEYS = ["gpc", "collect-data", "ipcc"];
 
@@ -169,11 +170,11 @@ export default function ChatBot({
 
       if (!response.ok) {
         const data = await response.text();
-        console.error("HTTP response text", data);
+        logger.error({ err: data }, "HTTP response text");
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       if (response.body == null) {
-        console.error("HTTP response is null");
+        logger.error("HTTP response is null");
         throw new Error("HTTP response is null");
       }
 
@@ -181,7 +182,7 @@ export default function ChatBot({
       handleReadableStream(stream);
     } catch (error: any) {
       if (error.name === "AbortError") {
-        console.log("Request was aborted");
+        logger.info("Request was aborted");
       } else {
         handleError(error, "Failed to send message. Please try again.");
       }
@@ -246,23 +247,23 @@ export default function ChatBot({
 
       if (!response.ok) {
         const data = await response.text();
-        console.error("HTTP response text", data);
+        logger.error({ err: data }, "HTTP response text");
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       if (response.body == null) {
-        console.error("HTTP response is null");
+        logger.error("HTTP response is null");
         throw new Error("HTTP response is null");
       }
 
       const stream = AssistantStream.fromReadableStream(response.body);
       handleReadableStream(stream);
-      console.log("Tool output submitted successfully");
+      logger.info("Tool output submitted successfully");
     } catch (error: any) {
       if (
         error.name === "AbortError" ||
         error.name === "Request was aborted."
       ) {
-        console.log("Fetch aborted by the user");
+        logger.info("Fetch aborted by the user");
       } else {
         handleError(error, "Failed to submit tool output. Please try again.");
       }
@@ -385,9 +386,9 @@ export default function ChatBot({
         error.name === "APIUserAbortError" ||
         error.message === "Request was aborted."
       ) {
-        console.log("Stream processing was aborted.");
+        logger.info("Stream processing was aborted.");
       } else {
-        console.error("An error occurred while processing the stream:", error);
+        logger.error({ err: error }, "An error occurred while processing the stream:");
       }
     }
   };
@@ -464,11 +465,11 @@ export default function ChatBot({
             });
             if (!response.ok) {
               const data = await response.text();
-              console.error("HTTP response text", data);
+              logger.error({ err: data }, "HTTP response text");
               throw new Error(`HTTP error! status: ${response.status}`);
             }
             if (response.body == null) {
-              console.error("HTTP response is null");
+              logger.error("HTTP response is null");
               throw new Error("HTTP response is null");
             }
 
@@ -479,7 +480,7 @@ export default function ChatBot({
               `【${data.file.filename}】`,
             );
           } catch (error) {
-            console.error("Error fetching file:", error);
+            logger.error({ err: error }, "Error fetching file:");
           }
         }
       });

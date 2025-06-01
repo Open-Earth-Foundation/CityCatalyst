@@ -1265,5 +1265,14 @@
   "waste-composition-other": "Andere",
   "no-data": "Keine Daten",
   "table-pagination": "{{start}} - {{end}} von {{total}}",
-  "search-records": "Aufzeichnungen suchen"
+  "search-records": "Aufzeichnungen suchen",
+  "enter-custom-values": "Ich habe meine eigenen Abfallzusammensetzungsdaten.",
+  "enter-default-values": "Ich habe keine Abfallzusammensetzungsdaten. Ich würde lieber die empfohlenen Standardwerte verwenden",
+  "waste-composition-default-values-heading": "Was sind Standardwerte?",
+  "waste-composition-default-values-description": "Wenn keine Abfallzusammensetzungsdaten verfügbar sind, ist die Verwendung dieser Standardwerte obligatorisch. Wir empfehlen Ihnen, die Quellenmethodik zu überprüfen",
+  "waste-composition-info": "Die Zusammensetzung von Abfällen ist einer der Hauptfaktoren, die die Emissionen aus der Feststoffabfallbehandlung beeinflussen, da verschiedene Abfalltypen unterschiedliche Mengen an abbaubarem organischem Kohlenstoff (DOC) und fossilem Kohlenstoff enthalten. Die Abfallzusammensetzungen sowie die zur Datenerfassung über die Abfallzusammensetzung in Siedlungsabfällen verwendeten Klassifikationen variieren stark in verschiedenen Regionen und Ländern.",
+  "waste-composition-total-percentage": "{{percent}} / 100%",
+  "waste-composition-percentage": "{{percent}}%",
+  "categories": "Kategorien",
+  "percentage": "Prozentsatz"
 }

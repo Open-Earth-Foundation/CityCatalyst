@@ -1242,5 +1242,14 @@
   "waste-composition-other": "Outro",
   "no-data": "Sem dados",
   "table-pagination": "{{start}} - {{end}} de {{total}}",
-  "search-records": "Pesquisar registros"
+  "search-records": "Pesquisar registros",
+  "enter-custom-values": "Tenho meus próprios dados de composição de resíduos.",
+  "enter-default-values": "Não tenho dados sobre a composição de resíduos. Prefiro usar os valores padrão recomendados",
+  "waste-composition-default-values-heading": "Quais são os valores padrão?",
+  "waste-composition-default-values-description": "Quando não há dados disponíveis sobre a composição de resíduos, é obrigatório usar esses valores padrão. Incentivamos que você verifique a metodologia da fonte",
+  "waste-composition-info": "A composição de resíduos é um dos principais fatores que influenciam as emissões do tratamento de resíduos sólidos, pois diferentes tipos de resíduos contêm diferentes quantidades de carbono orgânico degradável (DOC) e carbono fóssil. As composições de resíduos, bem como as classificações usadas para coletar dados sobre a composição de resíduos em MSW variam amplamente em diferentes regiões e países.",
+  "waste-composition-total-percentage": "{{percent}} / 100%",
+  "waste-composition-percentage": "{{percent}}%",
+  "categories": "Categorias",
+  "percentage": "Porcentagem"
 }

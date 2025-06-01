@@ -79,7 +79,6 @@ const useProjectData = ({
     }
     return uniqBy(projectUsers, "email");
   }, [projectUsers, selectedCityId]);
-  
 
   return {
     organization,

@@ -61,7 +61,7 @@ const FilesTable = ({ t, files }: { t: TFunction; files: UserFile[] }) => {
           color="content.primary"
           fontSize="body.md"
         >
-          {files.map((file) => (
+          {files?.map((file) => (
             <Table.Row key={`${file.id}`}>
               <Table.Cell gap="16px" alignItems="center">
                 <Box display="flex" alignItems="center" gap="8px">

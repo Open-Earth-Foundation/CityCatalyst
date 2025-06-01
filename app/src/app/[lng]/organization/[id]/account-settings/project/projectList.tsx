@@ -44,12 +44,15 @@ const ProjectList: React.FC<ProjectListProps> = ({
         onValueChange={(val) => {
           setSelectedProject(val.value);
           setSelectedCity(null);
+          setSelectedProject(val.value);
         }}
       >
         {projects.map((item) => (
           <AccordionItem key={item.projectId} value={item.projectId}>
             <AccordionItemTrigger
-              onClick={() => setSelectedCity(null)}
+              onClick={() => {
+                setSelectedCity(null);
+              }}
               w="full"
               hideIndicator
               padding="0px"
@@ -85,63 +88,65 @@ const ProjectList: React.FC<ProjectListProps> = ({
                 </Accordion.ItemIndicator>
               </Button>
             </AccordionItemTrigger>
-            <AccordionItemContent padding="0px" pb={4}>
-              {item.cities.length === 0 ? (
-                <Text
-                  fontSize="body.lg"
-                  fontWeight={600}
-                  color="content.primary"
-                >
-                  {t("no-cities")}
-                </Text>
-              ) : (
-                <Tabs.Root
-                  display="flex"
-                  mt="12px"
-                  flexDirection="row"
-                  variant="subtle"
-                  w="full"
-                  gap="12px"
-                  value={selectedCity} // Use selectedProjectId[0] as value to indicate selected project
-                  onValueChange={(val) => setSelectedCity(val.value)}
-                >
-                  <Tabs.List
-                    w="full"
-                    display="flex"
-                    flexDirection="column"
-                    gap="12px"
+            {selectedProjectId[0] === item.projectId && (
+              <AccordionItemContent padding="0px" pb={4}>
+                {item.cities.length === 0 ? (
+                  <Text
+                    fontSize="body.lg"
+                    fontWeight={600}
+                    color="content.primary"
                   >
-                    {item.cities.map((city) => (
-                      <Tabs.Trigger
-                        key={city.cityId}
-                        value={city.cityId}
-                        fontFamily="heading"
-                        justifyContent={"left"}
-                        letterSpacing={"wide"}
-                        color="content.secondary"
-                        lineHeight="20px"
-                        fontStyle="normal"
-                        fontSize="label.lg"
-                        minH="52px"
-                        w="full"
-                        _selected={{
-                          color: "content.link",
-                          fontSize: "label.lg",
-                          fontWeight: "medium",
-                          backgroundColor: "background.neutral",
-                          borderRadius: "8px",
-                          borderWidth: "1px",
-                          borderStyle: "solid",
-                          borderColor: "content.link",
-                        }}
-                      >
-                        {city.name}
-                      </Tabs.Trigger>
-                    ))}
-                  </Tabs.List>
-                </Tabs.Root>
-              )}
-            </AccordionItemContent>
+                    {t("no-cities")}
+                  </Text>
+                ) : (
+                  <Tabs.Root
+                    display="flex"
+                    mt="12px"
+                    flexDirection="row"
+                    variant="subtle"
+                    w="full"
+                    gap="12px"
+                    value={selectedCity} // Use selectedProjectId[0] as value to indicate selected project
+                    onValueChange={(val) => setSelectedCity(val.value)}
+                  >
+                    <Tabs.List
+                      w="full"
+                      display="flex"
+                      flexDirection="column"
+                      gap="12px"
+                    >
+                      {item.cities.map((city) => (
+                        <Tabs.Trigger
+                          key={city.cityId}
+                          value={city.cityId}
+                          fontFamily="heading"
+                          justifyContent={"left"}
+                          letterSpacing={"wide"}
+                          color="content.secondary"
+                          lineHeight="20px"
+                          fontStyle="normal"
+                          fontSize="label.lg"
+                          minH="52px"
+                          w="full"
+                          _selected={{
+                            color: "content.link",
+                            fontSize: "label.lg",
+                            fontWeight: "medium",
+                            backgroundColor: "background.neutral",
+                            borderRadius: "8px",
+                            borderWidth: "1px",
+                            borderStyle: "solid",
+                            borderColor: "content.link",
+                          }}
+                        >
+                          {city.name}
+                        </Tabs.Trigger>
+                      ))}
+                    </Tabs.List>
+                  </Tabs.Root>
+                )}
+              </AccordionItemContent>
+            )}
           </AccordionItem>
         ))}
       </AccordionRoot>

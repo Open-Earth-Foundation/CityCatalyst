@@ -367,6 +367,7 @@ export const api = createApi({
           "InventoryValue",
           "ReportResults",
           "YearlyReportResults",
+          "Projects"
         ],
       }),
       deleteInventoryValue: builder.mutation<

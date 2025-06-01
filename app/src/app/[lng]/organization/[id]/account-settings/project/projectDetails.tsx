@@ -3,34 +3,26 @@ import {
   OrganizationRole,
   ProjectUserResponse,
   ProjectWithCities,
+  Roles,
 } from "@/util/types";
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  BreadcrumbItem,
   Button,
   Flex,
   HStack,
   Icon,
   IconButton,
-  Progress,
   Table,
+  useDisclosure,
   Tabs,
   Text,
 } from "@chakra-ui/react";
 import ProgressLoader from "@/components/ProgressLoader";
 import {
-  BreadcrumbCurrentLink,
-  BreadcrumbLink,
-  BreadcrumbRoot,
-} from "@/components/ui/breadcrumb";
-import {
-  MdAdd,
-  MdChevronRight,
   MdMoreVert,
   MdOutlineFolder,
 } from "react-icons/md";
-import { CircleFlag } from "react-circle-flags";
 import DataTableCore from "@/components/ui/data-table-core";
 import {
   MenuContent,
@@ -48,6 +40,9 @@ import DownloadButton from "@/components/HomePage/DownloadButton";
 import InventoryView from "./InventoryView";
 import { FiFolder } from "react-icons/fi";
 import ProjectHeader from "./projectHeader";
+import DeleteInventoryModal from "@/components/Modals/delete-inventory-modal";
+import { UserAttributes } from "@/models/User";
+
 
 const getInventoryLastUpdated = (lastUpdated: Date, t: Function) => {
   if (!lastUpdated || isNaN(new Date(lastUpdated).getTime())) {
@@ -94,10 +89,20 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
     countryName: string;
   } | null>(null);
 
+  const [inventoryToDelete, setInventoryToDelete] = useState<string | null>(
+    null,
+  );
+
   const [selectedInventory, setSelectedInventory] = useState<{
     inventoryId: string;
     year: number;
   } | null>(null);
+
+  const {
+    open: isInventoryDeleteModalOpen,
+    onOpen: onInventoryDeleteModalOpen,
+    onClose: onInventoryDeleteModalClose,
+  } = useDisclosure();
 
   useEffect(() => {
     setSelectedCity(null);
@@ -106,6 +111,13 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
   useEffect(() => {
     setSelectedInventory(null);
   }, [selectedCityData]);
+
+  const [userData, setUserData] = useState<UserAttributes>({
+    email: "",
+    userId: "",
+    name: "",
+    role: Roles.User,
+  });
 
   if (isLoadingProjectUsers) {
     return <ProgressLoader />;
@@ -478,7 +490,10 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                               gap="16px"
                               _hover={{ bg: "content.link", cursor: "pointer" }}
                               className="group"
-                              onClick={() => {}}
+                              onClick={() => {
+                                setInventoryToDelete(item.inventoryId)
+                                onInventoryDeleteModalOpen();
+                              }}
                             >
                               <Icon
                                 className="group-hover:text-white"
@@ -516,6 +531,13 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
           setCityToDelete(null);
         }}
         onOpenChange={setIsDeleteModalOpen}
+      />
+      <DeleteInventoryModal
+        inventoryId={inventoryToDelete as string}
+        isOpen={isInventoryDeleteModalOpen}
+        onClose={onInventoryDeleteModalClose}
+        userData={userData}
+        t={t}
       />
     </Box>
   );

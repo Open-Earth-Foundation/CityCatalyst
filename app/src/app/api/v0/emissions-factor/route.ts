@@ -135,10 +135,11 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
   const caseStatements = priorityArray
     .map((value, index) => {
       const rank = index + 1;
+      const escapedValue = db.sequelize!.escape(value);
       return `
-      WHEN "EmissionsFactor"."region" = '${value}' THEN ${rank}
-      WHEN "EmissionsFactor"."actor_id" = '${value}' THEN ${rank}
-    `;
+        WHEN "EmissionsFactor"."region" = ${escapedValue} THEN ${rank}
+        WHEN "EmissionsFactor"."actor_id" = ${escapedValue} THEN ${rank}
+      `;
     })
     .join("\n");
 

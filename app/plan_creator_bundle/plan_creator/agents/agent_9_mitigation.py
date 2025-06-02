@@ -40,7 +40,8 @@ Follow these guidelines carefully to complete the task:
 3. Review the introduction for the climate action implementation plan.
 4. Inspect the provided additional context to climate mitigation sectors.
 5. Based on the provided information, list all mitigation sectors that are relevant and addressed by the climate action. Include a brief description of how they are addressed by the climate action.
-**Important**: It is possible, that a climate action does not address any of the listed mitigation sectors. This can happen for example, when the climate action primarily aims at reducing climate risks (hazards).
+**Important**: It is possible, that a climate action does not address any of the listed mitigation sectors provided in the additional context. This can happen for example, when the climate action primarily aims at reducing climate risks (hazards).
+If the climate action does not address any of the listed mitigation sectors provided in the additional context, output an empty list for the `mitigations` field, e.g. `{ "mitigations": [] }`. Do not output any mitigation sectors that are not provided in the additional context.
 </task>
 
 <output>
@@ -96,6 +97,9 @@ def build_custom_agent_9():
 
                     This is additional context to climate mitigation sectors:
                     {mitigation}
+
+                    This is the type of the action: {state['climate_action_data']['ActionType']}
+                    If the action is an adaptation action, output an empty list for the `mitigations` field, e.g. {{ "mitigations": [] }}.
                     """
                 )
             }

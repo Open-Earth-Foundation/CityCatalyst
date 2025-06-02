@@ -10,12 +10,6 @@ module.exports = {
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     });
 
-    // Add timestamps to GasToCO2Eq table (Could be removed if we're sticking to seed data only)
-    await queryInterface.addColumn("GasToCO2Eq", "created", {
-      type: Sequelize.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
-    });
     await queryInterface.addColumn("GasToCO2Eq", "last_updated", {
       type: Sequelize.DATE,
       allowNull: false,

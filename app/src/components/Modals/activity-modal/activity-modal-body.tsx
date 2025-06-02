@@ -465,9 +465,30 @@ const ActivityModalBody = ({
                       name={`activity.${title}-unit` as any}
                       render={({ field }) => (
                         <NativeSelectRoot
-                          variant="subtle"
                           {...field}
-                          minW="200px"
+                          borderRadius="4px"
+                          borderWidth={
+                            errors?.activity?.[`${title}-unit`] ? "1px" : 0
+                          }
+                          border="inputBox"
+                          h="42px"
+                          shadow="1dp"
+                          borderColor={
+                            errors?.activity?.[`${title}-unit`]
+                              ? "sentiment.negativeDefault"
+                              : ""
+                          }
+                          background={
+                            errors?.activity?.[`${title}-unit`]
+                              ? "sentiment.negativeOverlay"
+                              : ""
+                          }
+                          _focus={{
+                            borderWidth: "1px",
+                            shadow: "none",
+                            borderColor: "content.link",
+                          }}
+                          bgColor="base.light"
                           onChange={(e: any) => {
                             field.onChange(e.target.value);
                             setValue(

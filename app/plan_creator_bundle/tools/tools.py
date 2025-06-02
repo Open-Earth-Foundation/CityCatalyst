@@ -5,7 +5,7 @@ from langchain.tools import tool
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain.schema import Document
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_tavily import TavilySearch
 
 from plan_creator_bundle.utils.get_vectorstore_local import get_vectorstore
 from utils.logging_config import setup_logger
@@ -178,21 +178,20 @@ def retriever_indicators_tool(
 def get_search_municipalities_tool(search_query: str):
     """
     Search for municipal institutions that might be relevant for the implementation of the specific climate action for the given city.
-    Input: A search query in the national language.
+    search_query: A search query in the national language.
     """
 
     logger.info(f"get_search_municipalities_tool called with query: {search_query}")
+    logger.info(f"TAVILY_SEARCH_MODE: {TAVILY_SEARCH_MODE}")
+    logger.info(f"API_KEY: {os.getenv('TAVILY_API_KEY')}")
 
-    tavily_tool = TavilySearchResults(
+    tavily_tool = TavilySearch(
         max_results=2,
-        search_depth=TAVILY_SEARCH_MODE,  # change between 'basic' for testing and 'advanced' for production
-        description="""
-        Search for municipal institutions that might be relevant for the implementation of the specific climate action for the given city.\n\nInput: A search query in the national language.
-        """,
+        search_depth=TAVILY_SEARCH_MODE,  # change between 'basic' for testing and 'advanced' for production,
     )
     try:
         logger.info("Invoking TavilySearchResults...")
-        result = tavily_tool.invoke(search_query)
+        result = tavily_tool.invoke({"query": search_query})
         logger.info(f"TavilySearchResults returned: {result}")
         return result
     except Exception as e:

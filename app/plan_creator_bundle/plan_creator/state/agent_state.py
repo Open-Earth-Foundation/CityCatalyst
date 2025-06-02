@@ -1,5 +1,4 @@
 from typing import TypedDict, Annotated
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from plan_creator_bundle.plan_creator.models import (
     Introduction,
     SubactionList,
@@ -9,6 +8,8 @@ from plan_creator_bundle.plan_creator.models import (
     MitigationList,
     AdaptationList,
     SDGList,
+    Timeline,
+    CostBudget,
 )
 
 
@@ -28,8 +29,12 @@ class AgentState(TypedDict):
     response_agent_4: Annotated[
         MilestoneList, "The response from Agent 4 (list of Milestone)"
     ]
-    # response_agent_5: Annotated[AIMessage, "The response from Agent 5"]
-    # response_agent_6: Annotated[AIMessage, "The response from Agent 6"]
+    response_agent_5: Annotated[
+        Timeline, "The response from Agent 5 (timeline, empty model)"
+    ]
+    response_agent_6: Annotated[
+        CostBudget, "The response from Agent 6 (cost budget, empty model)"
+    ]
     response_agent_7: Annotated[
         MerIndicatorList, "The response from Agent 7 (list of MerIndicator)"
     ]
@@ -40,7 +45,7 @@ class AgentState(TypedDict):
         AdaptationList, "The response from Agent 9 (list of Adaptation)"
     ]
     response_agent_10: Annotated[SDGList, "The response from Agent 10 (list of SDG)"]
-    response_agent_combine: Annotated[str, "The combined response from all agents"]
+    # response_agent_combine: Annotated[str, "The combined response from all agents"]
     response_agent_translate: Annotated[
         str, "The translated response from Agent combine"
     ]

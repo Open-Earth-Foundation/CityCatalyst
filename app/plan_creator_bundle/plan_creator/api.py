@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 import time
 import uuid
 import threading
@@ -29,6 +29,10 @@ from plan_creator_bundle.plan_creator.models import (
     MitigationList,
     AdaptationList,
     SDGList,
+    Timeline,
+    CostBudget,
+    PlanCreatorMetadata,
+    PlanContent,
 )
 
 setup_logger()
@@ -55,30 +59,31 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
             f"Task {task_uuid}: Initializing computation graph and agent state"
         )
         graph = create_graph()
-        initial_state = AgentState(
-            climate_action_data=background_task_input["action"],
-            city_data=background_task_input["cityData"],
-            response_agent_1=Introduction(title="", description=""),
-            response_agent_2=SubactionList(subactions=[]),
-            response_agent_3=InstitutionList(institutions=[]),
-            response_agent_4=MilestoneList(milestones=[]),
-            # response_agent_5=AIMessage(""),
-            # response_agent_6=AIMessage(""),
-            response_agent_7=MerIndicatorList(merIndicators=[]),
-            response_agent_8=MitigationList(mitigations=[]),
-            response_agent_9=AdaptationList(adaptations=[]),
-            response_agent_10=SDGList(sdgs=[]),
-            response_agent_combine="",
-            response_agent_translate="",
-            language=background_task_input["language"],
-            messages=[],
-        )
+        initial_state: AgentState = {
+            "climate_action_data": background_task_input["action"],
+            "city_data": background_task_input["cityData"],
+            "response_agent_1": Introduction(title="", description=""),
+            "response_agent_2": SubactionList(subactions=[]),
+            "response_agent_3": InstitutionList(institutions=[]),
+            "response_agent_4": MilestoneList(milestones=[]),
+            "response_agent_5": Timeline(),
+            "response_agent_6": CostBudget(),
+            "response_agent_7": MerIndicatorList(merIndicators=[]),
+            "response_agent_8": MitigationList(mitigations=[]),
+            "response_agent_9": AdaptationList(adaptations=[]),
+            "response_agent_10": SDGList(sdgs=[]),
+            "response_agent_translate": "",
+            "language": background_task_input["language"],
+            "messages": [],
+        }
 
         # 2. Generate the plan
         try:
             logger.info(f"Task {task_uuid}: Executing graph for plan generation")
             result = graph.invoke(input=initial_state)
             logger.info(f"Task {task_uuid}: Graph execution completed successfully")
+
+            logger.info(f"Result: {result}")
         except Exception as e:
             logger.error(
                 f"Task {task_uuid}: Error during graph execution: {str(e)}",
@@ -90,14 +95,34 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
 
         # 3. Parse the plan result into PlanResponse
         try:
-            # TODO: Replace this with actual parsing logic from result to PlanResponse
-            if "plan_response" not in result:
-                logger.error(
-                    f"Task {task_uuid}: plan_response key not found in result. Returning raw result for debugging.",
-                    exc_info=True,
-                )
-                raise ValueError("plan_response key not found in result")
-            plan_response = PlanResponse.parse_obj(result["plan_response"])
+            # Step 1: Create metadata
+            metadata = PlanCreatorMetadata(
+                locode=result["city_data"]["locode"],
+                cityName=result["city_data"]["name"],
+                actionId=result["climate_action_data"]["ActionID"],
+                actionName=result["climate_action_data"]["ActionName"],
+                createdAt=datetime.now(UTC),
+            )
+
+            # Step 2: Create PlanContent
+            content = PlanContent(
+                introduction=result["response_agent_1"],
+                subactions=result["response_agent_2"],
+                institutions=result["response_agent_3"],
+                milestones=result["response_agent_4"],
+                timeline=[result["response_agent_5"]],
+                costBudget=[result["response_agent_6"]],
+                merIndicators=result["response_agent_7"],
+                mitigations=result["response_agent_9"],
+                adaptations=result["response_agent_8"],
+                sdgs=result["response_agent_10"],
+            )
+
+            # Step 3: Wrap in PlanResponse
+            plan_response = PlanResponse(
+                metadata=metadata, content={result["language"]: content}
+            )
+
         except Exception as e:
             logger.error(
                 f"Task {task_uuid}: Error parsing plan response: {str(e)}",

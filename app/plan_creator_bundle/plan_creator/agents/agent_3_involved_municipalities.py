@@ -93,10 +93,10 @@ def build_custom_agent_3():
                 "messages": HumanMessage(
                     f"""
                     This is the climate action (main action) data: 
-                    {json.dumps(state['climate_action_data'], indent=4)}
+                    {json.dumps(state['climate_action_data'], indent=2)}
 
                     This is the city data: 
-                    {json.dumps(state['city_data'], indent=4)}
+                    {json.dumps(state['city_data'], indent=2)}
 
                     This is the response from Agent 1 containing the nation and city-level strategies as well as the climate action plan (main action) description:
                     {json.dumps(state['response_agent_1'].model_dump(), indent=2)}

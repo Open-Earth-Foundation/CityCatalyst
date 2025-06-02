@@ -7,6 +7,13 @@ from langchain_openai import ChatOpenAI
 from plan_creator_bundle.tools.tools import (
     placeholder_tool,
 )
+from plan_creator_bundle.plan_creator.models import AdaptationList
+
+from utils.logging_config import setup_logger
+import logging
+
+setup_logger()
+logger = logging.getLogger(__name__)
 
 # Create the agents
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
@@ -33,25 +40,22 @@ Follow these guidelines carefully to complete the task:
 3. Review the introduction for the climate action implementation plan.
 4. Inspect the provided additional context to climate risks (hazards).
 5. Based on the provided information, list all climate risks (hazards) that are relevant and addressed by the climate action. Include a brief description of how they are addressed by the climate action.
-**Important**: It is possible, that a climate action does not address any of the listed climate risks (hazards). This can happen for example, when the climate action primarily aims at mitigating emissions. In this case, state this fact briefly.
+**Important**: It is possible, that a climate action does not address any of the listed climate risks (hazards). This can happen for example, when the climate action primarily aims at mitigating emissions.
 </task>
 
 <output>
-The final output should include: 
-- a headline
-- a bullet point list containing climate risks (hazards) with a brief descriptions of how they are addressed.
-
-<example_output_adaptation>
-## Climate Risks:
-
-[brief description of how the climate risks are addressed by the climate action]
-</example_output_adaptation>
-
-<example_output_mitigation>
-## Climate Risks:
-
-The climate action [name of the climate action] addresses mitigation actions and does not primarily address any climate risks (hazards).
-</example_output_mitigation>
+The final output should be a JSON object with an `adaptations` field, which is an array of objects, each with the following fields:
+{
+  "adaptations": [
+    {
+      "title": "<climate risk (hazard)>",
+      "description": "<brief description of how it is addressed>"
+    },
+    ...
+  ]
+}
+If no climate risks (hazards) are addressed by the climate action, output an empty list for the `adaptations` field, e.g. `{ "adaptations": [] }`.
+Only output valid JSON format without any additional text or formatting like ```
 </output>
 
 <tone>
@@ -70,24 +74,25 @@ def build_custom_agent_8():
     """Wrap create_react_agent to store final output in AgentState."""
 
     # The chain returned by create_react_agent
-    react_chain = create_react_agent(model, tools, prompt=system_prompt_agent_8)
+    react_chain = create_react_agent(
+        model, tools, prompt=system_prompt_agent_8, response_format=AdaptationList
+    )
 
     def custom_agent_8(state: AgentState) -> AgentState:
-
-        print("Agent 8 start...")
+        logger.info("Agent 8 start...")
 
         result_state = react_chain.invoke(
             {
                 "messages": HumanMessage(
                     f"""
                     This is the climate action (main action) data: 
-                    {json.dumps(state['climate_action_data'], indent=4)}
+                    {json.dumps(state['climate_action_data'], indent=2)}
 
                     This is the city data: 
-                    {json.dumps(state['city_data'], indent=4)}
+                    {json.dumps(state['city_data'], indent=2)}
 
                     This is the response from Agent 1 containing the national and city-level strategies as well as the climate action plan (main action) description:
-                    {json.dumps(state['response_agent_1'].content, indent=4)}
+                    {json.dumps(state['response_agent_1'].model_dump(), indent=2)}
 
                     This is additional context to climate risks (hazards):
                     {adaptation}
@@ -96,10 +101,11 @@ def build_custom_agent_8():
             }
         )
 
-        agent_output = result_state["messages"][-1].content
-        result_state["response_agent_8"] = AIMessage(agent_output)
+        # Extract the structured response from the result_state
+        agent_output_structured: AdaptationList = result_state["structured_response"]
+        result_state["response_agent_8"] = agent_output_structured
 
-        print("Agent 8 done\n")
+        logger.info("Agent 8 done\n")
         return AgentState(**result_state)
 
     return custom_agent_8

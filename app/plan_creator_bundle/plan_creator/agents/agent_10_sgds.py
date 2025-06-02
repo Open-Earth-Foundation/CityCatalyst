@@ -7,6 +7,13 @@ from langchain_openai import ChatOpenAI
 from plan_creator_bundle.tools.tools import (
     placeholder_tool,
 )
+from plan_creator_bundle.plan_creator.models import SDGList
+
+from utils.logging_config import setup_logger
+import logging
+
+setup_logger()
+logger = logging.getLogger(__name__)
 
 # Create the agents
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
@@ -36,16 +43,18 @@ Follow these guidlines carefully to complete the task:
 </task>
 
 <output>
-The final output should be headline and a bullet point list of addressed SGDs together with a short description on how these are addressed.
-Order the list ascendingly by the number of the SGDs.
-
-<example_output>
-## Relationship with SGDs:
-
-* SGD [number]: [name]
-* SGD [number]: [name]
-* ...
-</example_output>
+The final output should be a JSON object with an `sdgs` field, which is an array of objects, each with the following fields:
+{
+  "sdgs": [
+    {
+      "title": "<SDG number and name>",
+      "description": "<short description of how it is addressed>"
+    },
+    ...
+  ]
+}
+If no SDGs are addressed by the climate action, output an empty list for the `sdgs` field, e.g. `{ "sdgs": [] }`.
+Only output valid JSON format without any additional text or formatting like ```
 </output>
 
 <tone>
@@ -65,36 +74,38 @@ def build_custom_agent_10():
     """Wrap create_react_agent to store final output in AgentState."""
 
     # The chain returned by create_react_agent
-    react_chain = create_react_agent(model, tools, prompt=system_prompt_agent_10)
+    react_chain = create_react_agent(
+        model, tools, prompt=system_prompt_agent_10, response_format=SDGList
+    )
 
     def custom_agent_10(state: AgentState) -> AgentState:
-
-        print("Agent 10 start...")
+        logger.info("Agent 10 start...")
 
         result_state = react_chain.invoke(
             {
                 "messages": HumanMessage(
                     f"""
                     This is the climate action (main action) data: 
-                    {json.dumps(state['climate_action_data'], indent=4)}
+                    {json.dumps(state['climate_action_data'], indent=2)}
 
                     This is the city data: 
-                    {json.dumps(state['city_data'], indent=4)}
+                    {json.dumps(state['city_data'], indent=2)}
 
                     This is the response from Agent 1 containing the introduction for the climate action implementation plan:
-                    {json.dumps(state['response_agent_1'].content, indent=4)}
+                    {json.dumps(state['response_agent_1'].model_dump(), indent=2)}
 
                     The following is the context for all the SGDs:
-                    {json.dumps(sgds, indent=4)}
+                    {json.dumps(sgds, indent=2)}
                     """
                 )
             }
         )
 
-        agent_output = result_state["messages"][-1].content
-        result_state["response_agent_10"] = AIMessage(agent_output)
+        # Extract the structured response from the result_state
+        agent_output_structured: SDGList = result_state["structured_response"]
+        result_state["response_agent_10"] = agent_output_structured
 
-        print("Agent 10 done\n")
+        logger.info("Agent 10 done\n")
         return AgentState(**result_state)
 
     return custom_agent_10

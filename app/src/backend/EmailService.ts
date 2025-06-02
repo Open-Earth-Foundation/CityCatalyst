@@ -126,7 +126,7 @@ export default class EmailService {
 
           await sendEmail({
             to: user.email as string,
-            subject: "City Catalyst - City Slots Changed",
+            subject: "City Catalyst - Project Deletion",
             html,
           });
         } catch (err) {
@@ -163,7 +163,7 @@ export default class EmailService {
 
           await sendEmail({
             to: user.email as string,
-            subject: "City Catalyst - Project Deletion",
+            subject: "City Catalyst - City Slots Changed",
             html,
           });
         } catch (err) {

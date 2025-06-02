@@ -11,6 +11,7 @@ export interface OrganizationAttributes {
   lastUpdated?: Date;
   themeId?: string | null;
   logoUrl?: string | null;
+  active: boolean;
 }
 
 export type OrganizationPk = "organizationId";
@@ -32,7 +33,7 @@ export class Organization
   lastUpdated?: Date;
   themeId?: string | null;
   logoUrl?: string | null;
-
+  active!: boolean;
   theme!: Theme;
   projects!: Project[];
 
@@ -53,6 +54,11 @@ export class Organization
           type: DataTypes.STRING(255),
           allowNull: false,
           field: "contact_email",
+        },
+        active: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          
         },
         themeId: {
           type: DataTypes.UUID,

@@ -182,8 +182,6 @@ def get_search_municipalities_tool(search_query: str):
     """
 
     logger.info(f"get_search_municipalities_tool called with query: {search_query}")
-    logger.info(f"TAVILY_SEARCH_MODE: {TAVILY_SEARCH_MODE}")
-    logger.info(f"API_KEY: {os.getenv('TAVILY_API_KEY')}")
 
     tavily_tool = TavilySearch(
         max_results=2,
@@ -192,7 +190,7 @@ def get_search_municipalities_tool(search_query: str):
     try:
         logger.info("Invoking TavilySearchResults...")
         result = tavily_tool.invoke({"query": search_query})
-        logger.info(f"TavilySearchResults returned: {result}")
+        logger.debug(f"TavilySearchResults returned: {result}")
         return result
     except Exception as e:
         logger.error(f"Error in TavilySearchResults: {str(e)}", exc_info=True)

@@ -19,10 +19,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import ProgressLoader from "@/components/ProgressLoader";
-import {
-  MdMoreVert,
-  MdOutlineFolder,
-} from "react-icons/md";
+import { MdMoreVert, MdOutlineFolder } from "react-icons/md";
 import DataTableCore from "@/components/ui/data-table-core";
 import {
   MenuContent,
@@ -42,7 +39,7 @@ import { FiFolder } from "react-icons/fi";
 import ProjectHeader from "./projectHeader";
 import DeleteInventoryModal from "@/components/Modals/delete-inventory-modal";
 import { UserAttributes } from "@/models/User";
-
+import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
 
 const getInventoryLastUpdated = (lastUpdated: Date, t: Function) => {
   if (!lastUpdated || isNaN(new Date(lastUpdated).getTime())) {
@@ -83,6 +80,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
   setSelectedCity,
 }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleteUserModalOpen, setIsDeleteUserModal] = useState(false);
   const [cityToDelete, setCityToDelete] = useState<{
     cityName: string;
     cityId: string;
@@ -491,7 +489,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                               _hover={{ bg: "content.link", cursor: "pointer" }}
                               className="group"
                               onClick={() => {
-                                setInventoryToDelete(item.inventoryId)
+                                setInventoryToDelete(item.inventoryId);
                                 onInventoryDeleteModalOpen();
                               }}
                             >

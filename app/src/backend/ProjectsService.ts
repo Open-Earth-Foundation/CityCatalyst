@@ -2,8 +2,6 @@ import { db } from "@/models";
 import { logger } from "@/services/logger";
 import { uniqBy } from "lodash";
 import { ProjectWithCities } from "@/util/types";
-import { OK } from "zod";
-import { locode } from "tests/api/activity_value_data";
 
 interface ProjectInfo {
   projectId: string;

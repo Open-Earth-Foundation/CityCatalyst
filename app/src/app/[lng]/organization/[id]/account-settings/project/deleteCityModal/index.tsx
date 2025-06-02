@@ -73,7 +73,7 @@ const DeleteCityModal = (props: DeleteCityModalProps) => {
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => {
+      onOpenChange={(e: { open: boolean }) => {
         onOpenChange(e.open);
         if (!e.open) {
           setCityToDelete("");

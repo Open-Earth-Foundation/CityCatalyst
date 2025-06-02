@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import { logger } from "@/services/logger";
 
 type EmailPayload = {
-  to: string;
+  to: string | string[];
   subject: string;
   html: string;
 };
@@ -32,7 +32,7 @@ export const sendEmail = async (data: EmailPayload) => {
     }
 
     logger.info(
-      `Sending email from ${emailFrom} to ${data.to} with subject ${data.subject} (${data.html.length} characters)`,
+      `Sending email from ${emailFrom} to ${Array.isArray(data.to) ? data.to.join(",") : data.to} with subject ${data.subject} (${data.html.length} characters)`,
     );
 
     logger.debug(

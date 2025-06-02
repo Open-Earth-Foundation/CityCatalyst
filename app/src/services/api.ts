@@ -227,7 +227,11 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: InventoryAttributes }) =>
           response.data,
-        invalidatesTags: ["UserInventories", "CitiesAndInventories"],
+        invalidatesTags: [
+          "UserInventories",
+          "CitiesAndInventories",
+          "Projects",
+        ],
       }),
       setUserInfo: builder.mutation<
         UserAttributes,
@@ -368,6 +372,7 @@ export const api = createApi({
           "InventoryValue",
           "ReportResults",
           "YearlyReportResults",
+          "Projects",
           "UserInfo",
         ],
       }),
@@ -1191,6 +1196,20 @@ export const api = createApi({
         transformResponse: (response: { data: FormulaInputValuesResponse[] }) =>
           response.data,
       }),
+      deleteCity: builder.mutation({
+        query: (cityId: string) => ({
+          method: "DELETE",
+          url: `/city/${cityId}`,
+        }),
+        transformResponse: (response: { data: any }) => response.data,
+        invalidatesTags: [
+          "CityData",
+          "Projects",
+          "CitiesAndInventories",
+          "UserData",
+          "UserInfo",
+        ],
+      }),
     };
   },
 });
@@ -1290,6 +1309,7 @@ export const {
   useGetThemesQuery,
   useSetOrgWhiteLabelMutation,
   useGetOrganizationForInventoryQuery,
+  useDeleteCityMutation,
   useGetWasteCompositionValuesQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

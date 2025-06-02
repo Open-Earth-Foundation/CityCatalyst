@@ -15,31 +15,32 @@ import { Button } from "@/components/ui/button";
 import { FiTrash2 } from "react-icons/fi";
 import { Trans } from "react-i18next";
 import { Field } from "@/components/ui/field";
-import { useDeleteProjectMutation } from "@/services/api";
+import { useDeleteCityMutation } from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
-interface DeleteProjectModalProps {
-  projectId: string;
-  projectName: string;
+interface DeleteCityModalProps {
+  cityId: string;
+  countryName: string;
+  cityName: string;
   isOpen: boolean;
   onClose: () => void;
   t: TFunction;
   onOpenChange: (val: boolean) => void;
 }
 
-const DeleteProjectModal = (props: DeleteProjectModalProps) => {
-  const { projectId, projectName, onClose, isOpen, onOpenChange, t } = props;
+const DeleteCityModal = (props: DeleteCityModalProps) => {
+  const { cityId, cityName, onClose, isOpen, onOpenChange, t } = props;
 
   const { showErrorToast } = UseErrorToast({
     title: t("error-message"),
   });
   const { showSuccessToast } = UseSuccessToast({
-    title: t("project-deleted"),
+    title: t("city-deleted"),
     duration: 1200,
   });
 
-  const [projectToDelete, setProjectToDelete] = useState("");
-  const [deleteProject, { isLoading }] = useDeleteProjectMutation();
+  const [cityToDelete, setCityToDelete] = useState("");
+  const [deleteCity, { isLoading }] = useDeleteCityMutation();
 
   const [step, setStep] = useState(1);
 
@@ -48,11 +49,11 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
   };
 
   const submitFunction = async () => {
-    if (!(projectToDelete.trim() === projectName.trim())) {
+    if (!(cityToDelete.trim() === cityName.trim())) {
       return;
     }
 
-    const response = await deleteProject(projectId);
+    const response = await deleteCity(cityId);
 
     if (response.data) {
       showSuccessToast();
@@ -66,16 +67,16 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
   const closeFunction = () => {
     onClose();
     setStep(1);
-    setProjectToDelete("");
   };
 
   return (
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => {
+      onOpenChange={(e: { open: boolean }) => {
         onOpenChange(e.open);
         if (!e.open) {
+          setCityToDelete("");
           closeFunction();
         }
       }}
@@ -96,7 +97,7 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
           borderStyle="solid"
           borderColor="background.neutral"
         >
-          {t("delete-project")}
+          {t("delete-city")}
         </DialogHeader>
         <DialogCloseTrigger mt={"2"} color="interactive.control" mr={"2"} />
         <HStack flexDirection="column" alignItems="center" padding="24px">
@@ -116,10 +117,10 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
             <Box w="65%" textAlign="center" mt={6}>
               <Text fontSize="body.lg">
                 <Trans
-                  i18nKey="confirm-project-delete"
+                  i18nKey="confirm-city-delete"
                   t={t}
                   values={{
-                    name: projectName,
+                    name: cityName,
                   }}
                   components={{
                     bold: <strong />,
@@ -134,10 +135,10 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
             <Box w="70%" mt={6}>
               <Text fontSize="body.lg" textAlign="center">
                 <Trans
-                  i18nKey="enter-project-name-confirmation"
+                  i18nKey="enter-city-name-confirmation"
                   t={t}
                   values={{
-                    name: projectName,
+                    name: cityName,
                   }}
                   components={{
                     bold: <strong />,
@@ -147,11 +148,11 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
               <Field
                 labelClassName="font-semibold"
                 mt={6}
-                label={t("project-name")}
+                label={t("city-name")}
               >
                 <Input
-                  value={projectToDelete}
-                  onChange={(e) => setProjectToDelete(e.target.value)}
+                  value={cityToDelete}
+                  onChange={(e) => setCityToDelete(e.target.value)}
                 />
               </Field>
             </Box>
@@ -167,9 +168,7 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
           <Button
             variant="solid"
             h="64px"
-            disabled={
-              step === 2 && projectToDelete.trim() !== projectName.trim()
-            }
+            disabled={step === 2 && cityToDelete.trim() !== cityName.trim()}
             w="full"
             onClick={step === 1 ? nextFunction : submitFunction}
             color="base.light"
@@ -177,7 +176,7 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
             marginRight="2"
             loading={isLoading}
           >
-            {step === 1 ? t("yes-i-understand") : t("delete-project")}
+            {step === 1 ? t("yes-i-understand") : t("delete-city")}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -185,4 +184,4 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
   );
 };
 
-export default DeleteProjectModal;
+export default DeleteCityModal;

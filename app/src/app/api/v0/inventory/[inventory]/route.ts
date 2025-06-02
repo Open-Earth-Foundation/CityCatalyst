@@ -35,7 +35,7 @@ export const GET = apiHandler(async (req, { session, params }) => {
     }
   }
 
-  if (!validate(inventoryId)) {
+ if (!validate(inventoryId)) {
     throw new createHttpError.BadRequest(`'${inventoryId}' is not a valid inventory id (uuid)`);
   }
 

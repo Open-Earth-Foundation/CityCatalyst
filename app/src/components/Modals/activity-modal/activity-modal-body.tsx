@@ -350,10 +350,31 @@ const ActivityModalBody = ({
                           render={({ field }) => {
                             return (
                               <NativeSelectRoot
-                                minW="100px"
-                                mx={-2}
-                                width="100px"
-                                variant="subtle"
+                                borderRadius="4px"
+                                borderWidth={
+                                  errors?.activity?.[`${title}-unit`]
+                                    ? "1px"
+                                    : 0
+                                }
+                                border="inputBox"
+                                h="42px"
+                                shadow="1dp"
+                                borderColor={
+                                  errors?.activity?.[`${title}-unit`]
+                                    ? "sentiment.negativeDefault"
+                                    : ""
+                                }
+                                background={
+                                  errors?.activity?.[`${title}-unit`]
+                                    ? "sentiment.negativeOverlay"
+                                    : ""
+                                }
+                                _focus={{
+                                  borderWidth: "1px",
+                                  shadow: "none",
+                                  borderColor: "content.link",
+                                }}
+                                bgColor="base.light"
                                 {...field}
                                 onChange={(e: any) => {
                                   field.onChange(e.currentTarget.value);
@@ -366,8 +387,6 @@ const ActivityModalBody = ({
                                 <NativeSelectField
                                   value={field.value}
                                   placeholder={t("select-unit")}
-                                  minW="200px"
-                                  width="200px"
                                 >
                                   {f.units?.map((item: string) => (
                                     <option key={item} value={item}>

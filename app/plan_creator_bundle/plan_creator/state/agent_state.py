@@ -47,7 +47,7 @@ class AgentState(TypedDict):
     response_agent_10: Annotated[SDGList, "The response from Agent 10 (list of SDG)"]
     # response_agent_combine: Annotated[str, "The combined response from all agents"]
     response_agent_translate: Annotated[
-        str, "The translated response from Agent combine"
+        dict, "The translated plan content as a dictionary (all fields translated)"
     ]
     language: Annotated[str, "The language of the response"]
     messages: Annotated[list, "The list of messages exchanged between agents"]

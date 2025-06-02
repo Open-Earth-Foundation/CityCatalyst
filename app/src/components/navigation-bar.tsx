@@ -121,7 +121,8 @@ export function NavigationBar({
     inventoryIdFromParam ?? userInfo?.defaultInventoryId;
   const router = useRouter();
   const pathname = usePathname();
-  const dashboardPath = `/${lng}/${inventoryIdFromParam ?? currentInventoryId}`;
+  const inventoryStub = inventoryIdFromParam ?? currentInventoryId;
+  const dashboardPath = `/${lng}/${inventoryStub === null ? "" : inventoryStub}`;
   const { setTheme } = useTheme();
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);

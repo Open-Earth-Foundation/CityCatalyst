@@ -426,21 +426,24 @@ export type ListOrganizationsResponse = {
   }[];
 };
 
+export type CityResponse = {
+  cityId: string;
+  name: string;
+  countryLocode: string;
+  locode: string;
+  inventories: {
+    inventoryId: string;
+    year: number;
+    lastUpdated: string;
+  }[];
+};
+
 export type ProjectWithCities = {
   projectId: string;
   name: string;
   description?: string;
   cityCountLimit?: Number;
-  cities: {
-    cityId: string;
-    name: string;
-    countryLocode: string;
-    inventories: {
-      inventoryId: string;
-      year: number;
-      lastUpdated: string;
-    }[];
-  }[];
+  cities: CityResponse[];
 };
 
 export type ProjectWithCitiesResponse = ProjectWithCities[];

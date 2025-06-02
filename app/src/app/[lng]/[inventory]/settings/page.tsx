@@ -170,15 +170,7 @@ export default function Settings({
               </Tabs.List>
 
               <MyProfileTab t={t} userInfo={userInfo} lng={lng} />
-              <MyFilesTab
-                lng={lng}
-                session={session}
-                status={status}
-                t={t}
-                userInfo={userInfo!}
-                userFiles={userFiles!}
-                inventory={inventory!}
-              />
+              <MyFilesTab t={t} userFiles={userFiles!} inventory={inventory!} />
               <MyInventoriesTab
                 lng={lng}
                 cities={cities}

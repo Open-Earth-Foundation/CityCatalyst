@@ -3,33 +3,19 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // First create the enum type
-    await queryInterface.sequelize.query(`
-      DO $$ BEGIN
-        CREATE TYPE "enum_CityInvite_status" AS ENUM ('pending', 'accepted', 'canceled', 'expired');
-      EXCEPTION
-        WHEN duplicate_object THEN null;
-      END $$;
-    `);
-
     // First convert existing values to ensure they match the enum
     await queryInterface.sequelize.query(`
       UPDATE "CityInvite"
       SET status = 'pending'
-      WHERE status NOT IN ('pending', 'accepted', 'canceled', 'expired');
+      WHERE status IS NULL OR status NOT IN ('pending', 'accepted', 'canceled', 'expired');
     `);
 
     // Then modify the column to use the enum type
     await queryInterface.changeColumn("CityInvite", "status", {
       type: Sequelize.ENUM("pending", "accepted", "canceled", "expired"),
       allowNull: false,
+      defaultValue: "pending",
     });
-
-    // Finally set the default value
-    await queryInterface.sequelize.query(`
-      ALTER TABLE "CityInvite" 
-      ALTER COLUMN status SET DEFAULT 'pending';
-    `);
   },
 
   async down(queryInterface, Sequelize) {
@@ -42,7 +28,7 @@ module.exports = {
     // Change the column back to string
     await queryInterface.changeColumn("CityInvite", "status", {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     });
 
     // Set the default value for string type

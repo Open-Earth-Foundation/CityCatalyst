@@ -80,12 +80,7 @@ export default function HomePage({
         } else {
           return;
         }
-      } else if (
-        !inventoryIdFromParam &&
-        !isInventoryLoading &&
-        !inventory &&
-        !userInfo?.defaultInventoryId
-      ) {
+      } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
         setTimeout(() => router.push("/onboarding"), 0);
       }

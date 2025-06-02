@@ -70,9 +70,12 @@ export function NavigationBar({
   const { t } = useTranslation(lng, "navigation");
   const { logoUrl } = useLogo();
   const { inventory: inventoryParam } = useParams();
-  const inventoryIdFromParam = inventoryParam;
+  let inventoryIdFromParam = inventoryParam !== "null" ? inventoryParam : null;
+  if (Array.isArray(inventoryIdFromParam)) {
+    inventoryIdFromParam = inventoryIdFromParam[0];
+  }
   const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery((inventoryIdFromParam as string) || "default");
+    api.useGetInventoryQuery(inventoryIdFromParam ?? "default");
   const { data: userAccessStatus } = useGetUserAccessStatusQuery(
     {},
     {

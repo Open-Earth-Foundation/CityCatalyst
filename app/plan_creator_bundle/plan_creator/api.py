@@ -72,7 +72,7 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
             "response_agent_8": MitigationList(mitigations=[]),
             "response_agent_9": AdaptationList(adaptations=[]),
             "response_agent_10": SDGList(sdgs=[]),
-            "response_agent_translate": "",
+            "response_agent_translate": {},
             "language": background_task_input["language"],
             "messages": [],
         }
@@ -83,7 +83,6 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
             result = graph.invoke(input=initial_state)
             logger.info(f"Task {task_uuid}: Graph execution completed successfully")
 
-            logger.info(f"Result: {result}")
         except Exception as e:
             logger.error(
                 f"Task {task_uuid}: Error during graph execution: {str(e)}",
@@ -105,17 +104,28 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
             )
 
             # Step 2: Create PlanContent
+            translated = result["response_agent_translate"]
             content = PlanContent(
-                introduction=result["response_agent_1"],
-                subactions=result["response_agent_2"],
-                institutions=result["response_agent_3"],
-                milestones=result["response_agent_4"],
-                timeline=[result["response_agent_5"]],
-                costBudget=[result["response_agent_6"]],
-                merIndicators=result["response_agent_7"],
-                mitigations=result["response_agent_9"],
-                adaptations=result["response_agent_8"],
-                sdgs=result["response_agent_10"],
+                introduction=Introduction.model_validate(
+                    translated["response_agent_1"]
+                ),
+                subactions=SubactionList.model_validate(translated["response_agent_2"]),
+                institutions=InstitutionList.model_validate(
+                    translated["response_agent_3"]
+                ),
+                milestones=MilestoneList.model_validate(translated["response_agent_4"]),
+                timeline=[Timeline.model_validate(translated["response_agent_5"])],
+                costBudget=[CostBudget.model_validate(translated["response_agent_6"])],
+                merIndicators=MerIndicatorList.model_validate(
+                    translated["response_agent_7"]
+                ),
+                mitigations=MitigationList.model_validate(
+                    translated["response_agent_9"]
+                ),
+                adaptations=AdaptationList.model_validate(
+                    translated["response_agent_8"]
+                ),
+                sdgs=SDGList.model_validate(translated["response_agent_10"]),
             )
 
             # Step 3: Wrap in PlanResponse

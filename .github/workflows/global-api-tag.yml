@@ -59,6 +59,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_PROD_USER }}
       EKS_DEV_NAME: ${{ secrets.EKS_PROD_NAME }}
       REF: ${{ github.ref }}
+      IMAGE: ghcr.io/open-earth-foundation/citycatalyst-global-api
     steps:
       - uses: actions/checkout@v4
 
@@ -71,9 +72,10 @@ jobs:
       - name: Deploying service
         run: |
           export VERSION=${REF#refs/tags/v}
+          export VERSION=${REF#refs/tags/v}
           kubectl create -f k8s/cc-global-api-migrate.yml -n default
           kubectl apply -f k8s/cc-global-api-deploy.yml -n default
-          kubectl set image deployment/cc-web-deploy \
-            cc-global-api=ghcr.io/open-earth-foundation/citycatalyst-global-api:$VERSION \
+          kubectl set image deployment/cc-global-api-deploy \
+            cc-global-api=$IMAGE:$VERSION \
             -n default
           kubectl rollout restart deployment cc-global-api-deploy -n default

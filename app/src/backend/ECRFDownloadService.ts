@@ -11,6 +11,7 @@ import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import PopulationService from "@/backend/PopulationService";
 import CityBoundaryService from "@/backend/CityBoundaryService";
+import { logger } from "@/services/logger";
 
 const ECRF_TEMPLATE_PATH = "./templates/ecrf_template.xlsx";
 
@@ -36,10 +37,10 @@ export default class ECRFDownloadService {
       await this.writeToSheet3(workbook, output, t);
       // Save the modified workbook
       const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
-      console.log("Workbook has been generated successfully");
+      logger.info("Workbook has been generated successfully");
       return buffer;
     } catch (error) {
-      console.log("Error reading or writing Excel file", error);
+      logger.error({err: error}, "Error reading or writing Excel file");
       throw createHttpError.InternalServerError(
         "Error reading or writing Excel file",
       );
@@ -67,7 +68,7 @@ export default class ECRFDownloadService {
         city.locode as string,
       );
     } catch (e) {
-      console.warn("Failed to fetch city boundary or population");
+      logger.warn("Failed to fetch city boundary or population");
     }
 
     // prepare the data for sheet 1
@@ -476,7 +477,7 @@ export default class ECRFDownloadService {
             } else if (replacementValue !== undefined) {
               cell.value = replacementValue;
             } else {
-              console.warn(
+              logger.warn(
                 `No data found for field '${fieldName}' at row ${rowNumber}, column ${colNumber}`,
               );
               cell.value = ""; // remove the placeholder when done

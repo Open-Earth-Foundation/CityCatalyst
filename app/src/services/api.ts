@@ -648,9 +648,21 @@ export const api = createApi({
               body: data,
             };
           },
-
           transformResponse: (response: { data: AcceptInviteResponse }) =>
             response.data,
+          invalidatesTags: [
+            "Invites",
+            "UserData",
+            "CitiesAndInventories",
+            "UserInfo",
+            "CityData",
+            "Cities",
+            "Inventories",
+            "Project",
+            "Projects",
+            "ProjectUsers",
+            "UserAccessStatus",
+          ],
         },
       ),
       acceptOrganizationAdminInvite: builder.mutation({

@@ -5,7 +5,11 @@ on:
   push:
     paths:
       - app/**
-      - k8s/prod/cc-prod-migrate.yml
+      - k8s/prod/prod/cc-prod-prod-migrate.yml
+      - k8s/prod/cc-prod-seed.yml
+      - k8s/prod/cc-prod-sync-catalogue.yml
+      - k8s/prod/cc-prod-create-admin.yml
+      - k8s/cc-web.yml
       - k8s/prod/cc-prod-seed.yml
       - k8s/prod/cc-prod-sync-catalogue.yml
       - k8s/prod/cc-prod-create-admin.yml
@@ -116,6 +120,7 @@ jobs:
       EKS_PROD_NAME: ${{ secrets.EKS_PROD_NAME }}
       SHA: ${{ github.sha }}
       REF: ${{ github.ref }}
+      IMAGE: ghcr.io/open-earth-foundation/citycatalyst
     steps:
       - uses: actions/checkout@v4
 
@@ -128,12 +133,16 @@ jobs:
       - name: Deploying service
         run: |
           export VERSION=${REF#refs/tags/v}
+          export VERSION=${REF#refs/tags/v}
           kubectl create -f k8s/prod/cc-prod-migrate.yml -n default
           kubectl create -f k8s/prod/cc-prod-seed.yml -n default
           kubectl apply -f k8s/prod/cc-prod-sync-catalogue.yml -n default
           kubectl apply -f k8s/cc-web-deploy.yml -n default
           kubectl set image deployment/cc-web-deploy \
-            cc-web=ghcr.io/open-earth-foundation/citycatalyst:$VERSION \
+            cc-web=$IMAGE:$VERSION \
+            -n default
+          kubectl set image cronjob/cc-prod-sync-catalogue \
+            cc-sync-catalogue=$IMAGE:$VERSION \
             -n default
           kubectl set env deployment/cc-web-deploy \
             SMTP_USER=${{secrets.SMTP_USER}} \

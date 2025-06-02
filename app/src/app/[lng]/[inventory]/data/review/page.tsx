@@ -19,6 +19,7 @@ import { clear, removeSectorData } from "@/features/city/inventoryDataSlice";
 import { api } from "@/services/api";
 import { appendFileToFormData } from "@/util/helpers";
 import { useState } from "react";
+import { logger } from "@/services/logger";
 
 export default function ReviewPage({
   params: { lng },
@@ -102,7 +103,7 @@ export default function ReviewPage({
         });
       }
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       // TODO
       // Trigger notification to user
     } finally {

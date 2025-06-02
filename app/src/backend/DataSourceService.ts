@@ -310,7 +310,7 @@ export default class DataSourceService {
       data = await response.json();
     } catch (err) {
       const message = `Failed to query data source ${source.datasourceId} at URL ${url}:`;
-      console.error(message, err);
+      logger.error(message, err);
       return message;
     }
 
@@ -319,7 +319,7 @@ export default class DataSourceService {
         return "Source doesn't have data available for this input";
       } else {
         const message = "Incorrect response from Global API for URL: " + url;
-        console.error(message, data);
+        logger.error(message, data);
         return message;
       }
     }

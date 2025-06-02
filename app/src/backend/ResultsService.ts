@@ -10,6 +10,7 @@ import { bigIntToDecimal } from "@/util/big_int";
 import createHttpError from "http-errors";
 import GlobalAPIService from "./GlobalAPIService";
 import { Inventory } from "@/models/Inventory";
+import { logger } from "@/services/logger";
 
 function multiplyBigIntByFraction(
   stringValue: string,
@@ -486,7 +487,7 @@ export const getEmissionsBreakdownBatch = async (
     );
     return { byScope: resultsByScope };
   } catch (error) {
-    console.error("Error in getEmissionsBreakdownBatch:", error);
+    logger.error({ err: error }, "Error in getEmissionsBreakdownBatch:");
     throw error;
   }
 };
@@ -513,7 +514,7 @@ const getActivityDataValues = (
       );
 
   if (!methodologyFields) {
-    console.error(
+    logger.error(
       `Methodology fields not found for ${reference_number}, ${input_methodology}`,
     );
     return null;

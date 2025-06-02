@@ -9,6 +9,7 @@ import { sendEmail } from "@/lib/email";
 import { render } from "@react-email/components";
 import InviteUserTemplate from "@/lib/emails/InviteUserTemplate";
 import UserService from "@/backend/UserService";
+import { logger } from "@/services/logger";
 
 export const POST = apiHandler(async (req, { params, session }) => {
   if (!session) {
@@ -28,7 +29,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   }
 
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
-    console.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
+    logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
 

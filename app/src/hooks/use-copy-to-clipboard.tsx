@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { logger } from "@/services/logger";
 
 export function useCopyToClipboard({ timeout = 2000 }: { timeout?: number }) {
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -22,7 +23,7 @@ export function useCopyToClipboard({ timeout = 2000 }: { timeout?: number }) {
         }, timeout);
       });
     } catch (error) {
-      console.error("Failed to copy text to clipboard", error);
+      logger.error({ err: error }, "Failed to copy text to clipboard");
     }
   };
 

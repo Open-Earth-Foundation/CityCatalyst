@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup } from "@/components/ui/custom-radio";
 import CityAutocompleteInput from "./CityAutoCompleteInput";
 import { hasFeatureFlag } from "@/util/feature-flags";
+import { logger } from "@/services/logger";
 
 interface BulkActionsTabContentProps {
   t: TFunction;
@@ -159,7 +160,7 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
               type: "error",
               description: t("bulk-inventory-connection-error"),
             });
-            console.error(isConnectSourcesData.errors);
+            logger.error(isConnectSourcesData.errors);
           } else {
             toaster.create({
               type: "success",

@@ -15,6 +15,7 @@ import { Includeable, QueryTypes, Transaction } from "sequelize";
 import { UserFile } from "@/models/UserFile";
 import { Project } from "@/models/Project";
 import { hasOrgOwnerLevelAccess } from "@/backend/RoleBasedAccessService";
+import { logger } from "@/services/logger";
 
 export default class UserService {
   public static async findUser(
@@ -537,7 +538,7 @@ export default class UserService {
         });
       });
     } catch (error) {
-      console.error("Error removing user from project:", error);
+      logger.error({ projectId, email, err: error }, "Error removing user from project");
       throw new createHttpError.InternalServerError(
         "failed-to-remove-user-from-project",
       );
@@ -577,7 +578,7 @@ export default class UserService {
         });
       });
     } catch (error) {
-      console.error("Error removing user from project:", error);
+      logger.error({ err: error }, "Error removing user from project:");
       throw new createHttpError.InternalServerError(
         "failed-to-remove-user-from-city",
       );
@@ -611,7 +612,7 @@ export default class UserService {
         });
       });
     } catch (error) {
-      console.error("Error removing user from project:", error);
+      logger.error({ err: error }, "Error removing user from project:");
       throw new createHttpError.InternalServerError(
         "failed-to-remove-organization-owner",
       );

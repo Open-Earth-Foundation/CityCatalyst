@@ -13,6 +13,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import { Trans } from "react-i18next/TransWithoutContext";
+import { logger } from "@/services/logger";
 
 export type LoginInputs = {
   email: string;
@@ -93,11 +94,11 @@ export default function Login({
         setError("");
         return;
       } else {
-        console.error("Sign in failure:", res?.error);
+        logger.error({ err: res?.error }, "Sign in failure:");
         setError(t("invalid-email-password"));
       }
     } catch (error: any) {
-      console.error("Failed to sign in:", error);
+      logger.error({ err: error }, "Failed to sign in:");
       setError(error);
     }
   };

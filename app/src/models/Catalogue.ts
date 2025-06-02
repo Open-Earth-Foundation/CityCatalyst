@@ -37,7 +37,8 @@ export class Catalogue
         sequelize,
         tableName: "Catalogue",
         schema: "public",
-        timestamps: false,
+        timestamps: true,
+        createdAt: "created",
       },
     );
   }

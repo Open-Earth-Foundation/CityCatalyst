@@ -5,7 +5,6 @@ import threading
 from typing import Dict, Any
 
 from fastapi import HTTPException, APIRouter
-from langchain_core.messages import AIMessage
 
 import logging
 from utils.logging_config import setup_logger

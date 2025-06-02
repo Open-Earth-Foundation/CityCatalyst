@@ -7,6 +7,7 @@ import {
   useGetCityPopulationQuery,
   useGetCityYearsQuery,
   useGetOrganizationForInventoryQuery,
+  useGetUserAccessStatusQuery,
 } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
@@ -119,6 +120,13 @@ export default function HomePage({
       skip: !inventoryIdFromParam,
     });
 
+  const { data: userAccessStatus } = useGetUserAccessStatusQuery(
+    {},
+    {
+      skip: isPublic,
+    },
+  );
+
   const { setLogoUrl } = useLogo();
   const { setTheme } = useTheme();
 
@@ -129,12 +137,24 @@ export default function HomePage({
     }
   }, [isInventoryOrgDataLoading, inventoryOrgData]);
 
+  useEffect(() => {
+    if (
+      !inventory &&
+      !isInventoryLoading &&
+      userAccessStatus?.isOrgOwner &&
+      !inventoryIdFromParam
+    ) {
+      router.replace("/onboarding");
+      return;
+    }
+  }, [inventory, isInventoryLoading, userAccessStatus]);
+
   return (
     <>
       {(isInventoryLoading ||
         isInventoryOrgDataLoading ||
         isUserInfoLoading) && <ProgressLoader />}
-      {inventory === null && !isInventoryLoading && !isUserInfoLoading && (
+      {!inventory && !isInventoryLoading && !isUserInfoLoading && (
         <>
           {isPublic ? (
             <NotAvailable lng={language} />

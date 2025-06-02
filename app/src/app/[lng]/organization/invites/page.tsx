@@ -80,7 +80,7 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
               setError(true);
             } else {
               showSuccessToast();
-              router.push(`/`);
+              router.push(`/onboarding`);
             }
           } catch (error) {
             setError(true);

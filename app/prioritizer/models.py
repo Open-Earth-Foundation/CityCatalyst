@@ -44,6 +44,16 @@ class PrioritizerRequest(BaseModel):
 # --- Response models ---
 
 
+class StartPrioritizationResponse(BaseModel):
+    taskId: str
+    status: str
+
+
+class CheckProgressResponse(BaseModel):
+    status: str
+    error: Optional[str] = None
+
+
 class MetaData(BaseModel):
     locode: str
     rankedDate: datetime

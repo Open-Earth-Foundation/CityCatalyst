@@ -30,6 +30,7 @@ const BulkDownloadTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
   const { data: projectsList, isLoading: isProjectListLoading } =
     api.useGetUserProjectsQuery({});
   const [isDownloadLoading, setDownloadLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const showToast = (
     title: string,
@@ -53,10 +54,24 @@ const BulkDownloadTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
     showToast("preparing-dataset", "wait-fetch-data", "info", null);
     setDownloadLoading(true);
     fetch(`/api/v0/projects/${data.projectId}/bulk-download`)
-      .then((res) => {
+      .then(async (res) => {
         setDownloadLoading(false);
         if (!res.ok) {
-          throw new Error("Network response was not ok");
+          const response = await res.json();
+          logger.error(
+            { response, status: res.status, projectId: data.projectId },
+            "Network response was not ok",
+          );
+          const message =
+            response.message ??
+            response.error?.error ??
+            response.error?.message ??
+            "";
+          setErrorMessage(message);
+          showToast("download-failed", "download-error", "error", null);
+          return;
+        } else {
+          setErrorMessage("");
         }
 
         const contentDisposition = res.headers.get("Content-Disposition");
@@ -142,6 +157,8 @@ const BulkDownloadTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
               </NativeSelect.Root>
             </FieldRoot>
           </Fieldset.Content>
+
+          <Text color="semantic.danger">{errorMessage}</Text>
 
           <Box
             display="flex"

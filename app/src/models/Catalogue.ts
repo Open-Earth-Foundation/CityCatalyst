@@ -47,6 +47,7 @@ export class Catalogue
         schema: "public",
         timestamps: true,
         createdAt: "created",
+        updatedAt: "last_update"
       },
     );
   }

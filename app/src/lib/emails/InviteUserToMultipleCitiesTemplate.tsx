@@ -57,7 +57,7 @@ export function InviteUserToMultipleCitiesTemplate({
                 }}
               >
                 <Img
-                  src={brandInformation.logoUrl ?? ImageURL}
+                  src={brandInformation.logoUrl || ImageURL}
                   alt="logo"
                   height="100"
                 />

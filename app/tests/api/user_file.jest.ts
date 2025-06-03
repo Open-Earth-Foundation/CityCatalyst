@@ -49,7 +49,6 @@ const fileData = {
   status: STATUS.INPROGRESS,
   data: {
     ...testFileFormat,
-    fileName: "test.csv",
     fileType: "csv",
   },
   subsectors: "test1, test2, test3",

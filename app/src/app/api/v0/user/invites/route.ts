@@ -156,9 +156,6 @@ export const POST = apiHandler(async (req, { params, session }) => {
     }
   }
 
-  // how can I ensure this is all happening within the context of an organization,
-  // only then can I brand the email.
-
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
     logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
@@ -227,7 +224,6 @@ export const POST = apiHandler(async (req, { params, session }) => {
           doesInvitedUserExist ? "true" : "false",
         );
         const url = `${host}/user/invites?${params.toString()}`;
-        console.log(emailBranding, "the branding");
         const html = await render(
           InviteUserToMultipleCitiesTemplate({
             url,

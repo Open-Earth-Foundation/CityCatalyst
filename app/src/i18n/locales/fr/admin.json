@@ -125,5 +125,14 @@
   "error-occurred": "Une erreur s'est produite, veuillez réessayer",
   "updating-status": "Téléchargement du statut de l'organisation",
   "freeze-account": "Geler le compte",
-  "unfreeze-account": "Débloquer le compte"
+  "unfreeze-account": "Débloquer le compte",
+  "bulk-data-download": "Téléchargement de données en vrac",
+  "bulk-data-download-caption": "Obtenez toutes les données d'émissions de toutes les villes incluses dans un projet donné. Selon le nombre de villes, votre fichier peut prendre quelques minutes à compléter.",
+  "download-csv": "Télécharger CSV",
+  "preparing-dataset": "Préparation de votre ensemble de données pour le téléchargement",
+  "wait-fetch-data": "Veuillez attendre pendant que nous récupérons vos données",
+  "download-complete": "Le téléchargement du rapport d'inventaire est terminé !",
+  "downloading-data": "Téléchargement de vos données",
+  "download-failed": "Échec du téléchargement",
+  "download-error": "Une erreur s'est produite pendant le téléchargement"
 }

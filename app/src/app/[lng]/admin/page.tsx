@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import { BsPlus } from "react-icons/bs";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import CreateOrganizationModal from "@/app/[lng]/admin/CreateOrganizationModal";
 import { api } from "@/services/api";
 import DataTable from "@/components/ui/data-table";
@@ -34,7 +34,8 @@ import {
 } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
-import BulkActionsTabContent from "./bulk-inventory-actions/BulkActionsTabContent";
+import BulkInventoryCreationTabContent from "./bulk-inventory-actions/BulkInventoryCreationTabContent";
+import BulkDownloadTabContent from "./bulk-inventory-actions/BulkDownloadTabContent";
 import { OrganizationRole } from "@/util/types";
 import { toaster } from "@/components/ui/toaster";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -473,6 +474,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
             >
               <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
                 <BulkActionsTabTrigger title="bulk-inventory-creation" />
+                <BulkActionsTabTrigger title="bulk-data-download" />
                 <BulkActionsTabTrigger title="bulk-data-connection" disabled />
                 <BulkActionsTabTrigger title="bulk-user-creation" disabled />
                 <BulkActionsTabTrigger
@@ -481,10 +483,11 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                 />
                 <Tabs.Indicator rounded="l2" />
               </Tabs.List>
-              <BulkActionsTabContent
+              <BulkInventoryCreationTabContent
                 t={t}
                 onTabReset={() => setBulkActionsTab("bulk-inventory-creation")}
               />
+              <BulkDownloadTabContent t={t} />
 
               {/* TODO add more actions */}
               <Tabs.Content value="bulk-data-connection">

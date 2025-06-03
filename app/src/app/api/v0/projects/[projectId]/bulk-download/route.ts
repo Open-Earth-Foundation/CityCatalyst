@@ -7,6 +7,7 @@ import CSVDownloadService from "@/backend/CSVDownloadService";
 import InventoryDownloadService from "@/backend/InventoryDownloadService";
 import { z } from "zod";
 import UserService from "@/backend/UserService";
+import createHttpError from "http-errors";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   const lng = req.nextUrl.searchParams.get("lng") || "en";
@@ -16,7 +17,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
     projectId = z.string().uuid().parse(params.projectId);
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
-    throw new Error(
+    throw new createHttpError.BadRequest(
       `Invalid project ID format: ${params.projectId}. ${message}`,
     );
   }

@@ -122,8 +122,8 @@ export default function SelectCityStep({
     return createListCollection({
       items:
         projectsList?.map((project) => ({
-          label: project.name,
-          value: project.projectId,
+          label: project?.name,
+          value: project?.projectId,
         })) ?? [],
     });
   }, [projectsList]);
@@ -330,8 +330,8 @@ export default function SelectCityStep({
                     </SelectTrigger>
                     <SelectContent portalled={false}>
                       {projectCollection?.items.map((project) => (
-                        <SelectItem key={project.value} item={project.value}>
-                          {project.label}
+                        <SelectItem key={project?.value} item={project?.value}>
+                          {project?.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -408,7 +408,7 @@ export default function SelectCityStep({
                               lineHeight="24"
                               letterSpacing="wide"
                             >
-                              {city.name}
+                              {city?.name}
                             </Text>
                             <Text
                               className="group-hover:text-[#E8EAFB]"

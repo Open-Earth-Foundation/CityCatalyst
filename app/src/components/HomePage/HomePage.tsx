@@ -24,10 +24,6 @@ import { YearSelectorCard } from "@/components/Cards/years-selection-card";
 import { Button } from "../ui/button";
 import { BsPlus } from "react-icons/bs";
 import Cookies from "js-cookie";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import CapTab from "@/app/[lng]/[inventory]/CapTab";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
@@ -141,11 +137,12 @@ export default function HomePage({
     }
   }, [isInventoryOrgDataLoading, inventoryOrgData]);
 
+  if (isInventoryLoading || isInventoryOrgDataLoading || isUserInfoLoading) {
+    return <ProgressLoader />;
+  }
+
   return (
     <>
-      {(isInventoryLoading ||
-        isInventoryOrgDataLoading ||
-        isUserInfoLoading) && <ProgressLoader />}
       {inventory === null && !isInventoryLoading && !isUserInfoLoading && (
         <>
           {isPublic ? (
@@ -156,7 +153,7 @@ export default function HomePage({
           <Footer lng={language} />
         </>
       )}
-      {inventory && !isInventoryLoading && !isUserInfoLoading && (
+      {inventory && (
         <>
           <Hero
             inventory={inventory}

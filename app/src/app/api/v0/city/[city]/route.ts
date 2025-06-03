@@ -50,12 +50,14 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
       });
 
     if (nextDefaultInventory.length > 0) {
-      const inventoryId = nextDefaultInventory[0].inventory_id;
+      const inventoryId = nextDefaultInventory[0].inventory_id ?? null;
 
       await User.update(
         { defaultInventoryId: inventoryId },
         { where: { userId } },
       );
+    } else {
+      await User.update({ defaultInventoryId: null }, { where: { userId } });
     }
   }
   await city.destroy();

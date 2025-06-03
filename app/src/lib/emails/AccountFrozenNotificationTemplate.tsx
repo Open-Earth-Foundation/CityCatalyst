@@ -12,19 +12,20 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
-import { Organization } from "@/models/Organization";
 import { User } from "@/models/User";
+import { Project } from "@/models/Project";
 
-export default function InviteToOrganizationTemplate({
+export default function AccountFrozenNotificationTemplate({
   url,
-  organization,
   user,
+  project,
+  organizationName,
 }: {
   url: string;
-  organization: Organization;
+  project: Project;
   user: User | null;
+  organizationName: string;
 }) {
-  const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
     <Html>
       <Head>
@@ -40,31 +41,21 @@ export default function InviteToOrganizationTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: Organization Invitation</Preview>
+      <Preview>CityCatalyst: Account Frozen</Preview>
       <Body style={main}>
         <Container style={container}>
           <Text style={brandHeading}>CityCatalyst</Text>
-          <Text style={heading}>Join Your Team In CityCatalyst</Text>
+          <Text style={headingGreen}> Your account has been Frozen</Text>
           <Text style={greeting}>Hi {user?.name},</Text>
           <Text style={paragraph}>
-            You are invited to join CityCatalyst and contribute to the emission
-            inventory for the organization:
+            Your account has been frozen. This means you and every other admin
+            and collaborator won’t be able to edit any projects or inventories
+            in your account.
           </Text>
-          <div style={organizationBox}>
-            <div>
-              <Text
-                style={{
-                  fontSize: "14px",
-                  fontStyle: "normal",
-                  fontWeight: "500",
-                  lineHeight: "20px",
-                  letterSpacing: "0.5px",
-                }}
-              >
-                {organization?.name}
-              </Text>
-            </div>
-          </div>
+          <Text style={paragraph}>
+            To activate your account, please reach out to{" "}
+            <span style={boldText}>info@openearth.com</span>
+          </Text>
           <div
             style={{
               marginTop: "36px",
@@ -72,7 +63,7 @@ export default function InviteToOrganizationTemplate({
             }}
           >
             <Link href={url} style={urlLink}>
-              JOIN NOW
+              Sign In
             </Link>
           </div>
 
@@ -116,6 +107,14 @@ const heading = {
   marginTop: "50px",
 };
 
+const headingGreen = {
+  fontSize: "24px",
+  lineHeight: "32px",
+  fontWeight: "700",
+  color: "#24BE00",
+  marginTop: "50px",
+};
+
 const greeting = {
   fontSize: "14px",
   lineHeight: "1.4",
@@ -125,7 +124,7 @@ const greeting = {
 const paragraph = {
   fontSize: "14px",
   lineHeight: "1.4",
-  color: "#484848",
+  color: "#4B4C63",
 };
 
 const urlLink = {
@@ -147,12 +146,6 @@ const footerText = {
   color: "#79797A",
 };
 
-const organizationBox = {
-  display: "flex",
-  padding: "16px",
-  alignItems: "center",
-  gap: "16px",
-  borderRadius: "8px",
-  border: "1px solid #E6E7FF",
-  margin: "32px",
+const boldText = {
+  fontWeight: "700",
 };

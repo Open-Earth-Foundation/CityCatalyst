@@ -10,6 +10,7 @@ import {
   Table,
   Tabs,
   Text,
+  Spinner,
 } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import { BsPlus } from "react-icons/bs";
@@ -24,7 +25,13 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
-import { MdForwardToInbox, MdMoreVert, MdOutlineGroup } from "react-icons/md";
+import {
+  MdForwardToInbox,
+  MdMoreVert,
+  MdOutlineGroup,
+  MdPauseCircleOutline,
+  MdPlayCircleOutline,
+} from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
 import BulkInventoryCreationTabContent from "./bulk-inventory-actions/BulkInventoryCreationTabContent";
@@ -39,7 +46,7 @@ interface OrgData {
   last_updated: string;
   name: string;
   organizationId: string;
-  status: "accepted" | "invite sent";
+  status: "accepted" | "invite sent" | "frozen";
 }
 
 const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
@@ -49,6 +56,30 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
     "bulk-inventory-creation",
   );
   const router = useRouter();
+
+  const renderStatusTag = (status: string) => {
+    if (status === "frozen") {
+      return (
+        <Tag size="lg" colorPalette="blue">
+          {t("frozen")}
+        </Tag>
+      );
+    }
+
+    if (status === "accepted") {
+      return (
+        <Tag size="lg" colorPalette="green">
+          {t("accepted")}
+        </Tag>
+      );
+    }
+
+    return (
+      <Tag size="lg" colorPalette="yellow">
+        {t("invite-sent")}
+      </Tag>
+    );
+  };
 
   const { data: organizationData, isLoading: isOrgDataLoading } =
     api.useGetOrganizationsQuery({});
@@ -70,6 +101,9 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
   };
   const [createOrganizationInvite, { isLoading: isInviteLoading }] =
     api.useCreateOrganizationInviteMutation();
+
+  const [updateOrganizationActiveStatus, { isLoading: isUpdatingStatus }] =
+    api.useUpdateOrganizationActiveStatusMutation();
 
   const handleReInvite = async (email: string, organizationId: string) => {
     toaster.create({
@@ -96,6 +130,26 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
         duration: 3000,
       });
     }
+  };
+
+  const handleChangeOrganizationStatus = async (
+    activeStatus: boolean,
+    organizationId: string,
+  ) => {
+    const updateStatusResponse = updateOrganizationActiveStatus({
+      activeStatus,
+      organizationId,
+    });
+
+    toaster.promise(updateStatusResponse, {
+      success: {
+        title: t("organization-status-updated"),
+      },
+      error: {
+        title: t("error-occurred"),
+      },
+      loading: { title: t("updating-status") },
+    });
   };
 
   const BulkActionsTabTrigger: FC<{ title: string; disabled?: boolean }> = ({
@@ -227,19 +281,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                     <Table.Row key={idx}>
                       <Table.Cell>{item.name}</Table.Cell>
                       <Table.Cell>{item.contactEmail}</Table.Cell>
-                      <Table.Cell>
-                        {" "}
-                        {item.status === "accepted" ? (
-                          <Tag size="lg" colorPalette="green">
-                            {" "}
-                            {t("accepted")}
-                          </Tag>
-                        ) : (
-                          <Tag size="lg" colorPalette="yellow">
-                            {t("invite-sent")}
-                          </Tag>
-                        )}{" "}
-                      </Table.Cell>
+                      <Table.Cell> {renderStatusTag(item.status)}</Table.Cell>
                       <Table.Cell>
                         <MenuRoot>
                           <MenuTrigger>
@@ -291,6 +333,75 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                                 {t("resend-invite")}
                               </Text>
                             </MenuItem>
+                            {item.status === "frozen" ? (
+                              <MenuItem
+                                value={t("unfreeze-account")}
+                                valueText={t("unfreeze-account")}
+                                p="16px"
+                                display="flex"
+                                alignItems="center"
+                                gap="16px"
+                                _hover={{
+                                  bg: "content.link",
+                                  cursor: "pointer",
+                                }}
+                                className="group"
+                                onClick={() => {
+                                  handleChangeOrganizationStatus(
+                                    true,
+                                    item.organizationId,
+                                  );
+                                }}
+                              >
+                                <Icon
+                                  className="group-hover:text-white"
+                                  color="interactive.control"
+                                  as={MdPlayCircleOutline}
+                                  h="24px"
+                                  w="24px"
+                                />
+                                <Text
+                                  className="group-hover:text-white"
+                                  color="content.primary"
+                                >
+                                  {t("unfreeze-account")}
+                                </Text>
+                              </MenuItem>
+                            ) : (
+                              <MenuItem
+                                value={t("account-details")}
+                                valueText={t("account-details")}
+                                p="16px"
+                                display="flex"
+                                alignItems="center"
+                                gap="16px"
+                                _hover={{
+                                  bg: "content.link",
+                                  cursor: "pointer",
+                                }}
+                                className="group"
+                                onClick={() => {
+                                  handleChangeOrganizationStatus(
+                                    false,
+                                    item.organizationId,
+                                  );
+                                }}
+                              >
+                                <Icon
+                                  className="group-hover:text-white"
+                                  color="interactive.control"
+                                  as={MdPauseCircleOutline}
+                                  h="24px"
+                                  w="24px"
+                                />
+                                <Text
+                                  className="group-hover:text-white"
+                                  color="content.primary"
+                                >
+                                  {t("freeze-account")}
+                                </Text>
+                              </MenuItem>
+                            )}
                             <MenuItem
                               value={t("account-details")}
                               valueText={t("account-details")}

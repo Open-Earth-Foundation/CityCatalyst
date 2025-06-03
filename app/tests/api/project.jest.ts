@@ -65,6 +65,7 @@ describe("Project API", () => {
     await db.initialize();
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
     organization = await db.models.Organization.create({
+      active: true,
       ...organizationData,
       organizationId: randomUUID(),
     });
@@ -75,6 +76,7 @@ describe("Project API", () => {
       where: { name: organizationData.name },
     });
     organization = await db.models.Organization.create({
+      active: true,
       ...organizationData,
       organizationId: randomUUID(),
     });

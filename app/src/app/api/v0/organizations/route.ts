@@ -11,6 +11,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   const orgData = createOrganizationRequest.parse(await req.json());
   const newOrg = await Organization.create({
     organizationId: randomUUID(),
+    active: true,
     ...orgData,
   });
   return NextResponse.json(newOrg, { status: 201 });

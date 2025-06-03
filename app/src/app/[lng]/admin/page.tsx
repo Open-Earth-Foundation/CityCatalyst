@@ -31,6 +31,7 @@ import BulkInventoryCreationTabContent from "./bulk-inventory-actions/BulkInvent
 import { OrganizationRole } from "@/util/types";
 import { toaster } from "@/components/ui/toaster";
 import ProgressLoader from "@/components/ProgressLoader";
+import BulkDownloadTabContent from "./bulk-inventory-actions/BulkDownloadTabContent";
 
 interface OrgData {
   contactEmail: string;
@@ -362,7 +363,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
             >
               <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
                 <BulkActionsTabTrigger title="bulk-inventory-creation" />
-                <BulkActionsTabTrigger title="bulk-inventory-download" />
+                <BulkActionsTabTrigger title="bulk-data-download" />
                 <BulkActionsTabTrigger title="bulk-data-connection" disabled />
                 <BulkActionsTabTrigger title="bulk-user-creation" disabled />
                 <BulkActionsTabTrigger
@@ -374,6 +375,10 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
               <BulkInventoryCreationTabContent
                 t={t}
                 onTabReset={() => setBulkActionsTab("bulk-inventory-creation")}
+              />
+              <BulkDownloadTabContent
+                t={t}
+                onTabReset={() => setBulkActionsTab("bulk-data-download")}
               />
 
               {/* TODO add more actions */}

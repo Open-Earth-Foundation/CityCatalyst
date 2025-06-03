@@ -120,5 +120,10 @@
   "cities": "Ciudades",
   "save-changes": "Guardar Cambios",
   "no-cities": "Sin ciudades",
-  "no-cities-available": "No hay ciudades disponibles"
+  "no-cities-available": "No hay ciudades disponibles",
+  "organization-status-updated": "El estado de la organización se actualizó con éxito.",
+  "error-occurred": "Ocurrió un error, por favor intenta de nuevo",
+  "updating-status": "Subiendo el estado de la organización",
+  "freeze-account": "Congelar cuenta",
+  "unfreeze-account": "Descongelar cuenta"
 }

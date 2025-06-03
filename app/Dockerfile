@@ -18,6 +18,8 @@ RUN npm ci --only=production
 COPY --from=build /app/.next ./.next
 COPY --from=build /app/public ./public
 COPY --from=build /app/scripts ./scripts
+COPY --from=build /app/seeders ./seeders
+COPY --from=build /app/migrations ./migrations
 
 # Expose port
 EXPOSE 3000

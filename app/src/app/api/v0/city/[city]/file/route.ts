@@ -51,7 +51,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
       file: {
         fileName: file.name,
         size: file.size,
-        fileType: userFile.fileType,
+        fileType: userFile.fileType === "blob" ? "csv" : userFile.fileType,
       },
     };
   });

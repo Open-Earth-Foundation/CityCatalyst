@@ -87,7 +87,7 @@ export default function OnboardingSetup({
 
   useEffect(() => {
     if (projectsList && projectsList.length > 0) {
-      setSelectedProject([projectsList[0].projectId]);
+      setSelectedProject([projectsList[0]?.projectId]);
     }
   }, [projectsList]);
 

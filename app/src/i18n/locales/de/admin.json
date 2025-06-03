@@ -125,5 +125,14 @@
   "error-occurred": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut",
   "updating-status": "Hochladen des Organisationsstatus",
   "freeze-account": "Konto einfrieren",
-  "unfreeze-account": "Konto entsperren"
+  "unfreeze-account": "Konto entsperren",
+  "bulk-data-download": "Massendatendownload",
+  "bulk-data-download-caption": "Laden Sie alle Emissionsdaten von allen Städten herunter, die in einem bestimmten Projekt enthalten sind. Abhängig von der Anzahl der Städte kann die Erstellung Ihrer Datei einige Minuten dauern.",
+  "download-csv": "CSV herunterladen",
+  "preparing-dataset": "Vorbereitung Ihres Datensatzes zum Herunterladen",
+  "wait-fetch-data": "Bitte warten Sie, während wir Ihre Daten abrufen",
+  "download-complete": "Inventarbericht Download abgeschlossen!",
+  "downloading-data": "Ihre Daten herunterladen",
+  "download-failed": "Download fehlgeschlagen",
+  "download-error": "Es gab einen Fehler beim Herunterladen"
 }

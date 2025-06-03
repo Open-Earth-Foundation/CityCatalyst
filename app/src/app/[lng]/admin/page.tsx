@@ -3,28 +3,20 @@
 import {
   Box,
   Button,
-  Checkbox,
-  Field,
-  Fieldset,
   Heading,
-  HStack,
   Icon,
   IconButton,
-  Input,
   Link,
   Table,
   Tabs,
   Text,
+  Spinner,
 } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import { BsPlus } from "react-icons/bs";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import CreateOrganizationModal from "@/app/[lng]/admin/CreateOrganizationModal";
 import { api } from "@/services/api";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import DataTable from "@/components/ui/data-table";
 import { Tag } from "@/components/ui/tag";
 import {
@@ -35,19 +27,15 @@ import {
 } from "@/components/ui/menu";
 import {
   MdForwardToInbox,
-  MdInfoOutline,
   MdMoreVert,
   MdOutlineGroup,
-  MdWarning,
+  MdPauseCircleOutline,
+  MdPlayCircleOutline,
 } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { Trans } from "react-i18next";
-import { Controller, useForm } from "react-hook-form";
-import { RadioGroup } from "@/components/ui/radio";
-import CustomSelectableButton from "@/components/custom-selectable-buttons";
-import CommaSeperatedInput from "./bulk-inventory-actions/CommaSeperatedInput";
 import { Toaster } from "@/components/ui/toaster";
-import BulkActionsTabContent from "./bulk-inventory-actions/BulkActionsTabContent";
+import BulkInventoryCreationTabContent from "./bulk-inventory-actions/BulkInventoryCreationTabContent";
+import BulkDownloadTabContent from "./bulk-inventory-actions/BulkDownloadTabContent";
 import { OrganizationRole } from "@/util/types";
 import { toaster } from "@/components/ui/toaster";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -58,7 +46,7 @@ interface OrgData {
   last_updated: string;
   name: string;
   organizationId: string;
-  status: "accepted" | "invite sent";
+  status: "accepted" | "invite sent" | "frozen";
 }
 
 const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
@@ -68,6 +56,30 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
     "bulk-inventory-creation",
   );
   const router = useRouter();
+
+  const renderStatusTag = (status: string) => {
+    if (status === "frozen") {
+      return (
+        <Tag size="lg" colorPalette="blue">
+          {t("frozen")}
+        </Tag>
+      );
+    }
+
+    if (status === "accepted") {
+      return (
+        <Tag size="lg" colorPalette="green">
+          {t("accepted")}
+        </Tag>
+      );
+    }
+
+    return (
+      <Tag size="lg" colorPalette="yellow">
+        {t("invite-sent")}
+      </Tag>
+    );
+  };
 
   const { data: organizationData, isLoading: isOrgDataLoading } =
     api.useGetOrganizationsQuery({});
@@ -89,6 +101,9 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
   };
   const [createOrganizationInvite, { isLoading: isInviteLoading }] =
     api.useCreateOrganizationInviteMutation();
+
+  const [updateOrganizationActiveStatus, { isLoading: isUpdatingStatus }] =
+    api.useUpdateOrganizationActiveStatusMutation();
 
   const handleReInvite = async (email: string, organizationId: string) => {
     toaster.create({
@@ -115,6 +130,26 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
         duration: 3000,
       });
     }
+  };
+
+  const handleChangeOrganizationStatus = async (
+    activeStatus: boolean,
+    organizationId: string,
+  ) => {
+    const updateStatusResponse = updateOrganizationActiveStatus({
+      activeStatus,
+      organizationId,
+    });
+
+    toaster.promise(updateStatusResponse, {
+      success: {
+        title: t("organization-status-updated"),
+      },
+      error: {
+        title: t("error-occurred"),
+      },
+      loading: { title: t("updating-status") },
+    });
   };
 
   const BulkActionsTabTrigger: FC<{ title: string; disabled?: boolean }> = ({
@@ -246,19 +281,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                     <Table.Row key={idx}>
                       <Table.Cell>{item.name}</Table.Cell>
                       <Table.Cell>{item.contactEmail}</Table.Cell>
-                      <Table.Cell>
-                        {" "}
-                        {item.status === "accepted" ? (
-                          <Tag size="lg" colorPalette="green">
-                            {" "}
-                            {t("accepted")}
-                          </Tag>
-                        ) : (
-                          <Tag size="lg" colorPalette="yellow">
-                            {t("invite-sent")}
-                          </Tag>
-                        )}{" "}
-                      </Table.Cell>
+                      <Table.Cell> {renderStatusTag(item.status)}</Table.Cell>
                       <Table.Cell>
                         <MenuRoot>
                           <MenuTrigger>
@@ -310,6 +333,75 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                                 {t("resend-invite")}
                               </Text>
                             </MenuItem>
+                            {item.status === "frozen" ? (
+                              <MenuItem
+                                value={t("unfreeze-account")}
+                                valueText={t("unfreeze-account")}
+                                p="16px"
+                                display="flex"
+                                alignItems="center"
+                                gap="16px"
+                                _hover={{
+                                  bg: "content.link",
+                                  cursor: "pointer",
+                                }}
+                                className="group"
+                                onClick={() => {
+                                  handleChangeOrganizationStatus(
+                                    true,
+                                    item.organizationId,
+                                  );
+                                }}
+                              >
+                                <Icon
+                                  className="group-hover:text-white"
+                                  color="interactive.control"
+                                  as={MdPlayCircleOutline}
+                                  h="24px"
+                                  w="24px"
+                                />
+                                <Text
+                                  className="group-hover:text-white"
+                                  color="content.primary"
+                                >
+                                  {t("unfreeze-account")}
+                                </Text>
+                              </MenuItem>
+                            ) : (
+                              <MenuItem
+                                value={t("account-details")}
+                                valueText={t("account-details")}
+                                p="16px"
+                                display="flex"
+                                alignItems="center"
+                                gap="16px"
+                                _hover={{
+                                  bg: "content.link",
+                                  cursor: "pointer",
+                                }}
+                                className="group"
+                                onClick={() => {
+                                  handleChangeOrganizationStatus(
+                                    false,
+                                    item.organizationId,
+                                  );
+                                }}
+                              >
+                                <Icon
+                                  className="group-hover:text-white"
+                                  color="interactive.control"
+                                  as={MdPauseCircleOutline}
+                                  h="24px"
+                                  w="24px"
+                                />
+                                <Text
+                                  className="group-hover:text-white"
+                                  color="content.primary"
+                                >
+                                  {t("freeze-account")}
+                                </Text>
+                              </MenuItem>
+                            )}
                             <MenuItem
                               value={t("account-details")}
                               valueText={t("account-details")}
@@ -382,6 +474,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
             >
               <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
                 <BulkActionsTabTrigger title="bulk-inventory-creation" />
+                <BulkActionsTabTrigger title="bulk-data-download" />
                 <BulkActionsTabTrigger title="bulk-data-connection" disabled />
                 <BulkActionsTabTrigger title="bulk-user-creation" disabled />
                 <BulkActionsTabTrigger
@@ -390,10 +483,11 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                 />
                 <Tabs.Indicator rounded="l2" />
               </Tabs.List>
-              <BulkActionsTabContent
+              <BulkInventoryCreationTabContent
                 t={t}
                 onTabReset={() => setBulkActionsTab("bulk-inventory-creation")}
               />
+              <BulkDownloadTabContent t={t} />
 
               {/* TODO add more actions */}
               <Tabs.Content value="bulk-data-connection">

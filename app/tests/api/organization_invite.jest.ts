@@ -62,6 +62,7 @@ describe("Organization Invitations API", () => {
     });
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
     organization = await db.models.Organization.create({
+      active: true,
       ...organizationData,
       organizationId: inviteData.organizationId,
     });

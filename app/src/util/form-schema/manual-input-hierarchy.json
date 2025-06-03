@@ -4035,6 +4035,8 @@
               },
               {
                 "id": "methane-commitment-solid-waste-inboundary-waste-composition",
+                "info-text": "waste-composition-info",
+                "default-composition-available": true,
                 "type": "percentage-breakdown",
                 "total-required": 100,
                 "subtypes": [
@@ -4152,6 +4154,7 @@
               {
                 "id": "methane-commitment-solid-waste-outboundary-waste-composition",
                 "type": "percentage-breakdown",
+                "default-composition-available": true,
                 "total-required": 100,
                 "subtypes": [
                   "waste-composition-food",
@@ -4159,7 +4162,13 @@
                   "waste-composition-paper",
                   "waste-composition-wood",
                   "waste-composition-textiles",
-                  "waste-composition-industrial"
+                  "waste-composition-industrial",
+                  "waste-composition-leather",
+                  "waste-composition-plastics",
+                  "waste-composition-metal",
+                  "waste-composition-glass",
+                  "waste-composition-nappies",
+                  "waste-composition-other"
                 ],
                 "required": false
               }

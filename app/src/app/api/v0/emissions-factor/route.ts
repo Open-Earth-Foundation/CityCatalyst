@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Op } from "sequelize";
 import { fetchEmissionsFactorRequest } from "@/util/validation";
 import { logger } from "@/services/logger";
+
 const filterMappings: Record<string, any> = {
   "fuel-type-wood/wood-waste": "fuel-type-wood-wood-waste",
 };
@@ -24,6 +25,12 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
       "Cannot have both inventoryID and regionLocode as part of request params",
     );
   }
+
+  let city_name = null;
+  let region_name = null;
+  let region_locode = null;
+  let country = null;
+  let countryLocode = null;
 
   let parsedLocode = null;
 
@@ -45,11 +52,14 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
         },
       ],
     });
-    parsedLocode = city?.countryLocode;
+    city_name = city?.name;
+    region_name = city?.region;
+    region_locode = city?.regionLocode;
+    country = city?.country;
+    countryLocode = city?.countryLocode;
   }
 
   // use units from the emission factors first
-  // if custom
 
   let whereClause: { [k: string]: any } = {};
   // don't return emissions factors from specific inventories
@@ -104,16 +114,62 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
       whereClause.methodologyName = "energy-consumption";
   }
 
-  const emissionsFactors = await db.models.EmissionsFactor.findAll({ 
+  // Unified priority list (order matters)
+  const priorityArray: string[] = [];
+
+  if (region_name) priorityArray.push(region_name);
+  if (region_locode) priorityArray.push(region_locode);
+  if (city_name) priorityArray.push(city_name);
+  if (country) priorityArray.push(country);
+  if (countryLocode) priorityArray.push(countryLocode);
+  priorityArray.push("world"); // fallback for region
+
+  whereClause = {
+    ...whereClause,
+    [Op.or]: [
+      { region: { [Op.in]: priorityArray } },
+      { actorId: { [Op.in]: priorityArray } },
+    ],
+  };
+
+  const caseStatements = priorityArray
+    .map((value, index) => {
+      const rank = index + 1;
+      const escapedValue = db.sequelize!.escape(value);
+      return `
+        WHEN "EmissionsFactor"."region" = ${escapedValue} THEN ${rank}
+        WHEN "EmissionsFactor"."actor_id" = ${escapedValue} THEN ${rank}
+      `;
+    })
+    .join("\n");
+
+  const emissionsFactors = await db.models.EmissionsFactor.findAll({
     where: whereClause,
     include: [{ model: db.models.DataSource, as: "dataSources" }],
+    order: [
+      [
+        db.sequelize!.literal(`
+        CASE
+          ${caseStatements}
+          ELSE ${priorityArray.length + 1}
+        END
+      `),
+        "ASC",
+      ],
+    ],
   });
 
-  logger.info("actor Id used to filter emissionsFactors ", parsedLocode);
+  // const emissionsFactors = await db.models.EmissionsFactor.findAll({
+  //   where: whereClause,
+  //   include: [{ model: db.models.DataSource, as: "dataSources" }],
+  // });
 
-  let output = emissionsFactors.filter(({ actorId }) =>
-    ["world", parsedLocode].includes(actorId as string),
+  logger.info(
+    { locode: parsedLocode },
+    "actor Id used to filter emissionsFactors ",
   );
+
+  let output = emissionsFactors;
 
   return NextResponse.json({ data: output });
 });

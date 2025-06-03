@@ -17,7 +17,7 @@ export interface UserAttributes {
   role?: Roles;
   created?: Date;
   lastUpdated?: Date;
-  defaultInventoryId?: string;
+  defaultInventoryId?: string | null;
   // Professional title or position of the user within their organization
   title?: string;
 }
@@ -41,7 +41,8 @@ export type UserCreationAttributes = Optional<
 
 export class User
   extends Model<UserAttributes, UserCreationAttributes>
-  implements Partial<UserAttributes> {
+  implements Partial<UserAttributes>
+{
   userId!: string;
   name?: string;
   pictureUrl?: string;

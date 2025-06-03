@@ -1,5 +1,6 @@
 import { Field as ChakraField } from "@chakra-ui/react";
 import * as React from "react";
+import { InfoTip } from "@/components/ui/tooltips";
 
 export interface FieldProps extends Omit<ChakraField.RootProps, "label"> {
   label?: React.ReactNode;
@@ -8,12 +9,14 @@ export interface FieldProps extends Omit<ChakraField.RootProps, "label"> {
   optionalText?: React.ReactNode;
   labelColor?: string;
   labelClassName?: string;
+  labelInfo?: string;
 }
 
 export const Field = React.forwardRef<HTMLDivElement, FieldProps>(
   function Field(props, ref) {
     const {
       label,
+      labelInfo,
       children,
       helperText,
       errorText,
@@ -27,6 +30,7 @@ export const Field = React.forwardRef<HTMLDivElement, FieldProps>(
         {label && (
           <ChakraField.Label className={labelClassName} color={labelColor}>
             {label}
+            {labelInfo && <InfoTip content={labelInfo} />}
             <ChakraField.RequiredIndicator fallback={optionalText} />
           </ChakraField.Label>
         )}

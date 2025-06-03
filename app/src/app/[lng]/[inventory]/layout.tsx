@@ -24,10 +24,15 @@ export default function DataLayout({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
-  const inventoryId = userInfo?.defaultInventoryId || inventory;
+  let inventoryId: string | null;
+  if (inventory && inventory !== "null") {
+    inventoryId = inventory;
+  } else {
+    inventoryId = userInfo?.defaultInventoryId ?? null;
+  }
 
   const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
-    useGetOrganizationForInventoryQuery(inventoryId, {
+    useGetOrganizationForInventoryQuery(inventoryId!, {
       skip: !inventoryId,
     });
 

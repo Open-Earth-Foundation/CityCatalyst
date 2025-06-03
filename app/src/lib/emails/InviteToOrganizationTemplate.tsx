@@ -43,7 +43,6 @@ export default function InviteToOrganizationTemplate({
       <Preview>CityCatalyst: Organization Invitation</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Img src={ImageURL} alt="City Catalyst logo" width="36" height="36" />
           <Text style={brandHeading}>CityCatalyst</Text>
           <Text style={heading}>Join Your Team In CityCatalyst</Text>
           <Text style={greeting}>Hi {user?.name},</Text>
@@ -97,8 +96,9 @@ const main = {
 
 const container = {
   margin: "0 auto",
-  padding: "20px 0 48px",
+  padding: "20px 48px 48px",
   width: "580px",
+  borderTop: "2px solid #2351DC",
 };
 
 const brandHeading = {
@@ -136,6 +136,8 @@ const urlLink = {
   lineHeight: 1.5,
   color: "#FFF",
   display: "inline-block",
+  paddingLeft: "36px",
+  paddingRight: "36px",
 };
 
 const footerText = {

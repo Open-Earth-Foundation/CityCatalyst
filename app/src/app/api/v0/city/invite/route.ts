@@ -9,6 +9,7 @@ import { sendEmail } from "@/lib/email";
 import { render } from "@react-email/components";
 import InviteUserTemplate from "@/lib/emails/InviteUserTemplate";
 import UserService from "@/backend/UserService";
+import { logger } from "@/services/logger";
 
 export const POST = apiHandler(async (req, { params, session }) => {
   if (!session) {
@@ -21,6 +22,18 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
   const cityData = await db.models.City.findOne({
     where: { cityId: city.cityId },
+    include: [
+      {
+        model: db.models.Project,
+        as: "project",
+        include: [
+          {
+            model: db.models.Organization,
+            as: "organization",
+          },
+        ],
+      },
+    ],
   });
 
   if (!cityData) {
@@ -28,7 +41,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   }
 
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
-    console.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
+    logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
 

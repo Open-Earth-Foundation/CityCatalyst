@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import Select, { components, MultiValueProps, OptionProps } from "react-select";
+import React from "react";
+import { Select, MultiValueProps, OptionProps } from "chakra-react-select";
 import { Box, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 
 import { Control, Controller } from "react-hook-form";
-import { Inputs } from "@/components/Modals/activity-modal/activity-modal-body";
 import { CloseButton } from "./ui/close-button";
 import { Checkbox } from "./ui/checkbox";
 import { MdWarning } from "react-icons/md";

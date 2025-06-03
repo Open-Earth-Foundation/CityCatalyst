@@ -7,6 +7,7 @@ import {
   CredentialsConfig,
 } from "next-auth/providers/credentials";
 import { Roles } from "@/util/types";
+import { logger } from "@/services/logger";
 
 // extracted from next-auth/providers/credentials
 // added here since the node test runner/ tsx wouldn't properly import ESM modules
@@ -75,12 +76,12 @@ export const authOptions: NextAuthOptions = {
             where: { email: credentials.email },
           });
         } catch (err: any) {
-          console.error("Failed to login:", err);
+          logger.error({ err: err }, "Failed to login:");
           return null;
         }
 
         if (!user || !user.passwordHash) {
-          console.error("No user found!");
+          logger.error("No user found!");
           return null;
         }
 
@@ -89,7 +90,7 @@ export const authOptions: NextAuthOptions = {
           user.passwordHash,
         );
         if (!isValid) {
-          console.error("Invalid password!");
+          logger.error("Invalid password!");
           return null;
         }
         return {

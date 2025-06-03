@@ -316,3 +316,7 @@ export const whiteLabelSchema = z.object({
   logoUrl: z.string().optional(),
   clearLogoUrl: z.string().optional(),
 });
+
+export const organizationActiveStateSchema = z.object({
+  active: z.boolean()
+})

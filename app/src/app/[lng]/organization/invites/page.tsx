@@ -13,7 +13,7 @@ import ProgressLoader from "@/components/ProgressLoader";
 
 const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
   const searchParams = useSearchParams();
-  console.log(searchParams.get("email"));
+  logger.info(searchParams.get("email"));
   const { t } = useTranslation(lng, "auth");
   const { showSuccessToast } = UseSuccessToast({
     title: t("invite-accepted"),

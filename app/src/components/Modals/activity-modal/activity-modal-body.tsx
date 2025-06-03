@@ -1,7 +1,6 @@
 import {
   Box,
   Grid,
-  Group,
   Heading,
   HStack,
   Icon,
@@ -63,6 +62,7 @@ interface AddActivityModalBodyProps {
   getValues: UseFormGetValues<Inputs>;
   title: string; // Title of the field
   areEmissionFactorsLoading: boolean;
+  inventoryId?: string;
 }
 
 export type Inputs = {
@@ -82,6 +82,7 @@ export type Inputs = {
     co2EmissionFactorUnit: string;
     n2oEmissionFactorUnit: string;
     ch4EmissionFactorUnit: string;
+    wasteCompositionType?: string;
   };
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
@@ -106,6 +107,7 @@ const ActivityModalBody = ({
   setValue,
   getValues,
   areEmissionFactorsLoading,
+  inventoryId,
 }: AddActivityModalBodyProps) => {
   const unitValue = useWatch({
     control,
@@ -251,6 +253,8 @@ const ActivityModalBody = ({
                   <PercentageBreakdownInput
                     id={f.id}
                     label={t(f.id)}
+                    tooltipInfo={t(f["info-text"] as string)}
+                    defaultMode={f["default-composition-available"]}
                     register={register}
                     getValues={getValues}
                     control={control}
@@ -260,6 +264,8 @@ const ActivityModalBody = ({
                     breakdownCategories={f.subtypes as string[]}
                     error={errors?.activity?.[f.id]}
                     t={t}
+                    inventoryId={inventoryId}
+                    methodologyName={methodology.id}
                   />
                 )}
                 {f.type === "text" && (
@@ -308,7 +314,6 @@ const ActivityModalBody = ({
                           {" "}
                           {errors?.activity?.[f.id]?.message}{" "}
                         </Text>
-                        {/* use ii8n */}
                       </Box>
                     ) : (
                       ""
@@ -316,8 +321,8 @@ const ActivityModalBody = ({
                   </Field>
                 )}
                 {f.type === "number" && (
-                  <>
-                    <Field className="w-full" label={t(f.id)}>
+                  <Field className="w-full" label={t(f.id)}>
+                    <HStack>
                       <FormattedNumberInput
                         placeholder={t("activity-data-amount-placeholder")}
                         max={f.max!}
@@ -329,87 +334,111 @@ const ActivityModalBody = ({
                         name={`activity.${f.id}`}
                         t={t}
                         w="full"
-                      >
-                        {f.units && (
-                          <Controller
-                            control={control}
-                            name={`activity.${f.id}-unit` as any}
-                            defaultValue=""
-                            rules={{
-                              required:
-                                f.required === false
-                                  ? false
-                                  : t("option-required"),
-                            }}
-                            render={({ field }) => {
-                              return (
-                                <NativeSelectRoot
-                                  variant="subtle"
-                                  {...field}
-                                  onChange={(e: any) => {
-                                    field.onChange(e.currentTarget.value);
-                                    setValue(
-                                      `activity.${f.id}-unit` as any,
-                                      e.target.value,
-                                    );
-                                  }}
+                      />
+
+                      {f.units && (
+                        <Controller
+                          control={control}
+                          name={`activity.${f.id}-unit` as any}
+                          defaultValue=""
+                          rules={{
+                            required:
+                              f.required === false
+                                ? false
+                                : t("option-required"),
+                          }}
+                          render={({ field }) => {
+                            return (
+                              <NativeSelectRoot
+                                borderRadius="4px"
+                                borderWidth={
+                                  errors?.activity?.[`${title}-unit`]
+                                    ? "1px"
+                                    : 0
+                                }
+                                border="inputBox"
+                                h="42px"
+                                shadow="1dp"
+                                borderColor={
+                                  errors?.activity?.[`${title}-unit`]
+                                    ? "sentiment.negativeDefault"
+                                    : ""
+                                }
+                                background={
+                                  errors?.activity?.[`${title}-unit`]
+                                    ? "sentiment.negativeOverlay"
+                                    : ""
+                                }
+                                _focus={{
+                                  borderWidth: "1px",
+                                  shadow: "none",
+                                  borderColor: "content.link",
+                                }}
+                                bgColor="base.light"
+                                {...field}
+                                onChange={(e: any) => {
+                                  field.onChange(e.currentTarget.value);
+                                  setValue(
+                                    `activity.${f.id}-unit` as any,
+                                    e.target.value,
+                                  );
+                                }}
+                              >
+                                <NativeSelectField
+                                  value={field.value}
+                                  placeholder={t("select-unit")}
                                 >
-                                  <NativeSelectField
-                                    value={field.value}
-                                    placeholder={t("select-unit")}
-                                  >
-                                    {f.units?.map((item: string) => (
-                                      <option key={item} value={item}>
-                                        {t(item)}
-                                      </option>
-                                    ))}
-                                  </NativeSelectField>
-                                </NativeSelectRoot>
-                              );
-                            }}
-                          />
-                        )}
-                      </FormattedNumberInput>
-                      {(errors?.activity?.[f.id] as any) ? (
-                        <Box
-                          display="flex"
-                          gap="6px"
-                          alignItems="center"
-                          mt="6px"
-                        >
-                          <Icon
-                            as={MdWarning}
-                            color="sentiment.negativeDefault"
-                          />
-                          <Text fontSize="body.md">
-                            {errors?.activity?.[f.id]?.message}{" "}
-                          </Text>
-                        </Box>
-                      ) : (
-                        ""
+                                  {f.units?.map((item: string) => (
+                                    <option key={item} value={item}>
+                                      {t(item)}
+                                    </option>
+                                  ))}
+                                </NativeSelectField>
+                              </NativeSelectRoot>
+                            );
+                          }}
+                        />
                       )}
-                      {(errors?.activity?.[`${f.id}-unit`] as any) &&
-                      !errors?.activity?.[`${f.id}`] ? (
-                        <Box
-                          display="flex"
-                          gap="6px"
-                          alignItems="center"
-                          mt="6px"
-                        >
-                          <Icon
-                            as={MdWarning}
-                            color="sentiment.negativeDefault"
-                          />
-                          <Text fontSize="body.md">
-                            {" "}
-                            {errors?.activity?.[`${f.id}-unit`]?.message}{" "}
-                          </Text>
-                        </Box>
-                      ) : (
-                        ""
-                      )}
-                    </Field>
-                  </>
+                    </HStack>
+                    {(errors?.activity?.[f.id] as any) ? (
+                      <Box
+                        display="flex"
+                        gap="6px"
+                        alignItems="center"
+                        mt="6px"
+                      >
+                        <Icon
+                          as={MdWarning}
+                          color="sentiment.negativeDefault"
+                        />
+                        <Text fontSize="body.md">
+                          {errors?.activity?.[f.id]?.message}{" "}
+                        </Text>
+                      </Box>
+                    ) : (
+                      ""
+                    )}
+                    {(errors?.activity?.[`${f.id}-unit`] as any) &&
+                    !errors?.activity?.[`${f.id}`] ? (
+                      <Box
+                        display="flex"
+                        gap="6px"
+                        alignItems="center"
+                        mt="6px"
+                      >
+                        <Icon
+                          as={MdWarning}
+                          color="sentiment.negativeDefault"
+                        />
+                        <Text fontSize="body.md">
+                          {" "}
+                          {errors?.activity?.[`${f.id}-unit`]?.message}{" "}
+                        </Text>
+                      </Box>
+                    ) : (
+                      ""
+                    )}
+                  </Field>
                 )}
                 {f.dependsOn && (
                   <Field className="w-full" label={t(f.id)}>
@@ -439,48 +468,69 @@ const ActivityModalBody = ({
                 invalid={!!resolve(prefix + "activityDataAmount", errors)}
                 label={<Text className="truncate">{t(title)}</Text>}
               >
-                <Group>
+                <HStack>
                   <FormattedNumberInput
                     control={control}
                     name={`activity.${title}`}
                     defaultValue="0"
                     t={t}
                     miniAddon
-                  >
-                    {(units?.length as number) > 0 && (
-                      <Controller
-                        rules={{ required: t("option-required") }}
-                        defaultValue=""
-                        control={control}
-                        name={`activity.${title}-unit` as any}
-                        render={({ field }) => (
-                          <NativeSelectRoot
-                            variant="subtle"
-                            {...field}
-                            onChange={(e: any) => {
-                              field.onChange(e.target.value);
-                              setValue(
-                                `activity.${title}-unit` as any,
-                                e.target.value,
-                              );
-                            }}
+                  />
+                  {(units?.length as number) > 0 && (
+                    <Controller
+                      rules={{ required: t("option-required") }}
+                      defaultValue=""
+                      control={control}
+                      name={`activity.${title}-unit` as any}
+                      render={({ field }) => (
+                        <NativeSelectRoot
+                          {...field}
+                          borderRadius="4px"
+                          borderWidth={
+                            errors?.activity?.[`${title}-unit`] ? "1px" : 0
+                          }
+                          border="inputBox"
+                          h="42px"
+                          shadow="1dp"
+                          borderColor={
+                            errors?.activity?.[`${title}-unit`]
+                              ? "sentiment.negativeDefault"
+                              : ""
+                          }
+                          background={
+                            errors?.activity?.[`${title}-unit`]
+                              ? "sentiment.negativeOverlay"
+                              : ""
+                          }
+                          _focus={{
+                            borderWidth: "1px",
+                            shadow: "none",
+                            borderColor: "content.link",
+                          }}
+                          bgColor="base.light"
+                          onChange={(e: any) => {
+                            field.onChange(e.target.value);
+                            setValue(
+                              `activity.${title}-unit` as any,
+                              e.target.value,
+                            );
+                          }}
+                        >
+                          <NativeSelectField
+                            placeholder={t("select-unit")}
+                            value={field.value}
                           >
-                            <NativeSelectField
-                              placeholder={t("select-unit")}
-                              value={field.value}
-                            >
-                              {units?.map((item: string) => (
-                                <option key={item} value={item}>
-                                  {t(item)}
-                                </option>
-                              ))}
-                            </NativeSelectField>
-                          </NativeSelectRoot>
-                        )}
-                      />
-                    )}
-                  </FormattedNumberInput>
-                </Group>
+                            {units?.map((item: string) => (
+                              <option key={item} value={item}>
+                                {t(item)}
+                              </option>
+                            ))}
+                          </NativeSelectField>
+                        </NativeSelectRoot>
+                      )}
+                    />
+                  )}
+                </HStack>
 
                 {(errors?.activity?.[title] as any) ? (
                   <Box display="flex" gap="6px" alignItems="center" mt="6px">
@@ -504,6 +554,7 @@ const ActivityModalBody = ({
                   ""
                 )}
               </Field>
+
               {!hideEmissionFactors && (
                 <Field
                   label={t("emission-factor-type")}

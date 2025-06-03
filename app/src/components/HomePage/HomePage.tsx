@@ -25,10 +25,6 @@ import { YearSelectorCard } from "@/components/Cards/years-selection-card";
 import { Button } from "../ui/button";
 import { BsPlus } from "react-icons/bs";
 import Cookies from "js-cookie";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import CapTab from "@/app/[lng]/[inventory]/CapTab";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
@@ -55,13 +51,30 @@ export default function HomePage({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
-  const inventoryIdFromParam =
-    inventoryId || inventoryParam || userInfo?.defaultInventoryId;
+  // make sure that the inventory ID is using valid values
+  let inventoryIdFromParam: string | undefined;
+  if (inventoryId && inventoryId != "null") {
+    inventoryIdFromParam = inventoryId;
+  } else if (inventoryParam && inventoryParam != "null") {
+    if (typeof inventoryParam !== "string") {
+      inventoryIdFromParam = inventoryParam[0];
+    } else {
+      inventoryIdFromParam = inventoryParam;
+    }
+  } else {
+    inventoryIdFromParam = userInfo?.defaultInventoryId ?? undefined;
+  }
 
-  const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery((inventoryIdFromParam as string) || "default");
+  const {
+    data: inventory,
+    isLoading: isInventoryLoading,
+    error: inventoryError,
+  } = api.useGetInventoryQuery(inventoryIdFromParam ?? "default");
 
   useEffect(() => {
+    if (inventoryError) {
+      setTimeout(() => router.push("/onboarding"), 0);
+    }
     if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
         // fix inventoryId in URL without reloading page
@@ -77,20 +90,24 @@ export default function HomePage({
         }
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
-
-        setTimeout(() => router.push(`/onboarding`), 0);
+        setTimeout(() => router.push("/onboarding"), 0);
       }
     }
-  }, [isInventoryLoading, inventory, inventoryIdFromParam, language, router]);
+  }, [
+    isInventoryLoading,
+    inventory,
+    inventoryIdFromParam,
+    language,
+    router,
+    inventoryError,
+  ]);
 
   // query API data
   // TODO maybe rework this logic into one RTK query:
   // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#performing-multiple-requests-with-a-single-query
 
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
-    api.useGetInventoryProgressQuery(
-      (inventoryIdFromParam as string) || "default",
-    );
+    api.useGetInventoryProgressQuery(inventoryIdFromParam ?? "default");
 
   const { data: city } = api.useGetCityQuery(inventory?.cityId!, {
     skip: !inventory?.cityId,
@@ -116,7 +133,7 @@ export default function HomePage({
   }, [cityYears]);
 
   const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
-    useGetOrganizationForInventoryQuery(inventoryIdFromParam as string, {
+    useGetOrganizationForInventoryQuery(inventoryIdFromParam!, {
       skip: !inventoryIdFromParam,
     });
 
@@ -137,24 +154,13 @@ export default function HomePage({
     }
   }, [isInventoryOrgDataLoading, inventoryOrgData]);
 
-  useEffect(() => {
-    if (
-      !inventory &&
-      !isInventoryLoading &&
-      userAccessStatus?.isOrgOwner &&
-      !inventoryIdFromParam
-    ) {
-      router.replace("/onboarding");
-      return;
-    }
-  }, [inventory, isInventoryLoading, userAccessStatus]);
+  if (isInventoryLoading || isInventoryOrgDataLoading || isUserInfoLoading) {
+    return <ProgressLoader />;
+  }
 
   return (
     <>
-      {(isInventoryLoading ||
-        isInventoryOrgDataLoading ||
-        isUserInfoLoading) && <ProgressLoader />}
-      {!inventory && !isInventoryLoading && !isUserInfoLoading && (
+      {inventory === null && !isInventoryLoading && !isUserInfoLoading && (
         <>
           {isPublic ? (
             <NotAvailable lng={language} />
@@ -164,7 +170,7 @@ export default function HomePage({
           <Footer lng={language} />
         </>
       )}
-      {inventory && !isInventoryLoading && !isUserInfoLoading && (
+      {inventory && (
         <>
           <Hero
             inventory={inventory}

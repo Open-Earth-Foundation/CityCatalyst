@@ -120,5 +120,19 @@
   "cities": "Ciudades",
   "save-changes": "Guardar Cambios",
   "no-cities": "Sin ciudades",
-  "no-cities-available": "No hay ciudades disponibles"
+  "no-cities-available": "No hay ciudades disponibles",
+  "organization-status-updated": "El estado de la organización se actualizó con éxito.",
+  "error-occurred": "Ocurrió un error, por favor intenta de nuevo",
+  "updating-status": "Subiendo el estado de la organización",
+  "freeze-account": "Congelar cuenta",
+  "unfreeze-account": "Descongelar cuenta",
+  "bulk-data-download": "Descarga de datos en masa",
+  "bulk-data-download-caption": "Obtenga todos los datos de emisiones de todas las ciudades incluidas en un proyecto dado. Dependiendo del número de ciudades, su archivo puede tardar unos minutos en completarse.",
+  "download-csv": "Descargar CSV",
+  "preparing-dataset": "Preparando su conjunto de datos para descargar",
+  "wait-fetch-data": "Por favor espere mientras obtenemos sus datos",
+  "download-complete": "¡Descarga del informe de inventario completada!",
+  "downloading-data": "Descargando tus datos",
+  "download-failed": "Descarga fallida",
+  "download-error": "Hubo un error durante la descarga"
 }

@@ -248,7 +248,7 @@ export default function AddDataSteps({
         (p) => p.sector.referenceNumber === step.referenceNumber,
       );
       if (!sectorProgress) {
-        console.error(
+        logger.error(
           "No progress entry found for sector",
           step.referenceNumber,
         );
@@ -344,7 +344,7 @@ export default function AddDataSteps({
     useState<string[]>([]);
   const onConnectClick = async (source: DataSourceWithRelations) => {
     if (!inventoryProgress) {
-      console.error(
+      logger.error(
         "Tried to assign data source while inventory progress was not yet loaded!",
       );
       return;
@@ -378,7 +378,7 @@ export default function AddDataSteps({
         onSourceDrawerClose();
       }
     } catch (error: any) {
-      console.error("Failed to connect data source", source, error);
+      logger.error({ err: error, source: source }, "Failed to connect data source");
       showError("data-source-connect-failed", error.data?.error?.message);
     } finally {
       setConnectingDataSourceId(null);
@@ -401,12 +401,12 @@ export default function AddDataSteps({
     // this is printed to debug missing data sources more easily,
     // TODO consider putting this behind a "dev mode" flag of some kind
     if (removedSources.length > 0) {
-      console.info("Removed data sources");
-      console.dir(removedSources);
+      logger.info("Removed data sources");
+      logger.info({removedSources});
     }
     if (failedSources.length > 0) {
-      console.info("Failed data sources");
-      console.dir(failedSources);
+      logger.info("Failed data sources");
+      logger.info({failedSources});
     }
   }
 
@@ -537,7 +537,7 @@ export default function AddDataSteps({
       setDisconnectingDataSourceId(null);
       onSearchDataSourcesClicked();
     } else {
-      console.error("Something went wrong when disconnecting data source");
+      logger.error("Something went wrong when disconnecting data source");
     }
   };
 

@@ -5,7 +5,8 @@ export interface ThemeAttributes {
   themeId: string;
   themeKey: string;
   created?: Date;
-  lastUpdated?: Date;
+  lastUpdated: Date;
+  primaryColor?: string;
 }
 
 export type ThemePk = "themeId";
@@ -25,6 +26,7 @@ export class Theme
 {
   themeId!: string;
   themeKey!: string;
+  primaryColor!: string;
   created?: Date;
   lastUpdated?: Date;
 
@@ -37,10 +39,25 @@ export class Theme
           primaryKey: true,
           field: "theme_id",
         },
+        primaryColor: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          field: "primary_color",
+        },
         themeKey: {
           type: DataTypes.STRING(255),
           allowNull: false,
           field: "theme_key",
+        },
+        created: {
+          type: DataTypes.DATE,
+          allowNull: true,
+          field: "created",
+        },
+        lastUpdated: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          field: "last_updated",
         },
       },
       {

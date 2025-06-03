@@ -198,6 +198,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         }),
         dataQuality: activity.dataQuality,
         sourceExplanation: activity.dataComments,
+        ...(activity.wasteCompositionType && {
+          wasteCompositionType: activity.wasteCompositionType,
+        }),
       },
       ...(inventoryValue ? { inventoryValueId: inventoryValue.id } : {}),
       ...(!inventoryValue
@@ -296,6 +299,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           <DialogCloseTrigger />
           <ActivityModalBody
             emissionsFactorTypes={emissionsFactorTypes}
+            inventoryId={inventoryId}
             areEmissionFactorsLoading={areEmissionFactorsLoading}
             title={title}
             hideEmissionFactors={hideEmissionFactors}

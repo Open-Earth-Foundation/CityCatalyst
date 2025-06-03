@@ -20,6 +20,7 @@ import {
 } from "@tanstack/react-table";
 import { ActionDrawer } from "./ActionDrawer";
 import { useGetCapQuery } from "@/services/api";
+import { logger } from "@/services/logger";
 
 export const BarVisualization = ({ value, total }: { value: number; total: number }) => {
   return (
@@ -146,7 +147,7 @@ export function CapActionTab({
           size="sm"
           onClick={() => {
             setSelectedAction(row.original)
-            console.log("Open drawer for action:", row.original);
+            logger.info("Open drawer for action:", row.original);
           }}
         >
           <RiExpandDiagonalFill color="black" />

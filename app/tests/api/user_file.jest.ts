@@ -47,11 +47,15 @@ const fileData = {
   sector: "Energy Sector",
   url: "http://www.acme.com",
   status: STATUS.INPROGRESS,
-  data: testFileFormat,
+  data: {
+    ...testFileFormat,
+    fileType: "csv",
+  },
   subsectors: "test1, test2, test3",
   scopes: "1,2,3",
   gpc_ref_no: "XXXTESTXXX",
   file_reference: "XXXTESTXXX",
+  file_type: "csv",
 };
 
 const invalidFileData = {
@@ -63,9 +67,13 @@ const invalidFileData = {
   url: "invalid.com",
   cityId: "XXINVALID_ID",
   status: "7",
-  data: "",
+  data: {
+    ...testFileFormat,
+    fileType: "csv",
+  },
   gpc_ref_no: "43",
   file_reference: "0",
+  file_type: "csv",
 };
 
 describe("UserFile API", () => {
@@ -115,6 +123,7 @@ describe("UserFile API", () => {
     formData.append("status", fileData.status);
     formData.append("fileReference", fileData.file_reference);
     formData.append("gpcRefNo", fileData.gpc_ref_no);
+    formData.append("fileType", fileData.file_type);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, {
       params: { city: testCityID },
@@ -147,6 +156,7 @@ describe("UserFile API", () => {
     formData.append("scopes", invalidFileData.scopes);
     formData.append("fileReference", invalidFileData.file_reference);
     formData.append("gpcRefNo", invalidFileData.gpc_ref_no);
+    formData.append("fileType", invalidFileData.file_type);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, { params: { city: testCityID } });
     expect(res.status).toBe(400);
@@ -208,6 +218,7 @@ describe("UserFile API", () => {
     formData.append("status", fileData.status);
     formData.append("fileReference", fileData.file_reference);
     formData.append("gpcRefNo", fileData.gpc_ref_no);
+    formData.append("fileType", fileData.file_type);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, {
       params: { user: testUserID, city: testCityID },

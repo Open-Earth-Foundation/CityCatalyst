@@ -6,6 +6,15 @@ import jwt from "jsonwebtoken";
 import { sendEmail } from "@/lib/email";
 import { render } from "@react-email/components";
 import InviteToOrganizationTemplate from "@/lib/emails/InviteToOrganizationTemplate";
+import { logger } from "@/services/logger";
+import ProjectCreatedNotificationTemplate from "@/lib/emails/ProjectCreatedNotificationTemplate";
+import { Project } from "@/models/Project";
+import ProjectDeletedNotificationTemplate from "@/lib/emails/ProjectDeletedNotificationTemplate";
+import CitySlotChangedNotificationTemplate from "@/lib/emails/CitySlotChangedNotification";
+import AccountFrozenNotificationTemplate from "@/lib/emails/AccountFrozenNotificationTemplate";
+import AccountUnFrozenNotificationTemplate from "@/lib/emails/AccountUnFrozenNotificationTemplate";
+import { City } from "@/models/City";
+import RemoveUserFromMultipleCitiesTemplate from "@/lib/emails/RemoveUsersFromMultipleCities";
 
 export default class EmailService {
   public static async sendOrganizationInvitationEmail(
@@ -16,7 +25,7 @@ export default class EmailService {
     const { inviteeEmail: email, organizationId, role } = request;
 
     if (!process.env.VERIFICATION_TOKEN_SECRET) {
-      console.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
+      logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
       throw createHttpError.InternalServerError("configuration-error");
     }
 
@@ -55,5 +64,213 @@ export default class EmailService {
       subject: "City Catalyst - Organization Invitation",
       html,
     });
+  }
+
+  public static async sendProjectCreationNotificationEmail({
+    project,
+    users,
+    organizationName,
+  }: {
+    project: Project;
+    users: User[];
+    organizationName: string;
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            ProjectCreatedNotificationTemplate({
+              url,
+              organizationName,
+              project,
+              user, // pass the individual user to the template if needed
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - Project Creation",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
+  }
+
+  public static async sendProjectDeletionNotificationEmail({
+    project,
+    users,
+    organizationName,
+  }: {
+    project: Project;
+    users: User[];
+    organizationName: string;
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            ProjectDeletedNotificationTemplate({
+              url,
+              organizationName,
+              project,
+              user,
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - Project Deletion",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
+  }
+
+  public static async sendCitySlotUpdateNotificationEmail({
+    project,
+    users,
+    organizationName,
+  }: {
+    project: Project;
+    users: User[];
+    organizationName: string;
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            CitySlotChangedNotificationTemplate({
+              url,
+              organizationName,
+              project,
+              user, // pass the individual user to the template if needed
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - City Slots Changed",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
+  }
+
+  public static async sendAccountFrozenNotification({
+    users,
+  }: {
+    users: User[];
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            AccountFrozenNotificationTemplate({
+              url,
+              user,
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - Account Frozen",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
+  }
+
+  public static async sendAccountActivatedNotification({
+    users,
+  }: {
+    users: User[];
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            AccountUnFrozenNotificationTemplate({
+              url,
+              user,
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - Account Activated",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
+  }
+
+  public static async sendChangeToCityAccessNotification({
+    email,
+    cities,
+    brandInformation,
+  }: {
+    email: string;
+    cities: City[];
+    brandInformation?: {
+      color: string;
+      logoUrl: string;
+    };
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    try {
+      const html = await render(
+        RemoveUserFromMultipleCitiesTemplate({
+          url,
+          email: email as string,
+          cities,
+          brandInformation,
+        }),
+      );
+      await sendEmail({
+        to: email,
+        subject: "City Catalyst - Access Removed",
+        html,
+      });
+    } catch (err) {
+      logger.error({ email, cities }, "Failed to send change to city access notification email");
+    }
   }
 }

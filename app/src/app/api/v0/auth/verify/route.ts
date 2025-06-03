@@ -6,9 +6,10 @@ import createHttpError from "http-errors";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { logger } from "@/services/logger";
 
 const requestVerification = z.object({
-  password: z.string().min(4).regex(passwordRegex),
+  password: z.string().min(4),
   token: z.string(),
 });
 
@@ -27,7 +28,7 @@ export const GET = apiHandler(async (_req, { session }) => {
   }
 
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
-    console.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
+    logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
 
@@ -48,7 +49,7 @@ export const POST = apiHandler(async (req: Request) => {
   const body = requestVerification.parse(await req.json());
 
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
-    console.error("Need to assign RESET_TOKEN_SECRET in env!");
+    logger.error("Need to assign RESET_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
 

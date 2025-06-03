@@ -24,16 +24,12 @@ import CustomSelectableButton from "@/components/custom-selectable-buttons";
 import { Button } from "@/components/ui/button";
 import { RadioGroup } from "@/components/ui/custom-radio";
 import CityAutocompleteInput from "./CityAutoCompleteInput";
-import { hasFeatureFlag } from "@/util/feature-flags";
+import { logger } from "@/services/logger";
 
 interface BulkActionsTabContentProps {
   t: TFunction;
   onTabReset?: () => void;
 }
-type CityDetails = {
-  cityName: string;
-  cityLocode: string;
-};
 export interface BulkCreationInputs {
   projectId: string;
   cities: string[];
@@ -44,7 +40,7 @@ export interface BulkCreationInputs {
   connectSources: boolean;
 }
 
-const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
+const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
   t,
   onTabReset,
 }) => {
@@ -85,7 +81,6 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
     selectedGlobalWarmingPotentialValue,
     setSelectedGlobalWarmingPotentialValue,
   ] = useState("");
-  let year;
   const inventoryGoalOptions: string[] = ["gpc_basic", "gpc_basic_plus"];
   const globalWarmingPotential: string[] = ["AR5", "AR6"];
 
@@ -159,7 +154,7 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
               type: "error",
               description: t("bulk-inventory-connection-error"),
             });
-            console.error(isConnectSourcesData.errors);
+            logger.error(isConnectSourcesData.errors);
           } else {
             toaster.create({
               type: "success",
@@ -201,7 +196,6 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
         <Fieldset.Root size="lg" maxW="full" py="36px">
           <Fieldset.Content display="flex" flexDir="column" gap="36px">
             <FieldRoot>
-              {" "}
               <Field.Label
                 fontFamily="heading"
                 fontWeight="medium"
@@ -265,7 +259,7 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
                   inputType="number"
                   tipContent={
                     <Box
-                      display={"flex"}
+                      display="flex"
                       gap="8px"
                       alignItems="center"
                       fontSize="body.sm"
@@ -299,7 +293,7 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
                   inputType="email"
                   tipContent={
                     <Box
-                      display={"flex"}
+                      display="flex"
                       gap="8px"
                       alignItems="center"
                       fontSize="body.sm"
@@ -465,20 +459,18 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
                         }}
                       >
                         <HStack gap="16px">
-                          {globalWarmingPotential.map((value) => {
-                            return (
-                              <CustomSelectableButton
-                                field={field}
-                                key={value}
-                                value={value}
-                                inputValue={selectedGlobalWarmingPotentialValue}
-                                inputValueFunction={
-                                  setSelectedGlobalWarmingPotentialValue
-                                }
-                                t={t}
-                              />
-                            );
-                          })}
+                          {globalWarmingPotential.map((value) => (
+                            <CustomSelectableButton
+                              field={field}
+                              key={value}
+                              value={value}
+                              inputValue={selectedGlobalWarmingPotentialValue}
+                              inputValueFunction={
+                                setSelectedGlobalWarmingPotentialValue
+                              }
+                              t={t}
+                            />
+                          ))}
                         </HStack>
                       </RadioGroup>
                     )}
@@ -543,7 +535,6 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
             justifyContent="right"
           >
             <Button
-              type="submit"
               alignSelf="flex-start"
               variant="outline"
               p="32px"
@@ -567,4 +558,4 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
   );
 };
 
-export default BulkActionsTabContent;
+export default BulkInventoryCreationTabContent;

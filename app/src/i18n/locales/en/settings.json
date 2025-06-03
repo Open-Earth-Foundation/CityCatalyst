@@ -123,5 +123,21 @@
   "all-cities": "All Cities ({{count}})",
   "all-collaborators": "All Collaborators ({{count}})",
   "all-inventories": "Inventories ({{count}})",
-  "delete-city": "Delete City"
+  "delete-city": "Delete City",
+  "confirm-city-delete": "Are you sure you want to permanently delete <strong>{{name}}</strong>",
+  "delete-all-inventories-warning": "All the inventories associated with this city will be deleted as well.",
+  "yes-i-understand": "Yes, I understand",
+  "enter-city-name-confirmation": "Please write \"{{name}}\" below to delete it",
+  "year-inventory_status": "{{year}} inventory status",
+  "ghg-emissions-inventory-year": "GHG emissions inventory {{year}}",
+  "ghg-inventory-year": "{{year}} inventory",
+  "add-inventory": "Add Inventory",
+  "open-inventory": "Open Inventory",
+  "download-inventory": "Download Inventory",
+  "total-ghg-inventory": "Total GHG Emissions",
+  "total-population": "Total population",
+  "total-land-area": "Total land area",
+  "files-uploaded": "Files uploaded",
+  "n-a": "N/A",
+  "no-data": "No data available"
 }

@@ -794,8 +794,12 @@ export function initModels(sequelize: Sequelize) {
     as: "organizationInvite",
     foreignKey: "organizationId",
   });
-  Organization.hasOne(Theme, {
+  Organization.belongsTo(Theme, {
     as: "theme",
+    foreignKey: "themeId",
+  });
+  Theme.hasMany(Organization, {
+    as: "organization",
     foreignKey: "themeId",
   });
   OrganizationInvite.belongsTo(Organization, {

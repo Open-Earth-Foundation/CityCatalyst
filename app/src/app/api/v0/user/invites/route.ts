@@ -114,7 +114,48 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
   const cities = await db.models.City.findAll({
     where: { cityId: { [Op.in]: cityIds } },
+    include: [
+      {
+        model: db.models.Project,
+        as: "project",
+        include: [
+          {
+            model: db.models.Organization,
+            as: "organization",
+            include: [
+              {
+                model: db.models.Theme,
+                as: "theme",
+                attributes: ["primaryColor"],
+              },
+            ],
+          },
+        ],
+      },
+    ],
   });
+
+  let emailBranding: { logoUrl: string; color: string } | null = null;
+  const organizationIds = new Set(
+    cities
+      .map((city) => city.project?.organization?.organizationId)
+      .filter(Boolean),
+  );
+
+  if (organizationIds.size > 1) {
+    logger.warn(
+      { cityIds },
+      "Multiple organizations found for invites, cannot apply branding to email",
+    );
+  } else if (organizationIds.size === 1) {
+    const organization = cities[0]?.project?.organization;
+    if (organization) {
+      emailBranding = {
+        logoUrl: organization.logoUrl ?? "",
+        color: organization.theme?.primaryColor,
+      };
+    }
+  }
 
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
     logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
@@ -193,6 +234,11 @@ export const POST = apiHandler(async (req, { params, session }) => {
               name: session?.user.name!,
               email: session?.user.email!,
             },
+            ...(emailBranding
+              ? {
+                  brandInformation: emailBranding,
+                }
+              : {}),
           }),
         );
         const sendInvite = await sendEmail({

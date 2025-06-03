@@ -22,6 +22,18 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
   const cityData = await db.models.City.findOne({
     where: { cityId: city.cityId },
+    include: [
+      {
+        model: db.models.Project,
+        as: "project",
+        include: [
+          {
+            model: db.models.Organization,
+            as: "organization",
+          },
+        ],
+      },
+    ],
   });
 
   if (!cityData) {

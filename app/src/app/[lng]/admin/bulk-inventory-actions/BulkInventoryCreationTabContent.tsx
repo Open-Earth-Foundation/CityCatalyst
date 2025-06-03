@@ -40,7 +40,7 @@ export interface BulkCreationInputs {
   connectSources: boolean;
 }
 
-const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
+const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
   t,
   onTabReset,
 }) => {
@@ -559,4 +559,4 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
   );
 };
 
-export default BulkActionsTabContent;
+export default BulkInventoryCreationTabContent;

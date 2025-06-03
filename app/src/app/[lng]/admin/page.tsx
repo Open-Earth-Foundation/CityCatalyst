@@ -27,7 +27,7 @@ import {
 import { MdForwardToInbox, MdMoreVert, MdOutlineGroup } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
-import BulkActionsTabContent from "./bulk-inventory-actions/BulkActionsTabContent";
+import BulkInventoryCreationTabContent from "./bulk-inventory-actions/BulkInventoryCreationTabContent";
 import { OrganizationRole } from "@/util/types";
 import { toaster } from "@/components/ui/toaster";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -371,7 +371,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                 />
                 <Tabs.Indicator rounded="l2" />
               </Tabs.List>
-              <BulkActionsTabContent
+              <BulkInventoryCreationTabContent
                 t={t}
                 onTabReset={() => setBulkActionsTab("bulk-inventory-creation")}
               />

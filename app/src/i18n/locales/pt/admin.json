@@ -125,5 +125,14 @@
   "error-occurred": "Ocorreu um erro, por favor tente novamente",
   "updating-status": "Carregando status da organização",
   "freeze-account": "Congelar conta",
-  "unfreeze-account": "Descongelar conta"
+  "unfreeze-account": "Descongelar conta",
+  "bulk-data-download": "Download de dados em massa",
+  "bulk-data-download-caption": "Obtenha todos os dados de emissões de todas as cidades incluídas em um determinado projeto. Dependendo do número de cidades, seu arquivo pode levar alguns minutos para ser concluído.",
+  "download-csv": "Baixar CSV",
+  "preparing-dataset": "Preparando seu conjunto de dados para download",
+  "wait-fetch-data": "Por favor, aguarde enquanto buscamos seus dados",
+  "download-complete": "Download do relatório de inventário concluído!",
+  "downloading-data": "Baixando seus dados",
+  "download-failed": "Download falhou",
+  "download-error": "Ocorreu um erro durante o download"
 }

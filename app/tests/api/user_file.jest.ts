@@ -70,7 +70,6 @@ const invalidFileData = {
   status: "7",
   data: {
     ...testFileFormat,
-    fileName: "blob",
     fileType: "csv",
   },
   gpc_ref_no: "43",

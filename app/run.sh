@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# This script is used to run the application
+# Under different OS, the line endings may be different
+# Under Windows, the line endings are CRLF
+# Under Unix, the line endings are LF
+# When running in Docker(Linux), the line endings are LF
+
 set -e
 
 # Set collection name and local path (update these as needed)

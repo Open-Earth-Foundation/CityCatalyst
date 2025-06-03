@@ -10,12 +10,17 @@ module.exports = {
       WHERE status IS NULL OR status NOT IN ('pending', 'accepted', 'canceled', 'expired');
     `);
 
-    // Then modify the column to use the enum type
+    // Then modify the column to use the enum type (without default value)
     await queryInterface.changeColumn("CityInvite", "status", {
       type: Sequelize.ENUM("pending", "accepted", "canceled", "expired"),
       allowNull: false,
-      defaultValue: "pending",
     });
+
+    // Finally set the default value
+    await queryInterface.sequelize.query(`
+      ALTER TABLE "CityInvite" 
+      ALTER COLUMN status SET DEFAULT 'pending';
+    `);
   },
 
   async down(queryInterface, Sequelize) {

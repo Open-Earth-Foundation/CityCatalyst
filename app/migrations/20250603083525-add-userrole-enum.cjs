@@ -10,12 +10,17 @@ module.exports = {
       WHERE role IS NULL OR role NOT IN ('admin', 'user');
     `);
 
-    // Then modify the column to use the enum type
+    // Then modify the column to use the enum type (without default value)
     await queryInterface.changeColumn("User", "role", {
       type: Sequelize.ENUM("admin", "user"),
       allowNull: false,
-      defaultValue: "user",
     });
+
+    // Finally set the default value
+    await queryInterface.sequelize.query(`
+      ALTER TABLE "User" 
+      ALTER COLUMN role SET DEFAULT 'user';
+    `);
   },
 
   async down(queryInterface, Sequelize) {

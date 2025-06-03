@@ -9,7 +9,7 @@ import { z } from "zod";
 import { logger } from "@/services/logger";
 
 const requestVerification = z.object({
-  password: z.string().min(4).regex(passwordRegex),
+  password: z.string().min(4),
   token: z.string(),
 });
 

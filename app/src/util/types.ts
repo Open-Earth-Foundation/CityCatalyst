@@ -419,10 +419,23 @@ export type ListOrganizationsResponse = {
     email: string;
     role: OrganizationRole;
   }[];
+  active: boolean;
   projects: {
     projectId: string;
     name: string;
     cityCountLimit: number;
+  }[];
+};
+
+export type CityResponse = {
+  cityId: string;
+  name: string;
+  countryLocode: string;
+  locode: string;
+  inventories: {
+    inventoryId: string;
+    year: number;
+    lastUpdated: string;
   }[];
 };
 
@@ -431,16 +444,7 @@ export type ProjectWithCities = {
   name: string;
   description?: string;
   cityCountLimit?: Number;
-  cities: {
-    cityId: string;
-    name: string;
-    countryLocode: string;
-    inventories: {
-      inventoryId: string;
-      year: number;
-      lastUpdated: string;
-    }[];
-  }[];
+  cities: CityResponse[];
 };
 
 export type ProjectWithCitiesResponse = ProjectWithCities[];

@@ -52,6 +52,7 @@ describe("City Transfer API", () => {
 
     organization = await db.models.Organization.create({
       ...organizationData,
+      active: true,
       organizationId: randomUUID(),
     });
     project1 = await db.models.Project.create({

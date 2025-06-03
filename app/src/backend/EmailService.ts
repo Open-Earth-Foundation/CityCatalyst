@@ -7,6 +7,12 @@ import { sendEmail } from "@/lib/email";
 import { render } from "@react-email/components";
 import InviteToOrganizationTemplate from "@/lib/emails/InviteToOrganizationTemplate";
 import { logger } from "@/services/logger";
+import ProjectCreatedNotificationTemplate from "@/lib/emails/ProjectCreatedNotificationTemplate";
+import { Project } from "@/models/Project";
+import ProjectDeletedNotificationTemplate from "@/lib/emails/ProjectDeletedNotificationTemplate";
+import CitySlotChangedNotificationTemplate from "@/lib/emails/CitySlotChangedNotification";
+import AccountFrozenNotificationTemplate from "@/lib/emails/AccountFrozenNotificationTemplate";
+import AccountUnFrozenNotificationTemplate from "@/lib/emails/AccountUnFrozenNotificationTemplate";
 
 export default class EmailService {
   public static async sendOrganizationInvitationEmail(
@@ -56,5 +62,178 @@ export default class EmailService {
       subject: "City Catalyst - Organization Invitation",
       html,
     });
+  }
+
+  public static async sendProjectCreationNotificationEmail({
+    project,
+    users,
+    organizationName,
+  }: {
+    project: Project;
+    users: User[];
+    organizationName: string;
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            ProjectCreatedNotificationTemplate({
+              url,
+              organizationName,
+              project,
+              user, // pass the individual user to the template if needed
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - Project Creation",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
+  }
+
+  public static async sendProjectDeletionNotificationEmail({
+    project,
+    users,
+    organizationName,
+  }: {
+    project: Project;
+    users: User[];
+    organizationName: string;
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            ProjectDeletedNotificationTemplate({
+              url,
+              organizationName,
+              project,
+              user,
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - Project Deletion",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
+  }
+
+  public static async sendCitySlotUpdateNotificationEmail({
+    project,
+    users,
+    organizationName,
+  }: {
+    project: Project;
+    users: User[];
+    organizationName: string;
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            CitySlotChangedNotificationTemplate({
+              url,
+              organizationName,
+              project,
+              user, // pass the individual user to the template if needed
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - City Slots Changed",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
+  }
+
+  public static async sendAccountFrozenNotification({
+    users,
+  }: {
+    users: User[];
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            AccountFrozenNotificationTemplate({
+              url,
+              user,
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - Account Frozen",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
+  }
+
+  public static async sendAccountActivatedNotification({
+    users,
+  }: {
+    users: User[];
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            AccountUnFrozenNotificationTemplate({
+              url,
+              user,
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - Account Activated",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
   }
 }

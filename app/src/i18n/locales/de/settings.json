@@ -126,5 +126,21 @@
   "all-cities": "Alle Städte ({{count}})",
   "all-collaborators": "Alle Mitarbeiter ({{count}})",
   "all-inventories": "Inventar ({{count}})",
-  "delete-city": "Stadt löschen"
+  "delete-city": "Stadt löschen",
+  "confirm-city-delete": "Sind Sie sicher, dass Sie <strong>{{name}}</strong> dauerhaft löschen möchten",
+  "delete-all-inventories-warning": "Alle mit dieser Stadt verbundenen Inventare werden ebenfalls gelöscht.",
+  "yes-i-understand": "Ja, ich verstehe",
+  "enter-city-name-confirmation": "Bitte schreiben Sie \"{{name}}\" unten, um es zu löschen",
+  "year-inventory_status": "{{year}} Inventarstatus",
+  "ghg-emissions-inventory-year": "Treibhausgas-Emissionsinventar {{Jahr}}",
+  "ghg-inventory-year": "{{year}} Inventar",
+  "add-inventory": "Inventar hinzufügen",
+  "open-inventory": "Inventar öffnen",
+  "download-inventory": "Inventar Herunterladen",
+  "total-ghg-inventory": "Gesamte Treibhausgasemissionen",
+  "total-population": "Gesamtbevölkerung",
+  "total-land-area": "Gesamtlandfläche",
+  "files-uploaded": "Hochgeladene Dateien",
+  "n-a": "N/V",
+  "no-data": "Keine Daten verfügbar"
 }

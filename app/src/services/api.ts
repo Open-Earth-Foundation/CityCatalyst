@@ -53,6 +53,7 @@ import {
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { PATCH } from "@/app/api/v0/organizations/[organizationId]/white-label/route";
 
 export const api = createApi({
   reducerPath: "api",
@@ -227,7 +228,11 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: InventoryAttributes }) =>
           response.data,
-        invalidatesTags: ["UserInventories", "CitiesAndInventories"],
+        invalidatesTags: [
+          "UserInventories",
+          "CitiesAndInventories",
+          "Projects",
+        ],
       }),
       setUserInfo: builder.mutation<
         UserAttributes,
@@ -368,6 +373,7 @@ export const api = createApi({
           "InventoryValue",
           "ReportResults",
           "YearlyReportResults",
+          "Projects",
           "UserInfo",
         ],
       }),
@@ -981,11 +987,14 @@ export const api = createApi({
         transformResponse: (response: ListOrganizationsResponse[]) =>
           response.map((org) => ({
             ...org,
-            status: org.organizationInvite.find(
-              (invite) => invite.status === InviteStatus.ACCEPTED,
-            )
-              ? "accepted"
-              : "invite sent",
+            status:
+              org.active === false
+                ? "frozen"
+                : org.organizationInvite.find(
+                      (invite) => invite.status === InviteStatus.ACCEPTED,
+                    )
+                  ? "accepted"
+                  : "invite sent",
           })),
         providesTags: ["Organizations"],
       }),
@@ -1191,6 +1200,37 @@ export const api = createApi({
         transformResponse: (response: { data: FormulaInputValuesResponse[] }) =>
           response.data,
       }),
+      deleteCity: builder.mutation({
+        query: (cityId: string) => ({
+          method: "DELETE",
+          url: `/city/${cityId}`,
+        }),
+        transformResponse: (response: { data: any }) => response.data,
+        invalidatesTags: [
+          "CityData",
+          "Projects",
+          "CitiesAndInventories",
+          "UserData",
+          "UserInfo",
+        ],
+      }),
+      updateOrganizationActiveStatus: builder.mutation({
+        query: ({
+          activeStatus,
+          organizationId,
+        }: {
+          activeStatus: boolean;
+          organizationId: string;
+        }) => ({
+          method: "PATCH",
+          url: `/organizations/${organizationId}/active-status`,
+          body: {
+            active: activeStatus,
+          },
+        }),
+        transformResponse: (response: { data: any }) => response.data,
+        invalidatesTags: ["Organizations"],
+      }),
     };
   },
 });
@@ -1290,6 +1330,8 @@ export const {
   useGetThemesQuery,
   useSetOrgWhiteLabelMutation,
   useGetOrganizationForInventoryQuery,
+  useDeleteCityMutation,
   useGetWasteCompositionValuesQuery,
+  useUpdateOrganizationActiveStatusMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

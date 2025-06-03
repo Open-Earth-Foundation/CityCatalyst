@@ -74,7 +74,6 @@ export function ActionCards({
         <AddCollaboratorButton lng={lng} />
         <DownloadButton
           lng={lng}
-          t={t}
           inventoryId={inventoryId!}
           city={city}
           inventory={inventory}

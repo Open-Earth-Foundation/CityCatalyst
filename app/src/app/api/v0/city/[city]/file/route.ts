@@ -51,7 +51,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
       file: {
         fileName: file.name,
         size: file.size,
-        fileType: userFile.fileType === "blob" ? "csv" : userFile.fileType,
+        fileType: userFile.fileType,
       },
     };
   });
@@ -89,7 +89,7 @@ export const POST = apiHandler(
       fileReference: formData.get("fileReference"),
       url: formData.get("url"),
       data: buffer,
-      fileType: fileType,
+      fileType: fileType === "blob" ? "csv" : fileType,
       fileName: filename,
       sector: formData.get("sector"),
       subsectors: subsectors.split(","),

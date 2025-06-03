@@ -419,6 +419,7 @@ export type ListOrganizationsResponse = {
     email: string;
     role: OrganizationRole;
   }[];
+  active: boolean;
   projects: {
     projectId: string;
     name: string;

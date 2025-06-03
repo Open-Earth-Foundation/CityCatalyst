@@ -15,7 +15,7 @@ import {
 import { User } from "@/models/User";
 import { Project } from "@/models/Project";
 
-export default function AccountFrozenNotificationTemplate({
+export default function AccountUnFrozenNotificationTemplate({
   url,
   user,
 }: {
@@ -37,16 +37,15 @@ export default function AccountFrozenNotificationTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: Account Frozen</Preview>
+      <Preview>CityCatalyst: Account Activated</Preview>
       <Body style={main}>
         <Container style={container}>
           <Text style={brandHeading}>CityCatalyst</Text>
-          <Text style={headingGreen}> Your account has been Frozen</Text>
+          <Text style={headingGreen}> Your account has been Activated</Text>
           <Text style={greeting}>Hi {user?.name},</Text>
           <Text style={paragraph}>
-            Your account has been frozen. This means you and every other admin
-            and collaborator won’t be able to edit any projects or inventories
-            in your account.
+            Your account has been activated. This means you can created and edit
+            all your Inventories and Projects
           </Text>
           <Text style={paragraph}>
             To activate your account, please reach out to{" "}

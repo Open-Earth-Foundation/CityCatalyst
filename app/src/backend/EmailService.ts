@@ -11,6 +11,8 @@ import ProjectCreatedNotificationTemplate from "@/lib/emails/ProjectCreatedNotif
 import { Project } from "@/models/Project";
 import ProjectDeletedNotificationTemplate from "@/lib/emails/ProjectDeletedNotificationTemplate";
 import CitySlotChangedNotificationTemplate from "@/lib/emails/CitySlotChangedNotification";
+import AccountFrozenNotificationTemplate from "@/lib/emails/AccountFrozenNotificationTemplate";
+import AccountUnFrozenNotificationTemplate from "@/lib/emails/AccountUnFrozenNotificationTemplate";
 
 export default class EmailService {
   public static async sendOrganizationInvitationEmail(
@@ -164,6 +166,68 @@ export default class EmailService {
           await sendEmail({
             to: user.email as string,
             subject: "City Catalyst - City Slots Changed",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
+  }
+
+  public static async sendAccountFrozenNotification({
+    users,
+  }: {
+    users: User[];
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            AccountFrozenNotificationTemplate({
+              url,
+              user, // pass the individual user to the template if needed
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - Account Frozen",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
+  }
+
+  public static async sendAccountActivatedNotification({
+    users,
+  }: {
+    users: User[];
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            AccountUnFrozenNotificationTemplate({
+              url,
+              user, // pass the individual user to the template if needed
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - Account Activated",
             html,
           });
         } catch (err) {

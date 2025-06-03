@@ -19,11 +19,16 @@ export function InviteUserToMultipleCitiesTemplate({
   email,
   cities,
   invitingUser,
+  brandInformation,
 }: {
   url?: string;
   email: string;
   cities: City[];
   invitingUser: { name: string; email: string };
+  brandInformation?: {
+    color: string;
+    logoUrl: string;
+  };
 }) {
   const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
@@ -45,43 +50,67 @@ export function InviteUserToMultipleCitiesTemplate({
       <Body style={main}>
         <Container style={container}>
           <Section>
-            <Img
-              src={ImageURL}
-              alt="City Catalyst logo"
-              width="36"
-              height="36"
-            />
-            <Text style={brandHeading}>CityCatalyst</Text>
-            <Text style={heading}>
-              You&apos;ve been invited to CityCatalyst
-            </Text>
-            <Text style={greeting}>Hi {email},</Text>
-            <Text style={paragraph}>
-              {invitingUser?.name} ({invitingUser?.email}) has invited you to
-              join CityCatalyst and contribute to the emission inventory for the{" "}
-              {cities.length == 1 ? "city" : "cities"}:
-            </Text>
-            <div>
-              {cities.map(({ locode, name }) => (
-                <div style={cityBox} key={name}>
-                  <div
-                    style={{
-                      background: `url('https://flagsapi.com/${locode!.split(" ")[0]}/flat/64.png') no-repeat center center`,
-                      backgroundSize: "cover",
-                      height: "32px",
-                      width: "32px",
-                      flexShrink: 0,
-                    }}
-                  />
-                  <div style={cityNameText}>{name}</div>
-                </div>
-              ))}
-            </div>
-          </Section>
-          <Section style={buttonSection}>
-            <Link href={url} style={urlLink}>
-              JOIN NOW
-            </Link>
+            {brandInformation ? (
+              <Section
+                style={{
+                  backgroundColor: brandInformation.color || "#ffffff",
+                }}
+              >
+                <Img
+                  src={brandInformation.logoUrl ?? ImageURL}
+                  alt="logo"
+                  height="100"
+                />
+              </Section>
+            ) : (
+              <Section>
+                <Img
+                  src={ImageURL}
+                  alt="City Catalyst logo"
+                  width="36"
+                  height="36"
+                />
+                <Text style={brandHeading}>CityCatalyst</Text>
+              </Section>
+            )}
+            <Section style={{ padding: "24px" }}>
+              {/* eslint-disable-next-line react/no-unescaped-entities */}
+              <Text style={headingGreen}>You've been granted access</Text>
+              <Text style={greeting}>Hi {email},</Text>
+              <Text style={paragraph}>
+                You have been granted access to
+                {cities?.length == 1 ? " this city" : "these cities"}:
+              </Text>
+              <div>
+                {cities?.map(({ locode, name }) => (
+                  <div style={cityBox} key={name}>
+                    <div
+                      style={{
+                        background: `url('https://flagsapi.com/${locode!.split(" ")[0]}/flat/64.png') no-repeat center center`,
+                        backgroundSize: "cover",
+                        height: "32px",
+                        width: "32px",
+                        flexShrink: 0,
+                      }}
+                    />
+                    <div style={cityNameText}>{name}</div>
+                  </div>
+                ))}
+              </div>
+              <Section style={buttonSection}>
+                <Link
+                  href={url}
+                  style={{
+                    ...urlLink,
+                    ...(brandInformation?.color
+                      ? { backgroundColor: brandInformation?.color }
+                      : {}),
+                  }}
+                >
+                  JOIN NOW
+                </Link>
+              </Section>
+            </Section>
           </Section>
           <Text style={footerText}>
             This invite will remain valid for the next 30 days or until claimed,
@@ -179,4 +208,12 @@ const cityNameText = {
   lineHeight: "32px", // Match this with the flag height
   letterSpacing: "0.5px",
   color: "#484848",
+};
+
+const headingGreen = {
+  fontSize: "24px",
+  lineHeight: "32px",
+  fontWeight: "700",
+  color: "#24BE00",
+  marginTop: "50px",
 };

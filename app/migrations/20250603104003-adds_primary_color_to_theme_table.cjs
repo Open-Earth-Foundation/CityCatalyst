@@ -6,6 +6,7 @@ module.exports = {
     await queryInterface.addColumn("Theme", "primary_color", {
       type: Sequelize.STRING,
       allowNull: false,
+      defaultValue: "#2351DC",
       comment: "contains the primary color of the theme",
     });
 

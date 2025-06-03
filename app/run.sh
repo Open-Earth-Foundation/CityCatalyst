@@ -20,10 +20,8 @@ echo "Local path: $LOCAL_PATH"
 echo ""
 
 # Run the vector store script and capture its exit code
-# python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME" "$LOCAL_PATH"
-# VECTOR_STORE_STATUS=$?
-
-VECTOR_STORE_STATUS=0
+python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME" "$LOCAL_PATH"
+VECTOR_STORE_STATUS=$?
 
 # Check if the script failed
 if [ $VECTOR_STORE_STATUS -ne 0 ]; then

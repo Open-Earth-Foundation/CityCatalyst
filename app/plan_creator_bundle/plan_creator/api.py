@@ -278,13 +278,13 @@ async def check_progress(task_uuid: str):
     task_info = task_storage[task_uuid]
     logger.info(f"Task {task_uuid}: Task status: {task_info['status']}")
 
-    response_data = {"status": task_info["status"]}
-
     # Include error message if status is failed
     if task_info["status"] == "failed" and "error" in task_info:
-        response_data["error"] = task_info["error"]
+        return CheckProgressResponse(
+            status=task_info["status"], error=task_info["error"]
+        )
 
-    return CheckProgressResponse(**response_data)
+    return CheckProgressResponse(status=task_info["status"])
 
 
 @router.get("/v1/get_plan/{task_uuid}", response_model=PlanResponse)

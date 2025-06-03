@@ -3,14 +3,9 @@
 import {
   Box,
   Button,
-  Checkbox,
-  Field,
-  Fieldset,
   Heading,
-  HStack,
   Icon,
   IconButton,
-  Input,
   Link,
   Table,
   Tabs,
@@ -18,13 +13,9 @@ import {
 } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import { BsPlus } from "react-icons/bs";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import CreateOrganizationModal from "@/app/[lng]/admin/CreateOrganizationModal";
 import { api } from "@/services/api";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import DataTable from "@/components/ui/data-table";
 import { Tag } from "@/components/ui/tag";
 import {
@@ -33,19 +24,8 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
-import {
-  MdForwardToInbox,
-  MdInfoOutline,
-  MdMoreVert,
-  MdOutlineGroup,
-  MdWarning,
-} from "react-icons/md";
+import { MdForwardToInbox, MdMoreVert, MdOutlineGroup } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { Trans } from "react-i18next";
-import { Controller, useForm } from "react-hook-form";
-import { RadioGroup } from "@/components/ui/radio";
-import CustomSelectableButton from "@/components/custom-selectable-buttons";
-import CommaSeperatedInput from "./bulk-inventory-actions/CommaSeperatedInput";
 import { Toaster } from "@/components/ui/toaster";
 import BulkActionsTabContent from "./bulk-inventory-actions/BulkActionsTabContent";
 import { OrganizationRole } from "@/util/types";
@@ -382,6 +362,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
             >
               <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
                 <BulkActionsTabTrigger title="bulk-inventory-creation" />
+                <BulkActionsTabTrigger title="bulk-inventory-download" />
                 <BulkActionsTabTrigger title="bulk-data-connection" disabled />
                 <BulkActionsTabTrigger title="bulk-user-creation" disabled />
                 <BulkActionsTabTrigger

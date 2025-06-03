@@ -4,6 +4,7 @@ import { DataTypes, Model, Optional } from "sequelize";
 export interface CatalogueAttributes {
   type?: string;
   lastUpdate?: Date;
+  createdAt?: Date;
 }
 
 export type CatalogueOptionalAttributes = "type" | "lastUpdate";
@@ -18,6 +19,7 @@ export class Catalogue
 {
   type?: string;
   lastUpdate?: Date;
+  createdAt?: Date;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Catalogue {
     return Catalogue.init(
@@ -32,12 +34,18 @@ export class Catalogue
           allowNull: true,
           field: "last_update",
         },
+        createdAt: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        },
       },
       {
         sequelize,
         tableName: "Catalogue",
         schema: "public",
-        timestamps: false,
+        timestamps: true,
+        createdAt: "created",
       },
     );
   }

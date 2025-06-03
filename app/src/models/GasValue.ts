@@ -111,7 +111,7 @@ export class GasValue
         sequelize,
         tableName: "GasValue",
         schema: "public",
-        timestamps: false,
+        timestamps: true,
         createdAt: "created",
         updatedAt: "last_updated",
         indexes: [

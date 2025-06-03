@@ -123,5 +123,21 @@
   "all-cities": "Toutes les villes ({{count}})",
   "all-collaborators": "Tous les Collaborateurs ({{count}})",
   "all-inventories": "Inventaires ({{count}})",
-  "delete-city": "Supprimer la Ville"
+  "delete-city": "Supprimer la Ville",
+  "confirm-city-delete": "Êtes-vous sûr de vouloir supprimer définitivement <strong>{{name}}</strong>",
+  "delete-all-inventories-warning": "Tous les inventaires associés à cette ville seront également supprimés.",
+  "yes-i-understand": "Oui, je comprends",
+  "enter-city-name-confirmation": "Veuillez écrire \"{{name}}\" ci-dessous pour le supprimer",
+  "year-inventory_status": "Statut de l'inventaire {{année}}",
+  "ghg-emissions-inventory-year": "Inventaire des émissions de GES {{année}}",
+  "ghg-inventory-year": "Inventaire de {{year}}",
+  "add-inventory": "Ajouter l'inventaire",
+  "open-inventory": "Inventaire Ouvert",
+  "download-inventory": "Télécharger l'inventaire",
+  "total-ghg-inventory": "Émissions totales de GES",
+  "total-population": "Population totale",
+  "total-land-area": "Superficie totale des terres",
+  "files-uploaded": "Fichiers téléchargés",
+  "n-a": "S/O",
+  "no-data": "Aucune donnée disponible"
 }

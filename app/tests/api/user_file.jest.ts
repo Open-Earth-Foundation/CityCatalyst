@@ -52,6 +52,7 @@ const fileData = {
   scopes: "1,2,3",
   gpc_ref_no: "XXXTESTXXX",
   file_reference: "XXXTESTXXX",
+  file_type: "csv",
 };
 
 const invalidFileData = {
@@ -66,6 +67,7 @@ const invalidFileData = {
   data: "",
   gpc_ref_no: "43",
   file_reference: "0",
+  file_type: "csv",
 };
 
 describe("UserFile API", () => {
@@ -115,6 +117,7 @@ describe("UserFile API", () => {
     formData.append("status", fileData.status);
     formData.append("fileReference", fileData.file_reference);
     formData.append("gpcRefNo", fileData.gpc_ref_no);
+    formData.append("fileType", fileData.file_type);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, {
       params: { city: testCityID },
@@ -147,6 +150,7 @@ describe("UserFile API", () => {
     formData.append("scopes", invalidFileData.scopes);
     formData.append("fileReference", invalidFileData.file_reference);
     formData.append("gpcRefNo", invalidFileData.gpc_ref_no);
+    formData.append("fileType", invalidFileData.file_type);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, { params: { city: testCityID } });
     expect(res.status).toBe(400);
@@ -208,6 +212,7 @@ describe("UserFile API", () => {
     formData.append("status", fileData.status);
     formData.append("fileReference", fileData.file_reference);
     formData.append("gpcRefNo", fileData.gpc_ref_no);
+    formData.append("fileType", fileData.file_type);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, {
       params: { user: testUserID, city: testCityID },

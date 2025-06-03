@@ -39,7 +39,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         working-directory: ./app
         run: |
-          for lang in de es pt; do
+          for lang in de es fr pt; do
             git checkout -b "i18n/$lang/$EXTRA"
             node scripts/update-translation.js $lang
             git add src/i18n/locales/$lang

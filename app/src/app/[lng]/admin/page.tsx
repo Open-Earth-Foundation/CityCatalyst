@@ -35,10 +35,10 @@ import {
 import { useRouter } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
 import BulkInventoryCreationTabContent from "./bulk-inventory-actions/BulkInventoryCreationTabContent";
+import BulkDownloadTabContent from "./bulk-inventory-actions/BulkDownloadTabContent";
 import { OrganizationRole } from "@/util/types";
 import { toaster } from "@/components/ui/toaster";
 import ProgressLoader from "@/components/ProgressLoader";
-import BulkDownloadTabContent from "./bulk-inventory-actions/BulkDownloadTabContent";
 
 interface OrgData {
   contactEmail: string;
@@ -487,10 +487,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                 t={t}
                 onTabReset={() => setBulkActionsTab("bulk-inventory-creation")}
               />
-              <BulkDownloadTabContent
-                t={t}
-                onTabReset={() => setBulkActionsTab("bulk-data-download")}
-              />
+              <BulkDownloadTabContent t={t} />
 
               {/* TODO add more actions */}
               <Tabs.Content value="bulk-data-connection">

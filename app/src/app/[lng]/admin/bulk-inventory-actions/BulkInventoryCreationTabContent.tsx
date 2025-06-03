@@ -535,7 +535,6 @@ const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
             justifyContent="right"
           >
             <Button
-              type="submit"
               alignSelf="flex-start"
               variant="outline"
               p="32px"

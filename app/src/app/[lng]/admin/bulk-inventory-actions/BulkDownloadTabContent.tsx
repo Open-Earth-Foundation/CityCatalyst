@@ -18,16 +18,12 @@ import { logger } from "@/services/logger";
 
 interface BulkActionsTabContentProps {
   t: TFunction;
-  onTabReset?: () => void;
 }
 export interface BulkDownloadInputs {
   projectId: string;
 }
 
-const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
-  t,
-  onTabReset,
-}) => {
+const BulkDownloadTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
   // React hook form to manage form state
   const { register, handleSubmit, reset } = useForm<BulkDownloadInputs>();
 
@@ -38,7 +34,7 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
   const showToast = (
     title: string,
     description: string,
-    status: any,
+    status: string,
     duration: number | null,
   ) => {
     // Replace previous toast notifications
@@ -79,7 +75,7 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
           });
         } else {
           logger.error(
-            { headers: res.headers },
+            { headers: res.headers, projectId: data.projectId },
             "Content-Disposition missing in response headers",
           );
           showToast("download-failed", "download-error", "error", null);
@@ -156,7 +152,6 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
             justifyContent="right"
           >
             <Button
-              type="submit"
               alignSelf="flex-start"
               variant="outline"
               p="32px"
@@ -180,4 +175,4 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({
   );
 };
 
-export default BulkActionsTabContent;
+export default BulkDownloadTabContent;

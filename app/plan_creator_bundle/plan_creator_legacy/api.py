@@ -11,7 +11,7 @@ import time
 import logging
 import uuid
 import threading
-from typing import Optional, List, Dict, Any
+from typing import Dict, Any
 
 from langchain_core.messages import AIMessage
 
@@ -263,7 +263,7 @@ async def get_plan(task_uuid: str):
 
 
 # Keep the old endpoint for backward compatibility
-@router.post("/create_plan")
+@router.post("/create_plan", deprecated=True)
 async def create_plan(request: PlanRequest):
     logger.warning(
         "Deprecated /create_plan endpoint called. Consider using the new asynchronous API."

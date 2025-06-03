@@ -19,7 +19,6 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
   const validatedData = organizationActiveStateSchema.parse(await req.json());
 
-
   await organization.update({
     active: validatedData.active,
   });
@@ -30,16 +29,17 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   });
   const users = admins.map((admin) => admin?.user).filter((user) => user);
 
-  if (validatedData.active === true) {
-    await EmailService.sendAccountActivatedNotification({
+  if (validatedData.active) {
+    // fire and forget
+    EmailService.sendAccountActivatedNotification({
       users,
     });
   } else {
-    await EmailService.sendAccountFrozenNotification({
+    // fire and forget
+    EmailService.sendAccountFrozenNotification({
       users,
     });
   }
 
-  // send email to the admins in the organization that a new project was added.
   return NextResponse.json(organization);
 });

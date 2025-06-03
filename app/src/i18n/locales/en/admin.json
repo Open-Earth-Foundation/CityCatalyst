@@ -123,7 +123,7 @@
   "no-cities-available": "No cities available",
   "organization-status-updated": "Organization status updated successfully.",
   "error-occurred": "An error occured, please try again",
-  "upddating-status": "Uploading organization status",
+  "updating-status": "Uploading organization status",
   "freeze-account": "Freeze account",
   "unfreeze-account": "Unfreeze account"
 }

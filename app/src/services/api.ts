@@ -1214,7 +1214,7 @@ export const api = createApi({
           "UserInfo",
         ],
       }),
-      mutateAccountFrozenStatus: builder.mutation({
+      updateOrganizationActiveStatus: builder.mutation({
         query: ({
           activeStatus,
           organizationId,
@@ -1332,6 +1332,6 @@ export const {
   useGetOrganizationForInventoryQuery,
   useDeleteCityMutation,
   useGetWasteCompositionValuesQuery,
-  useMutateAccountFrozenStatusMutation,
+  useUpdateOrganizationActiveStatusMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

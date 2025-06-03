@@ -58,7 +58,7 @@ export class Organization
         active: {
           type: DataTypes.BOOLEAN,
           allowNull: false,
-          
+          defaultValue: true,
         },
         themeId: {
           type: DataTypes.UUID,

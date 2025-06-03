@@ -102,7 +102,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
     api.useCreateOrganizationInviteMutation();
 
   const [updateOrganizationActiveStatus, { isLoading: isUpdatingStatus }] =
-    api.useMutateAccountFrozenStatusMutation();
+    api.useUpdateOrganizationActiveStatusMutation();
 
   const handleReInvite = async (email: string, organizationId: string) => {
     toaster.create({
@@ -147,7 +147,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
       error: {
         title: t("error-occurred"),
       },
-      loading: { title: t("upddating-status") },
+      loading: { title: t("updating-status") },
     });
   };
 

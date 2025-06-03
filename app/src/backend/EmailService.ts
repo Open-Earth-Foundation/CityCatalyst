@@ -122,7 +122,7 @@ export default class EmailService {
               url,
               organizationName,
               project,
-              user, // pass the individual user to the template if needed
+              user,
             }),
           );
 
@@ -190,7 +190,7 @@ export default class EmailService {
           const html = await render(
             AccountFrozenNotificationTemplate({
               url,
-              user, // pass the individual user to the template if needed
+              user,
             }),
           );
 
@@ -221,7 +221,7 @@ export default class EmailService {
           const html = await render(
             AccountUnFrozenNotificationTemplate({
               url,
-              user, // pass the individual user to the template if needed
+              user,
             }),
           );
 

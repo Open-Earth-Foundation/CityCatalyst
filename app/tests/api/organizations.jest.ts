@@ -53,6 +53,7 @@ describe("Organization API", () => {
       where: { name: organizationData.name },
     });
     organization = await db.models.Organization.create({
+      active: true,
       ...organizationData,
       organizationId: randomUUID(),
     });

@@ -571,7 +571,7 @@ export default class UserService {
   }
 
   public static async removeUserFromProject(projectId: string, email: string) {
-    const project = await Project.findByPk(projectId as string, {
+    const project = await Project.findByPk(projectId, {
       include: [
         {
           model: db.models.Organization,

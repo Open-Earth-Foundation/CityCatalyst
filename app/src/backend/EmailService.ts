@@ -270,7 +270,7 @@ export default class EmailService {
         html,
       });
     } catch (err) {
-      logger.error(`Failed to send email to ${email}`);
+      logger.error({ email, cities }, "Failed to send change to city access notification email");
     }
   }
 }

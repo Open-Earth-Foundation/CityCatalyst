@@ -45,7 +45,7 @@ humanfriendly==10.0
 idna==3.10
 importlib_metadata==8.6.1
 importlib_resources==6.5.2
-Jinja2==3.1.5
+Jinja2==3.1.6
 jiter==0.7.1
 jmespath==1.0.1
 joblib==1.4.2
@@ -127,7 +127,7 @@ rsa==4.9.1
 s3transfer==0.10.4
 scikit-learn==1.6.1
 scipy==1.15.2
-setuptools==75.8.0
+setuptools==78.1.1
 shap==0.47.1
 shellingham==1.5.4
 six==1.16.0

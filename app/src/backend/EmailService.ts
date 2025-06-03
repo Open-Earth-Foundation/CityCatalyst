@@ -265,7 +265,7 @@ export default class EmailService {
         }),
       );
       await sendEmail({
-        to: email as string,
+        to: email,
         subject: "City Catalyst - Access Removed",
         html,
       });

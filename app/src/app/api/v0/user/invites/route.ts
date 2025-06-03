@@ -144,6 +144,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
   if (organizationIds.size > 1) {
     logger.warn(
+      { cityIds },
       "Multiple organizations found for invites, cannot apply branding to email",
     );
   } else if (organizationIds.size === 1) {

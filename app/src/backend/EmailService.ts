@@ -265,12 +265,12 @@ export default class EmailService {
         }),
       );
       await sendEmail({
-        to: email as string,
+        to: email,
         subject: "City Catalyst - Access Removed",
         html,
       });
     } catch (err) {
-      logger.error(`Failed to send email to ${email}`);
+      logger.error({ email, cities }, "Failed to send change to city access notification email");
     }
   }
 }

@@ -1,11 +1,18 @@
 import json
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from plan_creator_bundle.plan_creator_legacy.state.agent_state import AgentState
+from plan_creator_bundle.plan_creator.state.agent_state import AgentState
 from langchain_openai import ChatOpenAI
-from tools.tools import (
+from plan_creator_bundle.tools.tools import (
     get_search_municipalities_tool,
 )
+from plan_creator_bundle.plan_creator.models import InstitutionList
+
+from utils.logging_config import setup_logger
+import logging
+
+setup_logger()
+logger = logging.getLogger(__name__)
 
 # Create the agents
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
@@ -45,19 +52,17 @@ Include keywords such as "official website," "government agency," or "city depar
 </tools>
 
 <output>
-The final output should be a headline and a bullet point list of possibly involved municipal institutions.
-
-<example_output>
-## Municipal Institutions Involved:
-
-* **[name in national language]**
-    * [brief english description]
-    * Source: [<link to the website>]
-* **[name in national language]**
-    * [brief english description]
-    * Source: [<link to the website>]
-* ...
-</example_output>
+The final output should be a JSON object with an `institutions` field, which is an array of objects, each with the following fields:
+{
+  "institutions": [
+    {
+      "name": "<name in national language>",
+      "description": "<brief english description>"
+    },
+    ...
+  ]
+}
+Only output valid JSON format without any additional text or formatting like ```
 </output>
 
 <tone>
@@ -76,36 +81,51 @@ def build_custom_agent_3():
     """Wrap create_react_agent to store final output in AgentState."""
 
     # The chain returned by create_react_agent
-    react_chain = create_react_agent(model, tools, prompt=system_prompt_agent_3)
+    react_chain = create_react_agent(
+        model, tools, prompt=system_prompt_agent_3, response_format=InstitutionList
+    )
 
     def custom_agent_3(state: AgentState) -> AgentState:
-
-        print("Agent 3 start...")
+        logger.info("Agent 3 start...")
 
         result_state = react_chain.invoke(
             {
                 "messages": HumanMessage(
                     f"""
                     This is the climate action (main action) data: 
-                    {json.dumps(state['climate_action_data'], indent=4)}
+                    {json.dumps(state['climate_action_data'], indent=2)}
 
                     This is the city data: 
-                    {json.dumps(state['city_data'], indent=4)}
+                    {json.dumps(state['city_data'], indent=2)}
 
                     This is the response from Agent 1 containing the nation and city-level strategies as well as the climate action plan (main action) description:
-                    {json.dumps(state['response_agent_1'].content, indent=4)}
+                    {json.dumps(state['response_agent_1'].model_dump(), indent=2)}
 
                     This is the response from Agent 2 containing the proposed sub-actions for the climate action:
-                    {json.dumps(state['response_agent_2'].content, indent=4)}
+                    {json.dumps(state['response_agent_2'].model_dump(), indent=2)}
+
+                    # INSTRUCTIONS FOR OUTPUT FORMAT
+                    Please output your response as a JSON object with an `institutions` field, which is an array of objects, each with the following fields:
+                    {{
+                    "institutions": [
+                        {{
+                        "name": "<name in national language>",
+                        "description": "<brief english description>"
+                        }},
+                        ...
+                    ]
+                    }}
+                    Only output valid JSON format without any additional text or formatting like ```
                     """
                 )
             }
         )
 
-        agent_output = result_state["messages"][-1].content
-        result_state["response_agent_3"] = AIMessage(agent_output)
+        # Extract the structured response from the result_state
+        agent_output_structured: InstitutionList = result_state["structured_response"]
+        result_state["response_agent_3"] = agent_output_structured
 
-        print("Agent 3 done\n")
+        logger.info("Agent 3 done\n")
         return AgentState(**result_state)
 
     return custom_agent_3

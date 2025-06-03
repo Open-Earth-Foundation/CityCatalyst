@@ -10,9 +10,10 @@ from services.get_actions import get_actions
 from services.get_context import get_context
 from prioritizer.utils.filter_actions_by_biome import filter_actions_by_biome
 from prioritizer.models import (
-    PrioritizeRequest,
-    PrioritizeResponse,
+    PrioritizerRequest,
+    PrioritizerResponse,
     RankedAction,
+    MetaData,
 )
 from utils.logging_config import setup_logger
 
@@ -25,11 +26,11 @@ router = APIRouter()
 
 @router.post(
     "/v1/prioritize_city",
-    response_model=PrioritizeResponse,
+    response_model=PrioritizerResponse,
     summary="Prioritize climate actions for a single city",
     description="This endpoint receives city context and emissions data, and returns a ranked list of climate actions.",
 )
-async def prioritize(request: PrioritizeRequest):
+async def prioritize(request: PrioritizerRequest):
     logger.info(
         f"Received prioritization request for city: {request.cityData.cityContextData.locode}"
     )
@@ -117,9 +118,11 @@ async def prioritize(request: PrioritizeRequest):
         for action, rank in adaptationRanking
     ]
 
-    return PrioritizeResponse(
-        locode=request.cityData.cityContextData.locode,
-        rankedDate=datetime.now(),
+    return PrioritizerResponse(
+        metadata=MetaData(
+            locode=request.cityData.cityContextData.locode,
+            rankedDate=datetime.now(),
+        ),
         rankedActionsMitigation=rankedActionsMitigation,
         rankedActionsAdaptation=rankedActionsAdaptation,
     )

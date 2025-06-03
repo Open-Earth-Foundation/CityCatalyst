@@ -1,16 +1,20 @@
+import os
 import logging
 from typing import Tuple, Union
 from langchain.tools import tool
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain.schema import Document
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_tavily import TavilySearch
 
 from plan_creator_bundle.utils.get_vectorstore_local import get_vectorstore
 from utils.logging_config import setup_logger
 
 setup_logger()
 logger = logging.getLogger(__name__)
+
+# Get TAVILY SEARCH MODE from environment variable
+TAVILY_SEARCH_MODE = os.getenv("TAVILY_SEARCH_MODE", "basic")
 
 
 # Define tools for each agent
@@ -174,22 +178,19 @@ def retriever_indicators_tool(
 def get_search_municipalities_tool(search_query: str):
     """
     Search for municipal institutions that might be relevant for the implementation of the specific climate action for the given city.
-    Input: A search query in the national language.
+    search_query: A search query in the national language.
     """
 
     logger.info(f"get_search_municipalities_tool called with query: {search_query}")
 
-    tavily_tool = TavilySearchResults(
+    tavily_tool = TavilySearch(
         max_results=2,
-        search_depth="advanced",  # change between 'basic' for testing and 'advanced' for production
-        description="""
-        Search for municipal institutions that might be relevant for the implementation of the specific climate action for the given city.\n\nInput: A search query in the national language.
-        """,
+        search_depth=TAVILY_SEARCH_MODE,  # change between 'basic' for testing and 'advanced' for production,
     )
     try:
         logger.info("Invoking TavilySearchResults...")
-        result = tavily_tool.invoke(search_query)
-        logger.info(f"TavilySearchResults returned: {result}")
+        result = tavily_tool.invoke({"query": search_query})
+        logger.debug(f"TavilySearchResults returned: {result}")
         return result
     except Exception as e:
         logger.error(f"Error in TavilySearchResults: {str(e)}", exc_info=True)

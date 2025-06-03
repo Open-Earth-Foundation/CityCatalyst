@@ -1,15 +1,13 @@
-from pathlib import Path
-import json
-from datetime import datetime
+from datetime import datetime, UTC
 import time
-import logging
 import uuid
 import threading
-from typing import Optional, List, Dict, Any
+from typing import Dict, Any
 
 from fastapi import HTTPException, APIRouter
-from fastapi.responses import FileResponse
-from langchain_core.messages import AIMessage
+
+import logging
+from utils.logging_config import setup_logger
 
 from utils.build_city_data import build_city_data
 from services.get_context import get_context
@@ -21,20 +19,26 @@ from plan_creator_bundle.plan_creator.models import (
     PlanRequest,
     StartPlanCreationResponse,
     CheckProgressResponse,
+    PlanResponse,
+    Introduction,
+    SubactionList,
+    InstitutionList,
+    MilestoneList,
+    MerIndicatorList,
+    MitigationList,
+    AdaptationList,
+    SDGList,
+    Timeline,
+    CostBudget,
+    PlanCreatorMetadata,
+    PlanContent,
 )
 
-
+setup_logger()
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# Define output directory
-output_dir = Path(__file__).parent / "data" / "output"
-logger.info(f"Output directory set to: {output_dir}")
-
-# Define city data path
-city_data_path = Path(__file__).parent / "data" / "city_data.json"
-logger.info(f"City data path set to: {city_data_path}")
 
 # Storage for task status and results
 task_storage = {}
@@ -46,48 +50,38 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
         # Update status to running
         task_storage[task_uuid]["status"] = "running"
         logger.info(
-            f"""Task {task_uuid}: Starting plan creation for: 
-            locode {background_task_input["cityData"]["locode"]}, 
-            action: {background_task_input["action"]}
-            language: {background_task_input["language"]}
-            """
+            f"Task {task_uuid}: Starting plan creation for locode={background_task_input['cityData']['locode']} action={background_task_input['action']['ActionID']} language={background_task_input['language']}"
         )
 
         start_time = time.time()
-
-        # 1. Initialize the graph and state
-        logger.info(f"Task {task_uuid}: Creating computation graph")
-        graph = create_graph()
-        logger.info(f"Task {task_uuid}: Graph created successfully")
-
-        logger.info(f"Task {task_uuid}: Initializing agent state")
-        initial_state = AgentState(
-            climate_action_data=background_task_input["action"],
-            city_data=background_task_input["cityData"],
-            response_agent_1=AIMessage(""),
-            response_agent_2=AIMessage(""),
-            response_agent_3=AIMessage(""),
-            response_agent_4=AIMessage(""),
-            # response_agent_5=AIMessage(""),
-            # response_agent_6=AIMessage(""),
-            response_agent_7=AIMessage(""),
-            response_agent_8=AIMessage(""),
-            response_agent_9=AIMessage(""),
-            response_agent_10=AIMessage(""),
-            response_agent_combine="",
-            response_agent_translate="",
-            language=background_task_input["language"],
-            messages=[],
+        logger.debug(
+            f"Task {task_uuid}: Initializing computation graph and agent state"
         )
-        logger.info(f"Task {task_uuid}: Agent state initialized successfully")
+        graph = create_graph()
+        initial_state: AgentState = {
+            "climate_action_data": background_task_input["action"],
+            "city_data": background_task_input["cityData"],
+            "response_agent_1": Introduction(title="", description=""),
+            "response_agent_2": SubactionList(subactions=[]),
+            "response_agent_3": InstitutionList(institutions=[]),
+            "response_agent_4": MilestoneList(milestones=[]),
+            "response_agent_5": Timeline(),
+            "response_agent_6": CostBudget(),
+            "response_agent_7": MerIndicatorList(merIndicators=[]),
+            "response_agent_8": MitigationList(mitigations=[]),
+            "response_agent_9": AdaptationList(adaptations=[]),
+            "response_agent_10": SDGList(sdgs=[]),
+            "response_agent_translate": {},
+            "language": background_task_input["language"],
+            "messages": [],
+        }
 
         # 2. Generate the plan
         try:
-            logger.info(
-                f"Task {task_uuid}: Starting graph execution for plan generation"
-            )
+            logger.info(f"Task {task_uuid}: Executing graph for plan generation")
             result = graph.invoke(input=initial_state)
             logger.info(f"Task {task_uuid}: Graph execution completed successfully")
+
         except Exception as e:
             logger.error(
                 f"Task {task_uuid}: Error during graph execution: {str(e)}",
@@ -97,26 +91,63 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
             task_storage[task_uuid]["error"] = f"Error during graph execution: {str(e)}"
             return
 
-        # 3. Save the plan
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-        action_id = background_task_input["action"].get("ActionID", "unknown")
-        filename = f"{timestamp}_{action_id}_{background_task_input['cityData']['locode']}_{background_task_input['language']}_climate_action_implementation_plan.md"
-        output_path = output_dir / filename
-        output_dir.mkdir(parents=True, exist_ok=True)
+        # 3. Parse the plan result into PlanResponse
+        try:
+            # Step 1: Create metadata
+            metadata = PlanCreatorMetadata(
+                locode=result["city_data"]["locode"],
+                cityName=result["city_data"]["name"],
+                actionId=result["climate_action_data"]["ActionID"],
+                actionName=result["climate_action_data"]["ActionName"],
+                createdAt=datetime.now(UTC),
+            )
 
-        logger.info(f"Task {task_uuid}: Saving plan to file: {output_path}")
-        with open(output_path, "w", encoding="utf-8") as f:
-            f.write(result["response_agent_translate"])
-        logger.info(f"Task {task_uuid}: Plan file saved successfully")
+            # Step 2: Create PlanContent
+            translated = result["response_agent_translate"]
+            content = PlanContent(
+                introduction=Introduction.model_validate(
+                    translated["response_agent_1"]
+                ),
+                subactions=SubactionList.model_validate(translated["response_agent_2"]),
+                institutions=InstitutionList.model_validate(
+                    translated["response_agent_3"]
+                ),
+                milestones=MilestoneList.model_validate(translated["response_agent_4"]),
+                timeline=[Timeline.model_validate(translated["response_agent_5"])],
+                costBudget=[CostBudget.model_validate(translated["response_agent_6"])],
+                merIndicators=MerIndicatorList.model_validate(
+                    translated["response_agent_7"]
+                ),
+                mitigations=MitigationList.model_validate(
+                    translated["response_agent_9"]
+                ),
+                adaptations=AdaptationList.model_validate(
+                    translated["response_agent_8"]
+                ),
+                sdgs=SDGList.model_validate(translated["response_agent_10"]),
+            )
+
+            # Step 3: Wrap in PlanResponse
+            plan_response = PlanResponse(
+                metadata=metadata, content={result["language"]: content}
+            )
+
+        except Exception as e:
+            logger.error(
+                f"Task {task_uuid}: Error parsing plan response: {str(e)}",
+                exc_info=True,
+            )
+            task_storage[task_uuid]["status"] = "failed"
+            task_storage[task_uuid]["error"] = f"Error parsing plan response: {str(e)}"
+            return
 
         # Store the result
         task_storage[task_uuid]["status"] = "completed"
-        task_storage[task_uuid]["filename"] = filename
-        task_storage[task_uuid]["output_path"] = str(output_path)
+        task_storage[task_uuid]["plan_response"] = plan_response
 
         process_time = time.time() - start_time
         logger.info(
-            f"Task {task_uuid}: Plan generation completed in {process_time:.2f} seconds"
+            f"Task {task_uuid}: Plan generation completed in {process_time:.2f}s"
         )
 
     except Exception as e:
@@ -135,9 +166,9 @@ async def start_plan_creation(request: PlanRequest):
     """Start asynchronous plan creation process"""
     # Generate a unique task ID
     task_uuid = str(uuid.uuid4())
-    logger.info(f"Received plan creation request, assigned task ID: {task_uuid}")
-    logger.info(f"Locode: {request.cityData.cityContextData.locode}")
-    logger.info(f"Requested language: {request.language}")
+    logger.info(f"Task {task_uuid}: Received plan creation request")
+    logger.info(f"Task {task_uuid}: Locode: {request.cityData.cityContextData.locode}")
+    logger.info(f"Task {task_uuid}: Requested language: {request.language}")
 
     # 1. Initialize task status
     task_storage[task_uuid] = {
@@ -167,6 +198,10 @@ async def start_plan_creation(request: PlanRequest):
     # 3. Fetch general city context data from global API
     cityContext = get_context(requestData["locode"])
     if not cityContext:
+        logger.error(
+            f"Task {task_uuid}: No city context data found from global API.",
+            exc_info=True,
+        )
         raise HTTPException(
             status_code=404, detail="No city context data found from global API."
         )
@@ -177,6 +212,9 @@ async def start_plan_creation(request: PlanRequest):
     # 5. Fetch actions from API and filter by actionId
     actions = get_actions()
     if not actions:
+        logger.error(
+            f"Task {task_uuid}: No actions data found from global API.", exc_info=True
+        )
         raise HTTPException(
             status_code=404, detail="No actions data found from global API."
         )
@@ -187,6 +225,10 @@ async def start_plan_creation(request: PlanRequest):
             action = item
             break
     if not action:
+        logger.error(
+            f"Task {task_uuid}: Action not found within retrieved actions from global API.",
+            exc_info=True,
+        )
         raise HTTPException(
             status_code=404,
             detail="Action not found within retrieved actions from global API.",
@@ -199,13 +241,26 @@ async def start_plan_creation(request: PlanRequest):
         "language": request.language,
     }
     # 7. Start background thread for processing
-    thread = threading.Thread(
-        target=_execute_plan_creation, args=(task_uuid, background_task_input)
-    )
-    thread.daemon = True
-    thread.start()
+    try:
+        thread = threading.Thread(
+            target=_execute_plan_creation, args=(task_uuid, background_task_input)
+        )
+        thread.daemon = True
+        thread.start()
+        logger.info(f"Task {task_uuid}: Started background processing for task")
+    except Exception as e:
+        logger.error(
+            f"Task {task_uuid}: Failed to start background thread: {str(e)}",
+            exc_info=True,
+        )
+        task_storage[task_uuid]["status"] = "failed"
+        task_storage[task_uuid][
+            "error"
+        ] = f"Failed to start background thread: {str(e)}"
 
-    logger.info(f"Started background processing for task: {task_uuid}")
+        raise HTTPException(
+            status_code=500, detail="Failed to start background thread."
+        )
 
     # Return the task ID immediately
     return StartPlanCreationResponse(taskId=task_uuid, status="pending")
@@ -214,14 +269,14 @@ async def start_plan_creation(request: PlanRequest):
 @router.get("/v1/check_progress/{task_uuid}", response_model=CheckProgressResponse)
 async def check_progress(task_uuid: str):
     """Check the progress of a plan creation task"""
-    logger.info(f"Checking progress for task: {task_uuid}")
+    logger.info(f"Task {task_uuid}: Checking progress")
 
     if task_uuid not in task_storage:
-        logger.warning(f"Task not found: {task_uuid}")
-        raise HTTPException(status_code=404, detail="Task not found")
+        logger.warning(f"Task {task_uuid}: Task not found")
+        raise HTTPException(status_code=404, detail=f"Task {task_uuid} not found")
 
     task_info = task_storage[task_uuid]
-    logger.info(f"Task {task_uuid} status: {task_info['status']}")
+    logger.info(f"Task {task_uuid}: Task status: {task_info['status']}")
 
     response_data = {"status": task_info["status"]}
 
@@ -232,39 +287,34 @@ async def check_progress(task_uuid: str):
     return CheckProgressResponse(**response_data)
 
 
-@router.get("/v1/get_plan/{task_uuid}")
+@router.get("/v1/get_plan/{task_uuid}", response_model=PlanResponse)
 async def get_plan(task_uuid: str):
-    """Get the completed plan for a task"""
-    logger.info(f"Retrieving plan for task: {task_uuid}")
-
+    """Get the completed plan for a task. Returns error details if failed or not ready."""
+    logger.info(f"Task {task_uuid}: Retrieving plan")
     if task_uuid not in task_storage:
-        logger.warning(f"Task not found: {task_uuid}")
-        raise HTTPException(status_code=404, detail="Task not found")
+        logger.warning(f"Task {task_uuid}: Task not found")
+        raise HTTPException(status_code=404, detail=f"Task {task_uuid} not found")
 
     task_info = task_storage[task_uuid]
-
-    if task_info["status"] != "completed":
-        logger.warning(
-            f"Task {task_uuid} is not completed yet. Current status: {task_info['status']}"
+    if task_info["status"] == "failed":
+        logger.error(
+            f"Task {task_uuid}: Task failed: {task_info.get('error')}", exc_info=True
         )
         raise HTTPException(
+            status_code=500,
+            detail=f"Task {task_uuid} failed: {task_info.get('error', 'Unknown error')}",
+        )
+    if task_info["status"] != "completed":
+        logger.info(f"Task {task_uuid}: Task not completed yet: {task_info['status']}")
+        raise HTTPException(
             status_code=409,
-            detail=f"Plan is not ready yet. Current status: {task_info['status']}",
+            detail=f"Plan for task {task_uuid} is not ready yet. Current status: {task_info['status']}",
         )
 
-    output_path = Path(task_info["output_path"])
-    filename = task_info["filename"]
-
-    logger.info(f"Returning plan file for task {task_uuid}: {output_path}")
-
-    # Return the file and then clean up the task data
     try:
-        response = FileResponse(
-            path=output_path, filename=filename, media_type="text/markdown"
+        return task_info["plan_response"]
+    except Exception as e:
+        logger.error(
+            f"Task {task_uuid}: Error returning plan response: {str(e)}", exc_info=True
         )
-        return response
-    finally:
-        # Clean up task data after attempt to return the file,
-        # even if an error occurred (e.g., file not found, disk error, etc.)
-        del task_storage[task_uuid]
-        logger.info(f"Task {task_uuid} data cleaned up after retrieval attempt")
+        raise HTTPException(status_code=500, detail="Error returning plan response.")

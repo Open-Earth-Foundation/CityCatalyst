@@ -16,7 +16,7 @@ COPY app/ ./
 # Make the run.sh file executable
 RUN chmod +x run.sh
 
-# Create output directory
+# Create output directory for legacy plan creator file output
 RUN mkdir -p plan_creator_legacy/data/output
 
 # Expose the port the app runs on

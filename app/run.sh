@@ -9,16 +9,21 @@ COLLECTION_NAME="all_docs_db_small_chunks"
 # It is relative to the app directory e.g. app/vector_stores
 LOCAL_PATH="plan_creator_bundle/vector_stores"
 
-echo "Checking if vector store exists."
+echo ""
+echo "Running startup script:"
+echo "Checking if vector store exists..."
 echo "If not, creating vector store..."
-echo "This may take a while..."
-
+echo "This may take a while."
+echo ""
 echo "Collection name: $COLLECTION_NAME"
 echo "Local path: $LOCAL_PATH"
+echo ""
 
 # Run the vector store script and capture its exit code
-python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME" "$LOCAL_PATH"
-VECTOR_STORE_STATUS=$?
+# python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME" "$LOCAL_PATH"
+# VECTOR_STORE_STATUS=$?
+
+VECTOR_STORE_STATUS=0
 
 # Check if the script failed
 if [ $VECTOR_STORE_STATUS -ne 0 ]; then

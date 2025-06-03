@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict
+from datetime import datetime, date
 
 # --- Request models ---
 
@@ -57,41 +58,138 @@ class CheckProgressResponse(BaseModel):
     error: Optional[str] = None
 
 
-### WIP for the plan creation response ###
+class Introduction(BaseModel):
+    title: str
+    description: str
 
 
-class PlanMetadata(BaseModel):
+class Subaction(BaseModel):
+    number: int
+    title: str
+    description: str
+
+
+class SubactionList(BaseModel):
+    subactions: List[Subaction]
+
+
+class Institution(BaseModel):
+    name: str
+    description: str
+
+
+class InstitutionList(BaseModel):
+    institutions: List[Institution]
+
+
+class Milestone(BaseModel):
+    number: int
+    title: str
+    description: str
+
+
+class MilestoneList(BaseModel):
+    milestones: List[Milestone]
+
+
+class Timeline(BaseModel):
+    pass
+
+
+class CostBudget(BaseModel):
+    pass
+
+
+class MerIndicator(BaseModel):
+    description: str
+
+
+class MerIndicatorList(BaseModel):
+    merIndicators: List[MerIndicator]
+
+
+class Mitigation(BaseModel):
+    title: str
+    description: str
+
+
+class MitigationList(BaseModel):
+    mitigations: List[Mitigation]
+
+
+class Adaptation(BaseModel):
+    title: str
+    description: str
+
+
+class AdaptationList(BaseModel):
+    adaptations: List[Adaptation]
+
+
+class SDG(BaseModel):
+    title: str
+    description: str
+
+
+class SDGList(BaseModel):
+    sdgs: List[SDG]
+
+
+class PlanContent(BaseModel):
+    introduction: Introduction = Field(
+        description="Introduction of the plan, including title and description"
+    )
+    subactions: SubactionList = Field(
+        default_factory=lambda: SubactionList(subactions=[]),
+        description="List of subactions, each with a number, title, and description",
+    )
+    institutions: InstitutionList = Field(
+        default_factory=lambda: InstitutionList(institutions=[]),
+        description="List of institutions, each with a name and description",
+    )
+    milestones: MilestoneList = Field(
+        default_factory=lambda: MilestoneList(milestones=[]),
+        description="List of milestones, each with a number, title, and description",
+    )
+    timeline: List[Timeline] = Field(
+        default_factory=list,
+        description="List of timelines, each with a title and description",
+    )
+    costBudget: List[CostBudget] = Field(
+        default_factory=list,
+        description="List of cost budgets, each with a title and description",
+    )
+    merIndicators: MerIndicatorList = Field(
+        default_factory=lambda: MerIndicatorList(merIndicators=[]),
+        description="List of MER indicators, each with a description",
+    )
+    mitigations: MitigationList = Field(
+        default_factory=lambda: MitigationList(mitigations=[]),
+        description="List of mitigations, each with a title and description",
+    )
+    adaptations: AdaptationList = Field(
+        default_factory=lambda: AdaptationList(adaptations=[]),
+        description="List of adaptations, each with a title and description",
+    )
+    sdgs: SDGList = Field(
+        default_factory=lambda: SDGList(sdgs=[]),
+        description="List of SDGs, each with a title and description",
+    )
+
+
+class PlanCreatorMetadata(BaseModel):
     locode: str
     cityName: str
     actionId: str
     actionName: str
+    createdAt: datetime
 
 
-class PlanContent(BaseModel):
-    title: str
-    description: str
-    subactions: List[dict] = Field(
-        description="List of subactions with their descriptions"
-    )
-    municipalInstitutions: List[dict] = Field(
-        description="List of institutions with their roles and sources"
-    )
-    milestones: List[dict] = Field(
-        description="List of milestones with their descriptions"
-    )
-    merIndicators: List[dict] = Field(
-        description="List of MER indicators with their descriptions"
-    )
-    climateRisks: List[dict] = Field(
-        description="List of climate risks with their descriptions"
-    )
-    mitigationSectors: List[dict] = Field(
-        description="List of mitigation sectors with their descriptions"
-    )
+LanguageCode = str  # should be ISO 639-1 codes like 'en', 'es', 'pt'
 
 
-class Plan(BaseModel):
-    metadata: PlanMetadata
-    content: Dict[str, PlanContent] = Field(
-        description="Plan content in different languages, keyed by language code (e.g. 'en', 'es')"
+class PlanResponse(BaseModel):
+    metadata: PlanCreatorMetadata = Field(description="Metadata for the plan creator")
+    content: Dict[LanguageCode, PlanContent] = Field(
+        description="Dictionary of PlanContent, keyed by ISO 639-1 language code (e.g., 'en', 'es', 'pt')"
     )

@@ -14,17 +14,15 @@ import {
   Text,
 } from "@react-email/components";
 
-export function InviteUserToMultipleCitiesTemplate({
+export function RemoveUserFromMultipleCitiesTemplate({
   url,
   email,
   cities,
-  invitingUser,
   brandInformation,
 }: {
   url?: string;
   email: string;
   cities: City[];
-  invitingUser: { name: string; email: string };
   brandInformation?: {
     color: string;
     logoUrl: string;
@@ -46,7 +44,7 @@ export function InviteUserToMultipleCitiesTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: City Invitation</Preview>
+      <Preview>CityCatalyst: Access Removed</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section>
@@ -75,11 +73,11 @@ export function InviteUserToMultipleCitiesTemplate({
             )}
             <Section style={{ padding: "24px" }}>
               {/* eslint-disable-next-line react/no-unescaped-entities */}
-              <Text style={headingGreen}>You've been granted access</Text>
+              <Text style={headingGreen}>Changes to Access</Text>
               <Text style={greeting}>Hi {email},</Text>
               <Text style={paragraph}>
-                You have been granted access to
-                {cities?.length == 1 ? " this city" : " these cities"}:
+                Your access has been removed from the following
+                {cities?.length == 1 ? " city" : " cities"}:
               </Text>
               <div>
                 {cities?.map(({ countryLocode, name }) => (
@@ -107,7 +105,7 @@ export function InviteUserToMultipleCitiesTemplate({
                       : {}),
                   }}
                 >
-                  JOIN NOW
+                  Sign In
                 </Link>
               </Section>
             </Section>
@@ -127,7 +125,7 @@ export function InviteUserToMultipleCitiesTemplate({
   );
 }
 
-export default InviteUserToMultipleCitiesTemplate;
+export default RemoveUserFromMultipleCitiesTemplate;
 
 const buttonSection = {
   marginTop: "36px",

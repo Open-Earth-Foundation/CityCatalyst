@@ -13,6 +13,8 @@ import ProjectDeletedNotificationTemplate from "@/lib/emails/ProjectDeletedNotif
 import CitySlotChangedNotificationTemplate from "@/lib/emails/CitySlotChangedNotification";
 import AccountFrozenNotificationTemplate from "@/lib/emails/AccountFrozenNotificationTemplate";
 import AccountUnFrozenNotificationTemplate from "@/lib/emails/AccountUnFrozenNotificationTemplate";
+import { City } from "@/models/City";
+import RemoveUserFromMultipleCitiesTemplate from "@/lib/emails/RemoveUsersFromMultipleCities";
 
 export default class EmailService {
   public static async sendOrganizationInvitationEmail(
@@ -235,5 +237,40 @@ export default class EmailService {
         }
       }),
     );
+  }
+
+  public static async sendChangeToCityAccessNotification({
+    email,
+    cities,
+    brandInformation,
+  }: {
+    email: string;
+    cities: City[];
+    brandInformation?: {
+      color: string;
+      logoUrl: string;
+    };
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    try {
+      const html = await render(
+        RemoveUserFromMultipleCitiesTemplate({
+          url,
+          email: email as string,
+          cities,
+          brandInformation,
+        }),
+      );
+      await sendEmail({
+        to: email as string,
+        subject: "City Catalyst - Access Removed",
+        html,
+      });
+    } catch (err) {
+      logger.error(`Failed to send email to ${email}`);
+    }
   }
 }

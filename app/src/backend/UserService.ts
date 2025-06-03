@@ -16,6 +16,7 @@ import { UserFile } from "@/models/UserFile";
 import { Project } from "@/models/Project";
 import { hasOrgOwnerLevelAccess } from "@/backend/RoleBasedAccessService";
 import { logger } from "@/services/logger";
+import EmailService from "@/backend/EmailService";
 
 export default class UserService {
   public static async findUser(
@@ -570,7 +571,20 @@ export default class UserService {
   }
 
   public static async removeUserFromProject(projectId: string, email: string) {
-    const project = await Project.findByPk(projectId as string);
+    const project = await Project.findByPk(projectId as string, {
+      include: [
+        {
+          model: db.models.Organization,
+          as: "organization",
+          include: [
+            {
+              model: db.models.Theme,
+              as: "theme",
+            },
+          ],
+        },
+      ],
+    });
 
     if (!project) {
       throw new createHttpError.NotFound("project-not-found");
@@ -579,7 +593,24 @@ export default class UserService {
     const user = await User.findOne({ where: { email } });
     const cities = await City.findAll({
       where: { projectId },
-      attributes: ["cityId"],
+      include: [
+        {
+          model: db.models.Project,
+          as: "project",
+          include: [
+            {
+              model: db.models.Organization,
+              as: "organization",
+              include: [
+                {
+                  model: db.models.Theme,
+                  as: "theme",
+                },
+              ],
+            },
+          ],
+        },
+      ],
       raw: true,
     });
     const cityIds = cities.map((city) => city.cityId);
@@ -617,6 +648,15 @@ export default class UserService {
           },
           transaction: t,
         });
+
+        EmailService.sendChangeToCityAccessNotification({
+          cities: cities as City[],
+          email: user ? (user.email as string) : email,
+          brandInformation: {
+            logoUrl: project.organization.logoUrl || "",
+            color: project.organization.theme?.primaryColor,
+          },
+        });
       });
     } catch (error) {
       logger.error(
@@ -633,7 +673,27 @@ export default class UserService {
   }
 
   public static async removeUserFromCity(cityId: string, email: string) {
-    const city = await City.findByPk(cityId as string);
+    const city = await City.findByPk(cityId as string, {
+      include: [
+        {
+          model: db.models.Project,
+          as: "project",
+          include: [
+            {
+              model: db.models.Organization,
+              as: "organization",
+              include: [
+                {
+                  model: db.models.Theme,
+                  as: "theme",
+                  attributes: ["primaryColor"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
 
     if (!city) {
       throw new createHttpError.NotFound("city-not-found");
@@ -659,6 +719,15 @@ export default class UserService {
             email: email,
           },
           transaction: t,
+        });
+
+        EmailService.sendChangeToCityAccessNotification({
+          cities: [city],
+          email: user ? (user.email as string) : email,
+          brandInformation: {
+            logoUrl: city.project.organization.logoUrl || "",
+            color: city.project.organization.theme?.primaryColor,
+          },
         });
       });
     } catch (error) {

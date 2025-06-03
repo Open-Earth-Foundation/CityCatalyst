@@ -126,6 +126,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
               {
                 model: db.models.Theme,
                 as: "theme",
+                attributes: ["primaryColor"],
               },
             ],
           },
@@ -226,6 +227,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
           doesInvitedUserExist ? "true" : "false",
         );
         const url = `${host}/user/invites?${params.toString()}`;
+        console.log(emailBranding, "the branding");
         const html = await render(
           InviteUserToMultipleCitiesTemplate({
             url,

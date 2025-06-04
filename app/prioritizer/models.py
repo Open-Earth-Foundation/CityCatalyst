@@ -62,7 +62,7 @@ class MetaData(BaseModel):
 class RankedAction(BaseModel):
     actionId: str
     rank: int
-    explanation: str
+    explanation: Optional[dict[str, str]] = None
 
 
 class PrioritizerResponse(BaseModel):

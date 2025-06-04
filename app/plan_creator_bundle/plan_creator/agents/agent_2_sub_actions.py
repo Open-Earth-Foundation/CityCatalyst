@@ -57,14 +57,27 @@ You have access to the following tools:
 </tools>
 
 <output>
-The final output should be a headline and an ordered list of actionable sub-actions for implementing the climate action.
+The final output should be a JSON object with an 'items' field containing an array of subaction objects.
 <example_output>
-## Subactions:
-
-1. Sub-action 1
-2. Sub-action 2
-3. Sub-action 3
-4. ...
+{
+  "items": [
+    {
+      "number": 1,
+      "title": "Sub-action 1",
+      "description": "Description of sub-action 1"
+    },
+    {
+      "number": 2,
+      "title": "Sub-action 2",
+      "description": "Description of sub-action 2"
+    },
+    {
+      "number": 3,
+      "title": "Sub-action 3",
+      "description": "Description of sub-action 3"
+    }
+  ]
+}
 </example_output>
 </output>
 
@@ -107,9 +120,9 @@ def build_custom_agent_2():
                     {json.dumps(state['response_agent_1'].model_dump(), indent=2)}
 
                     # INSTRUCTIONS FOR OUTPUT FORMAT
-                    Please output your response as a JSON object with a `subactions` field, which is an array of objects, each with the following fields:
+                    Please output your response as a JSON object with a `items` field, which is an array of objects, each with the following fields:
                     {{
-                    "subactions": [
+                    "items": [
                         {{
                         "number": <number of the subaction>,
                         "title": "<title of the subaction>",

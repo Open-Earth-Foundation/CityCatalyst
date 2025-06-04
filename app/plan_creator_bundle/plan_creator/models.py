@@ -70,7 +70,7 @@ class Subaction(BaseModel):
 
 
 class SubactionList(BaseModel):
-    subactions: List[Subaction]
+    items: List[Subaction]
 
 
 class Institution(BaseModel):
@@ -79,7 +79,7 @@ class Institution(BaseModel):
 
 
 class InstitutionList(BaseModel):
-    institutions: List[Institution]
+    items: List[Institution]
 
 
 class Milestone(BaseModel):
@@ -89,7 +89,7 @@ class Milestone(BaseModel):
 
 
 class MilestoneList(BaseModel):
-    milestones: List[Milestone]
+    items: List[Milestone]
 
 
 class Timeline(BaseModel):
@@ -105,7 +105,7 @@ class MerIndicator(BaseModel):
 
 
 class MerIndicatorList(BaseModel):
-    merIndicators: List[MerIndicator]
+    items: List[MerIndicator]
 
 
 class Mitigation(BaseModel):
@@ -114,7 +114,7 @@ class Mitigation(BaseModel):
 
 
 class MitigationList(BaseModel):
-    mitigations: List[Mitigation]
+    items: List[Mitigation]
 
 
 class Adaptation(BaseModel):
@@ -123,7 +123,7 @@ class Adaptation(BaseModel):
 
 
 class AdaptationList(BaseModel):
-    adaptations: List[Adaptation]
+    items: List[Adaptation]
 
 
 class SDG(BaseModel):
@@ -132,7 +132,7 @@ class SDG(BaseModel):
 
 
 class SDGList(BaseModel):
-    sdgs: List[SDG]
+    items: List[SDG]
 
 
 class PlanContent(BaseModel):
@@ -140,15 +140,15 @@ class PlanContent(BaseModel):
         description="Introduction of the plan, including title and description"
     )
     subactions: SubactionList = Field(
-        default_factory=lambda: SubactionList(subactions=[]),
+        default_factory=lambda: SubactionList(items=[]),
         description="List of subactions, each with a number, title, and description",
     )
     institutions: InstitutionList = Field(
-        default_factory=lambda: InstitutionList(institutions=[]),
+        default_factory=lambda: InstitutionList(items=[]),
         description="List of institutions, each with a name and description",
     )
     milestones: MilestoneList = Field(
-        default_factory=lambda: MilestoneList(milestones=[]),
+        default_factory=lambda: MilestoneList(items=[]),
         description="List of milestones, each with a number, title, and description",
     )
     timeline: List[Timeline] = Field(
@@ -160,19 +160,19 @@ class PlanContent(BaseModel):
         description="List of cost budgets, each with a title and description",
     )
     merIndicators: MerIndicatorList = Field(
-        default_factory=lambda: MerIndicatorList(merIndicators=[]),
+        default_factory=lambda: MerIndicatorList(items=[]),
         description="List of MER indicators, each with a description",
     )
     mitigations: MitigationList = Field(
-        default_factory=lambda: MitigationList(mitigations=[]),
+        default_factory=lambda: MitigationList(items=[]),
         description="List of mitigations, each with a title and description",
     )
     adaptations: AdaptationList = Field(
-        default_factory=lambda: AdaptationList(adaptations=[]),
+        default_factory=lambda: AdaptationList(items=[]),
         description="List of adaptations, each with a title and description",
     )
     sdgs: SDGList = Field(
-        default_factory=lambda: SDGList(sdgs=[]),
+        default_factory=lambda: SDGList(items=[]),
         description="List of SDGs, each with a title and description",
     )
 

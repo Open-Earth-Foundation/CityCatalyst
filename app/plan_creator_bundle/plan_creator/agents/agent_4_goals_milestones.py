@@ -45,9 +45,9 @@ Follow these guidelines carefully to complete the task:
 </task>
 
 <output>
-The final output should be a JSON object with a `milestones` field, which is an array of objects, each with the following fields:
+The final output should be a JSON object with a `items` field, which is an array of objects, each with the following fields:
 {
-  "milestones": [
+  "items": [
     {
       "number": <number of the milestone>,
       "title": "<title of the milestone>",
@@ -99,9 +99,9 @@ def build_custom_agent_4():
                     {json.dumps(state['response_agent_2'].model_dump(), indent=2)}
 
                     # INSTRUCTIONS FOR OUTPUT FORMAT
-                    Please output your response as a JSON object with a `milestones` field, which is an array of objects, each with the following fields:
+                    Please output your response as a JSON object with a `items` field, which is an array of objects, each with the following fields:
                     {{
-                    "milestones": [
+                    "items": [
                         {{
                         "number": <number of the milestone>,
                         "title": "<title of the milestone>",

@@ -52,9 +52,9 @@ Include keywords such as "official website," "government agency," or "city depar
 </tools>
 
 <output>
-The final output should be a JSON object with an `institutions` field, which is an array of objects, each with the following fields:
+The final output should be a JSON object with an `items` field, which is an array of objects, each with the following fields:
 {
-  "institutions": [
+  "items": [
     {
       "name": "<name in national language>",
       "description": "<brief english description>"
@@ -105,9 +105,9 @@ def build_custom_agent_3():
                     {json.dumps(state['response_agent_2'].model_dump(), indent=2)}
 
                     # INSTRUCTIONS FOR OUTPUT FORMAT
-                    Please output your response as a JSON object with an `institutions` field, which is an array of objects, each with the following fields:
+                    Please output your response as a JSON object with an `items` field, which is an array of objects, each with the following fields:
                     {{
-                    "institutions": [
+                    "items": [
                         {{
                         "name": "<name in national language>",
                         "description": "<brief english description>"

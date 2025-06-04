@@ -41,13 +41,13 @@ Follow these guidelines carefully to complete the task:
 4. Inspect the provided additional context to climate risks (hazards).
 5. Based on the provided information, list all climate risks (hazards) that are relevant and addressed by the climate action. Include a brief description of how they are addressed by the climate action.
 **Important**: It is possible, that a climate action does not address any of the listed climate risks (hazards) provided in the additional context. This can happen for example, when the climate action primarily aims at mitigating emissions.
-If the climate action does not address any of the listed climate risks (hazards) provided in the additional context, output an empty list for the `adaptations` field, e.g. `{ "adaptations": [] }`. Do not output any climate risks (hazards) that are not provided in the additional context.
+If the climate action does not address any of the listed climate risks (hazards) provided in the additional context, output an empty list for the `items` field, e.g. `{ "items": [] }`. Do not output any climate risks (hazards) that are not provided in the additional context.
 </task>
 
 <output>
-The final output should be a JSON object with an `adaptations` field, which is an array of objects, each with the following fields:
+The final output should be a JSON object with an `items` field, which is an array of objects, each with the following fields:
 {
-  "adaptations": [
+  "items": [
     {
       "title": "<climate risk (hazard)>",
       "description": "<brief description of how it is addressed>"
@@ -55,7 +55,7 @@ The final output should be a JSON object with an `adaptations` field, which is a
     ...
   ]
 }
-If no climate risks (hazards) are addressed by the climate action, output an empty list for the `adaptations` field, e.g. `{ "adaptations": [] }`.
+If no climate risks (hazards) are addressed by the climate action, output an empty list for the `items` field, e.g. `{ "items": [] }`.
 Only output valid JSON format without any additional text or formatting like ```
 </output>
 
@@ -99,7 +99,20 @@ def build_custom_agent_8():
                     {adaptation}
 
                     This is the type of the action: {state['climate_action_data']['ActionType']}
-                    If the action is a mitigation action, output an empty list for the `adaptations` field, e.g. {{ "adaptations": [] }}.
+
+                    # INSTRUCTIONS FOR OUTPUT FORMAT
+                    Please output your response as a JSON object with a `items` field, which is an array of objects, each with the following fields:
+                    {{
+                    "items": [
+                        {{
+                        "title": "<climate risk (hazard)>",
+                        "description": "<brief description of how it is addressed>"
+                        }},
+                        ...
+                    ]
+                    }}
+                    Only output valid JSON format without any additional text or formatting like ```
+                    If the action is a mitigation action, output an empty list for the `items` field, e.g. {{ "items": [] }}.
                     """
                 )
             }

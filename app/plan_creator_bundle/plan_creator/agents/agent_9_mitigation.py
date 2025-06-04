@@ -45,9 +45,9 @@ If the climate action does not address any of the listed mitigation sectors prov
 </task>
 
 <output>
-The final output should be a JSON object with a `mitigations` field, which is an array of objects, each with the following fields:
+The final output should be a JSON object with a `items` field, which is an array of objects, each with the following fields:
 {
-  "mitigations": [
+  "items": [
     {
       "title": "<mitigation sector>",
       "description": "<brief description of how it is addressed>"
@@ -55,7 +55,7 @@ The final output should be a JSON object with a `mitigations` field, which is an
     ...
   ]
 }
-If no mitigation sectors are addressed by the climate action, output an empty list for the `mitigations` field, e.g. `{ "mitigations": [] }`.
+If no mitigation sectors are addressed by the climate action, output an empty list for the `items` field, e.g. `{ "items": [] }`.
 Only output valid JSON format without any additional text or formatting like ```
 </output>
 
@@ -99,7 +99,20 @@ def build_custom_agent_9():
                     {mitigation}
 
                     This is the type of the action: {state['climate_action_data']['ActionType']}
-                    If the action is an adaptation action, output an empty list for the `mitigations` field, e.g. {{ "mitigations": [] }}.
+
+                    # INSTRUCTIONS FOR OUTPUT FORMAT
+                    Please output your response as a JSON object with a `items` field, which is an array of objects, each with the following fields:
+                    {{
+                    "items": [
+                        {{
+                        "title": "<mitigation sector>",
+                        "description": "<brief description of how it is addressed>"
+                        }},
+                        ...
+                    ]
+                    }}
+                    Only output valid JSON format without any additional text or formatting like ```
+                    If the action is an adaptation action, output an empty list for the `items` field, e.g. {{ "items": [] }}.
                     """
                 )
             }

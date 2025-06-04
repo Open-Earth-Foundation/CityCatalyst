@@ -63,9 +63,9 @@ You have access to the following tools:
 </tools>
 
 <output>
-The final output should be a JSON object with a `merIndicators` field, which is an array of objects, each with the following fields:
+The final output should be a JSON object with a `items` field, which is an array of objects, each with the following fields:
 {
-  "merIndicators": [
+  "items": [
     {
       "description": "<indicator description>"
     },
@@ -112,6 +112,18 @@ def build_custom_agent_7():
 
                     This is the response from Agent 1 containing the introduction for the climate action implementation plan:
                     {json.dumps(state['response_agent_1'].model_dump(), indent=2)}
+
+                    # INSTRUCTIONS FOR OUTPUT FORMAT
+                    Please output your response as a JSON object with a `items` field, which is an array of objects, each with the following fields:
+                    {{
+                    "items": [
+                        {{
+                        "description": "<indicator description>"
+                        }},
+                        ...
+                    ]
+                    }}
+                    Only output valid JSON format without any additional text or formatting like ```
                     """
                 )
             }

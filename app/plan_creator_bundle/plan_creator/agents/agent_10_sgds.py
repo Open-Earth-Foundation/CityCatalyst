@@ -43,9 +43,9 @@ Follow these guidlines carefully to complete the task:
 </task>
 
 <output>
-The final output should be a JSON object with an `sdgs` field, which is an array of objects, each with the following fields:
+The final output should be a JSON object with an `items` field, which is an array of objects, each with the following fields:
 {
-  "sdgs": [
+  "items": [
     {
       "title": "<SDG number and name>",
       "description": "<short description of how it is addressed>"
@@ -53,7 +53,7 @@ The final output should be a JSON object with an `sdgs` field, which is an array
     ...
   ]
 }
-If no SDGs are addressed by the climate action, output an empty list for the `sdgs` field, e.g. `{ "sdgs": [] }`.
+If no SDGs are addressed by the climate action, output an empty list for the `items` field, e.g. `{ "items": [] }`.
 Only output valid JSON format without any additional text or formatting like ```
 </output>
 
@@ -96,6 +96,19 @@ def build_custom_agent_10():
 
                     The following is the context for all the SGDs:
                     {json.dumps(sgds, indent=2)}
+
+                    # INSTRUCTIONS FOR OUTPUT FORMAT
+                    Please output your response as a JSON object with a `items` field, which is an array of objects, each with the following fields:
+                    {{
+                    "items": [
+                        {{
+                        "title": "<SDG number and name>",
+                        "description": "<short description of how it is addressed>"
+                        }},
+                        ...
+                    ]
+                    }}
+                    Only output valid JSON format without any additional text or formatting like ```
                     """
                 )
             }

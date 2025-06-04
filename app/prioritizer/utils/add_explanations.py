@@ -1,117 +1,81 @@
-"""
-add_explanations.py
--------------------
-
-This script generates qualitative explanations for prioritized climate actions for each city, using city context and additional action data. It leverages chosen OpenRouter model to create a short explanation for each action, then saves the updated action lists back to the original files.
-
-How it works:
-- For each prioritized actions file in 'data/prioritized/', it:
-  1. Extracts the city code from the filename.
-  2. Loads the corresponding city data from 'data/cities/city_data.json'.
-  3. Loads the prioritized actions for that city.
-  4. For each action, generates a 3-5 sentence explanation using OpenAI's API.
-  5. Saves the updated actions (with explanations) back to the original files in 'data/prioritized/'.
-
-How to run (from project root, in Windows CMD or PowerShell):
-
-    # Single city
-    python scripts\add_explanations.py --locode "BR VDS"
-
-    # All cities (bulk)
-    python scripts\add_explanations.py
-
-The script will process all .json files in 'data/prioritized/' and update the original files with explanations.
-"""
 import os
-import re
-import json
-from pathlib import Path
-from typing import List, Optional
-
-from pydantic import BaseModel, Field
+from typing import Optional
 from openai import OpenAI
 from dotenv import load_dotenv
-from prioritizer.utils.reading_writing_data import read_city_inventory, read_actions
+from utils.logging_config import setup_logger
+import logging
+from pydantic import BaseModel
+
 load_dotenv()
 
-# Initialize OpenAI client
-#OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# Setup logging configuration
+setup_logger()
+logger = logging.getLogger(__name__)
+
+# Initialize OpenAI and OpenRouter clients
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-client = OpenAI(api_key=OPENROUTER_API_KEY, base_url="https://openrouter.ai/api/v1")
-MODEL_NAME = "google/gemini-2.5-flash-preview-05-20"
 
-# Adjust these paths as needed:
-PRIORITIZED_FOLDER = Path("data/prioritized")
-OUTPUT_FOLDER = Path("data/prioritized")  # Changed to save back to original folder
+# Commented out: OpenRouter client
+# openrouter_client = OpenAI(api_key=OPENROUTER_API_KEY, base_url="https://openrouter.ai/api/v1")
+# MODEL_NAME = "google/gemini-2.5-flash-preview-05-20"
 
-
-def extract_city_code(filename: str) -> str:
-    """
-    Extract city code from a filename that follows the pattern:
-    'output_citycode_*.json'
-
-    Example:
-        filename = "output_BR VDS_mitigation.json"
-        -> returns 'BR VDS'
-        filename = "output_BRSER_something.json"
-        -> returns 'BRSER'
-    """
-    # Match pattern: output_ followed by city code, then _ followed by action type
-    match = re.search(r"^output_(.+)_(mitigation|adaptation)\.json$", filename)
-    if match:
-        return match.group(1)
-    
-    # Fallback to original pattern for backward compatibility
-    match = re.search(r"^output_([^_]+)", filename)
-    if match:
-        return match.group(1)
-    return ""
+# Use OpenAI client
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
+OPENAI_MODEL_NAME = "gpt-4o"
 
 
-# Existing Pydantic model for a single action (unchanged)
-class ActionItem(BaseModel):
-    locode: str
-    cityName: str
-    region: str
-    regionName: str
-    actionId: str
-    actionName: str
-    actionPriority: int
-    explanation: str
+class Explanations(BaseModel):
+    en: str
+    es: str
+    pt: str
+    # Add all the languages required here and defined in api.py LANGUAGES constant
 
-# ----------------------------------------------------------------------
-# A new Pydantic model for a *single* explanation (actionId + explanation)
-class ExplanationItem(BaseModel):
-    actionId: str
-    explanation: str
+
+class Explanation(BaseModel):
+    explanation: Explanations
 
 
 def generate_single_explanation(
     city_data: dict,
     single_action: dict,
-    single_action_additional_data: Optional[dict]
+    rank: int,
 ) -> Optional[str]:
     """
-    Produce a short qualitative explanation for one action using city_data and
-    the single action's additional data (if found). Returns just the explanation string.
+    Generate a qualitative explanation for a single prioritized climate action.
 
-    The LLM prompt is set so it returns a JSON with:
-      {"actionId": "<id>", "explanation": "<text>"}
+    This function uses city context, action details, the action's rank, and any additional data to build a prompt for an LLM (OpenAI GPT-4o). The LLM returns a 3-5 sentence explanation describing why the action is a priority for the city. The explanation's tone is influenced by the action's rank (higher rank = more positive tone), but the rank itself is not mentioned in the explanation.
 
-    We extract 'explanation' from that and return it.
+    Args:
+        city_data (dict): Contextual data for the city.
+        single_action (dict): The action to explain.
+        rank (int): The action's rank among the top prioritized actions (1 = highest priority).
+
+    Returns:
+        Optional[str]: The generated explanation string, or None if generation fails.
     """
+    logger.info(
+        f"Generating explanation for action_id={single_action['ActionID']}, rank={rank}"
+    )
     # Build the minimal prompt:
     explanation_prompt = f"""
-    ### Task
-    You have city context and exactly one action (plus any additional data).
-    Return ONLY a JSON object with two keys: 'actionId' and 'explanation'.
-    Example: {{ "actionId": "ACTION_123", "explanation": "..." }}
+    <task>
+    You have city context and exactly one action (plus optional additional data).
+    Return ONLY a string containing the explanation for the action. 
+    Additionally you have the rank of the action.
+    The actions have been ranked from a total of about 240 actions. Therefore these are the top 20 actions.
+    The rank is a number between 1 and 20, where 1 is the highest priority and 20 is the lowest priority among the top selected 20 actions.
+    The rank is based on a tournament ranking algorithm and decided on by an ML model.
+    The rank is purely for your information, you should not mention it in the explanation.
+    However, you should use the rank to determine the tone of the explanation. The higher the rank, the more positive the tone. The lower the rank, the less positive the tone - but still positive as those are the top 20 actions.
+    Example: <explanation>
+
 
     Constraints:
-    - The 'actionId' must match the 'actionId' from the input.
-    - The 'explanation' must be 3-5 sentences describing why this action is a priority (or not).
+    - The explanation must be 3-5 sentences describing why this action is a priority (or not).
     - No numeric scores or internal model references.
     - Do not mention other actions, only focus on this one.
+    - Do not mention the rank in the explanation.
 
     # CITY DATA:
     {city_data}
@@ -119,217 +83,163 @@ def generate_single_explanation(
     # CURRENT ACTION:
     {single_action}
 
-    # ACTION ADDITIONAL DATA:
-    {single_action_additional_data}
+    # RANK:
+    {rank}
+    </task>
     """
 
     try:
-        # We'll use parse with Pydantic ExplanationItem to ensure correct structure.
-        completion = client.beta.chat.completions.parse(
-            model=MODEL_NAME,
+        # Commented out: OpenRouter .parse usage
+        # completion = openrouter_client.beta.chat.completions.parse(
+        #     model=MODEL_NAME,
+        #     messages=[
+        #         {
+        #             "role": "system",
+        #             "content": (
+        #                 "You must return a JSON object with exactly two keys: "
+        #                 "'actionId' (matching the actionId in the input) and 'explanation'. "
+        #                 "No extra keys, no internal data."
+        #             ),
+        #         },
+        #         {"role": "user", "content": explanation_prompt},
+        #     ],
+        #     temperature=0,
+        #     response_format=ExplanationItem,
+        # )
+
+        # Use OpenAI client (normal endpoint, not parse)
+        completion = openai_client.chat.completions.create(
+            model=OPENAI_MODEL_NAME,
             messages=[
                 {
                     "role": "system",
                     "content": (
-                        "You must return a JSON object with exactly two keys: "
-                        "'actionId' (matching the actionId in the input) and 'explanation'. "
-                        "No extra keys, no internal data."
+                        "You are an expert climate action analyst. Return ONLY a string explanation for the action, following the user's instructions."
                     ),
                 },
                 {"role": "user", "content": explanation_prompt},
             ],
             temperature=0,
-            response_format=ExplanationItem
         )
 
-        # 'completion' is already validated by ExplanationItem
-        # It will have the form ExplanationItem(actionId="...", explanation="...")
+        # Extract the explanation string from the response
         response_content = completion.choices[0].message.content
         if response_content is None:
             return "Error: No response content"
-        response_data = json.loads(response_content)
-        print(f"response_data: {response_data}")
-        if "explanation" in response_data:
-            print(response_data["explanation"])
-            return response_data["explanation"]
-        else:
-            print("Warning: No explanations found in response")
-            return "Error: No explanations found in response"
+
+        return response_content
 
     except Exception as e:
-        print(f"Error generating explanation for action '{single_action.get('actionId')}': {str(e)}")
+        logger.error(
+            f"Error generating explanation for action '{single_action['ActionID']}': {str(e)}"
+        )
         return None
 
 
-def update_actions_with_explanations(actions_data: List[dict], city_data: dict) -> List[dict]:
+def generate_multilingual_explanation(
+    city_data: dict,
+    single_action: dict,
+    rank: int,
+    languages: list[str],
+) -> Optional[dict[str, str]]:
     """
-    For each action in actions_data:
-      1. Find corresponding additional data from the merged file (if any).
-      2. Call 'generate_single_explanation' to get an explanation string.
-      3. Insert that explanation into the action.
-    Return the updated list of actions.
-    """
-    # Load the entire additional data set, so we can find extra context if needed.
-    actions_whole = read_actions()
+    Generate qualitative explanations for a single prioritized climate action in multiple languages.
 
-    for action in actions_data:
-        # Identify this action's ID
-        current_id = action.get("actionId", "")
-
-        # Find the additional data for this single action
-        # (There may be many in 'actions_whole'; we find only the relevant one)
-        single_action_additional_data = None
-        for add_data in actions_whole:
-            # Handle both actionId and ActionID field names
-            add_data_id = add_data.get("ActionID") or add_data.get("actionId")
-            if add_data_id == current_id:
-                single_action_additional_data = add_data
-                break
-
-        # Call LLM to get a single explanation for this single action
-        explanation_text = generate_single_explanation(
-            city_data=city_data,
-            single_action=action,
-            single_action_additional_data=single_action_additional_data
-        )
-
-        # Merge that explanation back into the original action
-        if explanation_text is not None:
-            action["explanation"] = explanation_text
-
-    return actions_data
-
-
-def add_explanations_for_city(locode: str) -> bool:
-    """
-    Add explanations for a specific city by locode.
-    Processes both mitigation and adaptation files for the city.
-    
     Args:
-        locode (str): The city locode (e.g., "BR VDS")
-    
+        city_data (dict): Contextual data for the city.
+        single_action (dict): The action to explain.
+        rank (int): The action's rank among the top prioritized actions (1 = highest priority).
+        languages (list[str]): List of 2-letter ISO language codes for the explanations.
+
     Returns:
-        bool: True if successful, False otherwise
+        Optional[dict[str, str]]: Dictionary mapping language codes to explanation strings, or None if generation fails.
+    """
+    logger.info(
+        f"Generating explanations for action_id={single_action['ActionID']}, rank={rank}, languages={languages}"
+    )
+    # Build the prompt for multilingual explanations
+    explanation_prompt = f"""
+    <task>
+    Your task is to generate a JSON object where each key is a 2-letter ISO language code from this list: {languages}, and each value is a string explanation for the action in that language.
+    </task>
+
+    <input>
+    Your input is:
+    - city context
+    - exactly one action
+    - the rank of the action
+    - a list of languages
+
+    The actions have been ranked from a total of about 240 actions. Therefore these are the top 20 actions.
+    The rank is a number between 1 and 20, where 1 is the highest priority and 20 is the lowest priority among the top selected 20 actions.
+    The rank is based on a tournament ranking algorithm and decided on by an ML model.
+    The rank is purely for your information, you should not mention it in the explanation.
+    </input>
+
+    <output>
+    Each explanation must be 3-5 sentences describing why this action is a priority (or not) for the city, in the requested language.
+    The explanations should be positive, with the tone influenced by the rank (higher rank = more positive tone, but do not mention the rank explicitly).
+    Do not mention other actions, only focus on this one. Do not include numeric scores or internal model references. Do not mention the rank in the explanation.
+    Only include the requested languages as keys in the JSON object. Do not include any extra keys or text.
+    </output>
+
+    <example_output>
+    {{
+        "en": <explanation in English>,
+        "es": <explanation in Spanish>,
+        "de": <explanation in German>
+    }}
+    </example_output>
+
+    Constraints:
+    - The explanation must be 3-5 sentences describing why this action is a priority (or not).
+    - No numeric scores or internal model references.
+    - Do not mention other actions, only focus on this one.
+    - Do not mention the rank in the explanation.
+    - Do not add any other text or keys to the JSON object.
+    - Only output valid JSON without additional text or formatting like ```json ```.
+
+    # CITY DATA:
+    {city_data}
+
+    # CURRENT ACTION:
+    {single_action}
+
+    # RANK:
+    {rank}
+    </task>
     """
     try:
-        # 1. Create output folder if it doesn't exist
-        OUTPUT_FOLDER.mkdir(parents=True, exist_ok=True)
+        completion = openai_client.beta.chat.completions.parse(
+            model=OPENAI_MODEL_NAME,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are an expert climate action analyst and translator. Return ONLY a JSON object mapping language codes to explanations, following the user's instructions."
+                    ),
+                },
+                {"role": "user", "content": explanation_prompt},
+            ],
+            temperature=0,
+            response_format=Explanation,
+        )
+        explanation_obj = completion.choices[0].message.parsed
 
-        # 2. Find both mitigation and adaptation files for this city
-        files = [f.name for f in PRIORITIZED_FOLDER.glob("*.json")]
-        target_files = []
-        
-        for filename in files:
-            city_code = extract_city_code(filename)
-            if city_code == locode:
-                target_files.append(filename)
-        
-        if not target_files:
-            print(f"No prioritized files found for city {locode}")
-            return False
+        logger.info(f"Explanation object: {explanation_obj}")
+        if not isinstance(explanation_obj, Explanation):
+            logger.error(
+                f"Parsed response is not an Explanation object: {explanation_obj}"
+            )
+            return None
+        if not explanation_obj.explanation:
+            logger.error("No explanation field in parsed Explanation object.")
+            return None
 
-        print(f"Found {len(target_files)} files for city {locode}: {target_files}")
-
-        # 3. Load city data once for this city
-        city_data = read_city_inventory(locode)
-
-        success_count = 0
-        
-        # 4. Process each file (mitigation and adaptation)
-        for target_file in target_files:
-            try:
-                input_path = PRIORITIZED_FOLDER / target_file
-
-                # Load the prioritized file (which has a list of actions)
-                with open(input_path, "r", encoding="utf-8") as inp:
-                    actions_data = json.load(inp)
-
-                # Generate an explanation per action and merge them
-                updated_actions_data = update_actions_with_explanations(actions_data, city_data)
-
-                print(f"Actions data updated for {target_file}")
-
-                # Save updated file back to original location, overwriting the original
-                output_path = OUTPUT_FOLDER / target_file
-                with open(output_path, "w", encoding="utf-8") as outp:
-                    json.dump(updated_actions_data, outp, indent=4, ensure_ascii=False)
-
-                print(f"Updated file saved as {target_file}")
-                success_count += 1
-                
-            except Exception as e:
-                print(f"Error processing file {target_file}: {str(e)}")
-
-        if success_count == len(target_files):
-            print(f"Successfully processed all {success_count} files for city {locode}")
-            return True
-        else:
-            print(f"Processed {success_count}/{len(target_files)} files for city {locode}")
-            return success_count > 0
-
+        # Return the explanation as a dictionary since the Pydantic model expects a dict
+        return explanation_obj.model_dump()["explanation"]
     except Exception as e:
-        print(f"Error processing city {locode}: {str(e)}")
-        return False
-
-
-def main(locode: str = None):
-    """
-    Main function that can process either a single city or all cities.
-    
-    Args:
-        locode (str, optional): If provided, process only this city. Otherwise, process all cities.
-    """
-    if locode:
-        # Process single city
-        success = add_explanations_for_city(locode)
-        if success:
-            print(f"Successfully added explanations for {locode}")
-        else:
-            print(f"Failed to add explanations for {locode}")
-        return success
-    else:
-        # Process all cities (original behavior)
-        # 1. Create output folder if it doesn't exist
-        OUTPUT_FOLDER.mkdir(parents=True, exist_ok=True)
-
-        # 2. List all files in data/prioritized
-        files = [f.name for f in PRIORITIZED_FOLDER.glob("*.json")]
-
-        for filename in files:
-            input_path = PRIORITIZED_FOLDER / filename
-
-            # 3. Extract city code from filename
-            city_code = extract_city_code(filename)
-
-            # 4. Load city data
-            city_data = read_city_inventory(city_code)
-
-            # 5. Load the prioritized file (which has a list of actions)
-            with open(input_path, "r", encoding="utf-8") as inp:
-                actions_data = json.load(inp)
-
-            # 6. Generate an explanation per action and merge them
-            updated_actions_data = update_actions_with_explanations(actions_data, city_data)
-
-            print("Actions data updated for city", city_code)
-
-            # 7. Save updated file back to original location, overwriting the original
-            output_path = OUTPUT_FOLDER / filename
-            with open(output_path, "w", encoding="utf-8") as outp:
-                json.dump(updated_actions_data, outp, indent=4, ensure_ascii=False)
-
-            print(f"Updated file saved as {filename}")
-
-
-if __name__ == "__main__":
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="Add explanations to climate actions")
-    parser.add_argument(
-        "--locode", 
-        type=str, 
-        help="Process only the specified city locode (e.g., 'BRSER'). If not provided, processes all cities."
-    )
-    
-    args = parser.parse_args()
-    main(args.locode)
+        logger.error(
+            f"Error generating multilingual explanation for action '{single_action['ActionID']}': {str(e)}"
+        )
+        return None

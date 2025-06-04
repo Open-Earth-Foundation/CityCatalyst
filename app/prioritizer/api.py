@@ -14,6 +14,9 @@ from utils.build_city_data import build_city_data
 from services.get_actions import get_actions
 from services.get_context import get_context
 from prioritizer.utils.filter_actions_by_biome import filter_actions_by_biome
+from prioritizer.utils.add_explanations import (
+    generate_multilingual_explanation,
+)
 from prioritizer.models import (
     PrioritizerRequest,
     PrioritizerResponse,
@@ -32,6 +35,9 @@ router = APIRouter()
 
 # Storage for task status and results
 task_storage = {}
+
+# List of languages to generate explanations for
+LANGUAGES = ["en", "es", "pt"]
 
 
 def _execute_prioritization(task_uuid: str, background_task_input: Dict[str, CityData]):
@@ -75,7 +81,7 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict[str, Cit
                 ] = "No city context data found from global API."
                 return
             # Build city data
-            cityData = build_city_data(cityContext, requestData)
+            cityData_dict = build_city_data(cityContext, requestData)
 
             # API call to get actions data
             actions = get_actions()
@@ -85,7 +91,7 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict[str, Cit
                     "error"
                 ] = "No actions data found from global API."
                 return
-            filteredActions = filter_actions_by_biome(cityData, actions)
+            filteredActions = filter_actions_by_biome(cityData_dict, actions)
             mitigationActions = [
                 action
                 for action in filteredActions
@@ -101,24 +107,35 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict[str, Cit
                 and "adaptation" in action["ActionType"]
             ]
             mitigationRanking = tournament_ranking(
-                cityData, mitigationActions, comparator=ml_compare
+                cityData_dict, mitigationActions, comparator=ml_compare
             )
             adaptationRanking = tournament_ranking(
-                cityData, adaptationActions, comparator=ml_compare
+                cityData_dict, adaptationActions, comparator=ml_compare
             )
+
             rankedActionsMitigation = [
                 RankedAction(
-                    actionId=action.get("ActionID", "Unknown"),
+                    actionId=action["ActionID"],
                     rank=rank,
-                    explanation=f"Ranked #{rank} by tournament ranking algorithm",
+                    explanation=generate_multilingual_explanation(
+                        city_data=cityData_dict,
+                        single_action=action,
+                        rank=rank,
+                        languages=LANGUAGES,
+                    ),
                 )
                 for action, rank in mitigationRanking
             ]
             rankedActionsAdaptation = [
                 RankedAction(
-                    actionId=action.get("ActionID", "Unknown"),
+                    actionId=action["ActionID"],
                     rank=rank,
-                    explanation=f"Ranked #{rank} by tournament ranking algorithm",
+                    explanation=generate_multilingual_explanation(
+                        city_data=cityData_dict,
+                        single_action=action,
+                        rank=rank,
+                        languages=LANGUAGES,
+                    ),
                 )
                 for action, rank in adaptationRanking
             ]
@@ -168,7 +185,7 @@ async def start_prioritization(request: PrioritizerRequest):
         "locode": request.cityData.cityContextData.locode,
     }
     background_task_input = {
-        "cityData": request.cityData.model_dump(),
+        "cityData": request.cityData,
     }
     try:
         thread = threading.Thread(

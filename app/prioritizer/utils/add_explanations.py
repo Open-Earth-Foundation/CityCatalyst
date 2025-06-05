@@ -1,6 +1,8 @@
 import os
 from typing import Optional
 from openai import OpenAI
+from langsmith.wrappers import wrap_openai
+from langsmith import traceable
 from dotenv import load_dotenv
 from utils.logging_config import setup_logger
 import logging
@@ -16,12 +18,15 @@ logger = logging.getLogger(__name__)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
+# Get LangSmith project name
+LANGCHAIN_PROJECT_NAME_PRIORITIZER = os.getenv("LANGCHAIN_PROJECT_NAME_PRIORITIZER")
+
 # Commented out: OpenRouter client
 # openrouter_client = OpenAI(api_key=OPENROUTER_API_KEY, base_url="https://openrouter.ai/api/v1")
 # MODEL_NAME = "google/gemini-2.5-flash-preview-05-20"
 
 # Use OpenAI client
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
+openai_client = wrap_openai(OpenAI(api_key=OPENAI_API_KEY))
 OPENAI_MODEL_NAME = "gpt-4o"
 
 
@@ -125,6 +130,7 @@ def generate_single_explanation(
         return None
 
 
+@traceable(run_type="llm", project_name=LANGCHAIN_PROJECT_NAME_PRIORITIZER)
 def generate_multilingual_explanation(
     city_data: dict,
     single_action: dict,

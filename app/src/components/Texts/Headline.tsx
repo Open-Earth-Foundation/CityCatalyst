@@ -1,10 +1,10 @@
 import { Heading, HeadingProps } from "@chakra-ui/react";
 
 interface HeadlineProps extends HeadingProps {
-  text: string;
+  text?: string;
 }
 
-export const HeadlineSmall = ({ text, ...props }: HeadlineProps) => (
+export const HeadlineSmall = ({ text, children, ...props }: HeadlineProps) => (
   <Heading
     fontFamily="body"
     fontSize="headline.sm"
@@ -14,6 +14,7 @@ export const HeadlineSmall = ({ text, ...props }: HeadlineProps) => (
     {...props}
   >
     {text}
+    {children}
   </Heading>
 );
 

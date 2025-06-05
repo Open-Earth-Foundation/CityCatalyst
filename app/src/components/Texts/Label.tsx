@@ -4,7 +4,7 @@ interface LabelLargeProps extends TextProps {
   text?: string;
 }
 
-const LabelLarge = ({ text, children, ...props }: LabelLargeProps) => (
+export const LabelLarge = ({ text, children, ...props }: LabelLargeProps) => (
   <Text
     fontSize="label.lg"
     fontWeight="medium"

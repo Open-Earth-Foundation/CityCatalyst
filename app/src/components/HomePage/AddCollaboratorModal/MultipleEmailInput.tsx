@@ -12,6 +12,7 @@ import { MdInfoOutline } from "react-icons/md";
 import type { TFunction } from "i18next";
 import { BodyLarge, BodyMedium } from "@/components/Texts/Body";
 import { Field } from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
 
 interface MultipleEmailInputProps {
   t: TFunction;
@@ -34,19 +35,23 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
     }
   };
 
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && inputValue.trim() !== "") {
-      if (validateEmail(inputValue.trim())) {
-        if (!emails.includes(inputValue.trim())) {
-          setEmails([...emails, inputValue.trim()]);
-          setInputValue("");
-          setError("");
-        } else {
-          setError("email-already-exists");
-        }
+  const addEmails = (inputValue: string) => {
+    if (inputValue.trim() !== "" && validateEmail(inputValue.trim())) {
+      if (!emails.includes(inputValue.trim())) {
+        setEmails([...emails, inputValue.trim()]);
+        setInputValue("");
+        setError("");
       } else {
-        setError("invalid-email");
+        setError("email-already-exists");
       }
+    } else {
+      setError("invalid-email");
+    }
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      addEmails(inputValue);
     }
   };
 
@@ -62,17 +67,21 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
   return (
     <Box mt={3}>
       <Field invalid={!!error}>
-        <Input
-          value={inputValue}
-          onChange={handleInputChange}
-          placeholder={t("email")}
-          onKeyDown={handleInputKeyDown}
-          borderColor={"border.neutral"}
-          variant="outline"
-          backgroundColor={
-            error ? "sentiment.negativeOverlay" : "background.default"
-          }
-        />
+        <HStack w="full">
+          <Input
+            flex={1}
+            value={inputValue}
+            onChange={handleInputChange}
+            placeholder={t("email")}
+            onKeyDown={handleInputKeyDown}
+            borderColor={"border.neutral"}
+            variant="outline"
+            backgroundColor={
+              error ? "sentiment.negativeOverlay" : "background.default"
+            }
+          />
+          <Button onClick={() => addEmails(inputValue)}>{t("add")}</Button>
+        </HStack>
       </Field>
       {error ? (
         <HStack my={"5px"}>

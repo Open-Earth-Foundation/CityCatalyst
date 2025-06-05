@@ -163,6 +163,7 @@
   "invalid-email": "Enter a valid email",
   "email-already-exists": "Duplicate email",
   "press-enter-to-add": "Press enter to add",
+  "add": "Add",
   "invite-success-toast-title": "Invite sent",
   "invite-success-toast-description": "Your invitations have been sent successfully",
   "invite-success-toast-text": "All set! Your invitations have been sent successfully",

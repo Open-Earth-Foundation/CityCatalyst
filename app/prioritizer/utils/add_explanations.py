@@ -4,7 +4,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from utils.logging_config import setup_logger
 import logging
-from pydantic import BaseModel
+from prioritizer.models import Explanation
 
 load_dotenv()
 
@@ -23,17 +23,6 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 # Use OpenAI client
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 OPENAI_MODEL_NAME = "gpt-4o"
-
-
-class Explanations(BaseModel):
-    en: str
-    es: str
-    pt: str
-    # Add all the languages required here and defined in api.py LANGUAGES constant
-
-
-class Explanation(BaseModel):
-    explanation: Explanations
 
 
 def generate_single_explanation(
@@ -141,23 +130,23 @@ def generate_multilingual_explanation(
     single_action: dict,
     rank: int,
     languages: list[str],
-) -> Optional[dict[str, str]]:
+) -> Optional[Explanation]:
     """
-    Generate qualitative explanations for a single prioritized climate action in multiple languages.
+    Generate qualitative explanation for a single prioritized climate action in multiple languages.
 
     Args:
         city_data (dict): Contextual data for the city.
         single_action (dict): The action to explain.
         rank (int): The action's rank among the top prioritized actions (1 = highest priority).
-        languages (list[str]): List of 2-letter ISO language codes for the explanations.
+        languages (list[str]): List of 2-letter ISO language codes for the explanation.
 
     Returns:
         Optional[dict[str, str]]: Dictionary mapping language codes to explanation strings, or None if generation fails.
     """
     logger.info(
-        f"Generating explanations for action_id={single_action['ActionID']}, rank={rank}, languages={languages}"
+        f"Generating explanation for action_id={single_action['ActionID']}, rank={rank}, languages={languages}"
     )
-    # Build the prompt for multilingual explanations
+    # Build the prompt for multilingual
     explanation_prompt = f"""
     <task>
     Your task is to generate a JSON object where each key is a 2-letter ISO language code from this list: {languages}, and each value is a string explanation for the action in that language.
@@ -178,13 +167,13 @@ def generate_multilingual_explanation(
 
     <output>
     Each explanation must be 3-5 sentences describing why this action is a priority (or not) for the city, in the requested language.
-    The explanations should be positive, with the tone influenced by the rank (higher rank = more positive tone, but do not mention the rank explicitly).
+    The explanation should be positive, with the tone influenced by the rank (higher rank = more positive tone, but do not mention the rank explicitly).
     Do not mention other actions, only focus on this one. Do not include numeric scores or internal model references. Do not mention the rank in the explanation.
     Only include the requested languages as keys in the JSON object. Do not include any extra keys or text.
     </output>
 
     <example_output>
-    {{
+    {{ 
         "en": <explanation in English>,
         "es": <explanation in Spanish>,
         "de": <explanation in German>
@@ -216,7 +205,7 @@ def generate_multilingual_explanation(
                 {
                     "role": "system",
                     "content": (
-                        "You are an expert climate action analyst and translator. Return ONLY a JSON object mapping language codes to explanations, following the user's instructions."
+                        "You are an expert climate action analyst and translator. Return ONLY a JSON object mapping language codes to explanation, following the user's instructions."
                     ),
                 },
                 {"role": "user", "content": explanation_prompt},
@@ -226,18 +215,17 @@ def generate_multilingual_explanation(
         )
         explanation_obj = completion.choices[0].message.parsed
 
-        logger.info(f"Explanation object: {explanation_obj}")
         if not isinstance(explanation_obj, Explanation):
             logger.error(
                 f"Parsed response is not an Explanation object: {explanation_obj}"
             )
             return None
-        if not explanation_obj.explanation:
-            logger.error("No explanation field in parsed Explanation object.")
-            return None
 
-        # Return the explanation as a dictionary since the Pydantic model expects a dict
-        return explanation_obj.model_dump()["explanation"]
+        return Explanation(
+            en=explanation_obj.en,
+            es=explanation_obj.es,
+            pt=explanation_obj.pt,
+        )
     except Exception as e:
         logger.error(
             f"Error generating multilingual explanation for action '{single_action['ActionID']}': {str(e)}"

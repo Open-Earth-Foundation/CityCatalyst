@@ -59,10 +59,17 @@ class MetaData(BaseModel):
     rankedDate: datetime
 
 
+class Explanation(BaseModel):
+    en: str
+    es: str
+    pt: str
+    # Add all the languages required here and defined in api.py LANGUAGES constant
+
+
 class RankedAction(BaseModel):
     actionId: str
     rank: int
-    explanation: Optional[dict[str, str]] = None
+    explanation: Optional[Explanation] = None
 
 
 class PrioritizerResponse(BaseModel):

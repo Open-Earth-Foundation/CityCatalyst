@@ -26,6 +26,7 @@ export interface EmissionsFactorAttributes {
   methodologyName?: string | null;
   methodologyId?: string | null;
   reference?: string | null;
+  deprecated: boolean;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -45,6 +46,7 @@ export type EmissionsFactorOptionalAttributes =
   | "metadata"
   | "methodologyId"
   | "reference"
+  | "deprecated"
   | "created"
   | "lastUpdated";
 export type EmissionsFactorCreationAttributes = Optional<
@@ -69,6 +71,7 @@ export class EmissionsFactor
   methodologyId?: string | null;
   metadata?: Record<string, any>;
   reference?: string | null;
+  deprecated: boolean;
   created?: Date;
   lastUpdated?: Date;
 
@@ -241,6 +244,11 @@ export class EmissionsFactor
         reference: {
           type: DataTypes.TEXT,
           allowNull: true,
+        },
+        deprecated: {
+          type: DataTypes.BOOLEAN,
+          defaultValue: false,
+          allowNull: false,
         },
       },
       {

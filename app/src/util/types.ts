@@ -502,6 +502,7 @@ export enum LANGUAGES {
   "es" = "es",
   "pt" = "pt",
   "de" = "de",
+  "fr" = "fr",
 }
 
 export type OrganizationWithThemeResponse = {

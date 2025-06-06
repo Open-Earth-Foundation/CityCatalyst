@@ -103,7 +103,6 @@ module.exports = {
           "datasource_id",
           transaction,
         );
-        C;
         console.info("Finished adding data sources");
         await bulkUpsert(
           queryInterface,
@@ -129,15 +128,17 @@ module.exports = {
           "emissions_factor_id", // TODO handle multiple primary keys
           transaction,
         );
+        console.info("Finished adding DataSourceEmissionsFactor entries");
       }
 
       console.info("Deleting unused deprecated emissions factors...");
-      await queryInterface.sequelize.query(`
-        DELETE FROM "EmissionsFactor" ef
+      await queryInterface.sequelize.query(
+        `DELETE FROM "EmissionsFactor" ef
         WHERE ef.deprecated = true AND ef.inventory_id IS NULL AND NOT EXISTS (
           SELECT FROM "GasValue" gv WHERE gv.emissions_factor_id = ef.id
-        );
-      `);
+        );`,
+        { transaction },
+      );
 
       console.info("Done, have a nice day ✨");
     });

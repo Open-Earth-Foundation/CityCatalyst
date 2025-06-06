@@ -650,6 +650,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                                       borderWidth="1px"
                                       borderColor="border.neutral"
                                       borderRadius="md"
+                                      shadow="1dp"
                                     >
                                       <SelectValueText
                                         color="content.tertiary"

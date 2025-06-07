@@ -50,7 +50,7 @@ export function SourceDrawerActivityTable({
           <AccordionItem key={i} value={JSON.stringify(activity.activity_name)}>
             <AccordionItemTrigger>
               <HStack justify="space-between" width="full">
-                <BodyMedium>
+                <BodyMedium textAlign="left" width="full">
                   {t(activity.activity_name) + translatedActivityPath}
                 </BodyMedium>
                 <TitleSmall>{`${t("total")} ${getTotalEmissions(activity)}`}</TitleSmall>

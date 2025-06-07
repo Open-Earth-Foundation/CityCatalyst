@@ -29,11 +29,13 @@ import { SourceDrawerActivityTable } from "./SourceDrawerActivityTable";
 import { BodyLarge } from "@/components/Texts/Body";
 import { DisplayMedium } from "@/components/Texts/Display";
 import ScalingSection from "./[subsector]/ScalingSection";
+import ProgressLoader from "@/components/ProgressLoader";
 
 export function SourceDrawer({
   source,
   sourceData,
   sector,
+  loading,
   isOpen,
   onClose,
   onConnectClick,
@@ -47,16 +49,27 @@ export function SourceDrawer({
   hideActions?: boolean;
   source?: DataSourceWithRelations;
   sourceData?: DataSourceData | null;
-  sector?: SectorAttributes;
+  sector?: { sectorName?: string };
+  loading?: boolean;
   isOpen: boolean;
   onClose: () => void;
-  onConnectClick: () => void;
+  onConnectClick?: () => void;
   finalFocusRef?: RefObject<any>;
-  isConnectLoading: boolean;
+  isConnectLoading?: boolean;
   totalEmissionsData?: string;
   t: TFunction;
   inventoryId: string;
 }) {
+  function ensureProtocol(url: string) {
+    if (!/^https?:\/\//i.test(url)) {
+      return "https://" + url;
+    }
+    return url;
+  }
+
+  const onUrlClick = () => {
+    window.open(source?.url, "_blank");
+  };
   const emissionsToBeIncluded = () => {
     let converted;
     if (!!totalEmissionsData && totalEmissionsData !== "?") {
@@ -90,162 +103,176 @@ export function SourceDrawer({
     >
       <DrawerBackdrop />
       <DrawerContent>
-        <DrawerBody>
-          <Stack h="full" px={[4, 4, 16]} pt={12}>
-            <Button
-              variant="ghost"
-              color="content.link"
-              alignSelf="flex-start"
-              onClick={onClose}
-              px={6}
-              py={4}
-              mb={6}
-            >
-              <Icon as={MdArrowBack} boxSize={4} />
-              {t("go-back")}
-            </Button>
-            {source && (
-              <DrawerBody className="space-y-6 overflow-auto" px={0}>
-                <Icon as={MdHomeWork} boxSize={9} />
-                <Heading
-                  color="content.tertiary"
-                  textTransform="uppercase"
-                  letterSpacing="1.25px"
-                  fontSize="title.sm"
-                  lineHeight="16px"
-                >
-                  {t(toKebabCase(sector?.sectorName))} /{" "}
-                  {t(
-                    toKebabCase(source.subSector?.subsectorName) ||
-                      toKebabCase(source.subCategory?.subsector?.subsectorName),
-                  )}
-                </Heading>
-                <Heading fontSize="title.lg">
-                  {source.subCategory?.referenceNumber ||
-                    source.subSector?.referenceNumber}{" "}
-                  {t(
-                    toKebabCase(source.subCategory?.subcategoryName) ||
-                      toKebabCase(source.subSector?.subsectorName),
-                  )}
-                </Heading>
-                <Heading
-                  fontSize="32px"
-                  lineHeight="40px"
-                  textTransform="capitalize"
-                >
-                  {getTranslationFromDict(source.datasetName)}
-                </Heading>
-                <HStack>
-                  <TitleMedium>{t("by")} </TitleMedium>
-                  <Link
-                    href={source.publisher?.url}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <TitleMedium color="content.link">
-                      {source.publisher?.name}
-                    </TitleMedium>
-                  </Link>
-                </HStack>
-                <TitleMedium>
-                  {t("total-emissions-included")}{" "}
-                  <Tooltip
-                    showArrow
-                    content={
-                      t("total-emissions-tooltip") +
-                      ".\nScale factor: " +
-                      sourceData?.scaleFactor.toFixed(4)
-                    }
-                    positioning={{ placement: "bottom-end" }}
-                  >
-                    <Icon
-                      as={MdInfoOutline}
-                      color="interactive.control"
-                      boxSize={4}
-                    />
-                  </Tooltip>
-                </TitleMedium>
-
-                <HStack align="baseline">
-                  <DisplayMedium color={"content.link"}>
-                    {emissionsToBeIncluded().number}
-                  </DisplayMedium>
-                  <Text
-                    color="content.tertiary"
-                    fontSize="22px"
-                    lineHeight="28px"
-                    fontFamily="heading"
-                    fontWeight={600}
-                  >
-                    {emissionsToBeIncluded().unit}
-                  </Text>
-                </HStack>
-
-                {sourceData?.issue && (
-                  <Text color="semantic.danger" fontSize="body.sm" mt={-4}>
-                    {t("error")}: {t(sourceData?.issue)}
-                  </Text>
-                )}
-
-                <SourceDrawerTags t={t} source={source} />
-                <Separator />
-                <Stack className="space-y-4">
-                  <TitleLarge>{t("inside-dataset")}</TitleLarge>
-                  <BodyLarge color="content.tertiary">
-                    {getTranslationFromDict(source.datasetDescription)}
-                  </BodyLarge>
-                  <TitleMedium>{t("disaggregated-analysis")}</TitleMedium>
-                  {sourceData?.records && (
-                    <SourceDrawerActivityTable
-                      activities={sourceData.records}
-                      t={t}
-                    />
-                  )}
-                  <VStack
-                    backgroundColor="background.neutral"
-                    align="flex-start"
-                    borderRadius="12px"
-                    p={6}
-                  >
-                    <HStack align="flex-start">
-                      <TitleMedium color={"content.link"}>
-                        <MdInfoOutline />
-                      </TitleMedium>
-                      <TitleMedium color={"content.link"}>
-                        {t("about-data-availability")}
-                      </TitleMedium>
-                    </HStack>
-                    <BodyLarge>
-                      {t("about-data-availability-description")}
-                    </BodyLarge>
-                  </VStack>
-                  <Separator />
-                  <ScalingSection
-                    source={source}
-                    t={t}
-                    inventoryId={inventoryId}
-                  />
-                </Stack>
-              </DrawerBody>
-            )}
-            {hideActions ? null : (
-              <Stack
-                w="full"
-                className="drop-shadow-top border-t-2 justify-center items-center"
+        {loading ? (
+          <ProgressLoader />
+        ) : (
+          <DrawerBody>
+            <Stack h="full" px={[4, 4, 16]} pt={12}>
+              <Button
+                variant="ghost"
+                color="content.link"
+                alignSelf="flex-start"
+                onClick={onClose}
+                px={6}
+                py={4}
+                mb={6}
               >
-                <Button
-                  onClick={onConnectClick}
-                  w="543px"
-                  h={16}
-                  my={6}
-                  loading={isConnectLoading}
-                >
-                  {t("connect-data")}
+                <Icon as={MdArrowBack} boxSize={4} />
+                {t("go-back")}
+              </Button>
+              {source && (
+                <DrawerBody className="space-y-6 overflow-auto" px={0}>
+                  <Icon as={MdHomeWork} boxSize={9} />
+                  <Heading
+                    color="content.tertiary"
+                    textTransform="uppercase"
+                    letterSpacing="1.25px"
+                    fontSize="title.sm"
+                    lineHeight="16px"
+                  >
+                    {t(toKebabCase(sector?.sectorName))} /{" "}
+                    {t(
+                      toKebabCase(source.subSector?.subsectorName) ||
+                        toKebabCase(
+                          source.subCategory?.subsector?.subsectorName,
+                        ),
+                    )}
+                  </Heading>
+                  <Heading fontSize="title.lg">
+                    {source.subCategory?.referenceNumber ||
+                      source.subSector?.referenceNumber}{" "}
+                    {t(
+                      toKebabCase(source.subCategory?.subcategoryName) ||
+                        toKebabCase(source.subSector?.subsectorName),
+                    )}
+                  </Heading>
+                  <Heading
+                    fontSize="32px"
+                    lineHeight="40px"
+                    textTransform="capitalize"
+                  >
+                    {getTranslationFromDict(source.datasetName)}
+                  </Heading>
+                  <HStack>
+                    <TitleMedium>{t("by")} </TitleMedium>
+                    <a
+                      href={
+                        source.publisher?.url
+                          ? ensureProtocol(source.publisher.url)
+                          : "#"
+                      }
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      <TitleMedium color="content.link">
+                        {source.publisher?.name}
+                      </TitleMedium>
+                    </a>
+                  </HStack>
+                  <TitleMedium>
+                    {t("total-emissions-included")}{" "}
+                    <Tooltip
+                      showArrow
+                      content={
+                        t("total-emissions-tooltip") +
+                        ".\nScale factor: " +
+                        sourceData?.scaleFactor.toFixed(4)
+                      }
+                      positioning={{ placement: "bottom-end" }}
+                    >
+                      <Icon
+                        as={MdInfoOutline}
+                        color="interactive.control"
+                        boxSize={4}
+                      />
+                    </Tooltip>
+                  </TitleMedium>
+
+                  <HStack align="baseline">
+                    <DisplayMedium color={"content.link"}>
+                      {emissionsToBeIncluded().number}
+                    </DisplayMedium>
+                    <Text
+                      color="content.tertiary"
+                      fontSize="22px"
+                      lineHeight="28px"
+                      fontFamily="heading"
+                      fontWeight={600}
+                    >
+                      {emissionsToBeIncluded().unit}
+                    </Text>
+                  </HStack>
+
+                  {sourceData?.issue && (
+                    <Text color="semantic.danger" fontSize="body.sm" mt={-4}>
+                      {t("error")}: {t(sourceData?.issue)}
+                    </Text>
+                  )}
+
+                  <SourceDrawerTags t={t} source={source} />
+                  <Separator />
+                  <Stack className="space-y-4">
+                    <TitleLarge>{t("inside-dataset")}</TitleLarge>
+                    <BodyLarge color="content.tertiary">
+                      {getTranslationFromDict(source.datasetDescription)}
+                    </BodyLarge>
+                    <TitleMedium>{t("disaggregated-analysis")}</TitleMedium>
+                    {sourceData?.records && (
+                      <SourceDrawerActivityTable
+                        activities={sourceData.records}
+                        t={t}
+                      />
+                    )}
+                    <VStack
+                      backgroundColor="background.neutral"
+                      align="flex-start"
+                      borderRadius="12px"
+                      p={6}
+                    >
+                      <HStack align="flex-start">
+                        <TitleMedium color={"content.link"}>
+                          <MdInfoOutline />
+                        </TitleMedium>
+                        <TitleMedium color={"content.link"}>
+                          {t("about-data-availability")}
+                        </TitleMedium>
+                      </HStack>
+                      <BodyLarge>
+                        {t("about-data-availability-description")}
+                      </BodyLarge>
+                    </VStack>
+                    <Separator />
+                    <ScalingSection
+                      source={source}
+                      t={t}
+                      inventoryId={inventoryId}
+                    />
+                  </Stack>
+                </DrawerBody>
+              )}
+              {hideActions ? (
+                <Button onClick={onUrlClick} w="543px" h={16} my={6}>
+                  {t("go-to-source")}
                 </Button>
-              </Stack>
-            )}
-          </Stack>
-        </DrawerBody>
+              ) : (
+                <Stack
+                  w="full"
+                  className="drop-shadow-top border-t-2 justify-center items-center"
+                >
+                  <Button
+                    onClick={onConnectClick}
+                    w="543px"
+                    h={16}
+                    my={6}
+                    loading={isConnectLoading}
+                  >
+                    {t("connect-data")}
+                  </Button>
+                </Stack>
+              )}
+            </Stack>
+          </DrawerBody>
+        )}
       </DrawerContent>
     </DrawerRoot>
   );

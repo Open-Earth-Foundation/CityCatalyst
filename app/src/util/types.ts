@@ -104,10 +104,10 @@ export type DataSource = DataSourceAttributes & {
 export type DataSourceResponse = {
   source: DataSourceWithRelations;
   data: any;
-}[];
+};
 
 export interface GetDataSourcesResult {
-  data: DataSourceResponse;
+  data: DataSourceResponse[];
   removedSources: RemovedSourceResult[];
   failedSources: FailedSourceResult[];
 }
@@ -363,6 +363,8 @@ export interface ActivityDataByScope {
   scopes: { [key: string]: Decimal };
   totalEmissions: Decimal;
   percentage: number;
+  datasource_id: string;
+  datasource_name: string;
 }
 
 export type SectorBreakdownResponse = BreakdownByActivity & {

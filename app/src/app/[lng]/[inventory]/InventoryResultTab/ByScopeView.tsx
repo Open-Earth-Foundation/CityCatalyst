@@ -1,10 +1,12 @@
-import React from "react";
-import { Box, Button, Table } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { Box, Table, useDisclosure } from "@chakra-ui/react";
 import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
 import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
 import { InventoryTypeEnum, SECTORS } from "@/util/constants";
 import { ButtonSmall } from "@/components/Texts/Button";
+import { BodyMedium } from "@/components/Texts/Body";
+import ByScopeViewSourceDrawer from "./ByScopeViewSourceDrawer";
 
 interface ByScopeViewProps {
   data: ActivityDataByScope[];
@@ -12,6 +14,7 @@ interface ByScopeViewProps {
   tDashboard: TFunction;
   sectorName: string;
   inventoryType: InventoryTypeEnum;
+  inventoryId: string;
 }
 
 const ByScopeView: React.FC<ByScopeViewProps> = ({
@@ -20,10 +23,19 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
   tDashboard,
   sectorName,
   inventoryType,
+  inventoryId,
 }) => {
   const scopes = SECTORS.find((s) => sectorName === s.name)!.inventoryTypes[
     inventoryType
   ].scopes;
+  const [selectedSourceId, setSelectedSourceId] = useState<string>("");
+
+  const {
+    open: isSourceDrawerOpen,
+    onClose: onSourceDrawerClose,
+    onOpen: onSourceDrawerOpen,
+  } = useDisclosure();
+
   return (
     <Box py={4}>
       <Table.Root variant="line">
@@ -44,6 +56,9 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
               </ButtonSmall>
             </Table.ColumnHeader>
           ))}
+          <Table.ColumnHeader>
+            <ButtonSmall>{tDashboard("source")}</ButtonSmall>
+          </Table.ColumnHeader>
         </Table.Header>
         <Table.Body>
           {data.map((item, index) => (
@@ -56,10 +71,32 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
                   {convertKgToTonnes(item.scopes[s] || 0)}
                 </Table.Cell>
               ))}
+              <Table.Cell>
+                <BodyMedium
+                  color="content.link"
+                  textDecoration={"underline"}
+                  textTransform={"uppercase"}
+                  fontWeight={"bold"}
+                  onClick={() => {
+                    setSelectedSourceId(item.datasource_id || "");
+                    onSourceDrawerOpen();
+                  }}
+                >
+                  {item.datasource_name || tDashboard("N/A")}
+                </BodyMedium>
+              </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
       </Table.Root>
+      <ByScopeViewSourceDrawer
+        sourceId={selectedSourceId}
+        sector={{ sectorName }}
+        isOpen={isSourceDrawerOpen}
+        onClose={onSourceDrawerClose}
+        t={tData}
+        inventoryId={inventoryId}
+      />
     </Box>
   );
 };

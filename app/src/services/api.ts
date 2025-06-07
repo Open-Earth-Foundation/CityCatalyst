@@ -50,6 +50,7 @@ import {
   OrganizationWithThemeResponse,
   UpdateUserPayload,
   FormulaInputValuesResponse,
+  DataSourceResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -257,6 +258,14 @@ export const api = createApi({
       >({
         query: ({ inventoryId }) => `datasource/${inventoryId}`,
         transformResponse: (response: GetDataSourcesResult) => response,
+      }),
+      getDataSource: builder.query<
+        DataSourceResponse,
+        { datasourceId: string; inventoryId: string }
+      >({
+        query: ({ datasourceId, inventoryId }) =>
+          `datasource/${inventoryId}/datasource/${datasourceId}`,
+        transformResponse: (response: DataSourceResponse) => response,
       }),
       getInventoryValue: builder.query<
         InventoryValueResponse,
@@ -1333,5 +1342,6 @@ export const {
   useDeleteCityMutation,
   useGetWasteCompositionValuesQuery,
   useUpdateOrganizationActiveStatusMutation,
+  useGetDataSourceQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

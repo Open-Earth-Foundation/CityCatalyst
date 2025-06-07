@@ -1,6 +1,7 @@
 import { GET as getDataSourcesForSector } from "@/app/api/v0/datasource/[inventoryId]/[sectorId]/route";
 import { GET as getAllDataSources } from "@/app/api/v0/datasource/[inventoryId]/route";
 import { DELETE as deleteInventoryValue } from "@/app/api/v0/datasource/[inventoryId]/datasource/[datasourceId]/route";
+import { GET as getSingleDataSource } from "@/app/api/v0/datasource/[inventoryId]/datasource/[datasourceId]/route";
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
 import { literal, Op } from "sequelize";
@@ -195,6 +196,8 @@ describe("DataSource API", () => {
       },
     });
 
+    if (!datasource) throw new Error("Test setup failed: datasource not found");
+
     const { datasourceId } = datasource;
     const inventoryValueId = randomUUID();
     await db.models.InventoryValue.create({
@@ -227,5 +230,51 @@ describe("DataSource API", () => {
       },
     });
     await expectStatusCode(res, 404);
+  });
+
+  it("should get a single datasource with scaling", async () => {
+    // Use the first created datasource for the positive test
+    const datasource = await db.models.DataSource.findOne({
+      where: { sectorId: sector.sectorId },
+    });
+    if (!datasource) throw new Error("Test setup failed: datasource not found");
+    const req = mockRequest();
+    const res = await getSingleDataSource(req, {
+      params: {
+        inventoryId: inventory.inventoryId,
+        datasourceId: datasource.datasourceId,
+      },
+    });
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.source.datasourceId).toBe(datasource.datasourceId);
+    expect(data.data).toBeDefined();
+    expect(data.data.scaleFactor).toBeDefined();
+  });
+
+  it("should return 404 if datasource not found", async () => {
+    const req = mockRequest();
+    const res = await getSingleDataSource(req, {
+      params: {
+        inventoryId: inventory.inventoryId,
+        datasourceId: randomUUID(),
+      },
+    });
+    expect(res.status).toBe(404);
+  });
+
+  it("should return 404 if inventory not found", async () => {
+    const datasource = await db.models.DataSource.findOne({
+      where: { sectorId: sector.sectorId },
+    });
+    if (!datasource) throw new Error("Test setup failed: datasource not found");
+    const req = mockRequest();
+    const res = await getSingleDataSource(req, {
+      params: {
+        inventoryId: randomUUID(),
+        datasourceId: datasource.datasourceId,
+      },
+    });
+    expect(res.status).toBe(404);
   });
 });

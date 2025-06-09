@@ -9,6 +9,9 @@ const packageInfo = JSON.parse(packageJson);
 const nextConfig = {
   trailingSlash: true,
   output: 'standalone',
+  distDir: '.next',
+  generateEtags: false,
+  poweredByHeader: false,
   experimental: {
     serverComponentsExternalPackages: ["sequelize"],
     optimizePackageImports: ['@chakra-ui/react']

@@ -54,10 +54,15 @@ task = "shell.exec"
 args = "cd app && npm run dev"
 
 [deployment]
-run = ["npm", "start"]
+run = ["sh", "/app/scripts/deploy-start.sh"]
 deploymentTarget = "cloudrun"
-build = ["sh", "-c", "npm install && npm run build"]
+build = ["sh", "-c", "cd /app && npm ci --production --no-audit --no-fund && npm run build && node scripts/verify-deployment.js"]
 workingDirectory = "app"
+
+[env]
+NODE_ENV = "production"
+REPLIT_DISABLE_PACKAGE_LAYER = "1"
+REPLIT_KEEP_PACKAGE_DEV_DEPENDENCIES = "0"
 
 [[ports]]
 localPort = 3000

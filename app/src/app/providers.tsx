@@ -1,6 +1,4 @@
-tags as requested.
-```python
-<replit_final_file>
+
 "use client";
 
 import { store } from "@/lib/store";
@@ -16,33 +14,34 @@ import { LogoProvider } from "@/hooks/logo-provider/use-logo-provider";
 const openSans = localFont({
   src: [
     {
+      path: "./fonts/open-sans-v36-latin_latin-ext-regular.woff2",
       weight: "400",
       style: "normal",
-      path: "./fonts/open-sans-v36-latin_latin-ext-regular.woff2",
     },
     {
+      path: "./fonts/open-sans-v36-latin_latin-ext-600.woff2",
       weight: "600",
       style: "normal",
-      path: "./fonts/open-sans-v36-latin_latin-ext-600.woff2",
     },
   ],
 });
+
 const poppins = localFont({
   src: [
     {
+      path: "./fonts/poppins-v20-latin_latin-ext-regular.woff2",
       weight: "400",
       style: "normal",
-      path: "./fonts/poppins-v20-latin_latin-ext-regular.woff2",
     },
     {
+      path: "./fonts/poppins-v20-latin_latin-ext-500.woff2",
       weight: "500",
       style: "normal",
-      path: "./fonts/poppins-v20-latin_latin-ext-500.woff2",
     },
     {
+      path: "./fonts/poppins-v20-latin_latin-ext-600.woff2",
       weight: "600",
       style: "normal",
-      path: "./fonts/poppins-v20-latin_latin-ext-600.woff2",
     },
   ],
 });

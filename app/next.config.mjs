@@ -39,9 +39,7 @@ const nextConfig = {
     config.externals.push("@node-rs/argon2", "@node-rs/bcrypt");
     return config;
   },
-  // Disable runtime config to prevent script injection
-  publicRuntimeConfig: {},
-  // Use build-time environment variables only
+  // Use build-time environment variables only - no runtime injection
   env: {
     PORT: process.env.PORT || '3000',
     NEXT_PUBLIC_SUPPORT_EMAILS: process.env.NEXT_PUBLIC_SUPPORT_EMAILS || 'info@openearth.org,greta@openearth.org',

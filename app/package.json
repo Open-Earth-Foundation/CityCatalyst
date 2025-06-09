@@ -1,4 +1,3 @@
-
 {
   "name": "city-catalyst",
   "version": "0.49.0-rc.1",
@@ -7,8 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p $PORT",
-    "deploy:build": "npm ci --only=production && npm run build",
+    "start": "next start",
     "lint": "next lint",
     "test": "npm run jest & npm run e2e:test",
     "api:test": "npm run jest",

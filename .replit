@@ -1,4 +1,3 @@
-
 modules = ["nodejs-20", "python-3.12", "bash", "postgresql-16"]
 run = "cd app && npm run dev"
 
@@ -55,15 +54,10 @@ task = "shell.exec"
 args = "cd app && npm run dev"
 
 [deployment]
-run = ["npm", "start"]
+run = ["sh", "-c", "npm run build && npm start"]
 deploymentTarget = "cloudrun"
-build = ["npm", "run", "build"]
-workingDirectory = "."
-
-[env]
-NODE_ENV = "production"
-REPLIT_DISABLE_PACKAGE_LAYER = "1"
-REPLIT_KEEP_PACKAGE_DEV_DEPENDENCIES = "0"
+build = ["sh", "-c", "npm install"]
+workingDirectory = "app"
 
 [[ports]]
 localPort = 3000

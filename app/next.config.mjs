@@ -1,51 +1,23 @@
+import fs from "fs";
+import path from "path";
 
-import { setupDevPlatform } from '@cloudflare/next-on-pages/next-dev';
-
-// Here we use the @cloudflare/next-on-pages next-dev module to allow us to use bindings during local development
-// (when running the application with `next dev`), for more information see:
-// https://github.com/cloudflare/next-on-pages/blob/2435877ef7c5b0f04a24bae85e29b5c30a6b56e8/internal-packages/next-dev/README.md
-if (process.env.NODE_ENV === 'development') {
-  await setupDevPlatform();
-}
+const packagePath = path.join(process.cwd(), "package.json");
+const packageJson = fs.readFileSync(packagePath);
+const packageInfo = JSON.parse(packageJson);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  trailingSlash: false,
+  trailingSlash: true,
   experimental: {
-    esmExternals: 'loose',
+    serverComponentsExternalPackages: ["sequelize"],
+    optimizePackageImports: ['@chakra-ui/react']
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
-          },
-        ],
-      },
-    ];
-  },
-  // Ensure the server listens on all interfaces for deployment
-  server: {
-    hostname: '0.0.0.0',
-    port: process.env.PORT || 3000,
+  env: {
+    APP_VERSION: packageInfo.version,
+    NEXT_AWS_REGION: process.env.NEXT_AWS_REGION,
+    NEXT_AWS_ACCESS_KEY_ID: process.env.NEXT_AWS_ACCESS_KEY_ID,
+    NEXT_AWS_SECRET_ACCESS_KEY: process.env.NEXT_AWS_SECRET_ACCESS_KEY,
+    NEXT_AWS_S3_BUCKET_ID: process.env.NEXT_AWS_S3_BUCKET_ID,
   },
 };
 

@@ -1,3 +1,13 @@
+
+import { setupDevPlatform } from '@cloudflare/next-on-pages/next-dev';
+
+// Here we use the @cloudflare/next-on-pages next-dev module to allow us to use bindings during local development
+// (when running the application with `next dev`), for more information see:
+// https://github.com/cloudflare/next-on-pages/blob/2435877ef7c5b0f04a24bae85e29b5c30a6b56e8/internal-packages/next-dev/README.md
+if (process.env.NODE_ENV === 'development') {
+  await setupDevPlatform();
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
@@ -32,19 +42,10 @@ const nextConfig = {
       },
     ];
   },
-  experimental: {
-    serverComponentsExternalPackages: ["sequelize"],
-  },
-  webpack: (config) => {
-    config.externals.push("@node-rs/argon2", "@node-rs/bcrypt");
-    return config;
-  },
-  // Use build-time environment variables only - no runtime injection
-  env: {
-    PORT: process.env.PORT || '3000',
-    NEXT_PUBLIC_SUPPORT_EMAILS: process.env.NEXT_PUBLIC_SUPPORT_EMAILS || 'info@openearth.org,greta@openearth.org',
-    NEXT_PUBLIC_OPENCLIMATE_API_URL: process.env.NEXT_PUBLIC_OPENCLIMATE_API_URL || 'https://openclimate.openearth.dev',
-    NEXT_PUBLIC_FEATURE_FLAGS: process.env.NEXT_PUBLIC_FEATURE_FLAGS || '',
+  // Ensure the server listens on all interfaces for deployment
+  server: {
+    hostname: '0.0.0.0',
+    port: process.env.PORT || 3000,
   },
 };
 

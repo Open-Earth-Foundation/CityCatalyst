@@ -14,7 +14,11 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd app && npm run dev"
+args = "cd app && npm install && npm run dev"
 
 [deployment]
 run = ["sh", "-c", "cd app && npm run dev"]
+
+[[ports]]
+localPort = 3000
+externalPort = 80

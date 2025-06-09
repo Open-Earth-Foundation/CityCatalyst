@@ -32,6 +32,27 @@ args = "cd app && npx sequelize-cli db:seed:all"
 task = "shell.exec"
 args = "cd app && npm run dev"
 
+[[workflows.workflow]]
+name = "Run CityCatalyst Fast"
+author = 24359658
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node app/scripts/setup-env.js"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd app && npm install"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd app && npx sequelize-cli db:migrate"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd app && npm run dev"
+
 [deployment]
 run = ["sh", "-c", "cd app && npm run dev"]
 

@@ -241,6 +241,7 @@ function SectorTabs({
                   )}
                   {shouldShowTableByScope && (
                     <ByScopeView
+                      inventoryId={inventory.inventoryId}
                       inventoryType={inventory.inventoryType}
                       data={sectorBreakdown!.byScope}
                       tData={tData}

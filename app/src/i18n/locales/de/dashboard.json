@@ -193,5 +193,6 @@
   "default-project": "Standardprojekt",
   "go-to": "Gehe zu...",
   "industrial-processes-and-product-uses-ippu": "IPPU",
-  "agriculture-forestry-and-other-land-use-afolu": "AFOLU"
+  "agriculture-forestry-and-other-land-use-afolu": "AFOLU",
+  "source": "Quelle"
 }

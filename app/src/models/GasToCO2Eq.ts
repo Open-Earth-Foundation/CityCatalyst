@@ -46,7 +46,7 @@ export class GasToCO2Eq
         sequelize,
         tableName: "GasToCO2Eq",
         schema: "public",
-        timestamps: true,
+        timestamps: false,
         indexes: [
           {
             name: "GasToCO2Eq_pkey",

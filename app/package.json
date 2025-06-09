@@ -40,7 +40,7 @@
     "@aws-sdk/client-s3": "^3.802.0",
     "@chakra-ui/react": "^3.8.0",
     "@emotion/react": "^11.14.0",
-    "@hookform/resolvers": "^3.10.0",
+    "@hookform/resolvers": "^5.1.1",
     "@huggingface/inference": "^3.9.2",
     "@next/env": "^14.2.5",
     "@nivo/bar": "^0.88.0",

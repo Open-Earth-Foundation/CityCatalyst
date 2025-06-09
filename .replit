@@ -14,7 +14,23 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "node app/scripts/setup-env.js && cd app && npm install && npm run db:migrate && npm run db:seed && npm run dev"
+args = "node app/scripts/setup-env.js"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd app && npm install"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd app && npm run db:migrate"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd app && npm run db:seed"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd app && npm run dev"
 
 [deployment]
 run = ["sh", "-c", "cd app && npm run dev"]

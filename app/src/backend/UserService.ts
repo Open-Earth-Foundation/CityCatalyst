@@ -168,6 +168,39 @@ export default class UserService {
   }
 
   public static async updateDefaultInventoryId(userId: string) {
+    // First check if user already has a defaultInventoryId set
+    const user = await db.models.User.findOne({
+      attributes: ["defaultInventoryId"],
+      where: { userId },
+    });
+
+    if (user?.defaultInventoryId) {
+      // Verify the inventory still exists and user has access
+      try {
+        const inventory = await db.models.Inventory.findOne({
+          where: { inventoryId: user.defaultInventoryId },
+          include: [
+            {
+              model: db.models.City,
+              as: "city",
+              include: [
+                {
+                  model: db.models.User,
+                  as: "users",
+                  where: { userId },
+                },
+              ],
+            },
+          ],
+        });
+        if (inventory) {
+          return user.defaultInventoryId;
+        }
+      } catch (error) {
+        // Continue to find a new default inventory
+      }
+    }
+
     const [inventory] = (await db.sequelize!.query(
       `
             SELECT i.inventory_id
@@ -193,8 +226,7 @@ export default class UserService {
       return inventory?.inventory_id;
     }
 
-    // throw new createHttpError.NotFound("Inventory not found");
-
+    // Check if user is an organization admin
     const adminData = await db.models.OrganizationAdmin.findOne({
       where: {
         userId: userId,

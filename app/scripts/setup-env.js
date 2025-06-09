@@ -1,8 +1,6 @@
 
-#!/usr/bin/env node
-
-const fs = require('fs');
-const url = require('url');
+import { writeFileSync } from 'fs';
+import { URL } from 'url';
 
 // Read DATABASE_URL from environment
 const databaseUrl = process.env.DATABASE_URL;
@@ -55,7 +53,7 @@ const envContent = Object.entries(envVars)
   .join('\n');
 
 // Write to .env file
-fs.writeFileSync('app/.env', envContent);
+writeFileSync('app/.env', envContent);
 
 console.log('Environment variables set up successfully!');
 console.log('Database connection configured for:', parsed.hostname);

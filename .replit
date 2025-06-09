@@ -55,10 +55,10 @@ task = "shell.exec"
 args = "cd app && npm run dev"
 
 [deployment]
-run = ["node_modules/.bin/next", "start", "-p", "$PORT"]
+run = ["sh", "-c", "cd app && npm start"]
 deploymentTarget = "cloudrun"
-build = ["npm", "ci", "--only=production", "--no-audit", "--no-fund", "&&", "npm", "run", "build"]
-workingDirectory = "app"
+build = ["sh", "-c", "cd app && npm ci --only=production --no-audit --no-fund && npm run build"]
+workingDirectory = "."
 
 [env]
 NODE_ENV = "production"

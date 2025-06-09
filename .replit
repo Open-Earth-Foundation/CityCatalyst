@@ -14,7 +14,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd app && npm install && npm run dev"
+args = "node app/scripts/setup-env.js && cd app && npm install && npm run dev"
 
 [deployment]
 run = ["sh", "-c", "cd app && npm run dev"]

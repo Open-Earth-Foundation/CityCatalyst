@@ -55,9 +55,9 @@ task = "shell.exec"
 args = "cd app && npm run dev"
 
 [deployment]
-run = ["sh", "-c", "cd app && npm start"]
+run = ["npm", "start"]
 deploymentTarget = "cloudrun"
-build = ["sh", "-c", "cd app && npm ci --production --no-audit --no-fund && npm run build"]
+build = ["npm", "run", "build"]
 workingDirectory = "."
 
 [env]

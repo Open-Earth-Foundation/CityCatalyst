@@ -1,0 +1,10 @@
+
+{
+  "name": "citycatalyst-deployment",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cd app && npm ci --production --no-audit --no-fund && npm run build",
+    "start": "cd app && npm start"
+  },
+  "dependencies": {}
+}

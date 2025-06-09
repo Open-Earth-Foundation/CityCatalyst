@@ -1,3 +1,4 @@
+
 "use client";
 
 import { store } from "@/lib/store";
@@ -24,6 +25,7 @@ const openSans = localFont({
     },
   ],
 });
+
 const poppins = localFont({
   src: [
     {

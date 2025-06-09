@@ -1,0 +1,15 @@
+
+{
+  "name": "citycatalyst-deployment-wrapper",
+  "version": "1.0.0",
+  "description": "Deployment wrapper for CityCatalyst Next.js application",
+  "scripts": {
+    "build": "cd app && npm ci --omit=dev --no-audit --no-fund && npm run build",
+    "start": "cd app && npm start",
+    "dev": "cd app && npm run dev"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "private": true
+}

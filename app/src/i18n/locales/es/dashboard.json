@@ -196,5 +196,6 @@
   "default-project": "Proyecto predeterminado",
   "go-to": "Ve a...",
   "industrial-processes-and-product-uses-ippu": "IPPU",
-  "agriculture-forestry-and-other-land-use-afolu": "AFOLU"
+  "agriculture-forestry-and-other-land-use-afolu": "AFOLU",
+  "source": "Fuente"
 }

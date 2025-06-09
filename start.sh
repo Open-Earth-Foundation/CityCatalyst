@@ -13,5 +13,8 @@ if [ ! -d ".next" ]; then
     exit 1
 fi
 
-echo "🚀 Starting application on port ${PORT:-3000}..."
+# Set default port if not provided
+export PORT=${PORT:-3000}
+
+echo "🚀 Starting application on port $PORT..."
 npm start

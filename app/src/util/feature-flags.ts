@@ -1,5 +1,3 @@
-import { env } from "next-runtime-env";
-
 export enum FeatureFlags {
   ENTERPRISE_MODE = "ENTERPRISE_MODE",
   CAP_TAB_ENABLED = "CAP_TAB_ENABLED",
@@ -14,7 +12,7 @@ export function getFeatureFlags(): string[] {
     return cachedFeatureFlags;
   }
 
-  const flags = env("NEXT_PUBLIC_FEATURE_FLAGS");
+  const flags = process.env.NEXT_PUBLIC_FEATURE_FLAGS;
 
   if (flags) {
     cachedFeatureFlags = flags

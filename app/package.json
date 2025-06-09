@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p $PORT",
+    "start": "next start -p ${PORT:-3000}",
     "deploy:build": "npm ci --only=production && npm run build",
     "lint": "next lint",
     "test": "npm run jest & npm run e2e:test",

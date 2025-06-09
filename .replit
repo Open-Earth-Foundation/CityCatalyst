@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "python-3.12", "bash"]
+modules = ["nodejs-20", "python-3.12", "bash", "postgresql-16"]
 run = "cd app && npm run dev"
 
 [nix]

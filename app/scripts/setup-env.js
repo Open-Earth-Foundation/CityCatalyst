@@ -55,8 +55,9 @@ const envContent = Object.entries(envVars)
   .map(([key, value]) => `${key}="${value}"`)
   .join('\n');
 
-// Write to .env file
+// Write to .env file in both locations for compatibility
 writeFileSync('app/.env', envContent);
+writeFileSync('.env', envContent);
 
 console.log('Environment variables set up successfully!');
 console.log('Database connection configured for:', parsed.hostname);

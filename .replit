@@ -22,11 +22,11 @@ args = "cd app && npm install"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd app && npm run db:migrate"
+args = "cd app && npx sequelize-cli db:migrate"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd app && npm run db:seed"
+args = "cd app && npx sequelize-cli db:seed:all"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

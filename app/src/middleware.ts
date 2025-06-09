@@ -15,6 +15,7 @@ export const config = {
 
 const authMatcher = /^\/[a-z]{0,2}(?!\/public)[\/]?auth\//;
 const publicMatcher = /^\/[a-z]{0,2}\/public\//;
+const pocMatcher = /^\/[a-z]{0,2}\/pocs\//;
 const cookieName = "i18next";
 
 export async function middleware(req: NextRequestWithAuth) {
@@ -79,6 +80,11 @@ async function next(req: NextRequestWithAuth): Promise<NextMiddlewareResult> {
   // Handle auth routes
   if (authMatcher.test(basePath)) {
     return NextResponse.next();
+  }
+
+  // Handle POC routes with authentication
+  if (pocMatcher.test(basePath)) {
+    return await withAuth(req, config);
   }
 
   // Apply authentication to all other routes

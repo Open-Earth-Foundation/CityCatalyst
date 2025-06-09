@@ -1,3 +1,6 @@
+tags as requested.
+```python
+<replit_final_file>
 "use client";
 
 import { store } from "@/lib/store";

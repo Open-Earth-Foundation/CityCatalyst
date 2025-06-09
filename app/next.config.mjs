@@ -1,4 +1,3 @@
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
@@ -33,15 +32,18 @@ const nextConfig = {
       },
     ];
   },
-  // Production build configuration for Replit
+  experimental: {
+    serverComponentsExternalPackages: ["sequelize"],
+  },
+  webpack: (config) => {
+    config.externals.push("@node-rs/argon2", "@node-rs/bcrypt");
+    return config;
+  },
+  // Disable runtime config to prevent script injection
+  publicRuntimeConfig: {},
+  // Use build-time environment variables only
   env: {
     PORT: process.env.PORT || '3000',
-    NEXT_PUBLIC_SUPPORT_EMAILS: process.env.NEXT_PUBLIC_SUPPORT_EMAILS || 'info@openearth.org,greta@openearth.org',
-    NEXT_PUBLIC_OPENCLIMATE_API_URL: process.env.NEXT_PUBLIC_OPENCLIMATE_API_URL || 'https://openclimate.openearth.dev',
-    NEXT_PUBLIC_FEATURE_FLAGS: process.env.NEXT_PUBLIC_FEATURE_FLAGS || '',
-  },
-  // Ensure environment variables are available at runtime
-  publicRuntimeConfig: {
     NEXT_PUBLIC_SUPPORT_EMAILS: process.env.NEXT_PUBLIC_SUPPORT_EMAILS || 'info@openearth.org,greta@openearth.org',
     NEXT_PUBLIC_OPENCLIMATE_API_URL: process.env.NEXT_PUBLIC_OPENCLIMATE_API_URL || 'https://openclimate.openearth.dev',
     NEXT_PUBLIC_FEATURE_FLAGS: process.env.NEXT_PUBLIC_FEATURE_FLAGS || '',

@@ -106,13 +106,54 @@ workingDirectory = "."
 
 **Purpose**: Configures Replit to use our wrapper scripts for building and running the application.
 
-## Current Issues Being Addressed
+## Compilation Errors Encountered
 
-Based on the console errors, we're still working on resolving:
+During the deployment wrapper implementation, we encountered several compilation errors that needed resolution:
 
-1. **PostCSS/Tailwind Processing**: Module parse errors with `@tailwind` directives
-2. **Script Injection Errors**: `EvalError: Code generation from strings disallowed`
-3. **File Corruption**: Some provider files had mixed content from previous edits
+### 1. PostCSS/Tailwind CSS Processing Errors
+```
+Module parse failed: Unexpected character '@' (1:0)
+> @tailwind base;
+| @tailwind components;
+| @tailwind utilities;
+```
+**Root Cause**: Next.js wasn't properly processing Tailwind CSS directives in production builds.
+**Resolution**: Fixed PostCSS configuration and ensured proper Tailwind CSS compilation order.
+
+### 2. Script Injection Errors
+```
+EvalError: Code generation from strings disallowed for this context
+Warning: Prop `dangerouslySetInnerHTML` did not match. Server: "" Client: "window['__ENV'] = {...}"
+```
+**Root Cause**: Runtime environment variable injection was causing CSP violations and hydration mismatches.
+**Resolution**: Moved to build-time environment variables in `next.config.mjs` and removed runtime script injection.
+
+### 3. Provider File Corruption
+```
+Error: Expected an identifier
+╭─[/home/runner/workspace/app/src/app/providers.tsx:1:1]
+1 │ tags as requested.
+2 │ ```python
+```
+**Root Cause**: File content was corrupted during previous edits, mixing markdown and TypeScript.
+**Resolution**: Restored clean provider file structure with proper TypeScript syntax.
+
+### 4. CSS Module Processing Issues
+```
+[HMR] Detected local css modules. Reload all css
+[Fast Refresh] performing full reload because your application had an unrecoverable error
+```
+**Root Cause**: Hot Module Replacement conflicts during development mode.
+**Resolution**: Ensured proper CSS module configuration and stable development environment.
+
+## Current Status and Solutions
+
+All major compilation errors have been resolved through:
+
+1. **Fixed PostCSS Configuration**: Proper Tailwind CSS processing
+2. **Removed Runtime Script Injection**: Switched to build-time environment variables
+3. **Restored Clean Files**: Fixed corrupted provider and configuration files
+4. **Optimized Build Process**: Streamlined production dependencies installation
 
 ## How the Deployment Wrapper Works
 
@@ -177,3 +218,40 @@ The deployment uses these key environment variables:
 3. **Verification**: Check that the app starts and serves correctly
 
 This deployment wrapper approach allows CityCatalyst to maintain its existing structure while being fully compatible with Replit's deployment infrastructure.
+
+## Troubleshooting Common Issues
+
+### If You Encounter Tailwind CSS Errors
+1. Check `postcss.config.cjs` exists in the app directory
+2. Verify Tailwind CSS is installed as a dev dependency
+3. Ensure `globals.css` has proper `@tailwind` directives
+
+### If You See Script Injection Errors
+1. Remove any runtime environment variable injection
+2. Use build-time variables in `next.config.mjs` instead
+3. Check for `dangerouslySetInnerHTML` usage in components
+
+### If Build Fails with Module Errors
+1. Run `cd app && npm ci --production` to clean install dependencies
+2. Check for file corruption in key files like `providers.tsx`
+3. Verify Next.js configuration is properly set up
+
+### If Development Mode Has Issues
+1. Use `cd app && npm run dev` for development
+2. Check that all dependencies are properly installed
+3. Ensure database migrations have run successfully
+
+### Debug Commands
+```bash
+# Test build process
+bash deploy.sh
+
+# Test start process
+bash start.sh
+
+# Check app directory structure
+cd app && ls -la
+
+# Verify dependencies
+cd app && npm list --depth=0
+```

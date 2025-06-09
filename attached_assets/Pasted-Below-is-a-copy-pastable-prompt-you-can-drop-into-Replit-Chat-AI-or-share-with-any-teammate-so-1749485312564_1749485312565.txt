@@ -1,0 +1,96 @@
+Below is a copy-pastable prompt you can drop into **Replit Chat-AI** (or share with any teammate) so the agent knows exactly *why* we’re doing this, *how* to do it, and what a “done” state looks like.
+
+---
+
+````
+🎯 **Mission**
+Create an experimental “Hello, <username>” proof-of-concept (POC) inside the CityCatalyst repo.  
+The page must live at **/pocs/hello** and greet the logged-in user using NextAuth.  
+Unauthenticated visitors should be redirected to **/login**.  
+This module must be fully isolated from the core code-base (no imports from /app/core/*).
+
+📚 **Context / Reasoning**
+1. **POC playground** – We reserve `app/pocs/<module>` for quick experiments so that breaking changes cannot impact production features.
+2. **File-system routing** – Next.js App Router auto-maps any `page.tsx` under that folder to `/pocs/<module>`, so no extra routing code is needed.
+3. **Auth & data access** – `getServerSession(authOptions)` gives us the current user server-side without exposing DB creds.
+4. **Guardrails** – Keeping things inside `/pocs/**` lets CI skip strict linting until the POC graduates.
+
+🛠 **Step-by-Step Tasks**
+1. **Clone the repo (if not already in workspace)**  
+   ```bash
+   git clone https://github.com/Open-Earth-Foundation/CityCatalyst.git
+   cd CityCatalyst
+````
+
+2. **Scaffold the folder**
+
+   ```bash
+   mkdir -p app/pocs/hello
+   touch app/pocs/hello/page.tsx
+   ```
+
+3. **Implement the page component**
+
+   ```tsx
+   // app/pocs/hello/page.tsx
+   import { getServerSession } from "next-auth/next";
+   import { authOptions } from "@/auth";      // update path if needed
+   import { redirect } from "next/navigation";
+
+   export default async function HelloPage() {
+     const session = await getServerSession(authOptions);
+     if (!session) redirect("/login");
+
+     return (
+       <main className="m-10 text-xl">
+         Hello,&nbsp;{session.user?.name ?? "friend"}!
+       </main>
+     );
+   }
+   ```
+
+4. **Local test**
+
+   ```bash
+   pnpm install        # or yarn / npm
+   pnpm dev
+   # open http://localhost:3000/pocs/hello
+   # • Expect “Hello, Your Name!” if logged in
+   # • Expect redirect to /login if not
+   ```
+
+5. **Commit & push**
+
+   ```bash
+   git add app/pocs/hello
+   git commit -m "feat(poc): hello module greets the user"
+   git push origin <branch-name>
+   ```
+
+6. **Open PR**
+   • Set reviewers to `@citycatalyst/maintainers`.
+   • Verify CI passes (only `app/pocs/hello/**` should be affected).
+
+✅ **Acceptance Criteria**
+
+* Visiting `/pocs/hello` while authenticated renders **“Hello, <username>!”**.
+* Unauthenticated users receive a 302 redirect to `/login`.
+* No imports from `/app/core/**` (checked by ESLint in CI).
+* PR description includes a screenshot and “How to test” section.
+
+🗑 **Rollback**
+If the module ever causes trouble, removing it is one `git rm -r app/pocs/hello && git commit` away—no other files touched.
+
+🤝 **Hand-off**
+Tag me in the PR once the checks turn green. I’ll merge & deploy.
+
+```
+
+---
+
+**How to use:**  
+1. Paste this entire block into Replit’s “Ask AI” chat or share it with your collaborator.  
+2. The agent will follow the numbered tasks and deliver the finished PR.  
+
+Feel free to tweak the commit message or ESLint path exclusions to match your team conventions.
+```

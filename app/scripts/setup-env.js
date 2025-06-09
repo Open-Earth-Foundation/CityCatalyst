@@ -15,11 +15,14 @@ const parsed = new URL(databaseUrl);
 
 const envVars = {
   NODE_ENV: process.env.NODE_ENV || 'development',
+  DATABASE_URL: databaseUrl,
   DATABASE_HOST: parsed.hostname,
   DATABASE_NAME: parsed.pathname.slice(1), // Remove leading slash
   DATABASE_USER: parsed.username,
   DATABASE_PASSWORD: parsed.password,
   DATABASE_PORT: parsed.port || '5432',
+  DATABASE_SSL: 'true',
+  DATABASE_DIALECT: 'postgres',
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || "TiK4b44DchsoV5009j0qf0jUnFzVloWem8WHZfgnWVU=",
   NEXTAUTH_URL: process.env.NEXTAUTH_URL || "http://localhost:3000",
   HOST: process.env.HOST || "http://localhost:3000",

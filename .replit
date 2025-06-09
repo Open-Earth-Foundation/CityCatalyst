@@ -5,7 +5,7 @@ run = "cd app && npm run dev"
 channel = "stable-24_05"
 
 [workflows]
-runButton = "Run CityCatalyst Fast"
+runButton = "Run CityCatalyst"
 
 [[workflows.workflow]]
 name = "Run CityCatalyst"
@@ -54,10 +54,8 @@ task = "shell.exec"
 args = "cd app && npm run dev"
 
 [deployment]
-run = ["sh", "-c", "bash start.sh"]
+run = ["sh", "-c", "cd app && npm run dev"]
 deploymentTarget = "cloudrun"
-build = ["sh", "-c", "bash deploy.sh"]
-workingDirectory = "app"
 
 [[ports]]
 localPort = 3000

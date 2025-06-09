@@ -1,15 +1,6 @@
+
 #!/bin/bash
-set -e
-
-echo "Starting CityCatalyst deployment..."
-export NODE_ENV=production
-export PORT=${PORT:-3000}
-
-# Check if .next directory exists
-if [ ! -d ".next" ]; then
-    echo "Error: .next build directory not found"
-    exit 1
-fi
-
-echo "Starting Next.js application on port $PORT..."
-exec npm start
+# This script is no longer needed as deployment now uses direct npm commands
+echo "This deployment script has been replaced by direct npm commands in .replit configuration"
+echo "Deployment now handles server startup automatically"
+exit 0

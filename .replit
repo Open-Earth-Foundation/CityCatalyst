@@ -1,3 +1,4 @@
+
 modules = ["nodejs-20", "python-3.12", "bash", "postgresql-16"]
 run = "cd app && npm run dev"
 
@@ -54,9 +55,9 @@ task = "shell.exec"
 args = "cd app && npm run dev"
 
 [deployment]
-run = ["npm", "start"]
+run = ["node_modules/.bin/next", "start", "-p", "$PORT"]
 deploymentTarget = "cloudrun"
-build = ["sh", "-c", "npm ci --production --no-audit --no-fund && npm run build"]
+build = ["npm", "ci", "--only=production", "--no-audit", "--no-fund", "&&", "npm", "run", "build"]
 workingDirectory = "app"
 
 [env]

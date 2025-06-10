@@ -1,9 +1,8 @@
-
 import { Auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import { db } from "@/models";
-import Link from "next/link";
+import { redirect } from "next/navigation";
 import CityBoundaryViewer from "./CityBoundaryViewer";
+import Link from "next/link";
 
 interface CityBoundaryPageProps {
   params: { lng: string; cityId: string };
@@ -11,26 +10,30 @@ interface CityBoundaryPageProps {
 
 export default async function CityBoundaryPage({ params }: CityBoundaryPageProps) {
   const session = await Auth.getServerSession();
-  
+
   if (!session) {
     redirect(`/${params.lng}/auth/login`);
   }
 
-  // Get the specific city and verify user access
+  // First check if user has access to this city
+  const cityUserAccess = await db.models.CityUser.findOne({
+    where: {
+      userId: session.user.id,
+      cityId: params.cityId
+    }
+  });
+
+  if (!cityUserAccess) {
+    redirect(`/${params.lng}/pocs/boundary-editor`);
+  }
+
+  // Get the specific city with project info
   const city = await db.models.City.findOne({
     where: { cityId: params.cityId },
     include: [
       {
         model: db.models.Project,
-        as: "project",
-        include: [
-          {
-            model: db.models.User,
-            as: "users",
-            where: { userId: session.user.id },
-            through: { attributes: [] }
-          }
-        ]
+        as: "project"
       }
     ]
   });

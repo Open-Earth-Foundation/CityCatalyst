@@ -1,7 +1,6 @@
-
 import { Auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import { db } from "@/models";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import BoundaryEditor from "./BoundaryEditor";
 
@@ -11,28 +10,26 @@ interface EditBoundaryPageProps {
 
 export default async function EditBoundaryPage({ params }: EditBoundaryPageProps) {
   const session = await Auth.getServerSession();
-  
+
   if (!session) {
     redirect(`/${params.lng}/auth/login`);
   }
 
-  // Get the specific city and verify user access
+  // First check if user has access to this city
+  const cityUserAccess = await db.models.CityUser.findOne({
+    where: {
+      userId: session.user.id,
+      cityId: params.cityId
+    }
+  });
+
+  if (!cityUserAccess) {
+    redirect(`/${params.lng}/pocs/boundary-editor`);
+  }
+
+  // Get the specific city
   const city = await db.models.City.findOne({
-    where: { cityId: params.cityId },
-    include: [
-      {
-        model: db.models.Project,
-        as: "project",
-        include: [
-          {
-            model: db.models.User,
-            as: "users",
-            where: { userId: session.user.id },
-            through: { attributes: [] }
-          }
-        ]
-      }
-    ]
+    where: { cityId: params.cityId }
   });
 
   if (!city) {

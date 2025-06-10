@@ -21,20 +21,21 @@ export default async function SelectCityPage({ params }: SelectCityPageProps) {
   }
 
   // Get cities that the user has access to and have boundaries (locode)
-  const userCities = await db.models.City.findAll({
+  // Get cities through CityUser relationship
+  const cityUsers = await db.models.CityUser.findAll({
+    where: { userId: session.user.id },
     include: [
       {
-        model: db.models.User,
-        as: "users",
-        where: { userId: session.user.id },
-        attributes: [],
-        through: { attributes: [] }
+        model: db.models.City,
+        as: "city",
+        where: {
+          locode: { [Op.ne]: null } // Only cities with locodes (boundaries available)
+        }
       }
-    ],
-    where: {
-      locode: { [Op.ne]: null } // Only cities with locodes (boundaries available)
-    }
+    ]
   });
+
+  const userCities = cityUsers.map(cityUser => cityUser.city);
 
   return (
     <main className="container mx-auto p-8">

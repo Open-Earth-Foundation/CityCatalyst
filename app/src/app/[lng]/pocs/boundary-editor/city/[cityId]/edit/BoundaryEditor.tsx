@@ -9,7 +9,6 @@ import {
   HStack,
   Spinner,
   Textarea,
-  VStack,
 } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
 import { Map, GeoJson, GeoJsonFeature } from "pigeon-maps";
@@ -178,7 +177,7 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
         {/* Editor Section */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900">GeoJSON Editor</h3>
-          <VStack spacing={4} align="stretch">
+          <div className="space-y-4">
             <Textarea
               value={geoJsonText}
               onChange={(e) => handleGeoJsonChange(e.target.value)}
@@ -207,7 +206,7 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
                 Download Boundary
               </Button>
             </HStack>
-          </VStack>
+          </div>
         </div>
       </div>
 

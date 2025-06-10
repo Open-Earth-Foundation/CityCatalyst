@@ -6,7 +6,6 @@ import {
   Box,
   Button,
   Center,
-  HStack,
   Spinner,
   Textarea,
 } from "@chakra-ui/react";
@@ -179,13 +178,15 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
               value={geoJsonText}
               onChange={(e) => handleGeoJsonChange(e.target.value)}
               placeholder="GeoJSON geometry will appear here..."
-              minHeight="400px"
-              fontFamily="mono"
-              fontSize="sm"
-              backgroundColor="gray.50"
+              style={{ 
+                minHeight: "400px",
+                fontFamily: "monospace",
+                fontSize: "14px",
+                backgroundColor: "#f9fafb"
+              }}
             />
 
-            <HStack spacing={4}>
+            <div className="flex gap-4">
               <Button
                 colorScheme="gray"
                 size="sm"
@@ -202,7 +203,7 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
               >
                 Download Boundary
               </Button>
-            </HStack>
+            </div>
           </div>
         </div>
       </div>

@@ -5,7 +5,6 @@ import { getBoundsZoomLevel } from "@/util/geojson";
 import {
   Box,
   Button,
-  Center,
   Spinner,
   Textarea,
 } from "@chakra-ui/react";
@@ -36,7 +35,7 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
     description: "An error occurred",
   });
   const { data: originalData, isLoading, error } = api.useGetCityBoundaryQuery(locode!, {
-    skip: !locode,
+    skip: !locode || locode === null,
   });
 
   const [center, setCenter] = useState<[number, number]>([34.0, -37.0]);
@@ -131,13 +130,13 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
         {/* Map Section */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900">Interactive Map</h3>
-          <Box w="100%" h={500} className="relative border rounded-lg overflow-hidden">
+          <Box style={{ width: "100%", height: "500px" }} className="relative border rounded-lg overflow-hidden">
             {isLoading && (
               <Box
                 style={{ width: "100%", height: "500px" }}
                 className="absolute top-0 left-0 z-[1000] pointer-events-none bg-white bg-opacity-75"
               >
-                <Center style={{ height: "100%" }}></Center>
+                <div className="flex items-center justify-center h-full"></div>
               </Box>
             )}
             <Map

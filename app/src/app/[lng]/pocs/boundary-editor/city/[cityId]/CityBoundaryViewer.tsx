@@ -2,7 +2,10 @@
 
 import { api } from "@/services/api";
 import { getBoundsZoomLevel } from "@/util/geojson";
-import { Box, Center, Spinner } from "@chakra-ui/react";
+import {
+  Box,
+  Spinner,
+} from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
 import { Map, GeoJson, GeoJsonFeature } from "pigeon-maps";
 
@@ -71,9 +74,9 @@ const CityBoundaryViewer: FC<CityBoundaryViewerProps> = ({
             style={{ width: "100%", height: "500px" }}
             className="absolute top-0 left-0 z-[1000] pointer-events-none bg-white bg-opacity-75"
           >
-            <Center style={{ height: "100%" }}>
+            <div className="flex items-center justify-center h-full">
               <Spinner size="lg" />
-            </Center>
+            </div>
           </Box>
         )}
         <Map

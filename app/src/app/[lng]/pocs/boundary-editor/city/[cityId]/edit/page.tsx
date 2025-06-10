@@ -83,8 +83,8 @@ export default async function EditBoundaryPage({ params }: EditBoundaryPageProps
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <BoundaryEditor 
             cityId={params.cityId}
-            locode={city.locode}
-            cityName={city.name}
+            locode={city.locode || null}
+            cityName={city.name || null}
             lng={params.lng}
           />
         </div>

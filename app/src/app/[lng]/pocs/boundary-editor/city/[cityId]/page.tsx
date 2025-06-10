@@ -104,8 +104,8 @@ export default async function CityBoundaryPage({ params }: CityBoundaryPageProps
           </h2>
           <CityBoundaryViewer 
             cityId={params.cityId}
-            locode={city.locode}
-            cityName={city.name}
+            locode={city.locode || null}
+            cityName={city.name || null}
           />
         </div>
       </div>

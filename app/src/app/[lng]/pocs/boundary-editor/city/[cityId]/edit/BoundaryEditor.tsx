@@ -29,8 +29,14 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
   cityName,
   lng 
 }) => {
-  const showSuccessToast = UseSuccessToast();
-  const showErrorToast = UseErrorToast();
+  const { showSuccessToast } = UseSuccessToast({
+    title: "Success",
+    description: "Operation completed successfully",
+  });
+  const { showErrorToast } = UseErrorToast({
+    title: "Error",
+    description: "An error occurred",
+  });
   const { data: originalData, isLoading, error } = api.useGetCityBoundaryQuery(locode!, {
     skip: !locode,
   });

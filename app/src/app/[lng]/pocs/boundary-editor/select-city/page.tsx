@@ -20,6 +20,11 @@ export default async function SelectCityPage({ params }: SelectCityPageProps) {
     await db.initialize();
   }
 
+  // Initialize database if not already initialized
+  if (!db.initialized) {
+    await db.initialize();
+  }
+
   // Get cities that the user has access to and have boundaries (locode)
   // Get cities through CityUser relationship
   const cityUsers = await db.models.CityUser.findAll({

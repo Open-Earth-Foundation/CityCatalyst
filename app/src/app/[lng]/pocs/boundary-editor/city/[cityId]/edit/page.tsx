@@ -15,6 +15,11 @@ export default async function EditBoundaryPage({ params }: EditBoundaryPageProps
     redirect(`/${params.lng}/auth/login`);
   }
 
+  // Initialize database if not already initialized
+  if (!db.initialized) {
+    await db.initialize();
+  }
+
   // First check if user has access to this city
   const cityUserAccess = await db.models.CityUser.findOne({
     where: {

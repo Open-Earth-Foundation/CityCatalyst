@@ -1,8 +1,8 @@
-
 import { Auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import { db } from "@/models";
+import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Op } from "sequelize";
 
 interface SelectCityPageProps {
   params: { lng: string };
@@ -10,29 +10,27 @@ interface SelectCityPageProps {
 
 export default async function SelectCityPage({ params }: SelectCityPageProps) {
   const session = await Auth.getServerSession();
-  
+
   if (!session) {
     redirect(`/${params.lng}/auth/login`);
   }
 
-  // Get user's cities from the database
+  // Initialize database if not already done
+  if (!db.initialized) {
+    await db.initialize();
+  }
+
+  // Get cities that the user has access to and have boundaries (locode)
   const userCities = await db.models.City.findAll({
     include: [
       {
-        model: db.models.Project,
-        as: "project",
-        include: [
-          {
-            model: db.models.User,
-            as: "users",
-            where: { userId: session.user.id },
-            through: { attributes: [] }
-          }
-        ]
+        model: db.models.CityUser,
+        where: { userId: session.user.id },
+        attributes: []
       }
     ],
     where: {
-      locode: { [db.Sequelize.Op.ne]: null } // Only cities with locodes (boundaries available)
+      locode: { [Op.ne]: null } // Only cities with locodes (boundaries available)
     }
   });
 

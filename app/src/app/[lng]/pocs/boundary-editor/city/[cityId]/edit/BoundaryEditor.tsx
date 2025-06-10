@@ -1,12 +1,20 @@
-
 "use client";
 
 import { api } from "@/services/api";
 import { getBoundsZoomLevel } from "@/util/geojson";
-import { Box, Center, Spinner, Button, VStack, HStack, Text, Textarea, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  HStack,
+  Spinner,
+  Textarea,
+  VStack,
+} from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
 import { Map, GeoJson, GeoJsonFeature } from "pigeon-maps";
 import wellknown from "wellknown";
+import { UseSuccessToast, UseErrorToast } from "@/hooks/Toasts";
 
 export interface BoundaryEditorProps {
   cityId: string;
@@ -21,7 +29,8 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
   cityName,
   lng 
 }) => {
-  const toast = useToast();
+  const showSuccessToast = UseSuccessToast();
+  const showErrorToast = UseErrorToast();
   const { data: originalData, isLoading, error } = api.useGetCityBoundaryQuery(locode!, {
     skip: !locode,
   });
@@ -47,7 +56,7 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
     if (originalData?.data) {
       setModifiedGeometry(originalData.data);
       setGeoJsonText(JSON.stringify(originalData.data, null, 2));
-      
+
       if (originalData.boundingBox && !originalData.boundingBox.some(isNaN)) {
         const newZoom = getBoundsZoomLevel(originalData.boundingBox, { width: 800, height: 500 });
         const newCenter: [number, number] = [
@@ -91,13 +100,10 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      
-      toast({
+
+      showSuccessToast({
         title: "Boundary Downloaded",
         description: "The modified boundary has been downloaded as a GeoJSON file.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
       });
     }
   };
@@ -153,7 +159,7 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
               )}
             </Map>
           </Box>
-          
+
           {isModified && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <p className="text-yellow-800 text-sm">
@@ -176,7 +182,7 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
               fontSize="sm"
               backgroundColor="gray.50"
             />
-            
+
             <HStack spacing={4}>
               <Button
                 colorScheme="gray"

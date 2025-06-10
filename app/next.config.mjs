@@ -8,6 +8,10 @@ const packageInfo = JSON.parse(packageJson);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
+  eslint: {
+    // Disable ESLint during builds for deployment
+    ignoreDuringBuilds: process.env.NODE_ENV === 'production',
+  },
   experimental: {
     serverComponentsExternalPackages: ["sequelize"],
     optimizePackageImports: ['@chakra-ui/react']

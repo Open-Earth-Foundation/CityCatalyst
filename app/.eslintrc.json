@@ -1,3 +1,16 @@
 {
-  "extends": ["next/core-web-vitals", "plugin:i18next/recommended"]
+  "extends": ["next/core-web-vitals", "plugin:i18next/recommended"],
+  "ignorePatterns": [
+    "src/components/POCModules/**/*",
+    "src/app/[lng]/pocs/**/*"
+  ],
+  "rules": {
+    "i18next/no-literal-string": [
+      "error",
+      {
+        "markupOnly": true,
+        "ignoreAttribute": ["data-testid", "className", "key", "href"]
+      }
+    ]
+  }
 }

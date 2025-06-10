@@ -1,4 +1,3 @@
-
 #!/bin/bash
 set -e
 
@@ -13,8 +12,8 @@ fi
 # Change to app directory
 cd app
 
-echo "📦 Installing production dependencies..."
-npm ci --omit=dev --no-audit --no-fund
+echo "📦 Installing dependencies..."
+npm ci --no-audit --no-fund
 
 # Install specific dev dependencies needed for build
 echo "📦 Installing build-time dependencies..."
@@ -33,9 +32,9 @@ if [ ! -f "tailwind.config.cjs" ]; then
     exit 1
 fi
 
-echo "🔨 Building Next.js application..."
+echo "🔨 Building application..."
 # Set NODE_ENV explicitly for build
-NODE_ENV=production npm run build
+NODE_ENV=production npm run build:deploy
 
 echo "✅ Build completed successfully!"
 echo "📁 Build output located in app/.next/"

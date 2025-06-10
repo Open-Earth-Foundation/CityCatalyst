@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Deployment wrapper for CityCatalyst Next.js application",
   "scripts": {
-    "build": "cd app && npm ci --omit=dev --no-audit --no-fund && npm run build",
+    "build": "cd app && npm ci --no-audit --no-fund && npm run build:deploy",
     "start": "cd app && npm start",
     "dev": "cd app && npm run dev"
   },

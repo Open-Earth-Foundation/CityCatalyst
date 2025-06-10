@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { useTranslation } from "@/i18n/client";
-import { Box, Button, Center } from "@chakra-ui/react";
-import { TitleMedium } from "@/components/Texts/Title";
-import { logger } from "@/services/logger";
 import Cookies from "js-cookie";
+import { Button, Center, VStack } from "@chakra-ui/react";
+
+import { useTranslation } from "@/i18n/client";
 import { fallbackLng } from "@/i18n/settings";
+import { TitleLarge, TitleMedium } from "@/components/Texts/Title";
+import { logger } from "@/services/logger";
+import { BodyMedium } from "@/components/Texts/Body";
 
 export default function Error({
   error,
@@ -23,9 +25,14 @@ export default function Error({
   const { t } = useTranslation(cookieLanguage ?? fallbackLng, "error");
 
   return (
-    <Center>
-      <Box p={4}>
-        <TitleMedium mb={4}>{t("something-went-wrong")}</TitleMedium>
+    <Center h="100vh">
+      <VStack p={4} alignItems="center" spaceX={4} spaceY={4}>
+        <TitleLarge>{t("something-went-wrong")}</TitleLarge>
+        <TitleMedium>{t("error-details")}</TitleMedium>
+        <BodyMedium>
+          {error.message}
+          {error.digest}
+        </BodyMedium>
         <Button
           onClick={
             // Attempt to recover by trying to re-render the segment
@@ -34,7 +41,7 @@ export default function Error({
         >
           {t("try-again")}
         </Button>
-      </Box>
+      </VStack>
     </Center>
   );
 }

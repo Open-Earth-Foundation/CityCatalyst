@@ -36,6 +36,10 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
   });
   const { data: originalData, isLoading, error } = api.useGetCityBoundaryQuery(locode!, {
     skip: !locode || locode === null,
+    // Prevent refetch loops during build
+    refetchOnMountOrArgChange: false,
+    refetchOnFocus: false,
+    refetchOnReconnect: false,
   });
 
   const [center, setCenter] = useState<[number, number]>([34.0, -37.0]);

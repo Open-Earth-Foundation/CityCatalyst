@@ -7,6 +7,9 @@ const packageInfo = JSON.parse(packageJson);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Optimize for deployment build
+  swcMinify: true,
+  compress: true,
   trailingSlash: true,
   eslint: {
     // Disable ESLint during builds for deployment
@@ -14,7 +17,8 @@ const nextConfig = {
   },
   experimental: {
     serverComponentsExternalPackages: ["sequelize"],
-    optimizePackageImports: ['@chakra-ui/react']
+    // Temporarily disabled for faster builds
+    // optimizePackageImports: ['@chakra-ui/react']
   },
   env: {
     APP_VERSION: packageInfo.version,

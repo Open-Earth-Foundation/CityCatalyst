@@ -1,4 +1,3 @@
-
 "use client";
 
 import { api } from "@/services/api";
@@ -24,7 +23,7 @@ const CityBoundaryViewer: FC<CityBoundaryViewerProps> = ({
 
   const [center, setCenter] = useState<[number, number]>([34.0, -37.0]);
   const [zoom, setZoom] = useState(11);
-  
+
   const onBoundsChanged = ({
     center: newCenter,
     zoom: newZoom,
@@ -66,14 +65,13 @@ const CityBoundaryViewer: FC<CityBoundaryViewerProps> = ({
 
   return (
     <div className="space-y-4">
-      <Box w={800} h={500} className="relative border rounded-lg overflow-hidden">
+      <Box style={{ width: "100%", height: "500px" }} className="relative border rounded-lg overflow-hidden">
         {isLoading && (
           <Box
-            w={800}
-            h={500}
-            className="absolute top-0 left-0 z-[1000] pointer-events-none bg-white bg-opacity-75"
-          >
-            <Center h="full">
+                style={{ width: "100%", height: "500px" }}
+                className="absolute top-0 left-0 z-[1000] pointer-events-none bg-white bg-opacity-75"
+              >
+                <Center style={{ height: "100%" }}>
               <Spinner size="lg" />
             </Center>
           </Box>

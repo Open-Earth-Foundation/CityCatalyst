@@ -135,13 +135,10 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
           <Box w="100%" h={500} className="relative border rounded-lg overflow-hidden">
             {isLoading && (
               <Box
-                w="100%"
-                h={500}
+                style={{ width: "100%", height: "500px" }}
                 className="absolute top-0 left-0 z-[1000] pointer-events-none bg-white bg-opacity-75"
               >
-                <Center h="full">
-                  <Spinner size="lg" />
-                </Center>
+                <Center style={{ height: "100%" }}></Center>
               </Box>
             )}
             <Map

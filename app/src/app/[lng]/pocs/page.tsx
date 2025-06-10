@@ -20,6 +20,12 @@ export default async function POCIndex({ params }: POCIndexProps) {
       path: "hello",
       description: "Simple greeting module demonstrating POC structure",
       status: "Active"
+    },
+    {
+      name: "Boundary Editor",
+      path: "boundary-editor",
+      description: "Multi-page module for viewing and modifying city boundaries",
+      status: "Active"
     }
     // Add more POC modules here as they're created
   ];

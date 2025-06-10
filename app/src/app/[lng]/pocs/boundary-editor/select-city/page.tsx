@@ -24,9 +24,11 @@ export default async function SelectCityPage({ params }: SelectCityPageProps) {
   const userCities = await db.models.City.findAll({
     include: [
       {
-        model: db.models.CityUser,
+        model: db.models.User,
+        as: "users",
         where: { userId: session.user.id },
-        attributes: []
+        attributes: [],
+        through: { attributes: [] }
       }
     ],
     where: {

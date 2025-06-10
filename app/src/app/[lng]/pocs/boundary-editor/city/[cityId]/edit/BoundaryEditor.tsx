@@ -191,7 +191,7 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
                 colorScheme="gray"
                 size="sm"
                 onClick={resetToOriginal}
-                isDisabled={!isModified}
+                disabled={!isModified}
               >
                 Reset to Original
               </Button>
@@ -199,7 +199,7 @@ const BoundaryEditor: FC<BoundaryEditorProps> = ({
                 colorScheme="green"
                 size="sm"
                 onClick={downloadBoundary}
-                isDisabled={!modifiedGeometry}
+                disabled={!modifiedGeometry}
               >
                 Download Boundary
               </Button>

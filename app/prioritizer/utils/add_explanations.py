@@ -17,6 +17,13 @@ logger = logging.getLogger(__name__)
 # Initialize OpenAI and OpenRouter clients
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
+# Check if API key is set
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY is not set")
+if not OPENROUTER_API_KEY:
+    raise ValueError("OPENROUTER_API_KEY is not set")
+
 OPENAI_MODEL_NAME_EXPLANATIONS = os.getenv(
     "OPENAI_MODEL_NAME_EXPLANATIONS", "gpt-4.1-nano"
 )

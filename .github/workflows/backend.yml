@@ -63,6 +63,7 @@ jobs:
         run: |
           kubectl apply -f k8s/
           kubectl set env deployment/hiap \
+            OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-nano \
             LANGCHAIN_PROJECT=hiap-prod \
             LANGCHAIN_PROJECT_NAME_PRIORITIZER=hiap-prod-prioritizer \
             LANGCHAIN_ENDPOINT=https://api.smith.langchain.com \

@@ -190,6 +190,6 @@ LanguageCode = str  # should be ISO 639-1 codes like 'en', 'es', 'pt'
 
 class PlanResponse(BaseModel):
     metadata: PlanCreatorMetadata = Field(description="Metadata for the plan creator")
-    content: Dict[LanguageCode, PlanContent] = Field(
-        description="Dictionary of PlanContent, keyed by ISO 639-1 language code (e.g., 'en', 'es', 'pt')"
+    content: PlanContent = Field(
+        description="The plan content in the requested language"
     )

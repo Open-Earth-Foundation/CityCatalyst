@@ -156,9 +156,8 @@
   "select-cities-to-share": "Select which cities you want to share",
   "select-cities-to-share-description": "Each user you invite will get a single link per city to add each. They will access to all the inventories made in each city.",
   "send-invites": "Send invites to",
-  "send-invites-description-1": "Keep in mind that each team member you invite will be able to ",
-  "send-invites-description-2": "add, edit and delete",
-  "send-invites-description-3": " any inventory they get access to.",
+  "send-invites-description-1": "This person will get an email to join a project with the selected cities.",
+  "send-invites-description-2": "They will be able to add, edit and delete any inventory they get access to.",
   "email": "Email",
   "invalid-email": "Enter a valid email",
   "email-already-exists": "Duplicate email",
@@ -194,5 +193,11 @@
   "go-to": "Go to...",
   "default-project": "Default Project",
   "industrial-processes-and-product-uses-ippu": "IPPU",
-  "agriculture-forestry-and-other-land-use-afolu": "AFOLU"
+  "agriculture-forestry-and-other-land-use-afolu": "AFOLU",
+  "enter-to-add": "Enter to add",
+  "choose-a-role": "Choose a role",
+  "select-role": "Select role",
+  "collaborator-rule": "Collaborators can only edit inventories",
+  "admin-rule": "Admins can add cities to all projects, and edit all inventories",
+  "all-cities": "All cities"
 }

@@ -80,7 +80,9 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
               error ? "sentiment.negativeOverlay" : "background.default"
             }
           />
-          <Button onClick={() => addEmails(inputValue)}>{t("add")}</Button>
+          <Button onClick={() => addEmails(inputValue)}>
+            {t("enter-to-add")}
+          </Button>
         </HStack>
       </Field>
       {error ? (
@@ -88,12 +90,7 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
           <Icon as={MdInfoOutline} color="sentiment.negativeDefault" />
           <BodyMedium text={t(error)} />
         </HStack>
-      ) : (
-        <HStack my={"5px"}>
-          <Icon as={MdInfoOutline} color="interactive.secondary" />
-          <BodyMedium text={t("press-enter-to-add")} />
-        </HStack>
-      )}
+      ) : null}
       <Flex flexWrap="wrap" gap={2} mt={2}>
         {emails.map((email, index) => (
           <Tag.Root

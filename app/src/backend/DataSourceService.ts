@@ -46,10 +46,8 @@ export const populationScalingRetrievalMethods = [
 ];
 
 export default class DataSourceService {
-  public static async findAllSources(
-    inventoryId: string,
-  ): Promise<DataSource[]> {
-    const include = [
+  private static getSourceInclude(inventoryId: string) {
+    return [
       {
         model: DataSource,
         as: "dataSources",
@@ -74,6 +72,12 @@ export default class DataSourceService {
         ],
       },
     ];
+  }
+
+  public static async findAllSources(
+    inventoryId: string,
+  ): Promise<DataSource[]> {
+    const include = DataSourceService.getSourceInclude(inventoryId);
 
     const sectors = await db.models.Sector.findAll({ include });
     const subSectors = await db.models.SubSector.findAll({ include });
@@ -92,6 +96,47 @@ export default class DataSourceService {
       .concat(subCategorySources);
 
     return sources;
+  }
+
+  public static async findSource(
+    inventoryId: string,
+    datasourceId: string,
+  ): Promise<DataSource | null> {
+    const include = DataSourceService.getSourceInclude(inventoryId);
+    // Search in all three entity types
+    const [sector] = await db.models.Sector.findAll({
+      include,
+      where: { "$dataSources.datasource_id$": datasourceId },
+    });
+    if (sector && sector.dataSources) {
+      const found = sector.dataSources.find(
+        (ds: any) => ds.datasourceId === datasourceId,
+      );
+      if (found) return found;
+    }
+
+    const [subSector] = await db.models.SubSector.findAll({
+      include,
+      where: { "$dataSources.datasource_id$": datasourceId },
+    });
+    if (subSector && subSector.dataSources) {
+      const found = subSector.dataSources.find(
+        (ds: any) => ds.datasourceId === datasourceId,
+      );
+      if (found) return found;
+    }
+
+    const [subCategory] = await db.models.SubCategory.findAll({
+      include,
+      where: { "$dataSources.datasource_id$": datasourceId },
+    });
+    if (subCategory && subCategory.dataSources) {
+      const found = subCategory.dataSources.find(
+        (ds: any) => ds.datasourceId === datasourceId,
+      );
+      if (found) return found;
+    }
+    return null;
   }
 
   public static async findPopulationScaleFactors(
@@ -518,5 +563,34 @@ export default class DataSourceService {
         }),
       ),
     );
+  }
+
+  /**
+   * Gets a datasource from an inventory and scales it if necessary
+   */
+  public static async getSourceWithData(
+    source: any,
+    inventory: any,
+    countryPopulationScaleFactor: number,
+    regionPopulationScaleFactor: number,
+    populationIssue: string | null,
+  ): Promise<{ error?: string; source: any; data?: any }> {
+    const data = await DataSourceService.retrieveGlobalAPISource(
+      source,
+      inventory,
+    );
+    if (data instanceof String || typeof data === "string") {
+      return { error: data as string, source };
+    }
+    let scaleFactor = 1.0;
+    let issue: string | null = null;
+    if (source.retrievalMethod === downscaledByCountryPopulation) {
+      scaleFactor = countryPopulationScaleFactor;
+      issue = populationIssue;
+    } else if (source.retrievalMethod === downscaledByRegionPopulation) {
+      scaleFactor = regionPopulationScaleFactor;
+      issue = populationIssue;
+    }
+    return { source, data: { ...data, scaleFactor, issue } };
   }
 }

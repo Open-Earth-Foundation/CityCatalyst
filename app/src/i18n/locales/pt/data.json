@@ -1251,5 +1251,6 @@
   "waste-composition-total-percentage": "{{percent}} / 100%",
   "waste-composition-percentage": "{{percent}}%",
   "categories": "Categorias",
-  "percentage": "Porcentagem"
+  "percentage": "Porcentagem",
+  "go-to-source": "Vá para a fonte"
 }

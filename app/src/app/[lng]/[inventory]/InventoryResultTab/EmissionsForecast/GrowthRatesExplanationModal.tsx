@@ -1,18 +1,17 @@
-import { TFunction } from "i18next";
-import { Heading, HStack, Text, Box, VStack } from "@chakra-ui/react";
-import { MdBarChart } from "react-icons/md";
-import { GrowthRatesExplanationModalTable } from "./GrowthRatesExplanationModalTable";
-import { EmissionsForecastData } from "@/util/types";
+import { DisplayLarge } from "@/components/Texts/Display";
+import { LabelLarge } from "@/components/Texts/Label";
 import {
   DialogBody,
   DialogCloseTrigger,
   DialogContent,
   DialogHeader,
   DialogRoot,
-  DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { DisplayLarge } from "@/components/Texts/Display";
+import { EmissionsForecastData } from "@/util/types";
+import { Box, HStack, Text, VStack } from "@chakra-ui/react";
+import { TFunction } from "i18next";
+import { MdBarChart } from "react-icons/md";
+import { GrowthRatesExplanationModalTable } from "./GrowthRatesExplanationModalTable";
 
 export function GrowthRatesExplanationModal({
   t,
@@ -83,18 +82,7 @@ export function GrowthRatesExplanationModal({
           >
             <VStack alignItems={"left"} justifyItems={"end"} p="24px">
               <DisplayLarge color="black">{cluster?.id}</DisplayLarge>
-              <Text
-                fontSize="label.lg"
-                fontStyle="normal"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color={"content.tertiary"}
-                fontFamily="Poppins"
-                fontWeight="500"
-                whiteSpace="nowrap"
-              >
-                {t("cluster-#")}
-              </Text>
+              <LabelLarge>{t("cluster-#")}</LabelLarge>
             </VStack>
             <VStack alignItems={"left"} justifyItems={"end"} p="24px">
               <DisplayLarge
@@ -105,18 +93,7 @@ export function GrowthRatesExplanationModal({
               >
                 {cluster?.description?.[lng]}
               </DisplayLarge>
-              <Text
-                fontFamily="Poppins"
-                fontSize="label.lg"
-                fontStyle="normal"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color={"content.tertiary"}
-                fontWeight="500"
-                textAlign="left"
-              >
-                {t("description")}
-              </Text>
+              <LabelLarge>{t("description")}</LabelLarge>
             </VStack>
           </HStack>
           <VStack alignItems={"left"} justifyItems={"end"} p="24px">

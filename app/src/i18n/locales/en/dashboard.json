@@ -91,7 +91,7 @@
   "%-of-emissions": "% of emissions",
   "of-total-emissions": "of total emissions",
   "view-total-emissions-data-by-GPC-required-sectors": "View total emissions data by GPC required sectors",
-  "breakdown-of-sub-sector-emissions": "Breakdown of sub-sector emissions",
+  "breakdown-of-sub-sector-emissions": "No-action emissions forecast by sector",
   "N/A": "N/A",
   "activity-type": "activity type",
   "consumption": "consumption",
@@ -199,5 +199,6 @@
   "select-role": "Select role",
   "collaborator-rule": "Collaborators can only edit inventories",
   "admin-rule": "Admins can add cities to all projects, and edit all inventories",
-  "all-cities": "All cities"
+  "all-cities": "All cities",
+  "source": "Source"
 }

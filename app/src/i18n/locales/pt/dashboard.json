@@ -87,7 +87,7 @@
   "%-of-emissions": "% das emissões",
   "of-total-emissions": "das emissões totais",
   "view-total-emissions-data-by-GPC-required-sectors": "Veja os dados totais de emissões por setores exigidos pelo GPC",
-  "breakdown-of-sub-sector-emissions": "Detalhamento das emissões por subsetor",
+  "breakdown-of-sub-sector-emissions": "Previsão de emissões por setor sem ação",
   "N/A": "N/A",
   "activity-type": "Tipo de atividade",
   "consumption": "Consumo",
@@ -193,5 +193,6 @@
   "default-project": "Projeto padrão",
   "go-to": "Vá para...",
   "industrial-processes-and-product-uses-ippu": "IPPU",
-  "agriculture-forestry-and-other-land-use-afolu": "AFOLU"
+  "agriculture-forestry-and-other-land-use-afolu": "AFOLU",
+  "source": "Fonte"
 }

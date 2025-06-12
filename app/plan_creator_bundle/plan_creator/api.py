@@ -128,9 +128,7 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
             )
 
             # Step 3: Wrap in PlanResponse
-            plan_response = PlanResponse(
-                metadata=metadata, content={result["language"]: content}
-            )
+            plan_response = PlanResponse(metadata=metadata, content=content)
 
         except Exception as e:
             logger.error(

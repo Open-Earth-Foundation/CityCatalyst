@@ -1,35 +1,27 @@
 import { InputGroup } from "@/components/ui/input-group";
 import { Icon, IconButton, Input } from "@chakra-ui/react";
 import { LuSearch } from "react-icons/lu";
-import { MdClose } from "react-icons/md";
+import { MdClose, MdSearch } from "react-icons/md";
 import React from "react";
 
 const SearchInput = ({
   searchTerm,
   setSearchTerm,
-  className,
   placeholder,
 }: {
   searchTerm: string;
   setSearchTerm: (searchTerm: string) => void;
-  className?: string;
   placeholder?: string;
 }) => {
   return (
     <InputGroup
-      color=""
-      w="full"
-      rounded={32}
-      backgroundColor="background.overlay"
-      className={className}
       startElement={
-        <Icon
-          as={LuSearch}
-          className="opacity-50"
-          color={"#414249"}
-          boxSize={4}
-        />
+        <Icon as={MdSearch} color="interactive.control" boxSize={6} />
       }
+      width="100%"
+      border="1px"
+      borderStyle="solid"
+      borderColor="border.neutral"
       endElement={
         searchTerm ? (
           <IconButton
@@ -49,11 +41,9 @@ const SearchInput = ({
       }
     >
       <Input
+        minWidth="350px"
         onChange={(e) => setSearchTerm(e.target.value)}
-        border="0px"
-        paddingX={2}
         placeholder={placeholder}
-        outline="none"
         value={searchTerm}
       />
     </InputGroup>

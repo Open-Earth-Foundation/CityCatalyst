@@ -3,6 +3,10 @@ from langchain_core.messages import HumanMessage, SystemMessage
 import json
 import logging
 from utils.logging_config import setup_logger
+from plan_creator_bundle.plan_creator.prompts.agent_translate_prompt import (
+    agent_translate_system_prompt,
+    agent_translate_user_prompt,
+)
 
 from plan_creator_bundle.plan_creator.state.agent_state import AgentState
 
@@ -10,21 +14,7 @@ from plan_creator_bundle.plan_creator.state.agent_state import AgentState
 model = ChatOpenAI(model="gpt-4.1", temperature=0.0, seed=42)
 
 # Define prompts for each agent
-system_prompt_agent_translate = SystemMessage(
-    """
-<role>
-You are a translator specializing in climate action implementation plans.
-</role>
-
-<task>
-Your task is to translate the given climate action implementation plan into the specified language. Translate all text content but do not translate the keys, keeping the same structure and formatting. If you cannot translate a specific word or phrase (e.g., a proper noun or scientific term), leave it in English.
-</task>
-
-<important>
-Do not add any additional text or formatting to the output. Only return the translated text in the same structure as the input.
-</important>
-"""
-)
+system_prompt_agent_translate = SystemMessage(agent_translate_system_prompt)
 
 setup_logger()
 logger = logging.getLogger(__name__)
@@ -62,17 +52,9 @@ def custom_agent_translate(state: AgentState) -> AgentState:
     if language != "en":
         logger.info(f"Translating full plan into '{language}'...")
         plan_content_json = json.dumps(plan_content, ensure_ascii=False, indent=2)
-        user_prompt = f"""
-Translate all string values in the following JSON into the target language: '{language}'.
-- Do NOT translate the keys, only the values.
-- Keep the JSON structure and all keys exactly the same.
-- If a value is not a string (e.g. a number or list), leave it unchanged.
-- Return only the translated JSON, with no extra text or formatting.
-- If you cannot translate a specific word or phrase (e.g., a proper noun, name, or scientific term), leave it in English.
-
-Input JSON:
-{plan_content_json}
-"""
+        user_prompt = agent_translate_user_prompt.format(
+            language=language, plan_content_json=plan_content_json
+        )
         messages = [
             system_prompt_agent_translate,
             HumanMessage(user_prompt),

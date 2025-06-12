@@ -11,7 +11,7 @@ import time
 import logging
 import uuid
 import threading
-from typing import Optional, List, Dict, Any
+from typing import Dict, Any
 
 from langchain_core.messages import AIMessage
 
@@ -167,7 +167,7 @@ def _execute_plan_creation(task_uuid: str, request: PlanRequest):
         task_storage[task_uuid]["error"] = f"Error generating plan: {str(e)}"
 
 
-@router.post("/start_plan_creation")
+@router.post("/start_plan_creation", deprecated=True)
 async def start_plan_creation(request: PlanRequest):
     """Start asynchronous plan creation process"""
     # Generate a unique task ID
@@ -204,7 +204,7 @@ async def start_plan_creation(request: PlanRequest):
     )
 
 
-@router.get("/check_progress/{task_uuid}")
+@router.get("/check_progress/{task_uuid}", deprecated=True)
 async def check_progress(task_uuid: str):
     """Check the progress of a plan creation task"""
     logger.info(f"Checking progress for task: {task_uuid}")
@@ -225,7 +225,7 @@ async def check_progress(task_uuid: str):
     return response_data
 
 
-@router.get("/get_plan/{task_uuid}")
+@router.get("/get_plan/{task_uuid}", deprecated=True)
 async def get_plan(task_uuid: str):
     """Get the completed plan for a task"""
     logger.info(f"Retrieving plan for task: {task_uuid}")
@@ -263,7 +263,7 @@ async def get_plan(task_uuid: str):
 
 
 # Keep the old endpoint for backward compatibility
-@router.post("/create_plan")
+@router.post("/create_plan", deprecated=True)
 async def create_plan(request: PlanRequest):
     logger.warning(
         "Deprecated /create_plan endpoint called. Consider using the new asynchronous API."

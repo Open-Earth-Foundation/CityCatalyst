@@ -4,68 +4,21 @@ from datetime import datetime
 
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from plan_creator_bundle.plan_creator_legacy.prompts.agent_translate_prompt import (
+    agent_translate_system_prompt,
+    agent_translate_user_prompt,
+)
 
 # Create the agents
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
 
 # Define prompts for each agent
-system_prompt_agent_translate = SystemMessage(
-    """
-<role>
-You are a translator specializing in climate action implementation plans.
-</role>
-
-<task>
-Your task is to translate the given climate action implementation plan into the specified language. You must translate the entire document but keep the same formatting.
-Try to keep the same tone and style as the original document.
-If you cannot translate a specific word or phrase e.g. because it is a proper noun or a scientific term, leave it in English.
-</task>
-
-<input>
-text to translate: The input is the climate action implementation plan in english.
-target language: The target language that the text should be translated into. It is a 2 letter ISO language code like "en", "es", "pt", etc.
-</input>
-
-<output>
-The output must follow all the same formatting as the input. It must be translated into the specified language.
-
-<example>
-Input:
-## Header
-
-**Bold text**
-
-### Subheader
-
-Text
-
-Output:
-## Translated Header
-
-**Translated bold text**
-
-### Translated subheader
-
-Translated text
-
-</example>
-</output>
-
-<important>
-Do not add any additional text or formatting to the output like ```json```, ```html```, ```markdown```, etc.
-You return only the plain translated text.
-</important>
-"""
-)
+system_prompt_agent_translate = SystemMessage(agent_translate_system_prompt)
 
 OUTPUT_PATH = Path(__file__).parent.parent / "data" / "output"
 
 
 def custom_agent_translate(state: AgentState) -> AgentState:
-
-    # Get meta data for saving the output
-    climate_action_id = state["climate_action_data"]["ActionID"]
-    city_locode = state["city_data"]["locode"]
 
     # Get the language from the state
     language = state["language"]
@@ -80,12 +33,10 @@ def custom_agent_translate(state: AgentState) -> AgentState:
         messages = [
             system_prompt_agent_translate,
             HumanMessage(
-                f"""
-                The target language is: {language}
-
-                This is the text to translate: 
-                {response_agent_combine}
-                """
+                agent_translate_user_prompt.format(
+                    language=language,
+                    response_agent_combine=response_agent_combine,
+                )
             ),
         ]
 

@@ -62,15 +62,15 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
             "climate_action_data": background_task_input["action"],
             "city_data": background_task_input["cityData"],
             "response_agent_1": Introduction(title="", description=""),
-            "response_agent_2": SubactionList(subactions=[]),
-            "response_agent_3": InstitutionList(institutions=[]),
-            "response_agent_4": MilestoneList(milestones=[]),
+            "response_agent_2": SubactionList(items=[]),
+            "response_agent_3": InstitutionList(items=[]),
+            "response_agent_4": MilestoneList(items=[]),
             "response_agent_5": Timeline(),
             "response_agent_6": CostBudget(),
-            "response_agent_7": MerIndicatorList(merIndicators=[]),
-            "response_agent_8": MitigationList(mitigations=[]),
-            "response_agent_9": AdaptationList(adaptations=[]),
-            "response_agent_10": SDGList(sdgs=[]),
+            "response_agent_7": MerIndicatorList(items=[]),
+            "response_agent_8": MitigationList(items=[]),
+            "response_agent_9": AdaptationList(items=[]),
+            "response_agent_10": SDGList(items=[]),
             "response_agent_translate": {},
             "language": background_task_input["language"],
             "messages": [],
@@ -128,9 +128,7 @@ def _execute_plan_creation(task_uuid: str, background_task_input: Dict[str, Any]
             )
 
             # Step 3: Wrap in PlanResponse
-            plan_response = PlanResponse(
-                metadata=metadata, content={result["language"]: content}
-            )
+            plan_response = PlanResponse(metadata=metadata, content=content)
 
         except Exception as e:
             logger.error(
@@ -278,13 +276,13 @@ async def check_progress(task_uuid: str):
     task_info = task_storage[task_uuid]
     logger.info(f"Task {task_uuid}: Task status: {task_info['status']}")
 
-    response_data = {"status": task_info["status"]}
-
     # Include error message if status is failed
     if task_info["status"] == "failed" and "error" in task_info:
-        response_data["error"] = task_info["error"]
+        return CheckProgressResponse(
+            status=task_info["status"], error=task_info["error"]
+        )
 
-    return CheckProgressResponse(**response_data)
+    return CheckProgressResponse(status=task_info["status"])
 
 
 @router.get("/v1/get_plan/{task_uuid}", response_model=PlanResponse)

@@ -44,15 +44,32 @@ class PrioritizerRequest(BaseModel):
 # --- Response models ---
 
 
+class StartPrioritizationResponse(BaseModel):
+    taskId: str
+    status: str
+
+
+class CheckProgressResponse(BaseModel):
+    status: str
+    error: Optional[str] = None
+
+
 class MetaData(BaseModel):
     locode: str
     rankedDate: datetime
 
 
+class Explanation(BaseModel):
+    en: str
+    es: str
+    pt: str
+    # Add all the languages required here and defined in api.py LANGUAGES constant
+
+
 class RankedAction(BaseModel):
     actionId: str
     rank: int
-    explanation: str
+    explanation: Optional[Explanation] = None
 
 
 class PrioritizerResponse(BaseModel):

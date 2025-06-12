@@ -135,6 +135,7 @@ function FormattedNumberInput({
             value={format(field.value)}
             shadow="1dp"
             w="full"
+            hideWheelControls
             borderRightRadius={children ? 0 : "md"} // Adjust border radius
             bgColor={isDisabled ? "background.neutral" : "base.light"}
             pos="relative"

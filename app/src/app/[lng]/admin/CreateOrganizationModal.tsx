@@ -114,7 +114,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
       const inviteResponse = await createOrganizationInvite({
         organizationId: orgId,
         role: OrganizationRole.ORG_ADMIN,
-        inviteeEmail: response.data.contactEmail,
+        inviteeEmails: [response.data.contactEmail],
       });
       if (projectResponse.data && inviteResponse.data) {
         showSuccessToast();

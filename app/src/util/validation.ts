@@ -280,7 +280,7 @@ export type UpdateOrganizationRequest = z.infer<
 
 export const createOrganizationInviteRequest = z.object({
   organizationId: z.string().uuid(),
-  inviteeEmail: z.string().email(),
+  inviteeEmails: z.array(z.string().email()),
   role: z.nativeEnum(OrganizationRole),
 });
 
@@ -318,5 +318,9 @@ export const whiteLabelSchema = z.object({
 });
 
 export const organizationActiveStateSchema = z.object({
-  active: z.boolean()
-})
+  active: z.boolean(),
+});
+
+export const updateUserRoleSchema = z.object({
+  contactEmail: z.string().email().max(255),
+});

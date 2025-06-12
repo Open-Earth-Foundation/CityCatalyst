@@ -97,7 +97,7 @@ const AdminOrganizationIdProfilePage = ({
   const resendInvite = async () => {
     const response = await createOrganizationInvite({
       organizationId: organization?.organizationId as string,
-      inviteeEmail: organization?.contactEmail as string,
+      inviteeEmails: [organization?.contactEmail] as string[],
       role: OrganizationRole.ORG_ADMIN,
     });
 

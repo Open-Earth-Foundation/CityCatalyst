@@ -167,7 +167,7 @@ def _execute_plan_creation(task_uuid: str, request: PlanRequest):
         task_storage[task_uuid]["error"] = f"Error generating plan: {str(e)}"
 
 
-@router.post("/start_plan_creation", deprecated=True)
+@router.post("/start_plan_creation")
 async def start_plan_creation(request: PlanRequest):
     """Start asynchronous plan creation process"""
     # Generate a unique task ID
@@ -204,7 +204,7 @@ async def start_plan_creation(request: PlanRequest):
     )
 
 
-@router.get("/check_progress/{task_uuid}", deprecated=True)
+@router.get("/check_progress/{task_uuid}")
 async def check_progress(task_uuid: str):
     """Check the progress of a plan creation task"""
     logger.info(f"Checking progress for task: {task_uuid}")
@@ -225,7 +225,7 @@ async def check_progress(task_uuid: str):
     return response_data
 
 
-@router.get("/get_plan/{task_uuid}", deprecated=True)
+@router.get("/get_plan/{task_uuid}")
 async def get_plan(task_uuid: str):
     """Get the completed plan for a task"""
     logger.info(f"Retrieving plan for task: {task_uuid}")

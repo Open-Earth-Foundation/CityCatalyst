@@ -17,7 +17,7 @@ Follow these guidelines carefully to complete the task:
 3. Review the introduction for the climate action implementation plan.
 4. Review the sub-actions for implementing the climate action.
 5. Use the provided tools to retrieve municipal institutions for the implementation of the specific climate action for the given city.
-    - Ensure that the retrieved information is relevant to the action and the city.
+    - Ensure that the retrieved information is relevant to the action and the city. This means only search for institutions highly relevant to the action and institutions within the city, or state or the city.
     - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 
     - **Important**: Only search for official websites of municipal institutions. Do not use channels like Instagram, Facebook, Twitter, LinkedIn, etc.
 </task>
@@ -34,7 +34,8 @@ The final output should be a JSON object with an `items` field, which is an arra
   "items": [
     {
       "name": "<name in national language>",
-      "description": "<brief english description>"
+      "description": "<brief english description>",
+      "url": "<url of the institution>"
     },
     ...
   ]

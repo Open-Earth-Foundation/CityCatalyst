@@ -76,6 +76,7 @@ class SubactionList(BaseModel):
 class Institution(BaseModel):
     name: str
     description: str
+    url: Optional[str] = None
 
 
 class InstitutionList(BaseModel):

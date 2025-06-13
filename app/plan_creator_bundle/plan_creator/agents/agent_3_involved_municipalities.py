@@ -3,9 +3,6 @@ from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from plan_creator_bundle.plan_creator.state.agent_state import AgentState
 from langchain_openai import ChatOpenAI
-from plan_creator_bundle.tools.tools import (
-    get_search_municipalities_tool,
-)
 from plan_creator_bundle.plan_creator.models import InstitutionList
 from plan_creator_bundle.plan_creator.prompts.agent_3_prompt import (
     agent_3_system_prompt,
@@ -18,11 +15,15 @@ import logging
 setup_logger()
 logger = logging.getLogger(__name__)
 
-# Create the agents
-model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
+tools = []
 
-# Define tools for the agent
-tools = [get_search_municipalities_tool]
+# Create the agents
+model = ChatOpenAI(
+    model="gpt-4o",
+    model_kwargs={
+        "tools": [{"type": "web_search_preview"}],
+    },  # Built-in search tool from OpenAI
+)
 
 system_prompt_agent_3 = SystemMessage(agent_3_system_prompt)
 
@@ -56,6 +57,8 @@ def build_custom_agent_3():
                 )
             }
         )
+
+        logger.info(f"Agent 3 output: {result_state}")
 
         # Extract the structured response from the result_state
         agent_output_structured: InstitutionList = result_state["structured_response"]

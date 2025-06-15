@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import createHttpError from "http-errors";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
+import { DEFAULT_ORGANIZATION_ID, DEFAULT_PROJECT_ID } from "@/util/constants";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
   const { organizationId } = params;
@@ -33,6 +34,10 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const { organizationId } = params;
   UserService.validateIsAdmin(session);
+
+  if (organizationId === DEFAULT_ORGANIZATION_ID) {
+    throw new createHttpError.BadRequest("Cannot update default organization");
+  }
   const validatedData = updateOrganizationRequest.parse(await req.json());
   const org = await Organization.findByPk(organizationId as string);
   if (!org) {
@@ -46,6 +51,11 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 export const DELETE = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
   const { organizationId } = params;
+
+  if (organizationId === DEFAULT_ORGANIZATION_ID) {
+    throw new createHttpError.BadRequest("Cannot delete default organization");
+  }
+
   const org = await Organization.findByPk(organizationId as string);
   if (!org) {
     throw new createHttpError.NotFound("organization-not-found");

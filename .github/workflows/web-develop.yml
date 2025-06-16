@@ -116,7 +116,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pushing CC Web to GHCR
+      - name: Pushing CC Full to GHCR
         env:
           VERSION: ${{ github.sha }}
           IMAGE: ghcr.io/open-earth-foundation/citycatalyst
@@ -124,6 +124,20 @@ jobs:
           docker build \
           --build-arg NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev \
           --build-arg NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev \
+          -t $IMAGE:$VERSION app
+          docker tag $IMAGE:$VERSION $IMAGE:latest
+          docker push $IMAGE:$VERSION
+          docker push $IMAGE:latest
+
+      - name: Pushing CC Web to GHCR
+        env:
+          VERSION: ${{ github.sha }}
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-web
+        run: |
+          docker build \
+          --build-arg NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev \
+          --build-arg NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev \
+          -f Dockerfile.web \
           -t $IMAGE:$VERSION app
           docker tag $IMAGE:$VERSION $IMAGE:latest
           docker push $IMAGE:$VERSION

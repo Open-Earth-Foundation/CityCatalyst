@@ -18,7 +18,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { forwardRef, useState, use } from "react";
 import { MdArrowBack, MdChevronRight, MdOutlineHomeWork } from "react-icons/md";
 import {
@@ -64,7 +64,6 @@ function SubSectorPage(props: {
   const { lng, step, inventory: inventoryId, subsector } = use(props.params);
 
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { t } = useTranslation(lng, "data");
   const { scrollY } = useScroll();
 

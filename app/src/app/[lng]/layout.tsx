@@ -26,6 +26,7 @@ export default function RootLayout({
   return (
     <html lang={lng} dir={dir(lng)}>
       <head>
+        <meta charSet="utf-8" />
         <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
         <link rel="icon" type="image/png" href="/assets/icon.png" />
         <PublicEnvScript />
@@ -33,9 +34,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <Toaster />
-            <ClientRootLayout lng={lng}>
-                {children}
-            </ClientRootLayout>
+          <ClientRootLayout lng={lng}>{children}</ClientRootLayout>
         </Providers>
       </body>
     </html>

@@ -80,9 +80,9 @@ export function GrowthRatesExplanationModal({
             marginTop={"48px"}
             alignItems={"flex-end"}
           >
-            <VStack alignItems={"left"} justifyItems={"end"} p="24px">
+            <VStack alignItems={"center"} justifyItems={"end"} p="24px">
               <DisplayLarge color="black">{cluster?.id}</DisplayLarge>
-              <LabelLarge>{t("cluster-#")}</LabelLarge>
+              <LabelLarge textWrap={"nowrap"}>{t("cluster-#")}</LabelLarge>
             </VStack>
             <VStack alignItems={"left"} justifyItems={"end"} p="24px">
               <DisplayLarge

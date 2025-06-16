@@ -194,5 +194,12 @@
   "go-to": "Vá para...",
   "industrial-processes-and-product-uses-ippu": "IPPU",
   "agriculture-forestry-and-other-land-use-afolu": "AFOLU",
-  "source": "Fonte"
+  "source": "Fonte",
+  "add": "Adicionar",
+  "enter-to-add": "Pressione enter para adicionar",
+  "choose-a-role": "Escolha um papel",
+  "select-role": "Selecione o papel",
+  "collaborator-rule": "Colaboradores só podem editar inventários",
+  "admin-rule": "Os administradores podem adicionar cidades a todos os projetos e editar todos os inventários",
+  "all-cities": "Todas as cidades"
 }

@@ -129,18 +129,23 @@ const SingleProjectView = ({
         { cityId: city.cityId },
         "City has no inventories but is listed in ProjectDrawer",
       );
+      return;
     }
+
     router.push(`/${lng}/${inventoryId}`);
   };
 
   const [searchTerm, setSearchTerm] = React.useState("");
 
   const filteredCitiesList = useMemo(() => {
-    return project.cities.filter(
-      (city) =>
-        city.inventories?.length > 0 &&
-        (!searchTerm ||
-          city.name.toLowerCase().includes(searchTerm.toLowerCase())),
+    const citiesWithInventories = project.cities.filter(
+      (city) => city.inventories?.length > 0,
+    );
+
+    if (!searchTerm) return citiesWithInventories;
+
+    return citiesWithInventories.filter((city) =>
+      city.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [project, searchTerm]);
 

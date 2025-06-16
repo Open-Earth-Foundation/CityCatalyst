@@ -26,7 +26,7 @@ export interface EmissionsFactorAttributes {
   methodologyName?: string | null;
   methodologyId?: string | null;
   reference?: string | null;
-  deprecated: boolean;
+  deprecated?: boolean;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -71,7 +71,7 @@ export class EmissionsFactor
   methodologyId?: string | null;
   metadata?: Record<string, any>;
   reference?: string | null;
-  deprecated: boolean;
+  deprecated?: boolean;
   created?: Date;
   lastUpdated?: Date;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { Box, Tabs, Text } from "@chakra-ui/react";
 
@@ -39,11 +39,17 @@ export type CityData = {
 
 const tabValues = ["my-profile", "my-files", "my-inventories"];
 
-export default function Settings({
-  params: { lng },
-}: {
-  params: { lng: string };
-}) {
+export default function Settings(
+  props: {
+    params: Promise<{ lng: string }>;
+  }
+) {
+  const params = use(props.params);
+
+  const {
+    lng
+  } = params;
+
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
 

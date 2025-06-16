@@ -1,4 +1,5 @@
-"use client";
+"use client";;
+import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
 import { MdArrowForward } from "react-icons/md";
@@ -6,11 +7,17 @@ import { Button, Heading, Icon, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
 
-export default function ResetSuccessful({
-  params: { lng },
-}: {
-  params: { lng: string };
-}) {
+export default function ResetSuccessful(
+  props: {
+    params: Promise<{ lng: string }>;
+  }
+) {
+  const params = use(props.params);
+
+  const {
+    lng
+  } = params;
+
   const { t } = useTranslation(lng, "auth");
   return (
     <>

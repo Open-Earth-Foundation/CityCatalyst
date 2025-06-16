@@ -1,5 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
-"use client";
+"use client";;
+import { use } from "react";
 
 import { Box, Container, Text, Heading, Flex, Strong } from "@chakra-ui/react";
 import Footer from "../components/Footer";
@@ -7,11 +8,18 @@ import NavigationBar from "../components/Navbar";
 import Image from "next/image";
 import { useTranslation } from "@/i18n/client";
 
-const Collaborators = ({
-  params: { project, lng },
-}: {
-  params: { project: string; lng: string };
-}) => {
+const Collaborators = (
+  props: {
+    params: Promise<{ project: string; lng: string }>;
+  }
+) => {
+  const params = use(props.params);
+
+  const {
+    project,
+    lng
+  } = params;
+
   const { t } = useTranslation(lng, "dashboard");
 
   const footerProps = {

@@ -7,7 +7,7 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import React, { useMemo } from "react";
+import React, { useMemo, use } from "react";
 import { useGetOrganizationQuery } from "@/services/api";
 import {
   ProgressCircleRing,
@@ -25,13 +25,23 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import ProgressLoader from "@/components/ProgressLoader";
 
-export default function AdminOrganizationLayout({
-  children,
-  params: { lng, id },
-}: {
-  children: React.ReactNode;
-  params: { lng: string; id: string };
-}) {
+export default function AdminOrganizationLayout(
+  props: {
+    children: React.ReactNode;
+    params: Promise<{ lng: string; id: string }>;
+  }
+) {
+  const params = use(props.params);
+
+  const {
+    lng,
+    id
+  } = params;
+
+  const {
+    children
+  } = props;
+
   const { t } = useTranslation(lng, "admin");
   const pathName = usePathname();
 

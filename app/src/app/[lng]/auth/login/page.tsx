@@ -7,7 +7,7 @@ import { Box, Heading, Link, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, use } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
@@ -39,11 +39,17 @@ function VerifiedNotification({ t }: { t: TFunction }) {
   return null;
 }
 
-export default function Login({
-  params: { lng },
-}: {
-  params: { lng: string };
-}) {
+export default function Login(
+  props: {
+    params: Promise<{ lng: string }>;
+  }
+) {
+  const params = use(props.params);
+
+  const {
+    lng
+  } = params;
+
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
   const [error, setError] = useState("");

@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import { BsPlus } from "react-icons/bs";
-import React, { FC, useState } from "react";
+import React, { FC, useState, use } from "react";
 import CreateOrganizationModal from "@/app/[lng]/admin/CreateOrganizationModal";
 import { api } from "@/services/api";
 import DataTable from "@/components/ui/data-table";
@@ -49,7 +49,13 @@ interface OrgData {
   status: "accepted" | "invite sent" | "frozen";
 }
 
-const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
+const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
+  const params = use(props.params);
+
+  const {
+    lng
+  } = params;
+
   const { t } = useTranslation(lng, "admin");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bulkActionsTab, setBulkActionsTab] = useState(

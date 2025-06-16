@@ -14,7 +14,7 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
-import React, { useEffect } from "react";
+import React, { useEffect, use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { MdReplay, MdWarning } from "react-icons/md";
 import { z } from "zod";
@@ -26,11 +26,18 @@ import { OrganizationRole } from "@/util/types";
 import { Trans } from "react-i18next";
 import ProgressLoader from "@/components/ProgressLoader";
 
-const AdminOrganizationIdProfilePage = ({
-  params: { lng, id },
-}: {
-  params: { lng: string; id: string };
-}) => {
+const AdminOrganizationIdProfilePage = (
+  props: {
+    params: Promise<{ lng: string; id: string }>;
+  }
+) => {
+  const params = use(props.params);
+
+  const {
+    lng,
+    id
+  } = params;
+
   const { t } = useTranslation(lng, "admin");
 
   const { data: organization, isLoading: isOrganizationLoading } =

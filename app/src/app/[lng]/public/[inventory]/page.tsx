@@ -1,9 +1,15 @@
 import HomePage from "@/components/HomePage/HomePage";
 
-export default function PublicHome({
-  params: { lng },
-}: {
-  params: { lng: string };
-}) {
+export default async function PublicHome(
+  props: {
+    params: Promise<{ lng: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    lng
+  } = params;
+
   return <HomePage lng={lng} isPublic={true} />;
 }

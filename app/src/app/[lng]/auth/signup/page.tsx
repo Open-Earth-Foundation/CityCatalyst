@@ -6,7 +6,7 @@ import { useTranslation } from "@/i18n/client";
 
 import { Box, Heading, Icon, Input, Link, Text } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, use } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
@@ -26,11 +26,17 @@ type Inputs = {
   acceptTerms: boolean;
 };
 
-export default function Signup({
-  params: { lng },
-}: {
-  params: { lng: string };
-}) {
+export default function Signup(
+  props: {
+    params: Promise<{ lng: string }>;
+  }
+) {
+  const params = use(props.params);
+
+  const {
+    lng
+  } = params;
+
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
   const {

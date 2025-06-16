@@ -5,7 +5,7 @@ import { toaster, Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
 import { api } from "@/services/api";
 import { Roles } from "@/util/types";
-import React, { useEffect } from "react";
+import React, { useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import {
   ProgressCircleRing,
@@ -14,13 +14,22 @@ import {
 import { useTranslation } from "@/i18n/client";
 import { useSession } from "next-auth/react";
 
-export default function AdminLayout({
-  children,
-  params: { lng },
-}: {
-  children: React.ReactNode;
-  params: { lng: string };
-}) {
+export default function AdminLayout(
+  props: {
+    children: React.ReactNode;
+    params: Promise<{ lng: string }>;
+  }
+) {
+  const params = use(props.params);
+
+  const {
+    lng
+  } = params;
+
+  const {
+    children
+  } = props;
+
   const router = useRouter();
 
   const { t } = useTranslation(lng, "admin");

@@ -6,16 +6,26 @@ import { Box } from "@chakra-ui/react";
 import { useGetOrganizationForInventoryQuery } from "@/services/api";
 import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 import { useTheme } from "next-themes";
-import { useEffect } from "react";
+import { useEffect, use } from "react";
 import ProgressLoader from "@/components/ProgressLoader";
 
-export default function DataLayout({
-  children,
-  params: { lng, inventory },
-}: {
-  children: React.ReactNode;
-  params: { lng: string; inventory: string };
-}) {
+export default function DataLayout(
+  props: {
+    children: React.ReactNode;
+    params: Promise<{ lng: string; inventory: string }>;
+  }
+) {
+  const params = use(props.params);
+
+  const {
+    lng,
+    inventory
+  } = params;
+
+  const {
+    children
+  } = props;
+
   const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
     useGetOrganizationForInventoryQuery(inventory, {
       skip: !inventory,

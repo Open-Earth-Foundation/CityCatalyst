@@ -1,5 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
-"use client";
+"use client";;
+import { use } from "react";
 
 import {
   Box,
@@ -15,11 +16,18 @@ import NavigationBar from "../components/Navbar";
 import Collaborators from "@/app/[lng]/public/project/[project]/components/Collaborators";
 import { useTranslation } from "@/i18n/client";
 
-const About = ({
-  params: { project, lng },
-}: {
-  params: { project: string; lng: string };
-}) => {
+const About = (
+  props: {
+    params: Promise<{ project: string; lng: string }>;
+  }
+) => {
+  const params = use(props.params);
+
+  const {
+    project,
+    lng
+  } = params;
+
   const { t } = useTranslation(lng, "dashboard");
 
   const footerProps = {
@@ -103,7 +111,8 @@ const About = ({
               <Box bg="gray.200" borderRadius="xl"></Box>
               <Box>
                 <Heading as="h2" fontSize="2xl" color="gray.800" mb={6}>
-                  Scale High Impact  Climate Actions
+                  Scale High Impact 
+Climate Actions
                 </Heading>
                 <Text mb={4} color="gray.600">
                   This national initiative aims to:

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Center, ProgressCircle } from "@chakra-ui/react";
 import { useAcceptInviteMutation } from "@/services/api";
@@ -9,7 +9,13 @@ import InviteErrorView from "./InviteErrorView";
 import { emailPattern, tokenRegex, uuidRegex } from "@/util/validation";
 import ProgressLoader from "@/components/ProgressLoader";
 
-const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
+const AcceptInvitePage = (props: { params: Promise<{ lng: string }> }) => {
+  const params = use(props.params);
+
+  const {
+    lng
+  } = params;
+
   const searchParams = useSearchParams();
   const queryParams = Object.fromEntries(searchParams.entries());
   const [acceptInvite, { isLoading, isError }] = useAcceptInviteMutation();

@@ -5,7 +5,7 @@ import { Link } from "@chakra-ui/react";
 import { Button, Heading, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, use } from "react";
 
 function DynamicContent({ t }: { t: Function }) {
   const searchParams = useSearchParams();
@@ -38,11 +38,17 @@ function DynamicContent({ t }: { t: Function }) {
   );
 }
 
-export default function CheckEmail({
-  params: { lng },
-}: {
-  params: { lng: string };
-}) {
+export default function CheckEmail(
+  props: {
+    params: Promise<{ lng: string }>;
+  }
+) {
+  const params = use(props.params);
+
+  const {
+    lng
+  } = params;
+
   const { t } = useTranslation(lng, "auth");
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");

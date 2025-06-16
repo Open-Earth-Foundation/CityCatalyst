@@ -18,14 +18,20 @@ import { useSelector, useDispatch } from "react-redux";
 import { clear, removeSectorData } from "@/features/city/inventoryDataSlice";
 import { api } from "@/services/api";
 import { appendFileToFormData } from "@/util/helpers";
-import { useState } from "react";
+import { useState, use } from "react";
 import { logger } from "@/services/logger";
 
-export default function ReviewPage({
-  params: { lng },
-}: {
-  params: { lng: string };
-}) {
+export default function ReviewPage(
+  props: {
+    params: Promise<{ lng: string }>;
+  }
+) {
+  const params = use(props.params);
+
+  const {
+    lng
+  } = params;
+
   const { t } = useTranslation(lng, "data");
   const { inventory: inventoryParam } = useParams();
   let inventoryId = inventoryParam as string | null;

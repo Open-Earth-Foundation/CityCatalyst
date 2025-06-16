@@ -142,5 +142,7 @@
   "total-land-area": "Gesamtlandfläche",
   "files-uploaded": "Hochgeladene Dateien",
   "n-a": "N/V",
-  "no-data": "Keine Daten verfügbar"
+  "no-data": "Keine Daten verfügbar",
+  "owner": "Eigentümer",
+  "collaborator": "Mitarbeiter"
 }

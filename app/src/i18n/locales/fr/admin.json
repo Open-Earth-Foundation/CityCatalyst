@@ -134,5 +134,6 @@
   "download-complete": "Le téléchargement du rapport d'inventaire est terminé !",
   "downloading-data": "Téléchargement de vos données",
   "download-failed": "Échec du téléchargement",
-  "download-error": "Une erreur s'est produite pendant le téléchargement"
+  "download-error": "Une erreur s'est produite pendant le téléchargement",
+  "change-to-admin": "Changer en admin"
 }

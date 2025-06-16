@@ -139,5 +139,9 @@
   "total-land-area": "Superficie totale des terres",
   "files-uploaded": "Fichiers téléchargés",
   "n-a": "S/O",
-  "no-data": "Aucune donnée disponible"
+  "no-data": "Aucune donnée disponible",
+  "position": "Position",
+  "position-description": "Indiquez votre titre ou profession.",
+  "owner": "Propriétaire",
+  "collaborator": "Collaborateur"
 }

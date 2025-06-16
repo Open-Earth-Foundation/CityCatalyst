@@ -108,10 +108,9 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
   }
 
   // TODO this is fixed on dev so use that version once stable
-  /* const { data: inventoryData } = api.useGetInventoryQuery(inventory!, {
+  const { data: inventoryData } = api.useGetInventoryQuery(inventory!, {
     skip: !userInfo,
-  }); */
-  const inventoryData: any = null;
+  });
 
   const [addUserFile, { isLoading }] = api.useAddUserFileMutation();
   const DEFAULT_STATUS = "pending";

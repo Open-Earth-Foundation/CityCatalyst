@@ -114,7 +114,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
     });
     const inviteResponse = await createOrganizationInvite({
       organizationId,
-      inviteeEmail: email,
+      inviteeEmails: [email],
       role: OrganizationRole.ORG_ADMIN,
     });
     if (inviteResponse.data) {

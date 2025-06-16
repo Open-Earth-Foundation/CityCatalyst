@@ -16,7 +16,11 @@ import {
 } from "react-icons/md";
 import { InputGroup } from "@/components/ui/input-group";
 import { LuSearch } from "react-icons/lu";
-import { ProjectWithCities, ProjectWithCitiesResponse } from "@/util/types";
+import type {
+  CityResponse,
+  ProjectWithCities,
+  ProjectWithCitiesResponse,
+} from "@/util/types";
 import {
   useGetProjectsQuery,
   useGetProjectUsersQuery,
@@ -33,6 +37,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { useTranslation } from "@/i18n/client";
 import ProjectLimitModal from "@/components/project-limit";
 import SearchInput from "@/components/SearchInput";
+import { logger } from "@/services/logger";
 
 const ProjectList = ({
   t,
@@ -117,17 +122,25 @@ const SingleProjectView = ({
     }
   };
 
-  const goToInventory = (inventoryId: string, lng: string) => {
+  const goToCityInventory = (city: CityResponse) => {
+    const inventoryId = city.inventories?.[0]?.inventoryId;
+    if (!inventoryId) {
+      logger.error(
+        { cityId: city.cityId },
+        "City has no inventories but is listed in ProjectDrawer",
+      );
+    }
     router.push(`/${lng}/${inventoryId}`);
   };
 
   const [searchTerm, setSearchTerm] = React.useState("");
 
   const filteredCitiesList = useMemo(() => {
-    if (!searchTerm) return project.cities;
-
-    return project.cities.filter((city) =>
-      city.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    return project.cities.filter(
+      (city) =>
+        city.inventories?.length > 0 &&
+        (!searchTerm ||
+          city.name.toLowerCase().includes(searchTerm.toLowerCase())),
     );
   }, [project, searchTerm]);
 
@@ -178,7 +191,7 @@ const SingleProjectView = ({
             className="flex justify-start gap-2.5"
             w="full"
             key={city.cityId}
-            onClick={() => goToInventory(city.inventories[0].inventoryId, lng)}
+            onClick={() => goToCityInventory(city)}
           >
             {city.inventories.find(
               (inventory) => inventory.inventoryId === currentInventoryId,

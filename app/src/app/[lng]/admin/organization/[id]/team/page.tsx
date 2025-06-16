@@ -9,7 +9,6 @@ import {
   Table,
   Tabs,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { MdAdd, MdMoreVert, MdOutlineGroup } from "react-icons/md";
 import React, { useEffect, useMemo, useState } from "react";
@@ -19,6 +18,7 @@ import {
   useGetOrganizationQuery,
   useGetProjectsQuery,
   useGetProjectUsersQuery,
+  useUpdateUserRoleInOrganizationMutation,
 } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import {
@@ -47,6 +47,8 @@ import { Tag } from "@/components/ui/tag";
 import AddCollaboratorsModal from "@/components/HomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { toaster } from "@/components/ui/toaster";
 
 const AdminOrganizationTeamPage = ({
   params: { lng, id },
@@ -57,8 +59,8 @@ const AdminOrganizationTeamPage = ({
 
   const TagMapping = {
     [OrganizationRole.ORG_ADMIN]: {
-      color: "green",
-      text: t("owner"),
+      color: "blue",
+      text: t("admin"),
     },
     [OrganizationRole.ADMIN]: {
       color: "blue",
@@ -70,11 +72,24 @@ const AdminOrganizationTeamPage = ({
     },
   };
 
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("role-update-success-toast-title"),
+    description: t("role-update-success-toast-description"),
+  });
+
+  const { showErrorToast } = UseErrorToast({
+    title: t("invite-error-toast-title"),
+    description: t("invite-error-toast-description"),
+  });
+
   const [selectedProject, setSelectedProject] = React.useState<string[]>([]);
   const [selectedCity, setSelectedCity] = React.useState<string | null>("");
 
   const { data: organization, isLoading: isOrganizationLoading } =
     useGetOrganizationQuery(id);
+
+  const [updateUserRole, { isLoading: isUpdatingUserRole }] =
+    useUpdateUserRoleInOrganizationMutation();
 
   const { data: projectsData, isLoading } = useGetProjectsQuery(
     {
@@ -116,6 +131,23 @@ const AdminOrganizationTeamPage = ({
       setSelectedProject([projectsData[0].projectId]);
     }
   }, [projectsData]);
+
+  const upgradeRole = async ({ contactEmail }: { contactEmail: string }) => {
+    toaster.loading({
+      title: t("updating-role"),
+      type: "info",
+    });
+    const { data, error } = await updateUserRole({
+      organizationId: organization?.organizationId as string,
+      contactEmail,
+    });
+    toaster.dismiss();
+    if (data?.success && !error) {
+      showSuccessToast();
+    } else {
+      showErrorToast();
+    }
+  };
 
   const selectedCityData = useMemo(() => {
     if (!projectsData || !selectedProject) return null;
@@ -365,6 +397,29 @@ const AdminOrganizationTeamPage = ({
                         shadow="2dp"
                         px="0"
                       >
+                        {item.role === OrganizationRole.COLLABORATOR && (
+                          <MenuItem
+                            value={t("change-to-admin")}
+                            valueText={t("change-to-admin")}
+                            p="16px"
+                            display="flex"
+                            alignItems="center"
+                            gap="16px"
+                            _hover={{
+                              bg: "content.link",
+                              cursor: "pointer",
+                            }}
+                            className="group"
+                            onClick={() =>
+                              upgradeRole({ contactEmail: item.email })
+                            }
+                          >
+                            <Icon as={MdOutlineGroup} h="24px" w="24px" />
+                            <Text color="content.primary">
+                              {t("change-to-admin")}
+                            </Text>
+                          </MenuItem>
+                        )}
                         <MenuItem
                           value={t("remove-user")}
                           valueText={t("remove-user")}

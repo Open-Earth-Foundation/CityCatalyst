@@ -80,7 +80,7 @@ export const filePath = async () => {
 };
 
 export const testFileFormat = {
-  fileName: "blob",
+  fileName: "blob.csv",
   size: 116,
   fileType: "",
 };

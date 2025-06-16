@@ -300,7 +300,7 @@ export default function AddDataSteps({
     Math.round(percentage * 1000) / 10;
 
   // only display data sources relevant to current sector
-  let dataSources: DataSourceResponse | undefined;
+  let dataSources: DataSourceResponse[] | undefined;
   if (data) {
     const { data: successfulSources, failedSources, removedSources } = data;
     dataSources = successfulSources?.filter(({ source, data }) => {
@@ -1188,7 +1188,7 @@ export default function AddDataSteps({
         <SourceDrawer
           source={selectedSource}
           sourceData={selectedSourceData}
-          sector={currentStep.sector ?? undefined}
+          sector={{ sectorName: currentStep.sector?.sectorName ?? "" }}
           isOpen={isSourceDrawerOpen}
           onClose={onSourceDrawerClose}
           onConnectClick={() => onConnectClick(selectedSource!)}

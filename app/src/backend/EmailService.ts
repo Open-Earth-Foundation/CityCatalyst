@@ -17,6 +17,7 @@ import { City } from "@/models/City";
 import RemoveUserFromMultipleCitiesTemplate from "@/lib/emails/RemoveUsersFromMultipleCities";
 import { OrganizationRole } from "@/util/types";
 import RoleUpdateNotificationTemplate from "@/lib/emails/RoleUpdateNotificationTemplate";
+import CitiesAddedToProjectNotificationTemplate from "@/lib/emails/CitiesAddedToProjectNotification";
 
 export default class EmailService {
   public static async sendOrganizationInvitationEmail(
@@ -280,6 +281,10 @@ export default class EmailService {
         { email, cities },
         "Failed to send change to city access notification email",
       );
+      logger.error(
+        { email, cities },
+        "Failed to send change to city access notification email",
+      );
     }
   }
 
@@ -319,5 +324,56 @@ export default class EmailService {
         "Failed to send change to organization role notification email",
       );
     }
+  }
+
+  public static async sendCityAddedNotification({
+    users,
+    brandInformation,
+    project,
+    organizationName,
+    cities,
+  }: {
+    users: User[];
+    brandInformation?: {
+      color: string;
+      logoUrl: string;
+    };
+    project: Project;
+    organizationName: string;
+    cities: City[];
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            CitiesAddedToProjectNotificationTemplate({
+              url,
+              user: {
+                name: user.name as string,
+                email: user.email as string,
+              },
+              project: {
+                name: project.name,
+              },
+              organizationName,
+              cities,
+              brandInformation,
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - Cities Added",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
   }
 }

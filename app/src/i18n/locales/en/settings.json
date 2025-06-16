@@ -139,5 +139,9 @@
   "total-land-area": "Total land area",
   "files-uploaded": "Files uploaded",
   "n-a": "N/A",
-  "no-data": "No data available"
+  "no-data": "No data available",
+  "position": "Position",
+  "position-description": "Indicate your title or profession.",
+  "owner": "Owner",
+  "collaborator": "Collaborator"
 }

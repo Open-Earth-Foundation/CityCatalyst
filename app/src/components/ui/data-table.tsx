@@ -120,7 +120,7 @@ function DataTable<T extends Record<string, any>>({
           {filterProperty && filterOptions.length > 0 && (
             <NativeSelectRoot>
               <NativeSelectField
-                placeholder="All"
+                placeholder={t("all")}
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
               >

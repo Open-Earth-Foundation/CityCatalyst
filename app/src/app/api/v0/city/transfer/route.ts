@@ -6,6 +6,7 @@ import { transferCitiesRequest } from "@/util/validation";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { NextResponse } from "next/server";
+import EmailService from "@/backend/EmailService";
 
 export const PATCH = apiHandler(async (req, { session }) => {
   UserService.validateIsAdmin(session);
@@ -40,6 +41,17 @@ export const PATCH = apiHandler(async (req, { session }) => {
           as: "cities",
           attributes: ["cityId"],
         },
+        {
+          model: db.models.Organization,
+          as: "organization",
+          attributes: ["organizationId", "name", "logoUrl"],
+          include: [
+            {
+              model: db.models.Theme,
+              as: "theme",
+            },
+          ],
+        },
       ],
     });
 
@@ -69,6 +81,32 @@ export const PATCH = apiHandler(async (req, { session }) => {
         transaction: t,
       },
     );
+
+    // Notify admin users about the transfer
+    const admins = await db.models.OrganizationAdmin.findAll({
+      where: {
+        organizationId: project.organizationId,
+      },
+      include: [
+        {
+          model: db.models.User,
+          as: "user",
+          attributes: ["email", "name"],
+        },
+      ],
+    });
+
+    // fire and forget email notification to all admins
+    EmailService.sendCityAddedNotification({
+      users: admins.map((admin) => admin.user),
+      brandInformation: {
+        color: project.organization.theme?.primaryColor,
+        logoUrl: project.organization.logoUrl || "",
+      },
+      project: project,
+      organizationName: project.organization.name as string,
+      cities: cities,
+    });
   });
 
   return NextResponse.json({ success: true });

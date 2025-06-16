@@ -48,18 +48,10 @@ import AddCollaboratorsModal from "@/components/HomePage/AddCollaboratorModal/Ad
 import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
 
-const AdminOrganizationTeamPage = (
-  props: {
-    params: Promise<{ lng: string; id: string }>;
-  }
-) => {
-  const params = use(props.params);
-
-  const {
-    lng,
-    id
-  } = params;
-
+const AdminOrganizationTeamPage = (props: {
+  params: Promise<{ lng: string; id: string }>;
+}) => {
+  const { lng, id } = use(props.params);
   const { t } = useTranslation(lng, "admin");
 
   const TagMapping = {

@@ -15,17 +15,10 @@ type Inputs = {
   confirmPassword: string;
 };
 
-export default function UpdatePassword(
-  props: {
-    params: Promise<{ lng: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng
-  } = params;
-
+export default function UpdatePassword(props: {
+  params: Promise<{ lng: string }>;
+}) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
   const searchParams = useSearchParams();

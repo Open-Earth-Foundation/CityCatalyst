@@ -1,24 +1,14 @@
-"use client";;
+"use client";
 import { use } from "react";
 
 import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
 
-export default function AuthLayout(
-  props: {
-    children: React.ReactNode;
-    params: Promise<{ lng: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng
-  } = params;
-
-  const {
-    children
-  } = props;
+export default function AuthLayout(props: {
+  children: React.ReactNode;
+  params: Promise<{ lng: string }>;
+}) {
+  const { lng } = use(props.params);
 
   return (
     <main className="h-screen flex flex-col">
@@ -27,7 +17,7 @@ export default function AuthLayout(
         <div className="w-full">
           <div className="pt-[148px] pb-4 w-[480px] max-w-full mx-auto px-4">
             <Toaster />
-            {children}
+            {props.children}
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-"use client";;
+"use client";
 import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
@@ -8,19 +8,10 @@ import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { useSearchParams } from "next/navigation";
 
-export default function OnboardingDone(
-  props: {
-    params: Promise<{ lng: string; year: number; inventory: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng,
-    year,
-    inventory
-  } = params;
-
+export default function OnboardingDone(props: {
+  params: Promise<{ lng: string; year: number; inventory: string }>;
+}) {
+  const { lng, year, inventory } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
   const searchParams = useSearchParams();
   const projectId = searchParams.get("project");

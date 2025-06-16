@@ -25,23 +25,12 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import ProgressLoader from "@/components/ProgressLoader";
 
-export default function AdminOrganizationLayout(
-  props: {
-    children: React.ReactNode;
-    params: Promise<{ lng: string; id: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng,
-    id
-  } = params;
-
-  const {
-    children
-  } = props;
-
+export default function AdminOrganizationLayout(props: {
+  children: React.ReactNode;
+  params: Promise<{ lng: string; id: string }>;
+}) {
+  const { children } = props;
+  const { lng, id } = use(props.params);
   const { t } = useTranslation(lng, "admin");
   const pathName = usePathname();
 

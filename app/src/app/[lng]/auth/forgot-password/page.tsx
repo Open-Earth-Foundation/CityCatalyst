@@ -12,19 +12,13 @@ type Inputs = {
   email: string;
 };
 
-export default function ForgotPassword(
-  props: {
-    params: Promise<{ lng: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng
-  } = params;
-
+export default function ForgotPassword(props: {
+  params: Promise<{ lng: string }>;
+}) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
+
   const {
     handleSubmit,
     register,

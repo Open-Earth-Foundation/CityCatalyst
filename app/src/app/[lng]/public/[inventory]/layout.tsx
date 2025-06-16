@@ -9,22 +9,11 @@ import { useTheme } from "next-themes";
 import { useEffect, use } from "react";
 import ProgressLoader from "@/components/ProgressLoader";
 
-export default function DataLayout(
-  props: {
-    children: React.ReactNode;
-    params: Promise<{ lng: string; inventory: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng,
-    inventory
-  } = params;
-
-  const {
-    children
-  } = props;
+export default function DataLayout(props: {
+  children: React.ReactNode;
+  params: Promise<{ lng: string; inventory: string }>;
+}) {
+  const { lng, inventory } = use(props.params);
 
   const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
     useGetOrganizationForInventoryQuery(inventory, {
@@ -49,7 +38,7 @@ export default function DataLayout(
     <Box className="h-full flex flex-col" bg="background.backgroundLight">
       <NavigationBar lng={lng} isPublic={true} />
       <Toaster />
-      <div className="w-full h-full">{children}</div>
+      <div className="w-full h-full">{props.children}</div>
     </Box>
   );
 }

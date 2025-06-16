@@ -26,18 +26,10 @@ import { OrganizationRole } from "@/util/types";
 import { Trans } from "react-i18next";
 import ProgressLoader from "@/components/ProgressLoader";
 
-const AdminOrganizationIdProfilePage = (
-  props: {
-    params: Promise<{ lng: string; id: string }>;
-  }
-) => {
-  const params = use(props.params);
-
-  const {
-    lng,
-    id
-  } = params;
-
+const AdminOrganizationIdProfilePage = (props: {
+  params: Promise<{ lng: string; id: string }>;
+}) => {
+  const { lng, id } = use(props.params);
   const { t } = useTranslation(lng, "admin");
 
   const { data: organization, isLoading: isOrganizationLoading } =

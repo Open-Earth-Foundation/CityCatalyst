@@ -1,4 +1,4 @@
-"use client";;
+"use client";
 import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
@@ -7,17 +7,10 @@ import Image from "next/image";
 import NextLink from "next/link";
 import { MdArrowForward } from "react-icons/md";
 
-export default function Onboarding(
-  props: {
-    params: Promise<{ lng: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng
-  } = params;
-
+export default function Onboarding(props: {
+  params: Promise<{ lng: string }>;
+}) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
 
   const steps = [1, 2, 3, 4];

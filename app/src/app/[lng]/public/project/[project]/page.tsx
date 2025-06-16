@@ -110,19 +110,12 @@ function LinkCard({
   );
 }
 
-export default function ProjectPage(
-  props: {
-    params: Promise<{ project: string; lng: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    project,
-    lng
-  } = params;
-
+export default function ProjectPage(props: {
+  params: Promise<{ project: string; lng: string }>;
+}) {
+  const { lng, project } = use(props.params);
   const { t } = useTranslation(lng, "dashboard");
+
   const {
     data: projectSummary,
     isLoading,

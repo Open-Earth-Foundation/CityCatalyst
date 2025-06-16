@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Center, ProgressCircle } from "@chakra-ui/react";
 import { useAcceptInviteMutation } from "@/services/api";
 import { logger } from "@/services/logger";
 import InviteErrorView from "./InviteErrorView";
@@ -10,11 +9,7 @@ import { emailPattern, tokenRegex, uuidRegex } from "@/util/validation";
 import ProgressLoader from "@/components/ProgressLoader";
 
 const AcceptInvitePage = (props: { params: Promise<{ lng: string }> }) => {
-  const params = use(props.params);
-
-  const {
-    lng
-  } = params;
+  const { lng } = use(props.params);
 
   const searchParams = useSearchParams();
   const queryParams = Object.fromEntries(searchParams.entries());
@@ -51,8 +46,13 @@ const AcceptInvitePage = (props: { params: Promise<{ lng: string }> }) => {
       if (!calledOnce.current) {
         calledOnce.current = true;
         const { token, email, cityIds } = queryParams;
-        const cleanedEmail = email?.split(" ").join("+")
-        if (token && cleanedEmail && cityIds && validateInput(token, cleanedEmail, cityIds)) {
+        const cleanedEmail = email?.split(" ").join("+");
+        if (
+          token &&
+          cleanedEmail &&
+          cityIds &&
+          validateInput(token, cleanedEmail, cityIds)
+        ) {
           try {
             const sanitizedToken = sanitizeInput(token);
             const sanitizedEmail = sanitizeInput(cleanedEmail);

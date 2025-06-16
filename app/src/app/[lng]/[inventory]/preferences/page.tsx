@@ -7,18 +7,12 @@ import PreferencesPageLayout from "./PreferencesPageLayout";
 
 import { LINKS } from "@/app/[lng]/[inventory]/preferences/constants";
 
-export default function PreferencesExplanationPage(
-  props: {
-    params: Promise<{ lng: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng
-  } = params;
-
+export default function PreferencesExplanationPage(props: {
+  params: Promise<{ lng: string }>;
+}) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "preferences");
+
   return (
     <PreferencesPageLayout step={0} t={t} next={LINKS[0]}>
       <PreferencesExplanation t={t} />

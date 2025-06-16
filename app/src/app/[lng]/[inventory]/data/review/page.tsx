@@ -21,16 +21,10 @@ import { appendFileToFormData } from "@/util/helpers";
 import { useState, use } from "react";
 import { logger } from "@/services/logger";
 
-export default function ReviewPage(
-  props: {
-    params: Promise<{ lng: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng
-  } = params;
+export default function ReviewPage(props: {
+  params: Promise<{ lng: string }>;
+}) {
+  const { lng } = use(props.params);
 
   const { t } = useTranslation(lng, "data");
   const { inventory: inventoryParam } = useParams();

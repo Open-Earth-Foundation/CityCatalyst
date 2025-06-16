@@ -7,17 +7,10 @@ import WastePage from "./WastePage";
 
 import { LINKS } from "@/app/[lng]/[inventory]/preferences/constants";
 
-export default function WasteLayout(
-  props: {
-    params: Promise<{ lng: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng
-  } = params;
-
+export default function WasteLayout(props: {
+  params: Promise<{ lng: string }>;
+}) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "preferences");
 
   return (

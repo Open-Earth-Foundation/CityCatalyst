@@ -193,19 +193,10 @@ function NoDataSourcesMessage({
   );
 }
 
-export default function AddDataSteps(
-  props0: {
-    params: Promise<{ lng: string; step: string; inventory: string }>;
-  }
-) {
-  const params = use(props0.params);
-
-  const {
-    lng,
-    step,
-    inventory
-  } = params;
-
+export default function AddDataSteps(props: {
+  params: Promise<{ lng: string; step: string; inventory: string }>;
+}) {
+  const { lng, step, inventory } = use(props.params);
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
 
@@ -386,7 +377,10 @@ export default function AddDataSteps(
         onSourceDrawerClose();
       }
     } catch (error: any) {
-      logger.error({ err: error, source: source }, "Failed to connect data source");
+      logger.error(
+        { err: error, source: source },
+        "Failed to connect data source",
+      );
       showError("data-source-connect-failed", error.data?.error?.message);
     } finally {
       setConnectingDataSourceId(null);
@@ -410,11 +404,11 @@ export default function AddDataSteps(
     // TODO consider putting this behind a "dev mode" flag of some kind
     if (removedSources.length > 0) {
       logger.info("Removed data sources");
-      logger.info({removedSources});
+      logger.info({ removedSources });
     }
     if (failedSources.length > 0) {
       logger.info("Failed data sources");
-      logger.info({failedSources});
+      logger.info({ failedSources });
     }
   }
 

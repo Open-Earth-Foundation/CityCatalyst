@@ -53,19 +53,15 @@ const kebab = (str: string | undefined): string =>
         .toLowerCase()
     : "";
 
-function SubSectorPage(
-  props0: {
-    params: Promise<{ lng: string; step: string; inventory: string; subsector: string }>;
-  }
-) {
-  const params = use(props0.params);
-
-  const {
-    lng,
-    step,
-    inventory: inventoryId,
-    subsector
-  } = params;
+function SubSectorPage(props: {
+  params: Promise<{
+    lng: string;
+    step: string;
+    inventory: string;
+    subsector: string;
+  }>;
+}) {
+  const { lng, step, inventory: inventoryId, subsector } = use(props.params);
 
   const router = useRouter();
   const searchParams = useSearchParams();

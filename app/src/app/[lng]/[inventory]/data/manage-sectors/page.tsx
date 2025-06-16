@@ -9,18 +9,10 @@ import SectorTabs from "./SectorTabs";
 import { api } from "@/services/api";
 import { Toaster } from "@/components/ui/toaster";
 
-const ManageSubSectors = (
-  props: {
-    params: Promise<{ lng: string; step: string; inventory: string }>;
-  }
-) => {
-  const params = use(props.params);
-
-  const {
-    lng,
-    step,
-    inventory
-  } = params;
+const ManageSubSectors = (props: {
+  params: Promise<{ lng: string; step: string; inventory: string }>;
+}) => {
+  const { lng, step, inventory } = use(props.params);
 
   const { t } = useTranslation(lng, "manage-subsectors");
   // fetch invnetory data

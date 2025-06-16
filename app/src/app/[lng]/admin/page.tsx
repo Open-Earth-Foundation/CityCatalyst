@@ -50,13 +50,9 @@ interface OrgData {
 }
 
 const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
-  const params = use(props.params);
-
-  const {
-    lng
-  } = params;
-
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "admin");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bulkActionsTab, setBulkActionsTab] = useState(
     "bulk-inventory-creation",

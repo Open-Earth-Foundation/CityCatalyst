@@ -28,12 +28,7 @@ import MoveCityModal from "@/app/[lng]/cities/MoveCityModal";
 import { CityWithProjectDataResponse } from "@/util/types";
 
 const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
-  const params = use(props.params);
-
-  const {
-    lng
-  } = params;
-
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "admin");
   const { data, isLoading } = useGetAllCitiesInSystemQuery({});
   const { data: organizationData, isLoading: isLoadingOrganizationData } =

@@ -7,17 +7,10 @@ import ActivitiesPage from "./ActivitiesPage";
 
 import { LINKS } from "@/app/[lng]/[inventory]/preferences/constants";
 
-export default function ActivitiesLayout(
-  props: {
-    params: Promise<{ lng: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng
-  } = params;
-
+export default function ActivitiesLayout(props: {
+  params: Promise<{ lng: string }>;
+}) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "preferences");
 
   return (

@@ -14,17 +14,8 @@ import React, { useState, use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 
-function Page(
-  props: {
-    params: Promise<{ lng: string; inventory: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng,
-    inventory
-  } = params;
+function Page(props: { params: Promise<{ lng: string; inventory: string }> }) {
+  const { lng, inventory } = use(props.params);
 
   const { t } = useTranslation(lng, "cdp");
   const [statusMessage, setStatusMessage] = useState(t("submit-data-to-cdp"));

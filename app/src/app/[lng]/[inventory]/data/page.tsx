@@ -1,4 +1,4 @@
-"use client";;
+"use client";
 import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
@@ -18,20 +18,11 @@ import { getSectorsForInventory, InventoryTypeEnum } from "@/util/constants";
 import { api } from "@/services/api";
 import { MdArrowBack } from "react-icons/md";
 
-export default function AddDataIntro(
-  props: {
-    params: Promise<{ lng: string; inventory: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng,
-    inventory
-  } = params;
-
+export default function AddDataIntro(props: {
+  params: Promise<{ lng: string; inventory: string }>;
+}) {
+  const { lng, inventory } = use(props.params);
   const { t } = useTranslation(lng, "data");
-
   const { data: inventoryData } = api.useGetInventoryQuery(inventory);
 
   return (

@@ -38,16 +38,10 @@ function DynamicContent({ t }: { t: Function }) {
   );
 }
 
-export default function CheckEmail(
-  props: {
-    params: Promise<{ lng: string }>;
-  }
-) {
-  const params = use(props.params);
-
-  const {
-    lng
-  } = params;
+export default function CheckEmail(props: {
+  params: Promise<{ lng: string }>;
+}) {
+  const { lng } = use(props.params);
 
   const { t } = useTranslation(lng, "auth");
   const searchParams = useSearchParams();
@@ -62,7 +56,7 @@ export default function CheckEmail(
       <Suspense>
         <DynamicContent t={t} />
       </Suspense>
-      <NextLink href={nextCallbackUrl} passHref legacyBehavior>
+      <NextLink href={nextCallbackUrl} passHref>
         <Button as="a" h={16} width="full" mt={4}>
           {t("back-to-login")}
         </Button>

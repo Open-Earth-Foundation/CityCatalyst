@@ -1,4 +1,4 @@
-"use client";;
+"use client";
 import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
@@ -9,18 +9,10 @@ import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
 
 // TODO create tabs component with recipe
-const AccountSettingsPage = (
-  props: {
-    params: Promise<{ lng: string; id: string }>;
-  }
-) => {
-  const params = use(props.params);
-
-  const {
-    lng,
-    id
-  } = params;
-
+const AccountSettingsPage = (props: {
+  params: Promise<{ lng: string; id: string }>;
+}) => {
+  const { lng, id } = use(props.params);
   const { t } = useTranslation(lng, "settings");
 
   return (

@@ -26,6 +26,10 @@ export interface EmissionsFactorAttributes {
   methodologyName?: string | null;
   methodologyId?: string | null;
   reference?: string | null;
+  /**
+   * Indicates whether this emissions factor was removed from seed data and should not be used for new calculations.
+   * Deprecated emissions factors are maintained for historical data consistency (of existing inventories).
+   */
   deprecated?: boolean;
   created?: Date;
   lastUpdated?: Date;

@@ -235,8 +235,6 @@ const AddCollaboratorsDialog = ({
               <NativeSelectField
                 value={role}
                 onChange={(e) => {
-                  console.log(e);
-                  console.log(e.target.value);
                   setRole(e.target.value);
                 }}
               >

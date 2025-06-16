@@ -17,7 +17,6 @@ import { Project } from "@/models/Project";
 import { hasOrgOwnerLevelAccess } from "@/backend/RoleBasedAccessService";
 import { logger } from "@/services/logger";
 import EmailService from "@/backend/EmailService";
-import { Organization } from "@/models/Organization";
 import uniqBy from "lodash/uniqBy";
 
 export default class UserService {
@@ -538,7 +537,7 @@ export default class UserService {
 
     const invitedEmails = new Set(orgInvites.map((invite) => invite.email));
 
-    const deduppedOrgAdmin: {
+    const dedupedOrgAdmin: {
       email: string;
       status: InviteStatus;
       role: OrganizationRole;
@@ -556,7 +555,7 @@ export default class UserService {
         status: invite?.status as InviteStatus,
         role: OrganizationRole.ORG_ADMIN,
       })),
-      ...deduppedOrgAdmin,
+      ...dedupedOrgAdmin,
     );
 
     // city collaborators level users -invites only.
@@ -604,9 +603,7 @@ export default class UserService {
     );
 
     users.push(...cityUsers, ...cityInvites);
-    const deduppedUsers = uniqBy(users, "email");
-
-    return deduppedUsers;
+    return uniqBy(users, "email");
   }
 
   public static async removeUserFromProject(projectId: string, email: string) {

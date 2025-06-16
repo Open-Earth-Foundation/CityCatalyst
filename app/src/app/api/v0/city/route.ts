@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
 import { DEFAULT_PROJECT_ID } from "@/util/constants";
+import EmailService from "@/backend/EmailService";
 
 export const POST = apiHandler(async (req, { session }) => {
   const body = createCityRequest.parse(await req.json());
@@ -25,6 +26,17 @@ export const POST = apiHandler(async (req, { session }) => {
       {
         model: db.models.City,
         as: "cities",
+      },
+      {
+        model: db.models.Organization,
+        as: "organization",
+        attributes: ["organizationId", "name", "logoUrl"],
+        include: [
+          {
+            model: db.models.Theme,
+            as: "theme",
+          },
+        ],
       },
     ],
   });
@@ -59,6 +71,31 @@ export const POST = apiHandler(async (req, { session }) => {
       ...body,
     });
     await city.addUser(session.user.id);
+    // we need to add an email notification here for all the admins of the organization
+    const admins = await db.models.OrganizationAdmin.findAll({
+      where: {
+        organizationId: project.organizationId,
+      },
+      include: [
+        {
+          model: db.models.User,
+          as: "user",
+          attributes: ["email", "name"],
+        },
+      ],
+    });
+
+    // fire and forget email notification to all admins
+    EmailService.sendCityAddedNotification({
+      users: admins.map((admin) => admin.user),
+      brandInformation: {
+        color: project.organization.theme?.primaryColor,
+        logoUrl: project.organization.logoUrl || "",
+      },
+      project: project,
+      organizationName: project.organization.name as string,
+      cities: [city],
+    });
   }
 
   return NextResponse.json({ data: city });

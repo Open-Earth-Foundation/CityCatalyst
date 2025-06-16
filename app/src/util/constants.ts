@@ -198,3 +198,5 @@ export const REGIONALLOCALES: Record<string, string> = {
 };
 
 export const DEFAULT_PROJECT_ID = "ebe82f61-b51b-4015-90ef-8b94f86fb0b7";
+
+export const DEFAULT_ORGANIZATION_ID = "5a84ebff-33ee-457e-ab52-512b5731978b";

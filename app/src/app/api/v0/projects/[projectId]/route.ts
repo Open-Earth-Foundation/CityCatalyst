@@ -7,6 +7,7 @@ import { updateProjectRequest } from "@/util/validation";
 import { City } from "@/models/City";
 import { db } from "@/models";
 import EmailService from "@/backend/EmailService";
+import { DEFAULT_PROJECT_ID } from "@/util/constants";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   // return a single project.
@@ -23,19 +24,22 @@ export const GET = apiHandler(async (req, { params, session }) => {
 export const PATCH = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
   const { projectId } = params;
+
+  if (projectId === DEFAULT_PROJECT_ID) {
+    throw new createHttpError.BadRequest("Cannot update default project");
+  }
+
   const validatedData = updateProjectRequest.parse(await req.json());
   const project = await Project.findByPk(projectId as string);
   if (!project) {
     throw new createHttpError.NotFound("project-not-found");
   }
-  
+
   const cityLimitChanged =
     validatedData.cityCountLimit !== undefined &&
     validatedData.cityCountLimit !== project.cityCountLimit;
-  
-  await project.update(validatedData);
 
-  
+  await project.update(validatedData);
 
   if (cityLimitChanged) {
     const organization = await db.models.Organization.findByPk(
@@ -60,6 +64,9 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 export const DELETE = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
   const { projectId } = params;
+  if (projectId === DEFAULT_PROJECT_ID) {
+    throw new createHttpError.BadRequest("Cannot delete default project");
+  }
   const project = await Project.findByPk(projectId as string);
   if (!project) {
     throw new createHttpError.NotFound("project-not-found");

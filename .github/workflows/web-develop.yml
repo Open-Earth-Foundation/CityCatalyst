@@ -109,39 +109,47 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Log in to the Container registry
-        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pushing CC Full to GHCR
-        env:
-          VERSION: ${{ github.sha }}
-          IMAGE: ghcr.io/open-earth-foundation/citycatalyst
-        run: |
-          docker build \
-          --build-arg NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev \
-          --build-arg NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev \
-          -t $IMAGE:$VERSION app
-          docker tag $IMAGE:$VERSION $IMAGE:latest
-          docker push $IMAGE:$VERSION
-          docker push $IMAGE:latest
+      - name: Build and push full image
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: ./app
+          target: full-build
+          push: true
+          tags: |
+            ghcr.io/open-earth-foundation/citycatalyst:${{ github.sha }}
+            ghcr.io/open-earth-foundation/citycatalyst:latest
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev
+            NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Pushing CC Web to GHCR
-        env:
-          VERSION: ${{ github.sha }}
-          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-web
-        run: |
-          docker build \
-          --build-arg NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev \
-          --build-arg NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev \
-          -f app/Dockerfile.web \
-          -t $IMAGE:$VERSION app
-          docker tag $IMAGE:$VERSION $IMAGE:latest
-          docker push $IMAGE:$VERSION
-          docker push $IMAGE:latest
+      - name: Build and push web image
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: ./app
+          target: release
+          push: true
+          tags: |
+            ghcr.io/open-earth-foundation/citycatalyst-web:${{ github.sha }}
+            ghcr.io/open-earth-foundation/citycatalyst-web:latest
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev
+            NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deployToEKS:
     needs: pushToGHCR

@@ -26,6 +26,7 @@ type Inputs = {
   acceptTerms: boolean;
 };
 
+
 export default function Signup({
   params: { lng },
 }: {

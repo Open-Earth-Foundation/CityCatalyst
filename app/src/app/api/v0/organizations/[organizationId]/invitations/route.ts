@@ -55,7 +55,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
           {
             email,
             organizationId: validatedData.organizationId,
-            role: validatedData.role    
+            role: validatedData.role,
           },
           org,
           user,
@@ -104,7 +104,9 @@ export const POST = apiHandler(async (req, { params, session }) => {
   );
 
   if (failedInvites.length > 0) {
-    throw new createHttpError.InternalServerError("Something went wrong");
+    throw new createHttpError.InternalServerError(
+      `Failed to send invitations to: ${failedInvites.map((f) => f.email).join(", ")}`,
+    );
   }
   return NextResponse.json({ success: failedInvites.length === 0 });
 });

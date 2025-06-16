@@ -1,7 +1,7 @@
 import { db } from "@/models";
 import { logger } from "@/services/logger";
-import { uniqBy } from "lodash";
 import { ProjectWithCities } from "@/util/types";
+import uniqBy from "lodash/uniqBy";
 
 interface ProjectInfo {
   projectId: string;

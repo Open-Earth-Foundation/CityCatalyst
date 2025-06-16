@@ -80,9 +80,7 @@ describe("Organization Invitations API", () => {
     });
     expect(res.status).toEqual(200);
     const data = await res.json();
-    expect(data.organizationId).toEqual(inviteData.organizationId);
-    expect(data.email).toEqual(inviteData.inviteeEmails[0]);
-    expect(data.role).toEqual(inviteData.role);
+    expect(data.success).toEqual(true);
   });
 
   it("should reject non-admin from inviting a consultant", async () => {

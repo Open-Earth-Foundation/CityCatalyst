@@ -18,7 +18,7 @@ import { hasOrgOwnerLevelAccess } from "@/backend/RoleBasedAccessService";
 import { logger } from "@/services/logger";
 import EmailService from "@/backend/EmailService";
 import { Organization } from "@/models/Organization";
-import { uniqBy } from "lodash";
+import uniqBy from "lodash/uniqBy";
 
 export default class UserService {
   public static async findUser(

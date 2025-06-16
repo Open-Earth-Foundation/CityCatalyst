@@ -15,14 +15,21 @@ import AccountFrozenNotificationTemplate from "@/lib/emails/AccountFrozenNotific
 import AccountUnFrozenNotificationTemplate from "@/lib/emails/AccountUnFrozenNotificationTemplate";
 import { City } from "@/models/City";
 import RemoveUserFromMultipleCitiesTemplate from "@/lib/emails/RemoveUsersFromMultipleCities";
+import { OrganizationRole } from "@/util/types";
+import RoleUpdateNotificationTemplate from "@/lib/emails/RoleUpdateNotificationTemplate";
+import CitiesAddedToProjectNotificationTemplate from "@/lib/emails/CitiesAddedToProjectNotification";
 
 export default class EmailService {
   public static async sendOrganizationInvitationEmail(
-    request: CreateOrganizationInviteRequest,
+    request: {
+      email: string;
+      organizationId: string;
+      role: OrganizationRole;
+    },
     organization: Organization,
     user: User | null,
   ) {
-    const { inviteeEmail: email, organizationId, role } = request;
+    const { email, organizationId, role } = request;
 
     if (!process.env.VERIFICATION_TOKEN_SECRET) {
       logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
@@ -270,7 +277,103 @@ export default class EmailService {
         html,
       });
     } catch (err) {
-      logger.error({ email, cities }, "Failed to send change to city access notification email");
+      logger.error(
+        { email, cities },
+        "Failed to send change to city access notification email",
+      );
+      logger.error(
+        { email, cities },
+        "Failed to send change to city access notification email",
+      );
     }
+  }
+
+  public static async sendRoleUpdateNotification({
+    email,
+    organizationName,
+    brandInformation,
+  }: {
+    email: string;
+    organizationName: string;
+    brandInformation?: {
+      color: string;
+      logoUrl: string;
+    };
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    try {
+      const html = await render(
+        RoleUpdateNotificationTemplate({
+          url,
+          email: email as string,
+          organizationName,
+          brandInformation,
+        }),
+      );
+      await sendEmail({
+        to: email,
+        subject: "City Catalyst - Role Updated",
+        html,
+      });
+    } catch (err) {
+      logger.error(
+        { email },
+        "Failed to send change to organization role notification email",
+      );
+    }
+  }
+
+  public static async sendCityAddedNotification({
+    users,
+    brandInformation,
+    project,
+    organizationName,
+    cities,
+  }: {
+    users: User[];
+    brandInformation?: {
+      color: string;
+      logoUrl: string;
+    };
+    project: Project;
+    organizationName: string;
+    cities: City[];
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+
+    const url = `${host}/login`;
+
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const html = await render(
+            CitiesAddedToProjectNotificationTemplate({
+              url,
+              user: {
+                name: user.name as string,
+                email: user.email as string,
+              },
+              project: {
+                name: project.name,
+              },
+              organizationName,
+              cities,
+              brandInformation,
+            }),
+          );
+
+          await sendEmail({
+            to: user.email as string,
+            subject: "City Catalyst - Cities Added",
+            html,
+          });
+        } catch (err) {
+          logger.error(`Failed to send email to ${user.email}`);
+        }
+      }),
+    );
   }
 }

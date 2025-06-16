@@ -155,9 +155,8 @@
   "select-cities-to-share": "Wählen Sie die Städte aus, die Sie teilen möchten",
   "select-cities-to-share-description": "Jeder Benutzer, den Sie einladen, erhält einen einzelnen Link pro Stadt, um jede hinzuzufügen. Sie haben Zugriff auf alle in jeder Stadt erstellten Inventare.",
   "send-invites": "Einladungen senden",
-  "send-invites-description-1": "Denken Sie daran, dass jedes Teammitglied, das Sie einladen, ",
-  "send-invites-description-2": "hinzufügen, bearbeiten und löschen",
-  "send-invites-description-3": " kann, auf das sie Zugriff haben.",
+  "send-invites-description-1": "Diese Person erhält eine E-Mail, um einem Projekt mit den ausgewählten Städten beizutreten",
+  "send-invites-description-2": "Sie können jedes Inventar, auf das sie Zugriff erhalten, hinzufügen, bearbeiten und löschen.",
   "email": "E-Mail",
   "invalid-email": "Geben Sie eine gültige E-Mail-Adresse ein",
   "email-already-exists": "Doppelte E-Mail",
@@ -193,5 +192,13 @@
   "default-project": "Standardprojekt",
   "go-to": "Gehe zu...",
   "industrial-processes-and-product-uses-ippu": "IPPU",
-  "agriculture-forestry-and-other-land-use-afolu": "AFOLU"
+  "agriculture-forestry-and-other-land-use-afolu": "AFOLU",
+  "add": "Hinzufügen",
+  "enter-to-add": "Drücken Sie Enter, um hinzuzufügen",
+  "choose-a-role": "Wähle eine Rolle",
+  "select-role": "Rolle auswählen",
+  "collaborator-rule": "Mitarbeiter können nur Inventare bearbeiten",
+  "admin-rule": "Admins können Städte zu allen Projekten hinzufügen und alle Inventare bearbeiten",
+  "all-cities": "Alle Städte",
+  "source": "Quelle"
 }

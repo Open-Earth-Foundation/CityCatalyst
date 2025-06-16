@@ -119,7 +119,7 @@ describe("UserFile API", () => {
     formData.append("subsectors", fileData.subsectors);
     formData.append("scopes", fileData.scopes);
     formData.append("url", fileData.url);
-    formData.append("data", fileStream);
+    formData.append("data", fileStream, "blob.csv");
     formData.append("status", fileData.status);
     formData.append("fileReference", fileData.file_reference);
     formData.append("gpcRefNo", fileData.gpc_ref_no);
@@ -150,7 +150,7 @@ describe("UserFile API", () => {
     formData.append("cityId", invalidFileData.cityId);
     formData.append("sector", invalidFileData.sector);
     formData.append("url", invalidFileData.url);
-    formData.append("data", fileStream);
+    formData.append("data", fileStream, "blob.csv");
     formData.append("status", invalidFileData.status);
     formData.append("subsectors", invalidFileData.subsectors);
     formData.append("scopes", invalidFileData.scopes);
@@ -214,7 +214,7 @@ describe("UserFile API", () => {
     formData.append("scopes", fileData.scopes);
     formData.append("url", fileData.url);
     formData.append("cityId", fileData.cityId);
-    formData.append("data", fileStream);
+    formData.append("data", fileStream, "blob.csv");
     formData.append("status", fileData.status);
     formData.append("fileReference", fileData.file_reference);
     formData.append("gpcRefNo", fileData.gpc_ref_no);

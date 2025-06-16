@@ -75,6 +75,7 @@ export const POST = apiHandler(
     }
 
     const fileExtension = file.name.split(".").pop()?.toLowerCase();
+    console.log(fileExtension, "the file extension");
     if (!fileExtension || !ACCEPTED_FILE_FORMATS.includes(fileExtension)) {
       throw new createHttpError.BadRequest(
         `Invalid file type. Accepted formats are: ${ACCEPTED_FILE_FORMATS.join(", ")}`,

@@ -21,13 +21,13 @@ import { AppSession, Auth } from "@/lib/auth";
 import { Roles } from "@/util/types";
 
 const organizationData: CreateOrganizationRequest = {
-  name: "Test Organization",
-  contactEmail: "test@organization.com",
+  name: "Test Organization Organization Jest",
+  contactEmail: "test-organization-jest@organization.com",
 };
 
 const organization2: CreateOrganizationRequest = {
-  name: "Test Organization 2",
-  contactEmail: "test2@organization.com",
+  name: "Test Organization 2 Organization Jest",
+  contactEmail: "test2-organization-jest@organization.com",
 };
 
 const invalidOrganization = {

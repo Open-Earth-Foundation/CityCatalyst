@@ -63,7 +63,7 @@
     "@types/nodemailer": "^6.4.14",
     "@types/pg": "^8.15.4",
     "@types/react": "^19.1.8",
-    "@types/react-dom": "18.2.19",
+    "@types/react-dom": "^19.1.6",
     "@types/react-table": "^7.7.20",
     "@types/uuid": "^9.0.8",
     "@types/wellknown": "^0.5.8",

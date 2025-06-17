@@ -134,5 +134,6 @@
   "download-complete": "¡Descarga del informe de inventario completada!",
   "downloading-data": "Descargando tus datos",
   "download-failed": "Descarga fallida",
-  "download-error": "Hubo un error durante la descarga"
+  "download-error": "Hubo un error durante la descarga",
+  "change-to-admin": "Cambiar a administrador"
 }

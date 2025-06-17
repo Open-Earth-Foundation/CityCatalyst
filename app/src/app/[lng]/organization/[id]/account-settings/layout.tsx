@@ -1,4 +1,5 @@
 "use client";
+import { use } from "react";
 
 import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
@@ -9,14 +10,15 @@ import { useEffect } from "react";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useTheme } from "next-themes";
 
-export default function OrganizationSettingsLayout({
-  children,
-  params: { lng, id },
-}: {
+export default function OrganizationSettingsLayout(props: {
   children: React.ReactNode;
-  params: { lng: string; id: string };
+  params: Promise<{ lng: string; id: string }>;
 }) {
-  const { data: orgData, isLoading: isOrgDataFetching } =
+
+    const { lng, id } = use(props.params);
+
+
+    const { data: orgData, isLoading: isOrgDataFetching } =
     useGetOrganizationQuery(id, {
       skip: !id,
     });
@@ -49,7 +51,7 @@ export default function OrganizationSettingsLayout({
     <Box className="h-full flex flex-col" bg="background.backgroundLight">
       <NavigationBar showMenu lng={lng} />
       <Toaster />
-      <Box className="w-full h-full">{children}</Box>
+      <Box className="w-full h-full">{props.children}</Box>
     </Box>
   );
 }

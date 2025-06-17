@@ -5,7 +5,7 @@ import { useTranslation } from "@/i18n/client";
 import { MdInfoOutline } from "react-icons/md";
 import { Button, Heading, Text, Icon } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, use } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { logger } from "@/services/logger";
 import { Field } from "@/components/ui/field";
@@ -15,11 +15,10 @@ type Inputs = {
   confirmPassword: string;
 };
 
-export default function UpdatePassword({
-  params: { lng },
-}: {
-  params: { lng: string };
+export default function UpdatePassword(props: {
+  params: Promise<{ lng: string }>;
 }) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
   const searchParams = useSearchParams();

@@ -47,7 +47,7 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useEffect, useState, use } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
@@ -194,11 +194,10 @@ function NoDataSourcesMessage({
   );
 }
 
-export default function AddDataSteps({
-  params: { lng, step, inventory },
-}: {
-  params: { lng: string; step: string; inventory: string };
+export default function AddDataSteps(props: {
+  params: Promise<{ lng: string; step: string; inventory: string }>;
 }) {
+  const { lng, step, inventory } = use(props.params);
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
 

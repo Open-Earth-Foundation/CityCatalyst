@@ -1,4 +1,5 @@
 "use client";
+import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
 import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
@@ -8,11 +9,10 @@ import { MdArrowForward } from "react-icons/md";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useRouter } from "next/navigation";
 
-export default function Onboarding({
-  params: { lng },
-}: {
-  params: { lng: string };
+export default function Onboarding(props: {
+  params: Promise<{ lng: string }>;
 }) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
   const router = useRouter();
 

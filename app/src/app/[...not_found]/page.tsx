@@ -5,10 +5,12 @@ import { useTranslation } from "@/i18n/client";
 import { Text, Box, Icon } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { use } from "react";
 import { MdArrowForward } from "react-icons/md";
 
-const NotFound = ({ params: { lng } }: { params: { lng: string } }) => {
+const NotFound = (props: { params: Promise<{ lng: string }> }) => {
+  const { lng } = use(props.params);
+
   const router = useRouter();
   const { t } = useTranslation(lng, "not-found");
 

@@ -3,9 +3,8 @@
 import { NavigationBar } from "@/components/navigation-bar";
 import { toaster, Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
-import { api } from "@/services/api";
 import { Roles } from "@/util/types";
-import React, { useEffect } from "react";
+import React, { useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import {
   ProgressCircleRing,
@@ -14,16 +13,14 @@ import {
 import { useTranslation } from "@/i18n/client";
 import { useSession } from "next-auth/react";
 
-export default function AdminLayout({
-  children,
-  params: { lng },
-}: {
+export default function AdminLayout(props: {
   children: React.ReactNode;
-  params: { lng: string };
+  params: Promise<{ lng: string }>;
 }) {
-  const router = useRouter();
-
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "admin");
+  const { children } = props;
+  const router = useRouter();
   const { data } = useSession();
 
   useEffect(() => {

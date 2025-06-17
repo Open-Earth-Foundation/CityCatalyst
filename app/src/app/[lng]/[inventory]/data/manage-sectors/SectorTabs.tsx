@@ -250,10 +250,13 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       }).unwrap();
       // clear dirty state on success
       setIsDirty(false);
-      status === "fulfilled" &&
+
+      !isLoading &&
+        !isError &&
         toaster.success({
           title: t("success"),
           description: t("notation-keys-updated"),
+          duration: 5000,
         });
     } catch (error) {
       toaster.error({

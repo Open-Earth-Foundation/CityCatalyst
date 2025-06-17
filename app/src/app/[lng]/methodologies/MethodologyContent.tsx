@@ -29,7 +29,7 @@ export function MethodologyContent() {
   const { lng } = (useParams() || { lng: "en" }) as { lng: LANGUAGES };
   const { t } = useTranslation("methodologies");
   return (
-    <div style={{ padding: "12px 96px" }}>
+    <div style={{ padding: "12px 96px", paddingRight: "48px" }}>
       <section id="introduction" style={{ scrollMarginTop: "100px" }}>
         <DisplayMedium py="12px" color="content.secondary">
           {t("methodologies-introduction.title")}

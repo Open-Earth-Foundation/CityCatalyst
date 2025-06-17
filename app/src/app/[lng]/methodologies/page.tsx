@@ -47,7 +47,7 @@ export default function MethodologiesPage() {
         >
           <MethodologyTableOfContents activeId={activeId} />
         </aside>
-        <main style={{ flex: 1, marginLeft: "48px" }}>
+        <main style={{ flex: 1 }}>
           <MethodologyContent />
         </main>
       </div>

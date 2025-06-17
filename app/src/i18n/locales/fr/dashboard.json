@@ -200,5 +200,8 @@
   "select-role": "Sélectionnez le rôle",
   "collaborator-rule": "Les collaborateurs peuvent uniquement modifier les inventaires",
   "admin-rule": "Les administrateurs peuvent ajouter des villes à tous les projets et modifier tous les inventaires",
-  "all-cities": "Toutes les villes"
+  "all-cities": "Toutes les villes",
+  "yes-i-understand": "Oui, je comprends",
+  "account-frozen-warning-text": "Votre compte est gelé. Veuillez contacter un administrateur ou <bold>{{email}}</bold> pour le réactiver",
+  "account-frozen-header": "Votre compte est gelé"
 }

@@ -143,5 +143,8 @@
   "position": "Position",
   "position-description": "Indiquez votre titre ou profession.",
   "owner": "Propriétaire",
-  "collaborator": "Collaborateur"
+  "collaborator": "Collaborateur",
+  "plan-details": "Détails du plan",
+  "plan-details-caption": "<bold>{{name}}</bold> a actuellement <bold>{{num_projects}}</bold> projets et un décompte de <bold>{{num_cities}} / {{total_cities}}</bold> villes",
+  "contact-us-to-upgrade": "Pour mettre à niveau votre plan, veuillez contacter"
 }

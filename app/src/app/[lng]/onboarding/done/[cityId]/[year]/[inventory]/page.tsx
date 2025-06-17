@@ -40,14 +40,9 @@ export default function OnboardingDone(props: {
         </Text>
       </Box>
       <Box display="flex" gap="24px" mt="24px">
-        <NextLink
-          href={`/onboarding/setup?project=${projectId}`}
-          passHref
-          legacyBehavior
-        >
+        <NextLink href={`/onboarding/setup?project=${projectId}`} passHref>
           <Button
             variant="ghost"
-            as="a"
             h={16}
             px={6}
             bg="base.light"
@@ -59,8 +54,8 @@ export default function OnboardingDone(props: {
             {t("add-new-inventory")}
           </Button>
         </NextLink>
-        <NextLink href={`/${inventory}`} passHref legacyBehavior>
-          <Button as="a" h={16} px={6} data-testid="check-dashboard">
+        <NextLink href={`/${inventory}`} passHref>
+          <Button h={16} px={6} data-testid="check-dashboard">
             {t("check-dashboard")}
             <MdArrowForward width="24px" height="24px" />
           </Button>

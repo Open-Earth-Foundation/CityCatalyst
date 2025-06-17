@@ -94,7 +94,9 @@ describe("Project API", () => {
         organizationId: organization.organizationId,
       });
       const response = await createProject(req, {
-        params: { organizationId: organization.organizationId },
+        params: Promise.resolve({
+          organizationId: organization.organizationId,
+        }),
       });
       expect(response.status).toBe(200);
       const data = await response.json();
@@ -112,7 +114,9 @@ describe("Project API", () => {
         organizationId: organization.organizationId,
       });
       const response = await createProject(req, {
-        params: { organizationId: organization.organizationId },
+        params: Promise.resolve({
+          organizationId: organization.organizationId,
+        }),
       });
       expect(response.status).toBe(400);
     });
@@ -130,7 +134,9 @@ describe("Project API", () => {
 
       const req = await mockRequest();
       const response = await getProjects(req, {
-        params: { organizationId: organization.organizationId },
+        params: Promise.resolve({
+          organizationId: organization.organizationId,
+        }),
       });
       expect(response.status).toBe(200);
       const data = await response.json();
@@ -155,7 +161,7 @@ describe("Project API", () => {
 
       const req = await mockRequest();
       const response = await getProject(req, {
-        params: { projectId: project.projectId },
+        params: Promise.resolve({ projectId: project.projectId }),
       });
       expect(response.status).toBe(200);
       const data = await response.json();
@@ -170,7 +176,7 @@ describe("Project API", () => {
     it("should return 404 if project does not exist", async () => {
       const req = await mockRequest();
       const response = await getProject(req, {
-        params: { projectId: randomUUID() },
+        params: Promise.resolve({ projectId: randomUUID() }),
       });
       const data = await response.json();
       expect(response.status).toBe(404);
@@ -192,7 +198,7 @@ describe("Project API", () => {
 
       const req = await mockRequest(updatedProject);
       const response = await updateProject(req, {
-        params: { projectId: project.projectId },
+        params: Promise.resolve({ projectId: project.projectId }),
       });
       expect(response.status).toBe(200);
       const data = await response.json();
@@ -216,7 +222,7 @@ describe("Project API", () => {
 
       const req = await mockRequest();
       const response = await deleteProject(req, {
-        params: { projectId: project.projectId },
+        params: Promise.resolve({ projectId: project.projectId }),
       });
       expect(response.status).toBe(200);
     });

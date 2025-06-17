@@ -76,7 +76,7 @@ describe("Organization Invitations API", () => {
   it("should allow admin to invite a consultant", async () => {
     const req = mockRequest(inviteData);
     const res = await createOrganizationInvite(req, {
-      params: { organizationId: inviteData.organizationId },
+      params: Promise.resolve({ organizationId: inviteData.organizationId }),
     });
     expect(res.status).toEqual(200);
     const data = await res.json();
@@ -87,7 +87,7 @@ describe("Organization Invitations API", () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
     const req = mockRequest(inviteData);
     const res = await createOrganizationInvite(req, {
-      params: { organizationId: inviteData.organizationId },
+      params: Promise.resolve({ organizationId: inviteData.organizationId }),
     });
     expect(res.status).toEqual(403);
   });
@@ -103,7 +103,7 @@ describe("Organization Invitations API", () => {
 
     const req = mockRequest();
     const res = await getOrganizationInvites(req, {
-      params: { organizationId: inviteData.organizationId },
+      params: Promise.resolve({ organizationId: inviteData.organizationId }),
     });
     expect(res.status).toEqual(200);
     const data = await res.json();
@@ -117,7 +117,7 @@ describe("Organization Invitations API", () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
     const req = mockRequest();
     const res = await getOrganizationInvites(req, {
-      params: { organizationId: inviteData.organizationId },
+      params: Promise.resolve({ organizationId: inviteData.organizationId }),
     });
     expect(res.status).toEqual(403);
   });

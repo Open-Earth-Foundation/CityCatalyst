@@ -39,6 +39,8 @@ const projectData2: Omit<CreateProjectRequest, "organizationId"> = {
   description: "Test Description",
 };
 
+const emptyParams = { params: Promise.resolve({}) };
+
 describe("City Transfer API", () => {
   let organization: Organization;
   let project1: Project;
@@ -95,7 +97,7 @@ describe("City Transfer API", () => {
       projectId: project2.projectId,
     });
 
-    const res = await transferCity(req, { params: {} });
+    const res = await transferCity(req, emptyParams);
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data).toEqual({ success: true });
@@ -121,7 +123,7 @@ describe("City Transfer API", () => {
       projectId: project2.projectId,
     });
 
-    const resJSON = await transferCity(req, { params: {} });
+    const resJSON = await transferCity(req, emptyParams);
     const res = await resJSON.json();
     expect(resJSON.status).toBe(404);
     expect(res.error).toEqual({
@@ -147,7 +149,7 @@ describe("City Transfer API", () => {
       projectId: project2.projectId,
     });
 
-    const res = await transferCity(req, { params: {} });
+    const res = await transferCity(req, emptyParams);
     expect(res.status).toBe(403);
     const data = await res.json();
     expect(data.error).toEqual({ message: "Forbidden" });

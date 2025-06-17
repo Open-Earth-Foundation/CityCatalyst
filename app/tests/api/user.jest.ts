@@ -25,6 +25,8 @@ const invalidUserUpdate = {
   defaultInventoryId: "invalid",
 };
 
+const emptyParams = { params: Promise.resolve({}) };
+
 describe("User API", () => {
   beforeAll(async () => {
     setupTests();
@@ -52,7 +54,7 @@ describe("User API", () => {
 
   it("should update a user", async () => {
     const req = mockRequest(userUpdate);
-    const res = await updateUser(req, { params: {} });
+    const res = await updateUser(req, emptyParams);
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.success).toBeTruthy();
@@ -65,7 +67,7 @@ describe("User API", () => {
 
   it("should not update a user with invalid data", async () => {
     const req = mockRequest(invalidUserUpdate);
-    const res = await updateUser(req, { params: {} });
+    const res = await updateUser(req, emptyParams);
     expect(res.status).toBe(400);
     const user = await db.models.User.findOne({
       where: { userId: userData.userId },

@@ -203,7 +203,7 @@ describe("Inventory API", () => {
     });
     const req = mockRequest(inventoryData);
     const res = await createInventory(req, {
-      params: { city: city.cityId },
+      params: Promise.resolve({ city: city.cityId }),
     });
     await db.models.Population.create({
       cityId: city.cityId!,
@@ -220,7 +220,7 @@ describe("Inventory API", () => {
   it("should not create an inventory with invalid data", async () => {
     const req = mockRequest(invalidInventory);
     const res = await createInventory(req, {
-      params: { city: locode },
+      params: Promise.resolve({ city: locode }),
     });
     expect(res.status).toEqual(400);
     const {
@@ -232,7 +232,7 @@ describe("Inventory API", () => {
   it("should find an inventory", async () => {
     const req = mockRequest();
     const res = await findInventory(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
     expect(res.status).toEqual(200);
     const { data } = await res.json();
@@ -246,7 +246,7 @@ describe("Inventory API", () => {
     const url = `http://localhost:3000/api/v0/inventory/${inventory.inventoryId}?format=csv`;
     const req = createRequest(url);
     const res = await findInventory(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
     expect(res.status).toEqual(200);
     expect(res.headers.get("content-type")).toEqual("text/csv");
@@ -279,7 +279,7 @@ describe("Inventory API", () => {
     const url = `http://localhost:3000/api/v0/inventory/${inventory.inventoryId}?format=xls`;
     const req = createRequest(url);
     const res = await findInventory(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
     expect(res.status).toEqual(200);
     expect(res.headers.get("content-type")).toEqual("application/vnd.ms-excel");
@@ -292,7 +292,7 @@ describe("Inventory API", () => {
   it("should not find non-existing inventories", async () => {
     const req = mockRequest(invalidInventory);
     const res = await findInventory(req, {
-      params: { inventory: randomUUID() },
+      params: Promise.resolve({ inventory: randomUUID() }),
     });
     expect(res.status).toEqual(404);
   });
@@ -300,7 +300,7 @@ describe("Inventory API", () => {
   it("should update an inventory", async () => {
     const req = mockRequest(inventoryData2);
     const res = await updateInventory(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
     expect(res.status).toEqual(200);
     const { data } = await res.json();
@@ -312,7 +312,7 @@ describe("Inventory API", () => {
   it("should not update an inventory with invalid data", async () => {
     const req = mockRequest(invalidInventory);
     const res = await updateInventory(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
     expect(res.status).toEqual(400);
     const {
@@ -324,7 +324,7 @@ describe("Inventory API", () => {
   it("should delete an inventory", async () => {
     const req = mockRequest();
     const res = await deleteInventory(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
     expect(res.status).toEqual(200);
     const { data, deleted } = await res.json();
@@ -337,7 +337,7 @@ describe("Inventory API", () => {
   it("should not delete a non-existing inventory", async () => {
     const req = mockRequest();
     const res = await deleteInventory(req, {
-      params: { inventory: randomUUID() },
+      params: Promise.resolve({ inventory: randomUUID() }),
     });
     expect(res.status).toEqual(404);
   });
@@ -400,7 +400,7 @@ describe("Inventory API", () => {
 
     const req = mockRequest();
     const res = await calculateProgress(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
     expect(res.status).toEqual(200);
@@ -444,7 +444,7 @@ describe("Inventory API", () => {
   it.skip("should submit an inventory to the CDP test API", async () => {
     const req = mockRequest({});
     const res = await submitInventory(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
     await expectStatusCode(res, 200);
     const json = await res.json();
@@ -454,7 +454,7 @@ describe("Inventory API", () => {
   it("should return 400 for a 'null' inventory ID", async () => {
     const req = mockRequest();
     const res = await findInventory(req, {
-      params: { inventory: 'null' },
+      params: Promise.resolve({ inventory: "null" }),
     });
     expect(res.status).toEqual(400);
   });
@@ -464,7 +464,7 @@ describe("Inventory API", () => {
   it.skip("should return 200 for the default inventory", async () => {
     const req = mockRequest();
     const res = await findInventory(req, {
-      params: { inventory: 'default' },
+      params: Promise.resolve({ inventory: "default" }),
     });
     expect(res.status).toEqual(200);
   });
@@ -472,7 +472,7 @@ describe("Inventory API", () => {
   it("should return 400 for a non-UUID string in inventory ID", async () => {
     const req = mockRequest();
     const res = await findInventory(req, {
-      params: { inventory: 'not-an-inventory-id' },
+      params: Promise.resolve({ inventory: "not-an-inventory-id" }),
     });
     expect(res.status).toEqual(400);
   });
@@ -480,7 +480,9 @@ describe("Inventory API", () => {
   it("should return 404 for a uuid string in that doesn't exist", async () => {
     const req = mockRequest();
     const res = await findInventory(req, {
-      params: { inventory: 'D8802AA9-F9DA-460F-86FE-F45F7D8D23F9' },
+      params: Promise.resolve({
+        inventory: "D8802AA9-F9DA-460F-86FE-F45F7D8D23F9",
+      }),
     });
     expect(res.status).toEqual(404);
   });

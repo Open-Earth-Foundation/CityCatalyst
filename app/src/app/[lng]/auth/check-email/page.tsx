@@ -56,8 +56,8 @@ export default function CheckEmail(props: {
       <Suspense>
         <DynamicContent t={t} />
       </Suspense>
-      <NextLink href={nextCallbackUrl} passHref>
-        <Button as="a" h={16} width="full" mt={4}>
+      <NextLink href={nextCallbackUrl}>
+        <Button h={16} width="full" mt={4}>
           {t("back-to-login")}
         </Button>
       </NextLink>

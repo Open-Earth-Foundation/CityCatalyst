@@ -122,7 +122,7 @@ jobs:
       - name: Build and push full image
         uses: docker/build-push-action@v5
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           context: ./app
           target: full-build
           push: true
@@ -138,7 +138,7 @@ jobs:
       - name: Build and push web image
         uses: docker/build-push-action@v5
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           context: ./app
           target: release
           push: true

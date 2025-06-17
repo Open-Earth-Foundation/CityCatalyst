@@ -3,12 +3,13 @@ import acceptLanguage from "accept-language";
 import { withAuth, type NextRequestWithAuth } from "next-auth/middleware";
 import type { NextMiddlewareResult } from "next/dist/server/web/types";
 import { NextResponse } from "next/server";
-import { logger } from "@/services/logger";
 
 acceptLanguage.languages(languages);
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)"],
+  matcher: [
+    "/((?!api|docs|_next/static|_next/image|assets|favicon.ico|sw.js).*)",
+  ],
   pages: { signIn: "/auth/login" },
   session: { strategy: "jwt" },
 };

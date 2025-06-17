@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 "use client";
 
-import { useState } from "react";
+import { useState, use } from "react";
 import { api } from "@/services/api";
 import type { CityMetadata } from "./ProjectMap";
 import ProjectMap from "./ProjectMap";
@@ -110,12 +110,12 @@ function LinkCard({
   );
 }
 
-export default function ProjectPage({
-  params: { project, lng },
-}: {
-  params: { project: string; lng: string };
+export default function ProjectPage(props: {
+  params: Promise<{ project: string; lng: string }>;
 }) {
+  const { lng, project } = use(props.params);
   const { t } = useTranslation(lng, "dashboard");
+
   const {
     data: projectSummary,
     isLoading,

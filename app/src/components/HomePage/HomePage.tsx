@@ -149,7 +149,7 @@ export default function HomePage({
         setOrganization({ logoUrl, active });
       }
       setTheme(inventoryOrgData?.theme?.themeKey ?? "blue_theme");
-    } else {
+    } else if (!isInventoryOrgDataLoading && !inventoryOrgData) {
       setTheme("blue_theme");
     }
   }, [isInventoryOrgDataLoading, inventoryOrgData, setTheme]);

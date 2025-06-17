@@ -136,12 +136,21 @@ export default function HomePage({
       skip: !inventoryIdFromParam,
     });
 
-  const { isFrozenCheck } = useOrganizationContext();
+  const { isFrozenCheck, organization, setOrganization } =
+    useOrganizationContext();
   const { setTheme } = useTheme();
 
   useEffect(() => {
     if (inventoryOrgData) {
-      setTheme(inventoryOrgData?.theme?.themeKey ?? ("blue_theme" as string));
+      const logoUrl = inventoryOrgData?.logoUrl ?? null;
+      const active = inventoryOrgData?.active ?? true;
+
+      if (organization.logoUrl !== logoUrl || organization.active !== active) {
+        setOrganization({ logoUrl, active });
+      }
+      setTheme(inventoryOrgData?.theme?.themeKey ?? "blue_theme");
+    } else {
+      setTheme("blue_theme");
     }
   }, [isInventoryOrgDataLoading, inventoryOrgData, setTheme]);
 

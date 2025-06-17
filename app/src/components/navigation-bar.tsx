@@ -142,7 +142,9 @@ export function NavigationBar({
   function logOut() {
     setTheme("blue_theme");
     clearOrganization();
-    signOut({ callbackUrl: "/auth/login", redirect: true });
+    setTimeout(() => {
+      signOut({ callbackUrl: "/auth/login", redirect: true });
+    });
   }
 
   return (

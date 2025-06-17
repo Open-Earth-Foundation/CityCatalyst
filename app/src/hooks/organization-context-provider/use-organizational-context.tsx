@@ -30,7 +30,7 @@ export const OrganizationContextProvider = ({
 }) => {
   const [organization, setOrganizationState] = useState<OrganizationState>({
     logoUrl: null,
-    active: false,
+    active: true,
   });
 
   const [showFrozenModal, setShowFrozenModal] = useState(false);

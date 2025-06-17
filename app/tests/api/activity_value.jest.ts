@@ -152,7 +152,7 @@ describe.skip("Activity Value API", () => {
   it("should not create an activity value with invalid data", async () => {
     const req = mockRequest(invalidCreateActivity);
     const res = await createActivityValue(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
     expect(res.status).toBe(400);
   });
@@ -168,9 +168,7 @@ describe.skip("Activity Value API", () => {
 
     const req = mockRequest(invalidCreateActivityTimesEmissionsFactor);
     const res = await createActivityValue(req, {
-      params: {
-        inventory: inventory.inventoryId,
-      },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
     expect(res.status).toBe(400);
@@ -187,9 +185,7 @@ describe.skip("Activity Value API", () => {
 
     const req = mockRequest(validCreateActivityTimesEmissionsFactor);
     const res = await createActivityValue(req, {
-      params: {
-        inventory: inventory.inventoryId,
-      },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
     expect(res.status).toBe(200);
@@ -211,10 +207,10 @@ describe.skip("Activity Value API", () => {
       metaData: updatedActivityValueWithFormula.metadata,
     });
     const res = await updateActivityValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         id: createdActivityValue.id,
-      },
+      }),
     });
 
     const { data } = await res.json();
@@ -232,10 +228,10 @@ describe.skip("Activity Value API", () => {
       metaData: invalidupdatedActivityValueWithFormula.metadata,
     });
     const res = await updateActivityValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         id: createdActivityValue.id,
-      },
+      }),
     });
 
     expect(res.status).toBe(400);
@@ -249,7 +245,7 @@ describe.skip("Activity Value API", () => {
 
     const req = mockRequest(validCreateActivity);
     const res = await createActivityValue(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
     expect(res.status).toBe(200);
@@ -273,7 +269,7 @@ describe.skip("Activity Value API", () => {
       inventoryValue: undefined,
     });
     const res = await createActivityValue(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
     expect(res.status).toBe(200);
@@ -288,10 +284,10 @@ describe.skip("Activity Value API", () => {
   it("should get an activity value", async () => {
     const req = mockRequest();
     const res = await getActivityValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         id: createdActivityValue.id,
-      },
+      }),
     });
 
     const { data } = await res.json();
@@ -305,7 +301,10 @@ describe.skip("Activity Value API", () => {
     const fakeId = randomUUID();
     const req = mockRequest();
     const res = await getActivityValue(req, {
-      params: { inventory: inventory.inventoryId, id: fakeId },
+      params: Promise.resolve({
+        inventory: inventory.inventoryId,
+        id: fakeId,
+      }),
     });
 
     const { data } = await res.json();
@@ -319,10 +318,10 @@ describe.skip("Activity Value API", () => {
       metaData: updatedActivityValue.metadata,
     });
     const res = await updateActivityValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         id: createdActivityValue.id,
-      },
+      }),
     });
 
     const { data } = await res.json();
@@ -335,10 +334,10 @@ describe.skip("Activity Value API", () => {
   it("should delete an activity value", async () => {
     const req = mockRequest();
     const res = await deleteActivityValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         id: createdActivityValue.id,
-      },
+      }),
     });
 
     const { data } = await res.json();
@@ -364,10 +363,10 @@ describe.skip("Activity Value API", () => {
     });
 
     const res1 = await createActivityValue(req1, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
     const res2 = await createActivityValue(req2, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
     expect(res1.status).toBe(200);
@@ -375,7 +374,7 @@ describe.skip("Activity Value API", () => {
 
     const req3 = mockRequest(null, { subSectorId: subSector.subsectorId });
     const res3 = await deleteAllActivitiesInSubsector(req3, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
     const { data } = await res3.json();

@@ -47,7 +47,7 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useEffect, useState, use } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
@@ -193,11 +193,10 @@ function NoDataSourcesMessage({
   );
 }
 
-export default function AddDataSteps({
-  params: { lng, step, inventory },
-}: {
-  params: { lng: string; step: string; inventory: string };
+export default function AddDataSteps(props: {
+  params: Promise<{ lng: string; step: string; inventory: string }>;
 }) {
+  const { lng, step, inventory } = use(props.params);
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
 
@@ -300,7 +299,7 @@ export default function AddDataSteps({
     Math.round(percentage * 1000) / 10;
 
   // only display data sources relevant to current sector
-  let dataSources: DataSourceResponse | undefined;
+  let dataSources: DataSourceResponse[] | undefined;
   if (data) {
     const { data: successfulSources, failedSources, removedSources } = data;
     dataSources = successfulSources?.filter(({ source, data }) => {
@@ -378,7 +377,10 @@ export default function AddDataSteps({
         onSourceDrawerClose();
       }
     } catch (error: any) {
-      logger.error({ err: error, source: source }, "Failed to connect data source");
+      logger.error(
+        { err: error, source: source },
+        "Failed to connect data source",
+      );
       showError("data-source-connect-failed", error.data?.error?.message);
     } finally {
       setConnectingDataSourceId(null);
@@ -402,11 +404,11 @@ export default function AddDataSteps({
     // TODO consider putting this behind a "dev mode" flag of some kind
     if (removedSources.length > 0) {
       logger.info("Removed data sources");
-      logger.info({removedSources});
+      logger.info({ removedSources });
     }
     if (failedSources.length > 0) {
       logger.info("Failed data sources");
-      logger.info({failedSources});
+      logger.info({ failedSources });
     }
   }
 
@@ -1188,7 +1190,7 @@ export default function AddDataSteps({
         <SourceDrawer
           source={selectedSource}
           sourceData={selectedSourceData}
-          sector={currentStep.sector ?? undefined}
+          sector={{ sectorName: currentStep.sector?.sectorName ?? "" }}
           isOpen={isSourceDrawerOpen}
           onClose={onSourceDrawerClose}
           onConnectClick={() => onConnectClick(selectedSource!)}

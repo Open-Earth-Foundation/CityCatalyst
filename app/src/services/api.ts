@@ -50,10 +50,10 @@ import {
   OrganizationWithThemeResponse,
   UpdateUserPayload,
   FormulaInputValuesResponse,
+  DataSourceResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { PATCH } from "@/app/api/v0/organizations/[organizationId]/white-label/route";
 
 export const api = createApi({
   reducerPath: "api",
@@ -257,6 +257,14 @@ export const api = createApi({
       >({
         query: ({ inventoryId }) => `datasource/${inventoryId}`,
         transformResponse: (response: GetDataSourcesResult) => response,
+      }),
+      getDataSource: builder.query<
+        DataSourceResponse,
+        { datasourceId: string; inventoryId: string }
+      >({
+        query: ({ datasourceId, inventoryId }) =>
+          `datasource/${inventoryId}/datasource/${datasourceId}`,
+        transformResponse: (response: DataSourceResponse) => response,
       }),
       getInventoryValue: builder.query<
         InventoryValueResponse,
@@ -961,13 +969,13 @@ export const api = createApi({
       createOrganizationInvite: builder.mutation({
         query: (data: {
           organizationId: string;
-          inviteeEmail: string;
+          inviteeEmails: string[];
           role: OrganizationRole;
         }) => ({
           url: `/organizations/${data.organizationId}/invitations`,
           method: "POST",
           body: {
-            inviteeEmail: data.inviteeEmail,
+            inviteeEmails: data.inviteeEmails,
             role: data.role,
             organizationId: data.organizationId,
           },
@@ -1156,7 +1164,7 @@ export const api = createApi({
           }
 
           return {
-            url: `/organizations/${data.organizationId}/white-label`,
+            url: `/organizations/${data.organizationId}/branding`,
             method: "PATCH",
             body: formData,
           };
@@ -1230,6 +1238,22 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: any }) => response.data,
         invalidatesTags: ["Organizations"],
+      }),
+      updateUserRoleInOrganization: builder.mutation({
+        query: ({
+          contactEmail,
+          organizationId,
+        }: {
+          contactEmail: string;
+          organizationId: string;
+        }) => ({
+          method: "PATCH",
+          url: `/organizations/${organizationId}/role`,
+          body: {
+            contactEmail,
+          },
+        }),
+        invalidatesTags: ["ProjectUsers"],
       }),
     };
   },
@@ -1333,5 +1357,7 @@ export const {
   useDeleteCityMutation,
   useGetWasteCompositionValuesQuery,
   useUpdateOrganizationActiveStatusMutation,
+  useGetDataSourceQuery,
+  useUpdateUserRoleInOrganizationMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

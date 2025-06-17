@@ -39,6 +39,8 @@ const mockUserSession: AppSession = {
   expires: "1h",
 };
 
+const emptyParams = { params: Promise.resolve({}) };
+
 describe("Organization API", () => {
   let organization: Organization;
   let prevGetServerSession = Auth.getServerSession;
@@ -71,7 +73,7 @@ describe("Organization API", () => {
     });
 
     const req = mockRequest(organizationData);
-    const res = await createOrganization(req, { params: {} });
+    const res = await createOrganization(req, emptyParams);
     expect(res.status).toEqual(201);
     const data = await res.json();
     expect(data.name).toEqual(organizationData.name);
@@ -80,7 +82,7 @@ describe("Organization API", () => {
 
   it("should not create an organization with invalid data", async () => {
     const req = mockRequest(invalidOrganization);
-    const res = await createOrganization(req, { params: {} });
+    const res = await createOrganization(req, emptyParams);
     expect(res.status).toEqual(400);
     const {
       error: { issues },
@@ -98,14 +100,14 @@ describe("Organization API", () => {
   it("should not allow non-admins to create an organization", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
     const req = mockRequest(organizationData);
-    const res = await createOrganization(req, { params: {} });
+    const res = await createOrganization(req, emptyParams);
     expect(res.status).toEqual(403);
   });
 
   it("should allow admin to query organizations", async () => {
     const req = mockRequest();
     const res = await getOrganizations(req, {
-      params: { organizationId: organization.organizationId },
+      params: Promise.resolve({ organizationId: organization.organizationId }),
     });
     expect(res.status).toEqual(200);
     const data = await res.json();
@@ -116,7 +118,7 @@ describe("Organization API", () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
     const req = mockRequest();
     const res = await getOrganizations(req, {
-      params: { organizationId: organization.organizationId },
+      params: Promise.resolve({ organizationId: organization.organizationId }),
     });
     expect(res.status).toEqual(403);
   });

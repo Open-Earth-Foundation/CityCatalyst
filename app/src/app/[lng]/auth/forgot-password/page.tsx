@@ -4,7 +4,7 @@ import EmailInput from "@/components/email-input";
 import { useTranslation } from "@/i18n/client";
 import { Button, Heading, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, use } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { logger } from "@/services/logger";
 
@@ -12,13 +12,13 @@ type Inputs = {
   email: string;
 };
 
-export default function ForgotPassword({
-  params: { lng },
-}: {
-  params: { lng: string };
+export default function ForgotPassword(props: {
+  params: Promise<{ lng: string }>;
 }) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
+
   const {
     handleSubmit,
     register,

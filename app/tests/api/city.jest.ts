@@ -58,6 +58,8 @@ const mockAdminSession: AppSession = {
   expires: "1h",
 };
 
+const emptyParams = { params: Promise.resolve({}) };
+
 describe("City API", () => {
   let city: City;
   let user: User;
@@ -100,7 +102,7 @@ describe("City API", () => {
     await db.models.City.destroy({ where: { locode: cityData.locode } });
 
     const req = mockRequest({ ...cityData, projectId: project?.projectId });
-    const res = await createCity(req, { params: {} });
+    const res = await createCity(req, emptyParams);
     assert.equal(res.status, 200);
     const { data } = await res.json();
     assert.equal(data.locode, cityData.locode);
@@ -112,7 +114,7 @@ describe("City API", () => {
 
   it("should not create a city with invalid data", async () => {
     const req = mockRequest(invalidCity);
-    const res = await createCity(req, { params: {} });
+    const res = await createCity(req, emptyParams);
     assert.equal(res.status, 400);
     const {
       error: { issues },
@@ -122,7 +124,9 @@ describe("City API", () => {
 
   it("should find a city", async () => {
     const req = mockRequest();
-    const res = await findCity(req, { params: { city: city.cityId } });
+    const res = await findCity(req, {
+      params: Promise.resolve({ city: city.cityId }),
+    });
     assert.equal(res.status, 200);
     const { data } = await res.json();
     assert.equal(data.locode, cityData.locode);
@@ -135,14 +139,14 @@ describe("City API", () => {
   it("should prevent unauthorized access to all city data", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockSession));
     const req = mockRequest();
-    const res = await getAllCities(req, { params: {} });
+    const res = await getAllCities(req, emptyParams);
     assert.equal(res.status, 403);
   });
 
   it("should get all cities for admin", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
     const req = mockRequest();
-    const res = await getAllCities(req, { params: {} });
+    const res = await getAllCities(req, emptyParams);
     assert.equal(res.status, 200);
     const { data } = await res.json();
     assert.notEqual(data.length, 0);
@@ -150,13 +154,17 @@ describe("City API", () => {
 
   it("should not find a non-existing city", async () => {
     const req = mockRequest();
-    const res = await findCity(req, { params: { city: randomUUID() } });
+    const res = await findCity(req, {
+      params: Promise.resolve({ city: randomUUID() }),
+    });
     assert.equal(res.status, 404);
   });
 
   it("should update a city", async () => {
     const req = mockRequest({ ...city2, projectId: project.projectId });
-    const res = await updateCity(req, { params: { city: city.cityId } });
+    const res = await updateCity(req, {
+      params: Promise.resolve({ city: city.cityId }),
+    });
     assert.equal(res.status, 200);
     const { data } = await res.json();
     assert.equal(data.locode, city2.locode);
@@ -168,7 +176,9 @@ describe("City API", () => {
 
   it("should not update a city with invalid values", async () => {
     const req = mockRequest(invalidCity);
-    const res = await updateCity(req, { params: { city: city.cityId } });
+    const res = await updateCity(req, {
+      params: Promise.resolve({ city: city.cityId }),
+    });
     assert.equal(res.status, 400);
     const {
       error: { issues },
@@ -178,7 +188,9 @@ describe("City API", () => {
 
   it("should delete a city", async () => {
     const req = mockRequest();
-    const res = await deleteCity(req, { params: { city: city.cityId } });
+    const res = await deleteCity(req, {
+      params: Promise.resolve({ city: city.cityId }),
+    });
     assert.equal(res.status, 200);
     const { data, deleted } = await res.json();
     assert.equal(deleted, true);
@@ -191,7 +203,9 @@ describe("City API", () => {
 
   it("should not delete a non-existing city", async () => {
     const req = mockRequest();
-    const res = await deleteCity(req, { params: { city: randomUUID() } });
+    const res = await deleteCity(req, {
+      params: Promise.resolve({ city: randomUUID() }),
+    });
     assert.equal(res.status, 404);
   });
 });

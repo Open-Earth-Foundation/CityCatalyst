@@ -43,6 +43,7 @@ import {
 import { MdInfoOutline } from "react-icons/md";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
+import Callout from "@/components/ui/callout";
 
 const categoryIconMapping: Record<string, any> = {
   "waste-composition-municipal-solid-waste": MunicipalSolidWasteIcon,
@@ -288,25 +289,12 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                 {wasteCompositionLoading && <ProgressLoader />}
                 {wasteCompositionValues && (
                   <>
-                    <Box bg="background.neutral" p={6} borderRadius={3}>
-                      <HStack color="content.link">
-                        <MdInfoOutline />
-                        <Text
-                          fontSize="label.md"
-                          fontWeight="semibold"
-                          color="content.link"
-                        >
-                          {t("waste-composition-default-values-heading")}
-                        </Text>
-                      </HStack>
-                      <Text
-                        fontSize="body.small"
-                        fontWeight="normal"
-                        color="content.secondary"
-                      >
-                        {t("waste-composition-default-values-description")}
-                      </Text>
-                    </Box>
+                    <Callout
+                      heading={t("waste-composition-default-values-heading")}
+                      description={t(
+                        "waste-composition-default-values-description",
+                      )}
+                    />
                     <Box
                       w="full"
                       p={6}

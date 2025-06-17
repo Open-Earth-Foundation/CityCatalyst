@@ -8,9 +8,9 @@ const packageInfo = JSON.parse(packageJson);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
+  serverExternalPackages: ["sequelize"],
   experimental: {
-    serverComponentsExternalPackages: ["sequelize"],
-    optimizePackageImports: ['@chakra-ui/react']
+    optimizePackageImports: ["@chakra-ui/react"],
   },
   env: {
     APP_VERSION: packageInfo.version,

@@ -30,7 +30,7 @@ const organizationData = {
 
 const inviteData: CreateOrganizationInviteRequest = {
   organizationId: randomUUID(),
-  inviteeEmail: "consultantinvitetest22@example.org",
+  inviteeEmails: ["consultantinvitetest22@example.org"],
   role: OrganizationRole.COLLABORATOR,
 };
 
@@ -76,20 +76,18 @@ describe("Organization Invitations API", () => {
   it("should allow admin to invite a consultant", async () => {
     const req = mockRequest(inviteData);
     const res = await createOrganizationInvite(req, {
-      params: { organizationId: inviteData.organizationId },
+      params: Promise.resolve({ organizationId: inviteData.organizationId }),
     });
     expect(res.status).toEqual(200);
     const data = await res.json();
-    expect(data.organizationId).toEqual(inviteData.organizationId);
-    expect(data.email).toEqual(inviteData.inviteeEmail);
-    expect(data.role).toEqual(inviteData.role);
+    expect(data.success).toEqual(true);
   });
 
   it("should reject non-admin from inviting a consultant", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
     const req = mockRequest(inviteData);
     const res = await createOrganizationInvite(req, {
-      params: { organizationId: inviteData.organizationId },
+      params: Promise.resolve({ organizationId: inviteData.organizationId }),
     });
     expect(res.status).toEqual(403);
   });
@@ -98,19 +96,19 @@ describe("Organization Invitations API", () => {
     await OrganizationInvite.create({
       id: randomUUID(),
       organizationId: inviteData.organizationId,
-      email: inviteData.inviteeEmail,
+      email: inviteData.inviteeEmails[0],
       role: inviteData.role as OrganizationRole,
       status: InviteStatus.PENDING,
     });
 
     const req = mockRequest();
     const res = await getOrganizationInvites(req, {
-      params: { organizationId: inviteData.organizationId },
+      params: Promise.resolve({ organizationId: inviteData.organizationId }),
     });
     expect(res.status).toEqual(200);
     const data = await res.json();
     expect(data).toHaveLength(1);
-    expect(data[0].email).toEqual(inviteData.inviteeEmail);
+    expect(data[0].email).toEqual(inviteData.inviteeEmails[0]);
     expect(data[0].role).toEqual(inviteData.role);
     expect(data[0].status).toEqual(InviteStatus.PENDING);
   });
@@ -119,7 +117,7 @@ describe("Organization Invitations API", () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
     const req = mockRequest();
     const res = await getOrganizationInvites(req, {
-      params: { organizationId: inviteData.organizationId },
+      params: Promise.resolve({ organizationId: inviteData.organizationId }),
     });
     expect(res.status).toEqual(403);
   });

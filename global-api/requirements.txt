@@ -6,7 +6,7 @@ flake8==7.2.0
 fsspec==2025.*
 geopandas>=0.12,<1.1
 mypy==1.16.0
-osmnx==2.0.3
+osmnx==2.0.4
 pandas==2.3.0
 psycopg2-binary==2.9.10
 pydantic-settings==2.*
@@ -25,6 +25,6 @@ xlrd==2.0.*
 dns-cache==0.3.*
 openpyxl==3.1.*
 pytest==8.4.0
-pytest-cov==6.1.1
+pytest-cov==6.2.1
 httpx==0.28.1
 pyproj==3.7.*

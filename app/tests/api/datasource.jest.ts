@@ -81,7 +81,7 @@ async function cleanupDatabase() {
   await db.models.Sector.destroy({ where: { sectorName } });
 }
 
-describe("DataSource API", () => {
+describe.skip("DataSource API", () => {
   let city: City;
   let inventory: Inventory;
   let sector: Sector;

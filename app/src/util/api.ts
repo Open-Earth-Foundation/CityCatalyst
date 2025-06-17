@@ -23,7 +23,7 @@ export type NextHandler = (
 export function apiHandler(handler: NextHandler) {
   return async (
     req: NextRequest,
-    props: { params: Record<string, string> },
+    props: { params: Promise<Record<string, string>> },
   ) => {
     const startTime = Date.now();
     let result: ApiResponse;
@@ -36,7 +36,7 @@ export function apiHandler(handler: NextHandler) {
 
       session = await Auth.getServerSession();
       const context = {
-        ...props,
+        params: await props.params,
         session,
       };
 

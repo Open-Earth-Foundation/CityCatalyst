@@ -107,11 +107,8 @@ export function SectorCard({
             <Box>
               <NextLink
                 href={`/${inventory.inventoryId}/data/${sector.number}`}
-                passHref
-                legacyBehavior
               >
                 <Button
-                  as="a"
                   variant="outline"
                   className="border-2 w-[256px] h-[48px] py-[16px] gap-2"
                   ml={2}

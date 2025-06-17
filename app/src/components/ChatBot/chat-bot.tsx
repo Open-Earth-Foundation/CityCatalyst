@@ -36,12 +36,12 @@ interface Message {
   role: "user" | "assistant" | "code";
   text: string;
 }
-import { logger } from "@/services/logger"
+import { logger } from "@/services/logger";
 
 const SUGGESTION_KEYS = ["gpc", "collect-data", "ipcc"];
 
 function useEnterSubmit(): {
-  formRef: RefObject<HTMLFormElement>;
+  formRef: RefObject<HTMLFormElement | null>;
   onKeyDown: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 } {
   const formRef = useRef<HTMLFormElement>(null);
@@ -388,7 +388,10 @@ export default function ChatBot({
       ) {
         logger.info("Stream processing was aborted.");
       } else {
-        logger.error({ err: error }, "An error occurred while processing the stream:");
+        logger.error(
+          { err: error },
+          "An error occurred while processing the stream:",
+        );
       }
     }
   };

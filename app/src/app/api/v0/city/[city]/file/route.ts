@@ -12,7 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // TODO: use these variables to configure file size and format
 const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_FILE_FORMATS = []; // file formats types to be parsed and refined later
+const ACCEPTED_FILE_FORMATS = ["csv", "xlsx", "json"]; // file formats types to be parsed and refined later
 
 export const GET = apiHandler(async (_req: Request, context) => {
   if (!context.session) {
@@ -72,6 +72,19 @@ export const POST = apiHandler(
 
     if (!file) {
       throw new createHttpError.BadRequest("File not found, Please add a file");
+    }
+
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+    if (!fileExtension || !ACCEPTED_FILE_FORMATS.includes(fileExtension)) {
+      throw new createHttpError.BadRequest(
+        `Invalid file type. Accepted formats are: ${ACCEPTED_FILE_FORMATS.join(", ")}`,
+      );
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      throw new createHttpError.BadRequest(
+        `File too large. Maximum allowed size is ${bytesToMB(MAX_FILE_SIZE)}MB.`,
+      );
     }
 
     const filename = file.name;

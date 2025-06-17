@@ -15,7 +15,7 @@ import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SelectCityStep from "@/components/steps/select-city-steps";
@@ -56,13 +56,13 @@ export type OnboardingData = {
   globalWarmingPotential: string;
 };
 
-export default function OnboardingSetup({
-  params: { lng },
-}: {
-  params: { lng: string };
+export default function OnboardingSetup(props: {
+  params: Promise<{ lng: string }>;
 }) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
   const router = useRouter();
+
   const {
     handleSubmit,
     register,

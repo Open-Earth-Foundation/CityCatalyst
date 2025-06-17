@@ -250,10 +250,13 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       }).unwrap();
       // clear dirty state on success
       setIsDirty(false);
-      status === "fulfilled" &&
+      // show success toast
+      !isLoading &&
+        !isError &&
         toaster.success({
           title: t("success"),
           description: t("notation-keys-updated"),
+          duration: 5000,
         });
     } catch (error) {
       toaster.error({
@@ -650,6 +653,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                                       borderWidth="1px"
                                       borderColor="border.neutral"
                                       borderRadius="md"
+                                      shadow="1dp"
                                     >
                                       <SelectValueText
                                         color="content.tertiary"

@@ -54,8 +54,8 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
 
   const TagMapping = {
     [OrganizationRole.ORG_ADMIN]: {
-      color: "green",
-      text: t("owner"),
+      color: "blue",
+      text: t("admin"),
     },
     [OrganizationRole.ADMIN]: {
       color: "blue",

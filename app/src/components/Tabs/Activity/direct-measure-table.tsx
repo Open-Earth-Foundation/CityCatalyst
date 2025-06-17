@@ -25,6 +25,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 interface DirectMeasureTableProps {
   t: TFunction;
@@ -71,6 +72,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   const filteredFields = extraFields.filter((f) => {
     return !f.id.includes(groupBy as string);
   });
+
+  const { isFrozenCheck } = useOrganizationContext();
 
   const renderTable = (list: ActivityValue[]) => {
     return (
@@ -235,7 +238,9 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                           cursor: "pointer",
                         }}
                         className="group"
-                        onClick={() => onEditActivity(activity)}
+                        onClick={() =>
+                          isFrozenCheck() ? null : onEditActivity(activity)
+                        }
                       >
                         <Icon
                           className="group-hover:text-white"
@@ -264,7 +269,9 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                         }}
                         data-testid="delete-activity-button"
                         className="group"
-                        onClick={() => onDeleteActivity(activity)}
+                        onClick={() =>
+                          isFrozenCheck() ? null : onDeleteActivity(activity)
+                        }
                       >
                         <Icon
                           className="group-hover:text-white"

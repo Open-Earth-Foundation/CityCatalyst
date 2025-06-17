@@ -104,10 +104,10 @@ export type DataSource = DataSourceAttributes & {
 export type DataSourceResponse = {
   source: DataSourceWithRelations;
   data: any;
-}[];
+};
 
 export interface GetDataSourcesResult {
-  data: DataSourceResponse;
+  data: DataSourceResponse[];
   removedSources: RemovedSourceResult[];
   failedSources: FailedSourceResult[];
 }
@@ -363,6 +363,8 @@ export interface ActivityDataByScope {
   scopes: { [key: string]: Decimal };
   totalEmissions: Decimal;
   percentage: number;
+  datasource_id: string;
+  datasource_name: string;
 }
 
 export type SectorBreakdownResponse = BreakdownByActivity & {
@@ -386,7 +388,12 @@ export type OrganizationResponse = {
   name: string;
   organizationId: string;
   themeId?: string;
+  theme?: {
+    themeId: string;
+    themeKey: string;
+  };
   logoUrl?: string;
+  active: boolean;
   projects: {
     projectId: string;
     name: string;
@@ -495,12 +502,14 @@ export enum LANGUAGES {
   "es" = "es",
   "pt" = "pt",
   "de" = "de",
+  "fr" = "fr",
 }
 
 export type OrganizationWithThemeResponse = {
   contactEmail: string;
   created: string;
   last_updated: string;
+  active: boolean;
   name: string;
   organizationId: string;
   themeId?: string;

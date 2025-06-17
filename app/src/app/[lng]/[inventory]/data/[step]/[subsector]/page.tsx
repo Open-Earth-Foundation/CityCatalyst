@@ -18,8 +18,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { forwardRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { forwardRef, useState, use } from "react";
 import { MdArrowBack, MdChevronRight, MdOutlineHomeWork } from "react-icons/md";
 import {
   AnimatePresence,
@@ -37,6 +37,7 @@ import {
   BreadcrumbCurrentLink,
   BreadcrumbRoot,
 } from "@/components/ui/breadcrumb";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 const MotionBox = motion.create(
   // the display name is added below, but the linter isn't picking it up
@@ -53,17 +54,22 @@ const kebab = (str: string | undefined): string =>
         .toLowerCase()
     : "";
 
-function SubSectorPage({
-  params: { lng, step, inventory: inventoryId, subsector },
-}: {
-  params: { lng: string; step: string; inventory: string; subsector: string };
+function SubSectorPage(props: {
+  params: Promise<{
+    lng: string;
+    step: string;
+    inventory: string;
+    subsector: string;
+  }>;
 }) {
+  const { lng, step, inventory: inventoryId, subsector } = use(props.params);
+
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { t } = useTranslation(lng, "data");
   const { scrollY } = useScroll();
-
-  const paddingTop = useTransform(scrollY, [0, 100], ["100px", "50px"], {
+  const { organization } = useOrganizationContext();
+  const paddingTopMax = organization.active ? "100px" : "150px";
+  const paddingTop = useTransform(scrollY, [0, 100], [paddingTopMax, "50px"], {
     ease: easeInOut,
   });
 

@@ -144,10 +144,10 @@ describe("Inventory Value API", () => {
     });
     const req = mockRequest(inventoryValue1);
     const res = await upsertInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
-      },
+      }),
     });
     await expectStatusCode(res, 200);
     const { data } = await res.json();
@@ -160,10 +160,10 @@ describe("Inventory Value API", () => {
   it.skip("should not create an inventory value with invalid data", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await upsertInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
-      },
+      }),
     });
     await expectStatusCode(res, 400);
     const {
@@ -175,10 +175,10 @@ describe("Inventory Value API", () => {
   it("should find an inventory value", async () => {
     const req = mockRequest();
     const res = await findInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
-      },
+      }),
     });
 
     const { data } = await res.json();
@@ -211,9 +211,9 @@ describe("Inventory Value API", () => {
     ].join(",");
     const req = mockRequest(null, { subCategoryIds });
     const res = await batchFindInventoryValues(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
-      },
+      }),
     });
 
     const { data } = await res.json();
@@ -244,10 +244,10 @@ describe("Inventory Value API", () => {
   it("should not find a non-existing sub category", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await findInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         subcategory: randomUUID(),
-      },
+      }),
     });
     await expectStatusCode(res, 404);
   });
@@ -255,10 +255,10 @@ describe("Inventory Value API", () => {
   it.skip("should update an inventory value", async () => {
     const req = mockRequest(inventoryValue1);
     const res = await upsertInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
-      },
+      }),
     });
     await expectStatusCode(res, 200);
     const { data } = await res.json();
@@ -270,10 +270,10 @@ describe("Inventory Value API", () => {
   it.skip("should not update an inventory value with invalid data", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await upsertInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
-      },
+      }),
     });
     await expectStatusCode(res, 400);
     const {

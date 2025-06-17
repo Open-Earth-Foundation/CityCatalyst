@@ -1,7 +1,4 @@
-import DataSourceService, {
-  downscaledByCountryPopulation,
-  downscaledByRegionPopulation,
-} from "@/backend/DataSourceService";
+import DataSourceService from "@/backend/DataSourceService";
 import { db } from "@/models";
 import { City } from "@/models/City";
 import { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
@@ -41,25 +38,15 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
 
   // TODO add query parameter to make this optional?
   const sourceData = await Promise.all(
-    applicableSources.map(async (source) => {
-      const data = await DataSourceService.retrieveGlobalAPISource(
+    applicableSources.map((source) =>
+      DataSourceService.getSourceWithData(
         source,
         inventory,
-      );
-      if (data instanceof String || typeof data === "string") {
-        return { error: data as string, source };
-      }
-      let scaleFactor = 1.0;
-      let issue: string | null = null;
-      if (source.retrievalMethod === downscaledByCountryPopulation) {
-        scaleFactor = countryPopulationScaleFactor;
-        issue = populationIssue;
-      } else if (source.retrievalMethod === downscaledByRegionPopulation) {
-        scaleFactor = regionPopulationScaleFactor;
-        issue = populationIssue;
-      }
-      return { source, data: { ...data, scaleFactor, issue } };
-    }),
+        countryPopulationScaleFactor,
+        regionPopulationScaleFactor,
+        populationIssue,
+      ),
+    ),
   );
 
   const successfulSources = sourceData.filter((source) => !source.error);

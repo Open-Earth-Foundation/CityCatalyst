@@ -134,5 +134,6 @@
   "download-complete": "Inventarbericht Download abgeschlossen!",
   "downloading-data": "Ihre Daten herunterladen",
   "download-failed": "Download fehlgeschlagen",
-  "download-error": "Es gab einen Fehler beim Herunterladen"
+  "download-error": "Es gab einen Fehler beim Herunterladen",
+  "change-to-admin": "Wechseln zu Admin"
 }

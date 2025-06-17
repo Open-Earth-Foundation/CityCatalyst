@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: cc-web
-          image: ghcr.io/open-earth-foundation/citycatalyst:latest
+          image: ghcr.io/open-earth-foundation/citycatalyst-web:latest
           # Set to Never for local
           imagePullPolicy: Always
           ports:
@@ -52,6 +52,9 @@ spec:
             - name: OPEN_AI_MODEL
               value: "gpt-4o-mini"
           resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
             limits:
               memory: "1024Mi"
               cpu: "1000m"

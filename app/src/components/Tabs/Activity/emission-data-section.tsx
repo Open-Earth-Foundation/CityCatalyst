@@ -29,6 +29,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 interface EmissionDataSectionProps {
   t: TFunction;
@@ -116,6 +117,7 @@ const EmissionDataSection = ({
   };
 
   const { lng } = useParams();
+  const { isFrozenCheck } = useOrganizationContext();
 
   const renderSuggestedActivities = () => (
     <>
@@ -140,7 +142,11 @@ const EmissionDataSection = ({
                   prefillValue={prefills[0]?.value}
                   t={t}
                   isSelected={selectedActivity?.id === id}
-                  onActivityAdded={() => handleActivityAdded(suggestedActivity)}
+                  onActivityAdded={() =>
+                    isFrozenCheck()
+                      ? null
+                      : handleActivityAdded(suggestedActivity)
+                  }
                 />
               );
             })}
@@ -180,7 +186,7 @@ const EmissionDataSection = ({
             </Box>
           </Box>
           <Button
-            onClick={() => handleActivityAdded()}
+            onClick={() => (isFrozenCheck() ? null : handleActivityAdded())}
             data-testid="add-emission-data-button"
             title={t("add-emission-data")}
             h="48px"
@@ -225,7 +231,9 @@ const EmissionDataSection = ({
             {activityValues.length > 0 && (
               <Button
                 data-testid="add-emission-data-button"
-                onClick={handleActivityAddDataDialog}
+                onClick={() =>
+                  isFrozenCheck() ? null : handleActivityAddDataDialog()
+                }
                 title="Add Activity"
                 h="48px"
                 aria-label="activity-button"
@@ -260,7 +268,9 @@ const EmissionDataSection = ({
                     cursor: "pointer",
                   }}
                   className="group"
-                  onClick={handleChangeMethodology}
+                  onClick={() =>
+                    isFrozenCheck() ? null : handleChangeMethodology()
+                  }
                 >
                   <Icon
                     className="group-hover:text-white"
@@ -290,7 +300,11 @@ const EmissionDataSection = ({
                       cursor: "pointer",
                     }}
                     className="group"
-                    onClick={handleDeleteAllActivityDataDialog}
+                    onClick={() =>
+                      isFrozenCheck()
+                        ? null
+                        : handleDeleteAllActivityDataDialog()
+                    }
                   >
                     <Icon
                       className="group-hover:text-white"

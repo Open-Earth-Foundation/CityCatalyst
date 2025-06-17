@@ -5,7 +5,7 @@ import { Link } from "@chakra-ui/react";
 import { Button, Heading, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, use } from "react";
 
 function DynamicContent({ t }: { t: Function }) {
   const searchParams = useSearchParams();
@@ -38,11 +38,11 @@ function DynamicContent({ t }: { t: Function }) {
   );
 }
 
-export default function CheckEmail({
-  params: { lng },
-}: {
-  params: { lng: string };
+export default function CheckEmail(props: {
+  params: Promise<{ lng: string }>;
 }) {
+  const { lng } = use(props.params);
+
   const { t } = useTranslation(lng, "auth");
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
@@ -56,8 +56,8 @@ export default function CheckEmail({
       <Suspense>
         <DynamicContent t={t} />
       </Suspense>
-      <NextLink href={nextCallbackUrl} passHref legacyBehavior>
-        <Button as="a" h={16} width="full" mt={4}>
+      <NextLink href={nextCallbackUrl}>
+        <Button h={16} width="full" mt={4}>
           {t("back-to-login")}
         </Button>
       </NextLink>

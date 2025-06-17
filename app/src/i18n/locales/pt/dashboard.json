@@ -201,5 +201,8 @@
   "select-role": "Selecione o papel",
   "collaborator-rule": "Colaboradores só podem editar inventários",
   "admin-rule": "Os administradores podem adicionar cidades a todos os projetos e editar todos os inventários",
-  "all-cities": "Todas as cidades"
+  "all-cities": "Todas as cidades",
+  "yes-i-understand": "Sim, eu entendo",
+  "account-frozen-warning-text": "A sua conta está congelada. Por favor, entre em contato com um administrador ou com <bold>{{email}}</bold> para reativá-la",
+  "account-frozen-header": "Sua conta está congelada"
 }

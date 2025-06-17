@@ -140,13 +140,13 @@ export function NavigationBar({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   function logOut() {
-    signOut({ callbackUrl: "/auth/login", redirect: true });
     setTheme("blue_theme");
     clearOrganization();
+    signOut({ callbackUrl: "/auth/login", redirect: true });
   }
 
   return (
-    <Box className="flex flex-col h-full w-full">
+    <Box className="flex flex-col w-full">
       <Box
         className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50 w-full"
         bgColor="content.alternative"
@@ -484,7 +484,7 @@ export function NavigationBar({
           onOpenChange={({ open }) => setIsDrawerOpen(open)}
         />
       </Box>
-      {isFrozen && !isPublic && (
+      {isFrozen && !isPublic && !isAuth && (
         <Box
           py={2}
           px={16}

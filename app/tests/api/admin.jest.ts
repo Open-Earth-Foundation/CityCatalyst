@@ -50,6 +50,8 @@ const mockConnectSourcesRequest: BulkInventoryUpdateProps = {
   years: [2022, 2023],
 };
 
+const emptyParams = { params: Promise.resolve({}) };
+
 describe("Admin API", () => {
   let prevGetServerSession = Auth.getServerSession;
 
@@ -76,7 +78,7 @@ describe("Admin API", () => {
   it("should allow creating bulk inventories for admin users", async () => {
     const req = mockRequest(mockBulkInventoriesRequest);
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
-    const res = await createBulkInventories(req, { params: {} });
+    const res = await createBulkInventories(req, emptyParams);
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.errors.length).toBe(0);
@@ -144,7 +146,7 @@ describe("Admin API", () => {
   it("should allow connecting bulk data sources for admin users", async () => {
     const req = mockRequest(mockConnectSourcesRequest);
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
-    const res = await bulkConnectDataSources(req, { params: {} });
+    const res = await bulkConnectDataSources(req, emptyParams);
     expect(res.status).toBe(200);
     const body = await res.json();
     // expect(body.errors.length).toBe(0);
@@ -157,7 +159,7 @@ describe("Admin API", () => {
       role: Roles.Admin,
     });
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
-    const res = await changeRole(req, { params: {} });
+    const res = await changeRole(req, emptyParams);
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.success).toBe(true);
@@ -173,7 +175,7 @@ describe("Admin API", () => {
       email: testUserData.email,
       role: Roles.Admin,
     });
-    const res = await changeRole(req, { params: {} });
+    const res = await changeRole(req, emptyParams);
     expect(res.status).toBe(403);
 
     const user = await db.models.User.findOne({
@@ -188,7 +190,7 @@ describe("Admin API", () => {
       role: Roles.Admin,
     });
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
-    const res = await changeRole(req, { params: {} });
+    const res = await changeRole(req, emptyParams);
     expect(res.status).toBe(404);
   });
 
@@ -196,15 +198,15 @@ describe("Admin API", () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
 
     const req = mockRequest({ email: testUserData.email, role: "invalid" });
-    const res = await changeRole(req, { params: {} });
+    const res = await changeRole(req, emptyParams);
     expect(res.status).toBe(400);
 
     const req2 = mockRequest({ email: "not-an-email", role: "admin" });
-    const res2 = await changeRole(req2, { params: {} });
+    const res2 = await changeRole(req2, emptyParams);
     expect(res2.status).toBe(400);
 
     const req3 = mockRequest({});
-    const res3 = await changeRole(req3, { params: {} });
+    const res3 = await changeRole(req3, emptyParams);
     expect(res3.status).toBe(400);
   });
 });

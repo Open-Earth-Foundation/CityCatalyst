@@ -107,7 +107,6 @@ export function SectorCard({
             <Box>
               <NextLink
                 href={`/${inventory.inventoryId}/data/${sector.number}`}
-                passHref
               >
                 <Button
                   variant="outline"

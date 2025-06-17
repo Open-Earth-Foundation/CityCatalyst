@@ -19,7 +19,7 @@ export default function ResetSuccessful(props: {
       <Text className="my-4" color="#7A7B9A">
         <Trans t={t}>reset-successful-details</Trans>
       </Text>
-      <NextLink href="/" passHref>
+      <NextLink href="/">
         <Button h={16} width="full" mt={4}>
           {t("continue")} <Icon as={MdArrowForward} ml={2} boxSize={6} />
         </Button>

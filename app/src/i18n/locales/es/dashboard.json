@@ -203,5 +203,8 @@
   "collaborator-rule": "Los colaboradores solo pueden editar inventarios",
   "admin-rule": "Los administradores pueden agregar ciudades a todos los proyectos y editar todos los inventarios",
   "all-cities": "Todas las ciudades",
-  "source": "Fuente"
+  "source": "Fuente",
+  "yes-i-understand": "Sí, entiendo",
+  "account-frozen-warning-text": "Tu cuenta está congelada. Por favor, contacta a un administrador o a <bold>{{email}}</bold> para reactivarla",
+  "account-frozen-header": "Tu cuenta está congelada"
 }

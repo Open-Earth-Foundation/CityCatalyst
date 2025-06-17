@@ -3,5 +3,6 @@
   "admin": "Administración",
   "cities": "ciudades",
   "settings": "Ajustes",
-  "account-settings": "Ajustes de la Cuenta"
+  "account-settings": "Ajustes de la Cuenta",
+  "account-frozen-warning-text": "Su cuenta está congelada. Por favor, póngase en contacto con un administrador o con <bold>{{ email }}</bold> para reactivarla"
 }

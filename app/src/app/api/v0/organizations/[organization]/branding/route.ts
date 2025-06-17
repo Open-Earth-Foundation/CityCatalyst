@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
-  const organizationId = params.organizationId;
+  const { organization: organizationId } = params;
   const org = await db.models.Organization.findOne({
     where: {
       organizationId,

@@ -30,7 +30,7 @@ export const POST = apiHandler(async (req, { session }) => {
       {
         model: db.models.Organization,
         as: "organization",
-        attributes: ["organizationId", "name", "logoUrl"],
+        attributes: ["organizationId", "name", "logoUrl", "active"],
         include: [
           {
             model: db.models.Theme,
@@ -43,6 +43,10 @@ export const POST = apiHandler(async (req, { session }) => {
 
   if (!project) {
     throw new createHttpError.NotFound("Project not found");
+  }
+
+  if (!project.organization.active) {
+    throw new createHttpError.Forbidden("Organization is not active");
   }
 
   if (project.cities.length === project.cityCountLimit) {

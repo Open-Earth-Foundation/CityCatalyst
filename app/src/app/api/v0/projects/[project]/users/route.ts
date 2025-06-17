@@ -5,7 +5,7 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 
 export const GET = apiHandler(async (req, { params, session }) => {
-  const { projectId } = params;
+  const { project: projectId } = params;
   const project = await Project.findByPk(projectId as string);
   if (!project) {
     throw new createHttpError.NotFound("project-not-found");
@@ -24,7 +24,7 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
 
   // 2. Get Path Parameter (projectId)
-  const { projectId } = params;
+  const { project: projectId } = params;
 
   // 3. Get Query Parameter (email) from the URL
   const email = req.nextUrl.searchParams.get("email");

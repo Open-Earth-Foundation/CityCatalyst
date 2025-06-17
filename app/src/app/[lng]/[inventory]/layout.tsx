@@ -11,8 +11,8 @@ import {
 } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useEffect } from "react";
-import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 import { useTheme } from "next-themes";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 export default function DataLayout({
   children,
@@ -36,17 +36,22 @@ export default function DataLayout({
       skip: !inventoryId,
     });
 
-  const { setLogoUrl } = useLogo();
+  const { organization, setOrganization } = useOrganizationContext();
   const { setTheme } = useTheme();
 
   useEffect(() => {
     if (inventoryOrgData) {
-      setLogoUrl(inventoryOrgData?.logoUrl as string);
+      const logoUrl = inventoryOrgData?.logoUrl ?? null;
+      const active = inventoryOrgData?.active ?? true;
+
+      if (organization.logoUrl !== logoUrl || organization.active !== active) {
+        setOrganization({ logoUrl, active });
+      }
       setTheme(inventoryOrgData?.theme?.themeKey ?? ("blue_theme" as string));
     } else {
       setTheme("blue_theme");
     }
-  }, [isInventoryOrgDataLoading, inventoryOrgData]);
+  }, [isInventoryOrgDataLoading, inventoryOrgData, setOrganization, setTheme]);
 
   if (isInventoryOrgDataLoading || isUserInfoLoading) {
     return <ProgressLoader />;

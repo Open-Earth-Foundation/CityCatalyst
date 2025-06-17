@@ -37,6 +37,7 @@ import {
   BreadcrumbCurrentLink,
   BreadcrumbRoot,
 } from "@/components/ui/breadcrumb";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 const MotionBox = motion.create(
   // the display name is added below, but the linter isn't picking it up
@@ -62,8 +63,9 @@ function SubSectorPage({
   const searchParams = useSearchParams();
   const { t } = useTranslation(lng, "data");
   const { scrollY } = useScroll();
-
-  const paddingTop = useTransform(scrollY, [0, 100], ["100px", "50px"], {
+  const { organization } = useOrganizationContext();
+  const paddingTopMax = organization.active ? "100px" : "150px";
+  const paddingTop = useTransform(scrollY, [0, 100], [paddingTopMax, "50px"], {
     ease: easeInOut,
   });
 

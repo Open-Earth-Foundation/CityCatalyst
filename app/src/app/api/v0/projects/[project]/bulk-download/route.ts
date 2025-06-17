@@ -11,10 +11,10 @@ import createHttpError from "http-errors";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   const lng = req.nextUrl.searchParams.get("lng") || "en";
-
+  const { project: projectIdFromParams } = params;
   let projectId: string;
   try {
-    projectId = z.string().uuid().parse(params.projectId);
+    projectId = z.string().uuid().parse(projectIdFromParams);
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
     throw new createHttpError.BadRequest(

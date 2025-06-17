@@ -18,6 +18,7 @@ import { MdAdd, MdChevronRight, MdOutlineFolder } from "react-icons/md";
 import { CircleFlag } from "react-circle-flags";
 import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 interface ProjectHeaderProps {
   t: TFunction;
@@ -57,7 +58,8 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
     }
     return "project-view";
   }, [selectedCityData, selectedInventory]);
-  
+
+  const { isFrozenCheck } = useOrganizationContext();
 
   return (
     <HStack justifyContent="space-between" alignItems="center" mb={6}>
@@ -155,9 +157,11 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       {view !== "inventory-view" && (
         <Button
           onClick={() =>
-            router.push(
-              `/${lng}/onboarding/setup?project=${selectedProjectData?.projectId as string}${selectedCityData?.cityId ? `&city=${selectedCityData?.cityId}` : ""}`,
-            )
+            isFrozenCheck()
+              ? null
+              : router.push(
+                  `/${lng}/onboarding/setup?project=${selectedProjectData?.projectId as string}${selectedCityData?.cityId ? `&city=${selectedCityData?.cityId}` : ""}`,
+                )
           }
           variant="outline"
           ml="auto"

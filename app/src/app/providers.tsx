@@ -9,6 +9,7 @@ import { Provider } from "react-redux";
 import { appTheme } from "@/lib/theme/recipes/app-theme";
 import { ThemeProvider } from "next-themes";
 import { LogoProvider } from "@/hooks/logo-provider/use-logo-provider";
+import { OrganizationContextProvider } from "@/hooks/organization-context-provider/use-organizational-context";
 
 const openSans = localFont({
   src: [
@@ -66,13 +67,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
           "violet_theme",
         ]}
       >
-        <LogoProvider>
-          <ChakraProvider value={appTheme}>
+        <ChakraProvider value={appTheme}>
+          <OrganizationContextProvider>
             <SessionProvider>
               <Provider store={store}>{children}</Provider>
             </SessionProvider>
-          </ChakraProvider>
-        </LogoProvider>
+          </OrganizationContextProvider>
+        </ChakraProvider>
       </ThemeProvider>
     </>
   );

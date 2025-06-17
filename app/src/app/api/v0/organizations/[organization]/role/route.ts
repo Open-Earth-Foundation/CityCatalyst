@@ -13,7 +13,7 @@ import { logger } from "@/services/logger";
 import { OrganizationInvite } from "@/models/OrganizationInvite";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
-  const { organizationId } = params;
+  const { organization: organizationId } = params;
   const { contactEmail: email } = updateUserRoleSchema.parse(await req.json());
   UserService.validateIsAdmin(session);
 

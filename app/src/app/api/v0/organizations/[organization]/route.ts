@@ -8,7 +8,7 @@ import { db } from "@/models";
 import { DEFAULT_ORGANIZATION_ID, DEFAULT_PROJECT_ID } from "@/util/constants";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
-  const { organizationId } = params;
+  const { organization: organizationId } = params;
   const org = await Organization.findByPk(organizationId as string, {
     include: [
       {
@@ -23,6 +23,10 @@ export const GET = apiHandler(async (_req, { params, session }) => {
           },
         ],
       },
+      {
+        model: db.models.Theme,
+        as: "theme",
+      },
     ],
   });
   if (!org) {
@@ -32,7 +36,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 });
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
-  const { organizationId } = params;
+  const { organization: organizationId } = params;
   UserService.validateIsAdmin(session);
 
   if (organizationId === DEFAULT_ORGANIZATION_ID) {
@@ -50,7 +54,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
 export const DELETE = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
-  const { organizationId } = params;
+  const { organization: organizationId } = params;
 
   if (organizationId === DEFAULT_ORGANIZATION_ID) {
     throw new createHttpError.BadRequest("Cannot delete default organization");

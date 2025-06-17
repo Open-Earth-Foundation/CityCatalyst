@@ -388,7 +388,12 @@ export type OrganizationResponse = {
   name: string;
   organizationId: string;
   themeId?: string;
+  theme?: {
+    themeId: string;
+    themeKey: string;
+  };
   logoUrl?: string;
+  active: boolean;
   projects: {
     projectId: string;
     name: string;
@@ -503,6 +508,7 @@ export type OrganizationWithThemeResponse = {
   contactEmail: string;
   created: string;
   last_updated: string;
+  active: boolean;
   name: string;
   organizationId: string;
   themeId?: string;

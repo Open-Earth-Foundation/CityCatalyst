@@ -12,7 +12,7 @@ import { DEFAULT_PROJECT_ID } from "@/util/constants";
 export const GET = apiHandler(async (req, { params, session }) => {
   // return a single project.
   UserService.validateIsAdmin(session);
-  const { projectId } = params;
+  const { project: projectId } = params;
   const project = await Project.findByPk(projectId as string);
   if (!project) {
     throw new createHttpError.NotFound("project-not-found");
@@ -23,7 +23,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
 // update a project
 export const PATCH = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
-  const { projectId } = params;
+  const { project: projectId } = params;
 
   if (projectId === DEFAULT_PROJECT_ID) {
     throw new createHttpError.BadRequest("Cannot update default project");
@@ -63,7 +63,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 // delete a project
 export const DELETE = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
-  const { projectId } = params;
+  const { project: projectId } = params;
   if (projectId === DEFAULT_PROJECT_ID) {
     throw new createHttpError.BadRequest("Cannot delete default project");
   }

@@ -6,12 +6,15 @@ import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import NextLink from "next/link";
 import { MdArrowForward } from "react-icons/md";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { useRouter } from "next/navigation";
 
 export default function Onboarding(props: {
   params: Promise<{ lng: string }>;
 }) {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
+  const router = useRouter();
 
   const steps = [1, 2, 3, 4];
 
@@ -85,18 +88,19 @@ export default function Onboarding(props: {
           py="32px"
           px="175px"
         >
-          <NextLink href="/onboarding/setup">
-            <Button w="auto" gap="8px" py="16px" px="24px" h="64px">
-              <Text
-                fontFamily="button.md"
-                fontWeight="600"
-                letterSpacing="wider"
-              >
-                {t("start-inventory")}
-              </Text>
-              <MdArrowForward height="24px" width="24px" />
-            </Button>
-          </NextLink>
+          <Button
+            w="auto"
+            gap="8px"
+            py="16px"
+            px="24px"
+            h="64px"
+            onClick={() => router.push("/onboarding/setup")}
+          >
+            <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
+              {t("start-inventory")}
+            </Text>
+            <MdArrowForward height="24px" width="24px" />
+          </Button>
         </Box>
       </Box>
     </>

@@ -15,7 +15,7 @@ import { Organization } from "@/models/Organization";
 
 export const POST = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
-  const { organizationId } = params;
+  const { organization: organizationId } = params;
 
   const organization = await Organization.findByPk(organizationId);
 
@@ -48,7 +48,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
 export const GET = apiHandler(async (req, { params, session }) => {
   // this will behave differently for different users
-  const { organizationId } = params;
+  const { organization: organizationId } = params;
   const projects = await UserService.findUserProjectsAndCitiesInOrganization(
     organizationId,
     session,

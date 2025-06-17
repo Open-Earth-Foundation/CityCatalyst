@@ -26,9 +26,9 @@ import { BsPlus } from "react-icons/bs";
 import Cookies from "js-cookie";
 import CapTab from "@/app/[lng]/[inventory]/CapTab";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 import { useTheme } from "next-themes";
 import ProgressLoader from "@/components/ProgressLoader";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 export default function HomePage({
   lng,
@@ -136,15 +136,23 @@ export default function HomePage({
       skip: !inventoryIdFromParam,
     });
 
-  const { setLogoUrl } = useLogo();
+  const { isFrozenCheck, organization, setOrganization } =
+    useOrganizationContext();
   const { setTheme } = useTheme();
 
   useEffect(() => {
     if (inventoryOrgData) {
-      setLogoUrl(inventoryOrgData?.logoUrl as string);
-      setTheme(inventoryOrgData?.theme?.themeKey ?? ("blue_theme" as string));
+      const logoUrl = inventoryOrgData?.logoUrl ?? null;
+      const active = inventoryOrgData?.active ?? true;
+
+      if (organization.logoUrl !== logoUrl || organization.active !== active) {
+        setOrganization({ logoUrl, active });
+      }
+      setTheme(inventoryOrgData?.theme?.themeKey ?? "blue_theme");
+    } else if (!isInventoryOrgDataLoading && !inventoryOrgData) {
+      setTheme("blue_theme");
     }
-  }, [isInventoryOrgDataLoading, inventoryOrgData]);
+  }, [isInventoryOrgDataLoading, inventoryOrgData, setTheme]);
 
   if (isInventoryLoading || isInventoryOrgDataLoading || isUserInfoLoading) {
     return <ProgressLoader />;
@@ -216,9 +224,7 @@ export default function HomePage({
                       fontSize="button.md"
                       gap="8px"
                       onClick={() =>
-                        router.push(
-                          `/onboarding/setup?city=${inventory?.cityId}&project=${city?.projectId}`,
-                        )
+                        isFrozenCheck() ? null : router.push("/onboarding")
                       }
                     >
                       <Icon as={BsPlus} h="16px" w="16px" />

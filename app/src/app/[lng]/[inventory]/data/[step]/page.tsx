@@ -90,6 +90,7 @@ import {
 import { TbWorldSearch } from "react-icons/tb";
 import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -610,6 +611,7 @@ export default function AddDataSteps(props: {
 
   const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
+  const { organization, isFrozenCheck } = useOrganizationContext();
 
   return (
     <>
@@ -618,7 +620,8 @@ export default function AddDataSteps(props: {
         bg="background.backgroundLight"
         borderColor="border.neutral"
         borderBottomWidth={isExpanded ? "1px" : ""}
-        className={`fixed z-10 top-0 w-full ${isExpanded ? "pt-[0px] h-[200px]" : "pt-[120px] h-[400px]"} transition-all duration-50 ease-linear`}
+        pt={isExpanded ? "0px" : organization.active ? "120px" : "160px"}
+        className={`fixed z-10 top-0 w-full ${isExpanded ? "h-[200px]" : "h-[400px]"} transition-all duration-50 ease-linear`}
       >
         <div className=" w-[1090px] mx-auto px-4  ">
           <Box
@@ -901,7 +904,9 @@ export default function AddDataSteps(props: {
                   h={16}
                   w={16}
                   loading={areDataSourcesFetching}
-                  onClick={onSearchDataSourcesClicked}
+                  onClick={() =>
+                    isFrozenCheck() ? null : onSearchDataSourcesClicked
+                  }
                 >
                   <Icon as={MdRefresh} boxSize={9} />
                 </IconButton>
@@ -911,7 +916,9 @@ export default function AddDataSteps(props: {
               <SearchDataSourcesPrompt
                 t={t}
                 isSearching={areDataSourcesLoading}
-                onSearchClicked={onSearchDataSourcesClicked}
+                onSearchClicked={() =>
+                  isFrozenCheck() ? null : onSearchDataSourcesClicked
+                }
               />
             ) : dataSourcesError ? (
               <Center>
@@ -1004,7 +1011,11 @@ export default function AddDataSteps(props: {
                               variant="solid"
                               px={6}
                               py={4}
-                              onClick={() => onDisconnectThirdPartyData(source)}
+                              onClick={() =>
+                                isFrozenCheck()
+                                  ? null
+                                  : onDisconnectThirdPartyData(source)
+                              }
                               loading={
                                 isDisconnectLoading &&
                                 source.datasourceId ===
@@ -1066,7 +1077,9 @@ export default function AddDataSteps(props: {
                 <Box w="full">
                   <Box mb="24px">
                     <FileInput
-                      onFileSelect={handleFileSelect}
+                      onFileSelect={() =>
+                        isFrozenCheck() ? null : handleFileSelect
+                      }
                       setUploadedFile={setUploadedFile}
                       t={t}
                     />

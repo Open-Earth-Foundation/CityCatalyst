@@ -40,6 +40,7 @@ import ProjectHeader from "./projectHeader";
 import DeleteInventoryModal from "@/components/Modals/delete-inventory-modal";
 import { UserAttributes } from "@/models/User";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 const getInventoryLastUpdated = (lastUpdated: Date, t: Function) => {
   if (!lastUpdated || isNaN(new Date(lastUpdated).getTime())) {
@@ -116,6 +117,8 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
     name: "",
     role: Roles.User,
   });
+
+  const { isFrozenCheck } = useOrganizationContext();
 
   if (isLoadingProjectUsers) {
     return <ProgressLoader />;
@@ -268,6 +271,9 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                             _hover={{ bg: "content.link", cursor: "pointer" }}
                             className="group"
                             onClick={() => {
+                              if (isFrozenCheck()) {
+                                return;
+                              }
                               setIsDeleteModalOpen(true);
                               setCityToDelete({
                                 cityName: item.name,
@@ -489,6 +495,9 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                               _hover={{ bg: "content.link", cursor: "pointer" }}
                               className="group"
                               onClick={() => {
+                                if (isFrozenCheck()) {
+                                  return;
+                                }
                                 setInventoryToDelete(item.inventoryId);
                                 onInventoryDeleteModalOpen();
                               }}

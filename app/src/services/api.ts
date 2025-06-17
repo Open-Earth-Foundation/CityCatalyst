@@ -1237,7 +1237,7 @@ export const api = createApi({
           },
         }),
         transformResponse: (response: { data: any }) => response.data,
-        invalidatesTags: ["Organizations"],
+        invalidatesTags: ["Organizations", "Organization"],
       }),
       updateUserRoleInOrganization: builder.mutation({
         query: ({

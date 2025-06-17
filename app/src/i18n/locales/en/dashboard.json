@@ -200,5 +200,8 @@
   "collaborator-rule": "Collaborators can only edit inventories",
   "admin-rule": "Admins can add cities to all projects, and edit all inventories",
   "all-cities": "All cities",
-  "source": "Source"
+  "source": "Source",
+  "yes-i-understand": "Yes, I understand",
+  "account-frozen-warning-text": "Your account is frozen. Please reach out to an admin or to <bold>{{email}}</bold> to reactivate it",
+  "account-frozen-header": "Your account is frozen"
 }

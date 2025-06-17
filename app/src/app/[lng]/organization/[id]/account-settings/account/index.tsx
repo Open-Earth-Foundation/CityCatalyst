@@ -31,7 +31,6 @@ import {
 import ProgressLoader from "@/components/ProgressLoader";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useTheme } from "next-themes";
-import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 import ManagePasswordTabContent from "@/components/Tabs/MyProfileTab/ManagePasswordTabContent";
 import AccountDetailsTab from "./account-details-tab";
 import OrganizationDetailsTab from "./organization-details-tab";
@@ -39,6 +38,7 @@ import TabContent from "@/components/ui/tab-content";
 import TabTrigger from "@/components/ui/tab-trigger";
 import { Trans } from "react-i18next";
 import { logger } from "@/services/logger";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const { showErrorToast } = UseErrorToast({
@@ -82,7 +82,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const [file, setFile] = React.useState<File | null>(null);
   const [clearImage, setClearImage] = React.useState(false);
   const { setTheme } = useTheme();
-  const { setLogoUrl } = useLogo();
+  const { setOrganization } = useOrganizationContext();
 
   const { data: userAccessStatus, isLoading } = useGetUserAccessStatusQuery({});
 
@@ -124,7 +124,9 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
       setFile(null);
       setClearImage(false);
       setTheme(selectedThemeValue?.key as string);
-      setLogoUrl(response?.logoUrl as string);
+      setOrganization({
+        logoUrl: response?.logoUrl ?? null,
+      });
       showSuccessToast();
     } catch (err) {
       logger.error({ err: err }, "Failed to update white label settings:");

@@ -5,12 +5,13 @@ import React from "react";
 import FooterLink from "../Navigation/FooterLink";
 import { useTranslation } from "@/i18n/client";
 import { getCurrentVersion } from "@/util/helpers";
-import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 const Footer = ({ lng }: { lng: string }) => {
   const currentVersion = getCurrentVersion();
   const { t } = useTranslation(lng, "footer");
-  const { logoUrl } = useLogo();
+  const { organization } = useOrganizationContext();
+  const logoUrl = organization?.logoUrl;
   return (
     <footer className="w-full h-[320px] bg-[#00001f] pt-[48px]">
       <Box className="w-full px-[64px]">

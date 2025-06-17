@@ -9,7 +9,7 @@ import { NextResponse } from "next/server";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
-  const { organizationId } = params;
+  const { organization: organizationId } = params;
 
   const organization = await Organization.findByPk(organizationId);
 

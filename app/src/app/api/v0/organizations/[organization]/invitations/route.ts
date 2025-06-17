@@ -17,8 +17,8 @@ import EmailService from "@/backend/EmailService";
 import { logger } from "@/services/logger";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
-  UserService.validateIsAdmin(session);
-  const { organizationId } = params;
+  const { organization: organizationId } = params;
+  await UserService.validateIsAdminOrOrgAdmin(session, organizationId);
 
   const invitations = await OrganizationInvite.findAll({
     where: { organizationId },
@@ -32,8 +32,8 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 });
 
 export const POST = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsAdmin(session);
-  const { organizationId } = params;
+  const { organization: organizationId } = params;
+  await UserService.validateIsAdminOrOrgAdmin(session, organizationId);
   const validatedData = createOrganizationInviteRequest.parse(await req.json());
   if (validatedData.organizationId !== organizationId) {
     throw new createHttpError.BadRequest("organization-id-mismatch");

@@ -82,7 +82,7 @@ describe("City Transfer API", () => {
 
     const city = await db.models.City.create({
       locode: "XX_CITY",
-      name: "Test City",
+      name: "Test City -City Transfer API test",
       country: "Test Country",
       region: "Test Region",
       area: 1337,
@@ -109,7 +109,7 @@ describe("City Transfer API", () => {
   it("should throw an error if city is not found", async () => {
     const validCity = await db.models.City.create({
       locode: "XX_CITY",
-      name: "Test City",
+      name: "Test City -City Transfer API test",
       country: "Test Country",
       region: "Test Region",
       area: 1337,
@@ -136,7 +136,7 @@ describe("City Transfer API", () => {
 
     const city = await db.models.City.create({
       locode: "XX_CITY",
-      name: "Test City",
+      name: "Test City -City Transfer API test",
       country: "Test Country",
       region: "Test Region",
       area: 1337,

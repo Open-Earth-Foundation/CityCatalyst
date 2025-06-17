@@ -7,7 +7,7 @@ import PopulationService from "@/backend/PopulationService";
 import { QueryTypes } from "sequelize";
 
 export const GET = apiHandler(async (req, { params, session }) => {
-  const { projectId } = params;
+  const { project: projectId } = params;
 
   // TODO perform access control/ only show public inventories
   const project = await Project.findByPk(projectId as string, {

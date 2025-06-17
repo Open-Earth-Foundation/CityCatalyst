@@ -212,7 +212,7 @@ const AdminOrganizationTeamPage = (props: {
         display="flex"
         gap={9}
         mt={12}
-        alignItems="center"
+        alignItems="flex-start"
         justifyContent="space-between"
       >
         <Box w="250px" flex={1}>

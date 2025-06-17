@@ -3,22 +3,21 @@
 import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
-import Footer from "@/components/Sections/Footer";
 import React from "react";
 
-export default function MethodologiesLayout({
+export default async function MethodologiesLayout({
   children,
-  params: { lng },
+  params,
 }: {
   children: React.ReactNode;
-  params: { lng: string };
+  params: Promise<{ lng: string }>;
 }) {
+  const { lng } = await params;
   return (
     <Box className="h-full flex flex-col" bg="background.backgroundLight">
       <NavigationBar lng={lng} />
       <Toaster />
       <div className="w-full h-full">{children}</div>
-      <Footer lng={lng} />
     </Box>
   );
 }

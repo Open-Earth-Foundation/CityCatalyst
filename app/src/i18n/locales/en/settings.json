@@ -143,5 +143,7 @@
   "position": "Position",
   "position-description": "Indicate your title or profession.",
   "owner": "Owner",
-  "collaborator": "Collaborator"
+  "collaborator": "Collaborator",
+  "plan-details": "Plan details",
+  "plan-details-caption": "<bold>{{name}}</bold> currently has <bold>{{num_projects}}</bold> projects and a count of <bold>{{num_cities}} / {{total_cities}}</bold> cities"
 }

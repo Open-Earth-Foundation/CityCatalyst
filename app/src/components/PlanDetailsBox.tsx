@@ -5,21 +5,38 @@ import { Trans } from "react-i18next";
 import { BodyLarge } from "@/components/Texts/Body";
 import { TitleMedium } from "@/components/Texts/Title";
 import i18next from "i18next";
+import { OrganizationResponse } from "@/util/types";
 
 interface PlanDetailsBoxProps {
-  organization?: {
-    name: string;
-    projects: Array<{
-      cities: any[];
-      cityCountLimit: number;
-    }>;
-  };
+  organization?: OrganizationResponse;
 }
+
+interface ProjectStats {
+  numCities: number;
+  totalCityLimit: bigint;
+}
+
+const calculateProjectStats = (
+  projects: OrganizationResponse["projects"],
+): ProjectStats => {
+  return projects.reduce(
+    (acc, project) => ({
+      numCities: acc.numCities + project.cities.length,
+      totalCityLimit: acc.totalCityLimit + BigInt(project.cityCountLimit),
+    }),
+    { numCities: 0, totalCityLimit: 0n },
+  );
+};
 
 const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
   const { t } = useTranslation(i18next.language, "settings");
 
   if (!organization) return null;
+
+  const { numCities, totalCityLimit } = organization.projects
+    ? calculateProjectStats(organization.projects)
+    : { numCities: 0, totalCityLimit: 0n };
+
   return (
     <Box backgroundColor="white" p={6} marginTop={4}>
       <TitleMedium color="content.secondary">{t("plan-details")}</TitleMedium>
@@ -30,15 +47,8 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
           values={{
             name: organization?.name,
             num_projects: organization?.projects.length ?? 0,
-            num_cities: organization?.projects.reduce(
-              (acc, proj) => acc + proj?.cities.length,
-              0,
-            ),
-            total_cities:
-              organization?.projects.reduce(
-                (acc, curr) => acc + BigInt(curr.cityCountLimit),
-                BigInt(0),
-              ) ?? 0,
+            num_cities: numCities,
+            total_cities: totalCityLimit,
           }}
           components={{
             bold: <strong />,
@@ -47,8 +57,10 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
       </BodyLarge>
       <BodyLarge color="content.tertiary">
         {t("contact-us-to-upgrade")}{" "}
-        <Link href="mailto:info@openearth.org">
-          <BodyLarge color="content.link">info@openearth.org</BodyLarge>
+        <Link href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAILS}`}>
+          <BodyLarge color="content.link">
+            {process.env.NEXT_PUBLIC_SUPPORT_EMAILS}
+          </BodyLarge>
         </Link>
       </BodyLarge>
     </Box>

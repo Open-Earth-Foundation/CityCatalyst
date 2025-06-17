@@ -53,7 +53,7 @@ const organizationContextCheck = async ({
   props,
 }: {
   req: NextRequest;
-  props: { params: Record<string, string> };
+  props: { params: Promise<Record<string, string>> };
   session: AppSession | null;
 }) => {
   const urlPath = new URL(req.url).pathname.toLowerCase();
@@ -72,11 +72,13 @@ const organizationContextCheck = async ({
     let city: string | null = null;
     let inventory: string | null = null;
 
-    if (props.params) {
-      organization = props.params.organization || null;
-      project = props.params.project || null;
-      city = props.params.city || null;
-      inventory = props.params.inventory || null;
+    const params = await props.params;
+
+    if (params) {
+      organization = params.organization || null;
+      project = params.project || null;
+      city = params.city || null;
+      inventory = params.inventory || null;
     }
 
     if (organization) {

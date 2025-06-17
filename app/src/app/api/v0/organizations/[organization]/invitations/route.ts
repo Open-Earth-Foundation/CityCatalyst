@@ -17,8 +17,8 @@ import EmailService from "@/backend/EmailService";
 import { logger } from "@/services/logger";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
-  UserService.validateIsAdmin(session);
   const { organization: organizationId } = params;
+  await UserService.validateIsAdminOrOrgAdmin(session, organizationId);
 
   const invitations = await OrganizationInvite.findAll({
     where: { organizationId },

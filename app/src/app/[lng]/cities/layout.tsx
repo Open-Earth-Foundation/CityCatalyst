@@ -3,27 +3,20 @@
 import { NavigationBar } from "@/components/navigation-bar";
 import { toaster, Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
-import { api } from "@/services/api";
 import { Roles } from "@/util/types";
-import React, { useEffect } from "react";
+import React, { useEffect, use } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import { useTranslation } from "@/i18n/client";
 import { useSession } from "next-auth/react";
 import ProgressLoader from "@/components/ProgressLoader";
 
-export default function CitiesLayout({
-  children,
-  params: { lng },
-}: {
+export default function CitiesLayout(props: {
   children: React.ReactNode;
-  params: { lng: string };
+  params: Promise<{ lng: string }>;
 }) {
+  const { lng } = use(props.params);
+  const { children } = props;
   const router = useRouter();
-
   const { t } = useTranslation(lng, "admin");
   const { data } = useSession();
 

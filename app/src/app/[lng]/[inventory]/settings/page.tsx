@@ -1,16 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { use } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+
 import { useTranslation } from "@/i18n/client";
 import { Box, Tabs, Text } from "@chakra-ui/react";
-
-import { useSession } from "next-auth/react";
-
 import { MyProfileTab } from "@/components/Tabs/MyProfileTab";
 import MyFilesTab from "@/components/Tabs/my-files-tab";
 import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
 import { api } from "@/services/api";
-import { useParams, useSearchParams } from "next/navigation";
 
 export type ProfileInputs = {
   name: string;
@@ -39,14 +37,10 @@ export type CityData = {
 
 const tabValues = ["my-profile", "my-files", "my-inventories"];
 
-export default function Settings({
-  params: { lng },
-}: {
-  params: { lng: string };
-}) {
-  const { data: session, status } = useSession();
-  const searchParams = useSearchParams();
+export default function Settings(props: { params: Promise<{ lng: string }> }) {
+  const { lng } = use(props.params);
 
+  const searchParams = useSearchParams();
   const paramValue = searchParams.get("tabIndex");
   const tabIndex = paramValue ? Number(paramValue) : 0;
   const defaultTab = tabValues[tabIndex] ?? tabValues[0];

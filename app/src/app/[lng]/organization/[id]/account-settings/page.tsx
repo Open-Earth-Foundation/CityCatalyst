@@ -1,4 +1,5 @@
 "use client";
+import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
 import { Box, Heading, HStack, Tabs, Text } from "@chakra-ui/react";
@@ -8,11 +9,10 @@ import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
 
 // TODO create tabs component with recipe
-const AccountSettingsPage = ({
-  params: { lng, id },
-}: {
-  params: { lng: string; id: string };
+const AccountSettingsPage = (props: {
+  params: Promise<{ lng: string; id: string }>;
 }) => {
+  const { lng, id } = use(props.params);
   const { t } = useTranslation(lng, "settings");
 
   return (

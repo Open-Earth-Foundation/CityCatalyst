@@ -1,4 +1,5 @@
 "use client";
+import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
 import { MdArrowForward } from "react-icons/md";
@@ -7,11 +8,10 @@ import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { useSearchParams } from "next/navigation";
 
-export default function OnboardingDone({
-  params: { lng, year, inventory },
-}: {
-  params: { lng: string; year: number; inventory: string };
+export default function OnboardingDone(props: {
+  params: Promise<{ lng: string; year: number; inventory: string }>;
 }) {
+  const { lng, year, inventory } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
   const searchParams = useSearchParams();
   const projectId = searchParams.get("project");

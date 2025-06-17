@@ -10,9 +10,9 @@ import { useTranslation } from "@/i18n/client";
 import { OrganizationResponse } from "@/util/types";
 import { useGetUserAccessStatusQuery, useUpdateOrganizationMutation } from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
-import { Trans } from "react-i18next";
-import { useMemo } from "react";
 import { logger } from "@/services/logger";
+import PlanDetailsBox from "@/components/PlanDetailsBox";
+
 const OrganizationDetailsTab = ({
   organization,
 }: {
@@ -51,9 +51,7 @@ const OrganizationDetailsTab = ({
   });
 
   const [updateOrganization, { isLoading }] = useUpdateOrganizationMutation();
-  const { data: userAccessStatus } = useGetUserAccessStatusQuery(
-    {},
-  );
+  const { data: userAccessStatus } = useGetUserAccessStatusQuery({});
   const handleFormSubmit = async (data: Schema) => {
     const { name, email } = data;
 
@@ -73,16 +71,6 @@ const OrganizationDetailsTab = ({
     showSuccessToast();
   };
 
-  const { numCities, totalCities } = useMemo(() =>
-    organization?.projects.reduce(
-      (acc, proj) => ({
-        numCities: acc.numCities + (proj?.cities?.length ?? 0),
-        totalCities: acc.totalCities + BigInt(proj?.cityCountLimit)
-      }),
-      { numCities: 0, totalCities: BigInt(0) }
-    ) ?? { numCities: 0, totalCities: BigInt(0) },
-    [organization?.projects]
-  );
   return (
     <Box>
       <Box backgroundColor="white" p={6}>
@@ -143,34 +131,7 @@ const OrganizationDetailsTab = ({
         </Box>
       </Box>
       {userAccessStatus?.isOrgOwner && (
-        <Box backgroundColor="white" p={6} marginTop={4}>
-          <Text
-            fontSize="title.md"
-            color="content.secondary"
-            fontWeight="semibold"
-          >
-            {t("plan-details")}
-          </Text>
-          <Text
-            fontSize="body.lg"
-            fontWeight="normal"
-            color="content.tertiary"
-          >
-            <Trans
-              i18nKey="plan-details-caption"
-              t={t}
-              values={{
-                name: organization?.name,
-                num_projects: organization?.projects?.length ?? 0,
-                num_cities: numCities,
-                total_cities: totalCities ?? 0,
-              }}
-              components={{
-                bold: <strong />,
-              }}
-            />
-          </Text>
-        </Box>
+        <PlanDetailsBox organization={organization} />
       )}
     </Box>
   );

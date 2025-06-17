@@ -145,5 +145,6 @@
   "owner": "Owner",
   "collaborator": "Collaborator",
   "plan-details": "Plan details",
-  "plan-details-caption": "<bold>{{name}}</bold> currently has <bold>{{num_projects}}</bold> projects and a count of <bold>{{num_cities}} / {{total_cities}}</bold> cities"
+  "plan-details-caption": "<bold>{{name}}</bold> currently has <bold>{{num_projects}}</bold> projects and a count of <bold>{{num_cities}} / {{total_cities}}</bold> cities",
+  "contact-us-to-upgrade": "To upgrade your plan, please reach out to"
 }

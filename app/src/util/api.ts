@@ -22,6 +22,103 @@ export type NextHandler = (
   props: { params: Record<string, string>; session: AppSession | null },
 ) => Promise<ApiResponse>;
 
+const organizationContextCheck = async ({
+  req,
+  session,
+  props,
+}: {
+  req: NextRequest;
+  props: { params: Record<string, string> };
+  session: AppSession | null;
+}) => {
+  const urlPath = new URL(req.url).pathname.toLowerCase();
+  const skipFrozenCheck =
+    urlPath.includes("invites") || urlPath.includes("invitations");
+
+  let userIsOEFAdmin = session?.user.role === Roles.Admin;
+  const isEditMethod = ["PUT", "PATCH", "DELETE", "POST"].includes(req.method);
+
+  let organizationData: Organization | null | undefined = null;
+
+  if (!skipFrozenCheck && isEditMethod && !userIsOEFAdmin) {
+    let organization: string | null = null;
+    let project: string | null = null;
+    let city: string | null = null;
+    let inventory: string | null = null;
+
+    if (props.params) {
+      organization = props.params.organization || null;
+      project = props.params.project || null;
+      city = props.params.city || null;
+      inventory = props.params.inventory || null;
+    }
+
+    if (organization) {
+      organizationData = await Organization.findByPk(organization, {
+        include: [{ model: db.models.Theme, as: "theme" }],
+      });
+      if (!organizationData) {
+        throw new createHttpError.NotFound("organization-not-found");
+      }
+    } else if (project) {
+      // If project is provided, we can still fetch the organization
+      const projectData = await db.models.Project.findByPk(project, {
+        include: [{ model: Organization, as: "organization" }],
+      });
+      if (!projectData || !projectData.organization) {
+        throw new createHttpError.NotFound("project-or-organization-not-found");
+      }
+      organizationData = projectData?.organization;
+    } else if (city) {
+      // If city is provided, we can still fetch the organization
+      const cityData = await db.models.City.findByPk(city, {
+        include: [
+          {
+            model: db.models.Project,
+            as: "project",
+            include: [
+              {
+                model: db.models.Organization,
+                as: "organization",
+              },
+            ],
+          },
+        ],
+      });
+      organizationData = cityData?.project?.organization;
+    } else if (inventory) {
+      const inventoryData = await db.models.Inventory.findByPk(inventory, {
+        include: [
+          {
+            model: db.models.City,
+            as: "city",
+            include: [
+              {
+                model: db.models.Project,
+                as: "project",
+                include: [
+                  {
+                    model: db.models.Organization,
+                    as: "organization",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      organizationData = inventoryData?.city?.project?.organization;
+    }
+  }
+
+  if (organizationData?.active === false && !userIsOEFAdmin && isEditMethod) {
+    return NextResponse.json(
+      { message: "Organization is frozen" },
+      { status: 403 },
+    );
+  }
+};
+
 export function apiHandler(handler: NextHandler) {
   return async (
     req: NextRequest,
@@ -38,99 +135,14 @@ export function apiHandler(handler: NextHandler) {
 
       session = await Auth.getServerSession();
 
-      const urlPath = new URL(req.url).pathname.toLowerCase();
-      const skipFrozenCheck =
-        urlPath.includes("invites") || urlPath.includes("invitations");
+      const orgContextCheckResult = await organizationContextCheck({
+        req,
+        session,
+        props,
+      });
 
-      let userIsOEFAdmin = session?.user.role === Roles.Admin;
-      const isEditMethod = ["PUT", "PATCH", "DELETE", "POST"].includes(
-        req.method,
-      );
-
-      let organizationData: Organization | null | undefined = null;
-
-      if (!skipFrozenCheck && isEditMethod && !userIsOEFAdmin) {
-        let organization: string | null = null;
-        let project: string | null = null;
-        let city: string | null = null;
-        let inventory: string | null = null;
-
-        if (props.params) {
-          organization = props.params.organization || null;
-          project = props.params.project || null;
-          city = props.params.city || null;
-          inventory = props.params.inventory || null;
-        }
-
-        if (organization) {
-          organizationData = await Organization.findByPk(organization, {
-            include: [{ model: db.models.Theme, as: "theme" }],
-          });
-          if (!organizationData) {
-            throw new createHttpError.NotFound("organization-not-found");
-          }
-        } else if (project) {
-          // If project is provided, we can still fetch the organization
-          const projectData = await db.models.Project.findByPk(project, {
-            include: [{ model: Organization, as: "organization" }],
-          });
-          if (!projectData || !projectData.organization) {
-            throw new createHttpError.NotFound(
-              "project-or-organization-not-found",
-            );
-          }
-          organizationData = projectData?.organization;
-        } else if (city) {
-          // If city is provided, we can still fetch the organization
-          const cityData = await db.models.City.findByPk(city, {
-            include: [
-              {
-                model: db.models.Project,
-                as: "project",
-                include: [
-                  {
-                    model: db.models.Organization,
-                    as: "organization",
-                  },
-                ],
-              },
-            ],
-          });
-          organizationData = cityData?.project?.organization;
-        } else if (inventory) {
-          const inventoryData = await db.models.Inventory.findByPk(inventory, {
-            include: [
-              {
-                model: db.models.City,
-                as: "city",
-                include: [
-                  {
-                    model: db.models.Project,
-                    as: "project",
-                    include: [
-                      {
-                        model: db.models.Organization,
-                        as: "organization",
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          });
-          organizationData = inventoryData?.city?.project?.organization;
-        }
-      }
-
-      if (
-        organizationData?.active === false &&
-        !userIsOEFAdmin &&
-        isEditMethod
-      ) {
-        return NextResponse.json(
-          { message: "Organization is frozen" },
-          { status: 403 },
-        );
+      if (orgContextCheckResult) {
+        return orgContextCheckResult;
       }
 
       const context = {

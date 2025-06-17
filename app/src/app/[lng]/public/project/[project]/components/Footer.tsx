@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 import { Box, Text } from "@chakra-ui/react";
 import Image from "next/image";
-import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 export interface FooterProps {
   copyright: string;
@@ -12,7 +12,7 @@ export interface FooterProps {
 }
 
 const Footer = ({ copyright, links }: FooterProps) => {
-  const { logoUrl } = useLogo();
+  const { organization } = useOrganizationContext();
   return (
     <Box className="bg-[#010018] py-6 px-6 text-white" w="100%">
       <Box className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center">
@@ -31,8 +31,13 @@ const Footer = ({ copyright, links }: FooterProps) => {
               rel="noopener noreferrer"
               className="inline-block"
             >
-              {logoUrl ? (
-                <img src={logoUrl} height={40} width={250} alt="Org logo" />
+              {organization.logoUrl ? (
+                <img
+                  src={organization.logoUrl}
+                  height={40}
+                  width={250}
+                  alt="Org logo"
+                />
               ) : (
                 <Image
                   src="/assets/logo.svg"

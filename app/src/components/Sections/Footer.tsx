@@ -5,7 +5,6 @@ import React from "react";
 import FooterLink from "../Navigation/FooterLink";
 import { useTranslation } from "@/i18n/client";
 import { getCurrentVersion } from "@/util/helpers";
-import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 const Footer = ({ lng }: { lng: string }) => {

@@ -6,13 +6,12 @@ import {
   DialogHeader,
   DialogRoot,
 } from "@/components/ui/dialog";
-import { Badge, Box, HStack, Input, Text } from "@chakra-ui/react";
+import { Badge, Box, HStack, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { useParams } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
-import { IoMdInformationCircleOutline } from "react-icons/io";
 import { TbInfoTriangle } from "react-icons/tb";
 
 interface AccountFrozenWarningModalProps {

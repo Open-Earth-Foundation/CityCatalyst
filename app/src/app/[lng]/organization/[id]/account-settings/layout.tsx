@@ -1,13 +1,9 @@
 "use client";
 
-import ChatPopover from "@/components/ChatBot/chat-popover";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
-import {
-  useGetOrganizationForInventoryQuery,
-  useGetOrganizationQuery,
-} from "@/services/api";
+import { useGetOrganizationQuery } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useEffect } from "react";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
@@ -39,7 +35,7 @@ export default function OrganizationSettingsLayout({
       ) {
         setOrganization({ logoUrl, active });
       }
-      setTheme(orgData?.theme?.themeKey ?? ("blue_theme" as string));
+      setTheme(orgData?.theme?.themeKey ?? "blue_theme");
     } else {
       setTheme("blue_theme");
     }

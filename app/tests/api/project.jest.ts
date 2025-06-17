@@ -10,13 +10,13 @@ import {
 import {
   GET as getProjects,
   POST as createProject,
-} from "@/app/api/v0/organizations/[organizationId]/projects/route";
+} from "@/app/api/v0/organizations/[organization]/projects/route";
 
 import {
   DELETE as deleteProject,
   GET as getProject,
   PATCH as updateProject,
-} from "@/app/api/v0/projects/[projectId]/route";
+} from "@/app/api/v0/projects/[project]/route";
 import { mockRequest, setupTests, testUserID } from "../helpers";
 
 import {

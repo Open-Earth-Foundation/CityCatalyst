@@ -10,7 +10,7 @@ import {
 import {
   GET as getOrganizationInvites,
   POST as createOrganizationInvite,
-} from "@/app/api/v0/organizations/[organizationId]/invitations/route";
+} from "@/app/api/v0/organizations/[organization]/invitations/route";
 import { db } from "@/models";
 import { mockRequest, setupTests, testUserID } from "../helpers";
 import { Organization } from "@/models/Organization";

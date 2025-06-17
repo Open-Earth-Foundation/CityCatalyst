@@ -8,7 +8,6 @@ import { Provider } from "react-redux";
 
 import { appTheme } from "@/lib/theme/recipes/app-theme";
 import { ThemeProvider } from "next-themes";
-import { LogoProvider } from "@/hooks/logo-provider/use-logo-provider";
 import { OrganizationContextProvider } from "@/hooks/organization-context-provider/use-organizational-context";
 
 const openSans = localFont({

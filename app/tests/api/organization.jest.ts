@@ -11,7 +11,7 @@ import {
   DELETE as deleteOrganization,
   GET as getOrganization,
   PATCH as updateOrganization,
-} from "@/app/api/v0/organizations/[organizationId]/route";
+} from "@/app/api/v0/organizations/[organization]/route";
 import { db } from "@/models";
 import { CreateOrganizationRequest } from "@/util/validation";
 import { mockRequest, setupTests, testUserID } from "../helpers";

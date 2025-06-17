@@ -31,7 +31,6 @@ import {
 import ProgressLoader from "@/components/ProgressLoader";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useTheme } from "next-themes";
-import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 import ManagePasswordTabContent from "@/components/Tabs/MyProfileTab/ManagePasswordTabContent";
 import AccountDetailsTab from "./account-details-tab";
 import OrganizationDetailsTab from "./organization-details-tab";

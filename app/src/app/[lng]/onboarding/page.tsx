@@ -18,9 +18,6 @@ export default function Onboarding({
 
   const steps = [1, 2, 3, 4];
 
-  //
-  const { isFrozenCheck } = useOrganizationContext();
-
   return (
     <>
       <Box className="pt-[100px] w-[1050px] max-w-full mx-auto">
@@ -97,9 +94,7 @@ export default function Onboarding({
             py="16px"
             px="24px"
             h="64px"
-            onClick={() =>
-              isFrozenCheck() ? null : router.push("/onboarding/setup")
-            }
+            onClick={() => router.push("/onboarding/setup")}
           >
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
               {t("start-inventory")}

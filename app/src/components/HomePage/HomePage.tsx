@@ -26,7 +26,6 @@ import { BsPlus } from "react-icons/bs";
 import Cookies from "js-cookie";
 import CapTab from "@/app/[lng]/[inventory]/CapTab";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 import { useTheme } from "next-themes";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";

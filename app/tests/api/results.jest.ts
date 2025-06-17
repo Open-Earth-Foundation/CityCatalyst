@@ -71,7 +71,7 @@ describe("Results API", () => {
   it("should return emissions data for a valid inventory", async () => {
     const req = mockRequest();
     const res = await getResults(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
     await expectStatusCode(res, 200);
@@ -151,7 +151,7 @@ describe("Results API", () => {
     });
     const req = mockRequest();
     const res = await getResults(req, {
-      params: { inventory: emptyInventory.inventoryId },
+      params: Promise.resolve({ inventory: emptyInventory.inventoryId }),
     });
 
     await expectStatusCode(res, 200);

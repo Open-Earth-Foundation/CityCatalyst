@@ -11,7 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { MdAdd, MdMoreVert, MdOutlineGroup } from "react-icons/md";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, use } from "react";
 import { useTranslation } from "@/i18n/client";
 import {
   api,
@@ -50,11 +50,10 @@ import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUser
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { toaster } from "@/components/ui/toaster";
 
-const AdminOrganizationTeamPage = ({
-  params: { lng, id },
-}: {
-  params: { lng: string; id: string };
+const AdminOrganizationTeamPage = (props: {
+  params: Promise<{ lng: string; id: string }>;
 }) => {
+  const { lng, id } = use(props.params);
   const { t } = useTranslation(lng, "admin");
 
   const TagMapping = {

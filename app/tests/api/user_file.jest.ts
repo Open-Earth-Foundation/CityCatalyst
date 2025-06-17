@@ -126,7 +126,7 @@ describe("UserFile API", () => {
     formData.append("fileType", fileData.file_type);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, {
-      params: { city: testCityID },
+      params: Promise.resolve({ city: testCityID }),
     });
     await expectStatusCode(res, 200);
     const { data } = await res.json();
@@ -158,14 +158,16 @@ describe("UserFile API", () => {
     formData.append("gpcRefNo", invalidFileData.gpc_ref_no);
     formData.append("fileType", invalidFileData.file_type);
     const req = mockRequestFormData(formData);
-    const res = await createUserFile(req, { params: { city: testCityID } });
+    const res = await createUserFile(req, {
+      params: Promise.resolve({ city: testCityID }),
+    });
     expect(res.status).toBe(400);
   });
 
   it("should find all user files", async () => {
     const req = mockRequest();
     const res = await findUserFiles(req, {
-      params: { user: testUserID, city: testCityID },
+      params: Promise.resolve({ user: testUserID, city: testCityID }),
     });
     const { data } = await res.json();
 
@@ -179,14 +181,22 @@ describe("UserFile API", () => {
   it("should find a user file", async () => {
     const getFilesReq = mockRequest();
     const getFilesRes = await findUserFiles(getFilesReq, {
-      params: { user: testUserID, file: randomUUID(), city: testCityID },
+      params: Promise.resolve({
+        user: testUserID,
+        file: randomUUID(),
+        city: testCityID,
+      }),
     });
     const { data: userFilesData } = await getFilesRes.json();
 
     const userFiles = userFilesData[0];
     const req = mockRequest();
     const res = await findUserFile(req, {
-      params: { user: testUserID, file: userFiles.id, city: testCityID },
+      params: Promise.resolve({
+        user: testUserID,
+        file: userFiles.id,
+        city: testCityID,
+      }),
     });
     const { data: userFile } = await res.json();
     expect(userFile?.sector).toBe(fileData.sector);
@@ -198,7 +208,11 @@ describe("UserFile API", () => {
   it("should not find a user file", async () => {
     const req = mockRequest();
     const res = await findUserFile(req, {
-      params: { user: testUserID, file: randomUUID(), city: testCityID },
+      params: Promise.resolve({
+        user: testUserID,
+        file: randomUUID(),
+        city: testCityID,
+      }),
     });
 
     expect(res.status).toBe(404);
@@ -221,13 +235,17 @@ describe("UserFile API", () => {
     formData.append("fileType", fileData.file_type);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, {
-      params: { user: testUserID, city: testCityID },
+      params: Promise.resolve({ user: testUserID, city: testCityID }),
     });
     expect(res.status).toBe(200);
     const { data } = await res.json();
     const deletRequest = mockRequest();
     const deleteResponse = await deleteUserfile(deletRequest, {
-      params: { user: testUserID, file: data.id, city: testCityID },
+      params: Promise.resolve({
+        user: testUserID,
+        file: data.id,
+        city: testCityID,
+      }),
     });
 
     const { deleted } = await deleteResponse.json();
@@ -238,7 +256,11 @@ describe("UserFile API", () => {
   it("should not delete a non-existent user file", async () => {
     const deletRequest = mockRequest();
     const deleteResponse = await deleteUserfile(deletRequest, {
-      params: { user: testUserID, file: randomUUID(), city: testCityID },
+      params: Promise.resolve({
+        user: testUserID,
+        file: randomUUID(),
+        city: testCityID,
+      }),
     });
 
     expect(deleteResponse.status).toBe(404);

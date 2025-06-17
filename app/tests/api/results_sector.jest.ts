@@ -73,10 +73,10 @@ describe.skip("Results API", () => {
   it("should return correct results for a sector", async () => {
     const req = mockRequest();
     const res = await getBreakdown(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         sectorName: "Stationary Energy",
-      },
+      }),
     });
 
     await expectStatusCode(res, 200);

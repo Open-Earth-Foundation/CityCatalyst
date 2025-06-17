@@ -10,17 +10,17 @@ import {
   useGetUserQuery,
 } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
-import { useEffect } from "react";
+import { useEffect, use } from "react";
 import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 import { useTheme } from "next-themes";
 
-export default function DataLayout({
-  children,
-  params: { lng, inventory },
-}: {
+export default function DataLayout(props: {
   children: React.ReactNode;
-  params: { lng: string; inventory: string };
+  params: Promise<{ lng: string; inventory: string }>;
 }) {
+  const { lng, inventory } = use(props.params);
+  const { children } = props;
+
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 

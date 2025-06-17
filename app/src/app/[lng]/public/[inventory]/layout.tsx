@@ -6,16 +6,15 @@ import { Box } from "@chakra-ui/react";
 import { useGetOrganizationForInventoryQuery } from "@/services/api";
 import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 import { useTheme } from "next-themes";
-import { useEffect } from "react";
+import { useEffect, use } from "react";
 import ProgressLoader from "@/components/ProgressLoader";
 
-export default function DataLayout({
-  children,
-  params: { lng, inventory },
-}: {
+export default function DataLayout(props: {
   children: React.ReactNode;
-  params: { lng: string; inventory: string };
+  params: Promise<{ lng: string; inventory: string }>;
 }) {
+  const { lng, inventory } = use(props.params);
+
   const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
     useGetOrganizationForInventoryQuery(inventory, {
       skip: !inventory,
@@ -39,7 +38,7 @@ export default function DataLayout({
     <Box className="h-full flex flex-col" bg="background.backgroundLight">
       <NavigationBar lng={lng} isPublic={true} />
       <Toaster />
-      <div className="w-full h-full">{children}</div>
+      <div className="w-full h-full">{props.children}</div>
     </Box>
   );
 }

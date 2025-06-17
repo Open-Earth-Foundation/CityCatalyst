@@ -142,5 +142,7 @@
   "total-land-area": "Área total de tierra",
   "files-uploaded": "Archivos subidos",
   "n-a": "N/D",
-  "no-data": "No hay datos disponibles"
+  "no-data": "No hay datos disponibles",
+  "owner": "Propietario",
+  "collaborator": "Colaborador"
 }

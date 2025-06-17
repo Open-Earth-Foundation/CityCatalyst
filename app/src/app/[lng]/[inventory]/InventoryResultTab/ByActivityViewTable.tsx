@@ -1,4 +1,4 @@
-import React from "react";
+import React, { JSX } from "react";
 import { Box, Table } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { ActivityBreakdown } from "@/util/types";

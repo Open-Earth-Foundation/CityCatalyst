@@ -64,7 +64,7 @@ describe("Emissions Forecast API", () => {
     mockGrowthRates = growth_rates_response;
     const req = mockRequest();
     const result = await getResults(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
     expect(await result.json()).toMatchSnapshot();
@@ -74,7 +74,7 @@ describe("Emissions Forecast API", () => {
     mockGrowthRates = undefined;
     const req = mockRequest();
     const result = await getResults(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
     expect(await result.json()).toEqual({

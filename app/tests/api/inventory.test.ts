@@ -165,7 +165,7 @@ describe("Inventory API", () => {
     const url = `http://localhost:3000/api/v0/inventory/${inventory.inventoryId}?format=csv`;
     const req = createRequest(url);
     const res = await findInventory(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
     assert.equal(res.status, 200);
     assert.equal(res.headers.get("content-type"), "text/csv");
@@ -194,7 +194,7 @@ describe("Inventory API", () => {
     const url = `http://localhost:3000/api/v0/inventory/${inventory.inventoryId}?format=xls`;
     const req = createRequest(url);
     const res = await findInventory(req, {
-      params: { inventory: inventory.inventoryId },
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
     assert.equal(res.status, 200);
     assert.equal(res.headers.get("content-type"), "application/vnd.ms-excel");
@@ -208,7 +208,7 @@ describe("Inventory API", () => {
     async () => {
       const req = mockRequest({});
       const res = await submitInventory(req, {
-        params: { inventory: inventory.inventoryId },
+        params: Promise.resolve({ inventory: inventory.inventoryId }),
       });
       assert.equal(res.status, 200);
       const json = await res.json();

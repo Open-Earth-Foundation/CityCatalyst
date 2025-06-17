@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Center, ProgressCircle } from "@chakra-ui/react";
 import { api, useAcceptInviteMutation } from "@/services/api";
 import { logger } from "@/services/logger";
 import InviteErrorView from "./InviteErrorView";
@@ -11,7 +10,9 @@ import { UseSuccessToast } from "@/hooks/Toasts";
 import { useTranslation } from "@/i18n/client";
 import ProgressLoader from "@/components/ProgressLoader";
 
-const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
+const AcceptInvitePage = (props: { params: Promise<{ lng: string }> }) => {
+  const { lng } = use(props.params);
+
   const searchParams = useSearchParams();
   logger.info(searchParams.get("email"));
   const { t } = useTranslation(lng, "auth");

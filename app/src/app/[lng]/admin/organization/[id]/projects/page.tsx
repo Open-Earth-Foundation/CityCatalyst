@@ -9,7 +9,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { MdAdd, MdMoreVert } from "react-icons/md";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { useGetOrganizationQuery, useGetProjectsQuery } from "@/services/api";
 import {
@@ -28,11 +28,12 @@ import { RiDeleteBin6Line, RiEditLine } from "react-icons/ri";
 import DeleteProjectModal from "@/app/[lng]/admin/organization/[id]/projects/DeleteProjectModal";
 import ProgressLoader from "@/components/ProgressLoader";
 
-const AdminOrganizationProjectsPage = ({
-  params: { lng, id },
-}: {
-  params: { lng: string; id: string };
+const AdminOrganizationProjectsPage = (props: {
+  params: Promise<{ lng: string; id: string }>;
 }) => {
+  const { lng, id } = use(props.params);
+  const { t } = useTranslation(lng, "admin");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [projectToEdit, setProjectToEdit] = useState<{
@@ -41,8 +42,6 @@ const AdminOrganizationProjectsPage = ({
     cityCountLimit: number;
     projectId: string;
   } | null>(null);
-
-  const { t } = useTranslation(lng, "admin");
 
   const { data: organization, isLoading: isOrganizationLoading } =
     useGetOrganizationQuery(id);

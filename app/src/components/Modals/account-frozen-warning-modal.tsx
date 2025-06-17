@@ -75,6 +75,12 @@ const AccountFrozenWarningModal = ({
             <Text fontSize="body.lg" textAlign="center">
               <Trans
                 i18nKey="account-frozen-warning-text"
+                values={{
+                  email:
+                    process.env.NEXT_PUBLIC_SUPPORT_EMAILS?.split(",").join(
+                      " or ",
+                    ) || "info@openearth.org",
+                }}
                 t={t}
                 components={{
                   bold: <strong />,

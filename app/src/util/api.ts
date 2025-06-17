@@ -22,6 +22,31 @@ export type NextHandler = (
   props: { params: Record<string, string>; session: AppSession | null },
 ) => Promise<ApiResponse>;
 
+// TODO extend this to other endpoints that need to skip the frozen check
+const shouldSkipFrozenCheckForPublicInventory = async (
+  req: NextRequest,
+  urlPath: string,
+): Promise<boolean> => {
+  if (req.method !== "PATCH") return false;
+  if (!urlPath.startsWith("/api/v0/inventory/")) return false;
+
+  try {
+    const clonedReq = req.clone();
+    const body = await clonedReq.json();
+    const allowedKeys = ["isPublic"];
+    const keys = Object.keys(body);
+
+    // Only allow if it's strictly a PATCH with { isPublic: true/false }
+    return (
+      keys.length === 1 &&
+      allowedKeys.includes(keys[0]) &&
+      typeof body[keys[0]] === "boolean"
+    );
+  } catch {
+    return false;
+  }
+};
+
 const organizationContextCheck = async ({
   req,
   session,
@@ -33,8 +58,9 @@ const organizationContextCheck = async ({
 }) => {
   const urlPath = new URL(req.url).pathname.toLowerCase();
   const skipFrozenCheck =
-    urlPath.includes("invites") || urlPath.includes("invitations");
-
+    urlPath.includes("invites") ||
+    urlPath.includes("invitations") ||
+    (await shouldSkipFrozenCheckForPublicInventory(req, urlPath));
   let userIsOEFAdmin = session?.user.role === Roles.Admin;
   const isEditMethod = ["PUT", "PATCH", "DELETE", "POST"].includes(req.method);
 

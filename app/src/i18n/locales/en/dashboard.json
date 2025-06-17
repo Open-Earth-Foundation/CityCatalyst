@@ -202,6 +202,6 @@
   "all-cities": "All cities",
   "source": "Source",
   "yes-i-understand": "Yes, I understand",
-  "account-frozen-warning-text": "Your account is frozen. Please reach out to an admin or to <bold>info@openearth.com</bold> to reactivate it",
+  "account-frozen-warning-text": "Your account is frozen. Please reach out to an admin or to <bold>{{email}}</bold> to reactivate it",
   "account-frozen-header": "Your account is frozen"
 }

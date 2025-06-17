@@ -494,6 +494,12 @@ export function NavigationBar({
           <Text color="content.primary" fontSize="body.lg">
             <Trans
               i18nKey="account-frozen-warning-text"
+              values={{
+                email:
+                  process.env.NEXT_PUBLIC_SUPPORT_EMAILS?.split(",").join(
+                    " or ",
+                  ) || "info@openearth.org",
+              }}
               t={t}
               components={{
                 bold: <strong />,

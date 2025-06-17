@@ -4,5 +4,6 @@
   "cities": "cities",
   "settings": "Settings",
   "account-settings": "Account Settings",
-  "account-frozen-warning-text": "Your account is frozen. Please reach out to an admin or to <bold>info@openearth.com</bold> to reactivate it"
+  "account-frozen-warning-text": "Your account is frozen. Please reach out to an admin or to <bold>{{ email }}</bold> to reactivate it"
+
 }

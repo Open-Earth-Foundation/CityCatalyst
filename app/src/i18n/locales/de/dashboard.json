@@ -200,5 +200,8 @@
   "collaborator-rule": "Mitarbeiter können nur Inventare bearbeiten",
   "admin-rule": "Admins können Städte zu allen Projekten hinzufügen und alle Inventare bearbeiten",
   "all-cities": "Alle Städte",
-  "source": "Quelle"
+  "source": "Quelle",
+  "yes-i-understand": "Ja, ich verstehe",
+  "account-frozen-warning-text": "Ihr Konto ist eingefroren. Bitte wenden Sie sich an einen Administrator oder an <bold>{{email}}</bold>, um es zu reaktivieren.",
+  "account-frozen-header": "Ihr Konto ist eingefroren"
 }

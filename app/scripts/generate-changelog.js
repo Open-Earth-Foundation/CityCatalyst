@@ -12,6 +12,7 @@ function getSortedSemverTags() {
     .filter((tag) => {
       // Only accept tags that start with 'v' followed by numbers and dots
       if (!tag.startsWith("v")) return false;
+      if (tag.includes("-")) return false;
       const v = semver.coerce(tag);
       return v && semver.valid(v) && !semver.prerelease(v);
     });

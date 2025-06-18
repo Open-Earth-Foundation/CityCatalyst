@@ -144,5 +144,8 @@
   "n-a": "N/D",
   "no-data": "No hay datos disponibles",
   "owner": "Propietario",
-  "collaborator": "Colaborador"
+  "collaborator": "Colaborador",
+  "plan-details": "Detalles del plan",
+  "plan-details-caption": "<bold>{{name}}</bold> actualmente tiene <bold>{{num_projects}}</bold> proyectos y un recuento de <bold>{{num_cities}} / {{total_cities}}</bold> ciudades",
+  "contact-us-to-upgrade": "Para actualizar su plan, por favor póngase en contacto con"
 }

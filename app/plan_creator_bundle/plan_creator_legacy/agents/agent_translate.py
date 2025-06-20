@@ -1,3 +1,4 @@
+import os
 from plan_creator_bundle.plan_creator_legacy.state.agent_state import AgentState
 from pathlib import Path
 from datetime import datetime
@@ -9,8 +10,14 @@ from plan_creator_bundle.plan_creator_legacy.prompts.agent_translate_prompt impo
     agent_translate_user_prompt,
 )
 
+OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY = os.getenv(
+    "OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY", "gpt-4.1-mini"
+)
+
 # Create the agents
-model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
+model = ChatOpenAI(
+    model=OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY, temperature=0.0, seed=42
+)
 
 # Define prompts for each agent
 system_prompt_agent_translate = SystemMessage(agent_translate_system_prompt)

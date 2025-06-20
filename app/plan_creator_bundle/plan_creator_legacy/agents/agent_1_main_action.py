@@ -1,3 +1,4 @@
+import os
 import json
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
@@ -12,8 +13,14 @@ from plan_creator_bundle.tools.tools import (
     retriever_main_action_tool,
 )
 
+OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY = os.getenv(
+    "OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY", "gpt-4.1-mini"
+)
+
 # Create the agents
-model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
+model = ChatOpenAI(
+    model=OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY, temperature=0.0, seed=42
+)
 
 # model = ChatOpenAI(model="o3-mini", temperature=None)
 

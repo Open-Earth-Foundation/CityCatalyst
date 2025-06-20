@@ -71,7 +71,6 @@ This is the city data:
 # INSTRUCTIONS FOR OUTPUT FORMAT
 Please output your response as a JSON object with the following fields:
 {{
-    "title": <headline for the plan>,
     "description": <the introduction for the climate action implementation plan, as described in the system prompt>
 }}
 Only output valid JSON format without any additional text or formatting like ```json ```.

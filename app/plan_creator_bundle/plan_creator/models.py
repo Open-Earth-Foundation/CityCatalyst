@@ -59,7 +59,6 @@ class CheckProgressResponse(BaseModel):
 
 
 class Introduction(BaseModel):
-    title: str
     description: str
 
 

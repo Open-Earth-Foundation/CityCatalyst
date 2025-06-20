@@ -27,7 +27,7 @@ from plan_creator_bundle.plan_creator.agents.agent_8_adaptation import (
 from plan_creator_bundle.plan_creator.agents.agent_9_mitigation import (
     build_custom_agent_9,
 )
-from plan_creator_bundle.plan_creator.agents.agent_10_sgds import (
+from plan_creator_bundle.plan_creator.agents.agent_10_sdgs import (
     build_custom_agent_10,
 )
 

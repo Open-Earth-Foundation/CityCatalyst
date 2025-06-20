@@ -1,4 +1,4 @@
-sgds = [
+sdgs = [
     {
         "sdg_number": 1,
         "name": "No Poverty",

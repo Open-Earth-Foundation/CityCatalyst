@@ -7,15 +7,15 @@ The team of experts have provided you with the following information for the cli
 </role> 
 
 <task>
-You are tasked with mapping relevant United Nations (UN) smart development goals (SGDs) to the climate action plan for the city you are working on.
-You need to identify, which SGDs are addressed by the climate action and how they are addressed.
+You are tasked with mapping relevant United Nations (UN) smart development goals (SDGs) to the climate action plan for the city you are working on.
+You need to identify, which SDGs are addressed by the climate action and how they are addressed.
 
 Follow these guidlines carefully to complete the task:
 
 1. Understand the details of climate action (main action).
 2. Understand the details of the city you are working on.
 3. Review the introduction for the climate action implementation plan.
-4. Based on the description of the climate action, the city context, and the introduction for the climate action implementation plan, list all SGDs that are relevant and addressed.
+4. Based on the description of the climate action, the city context, and the introduction for the climate action implementation plan, list all SDGs that are relevant and addressed.
 </task>
 
 <output>
@@ -39,7 +39,7 @@ Avoid overly technical jargon; use language that is accessible to professionals 
 </tone>
 
 <important>
-Only list SGDs that are highly relevant and addressed by the climate action.
+Only list SDGs that are highly relevant and addressed by the climate action.
 Be concise, realistic, and specific. Focus on measurable impact and actionable steps. Avoid vague or overly general answers. 
 </important>
 """
@@ -54,8 +54,8 @@ This is the city data:
 This is the response from Agent 1 containing the introduction for the climate action implementation plan:
 {response_agent_1}
 
-The following is the context for all the SGDs:
-{sgds}
+The following is the context for all the SDGs:
+{sdgs}
 
 # INSTRUCTIONS FOR OUTPUT FORMAT
 Please output your response as a JSON object with a `items` field, which is an array of objects, each with the following fields:

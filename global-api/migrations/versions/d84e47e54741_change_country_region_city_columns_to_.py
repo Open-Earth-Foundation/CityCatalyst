@@ -21,38 +21,38 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     # Change country_code column to VARCHAR
     op.alter_column('modelled.city_polygon', 'country_code',
-                    existing_type=sa.String(),
+                    existing_type=sa.TEXT(),
                     type_=sa.VARCHAR(),
                     existing_nullable=True)
     
     # Change region_code column to VARCHAR
     op.alter_column('modelled.city_polygon', 'region_code',
-                    existing_type=sa.String(),
+                    existing_type=sa.TEXT(),
                     type_=sa.VARCHAR(),
                     existing_nullable=True)
     
     # Change city_id column to VARCHAR
     op.alter_column('modelled.city_polygon', 'city_id',
-                    existing_type=sa.String(),
+                    existing_type=sa.TEXT(),
                     type_=sa.VARCHAR(),
                     existing_nullable=True)
 
 
 def downgrade() -> None:
-    # Revert country_code column back to String
+    # Revert country_code column back to TEXT
     op.alter_column('modelled.city_polygon', 'country_code',
                     existing_type=sa.VARCHAR(),
-                    type_=sa.String(),
+                    type_=sa.TEXT(),
                     existing_nullable=True)
     
-    # Revert region_code column back to String
+    # Revert region_code column back to TEXT
     op.alter_column('modelled.city_polygon', 'region_code',
                     existing_type=sa.VARCHAR(),
-                    type_=sa.String(),
+                    type_=sa.TEXT(),
                     existing_nullable=True)
     
-    # Revert city_id column back to String
+    # Revert city_id column back to TEXT
     op.alter_column('modelled.city_polygon', 'city_id',
                     existing_type=sa.VARCHAR(),
-                    type_=sa.String(),
+                    type_=sa.TEXT(),
                     existing_nullable=True)

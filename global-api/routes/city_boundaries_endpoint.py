@@ -15,11 +15,13 @@ def db_query(locode):
 
         Returns:
             dict: The queried row from the modelled.city_polygon table matching the locode.
+            None: If no city is found with the given locode.
     """
     row = None
 
     with SessionLocal() as session:
-        query = text(f"""
+        # This EPSG code is critical for correct area calculations
+        query = text("""
             SELECT 	city_name, 
                     country_code, 
                     region_code, 
@@ -56,7 +58,7 @@ def get_city_boundary(locode: str):
             locode (str): Unique identifier for the city.
 
         Returns:
-            dict: City boundary information including geometry, bounding boxes, and area.
+            dict: City boundary information including geometry, bounding boxes, and area. 
     """
     city = db_query(locode)
 
@@ -109,7 +111,7 @@ def get_locode(lat: Decimal, lon: Decimal):
     candidates = []
 
     with SessionLocal() as session:
-        query = text(f"""
+        query = text("""
             SELECT locode
             FROM modelled.city_polygon
             WHERE bbox_north >= :lat

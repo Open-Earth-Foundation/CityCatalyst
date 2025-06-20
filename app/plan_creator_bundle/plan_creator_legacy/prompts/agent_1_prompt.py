@@ -37,17 +37,15 @@ You have access to the following tools:
 
 <output>
 The final output should include:
-- a headline 
-- the name of the climate action
+- the name of the climate action as headline
 - the name of the city
 - the introduction for the climate action implementation plan.
 Ensure the introduction remains under 300 words, presenting a structured summary that flows logically. 
 Use appropriate paragraphs/spacing to organize the information.
 
 <sample_output>
-# Climate Action Implementation Plan
+# [name of climate action] - Implementation Plan
 **City:** [name of city]<br>
-**Climate action:** [name of climate action]
 
 [Brief overview of the city, including population and geographical location]
 [Summary of the main climate action and its importance to the city]

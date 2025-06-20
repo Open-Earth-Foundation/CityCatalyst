@@ -3,7 +3,7 @@ import json
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from plan_creator_bundle.plan_creator_legacy.state.agent_state import AgentState
-from plan_creator_bundle.plan_creator_legacy.data.context import sgds
+from plan_creator_bundle.plan_creator_legacy.data.context import sdgs
 from langchain_openai import ChatOpenAI
 from plan_creator_bundle.tools.tools import (
     placeholder_tool,
@@ -49,7 +49,7 @@ def build_custom_agent_10():
                         response_agent_1=json.dumps(
                             state["response_agent_1"].content, indent=4
                         ),
-                        sgds=json.dumps(sgds, indent=4),
+                        sdgs=json.dumps(sdgs, indent=4),
                     )
                 )
             }

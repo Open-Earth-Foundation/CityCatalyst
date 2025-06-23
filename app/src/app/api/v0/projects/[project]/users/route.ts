@@ -26,8 +26,12 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
   // 2. Get Path Parameter (projectId)
   const { project: projectId } = params;
 
-  // 3. Get Query Parameter (email) from the URL
-  const email = req.nextUrl.searchParams.get("email");
+  // 3. Get Query Parameter (email) from the URL and properly decode it
+  const url = new URL(req.url);
+  const emailParam = url.searchParams.get("email");
+  // The searchParams.get() already decodes, but converts + to space
+  // We need to manually decode to preserve the + character
+  const email = emailParam ? emailParam.replace(/ /g, "+") : null;
 
   const project = await Project.findByPk(projectId as string);
   if (!project) {

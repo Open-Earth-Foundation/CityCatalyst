@@ -76,39 +76,75 @@ jobs:
 
   pushToGHCR:
     needs: runTests
-    if: ${{ !contains(github.ref, '-') }}
     runs-on: ubuntu-latest
+    if: ${{ !contains(github.ref, '-') }}
     steps:
       - uses: actions/checkout@v4
 
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "full_version=$VERSION" >> $GITHUB_OUTPUT
+
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          echo "major_version=$MAJOR" >> $GITHUB_OUTPUT
+
+          MINOR=$(echo $VERSION | cut -d. -f1-2)
+          echo "minor_version=$MINOR" >> $GITHUB_OUTPUT
+
+          echo "Extracted versions:"
+          echo "  Full: $VERSION"
+          echo "  Major: $MAJOR"
+          echo "  Minor: $MINOR"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Log in to the Container registry
-        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pushing citycatalyst to GHCR
-        env:
-          SHA: ${{ github.sha }}
-          REF: ${{ github.ref }}
-          IMAGE: ghcr.io/open-earth-foundation/citycatalyst
+      - name: Build and push full image
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64
+          context: ./app
+          target: full-build
+          push: true
+          tags: |
+            ghcr.io/open-earth-foundation/citycatalyst:${{ github.sha }}
+            ghcr.io/open-earth-foundation/citycatalyst:stable
+            ghcr.io/open-earth-foundation/citycatalyst:${{ steps.version.outputs.major_version }}
+            ghcr.io/open-earth-foundation/citycatalyst:${{ steps.version.outputs.minor_version }}
+            ghcr.io/open-earth-foundation/citycatalyst:${{ steps.version.outputs.full_version }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://citycatalyst.io
+            NEXT_PUBLIC_OPENCLIMATE_API_URL=https://api.openclimate.network
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-        run: |
-          export VERSION=${REF#refs/tags/v}
-          export MAJOR=${VERSION%.*.*}
-          export MINOR=${VERSION%.*}
-          echo Version: ${VERSION} Major: ${MAJOR} Minor: ${MINOR}
-          docker build -t $IMAGE:$SHA app
-          docker tag $IMAGE:$SHA $IMAGE:$VERSION
-          docker tag $IMAGE:$SHA $IMAGE:$MAJOR
-          docker tag $IMAGE:$SHA $IMAGE:$MINOR
-          docker tag $IMAGE:$SHA $IMAGE:stable
-          docker push $IMAGE:$SHA
-          docker push $IMAGE:$VERSION
-          docker push $IMAGE:$MAJOR
-          docker push $IMAGE:$MINOR
-          docker push $IMAGE:stable
+      - name: Build and push web image
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64
+          context: ./app
+          target: release
+          push: true
+          tags: |
+            ghcr.io/open-earth-foundation/citycatalyst-web:${{ github.sha }}
+            ghcr.io/open-earth-foundation/citycatalyst-web:stable
+            ghcr.io/open-earth-foundation/citycatalyst-web:${{ steps.version.outputs.major_version }}
+            ghcr.io/open-earth-foundation/citycatalyst-web:${{ steps.version.outputs.minor_version }}
+            ghcr.io/open-earth-foundation/citycatalyst-web:${{ steps.version.outputs.full_version }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://citycatalyst.io
+            NEXT_PUBLIC_OPENCLIMATE_API_URL=https://api.openclimate.network
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deployToEKS:
     needs: pushToGHCR
@@ -132,7 +168,6 @@ jobs:
 
       - name: Deploying service
         run: |
-          export VERSION=${REF#refs/tags/v}
           export VERSION=${REF#refs/tags/v}
           kubectl create -f k8s/prod/cc-prod-migrate.yml -n default
           kubectl create -f k8s/prod/cc-prod-seed.yml -n default

@@ -5,8 +5,7 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from plan_creator_bundle.plan_creator_legacy.state.agent_state import AgentState
 from langchain_openai import ChatOpenAI
 from plan_creator_bundle.tools.tools import (
-    get_search_municipalities_tool,
-    openai_web_search,
+    openai_web_search_tool,
 )
 from plan_creator_bundle.plan_creator_legacy.prompts.agent_3_prompt import (
     agent_3_system_prompt,
@@ -16,7 +15,6 @@ from plan_creator_bundle.plan_creator_legacy.prompts.agent_3_prompt import (
 OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY = os.getenv(
     "OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY", "gpt-4.1-mini"
 )
-# OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY = "gpt-4.1-mini-websearch-preview"
 
 # Create the agents
 model = ChatOpenAI(
@@ -24,15 +22,7 @@ model = ChatOpenAI(
 )
 
 # Define tools for the agent
-# tools = [get_search_municipalities_tool]
-tools = [openai_web_search]
-
-# model = ChatOpenAI(
-#     model=OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY,
-#     model_kwargs={
-#         "tools": [{"type": "web_search_preview"}],
-#     },  # Built-in search tool from OpenAI
-# )
+tools = [openai_web_search_tool]
 
 system_prompt_agent_3 = SystemMessage(agent_3_system_prompt)
 

@@ -238,36 +238,28 @@ def get_search_municipalities_tool(search_query: str):
 
 
 @tool
-def openai_web_search(
+def openai_web_search_tool(
     query: str,
     country: str,
     city: str,
 ) -> dict:
     """
-    Use this tool to search the web for information.
+    Use this tool to search the web for information with relevance to a specific country and city.
 
     Args:
-        query (str): A search query in the national language.
+        query (str): The search query.
         country (str): The name of the country the city is located in (two-letter ISO code).
-        city (str): The name of the city to search for.
+        city (str): The name of the city the search is related to.
+
     Returns:
         dict: A dictionary containing only the following fields from the OpenAI web search response:
             - content: The main textual answer from the search.
             - annotations: Any web or source annotations provided by the model.
     """
 
-    # user_location = {"type": "approximate", "approximate": {"country": country}}
-    # if region:
-    #     user_location["approximate"]["region"] = region
-    # if city:
-    #     user_location["approximate"]["city"] = city
-
-    # web_search_options = {"user_location": user_location}
-
     client = OpenAI()
     completion = client.chat.completions.create(
         model="gpt-4o-search-preview",
-        # web_search_options=web_search_options,
         web_search_options={
             "user_location": {
                 "type": "approximate",
@@ -276,6 +268,7 @@ def openai_web_search(
                     "city": city,
                 },
             },
+            "search_context_size": "medium",
         },
         messages=[
             {
@@ -285,9 +278,7 @@ def openai_web_search(
         ],
     )
 
-    print("completion", completion.choices[0])
     result = completion.choices[0].model_dump()
-    print("result", result)
     # Only return content and annotations
     return {
         "content": result["message"]["content"],

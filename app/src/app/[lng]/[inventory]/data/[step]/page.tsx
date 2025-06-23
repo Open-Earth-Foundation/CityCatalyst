@@ -917,7 +917,7 @@ export default function AddDataSteps(props: {
                 t={t}
                 isSearching={areDataSourcesLoading}
                 onSearchClicked={() =>
-                  isFrozenCheck() ? null : onSearchDataSourcesClicked
+                  isFrozenCheck() ? null : onSearchDataSourcesClicked()
                 }
               />
             ) : dataSourcesError ? (

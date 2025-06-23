@@ -1,11 +1,12 @@
 import os
 import logging
-from typing import Tuple, Union
+from typing import Tuple, Union, Optional
 from langchain.tools import tool
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain.schema import Document
 from langchain_tavily import TavilySearch
+from openai import OpenAI
 
 from plan_creator_bundle.utils.get_vectorstore_local import get_vectorstore
 from utils.logging_config import setup_logger
@@ -234,6 +235,64 @@ def get_search_municipalities_tool(search_query: str):
 #     response = llm.invoke([HumanMessage(content=prompt_str)])
 
 #     return response.content
+
+
+@tool
+def openai_web_search(
+    query: str,
+    country: str,
+    city: str,
+) -> dict:
+    """
+    Use this tool to search the web for information.
+
+    Args:
+        query (str): A search query in the national language.
+        country (str): The name of the country the city is located in (two-letter ISO code).
+        city (str): The name of the city to search for.
+    Returns:
+        dict: A dictionary containing only the following fields from the OpenAI web search response:
+            - content: The main textual answer from the search.
+            - annotations: Any web or source annotations provided by the model.
+    """
+
+    # user_location = {"type": "approximate", "approximate": {"country": country}}
+    # if region:
+    #     user_location["approximate"]["region"] = region
+    # if city:
+    #     user_location["approximate"]["city"] = city
+
+    # web_search_options = {"user_location": user_location}
+
+    client = OpenAI()
+    completion = client.chat.completions.create(
+        model="gpt-4o-search-preview",
+        # web_search_options=web_search_options,
+        web_search_options={
+            "user_location": {
+                "type": "approximate",
+                "approximate": {
+                    "country": country,
+                    "city": city,
+                },
+            },
+        },
+        messages=[
+            {
+                "role": "user",
+                "content": query,
+            }
+        ],
+    )
+
+    print("completion", completion.choices[0])
+    result = completion.choices[0].model_dump()
+    print("result", result)
+    # Only return content and annotations
+    return {
+        "content": result["message"]["content"],
+        "annotations": result["message"]["annotations"],
+    }
 
 
 @tool

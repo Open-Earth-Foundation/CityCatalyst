@@ -19,13 +19,14 @@ Follow these guidelines carefully to complete the task:
 5. Use the provided tools to retrieve municipal institutions for the implementation of the specific climate action for the given city.
     - Ensure that the retrieved information is relevant to the action and the city.
     - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 
-    - **Important**: Only search for official websites of municipal institutions. Do not use channels like Instagram, Facebook, Twitter, LinkedIn, etc.
+    - **Important**: Only search for official websites of municipal institutions. Do not use channels like Instagram, Facebook, Twitter, LinkedIn, etc. and do not provide links to documents.
 </task>
 
 <tools>
 You have access to an internet search tool that can can be used to look-up specific municipial institutions. 
 Always provide the search query in the nation's national language to get the most relevant results. E.g. use Portuguese for Brazil, French for France, etc.
 Include keywords such as "official website," "government agency," or "city department" in the national language of the city to enhance search relevance.
+Start your search with more specific keywords and then broaden your search with more general keywords if you do not find relevant results.
 </tools>
 
 <output>

@@ -57,7 +57,7 @@ export const OrganizationContextProvider = ({
   };
 
   const clearOrganization = () => {
-    setOrganizationState({ logoUrl: null, active: false });
+    setOrganizationState({ logoUrl: null, active: true });
     localStorage.removeItem("organization");
     setShowFrozenBanner(false);
   };

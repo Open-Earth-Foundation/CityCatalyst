@@ -16,5 +16,6 @@ FROM base AS release
 RUN npm ci --omit=dev
 COPY --from=full-build /app/.next ./.next
 COPY --from=full-build /app/public ./public
+COPY --from=full-build /app/templates ./templates
 EXPOSE 3000
 CMD ["npm", "run", "start"]

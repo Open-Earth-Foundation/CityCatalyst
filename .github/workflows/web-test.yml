@@ -109,8 +109,12 @@ jobs:
           build-args: |
             NEXT_PUBLIC_API_URL=https://citycatalyst-test.openearth.dev
             NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: |
+            type=gha,scope=citycatalyst-shared
+            type=gha,scope=${{ github.ref_name }}
+            type=gha,scope=main
+            type=gha,scope=develop
+          cache-to: type=gha,mode=max,scope=citycatalyst-shared
 
       - name: Build and push web image
         uses: docker/build-push-action@v5
@@ -125,8 +129,12 @@ jobs:
           build-args: |
             NEXT_PUBLIC_API_URL=https://citycatalyst-test.openearth.dev
             NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: |
+            type=gha,scope=citycatalyst-shared
+            type=gha,scope=${{ github.ref_name }}
+            type=gha,scope=main
+            type=gha,scope=develop
+          cache-to: type=gha,mode=max,scope=citycatalyst-shared
 
   deployToEKS:
     needs: pushToGHCR

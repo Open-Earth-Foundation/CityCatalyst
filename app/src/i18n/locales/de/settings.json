@@ -144,5 +144,8 @@
   "n-a": "N/V",
   "no-data": "Keine Daten verfügbar",
   "owner": "Eigentümer",
-  "collaborator": "Mitarbeiter"
+  "collaborator": "Mitarbeiter",
+  "plan-details": "Plan Details",
+  "plan-details-caption": "<bold>{{name}}</bold> hat derzeit <bold>{{num_projects}}</bold> Projekte und eine Anzahl von <bold>{{num_cities}} / {{total_cities}}</bold> Städten",
+  "contact-us-to-upgrade": "Um Ihren Tarif zu aktualisieren, wenden Sie sich bitte an"
 }

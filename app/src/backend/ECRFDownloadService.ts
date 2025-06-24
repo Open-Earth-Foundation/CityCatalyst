@@ -12,6 +12,8 @@ import { bigIntToDecimal } from "@/util/big_int";
 import PopulationService from "@/backend/PopulationService";
 import CityBoundaryService from "@/backend/CityBoundaryService";
 import { logger } from "@/services/logger";
+import fs from "fs";
+import path from "path";
 
 const ECRF_TEMPLATE_PATH = "./templates/ecrf_template.xlsx";
 
@@ -31,7 +33,22 @@ export default class ECRFDownloadService {
     const workbook = new Excel.Workbook();
     try {
       // Load the workbook
-      await workbook.xlsx.readFile(ECRF_TEMPLATE_PATH);
+
+      const templatePath = path.resolve(
+        process.cwd(),
+        "templates",
+        "ecrf_template.xlsx",
+      );
+
+      if (!fs.existsSync(templatePath)) {
+        logger.error(
+          { err: `File not found at path: ${templatePath}` },
+          "Error reading or writing Excel file",
+        );
+        throw new Error(`File not found at path: ${templatePath}`);
+      }
+
+      await workbook.xlsx.readFile(templatePath);
       await this.writeToSheet1(workbook, output, t);
       await this.writeToSheet2(workbook, output, t);
       await this.writeToSheet3(workbook, output, t);
@@ -40,7 +57,7 @@ export default class ECRFDownloadService {
       logger.info("Workbook has been generated successfully");
       return buffer;
     } catch (error) {
-      logger.error({err: error}, "Error reading or writing Excel file");
+      logger.error({ err: error }, "Error reading or writing Excel file");
       throw createHttpError.InternalServerError(
         "Error reading or writing Excel file",
       );

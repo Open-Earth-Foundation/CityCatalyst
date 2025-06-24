@@ -19,8 +19,7 @@ import { BodyLarge } from "@/components/Texts/Body";
 import { HeadlineSmall } from "@/components/Texts/Headline";
 import {
   useCreateOrganizationInviteMutation,
-  useGetCitiesAndYearsQuery,
-  useGetProjectsQuery,
+  useGetUserProjectsQuery,
   useInviteUsersMutation,
 } from "@/services/api";
 import LabelLarge from "@/components/Texts/Label";
@@ -46,7 +45,6 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import Callout from "@/components/ui/callout";
-import { toaster } from "@/components/ui/toaster";
 import { OrganizationRole } from "@/util/types";
 
 const AddCollaboratorsDialog = ({
@@ -76,28 +74,18 @@ const AddCollaboratorsDialog = ({
     description: t("invite-error-toast-description"),
   });
 
-  const { data: projectsData, isLoading } = useGetProjectsQuery(
-    {
-      organizationId: organizationId as string,
-    },
-    {
-      skip: !isAdmin || !organizationId,
-    },
-  );
+  const { data: userProjectsData, isLoading } = useGetUserProjectsQuery({});
 
   const projectCollection = useMemo(() => {
     return createListCollection({
       items:
-        projectsData?.map((project) => ({
+        userProjectsData?.map((project) => ({
           label: project.name,
           value: project.projectId,
         })) ?? [],
     });
-  }, [projectsData]);
+  }, [userProjectsData]);
 
-  const { data: citiesAndYears } = useGetCitiesAndYearsQuery(undefined, {
-    skip: isAdmin,
-  });
   const [inviteUsers, { isLoading: isInviteUsersLoading }] =
     useInviteUsersMutation();
   const [createOrganizationInvite, { isLoading: isAdminInviteLoading }] =
@@ -173,17 +161,9 @@ const AddCollaboratorsDialog = ({
       name: string;
     }[]
   >(() => {
-    if (!isAdmin) {
-      return (
-        citiesAndYears?.map(({ city }) => ({
-          cityId: city.cityId,
-          name: city.name as string,
-        })) ?? []
-      );
-    }
     if (!selectedProject || selectedProject.length === 0) return [];
 
-    const project = projectsData?.find(
+    const project = userProjectsData?.find(
       (project) => project.projectId === selectedProject[0],
     );
     return (
@@ -192,7 +172,7 @@ const AddCollaboratorsDialog = ({
         name: city.name,
       })) ?? []
     );
-  }, [isAdmin, citiesAndYears, projectsData, selectedProject]);
+  }, [userProjectsData, selectedProject]);
 
   return (
     <DialogRoot

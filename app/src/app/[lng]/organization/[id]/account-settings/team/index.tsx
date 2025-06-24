@@ -186,7 +186,7 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
         display="flex"
         gap={9}
         mt={12}
-        alignItems="center"
+        alignItems="flex-start"
         justifyContent="space-between"
       >
         <Box w="250px" flex={1}>

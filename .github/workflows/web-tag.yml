@@ -156,7 +156,8 @@ jobs:
       EKS_PROD_NAME: ${{ secrets.EKS_PROD_NAME }}
       SHA: ${{ github.sha }}
       REF: ${{ github.ref }}
-      IMAGE: ghcr.io/open-earth-foundation/citycatalyst
+      WEBIMAGE: ghcr.io/open-earth-foundation/citycatalyst-web
+      MAINTIMAGE: ghcr.io/open-earth-foundation/citycatalyst
     steps:
       - uses: actions/checkout@v4
 
@@ -174,10 +175,10 @@ jobs:
           kubectl apply -f k8s/prod/cc-prod-sync-catalogue.yml -n default
           kubectl apply -f k8s/cc-web-deploy.yml -n default
           kubectl set image deployment/cc-web-deploy \
-            cc-web=$IMAGE:$VERSION \
+            cc-web=$WEBIMAGE:$VERSION \
             -n default
           kubectl set image cronjob/cc-prod-sync-catalogue \
-            cc-sync-catalogue=$IMAGE:$VERSION \
+            cc-sync-catalogue=$MAINTIMAGE:$VERSION \
             -n default
           kubectl set env deployment/cc-web-deploy \
             SMTP_USER=${{secrets.SMTP_USER}} \

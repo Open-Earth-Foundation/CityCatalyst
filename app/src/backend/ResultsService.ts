@@ -314,7 +314,6 @@ const fetchInventoryValuesBySector = async (
            iv.datasource_id,
            ds.datasource_name
     FROM "InventoryValue" iv
-           LEFT JOIN "ActivityValue" av ON av.inventory_value_id = iv.id
            JOIN "Sector" s ON iv.sector_id = s.sector_id
            JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
            LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id

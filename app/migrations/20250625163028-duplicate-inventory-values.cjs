@@ -4,25 +4,55 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     return queryInterface.sequelize.transaction(async (transaction) => {
-      /* await queryInterface.sequelize.query(`
-        SELECT * from "InventoryValue" iv1 JOIN "InventoryValue" iv2 on iv1.inventory_id = iv2.inventory_id AND iv1.gpc_reference_number = iv2.gpc_reference_number WHERE iv1.id < iv2.id;
-      `); */
       // merge the values and save them to the database
       await queryInterface.sequelize.query(`
         WITH duplicates AS (
-          SELECT iv1.id AS id1, iv2.id AS id2, iv1.inventory_id, iv1.gpc_reference_number, SUM(iv1.value) AS total_value
+          SELECT
+            iv1.id AS id_to_keep,
+            iv2.id AS id_to_remove,
+            iv1.inventory_id,
+            iv1.gpc_reference_number,
+            SUM(iv1.value) AS total_value
           FROM "InventoryValue" iv1
-          JOIN "InventoryValue" iv2 ON iv1.inventory_id = iv2.inventory_id
-          AND iv1.gpc_reference_number = iv2.gpc_reference_number
+          JOIN "InventoryValue" iv2
+            ON iv1.inventory_id = iv2.inventory_id
+            AND iv1.gpc_reference_number = iv2.gpc_reference_number
           WHERE iv1.id < iv2.id
-          GROUP BY iv1.inventory_id, iv1.gpc_reference_number
+          GROUP BY iv1.id, iv2.id, iv1.inventory_id, iv1.gpc_reference_number
+        ),
+        summed AS (
+          SELECT
+            inventory_id,
+            gpc_reference_number,
+            SUM(value) AS total_value,
+            MIN(id) AS id_to_keep
+          FROM "InventoryValue"
+          GROUP BY inventory_id, gpc_reference_number
+          HAVING COUNT(*) > 1
         )
+      `);
+
+      // Update the value of the kept InventoryValue
+      await queryInterface.sequelize.query(`
         UPDATE "InventoryValue" iv
-        SET value = d.total_value
+        SET value = s.total_value
+        FROM summed s
+        WHERE iv.id = s.id_to_keep;
+      `);
+
+      // Reassign ActivityValue entries to the kept InventoryValue
+      await queryInterface.sequelize.query(`
+        UPDATE "ActivityValue" av
+        SET inventory_value_id = d.id_to_keep
         FROM duplicates d
-        WHERE iv.id = d.id1
-        AND iv.inventory_id = d.inventory_id
-        AND iv.gpc_reference_number = d.gpc_reference_number;
+        WHERE av.inventory_value_id = d.id_to_remove;
+      `);
+
+      // Remove the duplicate InventoryValue entries
+      await queryInterface.sequelize.query(`
+        DELETE FROM "InventoryValue" iv
+        USING duplicates d
+        WHERE iv.id = d.id_to_remove;
       `);
 
       // add unique constraint to prevent future duplicates

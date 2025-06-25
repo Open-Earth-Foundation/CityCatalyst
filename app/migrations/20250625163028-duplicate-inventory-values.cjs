@@ -5,8 +5,8 @@ module.exports = {
   async up(queryInterface) {
     return queryInterface.sequelize.transaction(async (transaction) => {
       // Update the value of the kept InventoryValue (sum of all duplicates)
-      await queryInterface.sequelize.query(`
-        WITH ranked AS (
+      await queryInterface.sequelize.query(
+        `WITH ranked AS (
           SELECT
             id,
             inventory_id,
@@ -38,12 +38,13 @@ module.exports = {
         UPDATE "InventoryValue" iv
         SET value = tk.total_value
         FROM to_keep tk
-        WHERE iv.id = tk.id_to_keep;
-      `);
+        WHERE iv.id = tk.id_to_keep;`,
+        { transaction },
+      );
 
       // Reassign ActivityValue entries to the kept InventoryValue
-      await queryInterface.sequelize.query(`
-        WITH ranked AS (
+      await queryInterface.sequelize.query(
+        `WITH ranked AS (
           SELECT
             id,
             inventory_id,
@@ -69,12 +70,13 @@ module.exports = {
         UPDATE "ActivityValue" av
         SET inventory_value_id = d.id_to_keep
         FROM duplicates d
-        WHERE av.inventory_value_id = d.id_to_remove;
-      `);
+        WHERE av.inventory_value_id = d.id_to_remove;`,
+        { transaction },
+      );
 
       // Remove the duplicate InventoryValue entries
-      await queryInterface.sequelize.query(`
-        WITH ranked AS (
+      await queryInterface.sequelize.query(
+        `WITH ranked AS (
           SELECT
             id,
             inventory_id,
@@ -87,8 +89,9 @@ module.exports = {
         )
         DELETE FROM "InventoryValue" iv
         USING ranked r
-        WHERE iv.id = r.id AND r.rn > 1;
-      `);
+        WHERE iv.id = r.id AND r.rn > 1;`,
+        { transaction },
+      );
 
       // Add unique constraint to prevent future duplicates
       await queryInterface.addConstraint("InventoryValue", {

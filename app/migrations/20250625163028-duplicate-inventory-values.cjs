@@ -30,10 +30,8 @@ module.exports = {
           GROUP BY inventory_id, gpc_reference_number
           HAVING COUNT(*) > 1
         )
-      `);
 
-      // Update the value of the kept InventoryValue
-      await queryInterface.sequelize.query(`
+        -- Update the value of the kept InventoryValue
         UPDATE "InventoryValue" iv
         SET value = s.total_value
         FROM summed s
@@ -42,6 +40,16 @@ module.exports = {
 
       // Reassign ActivityValue entries to the kept InventoryValue
       await queryInterface.sequelize.query(`
+        WITH duplicates AS (
+          SELECT
+            MIN(id) AS id_to_keep,
+            id AS id_to_remove,
+            inventory_id,
+            gpc_reference_number
+          FROM "InventoryValue"
+          GROUP BY inventory_id, gpc_reference_number, id
+          HAVING COUNT(*) > 1 OR id != MIN(id)
+        )
         UPDATE "ActivityValue" av
         SET inventory_value_id = d.id_to_keep
         FROM duplicates d
@@ -50,6 +58,16 @@ module.exports = {
 
       // Remove the duplicate InventoryValue entries
       await queryInterface.sequelize.query(`
+        WITH duplicates AS (
+          SELECT
+            MIN(id) AS id_to_keep,
+            id AS id_to_remove,
+            inventory_id,
+            gpc_reference_number
+          FROM "InventoryValue"
+          GROUP BY inventory_id, gpc_reference_number, id
+          HAVING COUNT(*) > 1 OR id != MIN(id)
+        )
         DELETE FROM "InventoryValue" iv
         USING duplicates d
         WHERE iv.id = d.id_to_remove;

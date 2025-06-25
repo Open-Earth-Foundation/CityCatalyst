@@ -22,7 +22,6 @@ type Inputs = {
   email: string;
   password: string;
   confirmPassword: string;
-  inviteCode: string;
   acceptTerms: boolean;
 };
 
@@ -59,10 +58,6 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
       return;
     }
 
-    if (isUserInvite) {
-      data.inviteCode = "123456"; // TODO adjust once there is proper validation for the invite code
-    }
-
     if (typeof data.acceptTerms !== "boolean") {
       data.acceptTerms = data.acceptTerms === "on";
     }
@@ -86,7 +81,6 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         setError(message);
         return;
       }
-
       // can be re-enabled once the email verification required again
       // const queryParamsString = new URLSearchParams(queryParams).toString();
       // const callbackParam = callbackUrl ? "&" : "";
@@ -167,55 +161,6 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           id="confirmPassword"
           shouldValidate={false}
         />
-        {!isUserInvite && (
-          <Field
-            label={t("invite-code")}
-            invalid={!!errors.inviteCode}
-            errorText={
-              <Box display="flex" gap="6px">
-                <Icon as={MdWarning} />
-                <Text
-                  fontSize="body.md"
-                  lineHeight="20px"
-                  letterSpacing="wide"
-                  color="content.tertiary"
-                >
-                  {errors.inviteCode?.message}
-                </Text>
-              </Box>
-            }
-          >
-            <Input
-              type="text"
-              placeholder={t("invite-code-placeholder")}
-              size="lg"
-              shadow="2dp"
-              background={
-                errors.inviteCode
-                  ? "sentiment.negativeOverlay"
-                  : "background.default"
-              }
-              {...register("inviteCode", {
-                required: t("invite-code-required"),
-                minLength: { value: 6, message: t("invite-code-invalid") },
-                maxLength: { value: 6, message: t("invite-code-invalid") },
-              })}
-            />
-
-            <Box>
-              <Trans t={t} i18nKey="no-invite-code">
-                Don&apos;t have an invitation code?{" "}
-                <Link
-                  href="https://citycatalyst.openearth.org/#webflow-form"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Subscribe to the Waiting List
-                </Link>
-              </Trans>
-            </Box>
-          </Field>
-        )}
         <Field
           invalid={!!errors.acceptTerms}
           errorText={

@@ -4,7 +4,7 @@
 module.exports = {
   async up(queryInterface) {
     return queryInterface.sequelize.transaction(async (transaction) => {
-      // 1. Update the co2eq of the kept InventoryValue (sum of all duplicates)
+      // Update the co2eq of the kept InventoryValue (sum of all duplicates)
       await queryInterface.sequelize.query(`
         WITH ranked AS (
           SELECT
@@ -41,7 +41,7 @@ module.exports = {
         WHERE iv.id = tk.id_to_keep;
       `);
 
-      // 2. Reassign ActivityValue entries to the kept InventoryValue
+      // Reassign ActivityValue entries to the kept InventoryValue
       await queryInterface.sequelize.query(`
         WITH ranked AS (
           SELECT
@@ -72,7 +72,7 @@ module.exports = {
         WHERE av.inventory_value_id = d.id_to_remove;
       `);
 
-      // 3. Remove the duplicate InventoryValue entries
+      // Remove the duplicate InventoryValue entries
       await queryInterface.sequelize.query(`
         WITH ranked AS (
           SELECT
@@ -89,6 +89,7 @@ module.exports = {
         USING ranked r
         WHERE iv.id = r.id AND r.rn > 1;
       `);
+
       // Add unique constraint to prevent future duplicates
       await queryInterface.addConstraint("InventoryValue", {
         fields: ["inventory_id", "gpc_reference_number"],

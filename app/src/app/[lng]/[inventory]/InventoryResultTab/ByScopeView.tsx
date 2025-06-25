@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Table, useDisclosure } from "@chakra-ui/react";
+import { Box, Table, useDisclosure, Text, Flex, Icon } from "@chakra-ui/react";
 import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
 import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
@@ -7,6 +7,7 @@ import { InventoryTypeEnum, SECTORS } from "@/util/constants";
 import { ButtonSmall } from "@/components/Texts/Button";
 import { BodyMedium } from "@/components/Texts/Body";
 import ByScopeViewSourceDrawer from "./ByScopeViewSourceDrawer";
+import { LuChevronDown } from "react-icons/lu";
 
 interface ByScopeViewProps {
   data: ActivityDataByScope[];
@@ -29,12 +30,193 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     inventoryType
   ].scopes;
   const [selectedSourceId, setSelectedSourceId] = useState<string>("");
+  const [expandedSubsectors, setExpandedSubsectors] = useState<Set<string>>(
+    new Set(),
+  );
 
   const {
     open: isSourceDrawerOpen,
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
+
+  // Group data by subsector (using first part of activity title)
+  const groupedData: Record<string, ActivityDataByScope[]> = {};
+  data.forEach((item) => {
+    const subsector = item.activityTitle.split("_")[0] || item.activityTitle;
+    if (!groupedData[subsector]) {
+      groupedData[subsector] = [];
+    }
+    groupedData[subsector].push(item);
+  });
+
+  const toggleSubsector = (subsector: string) => {
+    const newExpanded = new Set(expandedSubsectors);
+    if (newExpanded.has(subsector)) {
+      newExpanded.delete(subsector);
+    } else {
+      newExpanded.add(subsector);
+    }
+    setExpandedSubsectors(newExpanded);
+  };
+
+  const renderSubsectorContent = (
+    subsector: string,
+    activities: ActivityDataByScope[],
+  ) => {
+    // Single activity - show directly
+    if (activities.length === 1) {
+      const item = activities[0];
+      return (
+        <Table.Row key={item.activityTitle}>
+          <Table.Cell>
+            <BodyMedium color="content.secondary">
+              {tData(toKebabCase(item.activityTitle))}
+            </BodyMedium>
+          </Table.Cell>
+          <Table.Cell>
+            <BodyMedium color="content.secondary">
+              {convertKgToTonnes(item.totalEmissions)}
+            </BodyMedium>
+          </Table.Cell>
+          <Table.Cell>
+            <BodyMedium color="content.secondary">
+              {item.percentage}%
+            </BodyMedium>
+          </Table.Cell>
+          {scopes.map((s) => (
+            <Table.Cell key={s}>
+              <BodyMedium color="content.secondary">
+                {convertKgToTonnes(item.scopes[s] || 0)}
+              </BodyMedium>
+            </Table.Cell>
+          ))}
+          <Table.Cell>
+            <BodyMedium
+              color="content.link"
+              textDecoration={"underline"}
+              textTransform={"uppercase"}
+              fontWeight={"bold"}
+              onClick={() => {
+                setSelectedSourceId(item.datasource_id || "");
+                onSourceDrawerOpen();
+              }}
+            >
+              {item.datasource_name || tDashboard("N/A")}
+            </BodyMedium>
+          </Table.Cell>
+          <Table.Cell></Table.Cell>
+        </Table.Row>
+      );
+    }
+
+    // Multiple activities - create manual accordion
+    const totalEmissions = activities.reduce(
+      (sum, item) => sum + Number(item.totalEmissions),
+      0,
+    );
+    const totalPercentage = activities.reduce(
+      (sum, item) => sum + item.percentage,
+      0,
+    );
+    const uniqueSources = [
+      ...new Set(activities.map((item) => item.datasource_name || "Unknown")),
+    ];
+    const sourceDisplay =
+      uniqueSources.length === 1 ? uniqueSources[0] : "Multiple sources";
+    const isExpanded = expandedSubsectors.has(subsector);
+
+    return (
+      <>
+        <Table.Row
+          key={subsector}
+          cursor="pointer"
+          onClick={() => toggleSubsector(subsector)}
+          _hover={{ bg: "gray.50" }}
+        >
+          <Table.Cell>
+            <BodyMedium color="content.secondary">
+              {tData(toKebabCase(subsector))}
+            </BodyMedium>
+          </Table.Cell>
+          <Table.Cell>
+            <BodyMedium color="content.secondary">
+              {convertKgToTonnes(totalEmissions)}
+            </BodyMedium>
+          </Table.Cell>
+          <Table.Cell>
+            <BodyMedium color="content.secondary">
+              {totalPercentage.toFixed(1)}%
+            </BodyMedium>
+          </Table.Cell>
+          {scopes.map((s) => (
+            <Table.Cell key={s}>
+              <BodyMedium color="content.secondary">
+                {convertKgToTonnes(
+                  activities.reduce(
+                    (sum, item) => sum + Number(item.scopes[s] || 0),
+                    0,
+                  ),
+                )}
+              </BodyMedium>
+            </Table.Cell>
+          ))}
+          <Table.Cell>
+            <BodyMedium color="content.secondary">{sourceDisplay}</BodyMedium>
+          </Table.Cell>
+          <Table.Cell>
+            <Icon
+              as={LuChevronDown}
+              transform={isExpanded ? "rotate(0deg)" : "rotate(-90deg)"}
+              transition="transform 0.2s"
+            />
+          </Table.Cell>
+        </Table.Row>
+        {isExpanded &&
+          activities.map((item, index) => (
+            <Table.Row key={`${item.activityTitle}-${index}`}>
+              <Table.Cell pl={8}>
+                {/* empty cell so we don't repeat the activity title */}
+              </Table.Cell>
+              <Table.Cell>
+                <BodyMedium color="content.secondary">
+                  {convertKgToTonnes(item.totalEmissions)}
+                </BodyMedium>
+              </Table.Cell>
+              <Table.Cell>
+                <BodyMedium color="content.secondary">
+                  {item.percentage}%
+                </BodyMedium>
+              </Table.Cell>
+              {scopes.map((s) => (
+                <Table.Cell key={s}>
+                  <BodyMedium color="content.secondary">
+                    {convertKgToTonnes(item.scopes[s] || 0)}
+                  </BodyMedium>
+                </Table.Cell>
+              ))}
+              <Table.Cell>
+                <BodyMedium
+                  color="content.link"
+                  textDecoration={"underline"}
+                  textTransform={"uppercase"}
+                  fontWeight={"bold"}
+                  fontSize="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedSourceId(item.datasource_id || "");
+                    onSourceDrawerOpen();
+                  }}
+                >
+                  {item.datasource_name || tDashboard("N/A")}
+                </BodyMedium>
+              </Table.Cell>
+              <Table.Cell></Table.Cell>
+            </Table.Row>
+          ))}
+      </>
+    );
+  };
 
   return (
     <Box py={4}>
@@ -59,34 +241,14 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           <Table.ColumnHeader>
             <ButtonSmall>{tDashboard("source")}</ButtonSmall>
           </Table.ColumnHeader>
+          <Table.ColumnHeader>
+            <ButtonSmall></ButtonSmall>
+          </Table.ColumnHeader>
         </Table.Header>
         <Table.Body>
-          {data.map((item, index) => (
-            <Table.Row key={index}>
-              <Table.Cell>{tData(toKebabCase(item.activityTitle))}</Table.Cell>
-              <Table.Cell>{convertKgToTonnes(item.totalEmissions)}</Table.Cell>
-              <Table.Cell>{item.percentage}%</Table.Cell>
-              {scopes.map((s) => (
-                <Table.Cell key={s}>
-                  {convertKgToTonnes(item.scopes[s] || 0)}
-                </Table.Cell>
-              ))}
-              <Table.Cell>
-                <BodyMedium
-                  color="content.link"
-                  textDecoration={"underline"}
-                  textTransform={"uppercase"}
-                  fontWeight={"bold"}
-                  onClick={() => {
-                    setSelectedSourceId(item.datasource_id || "");
-                    onSourceDrawerOpen();
-                  }}
-                >
-                  {item.datasource_name || tDashboard("N/A")}
-                </BodyMedium>
-              </Table.Cell>
-            </Table.Row>
-          ))}
+          {Object.entries(groupedData).map(([subsector, activities]) =>
+            renderSubsectorContent(subsector, activities),
+          )}
         </Table.Body>
       </Table.Root>
       <ByScopeViewSourceDrawer

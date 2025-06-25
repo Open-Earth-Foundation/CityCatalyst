@@ -2,43 +2,27 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     return queryInterface.sequelize.transaction(async (transaction) => {
-      // merge the values and save them to the database
+      // update the value of the kept InventoryValue (sum of all duplicates)
       await queryInterface.sequelize.query(`
-        WITH duplicates AS (
+        WITH to_keep AS (
           SELECT
-            iv1.id AS id_to_keep,
-            iv2.id AS id_to_remove,
-            iv1.inventory_id,
-            iv1.gpc_reference_number,
-            SUM(iv1.value) AS total_value
-          FROM "InventoryValue" iv1
-          JOIN "InventoryValue" iv2
-            ON iv1.inventory_id = iv2.inventory_id
-            AND iv1.gpc_reference_number = iv2.gpc_reference_number
-          WHERE iv1.id < iv2.id
-          GROUP BY iv1.id, iv2.id, iv1.inventory_id, iv1.gpc_reference_number
-        ),
-        summed AS (
-          SELECT
+            MIN(id) AS id_to_keep,
             inventory_id,
             gpc_reference_number,
-            SUM(value) AS total_value,
-            MIN(id) AS id_to_keep
+            SUM(value) AS total_value
           FROM "InventoryValue"
           GROUP BY inventory_id, gpc_reference_number
           HAVING COUNT(*) > 1
         )
-
-        -- Update the value of the kept InventoryValue
         UPDATE "InventoryValue" iv
-        SET value = s.total_value
-        FROM summed s
-        WHERE iv.id = s.id_to_keep;
+        SET value = tk.total_value
+        FROM to_keep tk
+        WHERE iv.id = tk.id_to_keep;
       `);
 
-      // Reassign ActivityValue entries to the kept InventoryValue
+      // reassign ActivityValue entries to the kept InventoryValue
       await queryInterface.sequelize.query(`
         WITH duplicates AS (
           SELECT
@@ -56,7 +40,7 @@ module.exports = {
         WHERE av.inventory_value_id = d.id_to_remove;
       `);
 
-      // Remove the duplicate InventoryValue entries
+      // remove the duplicate InventoryValue entries
       await queryInterface.sequelize.query(`
         WITH duplicates AS (
           SELECT
@@ -83,7 +67,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     // add unique constraint to prevent future duplicates
     await queryInterface.removeConstraint(
       "InventoryValue",

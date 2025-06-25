@@ -520,6 +520,8 @@ export function initModels(sequelize: Sequelize) {
     as: "cities",
     foreignKey: "userId",
     otherKey: "cityId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
   CityInvite.belongsTo(User, { foreignKey: "userId", as: "user" });
   CityInvite.belongsTo(City, {
@@ -548,6 +550,8 @@ export function initModels(sequelize: Sequelize) {
     as: "users",
     foreignKey: "cityId",
     otherKey: "userId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
   GDP.belongsTo(City, { as: "city", foreignKey: "cityId" });
   City.hasMany(GDP, { as: "gdps", foreignKey: "cityId" });

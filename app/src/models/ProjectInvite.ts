@@ -6,7 +6,7 @@ import { Project } from "@/models/Project";
 
 export interface ProjectInviteAttributes {
   id: string;
-  projectId?: string;
+  projectId: string;
   userId?: string;
   email?: string;
   status?: InviteStatus;
@@ -21,7 +21,6 @@ export type ProjectInviteCreationAttributes = Optional<
   ProjectInviteOptionalAttributes
 >;
 export type ProjectInviteOptionalAttributes =
-  | "projectId"
   | "userId"
   | "email"
   | "status"
@@ -33,7 +32,7 @@ export class ProjectInvite
   implements Partial<ProjectInviteAttributes>
 {
   id!: string;
-  projectId?: string;
+  projectId!: string;
   userId?: string;
   email?: string;
   status?: InviteStatus;
@@ -58,7 +57,7 @@ export class ProjectInvite
         },
         projectId: {
           type: Sequelize.DataTypes.UUID,
-          allowNull: true,
+          allowNull: false,
           references: {
             model: "Project",
             key: "project_id",

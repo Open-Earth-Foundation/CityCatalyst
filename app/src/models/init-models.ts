@@ -531,6 +531,8 @@ export function initModels(sequelize: Sequelize) {
   CityInvite.belongsTo(User, {
     foreignKey: "invitingUserId",
     as: "invitingUser",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
   City.hasMany(CityInvite, {
     foreignKey: "cityId",
@@ -790,13 +792,25 @@ export function initModels(sequelize: Sequelize) {
   });
   User.hasMany(UserFile, { foreignKey: "userId", as: "user" });
   UserFile.belongsTo(User, { as: "userFiles", foreignKey: "userId" });
-  UserFile.belongsTo(City, { foreignKey: "cityId", as: "city" });
-  City.hasMany(UserFile, { foreignKey: "cityId", as: "userFiles" });
+  UserFile.belongsTo(City, {
+    foreignKey: "cityId",
+    as: "city",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  City.hasMany(UserFile, {
+    foreignKey: "cityId",
+    as: "userFiles",
+    onDelete: "CASCADE",
+    onUpdate: "CASECADE",
+  });
   City.hasMany(CityInvite, { as: "cityInvite", foreignKey: "cityId" });
   CityInvite.belongsTo(City, { as: "cityInvites", foreignKey: "cityId" });
   Organization.hasMany(OrganizationInvite, {
     as: "organizationInvite",
     foreignKey: "organizationId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
   Organization.belongsTo(Theme, {
     as: "theme",
@@ -809,6 +823,8 @@ export function initModels(sequelize: Sequelize) {
   OrganizationInvite.belongsTo(Organization, {
     as: "organizationInvites",
     foreignKey: "organizationId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
   GasValue.belongsTo(InventoryValue, {
     as: "inventoryValue",
@@ -881,10 +897,14 @@ export function initModels(sequelize: Sequelize) {
   ProjectInvite.belongsTo(Project, {
     foreignKey: "projectId",
     as: "project",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
   Project.hasMany(ProjectInvite, {
     foreignKey: "projectId",
     as: "projectInvites",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
   User.hasMany(ProjectInvite, {
     foreignKey: "userId",

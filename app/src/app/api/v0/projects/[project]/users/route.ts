@@ -27,7 +27,8 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
   const { project: projectId } = params;
 
   // 3. Get Query Parameter (email) from the URL
-  const email = req.nextUrl.searchParams.get("email");
+  const url = new URL(req.url);
+  const email = url.searchParams.get("email");
 
   const project = await Project.findByPk(projectId as string);
   if (!project) {

@@ -159,3 +159,6 @@ zipp==3.21.0
 langchain-tavily==0.2.0
 mypy==1.16.0
 pathspec==0.12.1
+
+# Testing dependencies
+pytest==8.3.4

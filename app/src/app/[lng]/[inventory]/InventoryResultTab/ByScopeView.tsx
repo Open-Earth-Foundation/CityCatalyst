@@ -60,6 +60,52 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     setExpandedSubsectors(newExpanded);
   };
 
+  const renderActivityRow = (
+    item: ActivityDataByScope,
+    key: string,
+    showActivityTitle?: boolean,
+  ) => (
+    <Table.Row key={key}>
+      <Table.Cell>
+        {showActivityTitle && (
+          <BodyMedium color="content.secondary">
+            {tData(toKebabCase(item.activityTitle))}
+          </BodyMedium>
+        )}
+      </Table.Cell>
+      <Table.Cell>
+        <BodyMedium color="content.secondary">
+          {convertKgToTonnes(item.totalEmissions)}
+        </BodyMedium>
+      </Table.Cell>
+      <Table.Cell>
+        <BodyMedium color="content.secondary">{item.percentage}%</BodyMedium>
+      </Table.Cell>
+      {scopes.map((s) => (
+        <Table.Cell key={s}>
+          <BodyMedium color="content.secondary">
+            {convertKgToTonnes(item.scopes[s] || 0)}
+          </BodyMedium>
+        </Table.Cell>
+      ))}
+      <Table.Cell>
+        <BodyMedium
+          color="content.link"
+          textDecoration={"underline"}
+          textTransform={"uppercase"}
+          fontWeight={"bold"}
+          onClick={(e) => {
+            setSelectedSourceId(item.datasource_id || "");
+            onSourceDrawerOpen();
+          }}
+        >
+          {item.datasource_name || tDashboard("N/A")}
+        </BodyMedium>
+      </Table.Cell>
+      <Table.Cell></Table.Cell>
+    </Table.Row>
+  );
+
   const renderSubsectorContent = (
     subsector: string,
     activities: ActivityDataByScope[],
@@ -67,47 +113,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     // Single activity - show directly
     if (activities.length === 1) {
       const item = activities[0];
-      return (
-        <Table.Row key={item.activityTitle}>
-          <Table.Cell>
-            <BodyMedium color="content.secondary">
-              {tData(toKebabCase(item.activityTitle))}
-            </BodyMedium>
-          </Table.Cell>
-          <Table.Cell>
-            <BodyMedium color="content.secondary">
-              {convertKgToTonnes(item.totalEmissions)}
-            </BodyMedium>
-          </Table.Cell>
-          <Table.Cell>
-            <BodyMedium color="content.secondary">
-              {item.percentage}%
-            </BodyMedium>
-          </Table.Cell>
-          {scopes.map((s) => (
-            <Table.Cell key={s}>
-              <BodyMedium color="content.secondary">
-                {convertKgToTonnes(item.scopes[s] || 0)}
-              </BodyMedium>
-            </Table.Cell>
-          ))}
-          <Table.Cell>
-            <BodyMedium
-              color="content.link"
-              textDecoration={"underline"}
-              textTransform={"uppercase"}
-              fontWeight={"bold"}
-              onClick={() => {
-                setSelectedSourceId(item.datasource_id || "");
-                onSourceDrawerOpen();
-              }}
-            >
-              {item.datasource_name || tDashboard("N/A")}
-            </BodyMedium>
-          </Table.Cell>
-          <Table.Cell></Table.Cell>
-        </Table.Row>
-      );
+      return renderActivityRow(item, item.activityTitle, true);
     }
 
     // Multiple activities - create manual accordion
@@ -173,47 +179,9 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           </Table.Cell>
         </Table.Row>
         {isExpanded &&
-          activities.map((item, index) => (
-            <Table.Row key={`${item.activityTitle}-${index}`}>
-              <Table.Cell pl={8}>
-                {/* empty cell so we don't repeat the activity title */}
-              </Table.Cell>
-              <Table.Cell>
-                <BodyMedium color="content.secondary">
-                  {convertKgToTonnes(item.totalEmissions)}
-                </BodyMedium>
-              </Table.Cell>
-              <Table.Cell>
-                <BodyMedium color="content.secondary">
-                  {item.percentage}%
-                </BodyMedium>
-              </Table.Cell>
-              {scopes.map((s) => (
-                <Table.Cell key={s}>
-                  <BodyMedium color="content.secondary">
-                    {convertKgToTonnes(item.scopes[s] || 0)}
-                  </BodyMedium>
-                </Table.Cell>
-              ))}
-              <Table.Cell>
-                <BodyMedium
-                  color="content.link"
-                  textDecoration={"underline"}
-                  textTransform={"uppercase"}
-                  fontWeight={"bold"}
-                  fontSize="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedSourceId(item.datasource_id || "");
-                    onSourceDrawerOpen();
-                  }}
-                >
-                  {item.datasource_name || tDashboard("N/A")}
-                </BodyMedium>
-              </Table.Cell>
-              <Table.Cell></Table.Cell>
-            </Table.Row>
-          ))}
+          activities.map((item, index) =>
+            renderActivityRow(item, `${item.activityTitle}-${index}`),
+          )}
       </>
     );
   };
@@ -242,7 +210,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
             <ButtonSmall>{tDashboard("source")}</ButtonSmall>
           </Table.ColumnHeader>
           <Table.ColumnHeader>
-            <ButtonSmall></ButtonSmall>
+            {/* this is where the chevron is */}
           </Table.ColumnHeader>
         </Table.Header>
         <Table.Body>

@@ -57,10 +57,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
 
   // only redirect to user invite page as a fallback if there is a token present in the search params
   if (!callbackUrl) {
-    if ("token" in queryParams) {
-      const paramsString = new URLSearchParams(queryParams).toString();
-      callbackUrl = `/${lng}/user/invites?${paramsString}`;
-    } else {
+    if (!("token" in queryParams)) {
       callbackUrl = `/`;
     }
   }
@@ -155,7 +152,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
         >
           {t("no-account")}{" "}
           <Link
-            href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+            href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}+from=signup`}
             className="underline"
           >
             {t("sign-up")}

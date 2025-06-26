@@ -167,7 +167,15 @@ export function NavigationBar({
           )}
           {logoUrl && !isAuth ? (
             <Link href={dashboardPath}>
-              <img src={logoUrl} height={40} width={250} alt="Org logo" />
+              <img
+                src={logoUrl}
+                alt="Org logo"
+                style={{
+                  objectFit: "cover",
+                  height: "50px",
+                  width: "250px",
+                }}
+              />
             </Link>
           ) : (
             <>

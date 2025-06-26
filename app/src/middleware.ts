@@ -72,6 +72,7 @@ export async function middleware(req: NextRequestWithAuth) {
 
 async function next(req: NextRequestWithAuth): Promise<NextMiddlewareResult> {
   const basePath = new URL(req.url).pathname;
+  const searchParams = new URL(req.url).searchParams;
 
   // Allow public routes to pass through without authentication
   if (publicMatcher.test(basePath)) {
@@ -84,7 +85,7 @@ async function next(req: NextRequestWithAuth): Promise<NextMiddlewareResult> {
   }
 
   // handle invite routes
-  if (inviteMatcher.test(basePath)) {
+  if (inviteMatcher.test(basePath) && !searchParams.has("from")) {
     return await withAuth(req, {
       ...config,
       pages: { signIn: "/auth/signup" },

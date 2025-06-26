@@ -1060,7 +1060,7 @@ export const api = createApi({
       deleteProjectUser: builder.mutation({
         query: (data: { projectId: string; email: string }) => ({
           method: "DELETE",
-          url: `/projects/${data.projectId}/users?email=${data.email}`,
+          url: `/projects/${data.projectId}/users?email=${encodeURIComponent(data.email)}`,
         }),
         transformResponse: (response: any) => response,
         invalidatesTags: ["ProjectUsers"],
@@ -1068,7 +1068,7 @@ export const api = createApi({
       deleteCityUser: builder.mutation({
         query: (data: { cityId: string; email: string }) => ({
           method: "DELETE",
-          url: `/city/${data.cityId}/user?email=${data.email}`,
+          url: `/city/${data.cityId}/user?email=${encodeURIComponent(data.email)}`,
         }),
         transformResponse: (response: any) => response,
         invalidatesTags: ["ProjectUsers"],
@@ -1076,7 +1076,7 @@ export const api = createApi({
       deleteOrganizationAdminUser: builder.mutation({
         query: (data: { organizationId: string; email: string }) => ({
           method: "DELETE",
-          url: `/organizations/${data.organizationId}/users?email=${data.email}`,
+          url: `/organizations/${data.organizationId}/users?email=${encodeURIComponent(data.email)}`,
         }),
         transformResponse: (response: any) => response,
         invalidatesTags: ["ProjectUsers"],

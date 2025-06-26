@@ -1078,7 +1078,7 @@ export default function AddDataSteps(props: {
                   <Box mb="24px">
                     <FileInput
                       onFileSelect={() =>
-                        isFrozenCheck() ? null : handleFileSelect
+                        isFrozenCheck() ? null : handleFileSelect(uploadedFile!)
                       }
                       setUploadedFile={setUploadedFile}
                       t={t}
@@ -1188,7 +1188,7 @@ export default function AddDataSteps(props: {
         {/* Add fole data modal */}
         <AddFileDataDialog
           isOpen={openFileUploadDialog}
-          onClose={onfileDataModalClose}
+          onClose={() => setOpenFileUploadDialog(false)}
           subsectors={currentStep.subSectors}
           onOpenChange={setOpenFileUploadDialog}
           t={t}

@@ -65,7 +65,6 @@ export const signupRequest = z
     email: z.string().email(),
     password: z.string().min(4).regex(passwordRegex),
     confirmPassword: z.string().min(4),
-    inviteCode: z.string().min(6).max(6),
     acceptTerms: z.literal<boolean>(true),
     inventory: z.string().uuid().optional(),
   })

@@ -15,6 +15,7 @@ export const config = {
 };
 
 const authMatcher = /^\/[a-z]{0,2}(?!\/public)[\/]?auth\//;
+const inviteMatcher = /^\/[a-z]{2}\/(organization|user)\/invites\/?$/;
 const publicMatcher = /^\/[a-z]{0,2}\/public\//;
 const cookieName = "i18next";
 
@@ -80,6 +81,14 @@ async function next(req: NextRequestWithAuth): Promise<NextMiddlewareResult> {
   // Handle auth routes
   if (authMatcher.test(basePath)) {
     return NextResponse.next();
+  }
+
+  // handle invite routes
+  if (inviteMatcher.test(basePath)) {
+    return await withAuth(req, {
+      ...config,
+      pages: { signIn: "/auth/signup" },
+    });
   }
 
   // Apply authentication to all other routes

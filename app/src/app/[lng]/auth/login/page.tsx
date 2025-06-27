@@ -80,7 +80,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
 
       if (res?.ok && !res?.error) {
         showLoginSuccessToast();
-        router.push(callbackUrl ? callbackUrl : "/");
+        router.push(callbackUrl ?? "/");
         setError("");
         return;
       } else {
@@ -147,7 +147,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
         >
           {t("no-account")}{" "}
           <Link
-            href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}&from=signup`}
+            href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`}
             className="underline"
           >
             {t("sign-up")}

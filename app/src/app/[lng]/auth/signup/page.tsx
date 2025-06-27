@@ -215,7 +215,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
       >
         {t("have-account")}{" "}
         <Link
-          href={`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl ?? "")}`}
+          href={`/auth/login?callbackUrl=${encodeURIComponent(`${callbackUrl ?? ""}&from=signup`)}`}
           className="underline"
         >
           {t("log-in")}

@@ -248,7 +248,7 @@ def openai_web_search_tool(
 
     Args:
         query (str): The search query.
-        country (str): The name of the country the city is located in (two-letter ISO code).
+        country (str): The name of the country the city is located in (two-letter ISO code) - e.g., 'BR' for Brazil.
         city (str): The name of the city the search is related to.
 
     Returns:

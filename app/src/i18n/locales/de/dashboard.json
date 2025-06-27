@@ -203,5 +203,6 @@
   "source": "Quelle",
   "yes-i-understand": "Ja, ich verstehe",
   "account-frozen-warning-text": "Ihr Konto ist eingefroren. Bitte wenden Sie sich an einen Administrator oder an <bold>{{email}}</bold>, um es zu reaktivieren.",
-  "account-frozen-header": "Ihr Konto ist eingefroren"
+  "account-frozen-header": "Ihr Konto ist eingefroren",
+  "multiple-sources": "Mehrere Quellen"
 }

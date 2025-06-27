@@ -131,10 +131,12 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     // Calculate correct percentage based on subsector total emissions relative to sector total
     const totalPercentage = (totalEmissions / sectorTotalEmissions) * 100;
     const uniqueSources = [
-      ...new Set(activities.map((item) => item.datasource_name || "Unknown")),
+      ...new Set(activities.map((item) => item.datasource_name)),
     ];
     const sourceDisplay =
-      uniqueSources.length === 1 ? uniqueSources[0] : "Multiple sources";
+      uniqueSources.length === 1
+        ? uniqueSources[0]
+        : tDashboard("multiple-sources");
     const isExpanded = expandedSubsectors.has(subsector);
 
     return (

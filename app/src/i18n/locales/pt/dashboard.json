@@ -204,5 +204,6 @@
   "all-cities": "Todas as cidades",
   "yes-i-understand": "Sim, eu entendo",
   "account-frozen-warning-text": "A sua conta está congelada. Por favor, entre em contato com um administrador ou com <bold>{{email}}</bold> para reativá-la",
-  "account-frozen-header": "Sua conta está congelada"
+  "account-frozen-header": "Sua conta está congelada",
+  "multiple-sources": "Múltiplas fontes"
 }

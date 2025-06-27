@@ -64,11 +64,6 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
 
   // redirect to dashboard if user is already authenticated
   const { data: _session, status } = useSession();
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/");
-    }
-  }, [status, router]);
 
   const { showSuccessToast: showLoginSuccessToast } = UseSuccessToast({
     title: t("verified-toast-title"),
@@ -85,7 +80,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
 
       if (res?.ok && !res?.error) {
         showLoginSuccessToast();
-        router.push(callbackUrl);
+        router.push(callbackUrl ? callbackUrl : "/");
         setError("");
         return;
       } else {

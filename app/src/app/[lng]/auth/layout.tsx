@@ -11,7 +11,7 @@ export default function AuthLayout(props: {
   const { lng } = use(props.params);
 
   return (
-    <main className="h-screen flex flex-col">
+    <main className="min-h-screen h-full flex flex-col">
       <NavigationBar lng={lng} showNav={false} isAuth />
       <div className="flex flex-row items-stretch flex-1">
         <div className="w-full">

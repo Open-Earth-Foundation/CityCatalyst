@@ -24,7 +24,19 @@ export default function EmailInput({
   defaultValue?: string;
 }) {
   return (
-    <Field label={name} invalid={!!error} errorText={error?.message}>
+    <Field
+      label={
+        <Text
+          fontWeight="medium"
+          fontFamily="heading"
+          color="content.secondary"
+        >
+          {name}
+        </Text>
+      }
+      invalid={!!error}
+      errorText={error?.message}
+    >
       <Input
         readOnly={disabled}
         type="email"

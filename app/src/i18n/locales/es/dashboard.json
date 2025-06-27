@@ -206,5 +206,6 @@
   "source": "Fuente",
   "yes-i-understand": "Sí, entiendo",
   "account-frozen-warning-text": "Tu cuenta está congelada. Por favor, contacta a un administrador o a <bold>{{email}}</bold> para reactivarla",
-  "account-frozen-header": "Tu cuenta está congelada"
+  "account-frozen-header": "Tu cuenta está congelada",
+  "multiple-sources": "Múltiples fuentes"
 }

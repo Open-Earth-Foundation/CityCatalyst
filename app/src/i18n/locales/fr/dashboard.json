@@ -203,5 +203,6 @@
   "all-cities": "Toutes les villes",
   "yes-i-understand": "Oui, je comprends",
   "account-frozen-warning-text": "Votre compte est gelé. Veuillez contacter un administrateur ou <bold>{{email}}</bold> pour le réactiver",
-  "account-frozen-header": "Votre compte est gelé"
+  "account-frozen-header": "Votre compte est gelé",
+  "multiple-sources": "Sources multiples"
 }

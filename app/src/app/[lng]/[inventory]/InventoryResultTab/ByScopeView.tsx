@@ -50,6 +50,12 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     groupedData[subsector].push(item);
   });
 
+  // Calculate sector total emissions for correct percentage calculation
+  const sectorTotalEmissions = data.reduce(
+    (sum, item) => sum + Number(item.totalEmissions),
+    0,
+  );
+
   const toggleSubsector = (subsector: string) => {
     const newExpanded = new Set(expandedSubsectors);
     if (newExpanded.has(subsector)) {
@@ -95,6 +101,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           textTransform={"uppercase"}
           fontWeight={"bold"}
           onClick={(e) => {
+            e.stopPropagation();
             setSelectedSourceId(item.datasource_id || "");
             onSourceDrawerOpen();
           }}
@@ -121,15 +128,15 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
       (sum, item) => sum + Number(item.totalEmissions),
       0,
     );
-    const totalPercentage = activities.reduce(
-      (sum, item) => sum + item.percentage,
-      0,
-    );
+    // Calculate correct percentage based on subsector total emissions relative to sector total
+    const totalPercentage = (totalEmissions / sectorTotalEmissions) * 100;
     const uniqueSources = [
-      ...new Set(activities.map((item) => item.datasource_name || "Unknown")),
+      ...new Set(activities.map((item) => item.datasource_name)),
     ];
     const sourceDisplay =
-      uniqueSources.length === 1 ? uniqueSources[0] : "Multiple sources";
+      uniqueSources.length === 1
+        ? uniqueSources[0]
+        : tDashboard("multiple-sources");
     const isExpanded = expandedSubsectors.has(subsector);
 
     return (

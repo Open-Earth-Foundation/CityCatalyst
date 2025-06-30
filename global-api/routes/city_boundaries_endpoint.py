@@ -114,11 +114,7 @@ def get_locode(lat: Decimal, lon: Decimal):
         query = text("""
             SELECT locode
             FROM modelled.city_polygon
-            WHERE bbox_north >= :lat
-                AND bbox_south <= :lat
-                AND bbox_east >= :lon
-                AND bbox_west <= :lon
-                AND ST_Intersects(geometry, ST_SetSRID(ST_Point(:lon, :lat), 4326))
+            WHERE ST_Intersects(ST_SetSRID(geometry, 4326), ST_SetSRID(ST_Point(:lon, :lat), 4326))
         """)
         
         result = session.execute(query, {"lat": lat, "lon": lon})

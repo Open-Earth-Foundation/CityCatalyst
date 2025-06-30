@@ -49,6 +49,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
     include: [
       {
         model: User,
+        as: "user",
         where: {
           email: {
             [Op.in]: validatedData.inviteeEmails,

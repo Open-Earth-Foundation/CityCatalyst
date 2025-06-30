@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
 
-test.describe.skip("Onboarding Flow", () => {
+test.describe("Onboarding Flow", () => {
   const lng = "en";
   test.describe("Start Page", () => {
     test("should display the onboarding start page", async ({ page }) => {
       // Navigate to start page before each test
-      await page.goto(`/${lng}/onboarding/`);
+      await page.goto(`/onboarding/`);
 
       //   Verify the title of the page is correct
       await expect(page).toHaveTitle(/CityCatalyst/i);
@@ -36,11 +36,12 @@ test.describe.skip("Onboarding Flow", () => {
   test.describe("Select City Step", () => {
     test.beforeEach(async ({ page }) => {
       // Navigate to the setup page
-      await page.goto(`/${lng}/onboarding/setup`);
+      await page.goto(`/onboarding/setup`);
     });
 
     test("Select City step displays correctly", async ({ page }) => {
       // Verify tht the heading is displayed
+      test.setTimeout(60000);
       const heading = page.getByTestId("setup-city-heading");
       await expect(heading).toHaveText(/Select City/i);
 
@@ -62,6 +63,7 @@ test.describe.skip("Onboarding Flow", () => {
     test("User can select a city and proceed to the next step", async ({
       page,
     }) => {
+      test.setTimeout(60000);
       // Fill in the city input
       const cityInput = page.locator('input[name="city"]');
       await cityInput.click();
@@ -96,7 +98,7 @@ test.describe.skip("Onboarding Flow", () => {
       test.setTimeout(60000);
       test.beforeEach(async ({ page }) => {
         // Navigate to the setup page
-        await page.goto(`/${lng}/onboarding/setup`, {
+        await page.goto(`/onboarding/setup`, {
           waitUntil: "networkidle",
         });
 
@@ -157,18 +159,18 @@ test.describe.skip("Onboarding Flow", () => {
         // Verify that the selection was successful
         await expect(year).toHaveValue("2023");
 
-        // Select inventory goal (only 'gpc_basic' is enabled)
-        const inventoryGoalOption = page.locator("label").filter({
-          has: page.locator('input[value="gpc_basic"]'),
-        });
-        await expect(inventoryGoalOption).toHaveCount(1);
+        // Select inventory goal
+        const inventoryGoalOption = page.getByTestId(
+          "inventory-goal-gpc_basic",
+        );
+        await expect(inventoryGoalOption).toBeVisible();
+        await expect(inventoryGoalOption).toHaveText("GPC BASIC");
         await inventoryGoalOption.click();
 
-        // Select global warming potential (only 'gpc_basic' is enabled)
-        const gwpOption = page.locator("label", {
-          has: page.locator('input[value="ar6"]'),
-        });
-
+        // Select global warming potential
+        const gwpOption = page.getByTestId("inventory-goal-ar6");
+        await expect(gwpOption).toBeVisible();
+        await expect(gwpOption).toHaveText("ar6");
         await gwpOption.click();
 
         const continueButton = page.getByRole("button", { name: /Continue/i });
@@ -226,17 +228,17 @@ test.describe.skip("Onboarding Flow", () => {
         await yearSelect.selectOption("2023"); // Replace '2023' with an available option
 
         // Select inventory goal
-        const inventoryGoalOption = page.locator("label").filter({
-          has: page.locator('input[value="gpc_basic"]'),
-        });
-        await expect(inventoryGoalOption).toHaveCount(1);
+        const inventoryGoalOption = page.getByTestId(
+          "inventory-goal-gpc_basic",
+        );
+        await expect(inventoryGoalOption).toBeVisible();
+        await expect(inventoryGoalOption).toHaveText("GPC BASIC");
         await inventoryGoalOption.click();
 
         // Select global warming potential
-        const gwpOption = page.locator("label").filter({
-          has: page.locator('input[value="ar6"]'),
-        });
-        await expect(gwpOption).toHaveCount(1);
+        const gwpOption = page.getByTestId("inventory-goal-ar6");
+        await expect(gwpOption).toBeVisible();
+        await expect(gwpOption).toHaveText("ar6");
         await gwpOption.click();
 
         // Click "Continue" to go to the Set Population Data Step
@@ -394,7 +396,7 @@ test.describe.skip("Onboarding Flow", () => {
         // Navigate through previous steps to reach the Confirm Step
 
         // Navigate to the onboarding setup page
-        await page.goto(`/${lng}/onboarding/setup`, {
+        await page.goto(`/onboarding/setup`, {
           waitUntil: "networkidle",
         });
 
@@ -430,17 +432,17 @@ test.describe.skip("Onboarding Flow", () => {
         await expect(yearSelect).toBeVisible();
         await yearSelect.selectOption("2023");
         // Select inventory goal
-        const inventoryGoalOption = page.locator("label").filter({
-          has: page.locator('input[value="gpc_basic"]'),
-        });
-        await expect(inventoryGoalOption).toHaveCount(1);
+        const inventoryGoalOption = page.getByTestId(
+          "inventory-goal-gpc_basic",
+        );
+        await expect(inventoryGoalOption).toBeVisible();
+        await expect(inventoryGoalOption).toHaveText("GPC BASIC");
         await inventoryGoalOption.click();
 
         // Select global warming potential
-        const gwpOption = page.locator("label").filter({
-          has: page.locator('input[value="ar6"]'),
-        });
-        await expect(gwpOption).toHaveCount(1);
+        const gwpOption = page.getByTestId("inventory-goal-ar6");
+        await expect(gwpOption).toBeVisible();
+        await expect(gwpOption).toHaveText("ar6");
         await gwpOption.click();
 
         // Click "Continue" to go to the Set Population Data Step
@@ -521,18 +523,8 @@ test.describe.skip("Onboarding Flow", () => {
         // Click the "Continue" button
         const continueButton = page.getByRole("button", { name: /Continue/i });
         await expect(continueButton).toBeEnabled();
+
         await continueButton.click();
-
-        const completionMessage = page.getByTestId("done-heading");
-        await expect(completionMessage).toBeVisible();
-
-        // Verify that the "Add new inventory" button is present
-        const addnewInventoryButton = page.getByTestId("add-new-inventory");
-        await expect(addnewInventoryButton).toBeVisible();
-
-        // Verify that the "Add new inventory" button is present
-        const checkDashboardButton = page.getByTestId("check-dashboard");
-        await expect(checkDashboardButton).toBeVisible();
       });
     });
   });

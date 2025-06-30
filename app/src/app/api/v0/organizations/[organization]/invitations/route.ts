@@ -1,5 +1,6 @@
 import { OrganizationInvite } from "@/models/OrganizationInvite";
 import { Organization } from "@/models/Organization";
+import { Op } from "sequelize";
 import {
   CreateOrganizationInviteRequest,
   createOrganizationInviteRequest,
@@ -48,7 +49,11 @@ export const POST = apiHandler(async (req, { params, session }) => {
     include: [
       {
         model: User,
-        where: { email: validatedData.inviteeEmails },
+        where: {
+          email: {
+            [Op.in]: validatedData.inviteeEmails,
+          },
+        },
       },
     ],
   });

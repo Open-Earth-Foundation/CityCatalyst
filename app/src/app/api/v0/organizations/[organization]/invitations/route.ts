@@ -15,6 +15,7 @@ import InviteToOrganizationTemplate from "@/lib/emails/InviteToOrganizationTempl
 import { User } from "@/models/User";
 import EmailService from "@/backend/EmailService";
 import { logger } from "@/services/logger";
+import { OrganizationAdmin } from "@/models/OrganizationAdmin";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
   const { organization: organizationId } = params;
@@ -41,6 +42,23 @@ export const POST = apiHandler(async (req, { params, session }) => {
   const org = await Organization.findByPk(organizationId);
   if (!org) {
     throw new createHttpError.NotFound("organization-not-found");
+  }
+
+  const existingOrgAdmins = await OrganizationAdmin.findAll({
+    include: [
+      {
+        model: User,
+        where: { email: validatedData.inviteeEmails },
+      },
+    ],
+  });
+
+  if (existingOrgAdmins.length > 0) {
+    throw new createHttpError.BadRequest(
+      `The following users are already admins for another organization: ${existingOrgAdmins
+        .map((admin) => admin.user.email)
+        .join(", ")}`,
+    );
   }
 
   const failedInvites: { email: string }[] = [];

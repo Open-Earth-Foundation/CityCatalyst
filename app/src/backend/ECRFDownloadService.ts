@@ -5,7 +5,7 @@ import {
   InventoryWithInventoryValuesAndActivityValues,
 } from "@/util/types";
 import { findMethodology } from "@/util/form-schema";
-import { translationFunc } from "@/i18n/server";
+import i18next, { translationFunc } from "@/i18n/server";
 import { toDecimal } from "@/util/helpers";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
@@ -29,7 +29,7 @@ export default class ECRFDownloadService {
     output: InventoryWithInventoryValuesAndActivityValues,
     lng: string,
   ) {
-    const { t } = await translationFunc(lng, "data");
+    const t = i18next.getFixedT(lng, "data");
     const workbook = new Excel.Workbook();
     try {
       // Load the workbook

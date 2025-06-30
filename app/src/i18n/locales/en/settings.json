@@ -146,6 +146,7 @@
   "collaborator": "Collaborator",
   "plan-details": "Plan details",
   "plan-details-caption": "<bold>{{name}}</bold> currently has <bold>{{num_projects}}</bold> projects and a count of <bold>{{num_cities}} / {{total_cities}}</bold> cities",
+  "preferred-language": "Preferred language",
   "contact-us-to-upgrade": "To upgrade your plan, please reach out to",
   "confirm-remove-project-user": "Are you sure you want to remove the user with the email: <bold>{{email}}</bold> from the <bold>{{projectName}}</bold> project?",
   "confirm-remove-city-user": "Are you sure you want to remove the user with the email: <bold>{{email}}</bold> from <bold>{{cityName}}</bold>",

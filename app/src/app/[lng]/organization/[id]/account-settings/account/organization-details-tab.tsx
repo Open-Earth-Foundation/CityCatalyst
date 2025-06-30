@@ -11,6 +11,7 @@ import { OrganizationResponse } from "@/util/types";
 import { useGetUserAccessStatusQuery, useUpdateOrganizationMutation } from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { logger } from "@/services/logger";
+import { LanguageSelector } from "@/app/[lng]/auth/signup/LanguageSelector";
 import PlanDetailsBox from "@/components/PlanDetailsBox";
 
 const OrganizationDetailsTab = ({
@@ -24,6 +25,7 @@ const OrganizationDetailsTab = ({
   const schema = z.object({
     email: z.string().email("invalid-email").min(1, "required"),
     name: z.string().min(3, "required"),
+    preferredLanguage: z.string().min(1, "required"),
   });
 
   const { showErrorToast } = UseErrorToast({
@@ -46,6 +48,7 @@ const OrganizationDetailsTab = ({
     defaultValues: {
       email: organization?.contactEmail,
       name: organization?.name,
+      preferredLanguage: organization?.preferredLanguage,
     },
     resolver: zodResolver(schema),
   });
@@ -53,13 +56,14 @@ const OrganizationDetailsTab = ({
   const [updateOrganization, { isLoading }] = useUpdateOrganizationMutation();
   const { data: userAccessStatus } = useGetUserAccessStatusQuery({});
   const handleFormSubmit = async (data: Schema) => {
-    const { name, email } = data;
+    const { name, email, preferredLanguage } = data;
 
     // [ON-3932] TODO prevent users from editing the default organization
     const response = await updateOrganization({
       id: organization?.organizationId as string,
       name,
       contactEmail: email,
+      preferredLanguage,
     });
 
     if (response.error) {
@@ -129,6 +133,29 @@ const OrganizationDetailsTab = ({
             {t("save-changes")}
           </Button>
         </Box>
+        <Field
+          label={t("preferred-language")}
+          invalid={!!errors.preferredLanguage}
+          errorText={
+            <Box display="flex" gap="6px">
+              <Icon as={MdWarning} />
+              <Text
+                fontSize="body.md"
+                lineHeight="20px"
+                letterSpacing="wide"
+                color="content.tertiary"
+              >
+                {errors.preferredLanguage?.message}
+              </Text>
+            </Box>
+          }
+        >
+          <LanguageSelector
+            register={register}
+            error={errors.preferredLanguage}
+            t={t}
+          />
+        </Field>
       </Box>
       {userAccessStatus?.isOrgOwner && (
         <PlanDetailsBox organization={organization} />

@@ -18,6 +18,7 @@ export type ProfileInputs = {
   locode: string;
   userId: string;
   title?: string | null;
+  preferredLanguage?: string;
 };
 
 export type UserDetails = {

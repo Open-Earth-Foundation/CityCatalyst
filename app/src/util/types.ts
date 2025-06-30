@@ -93,6 +93,7 @@ export interface UserInfoResponse {
   defaultInventoryId: string | null;
   role: Roles;
   email?: string;
+  preferredLanguage?: string;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -393,6 +394,7 @@ export type OrganizationResponse = {
     themeKey: string;
   };
   logoUrl?: string;
+  preferredLanguage?: string;
   active: boolean;
   projects: {
     projectId: string;
@@ -525,6 +527,7 @@ export interface UpdateUserPayload {
   email: string;
   userId: string;
   title?: string;
+  preferredLanguage?: string;
 }
 
 export interface FormulaInputValuesResponse {

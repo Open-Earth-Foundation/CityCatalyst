@@ -10,7 +10,9 @@ import { UseSuccessToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { MdInfoOutline } from "react-icons/md";
 import { BodyMedium } from "@/components/Texts/Body";
-import { UpdateUserPayload } from "@/util/types";
+import { LANGUAGES, UpdateUserPayload } from "@/util/types";
+import { LanguageSelector } from "@/app/[lng]/auth/signup/LanguageSelector";
+import { Field } from "@/components/ui/field";
 
 interface AccountDetailsFormProps {
   t: TFunction;
@@ -41,6 +43,7 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
       setValue("name", userInfo.name);
       setValue("email", userInfo.email);
       setValue("title", userInfo.title);
+      setValue("preferredLanguage", userInfo.preferredLanguage);
     }
   }, [setValue, userInfo]);
 
@@ -49,6 +52,7 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
       userId: userInfo.userId,
       name: data.name ?? "",
       email: data.email ?? "",
+      preferredLanguage: data.preferredLanguage ?? LANGUAGES.en,
     };
     if (data.title) {
       payload.title = data.title;
@@ -61,7 +65,13 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
   };
 
   return (
-    <Box backgroundColor="white" p={6} display="flex" flexDirection="column" gap="24px">
+    <Box
+      backgroundColor="white"
+      p={6}
+      display="flex"
+      flexDirection="column"
+      gap="24px"
+    >
       {!userInfo ? (
         <ProgressLoader />
       ) : (
@@ -96,12 +106,22 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
                 <BodyMedium color={"content.link"}>
                   <MdInfoOutline />
                 </BodyMedium>
-                <BodyMedium >
-                  {t("position-description")}
-                </BodyMedium>
+                <BodyMedium>{t("position-description")}</BodyMedium>
               </HStack>
             </>
           )}
+          <Field
+            label={t("preferred-language")}
+            invalid={!!errors.preferredLanguage}
+            errorText={errors.preferredLanguage?.message}
+          >
+            <LanguageSelector
+              defaultValue={userInfo.preferredLanguage}
+              register={register}
+              error={errors.preferredLanguage}
+              t={t}
+            />
+          </Field>
           <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
             <Button
               type="submit"
@@ -120,9 +140,8 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
             </Button>
           </Box>
         </form>
-      )
-      }
-    </Box >
+      )}
+    </Box>
   );
 };
 

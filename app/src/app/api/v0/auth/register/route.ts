@@ -19,6 +19,7 @@ export const POST = apiHandler(async (req: Request) => {
     email: body.email.toLowerCase(),
     passwordHash,
     role: Roles.User,
+    preferredLanguage: body.preferredLanguage,
   });
 
   if (body.inventory) {
@@ -40,11 +41,12 @@ export const POST = apiHandler(async (req: Request) => {
         ConfirmRegistrationTemplate({
           url: `${host}/dashboard`,
           user: { name: body.name },
+          language: body.preferredLanguage,
         }),
       );
       await sendEmail({
         to: body.email,
-        subject: "City Catalyst - User Registration",
+        subject: "welcome.subject",
         html,
       });
     } catch (error) {
@@ -58,6 +60,7 @@ export const POST = apiHandler(async (req: Request) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      preferredLanguage: user.preferredLanguage,
     },
   });
 });

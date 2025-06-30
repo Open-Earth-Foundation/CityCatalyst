@@ -1,4 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
+import React from "react";
 import {
   Body,
   Container,
@@ -12,12 +13,15 @@ import {
   Section,
   Text,
 } from "@react-email/components";
+import i18next from "i18next";
+import { LANGUAGES } from "@/util/types";
 
 export function RoleUpdateNotificationTemplate({
   url,
   email,
   organizationName,
   brandInformation,
+  language,
 }: {
   url?: string;
   email: string;
@@ -26,7 +30,9 @@ export function RoleUpdateNotificationTemplate({
     color: string;
     logoUrl: string;
   };
+  language?: string;
 }) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
   const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
     <Html>
@@ -43,7 +49,7 @@ export function RoleUpdateNotificationTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: Role Update</Preview>
+      <Preview>{t("role-update.preview")}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section>
@@ -67,15 +73,16 @@ export function RoleUpdateNotificationTemplate({
                   width="36"
                   height="36"
                 />
-                <Text style={brandHeading}>CityCatalyst</Text>
+                <Text style={brandHeading}>{t("role-update.brand")}</Text>
               </Section>
             )}
             <Section style={{ padding: "24px" }}>
-              {/* eslint-disable-next-line react/no-unescaped-entities */}
-              <Text style={headingGreen}>Your role has been updated</Text>
-              <Text style={greeting}>Hi {email},</Text>
+              <Text style={headingGreen}>{t("role-update.title")}</Text>
+              <Text style={greeting}>
+                {t("role-update.greeting", { email })}
+              </Text>
               <Text style={paragraph}>
-                Your role in {organizationName} has been updated to Admin
+                {t("role-update.message", { organizationName })}
               </Text>
               <Section style={buttonSection}>
                 <Link
@@ -87,15 +94,13 @@ export function RoleUpdateNotificationTemplate({
                       : {}),
                   }}
                 >
-                  Sign In
+                  {t("role-update.cta")}
                 </Link>
               </Section>
             </Section>
           </Section>
           <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-          <Text style={footerText}>
-            CityCatalyst is a platform powered by the Open Earth Foundation.
-          </Text>
+          <Text style={footerText}>{t("role-update.footer")}</Text>
         </Container>
       </Body>
     </Html>

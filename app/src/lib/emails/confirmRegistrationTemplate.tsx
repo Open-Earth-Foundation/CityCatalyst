@@ -12,14 +12,19 @@ import {
   Font,
   Hr,
 } from "@react-email/components";
+import { LANGUAGES } from "@/util/types";
+import i18next from "i18next";
 
 export default function ConfirmRegistrationTemplate({
   url = "/",
   user = { name: "" },
+  language,
 }: {
   url?: string;
   user?: { name: string };
+  language?: string;
 }) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
   const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
     <Html>
@@ -36,7 +41,7 @@ export default function ConfirmRegistrationTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: User Registration</Preview>
+      <Preview>{t("welcome.subject")}</Preview>
       <Body style={main}>
         <Container style={container}>
           <div style={content}>
@@ -47,13 +52,11 @@ export default function ConfirmRegistrationTemplate({
               height="36"
             />
             <Text style={brandHeading}>CityCatalyst</Text>
-            <Text style={heading}>Welcome to CityCatalyst</Text>
-            <Text style={greeting}>Hi {user?.name},</Text>
-            <Text style={paragraph}>
-              Thank you for registering an account CityCatalyst. <br /> <br />{" "}
-              Please activate your account by clicking this button below. <br />{" "}
-              <br />
+            <Text style={heading}>{t("welcome.subject")}</Text>
+            <Text style={greeting}>
+              {t("welcome.greeting", { name: user?.name })}
             </Text>
+            <Text style={paragraph}>{t("welcome.message")}</Text>
 
             <div
               style={{
@@ -62,15 +65,12 @@ export default function ConfirmRegistrationTemplate({
               }}
             >
               <Link href={url} style={urlLink}>
-                ACTIVATE ACCOUNT
+                {t("welcome.cta")}
               </Link>
             </div>
 
             <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-            <Text style={footerText}>
-              Open Earth Foundation is a nonprofit public benefit corporation
-              from California, USA. EIN: 85-3261449
-            </Text>
+            <Text style={footerText}>{t("welcome.footer")}</Text>
           </div>
         </Container>
       </Body>

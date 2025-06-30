@@ -1,4 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
+import React from "react";
 import { City } from "@/models/City";
 import {
   Body,
@@ -13,12 +14,15 @@ import {
   Section,
   Text,
 } from "@react-email/components";
+import i18next from "i18next";
+import { LANGUAGES } from "@/util/types";
 
 export function RemoveUserFromMultipleCitiesTemplate({
   url,
   email,
   cities,
   brandInformation,
+  language,
 }: {
   url?: string;
   email: string;
@@ -27,7 +31,9 @@ export function RemoveUserFromMultipleCitiesTemplate({
     color: string;
     logoUrl: string;
   };
+  language?: string;
 }) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
   const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
     <Html>
@@ -44,7 +50,7 @@ export function RemoveUserFromMultipleCitiesTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: Access Removed</Preview>
+      <Preview>{t("remove-multiple-cities.preview")}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section>
@@ -68,16 +74,26 @@ export function RemoveUserFromMultipleCitiesTemplate({
                   width="36"
                   height="36"
                 />
-                <Text style={brandHeading}>CityCatalyst</Text>
+                <Text style={brandHeading}>
+                  {t("remove-multiple-cities.brand")}
+                </Text>
               </Section>
             )}
             <Section style={{ padding: "24px" }}>
-              {/* eslint-disable-next-line react/no-unescaped-entities */}
-              <Text style={headingGreen}>Changes to Access</Text>
-              <Text style={greeting}>Hi {email},</Text>
+              <Text style={headingGreen}>
+                {t("remove-multiple-cities.title")}
+              </Text>
+              <Text style={greeting}>
+                {t("remove-multiple-cities.greeting", { email })}
+              </Text>
               <Text style={paragraph}>
-                Your access has been removed from the following
-                {cities?.length == 1 ? " city" : " cities"}:
+                {t("remove-multiple-cities.message", {
+                  cityCount: cities?.length,
+                  cityLabel:
+                    cities?.length === 1
+                      ? t("remove-multiple-cities.cityLabelSingular")
+                      : t("remove-multiple-cities.cityLabel"),
+                })}
               </Text>
               <div>
                 {cities?.map(({ countryLocode, name }) => (
@@ -105,20 +121,14 @@ export function RemoveUserFromMultipleCitiesTemplate({
                       : {}),
                   }}
                 >
-                  Sign In
+                  {t("remove-multiple-cities.cta")}
                 </Link>
               </Section>
             </Section>
           </Section>
-          <Text style={footerText}>
-            This invite will remain valid for the next 30 days or until claimed,
-            whichever happens first.
-          </Text>
+          <Text style={footerText}>{t("remove-multiple-cities.footer")}</Text>
           <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-          <Text style={footerText}>
-            Open Earth Foundation is a nonprofit public benefit corporation from
-            California, USA. EIN: 85-3261449
-          </Text>
+          <Text style={footerText}>{t("remove-multiple-cities.footer2")}</Text>
         </Container>
       </Body>
     </Html>

@@ -1,4 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
+import React from "react";
 import type { CityAttributes } from "@/models/City";
 import type { UserAttributes } from "@/models/User";
 import {
@@ -13,6 +14,8 @@ import {
   Font,
   Hr,
 } from "@react-email/components";
+import i18next from "i18next";
+import { LANGUAGES } from "@/util/types";
 
 export default function InviteUserTemplate({
   url,
@@ -20,13 +23,16 @@ export default function InviteUserTemplate({
   city,
   invitingUser,
   members,
+  language,
 }: {
   url?: string;
   user?: { name: string; email: string; cityId?: string };
   city?: CityAttributes;
   invitingUser?: { name: string; email: string };
   members: UserAttributes[];
+  language?: string;
 }) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
   const countryCode = city?.locode?.split(" ")!;
 
   const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
@@ -45,17 +51,20 @@ export default function InviteUserTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: City Invitation</Preview>
+      <Preview>{t("invite.subject")}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Img src={ImageURL} alt="City Catalyst logo" width="36" height="36" />
-          <Text style={brandHeading}>CityCatalyst</Text>
-          <Text style={heading}>Join Your Team In CityCatalyst</Text>
-          <Text style={greeting}>Hi {user?.name},</Text>
+          <Text style={brandHeading}>{t("invite.brand")}</Text>
+          <Text style={heading}>{t("invite.title")}</Text>
+          <Text style={greeting}>
+            {t("invite.greeting", { name: user?.name })}
+          </Text>
           <Text style={paragraph}>
-            {" "}
-            {invitingUser?.name} ({invitingUser?.email}) has invited you to join
-            CityCatalyst and contribute to the emission inventory for the city.
+            {t("invite.message", {
+              inviterName: invitingUser?.name,
+              inviterEmail: invitingUser?.email,
+            })}
           </Text>
           <div style={cityBox}>
             <div
@@ -85,12 +94,11 @@ export default function InviteUserTemplate({
                 style={{
                   fontSize: "14px",
                   fontStyle: "normal",
-
                   letterSpacing: "0.5px",
                   color: "#7A7B9A",
                 }}
               >
-                {members.length} member(s)
+                {t("invite.members", { count: members.length })}
               </Text>
             </div>
           </div>
@@ -101,15 +109,12 @@ export default function InviteUserTemplate({
             }}
           >
             <Link href={url} style={urlLink}>
-              JOIN NOW
+              {t("invite.cta")}
             </Link>
           </div>
 
           <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-          <Text style={footerText}>
-            Open Earth Foundation is a nonprofit public benefit corporation from
-            California, USA. EIN: 85-3261449
-          </Text>
+          <Text style={footerText}>{t("invite.footer")}</Text>
         </Container>
       </Body>
     </Html>

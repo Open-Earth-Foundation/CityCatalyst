@@ -225,6 +225,9 @@ export const POST = apiHandler(async (req, { params, session }) => {
           doesInvitedUserExist ? "true" : "false",
         );
         const url = `${host}/user/invites?${params.toString()}`;
+        // Get the inviting user's preferred language
+        const invitingUser = await db.models.User.findByPk(session.user.id);
+
         const html = await render(
           InviteUserToMultipleCitiesTemplate({
             url,
@@ -234,6 +237,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
               name: session?.user.name!,
               email: session?.user.email!,
             },
+            language: invitingUser?.preferredLanguage,
             ...(emailBranding
               ? {
                   brandInformation: emailBranding,
@@ -243,7 +247,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
         );
         const sendInvite = await sendEmail({
           to: email!,
-          subject: "City Catalyst - City Invitation",
+          subject: "invite-multiple.subject",
           html,
         });
         if (!sendInvite) {

@@ -14,18 +14,24 @@ import {
 } from "@react-email/components";
 import { User } from "@/models/User";
 import { Project } from "@/models/Project";
+import i18next from "i18next";
+import { LANGUAGES } from "@/util/types";
 
 export default function ProjectCreatedNotificationTemplate({
   url,
   user,
   project,
   organizationName,
+  language,
 }: {
   url: string;
   project: Project;
   user: User | null;
   organizationName: string;
+  language?: string;
 }) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
+
   return (
     <Html>
       <Head>
@@ -41,23 +47,21 @@ export default function ProjectCreatedNotificationTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: Project Added</Preview>
+      <Preview>{t("project-created.preview")}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={brandHeading}>CityCatalyst</Text>
+          <Text style={brandHeading}>{t("project-created.brand")}</Text>
           <Text style={headingGreen}>
-            {" "}
-            Project added to <span style={heading}>
-              {organizationName}
-            </span>{" "}
-            account
+            {t("project-created.title", { organizationName })}
           </Text>
-          <Text style={greeting}>Hi {user?.name},</Text>
+          <Text style={greeting}>
+            {t("project-created.greeting", { name: user?.name })}
+          </Text>
           <Text style={paragraph}>
-            The {project?.name} project has been added to your account with{" "}
-            <span style={boldText}>
-              {project?.cityCountLimit.toString()} city slots.
-            </span>
+            {t("project-created.message", {
+              projectName: project?.name,
+              cityCount: project?.cityCountLimit.toString(),
+            })}
           </Text>
           <div
             style={{
@@ -66,15 +70,12 @@ export default function ProjectCreatedNotificationTemplate({
             }}
           >
             <Link href={url} style={urlLink}>
-              Sign In
+              {t("project-created.cta")}
             </Link>
           </div>
 
           <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-          <Text style={footerText}>
-            Open Earth Foundation is a nonprofit public benefit corporation from
-            California, USA. EIN: 85-3261449
-          </Text>
+          <Text style={footerText}>{t("project-created.footer")}</Text>
         </Container>
       </Body>
     </Html>

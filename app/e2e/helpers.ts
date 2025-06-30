@@ -10,7 +10,6 @@ export async function signup(
   password: string = "Test123",
   confirmPassword: string = "Test123",
   name: string = "Test Account",
-  inviteCode: string = "123456",
   acceptTerms: boolean = true,
 ) {
   const result = await request.post("/api/v0/auth/register", {
@@ -19,7 +18,6 @@ export async function signup(
       password,
       confirmPassword,
       name,
-      inviteCode,
       acceptTerms,
     },
   });

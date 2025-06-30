@@ -905,7 +905,7 @@ export default function AddDataSteps(props: {
                   w={16}
                   loading={areDataSourcesFetching}
                   onClick={() =>
-                    isFrozenCheck() ? null : onSearchDataSourcesClicked
+                    isFrozenCheck() ? null : onSearchDataSourcesClicked()
                   }
                 >
                   <Icon as={MdRefresh} boxSize={9} />
@@ -917,7 +917,7 @@ export default function AddDataSteps(props: {
                 t={t}
                 isSearching={areDataSourcesLoading}
                 onSearchClicked={() =>
-                  isFrozenCheck() ? null : onSearchDataSourcesClicked
+                  isFrozenCheck() ? null : onSearchDataSourcesClicked()
                 }
               />
             ) : dataSourcesError ? (

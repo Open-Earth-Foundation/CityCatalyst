@@ -149,7 +149,7 @@
     "sequelize-cli": "^6.6.2",
     "start-server-and-test": "^2.0.12",
     "storybook": "^8.2.7",
-    "tailwindcss": "3.4.10",
+    "tailwindcss": "4.1.11",
     "ts-jest": "^29.3.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",

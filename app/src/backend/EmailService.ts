@@ -1,6 +1,5 @@
 import createHttpError from "http-errors";
 import type { User } from "@/models/User";
-import { CreateOrganizationInviteRequest } from "@/util/validation";
 import { Organization } from "@/models/Organization";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "@/lib/email";
@@ -15,11 +14,51 @@ import AccountFrozenNotificationTemplate from "@/lib/emails/AccountFrozenNotific
 import AccountUnFrozenNotificationTemplate from "@/lib/emails/AccountUnFrozenNotificationTemplate";
 import { City } from "@/models/City";
 import RemoveUserFromMultipleCitiesTemplate from "@/lib/emails/RemoveUsersFromMultipleCities";
-import { OrganizationRole } from "@/util/types";
+import { LANGUAGES, OrganizationRole } from "@/util/types";
 import RoleUpdateNotificationTemplate from "@/lib/emails/RoleUpdateNotificationTemplate";
 import CitiesAddedToProjectNotificationTemplate from "@/lib/emails/CitiesAddedToProjectNotification";
+import i18next from "@/i18n/server";
+import InviteUserToMultipleCitiesTemplate from "@/lib/emails/InviteUserToMultipleCitiesTemplate";
+import AdminNotificationTemplate from "@/lib/emails/AdminNotificationTemplate";
+import ForgotPasswordTemplate from "@/lib/emails/ForgotPasswordTemplate";
+import InviteUserTemplate from "@/lib/emails/InviteUserTemplate";
+import confirmRegistrationTemplate from "@/lib/emails/confirmRegistrationTemplate";
+import { UserFileResponse } from "@/util/types";
+
+interface EmailTranslation {
+  subject: string;
+  [key: string]: string | undefined;
+}
 
 export default class EmailService {
+  static getTranslation(
+    user: { preferredLanguage?: LANGUAGES } | null,
+    key: string,
+  ): EmailTranslation {
+    const language = user?.preferredLanguage || LANGUAGES.en;
+
+    // Split the key to handle nested translations like "invite-organization.subject"
+    const keyParts = key.split(".");
+    const baseKey = keyParts[0];
+    const subKey = keyParts[1];
+
+    const t = i18next.getFixedT(language, "emails");
+    const translation = t(baseKey, { returnObjects: true });
+
+    // If we have a subKey (like "subject"), return the specific property
+    if (
+      subKey &&
+      translation &&
+      typeof translation === "object" &&
+      subKey in translation
+    ) {
+      return { [subKey]: (translation as any)[subKey] } as EmailTranslation;
+    }
+
+    // Otherwise return the full translation object
+    return translation as EmailTranslation;
+  }
+
   public static async sendOrganizationInvitationEmail(
     request: {
       email: string;
@@ -36,6 +75,7 @@ export default class EmailService {
       throw createHttpError.InternalServerError("configuration-error");
     }
 
+    let expiresIn = process.env.VERIFICATION_TOKEN_EXPIRATION ?? "30d";
     const invitationCode = jwt.sign(
       {
         reason: "organization-invite",
@@ -44,9 +84,7 @@ export default class EmailService {
         organizationId,
       },
       process.env.VERIFICATION_TOKEN_SECRET!,
-      {
-        expiresIn: "30d",
-      },
+      { expiresIn },
     );
 
     const host = process.env.HOST ?? "http://localhost:3000";
@@ -64,11 +102,18 @@ export default class EmailService {
         url,
         organization,
         user,
+        language: user?.preferredLanguage,
       }),
     );
+
+    const translatedSubject = this.getTranslation(
+      user,
+      "invite-organization.subject",
+    ).subject;
+
     return sendEmail({
       to: email,
-      subject: "City Catalyst - Organization Invitation",
+      subject: translatedSubject,
       html,
     });
   }
@@ -95,12 +140,18 @@ export default class EmailService {
               organizationName,
               project,
               user, // pass the individual user to the template if needed
+              language: user?.preferredLanguage,
             }),
           );
 
+          const translatedSubject = this.getTranslation(
+            user,
+            "project-created.subject",
+          ).subject;
+
           await sendEmail({
             to: user.email as string,
-            subject: "City Catalyst - Project Creation",
+            subject: translatedSubject,
             html,
           });
         } catch (err) {
@@ -132,12 +183,18 @@ export default class EmailService {
               organizationName,
               project,
               user,
+              language: user?.preferredLanguage,
             }),
           );
 
+          const translatedSubject = this.getTranslation(
+            user,
+            "project-deleted.subject",
+          ).subject;
+
           await sendEmail({
             to: user.email as string,
-            subject: "City Catalyst - Project Deletion",
+            subject: translatedSubject,
             html,
           });
         } catch (err) {
@@ -169,12 +226,18 @@ export default class EmailService {
               organizationName,
               project,
               user, // pass the individual user to the template if needed
+              language: user?.preferredLanguage,
             }),
           );
 
+          const translatedSubject = this.getTranslation(
+            user,
+            "city-slot-changed.subject",
+          ).subject;
+
           await sendEmail({
             to: user.email as string,
-            subject: "City Catalyst - City Slots Changed",
+            subject: translatedSubject,
             html,
           });
         } catch (err) {
@@ -200,12 +263,18 @@ export default class EmailService {
             AccountFrozenNotificationTemplate({
               url,
               user,
+              language: user?.preferredLanguage,
             }),
           );
 
+          const translatedSubject = this.getTranslation(
+            user,
+            "account-frozen.subject",
+          ).subject;
+
           await sendEmail({
             to: user.email as string,
-            subject: "City Catalyst - Account Frozen",
+            subject: translatedSubject,
             html,
           });
         } catch (err) {
@@ -231,12 +300,18 @@ export default class EmailService {
             AccountUnFrozenNotificationTemplate({
               url,
               user,
+              language: user?.preferredLanguage,
             }),
           );
 
+          const translatedSubject = this.getTranslation(
+            user,
+            "account-unfrozen.subject",
+          ).subject;
+
           await sendEmail({
             to: user.email as string,
-            subject: "City Catalyst - Account Activated",
+            subject: translatedSubject,
             html,
           });
         } catch (err) {
@@ -250,6 +325,7 @@ export default class EmailService {
     email,
     cities,
     brandInformation,
+    user,
   }: {
     email: string;
     cities: City[];
@@ -257,9 +333,9 @@ export default class EmailService {
       color: string;
       logoUrl: string;
     };
+    user: User | null;
   }) {
     const host = process.env.HOST ?? "http://localhost:3000";
-
     const url = `${host}/login`;
 
     try {
@@ -269,22 +345,26 @@ export default class EmailService {
           email: email as string,
           cities,
           brandInformation,
+          language: user?.preferredLanguage,
         }),
       );
+
+      const translatedSubject = this.getTranslation(
+        user,
+        "remove-multiple-cities.subject",
+      ).subject;
+
       await sendEmail({
         to: email,
-        subject: "City Catalyst - Access Removed",
+        subject: translatedSubject,
         html,
       });
     } catch (err) {
       logger.error(
-        { email, cities },
+        { email, cities, error: err instanceof Error ? err.message : err },
         "Failed to send change to city access notification email",
       );
-      logger.error(
-        { email, cities },
-        "Failed to send change to city access notification email",
-      );
+      throw err;
     }
   }
 
@@ -292,6 +372,7 @@ export default class EmailService {
     email,
     organizationName,
     brandInformation,
+    user,
   }: {
     email: string;
     organizationName: string;
@@ -299,9 +380,9 @@ export default class EmailService {
       color: string;
       logoUrl: string;
     };
+    user: User | null;
   }) {
     const host = process.env.HOST ?? "http://localhost:3000";
-
     const url = `${host}/login`;
 
     try {
@@ -311,11 +392,18 @@ export default class EmailService {
           email: email as string,
           organizationName,
           brandInformation,
+          language: user?.preferredLanguage,
         }),
       );
+
+      const translatedSubject = this.getTranslation(
+        user,
+        "role-update.subject",
+      ).subject;
+
       await sendEmail({
         to: email,
-        subject: "City Catalyst - Role Updated",
+        subject: translatedSubject,
         html,
       });
     } catch (err) {
@@ -323,6 +411,7 @@ export default class EmailService {
         { email },
         "Failed to send change to organization role notification email",
       );
+      throw err;
     }
   }
 
@@ -343,7 +432,6 @@ export default class EmailService {
     cities: City[];
   }) {
     const host = process.env.HOST ?? "http://localhost:3000";
-
     const url = `${host}/login`;
 
     await Promise.all(
@@ -362,12 +450,18 @@ export default class EmailService {
               organizationName,
               cities,
               brandInformation,
+              language: user.preferredLanguage,
             }),
           );
 
+          const translatedSubject = this.getTranslation(
+            user,
+            "cities-added.subject",
+          ).subject;
+
           await sendEmail({
             to: user.email as string,
-            subject: "City Catalyst - Cities Added",
+            subject: translatedSubject,
             html,
           });
         } catch (err) {
@@ -375,5 +469,291 @@ export default class EmailService {
         }
       }),
     );
+  }
+
+  public static async sendInviteToMultipleCities({
+    email,
+    cities,
+    invitingUser,
+    brandInformation,
+    user,
+  }: {
+    email: string;
+    cities: City[];
+    invitingUser: { name: string; email: string };
+    brandInformation?: {
+      color: string;
+      logoUrl: string;
+    };
+    user: User | null;
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+    const url = `${host}/login`;
+
+    try {
+      const html = await render(
+        InviteUserToMultipleCitiesTemplate({
+          url,
+          email,
+          cities,
+          invitingUser,
+          brandInformation,
+          language: user?.preferredLanguage,
+        }),
+      );
+
+      const translatedSubject = this.getTranslation(
+        user,
+        "invite-multiple.subject",
+      ).subject;
+
+      await sendEmail({
+        to: email,
+        subject: translatedSubject,
+        html,
+      });
+    } catch (err) {
+      logger.error(`Failed to send email to ${email}`);
+    }
+  }
+
+  public static async sendRemoveUserFromMultipleCities({
+    email,
+    cities,
+    brandInformation,
+    user,
+  }: {
+    email: string;
+    cities: City[];
+    brandInformation?: {
+      color: string;
+      logoUrl: string;
+    };
+    user: User | null;
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+    const url = `${host}/login`;
+
+    try {
+      const html = await render(
+        RemoveUserFromMultipleCitiesTemplate({
+          url,
+          email,
+          cities,
+          brandInformation,
+          language: user?.preferredLanguage,
+        }),
+      );
+
+      const translatedSubject = this.getTranslation(
+        user,
+        "remove-multiple-cities.subject",
+      ).subject;
+      await sendEmail({
+        to: email,
+        subject: translatedSubject,
+        html,
+      });
+    } catch (err) {
+      logger.error(`Failed to send email to ${email}`);
+    }
+  }
+
+  public static async sendInviteToOrganization({
+    url,
+    organization,
+    user,
+  }: {
+    url: string;
+    organization: Organization;
+    user: User | null;
+  }) {
+    try {
+      const html = await render(
+        InviteToOrganizationTemplate({
+          url,
+          organization,
+          user,
+          language: user?.preferredLanguage,
+        }),
+      );
+
+      const translatedSubject = this.getTranslation(
+        user,
+        "invite-organization.subject",
+      ).subject;
+
+      await sendEmail({
+        to: user?.email as string,
+        subject: translatedSubject,
+        html,
+      });
+    } catch (err) {
+      logger.error(`Failed to send email to ${user?.email}`);
+    }
+  }
+
+  public static async sendAdminNotification({
+    user,
+    file,
+    adminNames,
+    inventoryId,
+    userEmail,
+    language,
+  }: {
+    user: { name: string; email: string; cityName: string };
+    file: UserFileResponse;
+    adminNames: string;
+    inventoryId: string;
+    userEmail: string;
+    language?: string;
+  }) {
+    try {
+      const html = await render(
+        AdminNotificationTemplate({
+          user,
+          file,
+          adminNames,
+          inventoryId,
+          language: language || LANGUAGES.en,
+        }),
+      );
+
+      const translatedSubject = this.getTranslation(
+        { preferredLanguage: (language as LANGUAGES) || LANGUAGES.en },
+        "admin-notification.subject",
+      ).subject;
+
+      await sendEmail({
+        to: userEmail,
+        subject: translatedSubject,
+        html,
+      });
+    } catch (err) {
+      logger.error(
+        { userEmail, error: err instanceof Error ? err.message : err },
+        "Failed to send admin notification email",
+      );
+      throw err;
+    }
+  }
+
+  public static async sendForgotPassword({
+    email,
+    token,
+    user,
+  }: {
+    email: string;
+    token: string;
+    user: User | null;
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+    const url = `${host}/reset-password?token=${token}`;
+
+    try {
+      const html = await render(
+        ForgotPasswordTemplate({
+          url,
+          language: user?.preferredLanguage,
+        }),
+      );
+
+      const translatedSubject = this.getTranslation(
+        user,
+        "reset-password.subject",
+      ).subject;
+
+      await sendEmail({
+        to: email,
+        subject: translatedSubject,
+        html,
+      });
+    } catch (err) {
+      logger.error(
+        { email, error: err instanceof Error ? err.message : err },
+        "Failed to send forgot password email",
+      );
+      throw err;
+    }
+  }
+
+  public static async sendInviteUser({
+    url,
+    user,
+    city,
+    invitingUser,
+    members,
+    userEmail,
+    language,
+  }: {
+    url?: string;
+    user?: { name: string; email: string; cityId?: string };
+    city?: any;
+    invitingUser?: { name: string; email: string };
+    members: any[];
+    userEmail: string;
+    language?: string;
+  }) {
+    try {
+      const html = await render(
+        InviteUserTemplate({
+          url,
+          user,
+          city,
+          invitingUser,
+          members,
+          language: language || LANGUAGES.en,
+        }),
+      );
+
+      const translatedSubject = this.getTranslation(
+        { preferredLanguage: (language as LANGUAGES) || LANGUAGES.en },
+        "invite.subject",
+      ).subject;
+
+      await sendEmail({
+        to: userEmail,
+        subject: translatedSubject,
+        html,
+      });
+    } catch (err) {
+      logger.error(`Failed to send email to ${userEmail}`);
+    }
+  }
+
+  public static async sendConfirmRegistration({
+    email,
+    token,
+    user,
+  }: {
+    email: string;
+    token: string;
+    user: User | null;
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+    const url = `${host}/confirm-registration?token=${token}`;
+
+    try {
+      const html = await render(
+        confirmRegistrationTemplate({
+          url,
+          user: { name: user?.name || "User" },
+          language: user?.preferredLanguage,
+        }),
+      );
+
+      const translatedSubject = this.getTranslation(
+        user,
+        "welcome.subject",
+      ).subject;
+
+      await sendEmail({
+        to: email,
+        subject: translatedSubject,
+        html,
+      });
+    } catch (err) {
+      logger.error({ email }, "Failed to send confirm registration email");
+    }
   }
 }

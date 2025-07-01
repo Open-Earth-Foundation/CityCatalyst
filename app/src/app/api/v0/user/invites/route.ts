@@ -13,6 +13,7 @@ import { logger } from "@/services/logger";
 import { InviteStatus, Roles } from "@/util/types";
 
 import { subDays } from "date-fns";
+import EmailService from "@/backend/EmailService";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   if (!session) {
@@ -225,6 +226,9 @@ export const POST = apiHandler(async (req, { params, session }) => {
           doesInvitedUserExist ? "true" : "false",
         );
         const url = `${host}/user/invites?${params.toString()}`;
+        // Get the inviting user's preferred language
+        const invitingUser = await db.models.User.findByPk(session.user.id);
+
         const html = await render(
           InviteUserToMultipleCitiesTemplate({
             url,
@@ -234,6 +238,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
               name: session?.user.name!,
               email: session?.user.email!,
             },
+            language: invitingUser?.preferredLanguage,
             ...(emailBranding
               ? {
                   brandInformation: emailBranding,
@@ -241,9 +246,14 @@ export const POST = apiHandler(async (req, { params, session }) => {
               : {}),
           }),
         );
+        const translatedSubject = EmailService.getTranslation(
+          invitingUser,
+          "invite-multiple.subject",
+        ).subject;
+
         const sendInvite = await sendEmail({
           to: email!,
-          subject: "City Catalyst - City Invitation",
+          subject: translatedSubject,
           html,
         });
         if (!sendInvite) {

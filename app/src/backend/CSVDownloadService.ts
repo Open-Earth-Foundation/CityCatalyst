@@ -1,7 +1,7 @@
 import { InventoryWithInventoryValuesAndActivityValues } from "@/util/types";
 import { sortGpcReferenceNumbers, toDecimal } from "@/util/helpers";
 import Decimal from "decimal.js";
-import { translationFunc } from "@/i18n/server";
+import i18next from "@/i18n/server";
 import { stringify } from "csv-stringify/sync";
 import { db } from "@/models";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
@@ -61,7 +61,7 @@ export default class CSVDownloadService {
       "Data source name",
     ];
 
-    const { t } = await translationFunc(lng, "data");
+    const t = i18next.getFixedT(lng, "data");
 
     // prepare the data
     const dataDictionary = this.prepareDataForCSV(output, t);

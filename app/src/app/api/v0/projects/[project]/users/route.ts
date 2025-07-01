@@ -21,18 +21,19 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
 // --- NEW DELETE Handler ---
 export const DELETE = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsAdmin(session);
-
   // 2. Get Path Parameter (projectId)
   const { project: projectId } = params;
 
   // 3. Get Query Parameter (email) from the URL
-  const email = req.nextUrl.searchParams.get("email");
+  const url = new URL(req.url);
+  const email = url.searchParams.get("email");
 
   const project = await Project.findByPk(projectId as string);
   if (!project) {
     throw new createHttpError.NotFound("project-not-found");
   }
+
+  UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
 
   if (!email) {
     throw new createHttpError.BadRequest("user-not-found");

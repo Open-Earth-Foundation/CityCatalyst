@@ -146,5 +146,10 @@
   "collaborator": "Collaborateur",
   "plan-details": "Détails du plan",
   "plan-details-caption": "<bold>{{name}}</bold> a actuellement <bold>{{num_projects}}</bold> projets et un décompte de <bold>{{num_cities}} / {{total_cities}}</bold> villes",
-  "contact-us-to-upgrade": "Pour mettre à niveau votre plan, veuillez contacter"
+  "contact-us-to-upgrade": "Pour mettre à niveau votre plan, veuillez contacter",
+  "confirm-remove-project-user": "Êtes-vous sûr de vouloir supprimer l'utilisateur avec l'email : <bold>{{email}}</bold> du projet <bold>{{projectName}}</bold> ?",
+  "confirm-remove-city-user": "Êtes-vous sûr de vouloir supprimer l'utilisateur avec l'email : <bold>{{email}}</bold> de <bold>{{cityName}}</bold>",
+  "confirm-org-admin-delete": "Êtes-vous sûr de vouloir supprimer le propriétaire de l'organisation avec l'e-mail : <bold>{{email}}</bold> de <bold>{{orgName}}</bold> ?",
+  "user-removed": "Utilisateur supprimé avec succès",
+  "preferred-language": "Langue préférée"
 }

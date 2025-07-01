@@ -4,8 +4,9 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 
 export const DELETE = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsAdmin(session);
   const { organization: organizationId } = params;
+
+  UserService.validateIsAdminOrOrgAdmin(session, organizationId);
 
   // Get Query Parameter (email) from the URL
   const email = req.nextUrl.searchParams.get("email");

@@ -182,7 +182,9 @@ export default function OnboardingSetup(props: {
         countryLocode: country?.actor_id ?? undefined,
         projectId: EnterpriseMode ? projectId : undefined,
       }).unwrap();
-      await addCityPopulation({
+
+      // Log population data before sending
+      const populationData = {
         cityId: city.cityId,
         locode: city.locode!,
         cityPopulation: cityPopulation!,
@@ -191,8 +193,13 @@ export default function OnboardingSetup(props: {
         regionPopulationYear: regionPopulationYear!,
         countryPopulation: countryPopulation!,
         countryPopulationYear: countryPopulationYear!,
-      }).unwrap();
+      };
+
+      logger.info({ populationData }, "Onboarding - Sending population data");
+
+      await addCityPopulation(populationData).unwrap();
     } catch (err: any) {
+      logger.error({ err }, "Onboarding - Failed to add city or population");
       makeErrorToast("failed-to-add-city", err.data?.error?.message);
       setConfirming(false);
       return;

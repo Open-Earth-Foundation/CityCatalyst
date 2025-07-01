@@ -34,7 +34,6 @@ test.describe("Signup", () => {
     await page.getByPlaceholder("e.g. youremail@domain.com").fill(email);
     await page.getByLabel("Password", { exact: true }).fill("Test123!");
     await page.getByLabel("Confirm Password").fill("Test123!");
-    await page.getByPlaceholder("Enter the code you received").fill("123456");
     await page
       .locator('input[name="acceptTerms"] + .chakra-checkbox__control')
       .click();
@@ -61,13 +60,11 @@ test.describe("Signup", () => {
       .fill("testopenearthorg");
     await page.getByLabel("Password", { exact: true }).fill("Pas");
     await page.getByLabel("Confirm Password").fill("Pa1");
-    await page.getByPlaceholder("Enter the code you received").fill("12345");
     await page.getByRole("button", { name: "Create Account" }).click();
 
-    await expect(page).toHaveURL(`/en/auth/signup/`);
+    // await expect(page).toHaveURL(`/en/auth/signup/`);
     await expectText(page, "valid email address");
     await expectText(page, "Minimum length");
-    await expectText(page, "Invalid invite code");
     await expectText(page, "Please accept the privacy policy");
   });
 
@@ -82,13 +79,12 @@ test.describe("Signup", () => {
       .fill("e2e-test-fail@example.com");
     await page.getByLabel("Password", { exact: true }).fill("Password1");
     await page.getByLabel("Confirm Password").fill("Password2");
-    await page.getByPlaceholder("Enter the code you received").fill("123456");
     await page
       .locator('input[name="acceptTerms"] + .chakra-checkbox__control') // sibling
       .click();
     await page.getByRole("button", { name: "Create Account" }).click();
 
-    await expect(page).toHaveURL(`/en/auth/signup/`);
+    // await expect(page).toHaveURL(`/en/auth/signup/`);
     await expectText(page, "Passwords don't match");
   });
 

@@ -16,7 +16,7 @@ setup("authenticate", async ({ page, request }) => {
 
   await page.goto("/en/auth/login");
 
-  await expectText(page, "Log In to City Catalyst");
+  await expectText(page, "Log In");
   await page.locator('input[name="email"]').fill(email);
   await page.locator('input[name="password"]').fill(password);
   await page.locator('button[type="submit"]').click();

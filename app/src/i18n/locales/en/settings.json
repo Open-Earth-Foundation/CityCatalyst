@@ -144,6 +144,12 @@
   "position-description": "Indicate your title or profession.",
   "owner": "Owner",
   "collaborator": "Collaborator",
-  "confirm-remove-city-user": "Are you sure you want to remove this user",
-  "confirm-org-admin-delete": "Are you sure you want to remove this admin from your organization?"
+  "plan-details": "Plan details",
+  "plan-details-caption": "<bold>{{name}}</bold> currently has <bold>{{num_projects}}</bold> projects and a count of <bold>{{num_cities}} / {{total_cities}}</bold> cities",
+  "preferred-language": "Preferred language",
+  "contact-us-to-upgrade": "To upgrade your plan, please reach out to",
+  "confirm-remove-project-user": "Are you sure you want to remove the user with the email: <bold>{{email}}</bold> from the <bold>{{projectName}}</bold> project?",
+  "confirm-remove-city-user": "Are you sure you want to remove the user with the email: <bold>{{email}}</bold> from <bold>{{cityName}}</bold>",
+  "confirm-org-admin-delete": "Are you sure you want to remove the organization owner with the email: <bold>{{email}}</bold> from <bold>{{orgName}}</bold>?",
+  "user-removed": "User removed successfully"
 }

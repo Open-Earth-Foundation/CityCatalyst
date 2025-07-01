@@ -10,10 +10,6 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import React, { useEffect, use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { MdReplay, MdWarning } from "react-icons/md";
@@ -23,8 +19,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Field } from "@/components/ui/field";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { OrganizationRole } from "@/util/types";
-import { Trans } from "react-i18next";
 import ProgressLoader from "@/components/ProgressLoader";
+import PlanDetailsBox from "@/components/PlanDetailsBox";
 
 const AdminOrganizationIdProfilePage = (props: {
   params: Promise<{ lng: string; id: string }>;
@@ -200,42 +196,7 @@ const AdminOrganizationIdProfilePage = (props: {
           </Button>
         </Box>
       </Box>
-      <Box backgroundColor="white" p={6} marginTop={4}>
-        <Text
-          fontSize="title.md"
-          color="content.secondary"
-          fontWeight="semibold"
-        >
-          {t("plan-details")}
-        </Text>
-        <Text
-          fontSize="body.lg"
-          fontWeight="normal"
-          className="capitalize"
-          color="content.tertiary"
-        >
-          <Trans
-            i18nKey="plan-details-caption"
-            t={t}
-            values={{
-              name: organization?.name,
-              num_projects: organization?.projects.length ?? 0,
-              num_cities: organization?.projects.reduce(
-                (acc, proj) => acc + proj?.cities.length,
-                0,
-              ),
-              total_cities:
-                organization?.projects.reduce(
-                  (acc, curr) => acc + BigInt(curr.cityCountLimit),
-                  BigInt(0),
-                ) ?? 0,
-            }}
-            components={{
-              bold: <strong />,
-            }}
-          />
-        </Text>
-      </Box>
+      <PlanDetailsBox organization={organization} />
     </Box>
   );
 };

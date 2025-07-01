@@ -19,6 +19,7 @@ export default function CustomSelectableButton({
 }) {
   return (
     <Button
+      data-testId={`inventory-goal-${value}`}
       key={value}
       w="181px"
       borderColor={

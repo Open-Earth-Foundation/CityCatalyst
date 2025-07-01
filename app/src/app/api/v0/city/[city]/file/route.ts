@@ -9,6 +9,9 @@ import { render } from "@react-email/components";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
+import { LANGUAGES } from "@/util/types";
+import { User } from "@/models/User";
+import i18next from "@/i18n/server";
 
 // TODO: use these variables to configure file size and format
 const MAX_FILE_SIZE = 5000000;
@@ -144,7 +147,12 @@ export const POST = apiHandler(
     };
 
     await NotificationService.sendNotificationEmail({
-      user: { email: user?.email!, name: user?.name! },
+      user: {
+        email: user?.email!,
+        name: user?.name!,
+        // default to english since the email goes to admins
+        preferredLanguage: LANGUAGES.en,
+      },
       fileData: newFileData,
       city,
       inventoryId,

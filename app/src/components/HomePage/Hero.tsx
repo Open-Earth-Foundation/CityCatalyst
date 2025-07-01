@@ -102,7 +102,9 @@ export function Hero({
                           lineHeight="52"
                           className="flex"
                         >
-                          {inventory?.city?.name}
+                          <span data-testId="hero-city-name">
+                            {inventory?.city?.name}
+                          </span>
                         </Heading>
                       </>
                     ) : (
@@ -322,6 +324,7 @@ function ProjectTitle({
       w="max-content"
       fontWeight="semibold"
       color="white"
+      data-testId="hero-project-name"
     >
       {inventory?.city?.project?.name === "cc_project_default"
         ? t("default-project")

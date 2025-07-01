@@ -15,6 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { signIn } from "next-auth/react";
+import { LANGUAGES } from "@/util/types";
+import { LanguageSelector } from "./LanguageSelector";
+import i18next from "i18next";
 
 type Inputs = {
   inventory?: string;
@@ -22,12 +25,12 @@ type Inputs = {
   email: string;
   password: string;
   confirmPassword: string;
-  inviteCode: string;
   acceptTerms: boolean;
+  preferredLanguage: LANGUAGES;
 };
 
 export default function Signup(props: { params: Promise<{ lng: string }> }) {
-  const { lng } = use(props.params);
+  const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
 
@@ -37,7 +40,11 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
     setError: setFormError,
     formState: { errors, isSubmitting },
     watch,
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({
+    defaultValues: {
+      preferredLanguage: lng as LANGUAGES,
+    },
+  });
 
   const watchPassword = watch("password", "");
 
@@ -57,10 +64,6 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         message: "Passwords don't match!",
       });
       return;
-    }
-
-    if (isUserInvite) {
-      data.inviteCode = "123456"; // TODO adjust once there is proper validation for the invite code
     }
 
     if (typeof data.acceptTerms !== "boolean") {
@@ -86,7 +89,6 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         setError(message);
         return;
       }
-
       // can be re-enabled once the email verification required again
       // const queryParamsString = new URLSearchParams(queryParams).toString();
       // const callbackParam = callbackUrl ? "&" : "";
@@ -167,55 +169,30 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           id="confirmPassword"
           shouldValidate={false}
         />
-        {!isUserInvite && (
-          <Field
-            label={t("invite-code")}
-            invalid={!!errors.inviteCode}
-            errorText={
-              <Box display="flex" gap="6px">
-                <Icon as={MdWarning} />
-                <Text
-                  fontSize="body.md"
-                  lineHeight="20px"
-                  letterSpacing="wide"
-                  color="content.tertiary"
-                >
-                  {errors.inviteCode?.message}
-                </Text>
-              </Box>
-            }
-          >
-            <Input
-              type="text"
-              placeholder={t("invite-code-placeholder")}
-              size="lg"
-              shadow="2dp"
-              background={
-                errors.inviteCode
-                  ? "sentiment.negativeOverlay"
-                  : "background.default"
-              }
-              {...register("inviteCode", {
-                required: t("invite-code-required"),
-                minLength: { value: 6, message: t("invite-code-invalid") },
-                maxLength: { value: 6, message: t("invite-code-invalid") },
-              })}
-            />
-
-            <Box>
-              <Trans t={t} i18nKey="no-invite-code">
-                Don&apos;t have an invitation code?{" "}
-                <Link
-                  href="https://citycatalyst.openearth.org/#webflow-form"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Subscribe to the Waiting List
-                </Link>
-              </Trans>
+        <Field
+          label={t("preferred-language")}
+          invalid={!!errors.preferredLanguage}
+          errorText={
+            <Box display="flex" gap="6px">
+              <Icon as={MdWarning} />
+              <Text
+                fontSize="body.md"
+                lineHeight="20px"
+                letterSpacing="wide"
+                color="content.tertiary"
+              >
+                {errors.preferredLanguage?.message}
+              </Text>
             </Box>
-          </Field>
-        )}
+          }
+        >
+          <LanguageSelector
+            register={register}
+            error={errors.preferredLanguage}
+            t={t}
+            defaultValue={lng as LANGUAGES}
+          />
+        </Field>
         <Field
           invalid={!!errors.acceptTerms}
           errorText={
@@ -269,7 +246,10 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         color="content.tertiary"
       >
         {t("have-account")}{" "}
-        <Link href="/auth/login" className="underline">
+        <Link
+          href={`/auth/login?callbackUrl=${encodeURIComponent(`${callbackUrl ?? ""}&from=signup`)}`}
+          className="underline"
+        >
           {t("log-in")}
         </Link>
       </Text>

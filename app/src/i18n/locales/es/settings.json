@@ -151,5 +151,6 @@
   "confirm-remove-project-user": "¿Estás seguro de que quieres eliminar al usuario con el correo electrónico: <bold>{{email}}</bold> del proyecto <bold>{{projectName}}</bold>?",
   "confirm-remove-city-user": "¿Estás seguro de que quieres eliminar al usuario con el correo electrónico: <bold>{{email}}</bold> de <bold>{{cityName}}</bold>",
   "confirm-org-admin-delete": "¿Estás seguro de que quieres eliminar al dueño de la organización con el correo electrónico: <bold>{{email}}</bold> de <bold>{{orgName}}</bold>?",
-  "user-removed": "Usuario eliminado con éxito"
+  "user-removed": "Usuario eliminado con éxito",
+  "preferred-language": "Idioma preferido"
 }

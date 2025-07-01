@@ -20,6 +20,7 @@ import { HeadlineSmall } from "@/components/Texts/Headline";
 import {
   useCreateOrganizationInviteMutation,
   useGetProjectsQuery,
+  useGetUserProjectsQuery,
   useInviteUsersMutation,
 } from "@/services/api";
 import LabelLarge from "@/components/Texts/Label";
@@ -75,14 +76,7 @@ const AddCollaboratorsDialog = ({
     description: t("invite-error-toast-description"),
   });
 
-  const { data: projectsData, isLoading } = useGetProjectsQuery(
-    {
-      organizationId: organizationId as string,
-    },
-    {
-      skip: !isAdmin || !organizationId,
-    },
-  );
+  const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
 
   const projectCollection = useMemo(() => {
     return createListCollection({

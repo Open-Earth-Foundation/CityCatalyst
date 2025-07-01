@@ -50,7 +50,7 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { logger } from "@/services/logger"
+import { logger } from "@/services/logger";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -188,7 +188,10 @@ export default function SelectCityStep({
         numberOfYearsDisplayed,
       );
       if (!population) {
-        logger.error({locode, year}, "Failed to find population data for city");
+        logger.error(
+          { locode, year },
+          "Failed to find population data for city",
+        );
         return;
       }
       setValue("cityPopulation", population.population);
@@ -312,6 +315,7 @@ export default function SelectCityStep({
                     onValueChange={(e) => setSelectedProject(e.value)}
                     variant="outline"
                     collection={projectCollection}
+                    data-testId="setup-project-select"
                   >
                     <SelectLabel display="flex" alignItems="center" gap="8px">
                       <Text

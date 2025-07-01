@@ -756,7 +756,6 @@ export default class UserService {
           },
           transaction: t,
         });
-
         EmailService.sendChangeToCityAccessNotification({
           cities: [city],
           email: user ? (user.email as string) : email,

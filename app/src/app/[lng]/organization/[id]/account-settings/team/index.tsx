@@ -191,7 +191,7 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
         alignItems="flex-start"
         justifyContent="space-between"
       >
-        <Box w="250px" overflowY="hidden" flex={1}>
+        <Box w="250px" overflowY="hidden">
           <Text
             fontSize="title.md"
             mb={3}

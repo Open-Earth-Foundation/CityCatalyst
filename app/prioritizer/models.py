@@ -41,6 +41,10 @@ class PrioritizerRequest(BaseModel):
     cityData: CityData
 
 
+class PrioritizerRequestBulk(BaseModel):
+    cityDataList: List[CityData]
+
+
 # --- Response models ---
 
 
@@ -80,3 +84,7 @@ class PrioritizerResponse(BaseModel):
     rankedActionsAdaptation: List[RankedAction] = Field(
         description="List of ranked adaptation actions"
     )
+
+
+class PrioritizerResponseBulk(BaseModel):
+    prioritizerResponseList: List[PrioritizerResponse]

@@ -19,7 +19,6 @@ import { BodyLarge } from "@/components/Texts/Body";
 import { HeadlineSmall } from "@/components/Texts/Headline";
 import {
   useCreateOrganizationInviteMutation,
-  useGetCitiesAndYearsQuery,
   useGetProjectsQuery,
   useInviteUsersMutation,
 } from "@/services/api";
@@ -95,9 +94,6 @@ const AddCollaboratorsDialog = ({
     });
   }, [projectsData]);
 
-  const { data: citiesAndYears } = useGetCitiesAndYearsQuery(undefined, {
-    skip: isAdmin,
-  });
   const [inviteUsers, { isLoading: isInviteUsersLoading }] =
     useInviteUsersMutation();
   const [createOrganizationInvite, { isLoading: isAdminInviteLoading }] =
@@ -173,14 +169,6 @@ const AddCollaboratorsDialog = ({
       name: string;
     }[]
   >(() => {
-    if (!isAdmin) {
-      return (
-        citiesAndYears?.map(({ city }) => ({
-          cityId: city.cityId,
-          name: city.name as string,
-        })) ?? []
-      );
-    }
     if (!selectedProject || selectedProject.length === 0) return [];
 
     const project = projectsData?.find(
@@ -192,7 +180,7 @@ const AddCollaboratorsDialog = ({
         name: city.name,
       })) ?? []
     );
-  }, [isAdmin, citiesAndYears, projectsData, selectedProject]);
+  }, [isAdmin, projectsData, selectedProject]);
 
   return (
     <DialogRoot

@@ -36,6 +36,7 @@ export default class EmailService {
       throw createHttpError.InternalServerError("configuration-error");
     }
 
+    let expiresIn = process.env.VERIFICATION_TOKEN_EXPIRATION ?? "30d";
     const invitationCode = jwt.sign(
       {
         reason: "organization-invite",
@@ -44,9 +45,7 @@ export default class EmailService {
         organizationId,
       },
       process.env.VERIFICATION_TOKEN_SECRET!,
-      {
-        expiresIn: "30d",
-      },
+      { expiresIn },
     );
 
     const host = process.env.HOST ?? "http://localhost:3000";

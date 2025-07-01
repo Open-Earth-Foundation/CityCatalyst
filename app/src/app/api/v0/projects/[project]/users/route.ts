@@ -21,8 +21,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
 // --- NEW DELETE Handler ---
 export const DELETE = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsAdmin(session);
-
   // 2. Get Path Parameter (projectId)
   const { project: projectId } = params;
 
@@ -34,6 +32,8 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
   if (!project) {
     throw new createHttpError.NotFound("project-not-found");
   }
+
+  UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
 
   if (!email) {
     throw new createHttpError.BadRequest("user-not-found");

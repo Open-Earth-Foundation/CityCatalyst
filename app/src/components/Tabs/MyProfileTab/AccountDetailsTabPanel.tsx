@@ -116,7 +116,9 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
             errorText={errors.preferredLanguage?.message}
           >
             <LanguageSelector
-              defaultValue={userInfo.preferredLanguage}
+              defaultValue={
+                (userInfo.preferredLanguage as LANGUAGES) || LANGUAGES.en
+              }
               register={register}
               error={errors.preferredLanguage}
               t={t}

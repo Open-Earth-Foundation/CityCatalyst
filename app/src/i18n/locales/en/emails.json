@@ -24,7 +24,8 @@
     "greeting": "Welcome to City Catalyst, {{name}}!",
     "message": "Thank you for joining City Catalyst. We're excited to have you on board and help you make a positive impact on your city's sustainability journey.",
     "cta": "Get Started",
-    "footer": "If you have any questions, please don't hesitate to contact our support team."
+    "footer": "If you have any questions, please don't hesitate to contact our support team.",
+    "brand": "CityCatalyst"
   },
   "reset-password": {
     "subject": "City Catalyst - Reset Your Password",
@@ -85,7 +86,8 @@
     "greeting": "Hello {{name}},",
     "message": "The city slot limit for project '{{projectName}}' has been changed to {{cityCount}}.",
     "cta": "View Project",
-    "footer": "This is an automated message, please do not reply."
+    "footer": "This is an automated message, please do not reply.",
+    "brand": "CityCatalyst"
   },
   "admin-notification": {
     "subject": "CityCatalyst File Upload",
@@ -100,6 +102,7 @@
   "invite-multiple": {
     "subject": "CityCatalyst: City Invitation",
     "title": "You've been granted access",
+    "brand": "CityCatalyst",
     "greeting": "Hi {{email}},",
     "message": "You have been granted access to {{citiesCount}} cities:",
     "cta": "JOIN NOW",
@@ -147,6 +150,7 @@
     "message": "The following cities have been added to project '{{projectName}}' in {{organizationName}}:",
     "cities": "Cities",
     "cta": "View Project",
-    "footer": "This is an automated message, please do not reply."
+    "footer": "This is an automated message, please do not reply.",
+    "brand": "CityCatalyst"
   }
 }

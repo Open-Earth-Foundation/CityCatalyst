@@ -4,6 +4,8 @@ import {
   NativeSelectField,
 } from "@/components/ui/native-select";
 import { LANGUAGES } from "@/util/types";
+import { TFunction } from "i18next";
+import { languages } from "@/i18n/settings";
 
 export function LanguageSelector({
   register,
@@ -13,9 +15,14 @@ export function LanguageSelector({
 }: {
   register: any;
   error: any;
-  t: any;
+  t: TFunction;
   defaultValue: LANGUAGES;
 }) {
+  const options = languages.map((lang) => ({
+    value: lang as LANGUAGES,
+    label: t(`languages.${lang}`),
+  }));
+
   return (
     <NativeSelectRoot
       shadow="2dp"
@@ -29,11 +36,11 @@ export function LanguageSelector({
         })}
         defaultValue={defaultValue}
       >
-        <option value={LANGUAGES.en}>English</option>
-        <option value={LANGUAGES.de}>Deutsch</option>
-        <option value={LANGUAGES.es}>Español</option>
-        <option value={LANGUAGES.fr}>Français</option>
-        <option value={LANGUAGES.pt}>Português</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
       </NativeSelectField>
     </NativeSelectRoot>
   );

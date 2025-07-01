@@ -24,7 +24,8 @@
     "greeting": "¡Bienvenido a City Catalyst, {{name}}!",
     "message": "Gracias por unirte a City Catalyst. Nos emociona tenerte a bordo y ayudarte a hacer un impacto positivo en el viaje de sostenibilidad de tu ciudad.",
     "cta": "Comenzar",
-    "footer": "Si tienes alguna pregunta, no dudes en contactar a nuestro equipo de soporte."
+    "footer": "Si tienes alguna pregunta, no dudes en contactar a nuestro equipo de soporte.",
+    "brand": "CityCatalyst"
   },
   "reset-password": {
     "subject": "City Catalyst - Restablecer tu Contraseña",
@@ -85,7 +86,8 @@
     "greeting": "Hola {{name}},",
     "message": "El límite de espacios de ciudad para el proyecto '{{projectName}}' ha sido cambiado a {{cityCount}}.",
     "cta": "Ver Proyecto",
-    "footer": "Este es un mensaje automatizado, por favor no respondas."
+    "footer": "Este es un mensaje automatizado, por favor no respondas.",
+    "brand": "CityCatalyst"
   },
   "admin-notification": {
     "subject": "CityCatalyst Carga de Archivos",
@@ -104,7 +106,8 @@
     "message": "Se te ha otorgado acceso a {{citiesCount}}:",
     "cta": "ÚNETE AHORA",
     "expiry": "Esta invitación permanecerá válida durante los próximos 30 días o hasta que sea reclamada, lo que ocurra primero.",
-    "footer": "Open Earth Foundation es una corporación de beneficio público sin fines de lucro de California, EE.UU. EIN: 85-3261449"
+    "footer": "Open Earth Foundation es una corporación de beneficio público sin fines de lucro de California, EE.UU. EIN: 85-3261449",
+    "brand": "CityCatalyst"
   },
   "remove-multiple-cities": {
     "subject": "City Catalyst - Acceso Removido",
@@ -147,6 +150,7 @@
     "message": "Las siguientes ciudades han sido agregadas al proyecto '{{projectName}}' en {{organizationName}}:",
     "cities": "Ciudades",
     "cta": "Ver Proyecto",
-    "footer": "Este es un mensaje automatizado, por favor no respondas."
+    "footer": "Este es un mensaje automatizado, por favor no respondas.",
+    "brand": "CityCatalyst"
   }
 }

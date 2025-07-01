@@ -24,7 +24,8 @@
     "greeting": "Bienvenue sur City Catalyst, {{name}} !",
     "message": "Merci de rejoindre City Catalyst. Nous sommes ravis de vous accueillir et de vous aider à avoir un impact positif sur le parcours de durabilité de votre ville.",
     "cta": "Commencer",
-    "footer": "Si vous avez des questions, n'hésitez pas à contacter notre équipe de support."
+    "footer": "Si vous avez des questions, n'hésitez pas à contacter notre équipe de support.",
+    "brand": "CityCatalyst"
   },
   "reset-password": {
     "subject": "City Catalyst - Réinitialiser votre Mot de Passe",
@@ -85,7 +86,8 @@
     "greeting": "Bonjour {{name}},",
     "message": "La limite d'emplacements de ville pour le projet '{{projectName}}' a été modifiée à {{cityCount}}.",
     "cta": "Voir le Projet",
-    "footer": "Ceci est un message automatisé, veuillez ne pas répondre."
+    "footer": "Ceci est un message automatisé, veuillez ne pas répondre.",
+    "brand": "CityCatalyst"
   },
   "admin-notification": {
     "subject": "CityCatalyst Téléchargement de Fichiers",
@@ -104,7 +106,8 @@
     "message": "L'accès vous a été accordé à {{citiesCount}} :",
     "cta": "REJOIGNEZ MAINTENANT",
     "expiry": "Cette invitation restera valide pendant les 30 prochains jours ou jusqu'à ce qu'elle soit réclamée, selon ce qui se produit en premier.",
-    "footer": "Open Earth Foundation est une corporation à but non lucratif de Californie, États-Unis. EIN: 85-3261449"
+    "footer": "Open Earth Foundation est une corporation à but non lucratif de Californie, États-Unis. EIN: 85-3261449",
+    "brand": "CityCatalyst"
   },
   "remove-multiple-cities": {
     "subject": "City Catalyst - Accès Supprimé",
@@ -147,6 +150,7 @@
     "message": "Les villes suivantes ont été ajoutées au projet '{{projectName}}' dans {{organizationName}} :",
     "cities": "Villes",
     "cta": "Voir le Projet",
-    "footer": "Ceci est un message automatisé, veuillez ne pas répondre."
+    "footer": "Ceci est un message automatisé, veuillez ne pas répondre.",
+    "brand": "CityCatalyst"
   }
 }

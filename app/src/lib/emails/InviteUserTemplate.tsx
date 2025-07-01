@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import React from "react";
 import type { CityAttributes } from "@/models/City";
 import type { UserAttributes } from "@/models/User";

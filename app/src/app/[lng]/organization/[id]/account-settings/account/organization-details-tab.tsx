@@ -7,8 +7,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { MdWarning } from "react-icons/md";
 import { useParams } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
-import { OrganizationResponse } from "@/util/types";
-import { useGetUserAccessStatusQuery, useUpdateOrganizationMutation } from "@/services/api";
+import { OrganizationResponse, LANGUAGES } from "@/util/types";
+import {
+  useGetUserAccessStatusQuery,
+  useUpdateOrganizationMutation,
+} from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { logger } from "@/services/logger";
 import { LanguageSelector } from "@/app/[lng]/auth/signup/LanguageSelector";
@@ -63,7 +66,6 @@ const OrganizationDetailsTab = ({
       id: organization?.organizationId as string,
       name,
       contactEmail: email,
-      preferredLanguage,
     });
 
     if (response.error) {
@@ -154,6 +156,9 @@ const OrganizationDetailsTab = ({
             register={register}
             error={errors.preferredLanguage}
             t={t}
+            defaultValue={
+              (organization?.preferredLanguage as LANGUAGES) || LANGUAGES.en
+            }
           />
         </Field>
       </Box>

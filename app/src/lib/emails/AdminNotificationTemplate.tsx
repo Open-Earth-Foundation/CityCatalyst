@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import { ExcelFileIcon } from "@/components/icons";
 import { bytesToMB } from "@/util/helpers";
 import { UserFileResponse } from "@/util/types";

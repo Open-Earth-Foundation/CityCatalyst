@@ -13,6 +13,7 @@ import { logger } from "@/services/logger";
 import { InviteStatus, Roles } from "@/util/types";
 
 import { subDays } from "date-fns";
+import EmailService from "@/backend/EmailService";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   if (!session) {
@@ -245,9 +246,14 @@ export const POST = apiHandler(async (req, { params, session }) => {
               : {}),
           }),
         );
+        const translatedSubject = EmailService.getTranslation(
+          invitingUser,
+          "invite-multiple.subject",
+        ).subject;
+
         const sendInvite = await sendEmail({
           to: email!,
-          subject: "invite-multiple.subject",
+          subject: translatedSubject,
           html,
         });
         if (!sendInvite) {

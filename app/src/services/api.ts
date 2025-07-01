@@ -900,18 +900,12 @@ export const api = createApi({
         invalidatesTags: ["Organizations"],
       }),
       updateOrganization: builder.mutation({
-        query: (data: {
-          id: string;
-          name: string;
-          contactEmail: string;
-          preferredLanguage: string;
-        }) => ({
+        query: (data: { id: string; name: string; contactEmail: string }) => ({
           url: `/organizations/${data.id}`,
           method: "PATCH",
           body: {
             name: data.name,
             contactEmail: data.contactEmail,
-            preferredLanguage: data.preferredLanguage,
           },
         }),
         transformResponse: (response: OrganizationResponse) => {

@@ -5,7 +5,7 @@ import {
   InventoryWithInventoryValuesAndActivityValues,
 } from "@/util/types";
 import { findMethodology } from "@/util/form-schema";
-import i18next, { translationFunc } from "@/i18n/server";
+import i18next from "@/i18n/server";
 import { toDecimal } from "@/util/helpers";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";

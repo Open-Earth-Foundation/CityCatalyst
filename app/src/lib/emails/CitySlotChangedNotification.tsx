@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import React from "react";
 import {
   Body,
@@ -49,7 +48,7 @@ export default function CitySlotChangedNotificationTemplate({
       <Preview>{t("city-slot-changed.subject")}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={brandHeading}>CityCatalyst</Text>
+          <Text style={brandHeading}>{t("city-slot-changed.brand")}</Text>
           <Text style={headingGreen}>
             {t("city-slot-changed.title", { organizationName })}
           </Text>

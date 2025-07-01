@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import React from "react";
 import { City } from "@/models/City";
 import {
@@ -76,7 +75,9 @@ export function InviteUserToMultipleCitiesTemplate({
                   width="36"
                   height="36"
                 />
-                <Text style={brandHeading}>CityCatalyst</Text>
+                <Text style={brandHeading}>
+                  {t("invite-multiple-cities.brand")}
+                </Text>
               </Section>
             )}
             <Section style={{ padding: "24px" }}>

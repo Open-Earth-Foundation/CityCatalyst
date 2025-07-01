@@ -24,7 +24,8 @@
     "greeting": "Willkommen bei City Catalyst, {{name}}!",
     "message": "Vielen Dank, dass Sie City Catalyst beigetreten sind. Wir freuen uns, Sie an Bord zu haben und Ihnen dabei zu helfen, einen positiven Einfluss auf die Nachhaltigkeitsreise Ihrer Stadt zu nehmen.",
     "cta": "Loslegen",
-    "footer": "Bei Fragen zögern Sie bitte nicht, sich an unser Support-Team zu wenden."
+    "footer": "Bei Fragen zögern Sie bitte nicht, sich an unser Support-Team zu wenden.",
+    "brand": "CityCatalyst"
   },
   "reset-password": {
     "subject": "City Catalyst - Passwort zurücksetzen",
@@ -85,7 +86,8 @@
     "greeting": "Hallo {{name}},",
     "message": "Das Stadtplatz-Limit für das Projekt '{{projectName}}' wurde auf {{cityCount}} geändert.",
     "cta": "Projekt anzeigen",
-    "footer": "Dies ist eine automatisierte Nachricht, bitte nicht antworten."
+    "footer": "Dies ist eine automatisierte Nachricht, bitte nicht antworten.",
+    "brand": "CityCatalyst"
   },
   "admin-notification": {
     "subject": "CityCatalyst Datei-Upload",
@@ -104,7 +106,8 @@
     "message": "Ihnen wurde Zugang zu {{citiesCount}} gewährt:",
     "cta": "JETZT BEITRETEN",
     "expiry": "Diese Einladung bleibt für die nächsten 30 Tage gültig oder bis sie eingelöst wird, je nachdem, was zuerst eintritt.",
-    "footer": "Open Earth Foundation ist eine gemeinnützige Körperschaft aus Kalifornien, USA. EIN: 85-3261449"
+    "footer": "Open Earth Foundation ist eine gemeinnützige Körperschaft aus Kalifornien, USA. EIN: 85-3261449",
+    "brand": "CityCatalyst"
   },
   "remove-multiple-cities": {
     "subject": "City Catalyst - Zugriff entfernt",
@@ -147,6 +150,7 @@
     "message": "Die folgenden Städte wurden zum Projekt '{{projectName}}' in {{organizationName}} hinzugefügt:",
     "cities": "Städte",
     "cta": "Projekt anzeigen",
-    "footer": "Dies ist eine automatisierte Nachricht, bitte nicht antworten."
+    "footer": "Dies ist eine automatisierte Nachricht, bitte nicht antworten.",
+    "brand": "CityCatalyst"
   }
 }

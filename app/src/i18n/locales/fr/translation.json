@@ -6,5 +6,12 @@
   "dashboard": "Tableau de bord",
   "go-back": "Retourner",
   "log-out": "Se Déconnecter",
-  "settings": "Paramètres"
+  "settings": "Paramètres",
+  "languages": {
+    "en": "Anglais",
+    "es": "Espagnol",
+    "fr": "Français",
+    "de": "Allemand",
+    "pt": "Portugais"
+  }
 }

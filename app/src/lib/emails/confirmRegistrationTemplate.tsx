@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import React from "react";
 import {
   Body,
@@ -51,7 +50,7 @@ export default function ConfirmRegistrationTemplate({
               width="36"
               height="36"
             />
-            <Text style={brandHeading}>CityCatalyst</Text>
+            <Text style={heading}>{t("welcome.brand")}</Text>
             <Text style={heading}>{t("welcome.subject")}</Text>
             <Text style={greeting}>
               {t("welcome.greeting", { name: user?.name })}

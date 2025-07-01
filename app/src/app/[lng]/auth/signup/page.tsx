@@ -17,6 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { signIn } from "next-auth/react";
 import { LANGUAGES } from "@/util/types";
 import { LanguageSelector } from "./LanguageSelector";
+import i18next from "i18next";
 
 type Inputs = {
   inventory?: string;
@@ -29,7 +30,7 @@ type Inputs = {
 };
 
 export default function Signup(props: { params: Promise<{ lng: string }> }) {
-  const { lng } = use(props.params);
+  const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
 
@@ -189,6 +190,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
             register={register}
             error={errors.preferredLanguage}
             t={t}
+            defaultValue={lng as LANGUAGES}
           />
         </Field>
         <Field

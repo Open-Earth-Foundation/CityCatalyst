@@ -24,7 +24,8 @@
     "greeting": "Bem-vindo ao City Catalyst, {{name}}!",
     "message": "Obrigado por se juntar ao City Catalyst. Estamos empolgados em tê-lo a bordo e ajudá-lo a fazer um impacto positivo na jornada de sustentabilidade da sua cidade.",
     "cta": "Começar",
-    "footer": "Se você tiver alguma dúvida, não hesite em entrar em contato com nossa equipe de suporte."
+    "footer": "Se você tiver alguma dúvida, não hesite em entrar em contato com nossa equipe de suporte.",
+    "brand": "CityCatalyst"
   },
   "reset-password": {
     "subject": "City Catalyst - Redefinir sua Senha",
@@ -85,7 +86,8 @@
     "greeting": "Olá {{name}},",
     "message": "O limite de espaços de cidade para o projeto '{{projectName}}' foi alterado para {{cityCount}}.",
     "cta": "Ver Projeto",
-    "footer": "Esta é uma mensagem automatizada, por favor não responda."
+    "footer": "Esta é uma mensagem automatizada, por favor não responda.",
+    "brand": "CityCatalyst"
   },
   "admin-notification": {
     "subject": "CityCatalyst Upload de Arquivos",
@@ -104,7 +106,8 @@
     "message": "O acesso foi concedido a você para {{citiesCount}}:",
     "cta": "ENTRE AGORA",
     "expiry": "Este convite permanecerá válido pelos próximos 30 dias ou até ser reivindicado, o que acontecer primeiro.",
-    "footer": "Open Earth Foundation é uma corporação de benefício público sem fins lucrativos da Califórnia, EUA. EIN: 85-3261449"
+    "footer": "Open Earth Foundation é uma corporação de benefício público sem fins lucrativos da Califórnia, EUA. EIN: 85-3261449",
+    "brand": "CityCatalyst"
   },
   "remove-multiple-cities": {
     "subject": "City Catalyst - Acesso Removido",
@@ -147,6 +150,7 @@
     "message": "As seguintes cidades foram adicionadas ao projeto '{{projectName}}' em {{organizationName}}:",
     "cities": "Cidades",
     "cta": "Ver Projeto",
-    "footer": "Esta é uma mensagem automatizada, por favor não responda."
+    "footer": "Esta é uma mensagem automatizada, por favor não responda.",
+    "brand": "CityCatalyst"
   }
 }

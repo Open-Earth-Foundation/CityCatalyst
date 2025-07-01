@@ -135,9 +135,6 @@ export async function createInventoryThroughOnboarding(
   // Click Continue to complete onboarding
   await page.getByRole("button", { name: /Continue/i }).click();
 
-  // Wait for the final API response to complete onboarding
-  // await page.waitForTimeout(10000);
-
   // wait until data is submitting after clicking continue
   await page.waitForLoadState("networkidle");
 
@@ -148,7 +145,6 @@ export async function createInventoryThroughOnboarding(
   return page;
 }
 
-// create project
 export async function createProject(
   request: APIRequestContext,
   name: string,

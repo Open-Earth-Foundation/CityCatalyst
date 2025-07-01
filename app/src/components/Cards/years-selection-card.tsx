@@ -74,13 +74,14 @@ function YearCard({
           lineHeight="20"
           letterSpacing="wide"
         >
-          {year}
+          <span data-testid="inventory-year">{year}</span>
         </Heading>
         <Text
           fontWeight="regular"
           color="content.tertiary"
           lineHeight="20"
           letterSpacing="wide"
+          data-testId="inventory-last-updated"
         >
           {t("last-update")}:{" "}
           {format(new Date(lastUpdate), "dd/MM/yyyy", {

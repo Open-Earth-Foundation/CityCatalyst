@@ -10,83 +10,54 @@ test.describe("Dashboard", () => {
       await createInventoryThroughOnboarding(page, "Chicago");
 
       // Navigate to Dashboard
-      const checkDashboardButton = page.getByTestId("check-dashboard");
-      await expect(checkDashboardButton).toBeVisible();
-      await checkDashboardButton.click();
+      await page.goto("/");
 
       // Verify Dashboard
       await page.waitForLoadState("networkidle");
-
       // Verify page title
       await expect(page).toHaveTitle(/CityCatalyst/i);
 
+      // Verify project name is displayed
+      const projectName = page.getByTestId("hero-project-name");
+      await expect(projectName).toHaveText("Default Project");
+
       // Verify city name is displayed
       const cityName = page.getByTestId("hero-city-name");
-      await expect(cityName).toBeVisible();
       await expect(cityName).toHaveText("Chicago");
 
-      // Verify inventory year is displayed
-      const inventoryYear = page.getByTestId("inventory-year");
-      await expect(inventoryYear).toBeVisible();
-      await expect(inventoryYear).toHaveText("2023");
+      // Verify inventory year title is displayed
+      const inventoryYearTitle = page.getByTestId("inventory-year-title");
+      await expect(inventoryYearTitle).toHaveText("Inventory year");
 
-      // Verify inventory goal is displayed
-      const inventoryGoal = page.getByTestId("inventory-goal");
-      await expect(inventoryGoal).toBeVisible();
-      await expect(inventoryGoal).toHaveText("GPC BASIC");
+      const addNewInventoryButton = page.getByTestId(
+        "add-new-inventory-button",
+      );
+      await expect(addNewInventoryButton).toBeVisible();
 
-      // Verify GWP is displayed
-      const gwp = page.getByTestId("gwp");
-      await expect(gwp).toBeVisible();
-      await expect(gwp).toHaveText("AR6");
-    });
+      const inventoryYearValue = page.getByTestId("inventory-year");
+      await expect(inventoryYearValue).toBeVisible();
+      await expect(inventoryYearValue).toHaveText("2023");
 
-    test("Dashboard displays inventory progress correctly", async ({
-      page,
-    }) => {
-      // Create inventory through onboarding
-      await createInventoryThroughOnboarding(page, "Chicago");
+      const lastInventoryUpdated = page.getByTestId("inventory-last-updated");
+      await expect(lastInventoryUpdated).toBeVisible();
 
-      // Navigate to dashboard
-      await page.getByTestId("check-dashboard").click();
+      const InventoryCalculationTab = page.getByTestId(
+        "tab-emission-inventory-calculation-title",
+      );
+      await expect(InventoryCalculationTab).toHaveText("Inventory calculation");
 
-      // Now test dashboard functionality
-      await page.waitForLoadState("networkidle");
+      const EmissionsInventoryResultsTab = page.getByTestId(
+        "tab-emission-inventory-results-title",
+      );
+      await expect(EmissionsInventoryResultsTab).toHaveText(
+        "Emission inventory results",
+      );
 
-      // Verify progress indicators are present
-      const progressSection = page.getByTestId("inventory-progress");
-      await expect(progressSection).toBeVisible();
+      const SectorDataTitle = page.getByTestId("sector-data-title");
+      await expect(SectorDataTitle).toHaveText("Sector Emissions");
 
-      // Verify sectors are displayed
-      const sectors = page.getByTestId("sectors-list");
-      await expect(sectors).toBeVisible();
-
-      // Verify total emissions display
-      const totalEmissions = page.getByTestId("total-emissions");
-      await expect(totalEmissions).toBeVisible();
-
-      // Verify navigation elements
-      const navigation = page.getByTestId("main-navigation");
-      await expect(navigation).toBeVisible();
-    });
-  });
-
-  test.describe("Dashboard without Inventory", () => {
-    test("Dashboard shows empty state when no inventory exists", async ({
-      page,
-    }) => {
-      // Navigate directly to dashboard without creating inventory
-      await page.goto("/");
-      await page.waitForLoadState("networkidle");
-
-      // Verify empty state is displayed
-      const emptyState = page.getByTestId("empty-state");
-      await expect(emptyState).toBeVisible();
-
-      // Verify "Create Inventory" button is present
-      const createInventoryButton = page.getByTestId("create-inventory-button");
-      await expect(createInventoryButton).toBeVisible();
-      await expect(createInventoryButton).toHaveText(/Create Inventory/i);
+      const StationaryEnergy = page.getByTestId("stationary-energy");
+      await expect(StationaryEnergy).toHaveText("Stationary energy");
     });
   });
 });

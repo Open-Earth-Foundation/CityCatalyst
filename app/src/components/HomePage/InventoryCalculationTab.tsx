@@ -95,6 +95,7 @@ export default function InventoryCalculationTab({
               fontSize="title.md"
               fontWeight="semibold"
               lineHeight="24"
+              data-testid="sector-data-title"
             >
               <Trans t={t}>sector-emissions</Trans>
             </Text>

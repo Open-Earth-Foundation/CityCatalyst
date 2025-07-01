@@ -136,7 +136,7 @@ export async function createInventoryThroughOnboarding(
   await page.getByRole("button", { name: /Continue/i }).click();
 
   // Wait for the final API response to complete onboarding
-  await page.waitForTimeout(60000);
+  // await page.waitForTimeout(10000);
 
   // wait until data is submitting after clicking continue
   await page.waitForLoadState("networkidle");
@@ -144,7 +144,6 @@ export async function createInventoryThroughOnboarding(
   // Step 6: Verify completion page
   const completionMessage = page.getByTestId("done-heading");
   await expect(completionMessage).toBeVisible();
-
   // Return the completion page for further navigation
   return page;
 }

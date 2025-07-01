@@ -391,7 +391,7 @@ test.describe("Onboarding Flow", () => {
       });
     });
     test.describe("Confirm Step", () => {
-      test.setTimeout(60000);
+      test.setTimeout(10000);
       test.beforeEach(async ({ page }) => {
         // Navigate through previous steps to reach the Confirm Step
 

@@ -12,14 +12,21 @@ function getSortedSemverTags() {
     .filter((tag) => {
       // Only accept tags that start with 'v' followed by numbers and dots
       if (!tag.startsWith("v")) return false;
-      if (tag.includes("-")) return false;
       const v = semver.coerce(tag);
-      return v && semver.valid(v) && !semver.prerelease(v);
+      if (!semver.valid(v)) return false;
+      const p = semver.prerelease(tag);
+      // Only release tags or rc prereleases
+      if (p && p.length > 0 && p[0] != 'rc') return false;
+      return true;
     });
   // Sort tags using semver precedence
-  return tags.sort((a, b) =>
+  const sorted = tags.sort((a, b) =>
     semver.rcompare(semver.coerce(a), semver.coerce(b)),
   );
+  // Filter out all but the last pre-release
+  return sorted.filter((tag, i) => {
+    return (!tag.includes("-") || i == 0)
+  })
 }
 
 function getGitLogBetweenTags(fromTag, toTag) {
@@ -54,8 +61,13 @@ async function main() {
     process.exit(1);
   }
 
-  const [latestTag, previousTag] = getSortedSemverTags().slice(0, 2);
-  console.log({ latestTag, previousTag });
+  const sorted = getSortedSemverTags();
+
+  const [latestTag, previousTag] =
+    (process.argv.length >= 4)
+    ? [process.argv[2], process.argv[3]]
+    : sorted.slice(0, 2);
+
   if (!latestTag || !previousTag) {
     console.error("Not enough tags to generate changelog.");
     process.exit(1);
@@ -98,4 +110,4 @@ async function main() {
 main().catch((err) => {
   console.error(err);
   process.exit(1);
-}); 
+});

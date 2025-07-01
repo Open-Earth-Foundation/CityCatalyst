@@ -692,6 +692,7 @@ export default class UserService {
             logoUrl: project.organization.logoUrl || "",
             color: project.organization.theme?.primaryColor,
           },
+          user: user,
         });
       });
     } catch (error) {
@@ -764,6 +765,7 @@ export default class UserService {
             logoUrl: city.project.organization.logoUrl || "",
             color: city.project.organization.theme?.primaryColor,
           },
+          user: user,
         });
       });
     } catch (error) {

@@ -7,6 +7,9 @@ import createHttpError from "http-errors";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 import { logger } from "@/services/logger";
+import { db } from "@/models";
+import i18next from "i18next";
+import { LANGUAGES } from "@/util/types";
 
 export const POST = apiHandler(async (req) => {
   const body = forgotRequest.parse(await req.json());
@@ -15,6 +18,8 @@ export const POST = apiHandler(async (req) => {
     logger.error("Need to assign RESET_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
+
+  const user = await db.models.User.findOne({ where: { email: body.email } });
 
   const resetToken = jwt.sign(
     { email: body.email },
@@ -27,10 +32,20 @@ export const POST = apiHandler(async (req) => {
   const resetUrl =
     host + "/auth/update-password?token=" + encodeURIComponent(resetToken);
 
-  const html = await render(ForgotPasswordTemplate({ url: resetUrl }));
+  const html = await render(
+    ForgotPasswordTemplate({
+      url: resetUrl,
+      language: user?.preferredLanguage,
+    }),
+  );
+
+  const translatedSubject = i18next.t("reset-password.subject", {
+    lng: user?.preferredLanguage || LANGUAGES.en,
+    ns: "emails",
+  });
   await sendEmail({
     to: body.email,
-    subject: "CityCatalyst - Reset your password",
+    subject: translatedSubject,
     html,
   });
 

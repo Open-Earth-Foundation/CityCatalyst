@@ -15,6 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { signIn } from "next-auth/react";
+import { LANGUAGES } from "@/util/types";
+import { LanguageSelector } from "./LanguageSelector";
+import i18next from "i18next";
 
 type Inputs = {
   inventory?: string;
@@ -23,10 +26,11 @@ type Inputs = {
   password: string;
   confirmPassword: string;
   acceptTerms: boolean;
+  preferredLanguage: LANGUAGES;
 };
 
 export default function Signup(props: { params: Promise<{ lng: string }> }) {
-  const { lng } = use(props.params);
+  const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
 
@@ -36,7 +40,11 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
     setError: setFormError,
     formState: { errors, isSubmitting },
     watch,
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({
+    defaultValues: {
+      preferredLanguage: lng as LANGUAGES,
+    },
+  });
 
   const watchPassword = watch("password", "");
 
@@ -161,6 +169,30 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           id="confirmPassword"
           shouldValidate={false}
         />
+        <Field
+          label={t("preferred-language")}
+          invalid={!!errors.preferredLanguage}
+          errorText={
+            <Box display="flex" gap="6px">
+              <Icon as={MdWarning} />
+              <Text
+                fontSize="body.md"
+                lineHeight="20px"
+                letterSpacing="wide"
+                color="content.tertiary"
+              >
+                {errors.preferredLanguage?.message}
+              </Text>
+            </Box>
+          }
+        >
+          <LanguageSelector
+            register={register}
+            error={errors.preferredLanguage}
+            t={t}
+            defaultValue={lng as LANGUAGES}
+          />
+        </Field>
         <Field
           invalid={!!errors.acceptTerms}
           errorText={

@@ -903,7 +903,10 @@ export const api = createApi({
         query: (data: { id: string; name: string; contactEmail: string }) => ({
           url: `/organizations/${data.id}`,
           method: "PATCH",
-          body: { name: data.name, contactEmail: data.contactEmail },
+          body: {
+            name: data.name,
+            contactEmail: data.contactEmail,
+          },
         }),
         transformResponse: (response: OrganizationResponse) => {
           return response;

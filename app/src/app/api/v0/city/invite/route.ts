@@ -63,6 +63,9 @@ export const POST = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.BadRequest("Something went wrong");
   }
   const host = process.env.HOST ?? "http://localhost:3000";
+  // Get the inviting user's preferred language
+  const invitingUser = await db.models.User.findByPk(session.user.id);
+
   const html = await render(
     InviteUserTemplate({
       url: `${host}/api/v0/city/invite/${invite.id}?inventoryId=${body.inventoryId}&token=${invitationCode}&email=${body.email}`,
@@ -73,12 +76,13 @@ export const POST = apiHandler(async (req, { params, session }) => {
         email: session?.user.email!,
       },
       members: city.users,
+      language: invitingUser?.preferredLanguage,
     }),
   );
 
   const sendInvite = await sendEmail({
     to: body.email!,
-    subject: "City Catalyst - City Invitation",
+    subject: "invite.subject",
     html,
   });
 

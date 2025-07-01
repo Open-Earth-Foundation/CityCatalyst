@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum } from "./enums";
-import { OrganizationRole } from "@/util/types";
-import formidable, { File } from "formidable";
+import { OrganizationRole, LANGUAGES } from "@/util/types";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -67,6 +66,7 @@ export const signupRequest = z
     confirmPassword: z.string().min(4),
     acceptTerms: z.literal<boolean>(true),
     inventory: z.string().uuid().optional(),
+    preferredLanguage: z.nativeEnum(LANGUAGES),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",

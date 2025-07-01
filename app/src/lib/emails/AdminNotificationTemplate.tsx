@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import { ExcelFileIcon } from "@/components/icons";
 import { bytesToMB } from "@/util/helpers";
 import { UserFileResponse } from "@/util/types";
@@ -13,23 +12,28 @@ import {
   Text,
   Hr,
 } from "@react-email/components";
+import i18next from "i18next";
+import { LANGUAGES } from "@/util/types";
 
 export default function AdminNotificationTemplate({
   user,
   file,
   adminNames,
   inventoryId,
+  language,
 }: {
   user: { name: string; email: string; cityName: string };
   file: UserFileResponse;
   adminNames: string;
   inventoryId: string;
+  language?: string;
 }) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
   const host = process.env.HOST ?? "http://localhost:3000";
   return (
     <Html>
       <Head />
-      <Preview>CityCatalyst: File Upload</Preview>
+      <Preview>{t("admin-notification.preview")}</Preview>
       <Body style={main}>
         <Container style={container}>
           <svg
@@ -44,15 +48,21 @@ export default function AdminNotificationTemplate({
               fill="#001EA7"
             />
           </svg>
-          <Text style={brandHeading}>CityCatalyst</Text>
+          <Text style={brandHeading}>{t("admin-notification.brand")}</Text>
           <Text style={heading}>
-            {user.name} From {user.cityName} Uploaded New Files For Review
+            {t("admin-notification.title", {
+              userName: user.name,
+              cityName: user.cityName,
+            })}
           </Text>
-          <Text style={greeting}>Hi {adminNames},</Text>
+          <Text style={greeting}>
+            {t("admin-notification.greeting", { adminNames })}
+          </Text>
           <Text style={paragraph}>
-            {" "}
-            {user.name} ({user.email}) has uploaded files in CityCatalyst for
-            revision and to upload to their inventories.
+            {t("admin-notification.message", {
+              userName: user.name,
+              userEmail: user.email,
+            })}
           </Text>
 
           <Link
@@ -107,15 +117,12 @@ export default function AdminNotificationTemplate({
               href={`${host}/${inventoryId}/settings/?tabIndex=1`}
               style={urlLink}
             >
-              GO TO REVIEW
+              {t("admin-notification.cta")}
             </Link>
           </div>
 
           <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-          <Text style={footerText}>
-            Open Earth Foundation is a nonprofit public benefit corporation from
-            California, USA. EIN: 85-3261449
-          </Text>
+          <Text style={footerText}>{t("admin-notification.footer")}</Text>
         </Container>
       </Body>
     </Html>

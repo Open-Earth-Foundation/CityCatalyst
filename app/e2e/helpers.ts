@@ -19,6 +19,7 @@ export async function signup(
       confirmPassword,
       name,
       acceptTerms,
+      preferredLanguage: "en",
     },
   });
   expect(result.ok()).toBeTruthy();

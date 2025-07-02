@@ -21,7 +21,12 @@ export const POST = apiHandler(async (req) => {
 
   const user = await db.models.User.findOne({ where: { email: body.email } });
   if (!user) {
-    throw createHttpError.NotFound("user-not-found");
+    logger.error(
+      { email: body.email },
+      "User not found for resetting password",
+    );
+    // silent failure (for user) for security reasons
+    return NextResponse.json({});
   }
 
   const resetToken = jwt.sign(

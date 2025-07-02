@@ -142,7 +142,7 @@ export function SectorCard({
         <AccordionRoot border="none" w="full" collapsible>
           <AccordionItem value="" border="none">
             <AccordionItemContent padding={0}>
-              <Text className="font-[600]">
+              <Text className="font-semibold">
                 <Trans t={t}>sub-sectors-required</Trans>
               </Text>
               <Box className="grid grid-cols-3 gap-4 py-4">

@@ -689,7 +689,7 @@ export default function AddDataSteps(props: {
                 color="interactive.secondary"
                 mr={4}
               />
-              <div className="space-y-4 w-[100%]">
+              <div className="space-y-4 w-full">
                 <Heading
                   fontWeight="semibold"
                   textTransform="capitalize"
@@ -794,7 +794,7 @@ export default function AddDataSteps(props: {
                       w="full"
                       height="100px"
                       px={4}
-                      className="shadow-none border border-overlay hover:drop-shadow-xl !duration-300 transition-shadow"
+                      className="shadow-none border border-overlay hover:drop-shadow-xl duration-300! transition-shadow"
                       onClick={() => {
                         router.push(
                           `/${inventory}/data/${convertSectorReferenceNumberToNumber(currentStep.referenceNumber)}/${subSector.subsectorId}?refNo=${subSector.referenceNumber}`,

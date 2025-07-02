@@ -20,7 +20,7 @@ const Footer = ({ copyright, links }: FooterProps) => {
         <Box className="mb-4 lg:mb-0 text-sm text-gray-300">{copyright}</Box>
 
         {/* Powered by section */}
-        <Box className="flex items-center gap-4 mb-4 lg:mb-0 order-first lg:order-none">
+        <Box className="flex items-center gap-4 mb-4 lg:mb-0 order-first lg:order-0">
           <Text className="text-sm text-gray-300">
             Powered by open technology from
           </Text>

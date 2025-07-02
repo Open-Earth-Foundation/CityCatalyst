@@ -219,7 +219,7 @@ export function NavigationBar({
               <Heading
                 color="base.light"
                 size="md"
-                className="opacity-75 !text-nowrap"
+                className="opacity-75 text-nowrap!"
                 ml={6}
               >
                 {t("learning-hub")}

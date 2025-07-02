@@ -310,7 +310,7 @@ export default function OnboardingSetup(props: {
             />
           )}
         </div>
-        <div className="bg-white w-full fixed z-[9999] bottom-0 left-0  pb-8 px-1 transition-all">
+        <div className="bg-white w-full fixed z-9999 bottom-0 left-0  pb-8 px-1 transition-all">
           <Box w="full" display="flex" flexDir="column" gap="32px">
             <Box className="w-full">
               <div className="w-full">

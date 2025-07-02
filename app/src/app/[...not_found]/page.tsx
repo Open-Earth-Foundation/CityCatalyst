@@ -15,7 +15,7 @@ const NotFound = (props: { params: Promise<{ lng: string }> }) => {
   const { t } = useTranslation(lng, "not-found");
 
   return (
-    <Box className="flex w-full justify-start relative h-[100vh] z-20">
+    <Box className="flex w-full justify-start relative h-screen z-20">
       <Image
         src="/assets/not-found-background.svg"
         layout="fill"

@@ -79,12 +79,13 @@ async function main() {
   }
 
   const newVersion = latestTag;
-  const today = new Date().toISOString().split("T")[0];
+  const date = new Date(execSync(`git log -1 --format='%ad' ${newVersion}`)
+    .toString()).toISOString().split('T')[0]
 
   console.log(
     `Generating changelog for version ${newVersion} (changes from ${previousTag} to ${latestTag})`,
   );
-  const entry = await generateChangelogEntry(log, newVersion, today, apiKey);
+  const entry = await generateChangelogEntry(log, newVersion, date, apiKey);
 
   const changelogPath = path.resolve(process.cwd(), "../CHANGELOG.md");
   let changelog = fs.readFileSync(changelogPath, "utf-8");

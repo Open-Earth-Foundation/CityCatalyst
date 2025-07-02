@@ -80,12 +80,12 @@ const AddCollaboratorsDialog = ({
   const projectCollection = useMemo(() => {
     return createListCollection({
       items:
-        userProjectsData?.map((project) => ({
+        projectsData?.map((project) => ({
           label: project.name,
           value: project.projectId,
         })) ?? [],
     });
-  }, [userProjectsData]);
+  }, [projectsData]);
 
   const [inviteUsers, { isLoading: isInviteUsersLoading }] =
     useInviteUsersMutation();
@@ -164,7 +164,7 @@ const AddCollaboratorsDialog = ({
   >(() => {
     if (!selectedProject || selectedProject.length === 0) return [];
 
-    const project = userProjectsData?.find(
+    const project = projectsData?.find(
       (project) => project.projectId === selectedProject[0],
     );
     return (

@@ -1,4 +1,5 @@
-@import 'tailwindcss';
+@config "../../tailwind.config.mjs";
+@import "tailwindcss";
 
 @theme {
   --color-brand: #2351dc;
@@ -16,16 +17,16 @@
     from 180deg at 50% 50%,
     var(--tw-gradient-stops)
   );
-  --background-image-city: url('/assets/city_vector_onboarding.svg');
-  --background-image-roads: url('/assets/path_vector_login.svg');
+  --background-image-city: url("/assets/city_vector_onboarding.svg");
+  --background-image-roads: url("/assets/path_vector_login.svg");
 
   --shadow-2dp: 0px 2px 4px -2px #0000001a;
 
   --drop-shadow-3xl: 0 35px 35px rgba(0, 0, 0, 0.25);
-  --drop-shadow-4xl:
-    0 35px 35px rgba(0, 0, 0, 0.25), 0 45px 65px rgba(0, 0, 0, 0.15);
-  --drop-shadow-top:
-    0px -1px 2px -1px rgba(0, 0, 0, 0.1), 0px -1px 3px 0px rgba(0, 0, 31, 0.1);
+  --drop-shadow-4xl: 0 35px 35px rgba(0, 0, 0, 0.25),
+    0 45px 65px rgba(0, 0, 0, 0.15);
+  --drop-shadow-top: 0px -1px 2px -1px rgba(0, 0, 0, 0.1),
+    0px -1px 3px 0px rgba(0, 0, 31, 0.1);
 
   --animate-gradient: gradient 3s linear infinite;
   --animate-gradient-x: gradient-x 2s ease infinite;
@@ -66,3 +67,4 @@
     border-color: var(--color-gray-200, currentcolor);
   }
 }
+

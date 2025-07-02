@@ -1,3 +1,68 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --color-brand: #2351dc;
+  --color-brand_light: #7e99ed;
+  --color-tertiary: #7a7b9a;
+  --color-light: #ffffff;
+  --color-content_tertiary: #7a7b9a;
+  --color-content_secondary: #232640;
+  --color-sentiment_negative_default: #f23d33;
+  --color-interactive_primary: #008600;
+  --color-overlay: #e6e7ff;
+
+  --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
+  --background-image-gradient-conic: conic-gradient(
+    from 180deg at 50% 50%,
+    var(--tw-gradient-stops)
+  );
+  --background-image-city: url('/assets/city_vector_onboarding.svg');
+  --background-image-roads: url('/assets/path_vector_login.svg');
+
+  --shadow-2dp: 0px 2px 4px -2px #0000001a;
+
+  --drop-shadow-3xl: 0 35px 35px rgba(0, 0, 0, 0.25);
+  --drop-shadow-4xl:
+    0 35px 35px rgba(0, 0, 0, 0.25), 0 45px 65px rgba(0, 0, 0, 0.15);
+  --drop-shadow-top:
+    0px -1px 2px -1px rgba(0, 0, 0, 0.1), 0px -1px 3px 0px rgba(0, 0, 31, 0.1);
+
+  --animate-gradient: gradient 3s linear infinite;
+  --animate-gradient-x: gradient-x 2s ease infinite;
+
+  @keyframes gradient {
+    0% {
+      background-position: 200% center;
+    }
+    100% {
+      background-position: 0% center;
+    }
+    gradient-x {
+      0%,
+      100% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100%, 50%;
+      }
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}

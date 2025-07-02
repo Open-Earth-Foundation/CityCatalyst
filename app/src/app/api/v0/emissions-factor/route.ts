@@ -137,8 +137,8 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
       const rank = index + 1;
       const escapedValue = db.sequelize!.escape(value);
       return `
-        WHEN "EmissionsFactor"."region" = ${escapedValue} THEN ${rank}
-        WHEN "EmissionsFactor"."actor_id" = ${escapedValue} THEN ${rank}
+        WHEN "region" = ${escapedValue} THEN ${rank}
+        WHEN "actor_id" = ${escapedValue} THEN ${rank}
       `;
     })
     .join("\n");

@@ -20,6 +20,9 @@ export const POST = apiHandler(async (req) => {
   }
 
   const user = await db.models.User.findOne({ where: { email: body.email } });
+  if (!user) {
+    throw createHttpError.NotFound("user-not-found");
+  }
 
   const resetToken = jwt.sign(
     { email: body.email },

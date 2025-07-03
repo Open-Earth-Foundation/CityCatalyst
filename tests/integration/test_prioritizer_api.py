@@ -17,8 +17,8 @@ sys.path.insert(0, str(app_dir))
 class TestPrioritizerAPI:
     """Test cases for prioritizer API endpoints."""
 
-    @patch("prioritizer.api.get_context")
-    @patch("prioritizer.api.get_actions")
+    @patch("services.get_context.get_context")
+    @patch("services.get_actions.get_actions")
     def test_start_prioritization_success(
         self, mock_get_actions, mock_get_context, client, sample_city_data_request
     ):
@@ -100,7 +100,7 @@ class TestPrioritizerAPI:
 
         assert response.status_code == 404
 
-    @patch("prioritizer.api.get_context")
+    @patch("services.get_context.get_context")
     def test_start_prioritization_no_context_data(
         self, mock_get_context, client, sample_city_data_request
     ):
@@ -130,11 +130,11 @@ class TestPrioritizerAPI:
 class TestPrioritizerWorkflow:
     """Test complete prioritizer workflow (marked as slow)."""
 
-    @patch("prioritizer.api.get_context")
-    @patch("prioritizer.api.get_actions")
-    @patch("prioritizer.api.filter_actions_by_biome")
-    @patch("prioritizer.api.tournament_ranking")
-    @patch("prioritizer.api.generate_multilingual_explanation")
+    @patch("prioritizer.utils.add_explanations.generate_multilingual_explanation")
+    @patch("prioritizer.utils.tournament.tournament_ranking")
+    @patch("prioritizer.utils.filter_actions_by_biome.filter_actions_by_biome")
+    @patch("services.get_actions.get_actions")
+    @patch("services.get_context.get_context")
     def test_complete_prioritization_workflow(
         self,
         mock_explanation,

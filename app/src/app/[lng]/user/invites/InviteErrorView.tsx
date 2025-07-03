@@ -17,7 +17,7 @@ const InviteErrorView = ({ lng }: InviteErrorViewProps) => {
 
   return (
     <Center>
-      <Box className="flex w-full relative h-[100vh] z-20">
+      <Box className="flex w-full relative h-screen z-20">
         <Image
           src="/assets/not-found-background.svg"
           layout="fill"

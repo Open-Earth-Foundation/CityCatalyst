@@ -412,7 +412,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         toaster.create({
           title: t("success"),
           description: t("quick-action-applied"),
-          type: "info",
+          type: "success",
         });
       };
 

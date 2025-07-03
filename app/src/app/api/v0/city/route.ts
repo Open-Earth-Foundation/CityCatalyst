@@ -84,7 +84,7 @@ export const POST = apiHandler(async (req, { session }) => {
         {
           model: db.models.User,
           as: "user",
-          attributes: ["email", "name"],
+          attributes: ["email", "name", "preferredLanguage"],
         },
       ],
     });

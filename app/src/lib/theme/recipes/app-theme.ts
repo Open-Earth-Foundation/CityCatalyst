@@ -3,6 +3,7 @@ import { recipes } from "./index";
 import { SectorColors } from "../custom-colors";
 
 export const appTheme = createSystem(defaultConfig, {
+  disableLayers: true,
   conditions: {
     blue_theme: "&:is([data-theme=blue_theme])",
     light_brown_theme: "&:is([data-theme=light_brown_theme])",

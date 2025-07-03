@@ -1,5 +1,8 @@
 @config "../../tailwind.config.mjs";
-@import "tailwindcss";
+/* @import "tailwindcss"; */
+@import "tailwindcss/theme.css";
+@import "tailwindcss/preflight.css";
+@import "tailwindcss/utilities.css";
 
 @theme {
   --color-brand: #2351dc;
@@ -67,4 +70,3 @@
     border-color: var(--color-gray-200, currentcolor);
   }
 }
-

@@ -21,10 +21,10 @@ const DownloadButtons = ({
   inventoryYear: number | undefined;
 }) => {
   const DOWNLOAD_BUTTONS = {
-    ciris: { isAvailable: false },
+    // ciris: { isAvailable: false },
     ecrf: { isAvailable: true },
     csv: { isAvailable: true },
-    pdf: { isAvailable: false },
+    // pdf: { isAvailable: false },
   };
 
   enum STATUS {

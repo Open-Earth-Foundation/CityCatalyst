@@ -38,7 +38,9 @@ export const EmissionsForecastCard = ({
       <Card.Root paddingY="0px" paddingX="0px" height="100%" width="100%">
         <CardHeader>
           <HStack>
-            <TitleMedium>{t("breakdown-of-sub-sector-emissions")}</TitleMedium>
+            <TitleMedium>
+              {t("no-action-emissions-forecast-by-sector")}
+            </TitleMedium>
             {" | "}
             <HStack
               onClick={() => setIsExplanationModalOpen(true)}

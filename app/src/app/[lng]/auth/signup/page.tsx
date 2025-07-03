@@ -5,6 +5,7 @@ import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
 
 import { Box, Heading, Icon, Input, Link, Text } from "@chakra-ui/react";
+import LabelLarge from "@/components/Texts/Label";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, use } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -123,7 +124,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
       </Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <Field
-          label={t("full-name")}
+          label={<LabelLarge>{t("full-name")}</LabelLarge>}
           invalid={!!errors.name}
           errorText={
             <Box display="flex" gap="6px">
@@ -170,7 +171,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           shouldValidate={false}
         />
         <Field
-          label={t("preferred-language")}
+          label={<LabelLarge>{t("preferred-language")}</LabelLarge>}
           invalid={!!errors.preferredLanguage}
           errorText={
             <Box display="flex" gap="6px">

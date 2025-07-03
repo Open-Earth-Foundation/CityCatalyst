@@ -135,5 +135,6 @@
   "downloading-data": "Téléchargement de vos données",
   "download-failed": "Échec du téléchargement",
   "download-error": "Une erreur s'est produite pendant le téléchargement",
-  "change-to-admin": "Changer en admin"
+  "change-to-admin": "Changer en admin",
+  "user-removed": "Utilisateur supprimé avec succès"
 }

@@ -135,5 +135,6 @@
   "updating-status": "Uploading organization status",
   "freeze-account": "Freeze account",
   "unfreeze-account": "Unfreeze account",
-  "change-to-admin": "Change to admin"
+  "change-to-admin": "Change to admin",
+  "user-removed": "User removed successfully"
 }

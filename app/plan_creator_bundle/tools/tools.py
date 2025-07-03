@@ -9,13 +9,11 @@ from langchain_tavily import TavilySearch
 from openai import OpenAI
 
 from plan_creator_bundle.utils.get_vectorstore_local import get_vectorstore
-from utils.logging_config import setup_logger
-
-setup_logger()
-logger = logging.getLogger(__name__)
 
 # Get TAVILY SEARCH MODE from environment variable
 TAVILY_SEARCH_MODE = os.getenv("TAVILY_SEARCH_MODE", "basic")
+
+logger = logging.getLogger(__name__)
 
 
 # Define tools for each agent

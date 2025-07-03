@@ -16,10 +16,7 @@ import argparse
 import json
 import logging
 from typing import Optional
-from utils.logging_config import setup_logger
 
-# Setup logging configuration
-setup_logger()
 logger = logging.getLogger(__name__)
 
 # Configure retry strategy

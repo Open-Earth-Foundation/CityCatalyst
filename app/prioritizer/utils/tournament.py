@@ -1,10 +1,8 @@
 import random
 import logging
 from typing import Callable, Any, List, Tuple
-from utils.logging_config import setup_logger
 
 # Setup logging configuration
-setup_logger()
 logger = logging.getLogger(__name__)
 
 

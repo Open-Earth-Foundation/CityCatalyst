@@ -12,10 +12,8 @@ from plan_creator_bundle.plan_creator.prompts.agent_4_prompt import (
     agent_4_user_prompt,
 )
 
-from utils.logging_config import setup_logger
 import logging
 
-setup_logger()
 logger = logging.getLogger(__name__)
 
 # Create the agents

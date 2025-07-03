@@ -9,15 +9,13 @@ from plan_creator_bundle.plan_creator.prompts.agent_2_prompt import (
     agent_2_user_prompt,
 )
 
-from utils.logging_config import setup_logger
 import logging
+
+logger = logging.getLogger(__name__)
 
 from plan_creator_bundle.tools.tools import (
     retriever_sub_action_tool,
 )
-
-setup_logger()
-logger = logging.getLogger(__name__)
 
 # Create the agents
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)

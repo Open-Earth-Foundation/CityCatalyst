@@ -3,9 +3,7 @@ from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from plan_creator_bundle.plan_creator.state.agent_state import AgentState
 from langchain_openai import ChatOpenAI
-
 import logging
-from utils.logging_config import setup_logger
 
 from plan_creator_bundle.tools.tools import (
     retriever_main_action_tool,
@@ -17,9 +15,6 @@ from plan_creator_bundle.plan_creator.prompts.agent_1_prompt import (
     agent_1_user_prompt,
 )
 
-setup_logger()
-logger = logging.getLogger(__name__)
-
 # Create the agents
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
 
@@ -30,6 +25,8 @@ tools = [retriever_main_action_tool]
 
 # Define prompts for each agent
 system_prompt_agent_1 = SystemMessage(agent_1_system_prompt)
+
+logger = logging.getLogger(__name__)
 
 
 def build_custom_agent_1():

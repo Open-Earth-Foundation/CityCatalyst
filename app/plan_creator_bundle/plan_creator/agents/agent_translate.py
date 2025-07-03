@@ -2,7 +2,6 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
 import json
 import logging
-from utils.logging_config import setup_logger
 from plan_creator_bundle.plan_creator.prompts.agent_translate_prompt import (
     agent_translate_system_prompt,
     agent_translate_user_prompt,
@@ -16,7 +15,6 @@ model = ChatOpenAI(model="gpt-4.1", temperature=0.0, seed=42)
 # Define prompts for each agent
 system_prompt_agent_translate = SystemMessage(agent_translate_system_prompt)
 
-setup_logger()
 logger = logging.getLogger(__name__)
 
 

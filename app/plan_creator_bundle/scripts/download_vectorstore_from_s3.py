@@ -21,8 +21,9 @@ Call with (from app/ directory):
 """
 
 from dotenv import load_dotenv
-from utils.logging_config import setup_logger
 import logging
+
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
@@ -39,10 +40,6 @@ S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 # Get project root directory
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-
-# Setup logging configuration
-setup_logger()
-logger = logging.getLogger(__name__)
 
 
 def is_valid_vectorstore(path: Path) -> bool:

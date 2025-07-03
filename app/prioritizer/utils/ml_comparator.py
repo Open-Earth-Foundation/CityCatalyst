@@ -71,10 +71,8 @@ import xgboost as xgb
 from pathlib import Path
 import shap
 import logging
-from utils.logging_config import setup_logger
 
 # Setup logging configuration
-setup_logger()
 logger = logging.getLogger(__name__)
 
 root_path = Path(__file__).resolve().parent.parent.parent.parent
@@ -733,9 +731,12 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
 
 if __name__ == "__main__":
-    # Set up logging configuration
-    setup_logger(level=logging.DEBUG)
+    from utils.logging_config import setup_logger
+    import logging
 
+    # Set up logging configuration
+    setup_logger()
+    logger = logging.getLogger(__name__)
     # Calling it with test data
     logger.info("Starting ml_comparator test run")
 

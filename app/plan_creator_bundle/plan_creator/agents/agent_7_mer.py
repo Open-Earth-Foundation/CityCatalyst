@@ -9,15 +9,14 @@ from plan_creator_bundle.tools.tools import (
 )
 from plan_creator_bundle.plan_creator.models import MerIndicatorList
 
-from utils.logging_config import setup_logger
 import logging
+
+logger = logging.getLogger(__name__)
+
 from plan_creator_bundle.plan_creator.prompts.agent_7_prompt import (
     agent_7_system_prompt,
     agent_7_user_prompt,
 )
-
-setup_logger()
-logger = logging.getLogger(__name__)
 
 # Create the agents
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)

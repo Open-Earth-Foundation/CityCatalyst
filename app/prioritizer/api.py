@@ -380,7 +380,6 @@ def _update_bulk_task_status(main_task_id: str):
         task_storage[main_task_id]["status"] = "completed"
         # Aggregate results
         results = [s["result"] for s in subtasks if s["result"] is not None]
-        task_storage[main_task_id]["prioritizer_response"] = None  # Not used for bulk
         task_storage[main_task_id]["prioritizer_response_bulk"] = (
             PrioritizerResponseBulk(prioritizerResponseList=results)
         )
@@ -435,6 +434,14 @@ async def get_prioritization(task_uuid: str):
             status_code=409,
             detail=f"Prioritization for task {task_uuid} is not ready yet. Current status: {task_info['status']}",
         )
+    if "prioritizer_response" not in task_info:
+        logger.error(
+            f"Task {task_uuid}: Attempted to fetch single prioritization for a bulk task"
+        )
+        raise HTTPException(
+            status_code=400,
+            detail=f"Task {task_uuid} is a bulk prioritization task. Use the bulk endpoint to retrieve results.",
+        )
     try:
         return task_info["prioritizer_response"]
     except Exception as e:
@@ -469,6 +476,14 @@ async def get_prioritization_bulk(task_uuid: str):
         raise HTTPException(
             status_code=409,
             detail=f"Prioritization for task {task_uuid} is not ready yet. Current status: {task_info['status']}",
+        )
+    if "prioritizer_response_bulk" not in task_info:
+        logger.error(
+            f"Task {task_uuid}: Attempted to fetch bulk prioritization for a single task"
+        )
+        raise HTTPException(
+            status_code=400,
+            detail=f"Task {task_uuid} is a single prioritization task. Use the single endpoint to retrieve results.",
         )
     try:
         return task_info["prioritizer_response_bulk"]

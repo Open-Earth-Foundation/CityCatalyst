@@ -1,7 +1,7 @@
 import { apiHandler } from "@/util/api";
 import { LANGUAGES } from "@/util/types";
 import { ACTION_TYPES } from "@/util/types";
-import { readFile } from "@/backend/CapService";
+import { fetchClimateActions } from "@/backend/CapService";
 import { NextRequest } from "next/server";
 import UserService from "@/backend/UserService";
 import { logger } from "@/services/logger";
@@ -24,11 +24,14 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
   }
 
   try {
-    logger.info({"locode": inventory.city.locode!});
-    const data = await readFile(inventory.city.locode!, type, lng);
+    logger.info({ locode: inventory.city.locode! });
+    const data = await fetchClimateActions(inventory.city.locode!, type, lng);
     return Response.json({ data });
   } catch (error) {
     logger.error({ err: error }, "Error fetching CAP data:");
-    throw new Error(`Failed to fetch CAP data for city ${inventory.city.locode}: ${(error as Error).message}`, { cause: error });
+    throw new Error(
+      `Failed to fetch CAP data for city ${inventory.city.locode}: ${(error as Error).message}`,
+      { cause: error },
+    );
   }
 });

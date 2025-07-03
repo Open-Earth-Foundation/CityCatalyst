@@ -3,6 +3,9 @@ import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
 import { logger } from "@/services/logger";
 
+// API base URL for Climate Actions
+const CLIMATE_ACTIONS_API_BASE = "https://ccglobal.openearth.dev/api/v0";
+
 const getClient = (() => {
   let client: S3Client | null = null;
 
@@ -44,6 +47,61 @@ const streamToString = async (stream: Readable): Promise<string> => {
     stream.on('error', reject);
     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
   });
+};
+
+export const fetchClimateActions = async (
+  locode: string,
+  type: ACTION_TYPES,
+  lang: LANGUAGES,
+) => {
+  try {
+    if (!locode || !type || !lang) {
+      throw new Error("Missing required parameters");
+    }
+
+    const url = `${CLIMATE_ACTIONS_API_BASE}/climate_actions`;
+    const params = new URLSearchParams({
+      locode: locode,
+      action_type: type,
+      language: lang,
+    });
+
+    logger.info("Fetching climate actions from API", {
+      url,
+      locode,
+      type,
+      lang,
+    });
+
+    const response = await fetch(`${url}?${params.toString()}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      logger.error("API request failed", {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText,
+        locode,
+        type,
+        lang,
+      });
+      throw new Error(
+        `API request failed: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    const data = await response.json();
+    logger.info("Successfully fetched climate actions", { locode, type, lang });
+    return data;
+  } catch (err) {
+    logger.error({ err: err }, "Error fetching climate actions from API:");
+    throw err;
+  }
 };
 
 export const readFile = async (

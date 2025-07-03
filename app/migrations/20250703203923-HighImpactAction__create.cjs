@@ -21,10 +21,10 @@ CREATE TYPE subsector_enum AS ENUM (
     'fugitive_emissions_from_oil_and_natural_gas_systems', 'on-road', 'railways',
     'waterborne_navigation', 'aviation', 'off-road', 'disposal_of_solid_waste_generated_in_the_city',
     'disposal_of_solid_waste_generated_outside_the_city', 'biological_treatment_of_waste_generated_in_the_city',
-    'biological_treatment_of_waste_generated_outside_the_city', 'incineration_and_open_burning_of_waste_generated_in_the_city',
-    'incineration_and_open_burning_of_waste_generated_outside_the_city', 'wastewater_generated_in_the_city',
+    'biological_treatment_of_waste_generated_outside_the_city', 'incineration_and_open_burning_of_waste_generated_in_city',
+    'incineration_and_open_burning_of_waste_generated_outside_city', 'wastewater_generated_in_the_city',
     'wastewater_generated_outside_the_city', 'industrial_processes', 'product_use', 'livestock', 'land',
-    'aggregate_sources_and_non-co2_emission_sources_on_land', 'all'
+    'aggregate_sources_and_non-co2_emission_sources_land', 'all'
 );
 CREATE TYPE primary_purpose_enum AS ENUM ('ghg_reduction', 'climate_resilience');
 CREATE TYPE adaptation_effectiveness_enum AS ENUM ('high', 'medium', 'low');
@@ -37,7 +37,7 @@ CREATE TYPE biome_enum AS ENUM (
 CREATE TYPE language_enum AS ENUM ('en', 'es', 'pt', 'de');
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto"; -- for gen_random_uuid()
-CREATE TABLE ClimateActions (
+CREATE TABLE HighImpactActions (
     action_id UUID PRIMARY KEY,
     language language_enum NOT NULL,
     name TEXT NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE ClimateActions (
 `;
 
 const sql_down = `
-    DROP TABLE IF EXISTS "ClimateActions";
+    DROP TABLE IF EXISTS "HighImpactActions";
     DROP TYPE IF EXISTS language_enum;
     DROP TYPE IF EXISTS biome_enum;
     DROP TYPE IF EXISTS timeline_for_implementation_enum;

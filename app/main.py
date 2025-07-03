@@ -8,6 +8,9 @@ python main.py
 """
 
 from dotenv import load_dotenv
+from slowapi.errors import RateLimitExceeded
+from fastapi import Request
+from fastapi.responses import JSONResponse
 
 load_dotenv()
 
@@ -24,6 +27,7 @@ from plan_creator_bundle.plan_creator_legacy.api import (
 )
 from plan_creator_bundle.plan_creator.api import router as plan_creator_router
 from utils.logging_config import setup_logger
+from limiter import limiter
 
 
 app = FastAPI(
@@ -36,10 +40,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://cap.openearth.dev",
-        "https://cap-plan-creator.openearth.dev",
-        "http://localhost:3000",
-        "http://localhost:8000",
+        "http://localhost:8000",  # Domain for using Swagger UI for local testing
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
@@ -62,9 +63,25 @@ app.add_middleware(
 setup_logger()
 logger = logging.getLogger(__name__)
 
+# Add limiter to app state
+app.state.limiter = limiter
+
+
+# Custom rate limit handler
+def generic_rate_limit_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Rate limit exceeded"},
+    )
+
+
+# Register the exception handler
+app.add_exception_handler(RateLimitExceeded, generic_rate_limit_handler)
+
 
 @app.get("/")
-async def root():
+@limiter.limit("60/minute")
+async def root(request: Request):
     logger.info("Health check endpoint called")
     return {
         "message": "High Impact Actions Prioritizer API",

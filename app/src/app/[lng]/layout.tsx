@@ -24,7 +24,7 @@ export default function RootLayout(props: {
   const { lng } = use(props.params);
 
   return (
-    <html lang={lng} dir={dir(lng)}>
+    <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
       <head>
         <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
         <link rel="icon" type="image/png" href="/assets/icon.png" />

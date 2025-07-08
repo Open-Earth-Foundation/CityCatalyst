@@ -29,7 +29,7 @@ import {
 
 const locode = "XX_SUBCATEGORY_CITY";
 
-// TODO [ON-2579] fix tests
+// TODO [ON-2579] fix tests TEST
 describe.skip("Results API", () => {
   let inventory: Inventory;
   let city: City;

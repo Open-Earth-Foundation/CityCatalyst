@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { LANGUAGES } from "@/util/types";
 import { User } from "@/models/User";
 import i18next from "@/i18n/server";
+import { FeatureFlags, hasServerFeatureFlag } from "@/util/feature-flags";
 
 // TODO: use these variables to configure file size and format
 const MAX_FILE_SIZE = 5000000;
@@ -64,7 +65,12 @@ export const GET = apiHandler(async (_req: Request, context) => {
 
 export const POST = apiHandler(
   async (req: NextRequest, { params, session }) => {
-    const service = NotificationService.getInstance(); // TODO cache this/ make it a singleton
+    if (!hasServerFeatureFlag(FeatureFlags.UPLOAD_OWN_DATA_ENABLED)) {
+      throw new createHttpError.ServiceUnavailable(
+        "Feature flag UPLOAD_OWN_DATA_ENABLED is not enabled on this service",
+      );
+    }
+
     const user = session?.user;
     const cityId = params.city;
 

@@ -32,3 +32,19 @@ export function getFeatureFlags(): string[] {
 export function hasFeatureFlag(flag: FeatureFlags): boolean {
   return getFeatureFlags().includes(flag);
 }
+
+export function getServerFeatureFlags(): string[] {
+  const flags = process.env.NEXT_PUBLIC_FEATURE_FLAGS;
+  if (!flags) {
+    return [];
+  }
+
+  return flags
+    .split(",")
+    .map((flag) => flag.trim())
+    .filter((flag) => flag.length > 0);
+}
+
+export function hasServerFeatureFlag(flag: FeatureFlags): boolean {
+  return getServerFeatureFlags().includes(flag);
+}

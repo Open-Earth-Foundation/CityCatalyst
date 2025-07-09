@@ -7,6 +7,8 @@ import { PublicEnvScript } from "next-runtime-env";
 import { Toaster } from "@/components/ui/toaster";
 import ClientRootLayout from "@/components/ClientRootLayout";
 import { use } from "react";
+import { HighlightInit } from "@highlight-run/next/client";
+import HighlightIdentifier from "@/components/HighlightIdentifier";
 
 export const metadata: Metadata = {
   title: "CityCatalyst",
@@ -24,18 +26,31 @@ export default function RootLayout(props: {
   const { lng } = use(props.params);
 
   return (
-    <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
-      <head>
-        <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
-        <link rel="icon" type="image/png" href="/assets/icon.png" />
-        <PublicEnvScript />
-      </head>
-      <body>
-        <Providers>
-          <Toaster />
-          <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
-        </Providers>
-      </body>
-    </html>
+    <>
+      <HighlightInit
+        projectId={process.env.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID}
+        serviceName="citycatalyst"
+        tracingOrigins
+        networkRecording={{
+          enabled: true,
+          recordHeadersAndBody: true,
+          urlBlocklist: [],
+        }}
+      />
+      <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
+        <head>
+          <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
+          <link rel="icon" type="image/png" href="/assets/icon.png" />
+          <PublicEnvScript />
+        </head>
+        <body>
+          <Providers>
+            <HighlightIdentifier />
+            <Toaster />
+            <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
+          </Providers>
+        </body>
+      </html>
+    </>
   );
 }

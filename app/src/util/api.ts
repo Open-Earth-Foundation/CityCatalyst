@@ -7,6 +7,7 @@ import { ZodError } from "zod";
 
 import { StreamingTextResponse } from "ai";
 import OpenAI from "openai";
+import { H } from "@/lib/highlight";
 
 import { db } from "@/models";
 import { ValidationError } from "sequelize";
@@ -156,6 +157,13 @@ export function apiHandler(handler: NextHandler) {
     let result: ApiResponse;
     let session: AppSession | null = null;
     let error: Error | null = null;
+
+    // Start Highlight tracing
+    const { span } = H.startWithHeaders("api-request", {
+      method: req.method,
+      path: new URL(req.url).pathname,
+    });
+
     try {
       if (!db.initialized) {
         await db.initialize();
@@ -170,6 +178,7 @@ export function apiHandler(handler: NextHandler) {
       });
 
       if (orgContextCheckResult) {
+        span.end();
         return orgContextCheckResult;
       }
 
@@ -182,16 +191,27 @@ export function apiHandler(handler: NextHandler) {
     } catch (err) {
       error = err as Error;
       result = errorHandler(err, req);
+
+      // Record error in the span
+      span.recordException(error);
     }
 
+    const duration = Date.now() - startTime;
     const record = {
       method: req.method,
       path: new URL(req.url).pathname,
       status: result.status,
       user: session?.user?.email,
-      duration: Date.now() - startTime,
+      duration,
       error: error ? error.message : undefined,
     };
+
+    // Add attributes to the span
+    span.setAttributes({
+      "api.status": result.status,
+      "api.duration": duration,
+      "api.user": session?.user?.email || "anonymous",
+    });
 
     if (result.status >= 500) {
       logger.error(record);
@@ -201,6 +221,7 @@ export function apiHandler(handler: NextHandler) {
       logger.info(record);
     }
 
+    span.end();
     return result;
   };
 }

@@ -13,7 +13,7 @@ import {
 } from "@react-email/components";
 import { Organization } from "@/models/Organization";
 import { User } from "@/models/User";
-import i18next from "i18next";
+import i18next from "@/i18n/server";
 import { LANGUAGES } from "@/util/types";
 
 export default function InviteToOrganizationTemplate({

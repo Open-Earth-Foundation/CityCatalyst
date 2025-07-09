@@ -128,6 +128,7 @@
     "brand": "CityCatalyst",
     "title": "Join Your Team In CityCatalyst",
     "greeting": "Hi {{name}},",
+    "greeting-no-name": "Hi,",
     "message": "You are invited to join CityCatalyst and contribute to the emission inventory for the organization:",
     "cta": "JOIN NOW",
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"

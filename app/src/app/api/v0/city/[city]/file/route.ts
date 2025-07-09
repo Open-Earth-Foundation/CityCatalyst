@@ -1,17 +1,13 @@
 import NotificationService from "@/backend/NotificationService";
 import UserService from "@/backend/UserService";
-import AdminNotificationTemplate from "@/lib/emails/AdminNotificationTemplate";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { bytesToMB, fileEndingToMIMEType } from "@/util/helpers";
 import { createUserFileRequset } from "@/util/validation";
-import { render } from "@react-email/components";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { LANGUAGES } from "@/util/types";
-import { User } from "@/models/User";
-import i18next from "@/i18n/server";
 import { FeatureFlags, hasServerFeatureFlag } from "@/util/feature-flags";
 
 // TODO: use these variables to configure file size and format

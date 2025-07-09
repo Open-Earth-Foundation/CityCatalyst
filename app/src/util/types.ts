@@ -359,6 +359,19 @@ export type BreakdownByActivity = Record<
   Record<string, Record<string, GroupedActivity>> & { totals: SubsectorTotals }
 >;
 
+// Type for ActivityValue records from the database
+export interface ActivityValueRecord {
+  id: string;
+  activity_data_jsonb?: Record<string, any>;
+  co2eq: bigint;
+  co2eq_years: number;
+  inventory_value_id: string;
+  datasource_id?: string;
+  metadata: Record<string, any>;
+  created: string;
+  last_updated: string;
+}
+
 export interface ActivityDataByScope {
   activityTitle: string;
   scopes: { [key: string]: Decimal };
@@ -366,6 +379,7 @@ export interface ActivityDataByScope {
   percentage: number;
   datasource_id: string;
   datasource_name: string;
+  activities?: ActivityValueRecord[];
 }
 
 export type SectorBreakdownResponse = BreakdownByActivity & {

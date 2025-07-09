@@ -5,6 +5,7 @@ import { TFunction } from "i18next";
 import { Field } from "@/components/ui/field";
 import { PasswordInput as ChakraPasswordInput } from "@/components/ui/password-input";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import LabelLarge from "@/components/Texts/Label";
 
 export default function PasswordInput({
   children,
@@ -37,15 +38,7 @@ export default function PasswordInput({
   return (
     <Field
       invalid={!!error}
-      label={
-        <Text
-          fontWeight="medium"
-          fontFamily="heading"
-          color="content.secondary"
-        >
-          {name}
-        </Text>
-      }
+      label={<LabelLarge>{name}</LabelLarge>}
       errorText={error?.message}
       w={w}
     >

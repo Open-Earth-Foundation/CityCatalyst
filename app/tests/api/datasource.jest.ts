@@ -99,6 +99,7 @@ describe("DataSource API", () => {
       locode,
       name: "CC_",
     });
+    await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await db.models.CityUser.create({
       cityUserId: randomUUID(),
       userId: testUserID,

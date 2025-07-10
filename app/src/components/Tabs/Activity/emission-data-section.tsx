@@ -245,17 +245,10 @@ const EmissionDataSection = ({
               </Button>
             )}
             <MenuRoot>
-              <MenuTrigger>
-                <IconButton
-                  aria-label="more-icon"
-                  variant="ghost"
-                  color="content.tertiary"
-                >
-                  <MdMoreVert size="lg" />
-                </IconButton>
+              <MenuTrigger aria-label="more-icon" color="content.tertiary">
+                <MdMoreVert size="lg" />
               </MenuTrigger>
               <MenuContent p="0px" w="auto">
-                {" "}
                 <MenuItem
                   value="change-methodology"
                   value-text={t("change-methodology")}

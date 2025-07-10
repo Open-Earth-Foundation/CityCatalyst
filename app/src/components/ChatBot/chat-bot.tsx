@@ -518,7 +518,7 @@ export default function ChatBot({
                   bg={isUser ? "content.link" : "base.light"}
                 >
                   <>
-                    <Text
+                    <Box
                       className="whitespace-pre-wrap"
                       color={isUser ? "base.light" : "content.tertiary"}
                       letterSpacing="0.5px"
@@ -528,7 +528,7 @@ export default function ChatBot({
                       <ReactMarkdown rehypePlugins={[remarkGfm]}>
                         {m.text}
                       </ReactMarkdown>
-                    </Text>
+                    </Box>
                     {!isUser &&
                       i === messages.length - 1 &&
                       messages.length > 1 && (

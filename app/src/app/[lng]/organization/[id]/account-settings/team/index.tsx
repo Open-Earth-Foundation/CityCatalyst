@@ -426,7 +426,6 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         organizationId={id}
-        isAdmin={true}
       />
       <RemoveUserModal
         t={t}

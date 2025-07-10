@@ -33,6 +33,11 @@ const locode = "XX_SUBCATEGORY_CITY";
 describe("Results API", () => {
   let inventory: Inventory;
   let city: City;
+  let sector: any;
+  let subSector1: any;
+  let subSector2: any;
+  let subCategory1: any;
+  let subCategory2: any;
 
   beforeAll(async () => {
     setupTests();
@@ -49,6 +54,34 @@ describe("Results API", () => {
     });
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city.addUser(testUserID);
+
+    // Upsert required Sector, SubSector, and SubCategory records (they may already exist in CI)
+    sector = await db.models.Sector.upsert({
+      sectorId: "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
+      sectorName: "Stationary Energy",
+    });
+    
+    subSector1 = await db.models.SubSector.upsert({
+      subsectorId: "a235005c-f223-3c64-a0d2-f55d6f22f32f",
+      sectorId: sector.sectorId,
+      subsectorName: "Commercial and institutional buildings and facilities",
+    });
+    
+    subSector2 = await db.models.SubSector.upsert({
+      subsectorId: "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
+      sectorId: sector.sectorId,
+      subsectorName: "Residential buildings",
+    });
+    
+    subCategory1 = await db.models.SubCategory.upsert({
+      subcategoryId: "942f2e36-ab1f-3fbf-af9e-31d997f518c7",
+      subsectorId: subSector1.subsectorId,
+    });
+    
+    subCategory2 = await db.models.SubCategory.upsert({
+      subcategoryId: "58a9822a-fae0-3831-9f8b-4ec1fb48a54f",
+      subsectorId: subSector2.subsectorId,
+    });
 
     // Clean up any existing test data before creating
     await db.models.ActivityValue.destroy({
@@ -73,17 +106,24 @@ describe("Results API", () => {
       globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
     });
 
-    // Replace bulkCreate with individual create calls and error logging
+    // Create InventoryValue records first
+    const createdInventoryValues = [];
     for (const inventoryValueData of inventoryValuesData) {
       try {
         // If co2eq is a string, convert to BigInt for DB insertion
         const data = { ...inventoryValueData, co2eq: typeof inventoryValueData.co2eq === 'string' ? BigInt(inventoryValueData.co2eq) : inventoryValueData.co2eq };
-        await db.models.InventoryValue.create(data);
+        const created = await db.models.InventoryValue.create(data);
+        createdInventoryValues.push(created);
       } catch (error) {
         console.error('Error creating InventoryValue:', error);
         console.error('Data:', inventoryValueData);
+        throw new Error(`Failed to create InventoryValue: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
+    
+    // Verify all InventoryValue records were created
+    expect(createdInventoryValues).toHaveLength(inventoryValuesData.length);
+    
     for (const activityValueData of activityValuesData) {
       try {
         // If co2eq is a string, convert to BigInt for DB insertion
@@ -92,6 +132,7 @@ describe("Results API", () => {
       } catch (error) {
         console.error('Error creating ActivityValue:', error);
         console.error('Data:', activityValueData);
+        throw new Error(`Failed to create ActivityValue: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
   });
@@ -233,7 +274,15 @@ describe("Results API", () => {
     };
     const result = await res.json();
 
-    // Sort activities by co2eq to make the test order-independent
+    // Sort scopes by activityTitle to make the test order-independent
+    if (result.data?.byScope) {
+      result.data.byScope.sort((a: any, b: any) => a.activityTitle.localeCompare(b.activityTitle));
+    }
+    if (expected.data?.byScope) {
+      expected.data.byScope.sort((a: any, b: any) => a.activityTitle.localeCompare(b.activityTitle));
+    }
+
+    // Sort activities by co2eq within each scope to make the test order-independent
     if (result.data?.byScope?.[0]?.activities) {
       result.data.byScope[0].activities.sort((a: any, b: any) => 
         parseInt(a.co2eq) - parseInt(b.co2eq)

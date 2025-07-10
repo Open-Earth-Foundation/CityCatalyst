@@ -11,7 +11,7 @@
     "test": "npm run jest & npm run e2e:test",
     "api:test": "npm run jest",
     "api:test:all": "npm run jest:results-sector && npm run jest:other-tests",
-    "jest:results-sector": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" NODE_ENV=\"test\" npx jest tests/api/results_sector.jest.ts --workerThreads=false",
+    "jest:results-sector": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" NODE_ENV=\"test\" npx jest tests/api/results_sector.jest.ts --workerThreads=false --no-coverage",
     "jest:other-tests": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" NODE_ENV=\"test\" npx jest --testPathIgnorePatterns=\"results_sector.jest.ts\"",
     "api:test-windows": "npm run jest:windows",
     "e2e:test": "npx playwright test",

@@ -132,11 +132,11 @@ const EmissionDataSection = ({
             {t("activity-suggestion")}
           </Text>
           <Box className="flex flex-col gap-4">
-            {suggestedActivities.map((suggestedActivity) => {
+            {suggestedActivities.map((suggestedActivity, i) => {
               const { id, prefills } = suggestedActivity;
               return (
                 <SuggestedActivityCard
-                  key={id}
+                  key={`${id}-${i}`}
                   id={id}
                   prefillKey={prefills[0]?.key}
                   prefillValue={prefills[0]?.value}

@@ -108,7 +108,7 @@ describe("Results API", () => {
       },
     });
 
-    inventory = await db.models.Inventory.create({
+    const [inventoryResult] = await db.models.Inventory.upsert({
       inventoryId: inventoryId,
       ...baseInventory,
       inventoryName: "ReportResultInventory",
@@ -116,6 +116,7 @@ describe("Results API", () => {
       inventoryType: InventoryTypeEnum.GPC_BASIC,
       globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
     });
+    inventory = inventoryResult;
 
     // Create InventoryValue records first
     const createdInventoryValues = [];

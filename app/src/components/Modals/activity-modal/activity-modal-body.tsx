@@ -230,9 +230,9 @@ const ActivityModalBody = ({
           {/* handle select, multi-select types, text  */}
           {filteredFields.map((f, idx) => {
             return (
-              <>
+              <Box key={idx}>
                 {f.options && (
-                  <Field key={idx} className="w-full">
+                  <Field className="w-full">
                     <BuildingTypeSelectInput
                       options={f.options as string[]}
                       required={f.required}
@@ -385,7 +385,7 @@ const ActivityModalBody = ({
                                 }}
                               >
                                 <NativeSelectField
-                                  value={field.value}
+                                  defaultValue={field.value}
                                   placeholder={t("select-unit")}
                                 >
                                   {f.units?.map((item: string) => (
@@ -454,7 +454,7 @@ const ActivityModalBody = ({
                     />
                   </Field>
                 )}
-              </>
+              </Box>
             );
           })}
           {!methodology?.id.includes("direct-measure") && title ? (

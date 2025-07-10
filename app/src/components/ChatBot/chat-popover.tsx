@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { OpenChangeDetails } from "@zag-js/popover";
 
 export default function ChatPopover({
-  lng = "en",
+  lng,
   inventoryId,
 }: {
   userName?: string;
@@ -27,7 +27,7 @@ export default function ChatPopover({
 }) {
   const { open, onOpen, onClose } = useDisclosure();
   const inputRef = React.useRef(null);
-  const { t } = useTranslation(lng, "chat");
+  const { t } = useTranslation(lng as string, "chat");
 
   const onOpenChange = (e: OpenChangeDetails) => {
     if (!e.open) {

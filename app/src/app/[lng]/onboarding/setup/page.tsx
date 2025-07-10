@@ -142,7 +142,7 @@ export default function OnboardingSetup(props: {
   const globalWarmingPotential = watch("globalWarmingPotential");
 
   const currentYear = new Date().getFullYear();
-  const numberOfYearsDisplayed = 10;
+  const numberOfYearsDisplayed = 20;
   const years = Array.from(
     { length: numberOfYearsDisplayed },
     (_x, i) => currentYear - i,

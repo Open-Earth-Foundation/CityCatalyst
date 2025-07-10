@@ -83,6 +83,17 @@ describe("Results API", () => {
       subsectorId: subSector2.subsectorId,
     });
 
+    // Create required DataSource records
+    await db.models.DataSource.upsert({
+      datasourceId: "814d43fd-42bf-49f9-a10f-2c5486cf0344",
+      datasourceName: "Test DataSource 1",
+    });
+    
+    await db.models.DataSource.upsert({
+      datasourceId: "6bbbab3d-2978-4e7d-a2a7-295ecf35f338",
+      datasourceName: "Test DataSource 2",
+    });
+
     // Clean up any existing test data before creating
     await db.models.ActivityValue.destroy({
       where: {
@@ -262,7 +273,7 @@ describe("Results API", () => {
             ],
             activityTitle: "Residential buildings",
             datasource_id: "814d43fd-42bf-49f9-a10f-2c5486cf0344",
-            datasource_name: null,
+            datasource_name: "Test DataSource 1",
             percentage: 24, // 300/1250 ≈ 24%
             scopes: {
               "1": "300",

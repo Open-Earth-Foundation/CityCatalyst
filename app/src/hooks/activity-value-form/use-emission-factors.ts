@@ -113,9 +113,6 @@ const useEmissionFactors = ({
         ) {
           let key = generateMetadataKey(field.id) as string;
           acc[key] = activityData[field.id];
-          // search for specific manual input name as well in metadata
-          // in order to support emissions factors with manual input hierarchy schema
-          acc[field.id] = activityData[field.id];
         }
         return acc;
       },

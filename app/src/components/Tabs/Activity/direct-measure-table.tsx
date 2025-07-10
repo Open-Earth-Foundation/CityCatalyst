@@ -210,15 +210,12 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                 </Table.Cell>
                 <Table.Cell>
                   <MenuRoot>
-                    <MenuTrigger>
-                      <IconButton
-                        data-testid="activity-more-icon"
-                        aria-label="more-icon"
-                        variant="ghost"
-                        color="content.tertiary"
-                      >
-                        <Icon as={MdMoreVert} size="lg" />
-                      </IconButton>
+                    <MenuTrigger
+                      data-testid="activity-more-icon"
+                      aria-label="more-icon"
+                      color="content.tertiary"
+                    >
+                      <Icon as={MdMoreVert} size="lg" />
                     </MenuTrigger>
                     <MenuContent
                       w="auto"

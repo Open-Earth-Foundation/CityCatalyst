@@ -250,24 +250,20 @@ function SubSectorPage(props: {
                       <Icon as={MdChevronRight} color="gray.500" h="24px" />
                     }
                   >
-                    <BreadcrumbItem>
-                      <BreadcrumbLink
-                        href={`/${inventoryId}/data`}
-                        color="content.tertiary"
-                        truncate
-                      >
-                        {t("all-sectors")}
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbItem>
-                      <BreadcrumbLink
-                        href={`/${inventoryId}/data/${step}`}
-                        color="content.tertiary"
-                        truncate
-                      >
-                        {t(getSectorName(step))}
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
+                    <BreadcrumbLink
+                      href={`/${inventoryId}/data`}
+                      color="content.tertiary"
+                      truncate
+                    >
+                      {t("all-sectors")}
+                    </BreadcrumbLink>
+                    <BreadcrumbLink
+                      href={`/${inventoryId}/data/${step}`}
+                      color="content.tertiary"
+                      truncate
+                    >
+                      {t(getSectorName(step))}
+                    </BreadcrumbLink>
                     <BreadcrumbCurrentLink
                       color="content.link"
                       textDecoration="underline"

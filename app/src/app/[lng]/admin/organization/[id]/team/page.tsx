@@ -464,7 +464,6 @@ const AdminOrganizationTeamPage = (props: {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         organizationId={id}
-        isAdmin={true}
       />
       <RemoveUserModal
         t={t}

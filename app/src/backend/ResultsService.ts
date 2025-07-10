@@ -1,7 +1,7 @@
 import { db } from "@/models";
 import { QueryTypes } from "sequelize";
 import groupBy from "lodash/groupBy";
-import { ActivityDataByScope } from "@/util/types";
+import { ActivityDataByScope, ActivityValueRecord } from "@/util/types";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import createHttpError from "http-errors";
@@ -71,7 +71,6 @@ interface EmissionResults {
 }
 
 interface GroupedActivityResult {
-  // byActivity: ResponseWithoutTotals;
   byScope: ActivityDataByScope[];
 }
 
@@ -303,16 +302,42 @@ export async function getEmissionResultsBatch(
   return emissionResults;
 }
 
+// Type for raw query result from InventoryValue join query
+interface InventoryValueQueryResult {
+  co2eq: bigint;
+  subsector_name: string;
+  scope_name: string;
+  datasource_id: string;
+  datasource_name: string;
+  inventory_value_id: string;
+}
+
+
+
+interface InventoryValuesBySector {
+  sector_name?: SectorNamesInDB;
+  subsector_name: string;
+  scope_name: string;
+  co2eq: bigint;
+  datasource_name: string;
+  datasource_id: string;
+  inventory_value_id: string;
+  activities: ActivityValueRecord[];
+}
+
 const fetchInventoryValuesBySector = async (
   inventoryId: string,
   sectorName: SectorNamesInFE,
 ) => {
+  // Get individual inventory values with their activities
   const rawQuery = `
-    SELECT sum(iv.co2eq) as co2eq,
-           ss.subsector_name,
-           scope.scope_name,
-           iv.datasource_id,
-           ds.datasource_name
+    SELECT
+      iv.co2eq,
+      ss.subsector_name,
+      scope.scope_name,
+      iv.datasource_id,
+      ds.datasource_name,
+      iv.id as inventory_value_id
     FROM "InventoryValue" iv
            JOIN "Sector" s ON iv.sector_id = s.sector_id
            JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
@@ -322,32 +347,57 @@ const fetchInventoryValuesBySector = async (
     WHERE iv.inventory_id = (:inventoryId)
       and iv.co2eq IS NOT NULL
       AND (s.sector_name) = (:sectorName)
-    GROUP BY ss.subsector_name, scope.scope_name, iv.datasource_id, ds.datasource_name
   `;
-  const activitiesRaw: ActivityForSectorBreakdownRecords[] =
-    await db.sequelize!.query(rawQuery, {
-      replacements: {
-        inventoryId,
-        sectorName: SectorMappingsFromFEToDB[sectorName as SectorNamesInFE],
-      },
-      type: QueryTypes.SELECT,
-    });
-  return activitiesRaw as InventoryValuesBySector[];
-};
+  const sectorNameDB = SectorMappingsFromFEToDB[sectorName as SectorNamesInFE];
 
-interface InventoryValuesBySector {
-  sector_name: SectorNamesInDB;
-  subsector_name: string;
-  scope_name: string;
-  co2eq: bigint;
-  datasource_name: string;
-  datasource_id: string;
-}
+  const inventoryValues = (await db.sequelize!.query(rawQuery, {
+    replacements: {
+      inventoryId,
+      sectorName: sectorNameDB,
+    },
+    type: QueryTypes.SELECT,
+  })) as InventoryValueQueryResult[];
+
+  // Get all relevant InventoryValue IDs
+  const inventoryValueIds = inventoryValues.map(
+    (row) => row.inventory_value_id,
+  );
+
+  let activityRecords: ActivityValueRecord[] = [];
+  if (inventoryValueIds.length > 0) {
+    const activityQuery = `
+      SELECT *
+      FROM "ActivityValue"
+      WHERE inventory_value_id IN (:inventoryValueIds)
+    `;
+    activityRecords = (await db.sequelize!.query(activityQuery, {
+      replacements: { inventoryValueIds },
+      type: QueryTypes.SELECT,
+    })) as ActivityValueRecord[];
+  }
+  const activitiesGrouped: Record<string, ActivityValueRecord[]> = groupBy(
+    activityRecords,
+    "inventory_value_id",
+  );
+
+  // Attach activities to each inventory value
+  const inventoryValuesWithActivities: InventoryValuesBySector[] =
+    inventoryValues.map((iv) => ({
+      ...iv,
+      activities: activitiesGrouped[iv.inventory_value_id] || [],
+    }));
+
+  return inventoryValuesWithActivities;
+};
 
 export const getEmissionsBreakdownBatch = async (
   inventoryId: string,
   sectorName: SectorNamesInFE,
-): Promise<GroupedActivityResult> => {
+): Promise<
+  GroupedActivityResult & {
+    byScope: ActivityDataByScope[];
+  }
+> => {
   try {
     const emissionsForSector = await fetchInventoryValuesBySector(
       inventoryId,
@@ -360,21 +410,46 @@ export const getEmissionsBreakdownBatch = async (
     );
 
     const totalEmissions = bigIntToDecimal(
-      sumBigIntBy(emissionsForSector, "co2eq"),
+      emissionsForSector.reduce((sum, item) => {
+        // Sum the co2eq from all activities for this inventory value
+        const activitySum = item.activities.reduce(
+          (activitySum, activity) => activitySum + BigInt(activity.co2eq || 0n),
+          0n
+        );
+        return sum + activitySum;
+      }, 0n),
     );
 
     const resultsByScope = Object.entries(bySubSectorAndDataSource).map(
       ([_subsectorAndDataSource, scopeValues]) => {
-        const totalSectorEmissions = bigIntToDecimal(
-          sumBigIntBy(scopeValues, "co2eq"),
-        );
-        const scopes: { [key: string]: Decimal } = {};
+        // Group by scope within this subsector/datasource combination
+        const byScope = groupBy(scopeValues, "scope_name");
 
-        scopeValues.forEach(
-          ({ scope_name, co2eq }: { scope_name: string; co2eq: bigint }) => {
-            scopes[scope_name] = bigIntToDecimal(co2eq || 0n);
-          },
+        const scopes: { [key: string]: Decimal } = {};
+        let totalSectorEmissions = new Decimal(0);
+
+        // Aggregate emissions by scope
+        Object.entries(byScope).forEach(([scopeName, scopeItems]) => {
+          const scopeEmissions = scopeItems.reduce(
+            (sum, item) => {
+              // Sum the co2eq from all activities for this inventory value
+              const activitySum = item.activities.reduce(
+                (activitySum, activity) => activitySum.plus(bigIntToDecimal(activity.co2eq || 0n)),
+                new Decimal(0)
+              );
+              return sum.plus(activitySum);
+            },
+            new Decimal(0),
+          );
+          scopes[scopeName] = scopeEmissions;
+          totalSectorEmissions = totalSectorEmissions.plus(scopeEmissions);
+        });
+
+        // Collect all activities from this subsector/datasource combination
+        const activities = scopeValues.flatMap(
+          (scopeValue) => scopeValue.activities,
         );
+
         return {
           activityTitle: scopeValues[0].subsector_name,
           scopes,
@@ -382,9 +457,11 @@ export const getEmissionsBreakdownBatch = async (
           percentage: calculatePercentage(totalSectorEmissions, totalEmissions),
           datasource_id: scopeValues[0].datasource_id,
           datasource_name: scopeValues[0].datasource_name,
+          activities,
         };
       },
     );
+
     return { byScope: resultsByScope };
   } catch (error) {
     logger.error({ err: error }, "Error in getEmissionsBreakdownBatch:");
@@ -397,7 +474,6 @@ export async function getEmissionsBreakdown(
   inventory: string,
   sectorName: SectorNamesInFE,
 ): Promise<{
-  // byActivity: ResponseWithoutTotals;
   byScope: ActivityDataByScope[];
 }> {
   return getEmissionsBreakdownBatch(inventory, sectorName);

@@ -54,14 +54,12 @@ const AddCollaboratorsDialog = ({
   onClose,
   onOpen,
   organizationId,
-  isAdmin,
 }: {
   lng: string;
   isOpen: boolean;
   onClose: () => void;
   onOpen?: () => void;
   organizationId?: string;
-  isAdmin?: boolean;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
 
@@ -75,17 +73,32 @@ const AddCollaboratorsDialog = ({
     description: t("invite-error-toast-description"),
   });
 
+  // if organizationId is provided, we fetch the projects for that organization only
+  // if no organizationId is provided, we fetch the user's projects
+
+  const {
+    data: organizationProjectsData,
+    isLoading: isLoadingOrganizationProjects,
+  } = useGetProjectsQuery(
+    {
+      organizationId: organizationId as string,
+    },
+    {
+      skip: !organizationId,
+    },
+  );
+
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
 
   const projectCollection = useMemo(() => {
     return createListCollection({
       items:
-        projectsData?.map((project) => ({
+        (organizationProjectsData ?? projectsData)?.map((project) => ({
           label: project.name,
           value: project.projectId,
         })) ?? [],
     });
-  }, [projectsData]);
+  }, [projectsData, organizationProjectsData]);
 
   const [inviteUsers, { isLoading: isInviteUsersLoading }] =
     useInviteUsersMutation();
@@ -173,7 +186,7 @@ const AddCollaboratorsDialog = ({
         name: city.name,
       })) ?? []
     );
-  }, [isAdmin, projectsData, selectedProject]);
+  }, [projectsData, selectedProject]);
 
   return (
     <DialogRoot
@@ -220,7 +233,7 @@ const AddCollaboratorsDialog = ({
                 }}
               >
                 <option value="collaborator">{t("collaborator")}</option>
-                {isAdmin && <option value="admin">{t("admin")}</option>}
+                {organizationId && <option value="admin">{t("admin")}</option>}
               </NativeSelectField>
             </NativeSelectRoot>
             <Callout
@@ -255,7 +268,7 @@ const AddCollaboratorsDialog = ({
               <TitleLarge color="content.tertiary">
                 {t("project-to-share")}
               </TitleLarge>
-              {isLoading ? (
+              {isLoading || isLoadingOrganizationProjects ? (
                 <ProgressCircle.Root value={null} size="sm">
                   <ProgressCircle.Circle>
                     <ProgressCircle.Track />
@@ -301,7 +314,7 @@ const AddCollaboratorsDialog = ({
               <BodyLarge>{t("select-cities-to-share-description")}</BodyLarge>
               {cityData?.length === 0 && (
                 <Text fontSize="body.md" mt={3} color="content.tertiary">
-                  {isAdmin && !selectedProject
+                  {organizationId && !selectedProject
                     ? t("select-project")
                     : t("no-cities-available")}
                 </Text>

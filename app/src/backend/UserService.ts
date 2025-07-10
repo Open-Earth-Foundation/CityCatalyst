@@ -460,10 +460,9 @@ export default class UserService {
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
 
     // OEF admin and organization owner can see all projects
-    const orgOwner = await hasOrgOwnerLevelAccess(
-      organizationId,
-      session.user.id,
-    );
+    const orgOwner =
+      (await hasOrgOwnerLevelAccess(organizationId, session.user.id)) ||
+      session.user.role === Roles.Admin;
     if (session.user.role == Roles.Admin || orgOwner) {
       return await UserService.findAllProjectForAdminAndOwner(organizationId);
     }

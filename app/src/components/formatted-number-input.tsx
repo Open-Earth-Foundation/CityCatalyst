@@ -145,7 +145,6 @@ function FormattedNumberInput({
             {...rest}
           >
             <NumberInputField
-              value={format(field.value)}
               data-testId={testId}
               onChange={(e: any) => {
                 const parsedValue = parse(e.target.value);

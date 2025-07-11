@@ -632,7 +632,7 @@ export default function ChatBot({
           <Textarea
             h="80px"
             ref={inputRef}
-            className="flex-grow w-full p-4"
+            className="grow w-full p-4"
             value={userInput}
             placeholder={t("ask-assistant")}
             onChange={(e) => setUserInput(e.target.value)}

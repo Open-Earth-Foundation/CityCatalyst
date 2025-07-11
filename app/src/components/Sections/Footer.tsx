@@ -99,7 +99,7 @@ const Footer = ({ lng }: { lng: string }) => {
             </Link>
           </Box>
         </Box>
-        <Box backgroundColor="body" className="h-[1px]" />
+        <Box backgroundColor="body" className="h-px" />
         <Box className="flex gap-4 align-middle" mt={12}>
           <Box mt={-1.5}>
             <Image

@@ -182,7 +182,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
         <Box
           w={width}
           h={height}
-          className="absolute top-0 left-0 z-[1000] pointer-events-none"
+          className="absolute top-0 left-0 z-1000 pointer-events-none"
         >
           <Center h="full">
             <Spinner size="lg" />

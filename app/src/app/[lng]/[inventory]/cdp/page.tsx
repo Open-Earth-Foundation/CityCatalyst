@@ -37,7 +37,7 @@ function Page(props: { params: Promise<{ lng: string; inventory: string }> }) {
     }
   };
   return (
-    <Box className="h-[100vh] w-full flex justify-center items-center">
+    <Box className="h-screen w-full flex justify-center items-center">
       <Card.Root minH="300px" minW="300px">
         <CardHeader
           fontFamily="heading"

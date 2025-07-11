@@ -292,7 +292,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                 fontSize="body.md"
                 fontFamily="body"
                 flex="1 0 0"
-                className="overflow-ellipsis line-clamp-2"
+                className="text-ellipsis line-clamp-2"
               >
                 <Text fontSize="body.md" fontFamily="body">
                   <strong> {t("reason")}: </strong>

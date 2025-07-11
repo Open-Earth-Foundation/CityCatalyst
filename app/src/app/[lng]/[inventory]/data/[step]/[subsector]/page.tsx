@@ -412,7 +412,7 @@ function SubSectorPage(props: {
             {scopes?.map((scope, index) => (
               <Tabs.Trigger
                 key={index}
-                className="[&[aria-selected='false']]:border-[transparent]"
+                className="aria-[selected='false']:border-transparent"
                 value={index.toString()}
                 mt="40px"
               >

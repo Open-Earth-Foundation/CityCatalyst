@@ -1,6 +1,5 @@
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import declarative_base
 from main import app
 from routes.ccra_assessment import db_risk_assessment, db_impactchain_indicator, db_ccra_cities
 
@@ -67,12 +66,18 @@ def test_get_ccra_cities():
     assert response.status_code == 200
     assert response.json() == [
         {
-            "cityName": "Test City",
+            "cityname": "Test City",
             "region": "TEST",
             "actor_id": "CITY1",
             "osm_id": "R12345"
         }
     ]
+
+def test_get_ccra_cities_not_found(monkeypatch):
+    monkeypatch.setattr("routes.ccra_assessment.db_ccra_cities", lambda country_code: [])
+    response = client.get("/api/v0/ccra/city/NOPE")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "No data available"}
 
 # Test the /ccra/risk_assessment/city/{actor_id}/{scenario_name} endpoint
 def test_get_city_risk_assessment():
@@ -94,5 +99,27 @@ def test_get_city_risk_assessment():
             'sensitivity_score': 0.3,
             'risk_lower_limit': 0.2,
             'risk_upper_limit': 0.9
+        }
+    ]
+
+def test_get_city_impactchain_indicators(monkeypatch):
+    response = client.get("/api/v0/ccra/impactchain_indicators/city/CITY1/current")
+    assert response.status_code == 200
+    assert response.json() == [
+        {
+            'keyimpact': 'Test Impact',
+            'hazard': 'Test Hazard',
+            'scenario': 'current',
+            'actor_id': 'CITY1',
+            'category': 'Test Category',
+            'subcategory': 'Test Subcategory',
+            'indicator_name': 'Test Indicator',
+            'indicator_score': 0.7,
+            'indicator_units': 'units',
+            'indicator_normalized_score': 0.75,
+            'indicator_weight': 0.5,
+            'relationship': 'positive',
+            'indicator_year': 2023,
+            'datasource': 'Test Source'
         }
     ]

@@ -1,11 +1,12 @@
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
 from db.database import SessionLocal
+from typing import Dict, List, Union
 
 api_router = APIRouter(prefix="/api/v0")
 
 @api_router.get("/emissions_factor/methodology", summary="Get emission factor methodologies (IPCC only)")
-def get_emissionfactor_methodologies():
+def get_emissionfactor_methodologies() -> Dict[str, List[Dict[str, Union[int, str, None]]]]:
     """
     Retrieve emission factor methodologies where publisher_name = 'IPCC'.
     Returns a JSON object with a list of methodologies under the key 'emissionfactor_methodology'.

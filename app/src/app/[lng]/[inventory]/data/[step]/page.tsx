@@ -637,7 +637,7 @@ export default function AddDataSteps(props: {
               fontSize="14px"
               color="content.link"
               fontWeight="bold"
-              onClick={() => router.push(`/${inventory}/data`)}
+              onClick={() => router.push(`/${lng}/${inventory}/data`)}
             >
               <Icon as={MdArrowBack} boxSize={6} />
               {t("go-back")}

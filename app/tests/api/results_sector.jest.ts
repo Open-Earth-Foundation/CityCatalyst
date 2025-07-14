@@ -180,8 +180,7 @@ describe("Results API", () => {
           {
             activities: [
               {
-                activity_data: null,
-                activity_data_jsonb: {
+                activityData: {
                   "activity-total-fuel-consumption": "200000000",
                   "activity-total-fuel-consumption-unit": "units-gallons",
                   "commercial-building-fuel-type": "fuel-type-natural-gas",
@@ -189,19 +188,18 @@ describe("Results API", () => {
                   "data-source": "datasource",
                 },
                 co2eq: "200",
-                co2eq_years: 100,
+                co2eqYears: 100,
                 created: expect.any(String),
-                datasource_id: null,
+                datasourceId: null,
                 id: expect.any(String),
-                inventory_value_id: inventoryValueId2,
+                inventoryValueId: inventoryValueId2,
                 last_updated: expect.any(String),
                 metadata: {
                   emissionFactorType: "6a508faa-80a8-3246-9941-90d8cc8dec85",
                 },
               },
               {
-                activity_data: null,
-                activity_data_jsonb: {
+                activityData: {
                   "activity-total-fuel-consumption": "200",
                   "activity-total-fuel-consumption-unit": "units-gallons",
                   "commercial-building-fuel-type": "fuel-type-natural-gas",
@@ -209,19 +207,18 @@ describe("Results API", () => {
                   "data-source": "source",
                 },
                 co2eq: "500",
-                co2eq_years: 100,
+                co2eqYears: 100,
                 created: expect.any(String),
-                datasource_id: null,
+                datasourceId: null,
                 id: expect.any(String),
-                inventory_value_id: inventoryValueId1,
+                inventoryValueId: inventoryValueId1,
                 last_updated: expect.any(String),
                 metadata: {
                   emissionFactorType: "6a508faa-80a8-3246-9941-90d8cc8dec85",
                 },
               },
               {
-                activity_data: null,
-                activity_data_jsonb: {
+                activityData: {
                   "activity-total-fuel-consumption": "150",
                   "activity-total-fuel-consumption-unit": "units-kwh",
                   "commercial-building-fuel-type": "fuel-type-electricity",
@@ -229,11 +226,11 @@ describe("Results API", () => {
                   "data-source": "source2",
                 },
                 co2eq: "250",
-                co2eq_years: 100,
+                co2eqYears: 100,
                 created: expect.any(String),
-                datasource_id: null,
+                datasourceId: null,
                 id: expect.any(String),
-                inventory_value_id: inventoryValueId1,
+                inventoryValueId: inventoryValueId1,
                 last_updated: expect.any(String),
                 metadata: {
                   emissionFactorType: "6a508faa-80a8-3246-9941-90d8cc8dec85",
@@ -253,8 +250,7 @@ describe("Results API", () => {
           {
             activities: [
               {
-                activity_data: null,
-                activity_data_jsonb: {
+                activityData: {
                   ch4_amount: 29,
                   co2_amount: 66,
                   n2o_amount: 19,
@@ -263,11 +259,11 @@ describe("Results API", () => {
                   "residential-buildings-fuel-source": "Sit ad impedit par",
                 },
                 co2eq: "300",
-                co2eq_years: 100,
+                co2eqYears: 100,
                 created: expect.any(String),
-                datasource_id: "6bbbab3d-2978-4e7d-a2a7-295ecf35f338",
+                datasourceId: "6bbbab3d-2978-4e7d-a2a7-295ecf35f338",
                 id: expect.any(String),
-                inventory_value_id: inventoryValueId3,
+                inventoryValueId: inventoryValueId3,
                 last_updated: expect.any(String),
                 metadata: { emissionFactorType: "" },
               },
@@ -288,24 +284,28 @@ describe("Results API", () => {
 
     // Sort scopes by activityTitle to make the test order-independent
     if (result.data?.byScope) {
-      result.data.byScope.sort((a: any, b: any) => a.activityTitle.localeCompare(b.activityTitle));
+      result.data.byScope.sort((a: any, b: any) =>
+        a.activityTitle.localeCompare(b.activityTitle),
+      );
     }
     if (expected.data?.byScope) {
-      expected.data.byScope.sort((a: any, b: any) => a.activityTitle.localeCompare(b.activityTitle));
+      expected.data.byScope.sort((a: any, b: any) =>
+        a.activityTitle.localeCompare(b.activityTitle),
+      );
     }
 
     // Sort activities by co2eq within each scope to make the test order-independent
     if (result.data?.byScope?.[0]?.activities) {
-      result.data.byScope[0].activities.sort((a: any, b: any) => 
-        parseInt(a.co2eq) - parseInt(b.co2eq)
+      result.data.byScope[0].activities.sort(
+        (a: any, b: any) => parseInt(a.co2eq) - parseInt(b.co2eq),
       );
     }
     if (expected.data?.byScope?.[0]?.activities) {
-      expected.data.byScope[0].activities.sort((a: any, b: any) => 
-        parseInt(a.co2eq) - parseInt(b.co2eq)
+      expected.data.byScope[0].activities.sort(
+        (a: any, b: any) => parseInt(a.co2eq) - parseInt(b.co2eq),
       );
     }
-    
+
     expect(result).toEqual(expected);
   });
 });

@@ -1,13 +1,15 @@
 import { db } from "@/models";
 import { QueryTypes } from "sequelize";
 import groupBy from "lodash/groupBy";
-import { ActivityDataByScope, ActivityValueRecord } from "@/util/types";
+import { ActivityDataByScope } from "@/util/types";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import createHttpError from "http-errors";
 import GlobalAPIService from "./GlobalAPIService";
 import { Inventory } from "@/models/Inventory";
 import { logger } from "@/services/logger";
+import { Op } from "sequelize";
+import { ActivityValue } from "@/models/ActivityValue";
 
 function multiplyBigIntByFraction(
   stringValue: string,
@@ -322,7 +324,7 @@ interface InventoryValuesBySector {
   datasource_name: string;
   datasource_id: string;
   inventory_value_id: string;
-  activities: ActivityValueRecord[];
+  activities: ActivityValue[];
 }
 
 const fetchInventoryValuesBySector = async (
@@ -363,21 +365,17 @@ const fetchInventoryValuesBySector = async (
     (row) => row.inventory_value_id,
   );
 
-  let activityRecords: ActivityValueRecord[] = [];
+  let activityInstances: ActivityValue[] = [];
   if (inventoryValueIds.length > 0) {
-    const activityQuery = `
-      SELECT *
-      FROM "ActivityValue"
-      WHERE inventory_value_id IN (:inventoryValueIds)
-    `;
-    activityRecords = (await db.sequelize!.query(activityQuery, {
-      replacements: { inventoryValueIds },
-      type: QueryTypes.SELECT,
-    })) as ActivityValueRecord[];
+    activityInstances = await ActivityValue.findAll({
+      where: {
+        inventoryValueId: { [Op.in]: inventoryValueIds },
+      },
+    });
   }
-  const activitiesGrouped: Record<string, ActivityValueRecord[]> = groupBy(
-    activityRecords,
-    "inventory_value_id",
+  const activitiesGrouped: Record<string, ActivityValue[]> = groupBy(
+    activityInstances,
+    "inventoryValueId",
   );
 
   // Attach activities to each inventory value

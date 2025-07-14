@@ -213,7 +213,7 @@ export default function HomePage({
                       fontSize="headline.sm"
                       fontFamily="heading"
                       fontStyle="normal"
-                      data-testId="inventory-year-title"
+                      data-testid="inventory-year-title"
                     >
                       {t("inventory-year")}
                     </Text>

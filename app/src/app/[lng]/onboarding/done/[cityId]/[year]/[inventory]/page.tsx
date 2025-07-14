@@ -23,7 +23,7 @@ export default function OnboardingDone(props: {
         mb="24px"
         fontSize="headline.md"
         color="content.alternative"
-        data-testId="done-heading"
+        data-testid="done-heading"
       >
         <Trans t={t}>done-heading</Trans>
       </Heading>

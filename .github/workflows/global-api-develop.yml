@@ -63,11 +63,11 @@ jobs:
         with:
           files: global-api/pytest.xml
 
-      - name: Pytest coverage comment
-        uses: MishaKav/pytest-coverage-comment@main
-        with:
-          pytest-coverage-path: global-api/pytest-coverage.txt
-          junitxml-path: global-api/pytest.xml
+      # - name: Pytest coverage comment
+      #   uses: MishaKav/pytest-coverage-comment@main
+      #   with:
+      #     pytest-coverage-path: global-api/pytest-coverage.txt
+      #     junitxml-path: global-api/pytest.xml
 
       - name: Upload coverage reports to Codecov
         continue-on-error: true

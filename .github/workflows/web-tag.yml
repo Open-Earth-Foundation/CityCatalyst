@@ -20,7 +20,6 @@ on:
       - "v[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
-
   runTests:
     runs-on: ubuntu-latest
     if: ${{ !contains(github.ref, '-') }}
@@ -54,6 +53,12 @@ jobs:
           cp env.example .env
           npm run db:migrate
           npm run db:seed
+
+      - name: Setup Environment Variables
+        run: |
+          echo "NEXT_PUBLIC_API_URL=https://citycatalyst.io" >> .env.local
+          echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://app.openclimate.network" >> .env.local
+          echo "NEXT_PUBLIC_FEATURE_FLAGS=UPLOAD_OWN_DATA_ENABLED" >> .env.local
 
       - name: Run NextJS build
         run: npm run build

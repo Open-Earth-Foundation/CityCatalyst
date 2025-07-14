@@ -33,16 +33,25 @@ export function hasFeatureFlag(flag: FeatureFlags): boolean {
   return getFeatureFlags().includes(flag);
 }
 
+let cachedServerFeatureFlags: string[] | null = null;
+
 export function getServerFeatureFlags(): string[] {
-  const flags = process.env.NEXT_PUBLIC_FEATURE_FLAGS;
-  if (!flags) {
-    return [];
+  if (cachedServerFeatureFlags != null) {
+    return cachedServerFeatureFlags;
   }
 
-  return flags
+  const flags = process.env.NEXT_PUBLIC_FEATURE_FLAGS;
+  if (!flags) {
+    cachedServerFeatureFlags = [];
+    return cachedServerFeatureFlags;
+  }
+
+  cachedServerFeatureFlags = flags
     .split(",")
     .map((flag) => flag.trim())
     .filter((flag) => flag.length > 0);
+
+  return cachedServerFeatureFlags;
 }
 
 export function hasServerFeatureFlag(flag: FeatureFlags): boolean {

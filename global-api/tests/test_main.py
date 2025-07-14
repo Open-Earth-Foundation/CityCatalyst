@@ -9,7 +9,15 @@ def test_read_root():
     assert response.status_code == 200
     assert response.json() == {"message": "Welcome"}
 
-def test_health_check():
+def test_health_check(monkeypatch):
+    class DummyConnection:
+        def close(self): pass
+        def __enter__(self): return self
+        def __exit__(self, *a): pass
+
+    # Patch engine.connect in the health route to return a dummy connection
+    monkeypatch.setattr("routes.health.engine", type("DummyEngine", (), {"connect": lambda self=None: DummyConnection()})())
+
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json() == {'status': 'ok'}

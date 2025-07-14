@@ -33,10 +33,10 @@ def get_emissionfactor_methodologies() -> Dict[str, List[Dict[str, Union[int, st
 
     methodologies = [
         {
-            "methodology_id": row["method_id"],
-            "methodology": row["methodology_name"],
+            "methodology_id": str(row["method_id"]),
+            "methodology": str(row["methodology_name"]),
             "methodology_url": None,
-            "datasource_id": row["dataset_id"]
+            "datasource_id": str(row["dataset_id"])
         }
         for row in result
     ]

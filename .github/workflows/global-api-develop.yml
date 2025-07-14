@@ -52,6 +52,17 @@ jobs:
         run: |
           pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=app tests/ | tee pytest-coverage.txt
 
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest-results
+          path: pytest.xml
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: pytest.xml
+
       - name: Pytest coverage comment
         uses: MishaKav/pytest-coverage-comment@main
         with:

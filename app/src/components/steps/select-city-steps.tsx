@@ -289,7 +289,7 @@ export default function SelectCityStep({
         gap="24px"
         mb="48px"
       >
-        <Heading data-testId="setup-city-heading" size="xl">
+        <Heading data-testid="setup-city-heading" size="xl">
           {t("setup-city-heading")}
         </Heading>
         <Text
@@ -298,7 +298,7 @@ export default function SelectCityStep({
           fontStyle="normal"
           fontWeight="400"
           letterSpacing="wide"
-          data-testId="setup-city-description"
+          data-testid="setup-city-description"
         >
           {t("setup-city-details")}
         </Text>
@@ -315,7 +315,7 @@ export default function SelectCityStep({
                     onValueChange={(e) => setSelectedProject(e.value)}
                     variant="outline"
                     collection={projectCollection}
-                    data-testId="setup-project-select"
+                    data-testid="setup-project-select"
                   >
                     <SelectLabel display="flex" alignItems="center" gap="8px">
                       <Text
@@ -358,7 +358,7 @@ export default function SelectCityStep({
                   </Box>
                 }
                 label={t("city")}
-                data-testId="setup-city-input-label"
+                data-testid="setup-city-input-label"
               >
                 <InputGroup
                   shadow="1dp"
@@ -377,7 +377,7 @@ export default function SelectCityStep({
                 >
                   <Input
                     type="text"
-                    data-testId="setup-city-input"
+                    data-testid="setup-city-input"
                     placeholder={t("select-city-placeholder")}
                     size="lg"
                     {...register("city", {

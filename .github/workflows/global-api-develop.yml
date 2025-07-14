@@ -62,7 +62,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pytest-results
-          path: pytest.xml
+          path: global-api/pytest.xml
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2

@@ -591,11 +591,7 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
         `Emissions factor for ${emissionsFactor?.gas} has no emissions per activity`,
       );
     }
-    // this rounds/ truncates!
-    const amount = Decimal.mul(
-      activityAmount,
-      emissionsFactor.emissionsPerActivity,
-    ).ceil();
+    const amount = Decimal.mul(activityAmount, emissionsFactor.emissionsPerActivity);
 
     return { gas: gasValue.gas!, amount };
   });

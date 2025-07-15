@@ -97,7 +97,7 @@
     "react-table": "^7.8.0",
     "remark-gfm": "^4.0.1",
     "sequelize": "^6.37.5",
-    "swagger-ui-react": "^5.24.1",
+    "swagger-ui-react": "^5.26.2",
     "uuid": "^9.0.1",
     "wellknown": "^0.5.0",
     "zod": "^3.25.76"

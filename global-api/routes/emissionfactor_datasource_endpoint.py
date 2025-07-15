@@ -40,4 +40,4 @@ def get_emissionfactor_datasources():
         for row in result
     ]
 
-    return {"emissionfactor_datasource": datasources} 
+    return {"emissions_factor_datasource": datasources} 

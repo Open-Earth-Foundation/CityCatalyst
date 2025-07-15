@@ -24,7 +24,7 @@ def test_get_emissionfactor_datasources_success(monkeypatch):
     monkeypatch.setattr("routes.emissionfactor_datasource_endpoint.SessionLocal", lambda: DummySession())
     response = client.get("/api/v0/emissions_factor/datasource")
     assert response.status_code == 200
-    assert "emissionfactor_datasource" in response.json()
+    assert "emissions_factor_datasource" in response.json()
 
 def test_get_emissionfactor_datasources_not_found(monkeypatch):
     class DummySession:
@@ -58,9 +58,9 @@ def test_get_emissionfactor_emissionfactor_datasource_success(monkeypatch):
     response = client.get("/api/v0/emissions_factor/emissions_factor_datasource")
     assert response.status_code == 200
     data = response.json()
-    assert "emissionfactor_datasource" in data
-    assert data["emissionfactor_datasource"][0]["datasource_id"] == 1
-    assert data["emissionfactor_datasource"][0]["emissions_factor_id"] == 2
+    assert "emissions_factor_datasource" in data
+    assert data["emissions_factor_datasource"][0]["datasource_id"] == 1
+    assert data["emissions_factor_datasource"][0]["emissions_factor_id"] == 2
 
 def test_get_emissionfactor_emissionfactor_datasource_not_found(monkeypatch):
     class DummySession:

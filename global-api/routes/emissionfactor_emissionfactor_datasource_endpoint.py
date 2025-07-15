@@ -34,4 +34,4 @@ def get_ipcc_emission_mappings():
         for row in result
     ]
 
-    return {"emissionfactor_datasource": mappings} 
+    return {"emissions_factor_datasource": mappings} 

@@ -9,10 +9,10 @@ import {
   HStack,
   Icon,
   IconButton,
-  Text,
 } from "@chakra-ui/react";
 import { EmissionsForecastChart } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastChart";
 import { MdInfoOutline } from "react-icons/md";
+import { TitleMedium } from "@/components/Texts/Title";
 
 export const EmissionsForecastCard = ({
   forecast,
@@ -37,20 +37,27 @@ export const EmissionsForecastCard = ({
 
       <Card.Root paddingY="0px" paddingX="0px" height="100%" width="100%">
         <CardHeader>
-          <HStack justifyContent="space-between">
-            <Text fontFamily="heading" fontSize="title.md" fontWeight="medium">
-              {t("breakdown-of-sub-sector-emissions")}
-            </Text>
-            <IconButton
-              width={"20px"}
-              height={"20px"}
-              variant="plain"
-              rounded="full"
+          <HStack>
+            <TitleMedium>
+              {t("no-action-emissions-forecast-by-sector")}
+            </TitleMedium>
+            {" | "}
+            <HStack
               onClick={() => setIsExplanationModalOpen(true)}
-              aria-label={"growth-rates-explanation"}
+              cursor="pointer"
             >
-              <Icon as={MdInfoOutline} mr={3} boxSize={5} />
-            </IconButton>
+              <TitleMedium color="content.link">{t("learn-more")}</TitleMedium>
+              <IconButton
+                padding={0}
+                width={"20px"}
+                height={"20px"}
+                variant="plain"
+                rounded="full"
+                aria-label={"growth-rates-explanation"}
+              >
+                <Icon as={MdInfoOutline} boxSize={5} />
+              </IconButton>
+            </HStack>
           </HStack>
         </CardHeader>
         <CardBody

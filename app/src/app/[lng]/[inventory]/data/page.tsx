@@ -1,4 +1,5 @@
 "use client";
+import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
 import {
@@ -17,18 +18,16 @@ import { getSectorsForInventory, InventoryTypeEnum } from "@/util/constants";
 import { api } from "@/services/api";
 import { MdArrowBack } from "react-icons/md";
 
-export default function AddDataIntro({
-  params: { lng, inventory },
-}: {
-  params: { lng: string; inventory: string };
+export default function AddDataIntro(props: {
+  params: Promise<{ lng: string; inventory: string }>;
 }) {
+  const { lng, inventory } = use(props.params);
   const { t } = useTranslation(lng, "data");
-
   const { data: inventoryData } = api.useGetInventoryQuery(inventory);
 
   return (
     <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
-      <Link href="/" _hover={{ textDecoration: "none" }}>
+      <Link href={`/${lng}/${inventory}`} _hover={{ textDecoration: "none" }}>
         <Box
           display="flex"
           alignItems="center"

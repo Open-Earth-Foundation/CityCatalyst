@@ -1,4 +1,5 @@
 import { Box, Button, Icon } from "@chakra-ui/react";
+import type { JSX } from "react";
 import { IconBaseProps } from "react-icons";
 
 const ButtonGroupToggle = ({

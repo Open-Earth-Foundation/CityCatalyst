@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum } from "./enums";
-import { OrganizationRole } from "@/util/types";
-import formidable, { File } from "formidable";
+import { OrganizationRole, LANGUAGES } from "@/util/types";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -65,9 +64,9 @@ export const signupRequest = z
     email: z.string().email(),
     password: z.string().min(4).regex(passwordRegex),
     confirmPassword: z.string().min(4),
-    inviteCode: z.string().min(6).max(6),
     acceptTerms: z.literal<boolean>(true),
     inventory: z.string().uuid().optional(),
+    preferredLanguage: z.nativeEnum(LANGUAGES),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -280,7 +279,7 @@ export type UpdateOrganizationRequest = z.infer<
 
 export const createOrganizationInviteRequest = z.object({
   organizationId: z.string().uuid(),
-  inviteeEmail: z.string().email(),
+  inviteeEmails: z.array(z.string().email()),
   role: z.nativeEnum(OrganizationRole),
 });
 
@@ -318,5 +317,9 @@ export const whiteLabelSchema = z.object({
 });
 
 export const organizationActiveStateSchema = z.object({
-  active: z.boolean()
-})
+  active: z.boolean(),
+});
+
+export const updateUserRoleSchema = z.object({
+  contactEmail: z.string().email().max(255),
+});

@@ -1,0 +1,30 @@
+{
+  "sector": "sector",
+  "stationary-energy": "Stationary Energy",
+  "transportation": "Transportation",
+  "ippu": "IPPU",
+  "afolu": "AFOLU",
+  "waste": "Waste",
+  "multiple": "Multisector Methodologies",
+  "key-assumptions": "Key Assumptions",
+  "advantages": "Advantages",
+  "limitations": "Limitations",
+  "methodology": "Methodology",
+  "calculation-method": "Calculation Method",
+  "explanation-of-parameters": "Explanation of Parameters",
+  "parameter-code": "Parameter Code",
+  "parameter-description": "Parameter Description",
+  "units": "Units",
+  "methodologies-introduction": {
+    "title": "Methodologies",
+    "introduction": "Introduction",
+    "about": "About Methodologies",
+    "p1": "This platform follows internationally recognized standards for greenhouse gas (GHG) accounting, primarily based on the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories (GPC) and the IPCC Guidelines for National Greenhouse Gas Inventories (2006 and 2019 Refinement). These methodologies provide a transparent and consistent framework for cities to estimate, report, and manage emissions across all major sectors. Each methodology applied here is selected to match the level of data availability, technical capacity, and reporting needs of cities. Whenever possible, we prioritize Tier 1 IPCC methods and GPC-compliant approaches, which rely on default emission factors and general activity data. In cases where higher-resolution data or alternative inputs are available, we allow for minor adjustments or simplified models, ensuring methodological flexibility while maintaining alignment with core reporting principles.",
+    "p2": "The methodologies are organized by sector (e.g., Stationary Energy, Transportation, Waste) and are accompanied by clear descriptions, key assumptions, advantages, and limitations. This helps users understand how each emission value is generated and ensures transparency in the inventory-building process.",
+    "p3": "Each method aims to support cities in developing inventories that are:",
+    "complete": "Complete, covering all major sources;",
+    "consistent": "Consistent, year over year;",
+    "comparable": "Comparable, across cities and regions;",
+    "transparent": "Transparent, with clear documentation of inputs and assumptions."
+  }
+}

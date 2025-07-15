@@ -111,7 +111,10 @@ function DataTableCore<T>({
           ) {
             const rowKey = item[selectKey];
             const isSelected = selectedRowKeys.includes(rowKey);
-            const cells = React.Children.toArray(renderedRow.props.children);
+            const rowProps = renderedRow.props as {
+              children: React.ReactNode | React.ReactNode[];
+            };
+            const cells = React.Children.toArray(rowProps.children);
             return React.cloneElement(
               renderedRow,
               { key: rowKey as string },

@@ -9,10 +9,13 @@ import { render } from "@react-email/components";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
+import { LANGUAGES } from "@/util/types";
+import { User } from "@/models/User";
+import i18next from "@/i18n/server";
 
 // TODO: use these variables to configure file size and format
 const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_FILE_FORMATS = []; // file formats types to be parsed and refined later
+const ACCEPTED_FILE_FORMATS = ["csv", "xlsx", "json"]; // file formats types to be parsed and refined later
 
 export const GET = apiHandler(async (_req: Request, context) => {
   if (!context.session) {
@@ -74,6 +77,19 @@ export const POST = apiHandler(
       throw new createHttpError.BadRequest("File not found, Please add a file");
     }
 
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+    if (!fileExtension || !ACCEPTED_FILE_FORMATS.includes(fileExtension)) {
+      throw new createHttpError.BadRequest(
+        `Invalid file type. Accepted formats are: ${ACCEPTED_FILE_FORMATS.join(", ")}`,
+      );
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      throw new createHttpError.BadRequest(
+        `File too large. Maximum allowed size is ${bytesToMB(MAX_FILE_SIZE)}MB.`,
+      );
+    }
+
     const filename = file.name;
 
     const bytes = await file.arrayBuffer();
@@ -131,7 +147,12 @@ export const POST = apiHandler(
     };
 
     await NotificationService.sendNotificationEmail({
-      user: { email: user?.email!, name: user?.name! },
+      user: {
+        email: user?.email!,
+        name: user?.name!,
+        // default to english since the email goes to admins
+        preferredLanguage: LANGUAGES.en,
+      },
       fileData: newFileData,
       city,
       inventoryId,

@@ -1,0 +1,19 @@
+{
+  "sector": "secteur",
+  "stationary-energy": "Énergie Stationnaire",
+  "transportation": "Transport",
+  "ippu": "UIPP",
+  "afolu": "AFOLU",
+  "waste": "Déchets",
+  "multiple": "Méthodologies Multisectorielles",
+  "key-assumptions": "Hypothèses Clés",
+  "advantages": "Avantages",
+  "limitations": "Limitations",
+  "methodology": "Méthodologie",
+  "calculation-method": "Méthode de Calcul",
+  "explanation-of-parameters": "Explication des Paramètres",
+  "parameter-code": "Code de Paramètre",
+  "parameter-description": "Description du Paramètre",
+  "units": "Unités",
+  "methodologies-introduction": ""
+}

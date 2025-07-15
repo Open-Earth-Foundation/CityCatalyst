@@ -142,5 +142,15 @@
   "total-land-area": "Gesamtlandfläche",
   "files-uploaded": "Hochgeladene Dateien",
   "n-a": "N/V",
-  "no-data": "Keine Daten verfügbar"
+  "no-data": "Keine Daten verfügbar",
+  "owner": "Eigentümer",
+  "collaborator": "Mitarbeiter",
+  "plan-details": "Plan Details",
+  "plan-details-caption": "<bold>{{name}}</bold> hat derzeit <bold>{{num_projects}}</bold> Projekte und eine Anzahl von <bold>{{num_cities}} / {{total_cities}}</bold> Städten",
+  "contact-us-to-upgrade": "Um Ihren Tarif zu aktualisieren, wenden Sie sich bitte an",
+  "confirm-remove-project-user": "Sind Sie sicher, dass Sie den Benutzer mit der E-Mail: <bold>{{email}}</bold> aus dem <bold>{{projectName}}</bold> Projekt entfernen möchten?",
+  "confirm-remove-city-user": "Sind Sie sicher, dass Sie den Benutzer mit der E-Mail: <bold>{{email}}</bold> aus <bold>{{cityName}}</bold> entfernen möchten?",
+  "confirm-org-admin-delete": "Sind Sie sicher, dass Sie den Organisationsinhaber mit der E-Mail: <bold>{{email}}</bold> von <bold>{{orgName}}</bold> entfernen möchten?",
+  "user-removed": "Benutzer erfolgreich entfernt",
+  "preferred-language": "Bevorzugte Sprache"
 }

@@ -1,16 +1,18 @@
-import { Box, Button, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import { Link } from "@chakra-ui/react";
 import React from "react";
 import FooterLink from "../Navigation/FooterLink";
 import { useTranslation } from "@/i18n/client";
 import { getCurrentVersion } from "@/util/helpers";
-import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { TitleSmall } from "../Texts/Title";
 
 const Footer = ({ lng }: { lng: string }) => {
   const currentVersion = getCurrentVersion();
   const { t } = useTranslation(lng, "footer");
-  const { logoUrl } = useLogo();
+  const { organization } = useOrganizationContext();
+  const logoUrl = organization?.logoUrl;
   return (
     <footer className="w-full h-[320px] bg-[#00001f] pt-[48px]">
       <Box className="w-full px-[64px]">
@@ -31,31 +33,51 @@ const Footer = ({ lng }: { lng: string }) => {
             fontFamily="heading"
             className="text-white text-[14px] w-[60%] grid grid-cols-3  gap-6 font-poppins"
           >
-            <FooterLink
-              url="https://citycatalyst.openearth.org/"
-              title={t("about-citycatalyst")}
-            />
-            <FooterLink
-              url="https://github.com/Open-Earth-Foundation/OpenClimate/blob/develop/CONTRIBUTING.md"
-              title={t("contribution-guide")}
-            />
-            <FooterLink
-              url="https://github.com/Open-Earth-Foundation/CityCatalyst"
-              title={t("goto-gh")}
-            />
-            <FooterLink
-              url="https://wiki.climatedata.network/"
-              title={t("cad")}
-            />
-            <FooterLink
-              url="https://github.com/Open-Earth-Foundation/CityCatalyst/wiki"
-              title={t("read-the-docs")}
-            />
-            <FooterLink url="./cdp" title={t("submit-to-cdp")} />
-            <FooterLink
-              url="https://citycatalyst.openearth.org/privacy"
-              title={t("our-privacy-policy")}
-            />
+            <VStack align="flex-start">
+              <TitleSmall color="background.overlay" textTransform="uppercase">
+                {t("about")}
+              </TitleSmall>
+              <FooterLink
+                url="https://citycatalyst.openearth.org/"
+                title={t("about-citycatalyst")}
+              />
+              <FooterLink
+                url="https://wiki.climatedata.network/"
+                title={t("cad")}
+              />
+
+              <FooterLink
+                url="https://citycatalyst.openearth.org/privacy"
+                title={t("our-privacy-policy")}
+              />
+            </VStack>
+            <VStack align="flex-start">
+              <TitleSmall color="background.overlay" textTransform="uppercase">
+                {t("developers")}
+              </TitleSmall>
+
+              <FooterLink
+                url="https://github.com/Open-Earth-Foundation/CityCatalyst"
+                title={t("goto-gh")}
+              />
+              <FooterLink
+                url="https://github.com/Open-Earth-Foundation/OpenClimate/blob/develop/CONTRIBUTING.md"
+                title={t("contribution-guide")}
+              />
+
+              <FooterLink
+                url="https://github.com/Open-Earth-Foundation/CityCatalyst/wiki"
+                title={t("read-the-docs")}
+              />
+            </VStack>
+
+            <VStack align="flex-start">
+              <TitleSmall color="background.overlay" textTransform="uppercase">
+                {t("resources")}
+              </TitleSmall>
+              <FooterLink url="/methodologies" title={t("methodologies")} />
+              <FooterLink url="./cdp" title={t("submit-to-cdp")} />
+            </VStack>
           </Box>
           <Box>
             <Link href="mailto:info@openearth.org">

@@ -15,7 +15,7 @@ import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SelectCityStep from "@/components/steps/select-city-steps";
@@ -56,13 +56,13 @@ export type OnboardingData = {
   globalWarmingPotential: string;
 };
 
-export default function OnboardingSetup({
-  params: { lng },
-}: {
-  params: { lng: string };
+export default function OnboardingSetup(props: {
+  params: Promise<{ lng: string }>;
 }) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
   const router = useRouter();
+
   const {
     handleSubmit,
     register,
@@ -142,7 +142,7 @@ export default function OnboardingSetup({
   const globalWarmingPotential = watch("globalWarmingPotential");
 
   const currentYear = new Date().getFullYear();
-  const numberOfYearsDisplayed = 10;
+  const numberOfYearsDisplayed = 20;
   const years = Array.from(
     { length: numberOfYearsDisplayed },
     (_x, i) => currentYear - i,
@@ -182,7 +182,9 @@ export default function OnboardingSetup({
         countryLocode: country?.actor_id ?? undefined,
         projectId: EnterpriseMode ? projectId : undefined,
       }).unwrap();
-      await addCityPopulation({
+
+      // Log population data before sending
+      const populationData = {
         cityId: city.cityId,
         locode: city.locode!,
         cityPopulation: cityPopulation!,
@@ -191,8 +193,13 @@ export default function OnboardingSetup({
         regionPopulationYear: regionPopulationYear!,
         countryPopulation: countryPopulation!,
         countryPopulationYear: countryPopulationYear!,
-      }).unwrap();
+      };
+
+      logger.info({ populationData }, "Onboarding - Sending population data");
+
+      await addCityPopulation(populationData).unwrap();
     } catch (err: any) {
+      logger.error({ err }, "Onboarding - Failed to add city or population");
       makeErrorToast("failed-to-add-city", err.data?.error?.message);
       setConfirming(false);
       return;

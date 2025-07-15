@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import React from "react";
 import {
   Body,
@@ -13,15 +12,20 @@ import {
   Text,
 } from "@react-email/components";
 import { User } from "@/models/User";
-import { Project } from "@/models/Project";
+import i18next from "@/i18n/server";
+import { LANGUAGES } from "@/util/types";
 
 export default function AccountUnFrozenNotificationTemplate({
   url,
   user,
+  language,
 }: {
   url: string;
   user: User | null;
+  language?: string;
 }) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
+
   return (
     <Html>
       <Head>
@@ -37,19 +41,17 @@ export default function AccountUnFrozenNotificationTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: Account Activated</Preview>
+      <Preview>{t("account-unfrozen.subject")}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={brandHeading}>CityCatalyst</Text>
-          <Text style={headingGreen}> Your account has been Activated</Text>
-          <Text style={greeting}>Hi {user?.name},</Text>
-          <Text style={paragraph}>
-            Your account has been activated. This means you can created and edit
-            all your Inventories and Projects
+          <Text style={brandHeading}>{t("account-unfrozen.brand")}</Text>
+          <Text style={headingGreen}>{t("account-unfrozen.title")}</Text>
+          <Text style={greeting}>
+            {t("account-unfrozen.greeting", { name: user?.name })}
           </Text>
+          <Text style={paragraph}>{t("account-unfrozen.message")}</Text>
           <Text style={paragraph}>
-            To activate your account, please reach out to{" "}
-            <span style={boldText}>info@openearth.com</span>
+            {t("account-unfrozen.contact", { email: "info@openearth.com" })}
           </Text>
           <div
             style={{
@@ -58,15 +60,12 @@ export default function AccountUnFrozenNotificationTemplate({
             }}
           >
             <Link href={url} style={urlLink}>
-              Sign In
+              {t("account-unfrozen.cta")}
             </Link>
           </div>
 
           <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-          <Text style={footerText}>
-            Open Earth Foundation is a nonprofit public benefit corporation from
-            California, USA. EIN: 85-3261449
-          </Text>
+          <Text style={footerText}>{t("account-unfrozen.footer")}</Text>
         </Container>
       </Body>
     </Html>

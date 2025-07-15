@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import React from "react";
 import {
   Body,
@@ -14,16 +13,21 @@ import {
 } from "@react-email/components";
 import { Organization } from "@/models/Organization";
 import { User } from "@/models/User";
+import i18next from "@/i18n/server";
+import { LANGUAGES } from "@/util/types";
 
 export default function InviteToOrganizationTemplate({
   url,
   organization,
   user,
+  language,
 }: {
   url: string;
   organization: Organization;
   user: User | null;
+  language?: string;
 }) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
   const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
     <Html>
@@ -40,16 +44,21 @@ export default function InviteToOrganizationTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: Organization Invitation</Preview>
+      <Preview>{t("invite-organization.preview")}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={brandHeading}>CityCatalyst</Text>
-          <Text style={heading}>Join Your Team In CityCatalyst</Text>
-          <Text style={greeting}>Hi {user?.name},</Text>
-          <Text style={paragraph}>
-            You are invited to join CityCatalyst and contribute to the emission
-            inventory for the organization:
-          </Text>
+          <Text style={brandHeading}>{t("invite-organization.brand")}</Text>
+          <Text style={heading}>{t("invite-organization.title")}</Text>
+          {user?.name ? (
+            <Text style={greeting}>
+              {t("invite-organization.greeting", { name: user?.name })}
+            </Text>
+          ) : (
+            <Text style={greeting}>
+              {t("invite-organization.greeting-no-name")}
+            </Text>
+          )}
+          <Text style={paragraph}>{t("invite-organization.message")}</Text>
           <div style={organizationBox}>
             <div>
               <Text
@@ -72,15 +81,12 @@ export default function InviteToOrganizationTemplate({
             }}
           >
             <Link href={url} style={urlLink}>
-              JOIN NOW
+              {t("invite-organization.cta")}
             </Link>
           </div>
 
           <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-          <Text style={footerText}>
-            Open Earth Foundation is a nonprofit public benefit corporation from
-            California, USA. EIN: 85-3261449
-          </Text>
+          <Text style={footerText}>{t("invite-organization.footer")}</Text>
         </Container>
       </Body>
     </Html>

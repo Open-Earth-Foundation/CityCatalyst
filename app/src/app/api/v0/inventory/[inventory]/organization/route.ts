@@ -22,7 +22,13 @@ export const GET = apiHandler(async (req, { session, params }) => {
               {
                 model: db.models.Organization,
                 as: "organization",
-                attributes: ["logoUrl", "themeId", "organizationId", "name"],
+                attributes: [
+                  "logoUrl",
+                  "themeId",
+                  "organizationId",
+                  "name",
+                  "active",
+                ],
               },
             ],
           },
@@ -50,6 +56,7 @@ export const GET = apiHandler(async (req, { session, params }) => {
     organizationId: organization.organizationId,
     organizationName: organization.name,
     logoUrl: organization.logoUrl,
+    active: organization.active,
     theme: {
       themeId: theme?.themeId,
       themeKey: theme?.themeKey,

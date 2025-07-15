@@ -93,6 +93,7 @@ export interface UserInfoResponse {
   defaultInventoryId: string | null;
   role: Roles;
   email?: string;
+  preferredLanguage?: string;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -104,10 +105,10 @@ export type DataSource = DataSourceAttributes & {
 export type DataSourceResponse = {
   source: DataSourceWithRelations;
   data: any;
-}[];
+};
 
 export interface GetDataSourcesResult {
-  data: DataSourceResponse;
+  data: DataSourceResponse[];
   removedSources: RemovedSourceResult[];
   failedSources: FailedSourceResult[];
 }
@@ -358,11 +359,15 @@ export type BreakdownByActivity = Record<
   Record<string, Record<string, GroupedActivity>> & { totals: SubsectorTotals }
 >;
 
+
 export interface ActivityDataByScope {
   activityTitle: string;
   scopes: { [key: string]: Decimal };
   totalEmissions: Decimal;
   percentage: number;
+  datasource_id: string;
+  datasource_name: string;
+  activities?: ActivityValue[];
 }
 
 export type SectorBreakdownResponse = BreakdownByActivity & {
@@ -386,7 +391,13 @@ export type OrganizationResponse = {
   name: string;
   organizationId: string;
   themeId?: string;
+  theme?: {
+    themeId: string;
+    themeKey: string;
+  };
   logoUrl?: string;
+  preferredLanguage?: string;
+  active: boolean;
   projects: {
     projectId: string;
     name: string;
@@ -495,12 +506,14 @@ export enum LANGUAGES {
   "es" = "es",
   "pt" = "pt",
   "de" = "de",
+  "fr" = "fr",
 }
 
 export type OrganizationWithThemeResponse = {
   contactEmail: string;
   created: string;
   last_updated: string;
+  active: boolean;
   name: string;
   organizationId: string;
   themeId?: string;
@@ -516,6 +529,7 @@ export interface UpdateUserPayload {
   email: string;
   userId: string;
   title?: string;
+  preferredLanguage?: string;
 }
 
 export interface FormulaInputValuesResponse {

@@ -134,5 +134,7 @@
   "download-complete": "Download do relatório de inventário concluído!",
   "downloading-data": "Baixando seus dados",
   "download-failed": "Download falhou",
-  "download-error": "Ocorreu um erro durante o download"
+  "download-error": "Ocorreu um erro durante o download",
+  "change-to-admin": "Mudar para administrador",
+  "user-removed": "Usuário removido com sucesso"
 }

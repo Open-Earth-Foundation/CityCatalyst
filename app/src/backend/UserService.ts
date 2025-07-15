@@ -17,6 +17,7 @@ import { Project } from "@/models/Project";
 import { hasOrgOwnerLevelAccess } from "@/backend/RoleBasedAccessService";
 import { logger } from "@/services/logger";
 import EmailService from "@/backend/EmailService";
+import uniqBy from "lodash/uniqBy";
 
 export default class UserService {
   public static async findUser(
@@ -350,7 +351,7 @@ export default class UserService {
   ) {
     if (!session) throw new createHttpError.Forbidden("Forbidden");
 
-    const adminUser = !session || session.user.role !== Roles.Admin;
+    const adminUser = session.user.role === Roles.Admin;
 
     if (adminUser) {
       return;
@@ -459,10 +460,9 @@ export default class UserService {
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
 
     // OEF admin and organization owner can see all projects
-    const orgOwner = await hasOrgOwnerLevelAccess(
-      organizationId,
-      session.user.id,
-    );
+    const orgOwner =
+      (await hasOrgOwnerLevelAccess(organizationId, session.user.id)) ||
+      session.user.role === Roles.Admin;
     if (session.user.role == Roles.Admin || orgOwner) {
       return await UserService.findAllProjectForAdminAndOwner(organizationId);
     }
@@ -524,24 +524,37 @@ export default class UserService {
       where: { organizationId: project.organizationId },
     });
 
+    const orgAdmins = await db.models.OrganizationAdmin.findAll({
+      where: { organizationId: project.organizationId },
+      include: [
+        {
+          model: db.models.User,
+          as: "user",
+        },
+      ],
+    });
+
+    const invitedEmails = new Set(orgInvites.map((invite) => invite.email));
+
+    const dedupedOrgAdmin: {
+      email: string;
+      status: InviteStatus;
+      role: OrganizationRole;
+    }[] = orgAdmins
+      .filter((orgAdmin) => !invitedEmails.has(orgAdmin.user.email))
+      .map((orgAdmin) => ({
+        email: orgAdmin.user.email as string,
+        status: InviteStatus.ACCEPTED,
+        role: OrganizationRole.ORG_ADMIN,
+      }));
+
     users.push(
       ...orgInvites.map((invite) => ({
         email: invite?.email as string,
         status: invite?.status as InviteStatus,
         role: OrganizationRole.ORG_ADMIN,
       })),
-    );
-
-    // project level users
-    const projectInvites = await db.models.ProjectInvite.findAll({
-      where: { projectId },
-    });
-    users.push(
-      ...projectInvites.map((invite) => ({
-        email: invite?.email as string,
-        status: invite?.status as InviteStatus,
-        role: OrganizationRole.ADMIN,
-      })),
+      ...dedupedOrgAdmin,
     );
 
     // city collaborators level users -invites only.
@@ -556,6 +569,29 @@ export default class UserService {
       ],
     });
 
+    const cityUsersData = await db.models.CityUser.findAll({
+      include: [
+        {
+          model: db.models.User,
+          as: "user",
+        },
+        {
+          model: db.models.City,
+          as: "city",
+          where: {
+            projectId,
+          },
+        },
+      ],
+    });
+
+    const cityUsers = cityUsersData.map((cityUser) => ({
+      email: cityUser.user.email as string,
+      status: InviteStatus.ACCEPTED,
+      role: OrganizationRole.COLLABORATOR,
+      cityId: cityUser.cityId as string,
+    }));
+
     const cityInvites = cities.flatMap((city) =>
       city.cityInvites.map((invite) => ({
         email: invite?.email as string,
@@ -565,9 +601,8 @@ export default class UserService {
       })),
     );
 
-    users.push(...cityInvites);
-
-    return users;
+    users.push(...cityUsers, ...cityInvites);
+    return uniqBy(users, "email");
   }
 
   public static async removeUserFromProject(projectId: string, email: string) {
@@ -656,6 +691,7 @@ export default class UserService {
             logoUrl: project.organization.logoUrl || "",
             color: project.organization.theme?.primaryColor,
           },
+          user: user,
         });
       });
     } catch (error) {
@@ -728,6 +764,7 @@ export default class UserService {
             logoUrl: city.project.organization.logoUrl || "",
             color: city.project.organization.theme?.primaryColor,
           },
+          user: user,
         });
       });
     } catch (error) {

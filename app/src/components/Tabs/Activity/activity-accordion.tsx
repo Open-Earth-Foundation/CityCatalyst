@@ -21,6 +21,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 interface IActivityGroup {
   activityData: ActivityValue[];
@@ -56,6 +57,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
   // split the data into groups
   // for each table group by the group by field
 
+  const { isFrozenCheck } = useOrganizationContext();
   const methodology = findMethodology(methodologyId!, referenceNumber);
 
   const { activityGroups } = useMemo<{
@@ -324,7 +326,9 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           cursor: "pointer",
                         }}
                         className="group"
-                        onClick={() => onEditActivity(activity)}
+                        onClick={() =>
+                          isFrozenCheck() ? null : onEditActivity(activity)
+                        }
                       >
                         <Icon
                           className="group-hover:text-white"
@@ -352,7 +356,9 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           cursor: "pointer",
                         }}
                         className="group"
-                        onClick={() => onDeleteActivity(activity)}
+                        onClick={() =>
+                          isFrozenCheck() ? null : onDeleteActivity(activity)
+                        }
                       >
                         <Icon
                           className="group-hover:text-white"
@@ -464,6 +470,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           pos="relative"
                           onClick={(e) => {
                             e.stopPropagation();
+                            if (isFrozenCheck()) return;
                             showActivityModal();
                           }}
                           _hover={{ bg: "none" }}

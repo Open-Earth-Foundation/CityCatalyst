@@ -1,16 +1,17 @@
 "use client";
+import { use } from "react";
 
 import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
 
-export default function InviteLayout({
-  children,
-  params: { lng },
-}: {
+export default function InviteLayout(props: {
   children: React.ReactNode;
-  params: { lng: string };
+  params: Promise<{ lng: string }>;
 }) {
+  const { lng } = use(props.params);
+  const { children } = props;
+
   return (
     <Box
       as="main"

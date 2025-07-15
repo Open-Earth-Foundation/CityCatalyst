@@ -47,7 +47,7 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useEffect, useState, use } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
@@ -90,6 +90,7 @@ import {
 import { TbWorldSearch } from "react-icons/tb";
 import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -193,11 +194,10 @@ function NoDataSourcesMessage({
   );
 }
 
-export default function AddDataSteps({
-  params: { lng, step, inventory },
-}: {
-  params: { lng: string; step: string; inventory: string };
+export default function AddDataSteps(props: {
+  params: Promise<{ lng: string; step: string; inventory: string }>;
 }) {
+  const { lng, step, inventory } = use(props.params);
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
 
@@ -300,7 +300,7 @@ export default function AddDataSteps({
     Math.round(percentage * 1000) / 10;
 
   // only display data sources relevant to current sector
-  let dataSources: DataSourceResponse | undefined;
+  let dataSources: DataSourceResponse[] | undefined;
   if (data) {
     const { data: successfulSources, failedSources, removedSources } = data;
     dataSources = successfulSources?.filter(({ source, data }) => {
@@ -378,7 +378,10 @@ export default function AddDataSteps({
         onSourceDrawerClose();
       }
     } catch (error: any) {
-      logger.error({ err: error, source: source }, "Failed to connect data source");
+      logger.error(
+        { err: error, source: source },
+        "Failed to connect data source",
+      );
       showError("data-source-connect-failed", error.data?.error?.message);
     } finally {
       setConnectingDataSourceId(null);
@@ -402,11 +405,11 @@ export default function AddDataSteps({
     // TODO consider putting this behind a "dev mode" flag of some kind
     if (removedSources.length > 0) {
       logger.info("Removed data sources");
-      logger.info({removedSources});
+      logger.info({ removedSources });
     }
     if (failedSources.length > 0) {
       logger.info("Failed data sources");
-      logger.info({failedSources});
+      logger.info({ failedSources });
     }
   }
 
@@ -608,6 +611,7 @@ export default function AddDataSteps({
 
   const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
+  const { organization, isFrozenCheck } = useOrganizationContext();
 
   return (
     <>
@@ -616,7 +620,8 @@ export default function AddDataSteps({
         bg="background.backgroundLight"
         borderColor="border.neutral"
         borderBottomWidth={isExpanded ? "1px" : ""}
-        className={`fixed z-10 top-0 w-full ${isExpanded ? "pt-[0px] h-[200px]" : "pt-[120px] h-[400px]"} transition-all duration-50 ease-linear`}
+        pt={isExpanded ? "0px" : organization.active ? "120px" : "160px"}
+        className={`fixed z-10 top-0 w-full ${isExpanded ? "h-[200px]" : "h-[400px]"} transition-all duration-50 ease-linear`}
       >
         <div className=" w-[1090px] mx-auto px-4  ">
           <Box
@@ -632,7 +637,7 @@ export default function AddDataSteps({
               fontSize="14px"
               color="content.link"
               fontWeight="bold"
-              onClick={() => router.push(`/${inventory}/data`)}
+              onClick={() => router.push(`/${lng}/${inventory}/data`)}
             >
               <Icon as={MdArrowBack} boxSize={6} />
               {t("go-back")}
@@ -899,7 +904,9 @@ export default function AddDataSteps({
                   h={16}
                   w={16}
                   loading={areDataSourcesFetching}
-                  onClick={onSearchDataSourcesClicked}
+                  onClick={() =>
+                    isFrozenCheck() ? null : onSearchDataSourcesClicked()
+                  }
                 >
                   <Icon as={MdRefresh} boxSize={9} />
                 </IconButton>
@@ -909,7 +916,9 @@ export default function AddDataSteps({
               <SearchDataSourcesPrompt
                 t={t}
                 isSearching={areDataSourcesLoading}
-                onSearchClicked={onSearchDataSourcesClicked}
+                onSearchClicked={() =>
+                  isFrozenCheck() ? null : onSearchDataSourcesClicked()
+                }
               />
             ) : dataSourcesError ? (
               <Center>
@@ -1002,7 +1011,11 @@ export default function AddDataSteps({
                               variant="solid"
                               px={6}
                               py={4}
-                              onClick={() => onDisconnectThirdPartyData(source)}
+                              onClick={() =>
+                                isFrozenCheck()
+                                  ? null
+                                  : onDisconnectThirdPartyData(source)
+                              }
                               loading={
                                 isDisconnectLoading &&
                                 source.datasourceId ===
@@ -1064,7 +1077,9 @@ export default function AddDataSteps({
                 <Box w="full">
                   <Box mb="24px">
                     <FileInput
-                      onFileSelect={handleFileSelect}
+                      onFileSelect={() =>
+                        isFrozenCheck() ? null : handleFileSelect(uploadedFile!)
+                      }
                       setUploadedFile={setUploadedFile}
                       t={t}
                     />
@@ -1173,7 +1188,7 @@ export default function AddDataSteps({
         {/* Add fole data modal */}
         <AddFileDataDialog
           isOpen={openFileUploadDialog}
-          onClose={onfileDataModalClose}
+          onClose={() => setOpenFileUploadDialog(false)}
           subsectors={currentStep.subSectors}
           onOpenChange={setOpenFileUploadDialog}
           t={t}
@@ -1188,7 +1203,7 @@ export default function AddDataSteps({
         <SourceDrawer
           source={selectedSource}
           sourceData={selectedSourceData}
-          sector={currentStep.sector ?? undefined}
+          sector={{ sectorName: currentStep.sector?.sectorName ?? "" }}
           isOpen={isSourceDrawerOpen}
           onClose={onSourceDrawerClose}
           onConnectClick={() => onConnectClick(selectedSource!)}

@@ -1,3 +1,44 @@
+# Changelog for CityCatalyst
+
+## [v0.51.0-rc.0] - 2025-07-01
+
+### Added
+- **Emails**: Added support for translating emails, including setting preferred language ([ON-4053]).
+- **API**: Introduced optional environment variable `VERIFICATION_TOKEN_EXPIRATION` for organization invite ([ON-4080]).
+- **Dashboard**: Added end-to-end tests for various parts of the dashboard ([ON-4076]).
+- **Sign Up**: Invitation links now redirect to the sign-up page instead of the login page ([ON-4106]).
+
+### Fixed
+- **Release Process**: Only release tags and the most recent release candidate.
+- **Database**: Created migration to remove duplicate inventory values for the same GPC reference number.
+- **UI**: Fixed CSS issues on the teams accordion.
+- **Collaboration**: Fixed issues with fetching projects in the add collaborator modal and preventing users from deleting themselves ([ON-4104]).
+- **Invitation**: Fixed issues with invitation tokens not working for existing users ([ON-4097]).
+- **File Upload**: Fixed file upload handler ([ON-4051]).
+- **Email URLs**: Handled `+` characters in email URLs to prevent space conversion.
+- **ECRF Download**: Fixed file download issues by including templates folder in production image.
+- **City Polygon**: Fixed issues with creating tables and constraints for city polygons.
+
+### Changed
+- **Dependencies**:
+  - Bumped `@ai-sdk/openai` from 1.2.0 to 1.3.22.
+  - Bumped `pbkdf2` in the npm_and_yarn group.
+  - Bumped `flake8` from 7.2.0 to 7.3.0.
+  - Bumped `pytest` from 8.4.0 to 8.4.1.
+  - Bumped `uvicorn` from 0.34.3 to 0.35.0.
+  - Bumped `mypy` from 1.16.0 to 1.16.1.
+  - Bumped `alembic` from 1.16.1 to 1.16.2.
+
+### Internationalization
+- Updated translations for Portuguese, French, Spanish, and German.
+
+### Chore
+- Code cleanups and build fixes.
+- Updated Playwright tests to exclude invite code sections.
+- Enabled account settings.
+
+[v0.51.0-rc.0]: https://github.com/Open-Earth-Foundation/CityCatalyst/releases/tag/v0.51.0-rc.0
+
 ## [0.49.0] – 2025-06-03
 
 ### Added

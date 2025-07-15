@@ -31,14 +31,15 @@ import {
 import ProgressLoader from "@/components/ProgressLoader";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useTheme } from "next-themes";
-import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
 import ManagePasswordTabContent from "@/components/Tabs/MyProfileTab/ManagePasswordTabContent";
 import AccountDetailsTab from "./account-details-tab";
 import OrganizationDetailsTab from "./organization-details-tab";
 import TabContent from "@/components/ui/tab-content";
 import TabTrigger from "@/components/ui/tab-trigger";
-import { Trans } from "react-i18next";
 import { logger } from "@/services/logger";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { TitleMedium } from "@/components/Texts/Title";
+import PlanDetailsBox from "@/components/PlanDetailsBox";
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const { showErrorToast } = UseErrorToast({
@@ -82,7 +83,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const [file, setFile] = React.useState<File | null>(null);
   const [clearImage, setClearImage] = React.useState(false);
   const { setTheme } = useTheme();
-  const { setLogoUrl } = useLogo();
+  const { setOrganization } = useOrganizationContext();
 
   const { data: userAccessStatus, isLoading } = useGetUserAccessStatusQuery({});
 
@@ -124,7 +125,9 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
       setFile(null);
       setClearImage(false);
       setTheme(selectedThemeValue?.key as string);
-      setLogoUrl(response?.logoUrl as string);
+      setOrganization({
+        logoUrl: response?.logoUrl ?? null,
+      });
       showSuccessToast();
     } catch (err) {
       logger.error({ err: err }, "Failed to update white label settings:");
@@ -136,18 +139,6 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
       selectedTheme !== organization?.themeId || file !== null || clearImage
     );
   }, [selectedTheme, organization?.themeId, file, clearImage]);
-
-  const { numCities, totalCities } = useMemo(
-    () =>
-      organization?.projects.reduce(
-        (acc, proj) => ({
-          numCities: acc.numCities + (proj?.cities?.length ?? 0),
-          totalCities: acc.totalCities + BigInt(proj?.cityCountLimit),
-        }),
-        { numCities: 0, totalCities: BigInt(0) },
-      ) ?? { numCities: 0, totalCities: BigInt(0) },
-    [organization?.projects],
-  );
 
   if (isLoading || isOrganizationLoading) return <ProgressLoader />;
 
@@ -304,32 +295,10 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
         <AccountDetailsTab />
         {userAccessStatus?.isOrgOwner && (
           <Box backgroundColor="white" p={6} marginTop={4}>
-            <Text
-              fontSize="title.md"
-              color="content.secondary"
-              fontWeight="semibold"
-            >
+            <TitleMedium color="content.secondary">
               {t("plan-details")}
-            </Text>
-            <Text
-              fontSize="body.lg"
-              fontWeight="normal"
-              color="content.tertiary"
-            >
-              <Trans
-                i18nKey="plan-details-caption"
-                t={t}
-                values={{
-                  name: organization?.name,
-                  num_projects: organization?.projects?.length ?? 0,
-                  num_cities: numCities,
-                  total_cities: totalCities ?? 0,
-                }}
-                components={{
-                  bold: <strong />,
-                }}
-              />
-            </Text>
+            </TitleMedium>
+            <PlanDetailsBox organization={organization} />
           </Box>
         )}
       </TabContent>

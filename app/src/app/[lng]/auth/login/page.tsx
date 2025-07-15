@@ -7,7 +7,7 @@ import { Box, Heading, Link, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, use } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
@@ -39,12 +39,10 @@ function VerifiedNotification({ t }: { t: TFunction }) {
   return null;
 }
 
-export default function Login({
-  params: { lng },
-}: {
-  params: { lng: string };
-}) {
+export default function Login(props: { params: Promise<{ lng: string }> }) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "auth");
+
   const router = useRouter();
   const [error, setError] = useState("");
   const {
@@ -59,21 +57,13 @@ export default function Login({
 
   // only redirect to user invite page as a fallback if there is a token present in the search params
   if (!callbackUrl) {
-    if ("token" in queryParams) {
-      const paramsString = new URLSearchParams(queryParams).toString();
-      callbackUrl = `/${lng}/user/invites?${paramsString}`;
-    } else {
+    if (!("token" in queryParams)) {
       callbackUrl = `/`;
     }
   }
 
   // redirect to dashboard if user is already authenticated
   const { data: _session, status } = useSession();
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/");
-    }
-  }, [status, router]);
 
   const { showSuccessToast: showLoginSuccessToast } = UseSuccessToast({
     title: t("verified-toast-title"),
@@ -90,7 +80,7 @@ export default function Login({
 
       if (res?.ok && !res?.error) {
         showLoginSuccessToast();
-        router.push(callbackUrl);
+        router.push(callbackUrl ?? "/");
         setError("");
         return;
       } else {
@@ -138,19 +128,6 @@ export default function Login({
           <Link href="/auth/forgot-password" className="underline">
             {t("forgot-password")}
           </Link>
-          <Text my={2}>
-            <Trans t={t} i18nKey="read-privacy-policy">
-              Read our{" "}
-              <Link
-                href="https://citycatalyst.openearth.org/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline"
-              >
-                Privacy Policy
-              </Link>
-            </Trans>
-          </Text>
         </div>
         <Button
           type="submit"
@@ -163,18 +140,20 @@ export default function Login({
           {t("log-in")}
         </Button>
       </form>
-      <Text
-        className="w-full text-center mt-4 text-sm"
-        color="content.tertiary"
-      >
-        {t("no-account")}{" "}
-        <Link
-          href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-          className="underline"
+      {callbackUrl.includes("token") && (
+        <Text
+          className="w-full text-center mt-4 text-sm"
+          color="content.tertiary"
         >
-          {t("sign-up")}
-        </Link>
-      </Text>
+          {t("no-account")}{" "}
+          <Link
+            href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+            className="underline"
+          >
+            {t("sign-up")}
+          </Link>
+        </Text>
+      )}
       <Suspense>
         <VerifiedNotification t={t} />
       </Suspense>

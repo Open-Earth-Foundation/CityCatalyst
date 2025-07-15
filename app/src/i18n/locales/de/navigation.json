@@ -3,5 +3,6 @@
   "admin": "Admin-BereichÂ \n",
   "cities": "Städte",
   "settings": "Einstellungen",
-  "account-settings": "Kontoeinstellungen"
+  "account-settings": "Kontoeinstellungen",
+  "account-frozen-warning-text": "Ihr Konto ist eingefroren. Bitte wenden Sie sich an einen Administrator oder an <bold>{{ email }}</bold>, um es zu reaktivieren"
 }

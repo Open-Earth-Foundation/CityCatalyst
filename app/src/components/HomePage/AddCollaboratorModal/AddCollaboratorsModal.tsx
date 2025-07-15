@@ -5,19 +5,22 @@ import {
   CheckboxGroup,
   createListCollection,
   HStack,
-  Icon,
-  NativeSelectRoot,
   ProgressCircle,
   Separator,
   Text,
 } from "@chakra-ui/react";
-import { MdInfoOutline, MdPersonAdd } from "react-icons/md";
+import {
+  NativeSelectField,
+  NativeSelectRoot,
+} from "@/components/ui/native-select";
+import { MdPersonAdd } from "react-icons/md";
 import { TitleLarge } from "@/components/Texts/Title";
 import { BodyLarge } from "@/components/Texts/Body";
 import { HeadlineSmall } from "@/components/Texts/Headline";
 import {
-  useGetCitiesAndYearsQuery,
+  useCreateOrganizationInviteMutation,
   useGetProjectsQuery,
+  useGetUserProjectsQuery,
   useInviteUsersMutation,
 } from "@/services/api";
 import LabelLarge from "@/components/Texts/Label";
@@ -42,6 +45,9 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
+import Callout from "@/components/ui/callout";
+import { toaster } from "@/components/ui/toaster";
+import { OrganizationRole } from "@/util/types";
 
 const AddCollaboratorsDialog = ({
   lng,
@@ -49,14 +55,12 @@ const AddCollaboratorsDialog = ({
   onClose,
   onOpen,
   organizationId,
-  isAdmin,
 }: {
   lng: string;
   isOpen: boolean;
   onClose: () => void;
   onOpen?: () => void;
   organizationId?: string;
-  isAdmin?: boolean;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
 
@@ -70,33 +74,49 @@ const AddCollaboratorsDialog = ({
     description: t("invite-error-toast-description"),
   });
 
-  const { data: projectsData, isLoading } = useGetProjectsQuery(
+  // if organizationId is provided, we fetch the projects for that organization only
+  // if no organizationId is provided, we fetch the user's projects
+
+  const {
+    data: organizationProjectsData,
+    isLoading: isLoadingOrganizationProjects,
+  } = useGetProjectsQuery(
     {
       organizationId: organizationId as string,
     },
     {
-      skip: !isAdmin || !organizationId,
+      skip: !organizationId,
     },
   );
+
+  const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
 
   const projectCollection = useMemo(() => {
     return createListCollection({
       items:
-        projectsData?.map((project) => ({
+        (organizationProjectsData ?? projectsData)?.map((project) => ({
           label: project.name,
           value: project.projectId,
         })) ?? [],
     });
-  }, [projectsData]);
+  }, [projectsData, organizationProjectsData]);
 
-  const { data: citiesAndYears } = useGetCitiesAndYearsQuery(undefined, {
-    skip: isAdmin,
-  });
   const [inviteUsers, { isLoading: isInviteUsersLoading }] =
     useInviteUsersMutation();
+  const [createOrganizationInvite, { isLoading: isAdminInviteLoading }] =
+    useCreateOrganizationInviteMutation();
+
   const [emails, setEmails] = useState<string[]>([]);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [selectedProject, setSelectedProject] = useState<string[]>([]);
+  const [role, setRole] = useState<string>("collaborator");
+
+  useEffect(() => {
+    if (role === "admin") {
+      setSelectedCities([]);
+      setSelectedProject([]);
+    }
+  }, [role]);
 
   const handleCityChange = (city: string) => {
     setSelectedCities((prevSelectedCities) =>
@@ -104,6 +124,14 @@ const AddCollaboratorsDialog = ({
         ? prevSelectedCities.filter((c) => c !== city)
         : [...prevSelectedCities, city],
     );
+  };
+
+  const checkAllCities = () => {
+    if (selectedCities.length === cityData?.length) {
+      setSelectedCities([]);
+    } else {
+      setSelectedCities(cityData?.map((city) => city.cityId));
+    }
   };
 
   const onSendInvitesClick = async (): Promise<void> => {
@@ -115,6 +143,20 @@ const AddCollaboratorsDialog = ({
       showSuccessToast();
       setEmails([]);
       setSelectedCities([]);
+      onClose();
+    } else {
+      showErrorToast();
+    }
+  };
+
+  const onAdminInviteClick = async () => {
+    const inviteResponse = await createOrganizationInvite({
+      organizationId: organizationId as string,
+      inviteeEmails: emails,
+      role: OrganizationRole.ORG_ADMIN,
+    });
+    if (inviteResponse.data) {
+      showSuccessToast();
       onClose();
     } else {
       showErrorToast();
@@ -134,14 +176,6 @@ const AddCollaboratorsDialog = ({
       name: string;
     }[]
   >(() => {
-    if (!isAdmin) {
-      return (
-        citiesAndYears?.map(({ city }) => ({
-          cityId: city.cityId,
-          name: city.name as string,
-        })) ?? []
-      );
-    }
     if (!selectedProject || selectedProject.length === 0) return [];
 
     const project = projectsData?.find(
@@ -153,7 +187,7 @@ const AddCollaboratorsDialog = ({
         name: city.name,
       })) ?? []
     );
-  }, [isAdmin, citiesAndYears, projectsData, selectedProject]);
+  }, [projectsData, selectedProject]);
 
   return (
     <DialogRoot
@@ -184,19 +218,46 @@ const AddCollaboratorsDialog = ({
         <DialogBody p={0}>
           <Box paddingX={6} mt={6}>
             <TitleLarge color="content.tertiary">
+              {t("choose-a-role")}
+            </TitleLarge>
+            <LabelLarge text={t("select-role")} mt={3} />
+            <NativeSelectRoot
+              variant="outline"
+              defaultValue="collaborator"
+              marginTop={3}
+              w={"60%"}
+            >
+              <NativeSelectField
+                value={role}
+                onChange={(e) => {
+                  setRole(e.target.value);
+                }}
+              >
+                <option value="collaborator">{t("collaborator")}</option>
+                {organizationId && <option value="admin">{t("admin")}</option>}
+              </NativeSelectField>
+            </NativeSelectRoot>
+            <Callout
+              p={4}
+              mt={4}
+              heading={
+                role === "admin" ? t("admin-rule") : t("collaborator-rule")
+              }
+            />
+          </Box>
+          <Box paddingX={6} mt={6} mb={role === "admin" ? 20 : 6}>
+            <TitleLarge color="content.tertiary">
               {t("send-invites")}
             </TitleLarge>
             <Text color="content.tertiary">
               {t("send-invites-description-1")}
-              <Text as="span" fontWeight="bold">
-                {t("send-invites-description-2")}
-              </Text>
-              {t("send-invites-description-3")}
+              <br />
+              {t("send-invites-description-2")}
             </Text>
             <LabelLarge text={t("email")} mt={3} />
             <MultipleEmailInput t={t} emails={emails} setEmails={setEmails} />
           </Box>
-          {isAdmin && (
+          {role !== "admin" && (
             <Box
               display="flex"
               paddingX={6}
@@ -208,7 +269,7 @@ const AddCollaboratorsDialog = ({
               <TitleLarge color="content.tertiary">
                 {t("project-to-share")}
               </TitleLarge>
-              {isLoading ? (
+              {isLoading || isLoadingOrganizationProjects ? (
                 <ProgressCircle.Root value={null} size="sm">
                   <ProgressCircle.Circle>
                     <ProgressCircle.Track />
@@ -220,6 +281,7 @@ const AddCollaboratorsDialog = ({
                   value={selectedProject}
                   onValueChange={(e) => setSelectedProject(e.value)}
                   variant="subtle"
+                  w="80%"
                   collection={projectCollection}
                 >
                   <SelectLabel display="flex" alignItems="center" gap="8px">
@@ -245,7 +307,7 @@ const AddCollaboratorsDialog = ({
               )}
             </Box>
           )}
-          {isAdmin && !(selectedProject.length > 0) ? null : (
+          {!(selectedProject.length > 0) ? null : (
             <Box paddingX={6}>
               <TitleLarge color="content.tertiary">
                 {t("select-cities-to-share")}
@@ -253,34 +315,51 @@ const AddCollaboratorsDialog = ({
               <BodyLarge>{t("select-cities-to-share-description")}</BodyLarge>
               {cityData?.length === 0 && (
                 <Text fontSize="body.md" mt={3} color="content.tertiary">
-                  {isAdmin && !selectedProject
+                  {organizationId && !selectedProject
                     ? t("select-project")
                     : t("no-cities-available")}
                 </Text>
               )}
-              <CheckboxGroup my="24px">
-                <Box
-                  display="grid"
-                  gridTemplateColumns={{
-                    base: "1fr",
-                    sm: "repeat(2, 1fr)",
-                    md: "repeat(3, 1fr)",
-                  }}
-                  gap={4}
-                >
-                  {cityData?.map(({ cityId, name }) => (
+              <Box>
+                {cityData?.length > 1 && (
+                  <>
                     <Checkbox
-                      key={cityId}
-                      checked={selectedCities.includes(cityId)}
-                      onChange={() => handleCityChange(cityId)}
+                      key="all"
+                      my={6}
+                      checked={selectedCities.length === cityData?.length}
+                      onChange={() => checkAllCities()}
                     >
                       <Text fontWeight="semibold" fontSize="body.lg">
-                        {name}
+                        {t("all-cities")}
                       </Text>
                     </Checkbox>
-                  ))}
-                </Box>
-              </CheckboxGroup>
+                    <Separator borderColor="border.overlay" />
+                  </>
+                )}
+                <CheckboxGroup my="24px">
+                  <Box
+                    display="grid"
+                    gridTemplateColumns={{
+                      base: "1fr",
+                      sm: "repeat(2, 1fr)",
+                      md: "repeat(3, 1fr)",
+                    }}
+                    gap={4}
+                  >
+                    {cityData?.map(({ cityId, name }) => (
+                      <Checkbox
+                        key={cityId}
+                        checked={selectedCities.includes(cityId)}
+                        onChange={() => handleCityChange(cityId)}
+                      >
+                        <Text fontWeight="semibold" fontSize="body.lg">
+                          {name}
+                        </Text>
+                      </Checkbox>
+                    ))}
+                  </Box>
+                </CheckboxGroup>
+              </Box>
             </Box>
           )}
           <DialogFooter
@@ -294,12 +373,15 @@ const AddCollaboratorsDialog = ({
               <Button
                 disabled={
                   emails.length === 0 ||
-                  selectedCities.length === 0 ||
-                  isInviteUsersLoading
+                  (role === "collaborator" && selectedCities.length === 0) ||
+                  isInviteUsersLoading ||
+                  isAdminInviteLoading
                 }
-                loading={isInviteUsersLoading}
+                loading={isInviteUsersLoading || isAdminInviteLoading}
                 colorScheme="blue"
-                onClick={() => onSendInvitesClick()}
+                onClick={() =>
+                  role === "admin" ? onAdminInviteClick() : onSendInvitesClick()
+                }
               >
                 {t("send-invites")}
               </Button>

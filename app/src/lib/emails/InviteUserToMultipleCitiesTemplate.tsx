@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string */
+import React from "react";
 import { City } from "@/models/City";
 import {
   Body,
@@ -13,6 +13,8 @@ import {
   Section,
   Text,
 } from "@react-email/components";
+import i18next from "@/i18n/server";
+import { LANGUAGES } from "@/util/types";
 
 export function InviteUserToMultipleCitiesTemplate({
   url,
@@ -20,6 +22,7 @@ export function InviteUserToMultipleCitiesTemplate({
   cities,
   invitingUser,
   brandInformation,
+  language,
 }: {
   url?: string;
   email: string;
@@ -29,7 +32,9 @@ export function InviteUserToMultipleCitiesTemplate({
     color: string;
     logoUrl: string;
   };
+  language?: string;
 }) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
   const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
     <Html>
@@ -46,7 +51,7 @@ export function InviteUserToMultipleCitiesTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: City Invitation</Preview>
+      <Preview>{t("invite-multiple.subject")}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section>
@@ -70,16 +75,21 @@ export function InviteUserToMultipleCitiesTemplate({
                   width="36"
                   height="36"
                 />
-                <Text style={brandHeading}>CityCatalyst</Text>
+                <Text style={brandHeading}>
+                  {t("invite-multiple-cities.brand")}
+                </Text>
               </Section>
             )}
             <Section style={{ padding: "24px" }}>
-              {/* eslint-disable-next-line react/no-unescaped-entities */}
-              <Text style={headingGreen}>You've been granted access</Text>
-              <Text style={greeting}>Hi {email},</Text>
+              <Text style={headingGreen}>{t("invite-multiple.title")}</Text>
+              <Text style={greeting}>
+                {t("invite-multiple.greeting", { email })}
+              </Text>
               <Text style={paragraph}>
-                You have been granted access to
-                {cities?.length == 1 ? " this city" : " these cities"}:
+                {t("invite-multiple.message", {
+                  citiesCount:
+                    cities?.length === 1 ? "this city" : "these cities",
+                })}
               </Text>
               <div>
                 {cities?.map(({ countryLocode, name }) => (
@@ -107,20 +117,14 @@ export function InviteUserToMultipleCitiesTemplate({
                       : {}),
                   }}
                 >
-                  JOIN NOW
+                  {t("invite-multiple.cta")}
                 </Link>
               </Section>
             </Section>
           </Section>
-          <Text style={footerText}>
-            This invite will remain valid for the next 30 days or until claimed,
-            whichever happens first.
-          </Text>
+          <Text style={footerText}>{t("invite-multiple.expiry")}</Text>
           <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-          <Text style={footerText}>
-            Open Earth Foundation is a nonprofit public benefit corporation from
-            California, USA. EIN: 85-3261449
-          </Text>
+          <Text style={footerText}>{t("invite-multiple.footer")}</Text>
         </Container>
       </Body>
     </Html>

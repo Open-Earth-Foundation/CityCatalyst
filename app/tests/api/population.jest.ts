@@ -63,7 +63,9 @@ describe("Population API", () => {
 
   it("should save correct population information", async () => {
     const req = mockRequest(validPopulationUpdate);
-    const res = await savePopulations(req, { params: { city: cityId } });
+    const res = await savePopulations(req, {
+      params: Promise.resolve({ city: cityId }),
+    });
     expect(res.status).toEqual(200);
     const data = await res.json();
     expectToBeLooselyEqual(
@@ -103,7 +105,9 @@ describe("Population API", () => {
 
   it("should correctly save population information for the same year", async () => {
     const req = mockRequest(overlappingPopulationUpdate);
-    const res = await savePopulations(req, { params: { city: cityId } });
+    const res = await savePopulations(req, {
+      params: Promise.resolve({ city: cityId }),
+    });
     expect(res.status).toEqual(200);
     const data = await res.json();
 
@@ -143,7 +147,9 @@ describe("Population API", () => {
 
   it("should not save invalid population information", async () => {
     const req = mockRequest(invalidPopulationUpdate);
-    const res = await savePopulations(req, { params: { city: cityId } });
+    const res = await savePopulations(req, {
+      params: Promise.resolve({ city: cityId }),
+    });
     expect(res.status).toEqual(400);
     const populations = await db.models.Population.findAll({
       where: { cityId, year: -1340 },

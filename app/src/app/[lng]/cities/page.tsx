@@ -9,7 +9,7 @@ import {
   Table,
   Text,
 } from "@chakra-ui/react";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, use } from "react";
 import { useTranslation } from "@/i18n/client";
 import {
   useGetAllCitiesInSystemQuery,
@@ -27,7 +27,8 @@ import { MdMoreVert, MdOutlineGroup } from "react-icons/md";
 import MoveCityModal from "@/app/[lng]/cities/MoveCityModal";
 import { CityWithProjectDataResponse } from "@/util/types";
 
-const CitiesPage = ({ params: { lng } }: { params: { lng: string } }) => {
+const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "admin");
   const { data, isLoading } = useGetAllCitiesInSystemQuery({});
   const { data: organizationData, isLoading: isLoadingOrganizationData } =
@@ -62,7 +63,7 @@ const CitiesPage = ({ params: { lng } }: { params: { lng: string } }) => {
 
   return (
     <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
-      <Link href="/" _hover={{ textDecoration: "none" }}>
+      <Link href={`/${lng}`} _hover={{ textDecoration: "none" }}>
         <Box
           display="flex"
           alignItems="center"

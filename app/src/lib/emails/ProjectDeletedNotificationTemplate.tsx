@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import React from "react";
 import {
   Body,
@@ -14,18 +13,24 @@ import {
 } from "@react-email/components";
 import { User } from "@/models/User";
 import { Project } from "@/models/Project";
+import i18next from "@/i18n/server";
+import { LANGUAGES } from "@/util/types";
 
 export default function ProjectDeletedNotificationTemplate({
   url,
   user,
   project,
   organizationName,
+  language,
 }: {
   url: string;
   project: Project;
   user: User | null;
   organizationName: string;
+  language?: string;
 }) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
+
   return (
     <Html>
       <Head>
@@ -41,19 +46,19 @@ export default function ProjectDeletedNotificationTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: Project Deleted</Preview>
+      <Preview>{t("project-deleted.preview")}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={brandHeading}>CityCatalyst</Text>
+          <Text style={brandHeading}>{t("project-deleted.brand")}</Text>
           <Text style={headingGreen}>
-            {" "}
-            Project deleted on <span style={heading}>
-              {organizationName}
-            </span>{" "}
-            account
+            {t("project-deleted.title", { organizationName })}
           </Text>
-          <Text style={greeting}>Hi {user?.name},</Text>
-          <Text style={paragraph}>The {project?.name} project has deleted</Text>
+          <Text style={greeting}>
+            {t("project-deleted.greeting", { name: user?.name })}
+          </Text>
+          <Text style={paragraph}>
+            {t("project-deleted.message", { projectName: project?.name })}
+          </Text>
           <div
             style={{
               marginTop: "36px",
@@ -61,15 +66,12 @@ export default function ProjectDeletedNotificationTemplate({
             }}
           >
             <Link href={url} style={urlLink}>
-              Sign In
+              {t("project-deleted.cta")}
             </Link>
           </div>
 
           <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-          <Text style={footerText}>
-            Open Earth Foundation is a nonprofit public benefit corporation from
-            California, USA. EIN: 85-3261449
-          </Text>
+          <Text style={footerText}>{t("project-deleted.footer")}</Text>
         </Container>
       </Body>
     </Html>

@@ -55,7 +55,7 @@ def test_get_emissionfactor_emissionfactor_datasource_success(monkeypatch):
                     }]
             return DummyResult()
     monkeypatch.setattr("routes.emissionfactor_emissionfactor_datasource_endpoint.SessionLocal", lambda: DummySession())
-    response = client.get("/api/v0/emissions_factor/emissionfactor_datasource")
+    response = client.get("/api/v0/emissions_factor/emissions_factor_datasource")
     assert response.status_code == 200
     data = response.json()
     assert "emissionfactor_datasource" in data
@@ -72,7 +72,7 @@ def test_get_emissionfactor_emissionfactor_datasource_not_found(monkeypatch):
                 def all(self): return []
             return DummyResult()
     monkeypatch.setattr("routes.emissionfactor_emissionfactor_datasource_endpoint.SessionLocal", lambda: DummySession())
-    response = client.get("/api/v0/emissions_factor/emissionfactor_datasource")
+    response = client.get("/api/v0/emissions_factor/emissions_factor_datasource")
     assert response.status_code == 404
     assert response.json()["detail"] == "No data available"
 
@@ -103,7 +103,7 @@ def test_get_emissionfactors_success(monkeypatch):
     monkeypatch.setattr("routes.emissionfactor_emissionsfactor_endpoint.SessionLocal", lambda: DummySession())
     response = client.get("/api/v0/emissions_factor/emissions_factor")
     assert response.status_code == 200
-    assert "emissionfactor" in response.json()
+    assert "emissions_factor" in response.json()
 
 def test_get_emissionfactors_not_found(monkeypatch):
     class DummySession:
@@ -138,7 +138,7 @@ def test_get_emissionfactor_methodologies_success(monkeypatch):
     monkeypatch.setattr("routes.emissionfactor_methodology_endpoint.SessionLocal", lambda: DummySession())
     response = client.get("/api/v0/emissions_factor/methodology")
     assert response.status_code == 200
-    assert "emissionfactor_methodology" in response.json()
+    assert "emissions_factor_methodologies" in response.json()
 
 def test_get_emissionfactor_methodologies_not_found(monkeypatch):
     class DummySession:
@@ -173,10 +173,10 @@ def test_get_emissionfactor_publishers_success(monkeypatch):
     response = client.get("/api/v0/emissions_factor/publisher")
     assert response.status_code == 200
     data = response.json()
-    assert "emissionfactor_publisher" in data
-    assert data["emissionfactor_publisher"][0]["name"] == "IPCC"
-    assert data["emissionfactor_publisher"][0]["URL"] == "http://ipcc.org"
-    assert data["emissionfactor_publisher"][0]["publisher_id"] == 1
+    assert "emissions_factor_publisher" in data
+    assert data["emissions_factor_publisher"][0]["name"] == "IPCC"
+    assert data["emissions_factor_publisher"][0]["URL"] == "http://ipcc.org"
+    assert data["emissions_factor_publisher"][0]["publisher_id"] == 1
 
 def test_get_emissionfactor_publishers_not_found(monkeypatch):
     class DummySession:

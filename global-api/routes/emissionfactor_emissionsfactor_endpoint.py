@@ -90,4 +90,4 @@ def get_emissionfactors():
         for row in result
     ]
 
-    return {"emissionfactor": emissionfactors} 
+    return {"emissions_factor": emissionfactors} 

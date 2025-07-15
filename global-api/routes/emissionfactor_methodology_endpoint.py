@@ -41,4 +41,4 @@ def get_emissionfactor_methodologies() -> Dict[str, List[Dict[str, Union[int, st
         for row in result
     ]
 
-    return {"emissionfactor_methodology": methodologies} 
+    return {"emissions_factor_methodologies": methodologies} 

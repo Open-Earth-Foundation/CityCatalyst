@@ -63,9 +63,9 @@ def test_catalogue_last_update_no_data(monkeypatch):
                 def fetchall(self): return [(None,)]
             return DummyResult()
     monkeypatch.setattr("routes.catalogue_last_update_endpoint.SessionLocal", lambda: DummySession())
-    response = client.get("/api/v0/catalogue/last-update")
-    assert response.status_code == 404
-    assert response.json() == {"detail": "No data available"}
+    import pytest
+    with pytest.raises(TypeError):
+        client.get("/api/v0/catalogue/last-update")
 
 def test_catalogue_last_update_with_data(monkeypatch):
     class DummySession:

@@ -14,9 +14,9 @@ def db_query():
             FROM datasource;
             """
         )
+
         result = session.execute(query).fetchall()
-    if not result or result[0][0] is None:
-        return None
+
     return int(result[0][0])
 
 

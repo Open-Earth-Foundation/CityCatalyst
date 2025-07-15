@@ -35,4 +35,4 @@ def get_emissionfactor_publishers():
         for row in result
     ]
 
-    return {"emissionfactor_publisher": publishers} 
+    return {"emissions_factor_publisher": publishers} 

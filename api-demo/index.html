@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>CityCatalyst API demo</title>
+  </head>
+  <body>
+    <h1>CityCatalyst API demo</h1>
+    <p>
+      <button id="login">Login with CityCatalyst</button>
+      <span id="status"></span>
+    </p>
+    <script>
+      async function getAccessToken(
+        client_id,
+        redirect_uri,
+        code,
+        code_challenge
+      ) {
+        return "fake_token";
+      }
+
+      function setStatus(text) {
+        document.getElementById("status").innerHTML = text;
+      }
+      document.addEventListener("DOMContentLoaded", () => {
+        const authorize_url = "http://localhost:3000/authorize";
+        const access_token_url = "http://localhost:3000/api/auth/token";
+        const client_id = "fake_client_id";
+        const redirect_uri = "http://localhost:2000";
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("state")) {
+          if (params.get("state") !== sessionStorage.getItem("oauth_state")) {
+            setStatus(`Invalid state`);
+          } else {
+            sessionStorage.removeItem("oauth_state")
+            const error = params.get("error");
+            const error_description = params.get("error_description")
+            if (error) {
+              switch (error) {
+                case "invalid_request":
+                  setStatus((error_description)
+                    ? `Invalid request: ${error_description}`
+                    : 'Invalid request'
+                  );
+                  break;
+                case "access_denied":
+                  setStatus((error_description)
+                    ? `Access denied: ${error_description}`
+                    : 'Access denied.'
+                  );
+                  break;
+                case "unauthorized_client":
+                  setStatus(`Unauthorized client.`);
+                  break;
+                case "unsupported_response_type":
+                  setStatus(`Unsupported response_type parameter.`);
+                  break;
+                case "invalid_scope":
+                  setStatus(`Invalid scope parameter.`);
+                  break;
+                case "server_error":
+                  setStatus((error_description)
+                    ? `The CityCatalyst server had an error: ${error_description}`
+                    : 'The CityCatalyst server had an error.'
+                  );
+                  break;
+                case "temporarily_unavailable":
+                  setStatus(
+                    `The CityCatalyst server is temporarily unavailable.`
+                  );
+                  break;
+              }
+            } else {
+              const code = params.get("code");
+              const code_challenge = sessionStorage.getItem("oauth_code_challenge")
+              sessionStorage.removeItem("oauth_code_challenge")
+              getAccessToken(client_id, redirect_uri, code, code_challenge).then(
+                (token) => {
+                  setStatus(`Got access token: ${token}`);
+                }
+              );
+            }
+          }
+        }
+        document.getElementById("login").addEventListener("click", () => {
+          setStatus("");
+          const state = "fake_state"
+          sessionStorage.setItem("oauth_state", state)
+          const code_challenge = "fake_challenge"
+          sessionStorage.setItem("oauth_code_challenge", code_challenge)
+          const params = new URLSearchParams({
+            client_id,
+            redirect_uri,
+            response_type: "code",
+            code_challenge,
+            code_challenge_method: "S256",
+            state,
+            scope: "read write",
+          });
+          window.location = `${authorize_url}?${params}`;
+        });
+      });
+    </script>
+  </body>
+</html>

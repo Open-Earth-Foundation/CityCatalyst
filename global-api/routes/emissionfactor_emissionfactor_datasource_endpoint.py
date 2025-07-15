@@ -5,7 +5,7 @@ from db.database import SessionLocal
 api_router = APIRouter(prefix="/api/v0")
 
 @api_router.get("/emissions_factor/emissionfactor_datasource", summary="Get emission factor datasource mappings (IPCC only)")
-def get_emissionfactor_emissionfactor_datasource():
+def get_ipcc_emission_mappings():
     """
     Retrieve emission factor datasource mappings where publisher_name = 'IPCC'.
     Returns a JSON object with a list of mappings under the key 'emissionfactor_datasource'.

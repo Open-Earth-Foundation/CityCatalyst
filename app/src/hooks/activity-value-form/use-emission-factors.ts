@@ -75,14 +75,6 @@ const reduceEmissionsToUniqueSourcesAndUnits = (
   }));
 };
 
-const generateMetadataKey = (key: string) => {
-  if (key.includes("fuel-type")) {
-    return "fuel_type";
-  } else if (key.includes("fugitive-emissions")) {
-    return "activity_name";
-  }
-};
-
 const useEmissionFactors = ({
   referenceNumber,
   methodologyId,
@@ -111,8 +103,7 @@ const useEmissionFactors = ({
           activityData &&
           field.id in activityData
         ) {
-          let key = generateMetadataKey(field.id) as string;
-          acc[key] = activityData[field.id];
+          acc[field.id] = activityData[field.id];
         }
         return acc;
       },

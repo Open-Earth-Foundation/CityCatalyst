@@ -53,7 +53,7 @@ export default class UnitConversionService {
     "fuel-type-naphtha": 710, // Naphtha: 700-720 kg/m³
     "fuel-type-diesel-oil": 830, // Diesel Oil: 820-860 kg/m³
     "fuel-type-liquefied-petroleum-gases": 493, // LPG: 493-580 kg/m³
-    "fuel-type-wood/wood-waste": 700, // Wood/Wood Waste: 600-700 kg/m³ (solid state)
+    "fuel-type-wood-wood-waste": 700, // Wood/Wood Waste: 600-700 kg/m³ (solid state)
     "fuel-type-other-primary-solid-biomass": 700, // Biomass: ~600-700 kg/m³
     "fuel-type-charcoal": 250, // Charcoal: 200-300 kg/m³
     "fuel-type-natural-gas-oil": 820, // Natural Gas Oil: ~820 kg/m³

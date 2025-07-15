@@ -1,0 +1,7 @@
+{
+  "oauth-authorize-missing-parameters": "One or more of the following parameters are missing: client_id, redirect_uri",
+  "oauth-authorize-heading": "Authorize Application",
+  "oauth-authorize-prompt": "Allow this application to access your data?",
+  "oauth-ok": "OK",
+  "oauth-cancel": "Cancel"
+}

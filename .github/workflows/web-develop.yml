@@ -3,7 +3,7 @@ name: Push Web app to GHCR and deploy to EKS
 on:
   workflow_dispatch:
   push:
-    branches: ["develop"]
+    branches: [ "develop" ]
     paths:
       - app/**
       - k8s/cc-migrate.yml
@@ -68,7 +68,6 @@ jobs:
         run: |
           echo "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" >> .env.local
           echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" >> .env.local
-          echo "NEXT_PUBLIC_FEATURE_FLAGS=UPLOAD_OWN_DATA_ENABLED" >> .env.local
 
       - name: Run NextJS build
         run: npm run build
@@ -159,6 +158,7 @@ jobs:
             type=gha,scope=main
             type=gha,scope=develop
           cache-to: type=gha,mode=max,scope=citycatalyst-shared
+
 
   deployToEKS:
     needs: pushToGHCR

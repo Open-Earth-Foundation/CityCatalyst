@@ -36,6 +36,9 @@ async function processCsv(filePath: string) {
           for (const extraField of activity["extra-fields"]) {
             if (extraField.id == key) {
               found = true
+              if (extraField.options && !extraField.options.includes((metadata[key]))) {
+                console.log(`${row.id}: metadata has key ${key} with value ${metadata[key]} not found in options.`)
+              }
               break
             }
           }

@@ -13,7 +13,7 @@ import {
 } from "@react-email/components";
 import { User } from "@/models/User";
 import { Project } from "@/models/Project";
-import i18next from "i18next";
+import i18next from "@/i18n/server";
 import { LANGUAGES } from "@/util/types";
 
 export default function ProjectCreatedNotificationTemplate({

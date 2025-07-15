@@ -76,7 +76,8 @@ const invalidFileData = {
   file_type: "csv",
 };
 
-describe("UserFile API", () => {
+// TODO enable these tests again when the API is re-enabled
+describe.skip("UserFile API", () => {
   beforeAll(async () => {
     setupTests();
     await db.initialize();

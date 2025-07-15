@@ -30,6 +30,7 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { useTheme } from "next-themes";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { logger } from "@/services/logger";
 
 export default function HomePage({
   lng,
@@ -73,7 +74,10 @@ export default function HomePage({
 
   useEffect(() => {
     if (inventoryError) {
-      setTimeout(() => router.push("/onboarding"), 0);
+      logger.error(
+        { inventoryError, inventoryId: inventoryIdFromParam ?? "default" },
+        "Failed to load inventory",
+      );
     }
     if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
@@ -214,7 +218,7 @@ export default function HomePage({
                       fontSize="headline.sm"
                       fontFamily="heading"
                       fontStyle="normal"
-                      data-testId="inventory-year-title"
+                      data-testid="inventory-year-title"
                     >
                       {t("inventory-year")}
                     </Text>

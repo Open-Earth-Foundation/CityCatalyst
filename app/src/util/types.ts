@@ -359,6 +359,7 @@ export type BreakdownByActivity = Record<
   Record<string, Record<string, GroupedActivity>> & { totals: SubsectorTotals }
 >;
 
+
 export interface ActivityDataByScope {
   activityTitle: string;
   scopes: { [key: string]: Decimal };
@@ -366,6 +367,7 @@ export interface ActivityDataByScope {
   percentage: number;
   datasource_id: string;
   datasource_name: string;
+  activities?: ActivityValue[];
 }
 
 export type SectorBreakdownResponse = BreakdownByActivity & {

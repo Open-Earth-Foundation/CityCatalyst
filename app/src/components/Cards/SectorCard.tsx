@@ -78,7 +78,7 @@ export function SectorCard({
                   fontWeight="semibold"
                   lineHeight="24"
                   className="pb-[8px]"
-                  data-testId={sectorName}
+                  data-testid={sectorName}
                 >
                   {t(sectorName)}
                 </Heading>

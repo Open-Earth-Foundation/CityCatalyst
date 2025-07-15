@@ -82,7 +82,7 @@ export default function SetInventoryDetailsStep({
         gap="24px"
         mb="48px"
       >
-        <Heading data-testId="inventory-details-heading" size="xl">
+        <Heading data-testid="inventory-details-heading" size="xl">
           {t("setup-inventory-details-heading")}
         </Heading>
         <Text
@@ -91,7 +91,7 @@ export default function SetInventoryDetailsStep({
           fontStyle="normal"
           fontWeight="400"
           letterSpacing="wide"
-          data-testId="inventory-details-description"
+          data-testid="inventory-details-description"
         >
           {t("setup-inventory-details-description")}
         </Text>
@@ -116,7 +116,7 @@ export default function SetInventoryDetailsStep({
               fontStyle="normal"
               fontWeight="bold"
               lineHeight="24px"
-              data-testId="inventory-year"
+              data-testid="inventory-year"
             >
               {t("inventory-year")}
             </Text>
@@ -155,7 +155,7 @@ export default function SetInventoryDetailsStep({
                   size="lg"
                   w="400px"
                   _placeholder={{ color: "content.tertiary" }}
-                  data-testId="inventory-detils-year"
+                  data-testid="inventory-detils-year"
                   {...register("year", {
                     required: t("inventory-year-required"),
                   })}

@@ -12,7 +12,7 @@ import {
   Hr,
 } from "@react-email/components";
 import { LANGUAGES } from "@/util/types";
-import i18next from "i18next";
+import i18next from "@/i18n/server";
 
 export default function ConfirmRegistrationTemplate({
   url = "/",

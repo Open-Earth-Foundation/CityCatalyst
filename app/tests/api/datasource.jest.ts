@@ -81,7 +81,7 @@ async function cleanupDatabase() {
   await db.models.Sector.destroy({ where: { sectorName } });
 }
 
-describe.skip("DataSource API", () => {
+describe("DataSource API", () => {
   let city: City;
   let inventory: Inventory;
   let sector: Sector;
@@ -99,6 +99,7 @@ describe.skip("DataSource API", () => {
       locode,
       name: "CC_",
     });
+    await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await db.models.CityUser.create({
       cityUserId: randomUUID(),
       userId: testUserID,

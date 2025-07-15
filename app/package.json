@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "0.51.1",
+  "version": "0.52.0-rc.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -40,7 +40,7 @@
     "@aws-sdk/client-s3": "^3.802.0",
     "@chakra-ui/react": "^3.8.0",
     "@emotion/react": "^11.14.0",
-    "@hookform/resolvers": "^3.10.0",
+    "@hookform/resolvers": "^5.1.1",
     "@huggingface/inference": "^3.9.2",
     "@next/env": "^14.2.5",
     "@nivo/bar": "^0.88.0",
@@ -97,10 +97,10 @@
     "react-table": "^7.8.0",
     "remark-gfm": "^4.0.1",
     "sequelize": "^6.37.5",
-    "swagger-ui-react": "^5.24.1",
+    "swagger-ui-react": "^5.26.2",
     "uuid": "^9.0.1",
     "wellknown": "^0.5.0",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
@@ -124,7 +124,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/lodash": "^4.17.17",
     "@types/lodash.groupby": "^4.6.9",
-    "@types/node": "22.15.12",
+    "@types/node": "24.0.13",
     "@types/nodemailer": "^6.4.14",
     "@types/pg": "^8.15.4",
     "@types/react": "^19.1.8",

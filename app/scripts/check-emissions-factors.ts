@@ -39,6 +39,9 @@ async function processCsv(filePath: string) {
               if (extraField.options && !extraField.options.includes((metadata[key]))) {
                 console.log(`${row.id}: metadata has key ${key} with value ${metadata[key]} not found in options.`)
               }
+              if (!extraField['emission-factor-dependency']) {
+                console.log(`${row.id}: metadata has key ${key} which is not marked as important for emissions factors.`)
+              }
               break
             }
           }

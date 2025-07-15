@@ -91,6 +91,7 @@ import { TbWorldSearch } from "react-icons/tb";
 import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -1064,140 +1065,148 @@ export default function AddDataSteps(props: {
           </Card.Body>
         </Card.Root>
         {/* Upload own data section */}
-        <Card.Root mb={24} shadow="none" border="none" w="full">
-          <Card.Body>
-            <Heading fontSize="title.lg" mb={2}>
-              {t("upload-your-data-heading")}
-            </Heading>
-            <Text color="content.tertiary" mb={12}>
-              {t("upload-your-data-details")}
-            </Text>
-            <Box display="flex">
-              <Box w="full">
-                <Box w="full">
-                  <Box mb="24px">
-                    <FileInput
-                      onFileSelect={() =>
-                        isFrozenCheck() ? null : handleFileSelect(uploadedFile!)
-                      }
-                      setUploadedFile={setUploadedFile}
-                      t={t}
-                    />
-                  </Box>
-                  <Box mb="24px">
-                    {sectorData[0]?.files.length > 0 ? (
-                      <Heading size="sm">{t("files-uploaded")}</Heading>
-                    ) : (
-                      ""
-                    )}
-                  </Box>
-                  <Box display="flex" flexDirection="column" gap="8px">
-                    {sectorData &&
-                      sectorData[0]?.files.map(
-                        (file: InventoryUserFileAttributes, i: number) => {
-                          return (
-                            <Card.Root
-                              shadow="none"
-                              minH="120px"
-                              w="full"
-                              borderWidth="1px"
-                              borderColor="border.overlay"
-                              borderRadius="8px"
-                              px="16px"
-                              py="16px"
-                              key={i}
-                            >
-                              <Card.Body>
-                                <Box display="flex" gap="16px">
-                                  <Box>
-                                    <ExcelFileIcon />
-                                  </Box>
-                                  <Box
-                                    display="flex"
-                                    flexDirection="column"
-                                    justifyContent="center"
-                                    gap="8px"
-                                  >
-                                    <Heading
-                                      fontSize="lable.lg"
-                                      fontWeight="normal"
-                                      letterSpacing="wide"
-                                      truncate
-                                    >
-                                      {file.fileName}
-                                    </Heading>
-                                    <Text
-                                      fontSize="body.md"
-                                      fontWeight="normal"
-                                      color="interactive.control"
-                                    >
-                                      {bytesToMB(file.size ?? 0)}
-                                    </Text>
-                                  </Box>
-                                  <Box
-                                    color="sentiment.negativeDefault"
-                                    display="flex"
-                                    justifyContent="right"
-                                    alignItems="center"
-                                    w="full"
-                                  >
-                                    <Button
-                                      variant="ghost"
-                                      color="sentiment.negativeDefault"
-                                      onClick={() =>
-                                        removeSectorFile(
-                                          file.fileId,
-                                          sectorData[0].sectorName,
-                                          file.cityId,
-                                        )
-                                      }
-                                    >
-                                      <FiTrash2 size={24} />
-                                    </Button>
-                                  </Box>
-                                </Box>
-                                <Box w="full" className="relative pl-[63px]">
-                                  {file.subsectors
-                                    ?.split(",")
-                                    .map((item: any) => (
-                                      <Tag
-                                        key={item}
-                                        mt={2}
-                                        mr={2}
-                                        size="md"
-                                        variant="solid"
-                                        color="content.alternative"
-                                        bg="background.neutral"
-                                        maxW="150px"
+        {hasFeatureFlag(FeatureFlags.UPLOAD_OWN_DATA_ENABLED) && (
+          <>
+            <Card.Root mb={24} shadow="none" border="none" w="full">
+              <Card.Body>
+                <Heading fontSize="title.lg" mb={2}>
+                  {t("upload-your-data-heading")}
+                </Heading>
+                <Text color="content.tertiary" mb={12}>
+                  {t("upload-your-data-details")}
+                </Text>
+                <Box display="flex">
+                  <Box w="full">
+                    <Box w="full">
+                      <Box mb="24px">
+                        <FileInput
+                          onFileSelect={() =>
+                            isFrozenCheck()
+                              ? null
+                              : handleFileSelect(uploadedFile!)
+                          }
+                          setUploadedFile={setUploadedFile}
+                          t={t}
+                        />
+                      </Box>
+                      <Box mb="24px">
+                        {sectorData[0]?.files.length > 0 ? (
+                          <Heading size="sm">{t("files-uploaded")}</Heading>
+                        ) : (
+                          ""
+                        )}
+                      </Box>
+                      <Box display="flex" flexDirection="column" gap="8px">
+                        {sectorData &&
+                          sectorData[0]?.files.map(
+                            (file: InventoryUserFileAttributes, i: number) => {
+                              return (
+                                <Card.Root
+                                  shadow="none"
+                                  minH="120px"
+                                  w="full"
+                                  borderWidth="1px"
+                                  borderColor="border.overlay"
+                                  borderRadius="8px"
+                                  px="16px"
+                                  py="16px"
+                                  key={i}
+                                >
+                                  <Card.Body>
+                                    <Box display="flex" gap="16px">
+                                      <Box>
+                                        <ExcelFileIcon />
+                                      </Box>
+                                      <Box
+                                        display="flex"
+                                        flexDirection="column"
+                                        justifyContent="center"
+                                        gap="8px"
                                       >
-                                        <TagLabel>{item}</TagLabel>
-                                      </Tag>
-                                    ))}
-                                </Box>
-                              </Card.Body>
-                            </Card.Root>
-                          );
-                        },
-                      )}
+                                        <Heading
+                                          fontSize="lable.lg"
+                                          fontWeight="normal"
+                                          letterSpacing="wide"
+                                          truncate
+                                        >
+                                          {file.fileName}
+                                        </Heading>
+                                        <Text
+                                          fontSize="body.md"
+                                          fontWeight="normal"
+                                          color="interactive.control"
+                                        >
+                                          {bytesToMB(file.size ?? 0)}
+                                        </Text>
+                                      </Box>
+                                      <Box
+                                        color="sentiment.negativeDefault"
+                                        display="flex"
+                                        justifyContent="right"
+                                        alignItems="center"
+                                        w="full"
+                                      >
+                                        <Button
+                                          variant="ghost"
+                                          color="sentiment.negativeDefault"
+                                          onClick={() =>
+                                            removeSectorFile(
+                                              file.fileId,
+                                              sectorData[0].sectorName,
+                                              file.cityId,
+                                            )
+                                          }
+                                        >
+                                          <FiTrash2 size={24} />
+                                        </Button>
+                                      </Box>
+                                    </Box>
+                                    <Box
+                                      w="full"
+                                      className="relative pl-[63px]"
+                                    >
+                                      {file.subsectors
+                                        ?.split(",")
+                                        .map((item: any) => (
+                                          <Tag
+                                            key={item}
+                                            mt={2}
+                                            mr={2}
+                                            size="md"
+                                            variant="solid"
+                                            color="content.alternative"
+                                            bg="background.neutral"
+                                            maxW="150px"
+                                          >
+                                            <TagLabel>{item}</TagLabel>
+                                          </Tag>
+                                        ))}
+                                    </Box>
+                                  </Card.Body>
+                                </Card.Root>
+                              );
+                            },
+                          )}
+                      </Box>
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            </Box>
-          </Card.Body>
-        </Card.Root>
-        {/* Add fole data modal */}
-        <AddFileDataDialog
-          isOpen={openFileUploadDialog}
-          onClose={() => setOpenFileUploadDialog(false)}
-          subsectors={currentStep.subSectors}
-          onOpenChange={setOpenFileUploadDialog}
-          t={t}
-          uploadedFile={uploadedFile!}
-          currentStep={currentStep}
-          userInfo={userInfo}
-          inventory={inventory}
-        />
-        {/*** Bottom bar ***/}
+              </Card.Body>
+            </Card.Root>
+            {/* Add file data modal */}
+            <AddFileDataDialog
+              isOpen={openFileUploadDialog}
+              onClose={() => setOpenFileUploadDialog(false)}
+              subsectors={currentStep.subSectors}
+              onOpenChange={setOpenFileUploadDialog}
+              t={t}
+              uploadedFile={uploadedFile!}
+              currentStep={currentStep}
+              userInfo={userInfo}
+              inventory={inventory}
+            />
+          </>
+        )}
 
         {/*** Drawers ***/}
         <SourceDrawer

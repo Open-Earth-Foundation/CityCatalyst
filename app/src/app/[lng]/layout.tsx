@@ -24,6 +24,10 @@ export default function RootLayout(props: {
   params: Promise<{ lng: string }>;
 }) {
   const { lng } = use(props.params);
+  console.log(
+    process.env.NEXT_PUBLIC_HIGHLIGHT_BACKEND_URL,
+    process.env.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID,
+  );
 
   return (
     <>
@@ -31,6 +35,7 @@ export default function RootLayout(props: {
         projectId={process.env.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID}
         serviceName="citycatalyst"
         tracingOrigins
+        // backendUrl={process.env.NEXT_PUBLIC_HIGHLIGHT_BACKEND_URL}
         networkRecording={{
           enabled: true,
           recordHeadersAndBody: true,

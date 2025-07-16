@@ -22,22 +22,22 @@ module.exports = {
     `);
 
     // 2. Add CASCADE constraints for ProjectInvite table
-    await queryInterface.sequelize.query(`
-      -- Drop existing constraints if they exist
-      ALTER TABLE "ProjectInvite" DROP CONSTRAINT IF EXISTS "ProjectInvite_project_id_fkey";
-      ALTER TABLE "ProjectInvite" DROP CONSTRAINT IF EXISTS "ProjectInvite_user_id_fkey";
-      
-      -- Add CASCADE constraints
-      ALTER TABLE "ProjectInvite"
-      ADD CONSTRAINT "ProjectInvite_project_id_fkey"
-      FOREIGN KEY (project_id) REFERENCES "Project" (project_id)
-      ON DELETE CASCADE ON UPDATE CASCADE;
-      
-      ALTER TABLE "ProjectInvite"
-      ADD CONSTRAINT "ProjectInvite_user_id_fkey"
-      FOREIGN KEY (user_id) REFERENCES "User" (user_id)
-      ON DELETE SET NULL ON UPDATE CASCADE;
-    `);
+    // await queryInterface.sequelize.query(`
+    //   -- Drop existing constraints if they exist
+    //   ALTER TABLE "ProjectInvite" DROP CONSTRAINT IF EXISTS "ProjectInvite_project_id_fkey";
+    //   ALTER TABLE "ProjectInvite" DROP CONSTRAINT IF EXISTS "ProjectInvite_user_id_fkey";
+    //
+    //   -- Add CASCADE constraints
+    //   ALTER TABLE "ProjectInvite"
+    //   ADD CONSTRAINT "ProjectInvite_project_id_fkey"
+    //   FOREIGN KEY (project_id) REFERENCES "Project" (project_id)
+    //   ON DELETE CASCADE ON UPDATE CASCADE;
+    //
+    //   ALTER TABLE "ProjectInvite"
+    //   ADD CONSTRAINT "ProjectInvite_user_id_fkey"
+    //   FOREIGN KEY (user_id) REFERENCES "User" (user_id)
+    //   ON DELETE SET NULL ON UPDATE CASCADE;
+    // `);
 
     // 3. Add CASCADE constraints for CityInvite table
     await queryInterface.sequelize.query(`
@@ -109,21 +109,6 @@ module.exports = {
       ADD CONSTRAINT "CityUser_city_id_fkey"
       FOREIGN KEY (city_id) REFERENCES "City" (city_id);
     `);
-
-    await queryInterface.sequelize.query(`
-      -- Revert ProjectInvite constraints
-      ALTER TABLE "ProjectInvite" DROP CONSTRAINT IF EXISTS "ProjectInvite_project_id_fkey";
-      ALTER TABLE "ProjectInvite" DROP CONSTRAINT IF EXISTS "ProjectInvite_user_id_fkey";
-      
-      ALTER TABLE "ProjectInvite"
-      ADD CONSTRAINT "ProjectInvite_project_id_fkey"
-      FOREIGN KEY (project_id) REFERENCES "Project" (project_id);
-      
-      ALTER TABLE "ProjectInvite"
-      ADD CONSTRAINT "ProjectInvite_user_id_fkey"
-      FOREIGN KEY (user_id) REFERENCES "User" (user_id);
-    `);
-
     await queryInterface.sequelize.query(`
       -- Revert CityInvite constraints
       ALTER TABLE "CityInvite" DROP CONSTRAINT IF EXISTS "CityInvite_user_id_fkey";

@@ -82,13 +82,15 @@ const saveNotationKeysRequest = z.object({
   notationKeys: z.array(
     z.object({
       subCategoryId: z.string().uuid(),
-      unavailableReason: z.enum([
-        "no-occurrance",
-        "not-estimated",
-        "confidential-information",
-        "included-elsewhere",
-      ]),
-      unavailableExplanation: z.string().min(1),
+      unavailableReason: z
+        .enum([
+          "no-occurrance",
+          "not-estimated",
+          "confidential-information",
+          "included-elsewhere",
+        ])
+        .optional(),
+      unavailableExplanation: z.string().min(1).optional(),
     }),
   ),
 });
@@ -103,15 +105,6 @@ export const POST = apiHandler(async (req, { session, params }) => {
   const result = await db.sequelize!.transaction(async (transaction) => {
     const result: InventoryValue[] = [];
     for (const notationKey of body.notationKeys) {
-      const existingInventoryValue = await db.models.InventoryValue.findOne({
-        where: {
-          inventoryId,
-          subCategoryId: notationKey.subCategoryId,
-        },
-        transaction,
-        lock: true,
-      });
-
       const subCategory = await db.models.SubCategory.findOne({
         where: { subcategoryId: notationKey.subCategoryId },
         include: [
@@ -121,6 +114,16 @@ export const POST = apiHandler(async (req, { session, params }) => {
             attributes: ["sectorId"],
           },
         ],
+      });
+      const gpcReferenceNumber = subCategory?.referenceNumber;
+      // Lookup by inventoryId + gpcReferenceNumber (matches unique constraint)
+      const existingInventoryValue = await db.models.InventoryValue.findOne({
+        where: {
+          inventoryId,
+          gpcReferenceNumber,
+        },
+        transaction,
+        lock: true,
       });
       if (existingInventoryValue) {
         // reset emissions values of inventory value as notation key was used for it
@@ -150,7 +153,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
             subSectorId: subCategory?.subsectorId,
             sectorId: subCategory?.subsector?.sectorId,
             inventoryId,
-            gpcReferenceNumber: subCategory?.referenceNumber,
+            gpcReferenceNumber,
           },
           { transaction },
         );

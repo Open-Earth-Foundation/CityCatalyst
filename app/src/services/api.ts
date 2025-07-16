@@ -595,7 +595,7 @@ export const api = createApi({
       >({
         query: (params) => {
           return {
-            url: `/emissions-factor`,
+            url: `/emissions-factor/`,
             method: "POST",
             body: params,
           };

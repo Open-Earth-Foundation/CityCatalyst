@@ -523,7 +523,12 @@ export function initModels(sequelize: Sequelize) {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   });
-  CityInvite.belongsTo(User, { foreignKey: "userId", as: "user" });
+  CityInvite.belongsTo(User, {
+    foreignKey: "userId",
+    as: "user",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
   CityInvite.belongsTo(City, {
     foreignKey: "cityId",
     as: "city",
@@ -542,7 +547,12 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "userId",
     as: "organizationInvites",
   });
-  OrganizationInvite.belongsTo(User, { as: "user", foreignKey: "userId" });
+  OrganizationInvite.belongsTo(User, {
+    as: "user",
+    foreignKey: "userId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
   User.belongsTo(Inventory, {
     as: "defaultInventory",
     foreignKey: "defaultInventoryId",
@@ -802,7 +812,7 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "cityId",
     as: "userFiles",
     onDelete: "CASCADE",
-    onUpdate: "CASECADE",
+    onUpdate: "CASCADE",
   });
   City.hasMany(CityInvite, { as: "cityInvite", foreignKey: "cityId" });
   CityInvite.belongsTo(City, { as: "cityInvites", foreignKey: "cityId" });

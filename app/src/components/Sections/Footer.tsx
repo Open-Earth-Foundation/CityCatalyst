@@ -83,7 +83,7 @@ const Footer = ({ lng }: { lng: string }) => {
             <Link href="mailto:info@openearth.org">
               <Button
                 variant="solid"
-                className="h-[48px] w-[150px] gap-3 rounded-full"
+                className="h-[48px] minW-[150px] gap-3 rounded-full"
               >
                 <Text
                   color="base.light"

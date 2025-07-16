@@ -5,8 +5,8 @@ import { City, CityId } from "./City";
 
 export interface UserFileAttributes {
   id: string;
-  userId?: string;
-  cityId?: string;
+  userId: string;
+  cityId: string;
   fileReference?: string;
   data?: Buffer | any;
   fileType?: string;
@@ -24,8 +24,6 @@ export interface UserFileAttributes {
 export type UserFilePk = "id";
 export type UserFileId = UserFile[UserFilePk];
 export type UserFileOptionalAttributes =
-  | "userId"
-  | "cityId"
   | "fileReference"
   | "data"
   | "fileType"
@@ -48,8 +46,8 @@ export class UserFile
   implements Partial<UserFileAttributes>
 {
   id!: string;
-  userId?: string;
-  cityId?: string;
+  userId!: string;
+  cityId!: string;
   fileReference?: string;
   data?: Buffer;
   fileType?: string;
@@ -86,7 +84,7 @@ export class UserFile
         },
         userId: {
           type: DataTypes.UUID,
-          allowNull: true,
+          allowNull: false,
           references: {
             model: "User",
             key: "user_id",
@@ -95,7 +93,7 @@ export class UserFile
         },
         cityId: {
           type: DataTypes.UUID,
-          allowNull: true,
+          allowNull: false,
           references: {
             model: "City",
             key: "city_id",

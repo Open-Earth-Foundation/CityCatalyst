@@ -29,6 +29,7 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { useTheme } from "next-themes";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { logger } from "@/services/logger";
 
 export default function HomePage({
   lng,

@@ -27,7 +27,7 @@ export default function AddDataIntro(props: {
 
   return (
     <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
-      <Link href="/" _hover={{ textDecoration: "none" }}>
+      <Link href={`/${lng}/${inventory}`} _hover={{ textDecoration: "none" }}>
         <Box
           display="flex"
           alignItems="center"

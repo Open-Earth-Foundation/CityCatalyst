@@ -58,7 +58,7 @@ const InviteErrorView = ({ lng }: InviteErrorViewProps) => {
             </BodyXLarge>
           </Center>
           <Button
-            onClick={() => router.push(`/`)}
+            onClick={() => router.push(`/${lng}`)}
             gap="8px"
             h="48px"
             px="24px"

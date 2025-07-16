@@ -72,9 +72,15 @@ export default function HomePage({
 
   useEffect(() => {
     if (inventoryError) {
-      setTimeout(() => router.push("/onboarding"), 0);
-    }
-    if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
+      logger.error(
+        { inventoryError, inventoryId: inventoryIdFromParam ?? "default" },
+        "Failed to load inventory",
+      );
+      // 401 status can be cached from logged-out state
+      if ((inventoryError as any)?.status !== 401) {
+        setTimeout(() => router.push("/onboarding"), 0);
+      }
+    } else if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
         // fix inventoryId in URL without reloading page
         const newPath = "/" + language + "/" + inventory.inventoryId;

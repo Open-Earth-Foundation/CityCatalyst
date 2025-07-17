@@ -1,5 +1,12 @@
 "use client";
 
+import React, { useEffect, useMemo } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { BsPlus } from "react-icons/bs";
+import Cookies from "js-cookie";
+
 import Footer from "@/components/Sections/Footer";
 import { useTranslation } from "@/i18n/client";
 import {
@@ -12,7 +19,6 @@ import {
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
 import { Box, Icon, Tabs, Text, VStack } from "@chakra-ui/react";
-import { useParams, useRouter } from "next/navigation";
 import MissingInventory from "@/components/missing-inventory";
 import InventoryCalculationTab from "@/components/HomePage/InventoryCalculationTab";
 import InventoryReportTab from "../../app/[lng]/[inventory]/InventoryResultTab";
@@ -20,17 +26,17 @@ import NotAvailable from "@/components/NotAvailable";
 import { Hero } from "@/components/HomePage/Hero";
 import { ActionCards } from "@/components/HomePage/ActionCards";
 import { InventoryPreferencesCard } from "@/components/HomePage/InventoryPreferencesCard";
-import React, { useEffect, useMemo } from "react";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
 import { Button } from "../ui/button";
-import { BsPlus } from "react-icons/bs";
-import Cookies from "js-cookie";
 import CapTab from "@/app/[lng]/[inventory]/CapTab";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { useTheme } from "next-themes";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { logger } from "@/services/logger";
+
+function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
+  return typeof error === "object" && error != null && "status" in error;
+}
 
 export default function HomePage({
   lng,
@@ -78,8 +84,15 @@ export default function HomePage({
         { inventoryError, inventoryId: inventoryIdFromParam ?? "default" },
         "Failed to load inventory",
       );
-    }
-    if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
+
+      // 401 status can be cached from logged-out state, ignore it but redirect to onboarding on other errors
+      if (
+        !isFetchBaseQueryError(inventoryError) ||
+        inventoryError.status !== 401
+      ) {
+        setTimeout(() => router.push("/onboarding"), 0);
+      }
+    } else if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
         // fix inventoryId in URL without reloading page
         const newPath = "/" + language + "/" + inventory.inventoryId;

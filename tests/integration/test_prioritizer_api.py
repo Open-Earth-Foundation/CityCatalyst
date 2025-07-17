@@ -126,7 +126,6 @@ class TestPrioritizerAPI:
 
 
 @pytest.mark.integration
-@pytest.mark.slow
 class TestPrioritizerWorkflow:
     """Test complete prioritizer workflow (marked as slow)."""
 

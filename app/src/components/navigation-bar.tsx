@@ -71,7 +71,7 @@ export function NavigationBar({
   const { t } = useTranslation(lng, "navigation");
   const { organization, clearOrganization } = useOrganizationContext();
   const logoUrl = organization?.logoUrl;
-  const isFrozen = organization?.active === false;
+  const isFrozen = organization != null && !organization.active;
   const { inventory: inventoryParam } = useParams();
   let inventoryIdFromParam = inventoryParam !== "null" ? inventoryParam : null;
   if (Array.isArray(inventoryIdFromParam)) {

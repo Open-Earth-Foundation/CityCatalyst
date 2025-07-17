@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hiap-service-dev
+  namespace: default
+  labels:
+    app: hiap-dev
+spec:
+  selector:
+    app: hiap-dev
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8000
+    name: http
+  type: ClusterIP 

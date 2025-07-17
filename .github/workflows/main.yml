@@ -106,9 +106,14 @@ jobs:
       - name: Testing connection to EKS
         run: kubectl get pods -n default
 
-      - name: Re-deploying service
+      - name: Deploying production service
         run: |
-          kubectl apply -f k8s/
+          # Apply only production manifests (exclude dev files)
+          kubectl apply -f k8s/deployment.yml
+          kubectl apply -f k8s/service.yml
+          kubectl apply -f k8s/persistent-volume.yml
+
+          # Set environment variables for production
           kubectl set env deployment/hiap \
             OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-nano \
             OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY=gpt-4.1-mini \
@@ -123,4 +128,9 @@ jobs:
             TAVILY_API_KEY=${{secrets.TAVILY_API_KEY}} \
             AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} \
             AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
+
+          # Restart the production deployment
           kubectl rollout restart deployment hiap -n default
+
+          # Wait for deployment to be ready
+          kubectl rollout status deployment/hiap -n default

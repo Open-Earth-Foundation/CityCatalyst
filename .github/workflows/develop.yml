@@ -1,4 +1,4 @@
-name: HIAP Deployment
+name: HIAP Deployment Develop
 
 on:
   workflow_dispatch:

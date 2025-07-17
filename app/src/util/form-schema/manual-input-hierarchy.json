@@ -174,13 +174,9 @@
                 "options": [
                   "energy-usage-all",
                   "energy-usage-electricity",
-                  "energy-usage-electricity-chp",
                   "energy-usage-heating",
-                  "energy-usage-heating-chp",
                   "energy-usage-steam",
-                  "energy-usage-steam-chp",
-                  "energy-usage-refrigeration",
-                  "energy-usage-refrigeration-chp"
+                  "energy-usage-refrigeration"
                 ],
                 "exclusive": "energy-usage-all"
               },
@@ -245,13 +241,9 @@
           "options": [
             "energy-usage-all",
             "energy-usage-electricity",
-            "energy-usage-electricity-chp",
             "energy-usage-heating",
-            "energy-usage-heating-chp",
             "energy-usage-steam",
-            "energy-usage-steam-chp",
-            "energy-usage-refrigeration",
-            "energy-usage-refrigeration-chp"
+            "energy-usage-refrigeration"
           ],
           "exclusive": "energy-usage-all"
         },
@@ -284,13 +276,9 @@
           "options": [
             "energy-usage-all",
             "energy-usage-electricity",
-            "energy-usage-electricity-chp",
             "energy-usage-heating",
-            "energy-usage-heating-chp",
             "energy-usage-steam",
-            "energy-usage-steam-chp",
-            "energy-usage-refrigeration",
-            "energy-usage-refrigeration-chp"
+            "energy-usage-refrigeration"
           ],
           "exclusive": "energy-usage-all"
         },
@@ -498,13 +486,9 @@
                 "options": [
                   "energy-usage-all",
                   "energy-usage-electricity",
-                  "energy-usage-electricity-chp",
                   "energy-usage-heating",
-                  "energy-usage-heating-chp",
                   "energy-usage-steam",
-                  "energy-usage-steam-chp",
-                  "energy-usage-refrigeration",
-                  "energy-usage-refrigeration-chp"
+                  "energy-usage-refrigeration"
                 ],
                 "exclusive": "energy-usage-all"
               },
@@ -589,13 +573,9 @@
           "options": [
             "energy-usage-all",
             "energy-usage-electricity",
-            "energy-usage-electricity-chp",
             "energy-usage-heating",
-            "energy-usage-heating-chp",
             "energy-usage-steam",
-            "energy-usage-steam-chp",
-            "energy-usage-refrigeration",
-            "energy-usage-refrigeration-chp"
+            "energy-usage-refrigeration"
           ],
           "exclusive": "energy-usage-all"
         },
@@ -630,13 +610,9 @@
           "options": [
             "energy-usage-all",
             "energy-usage-electricity",
-            "energy-usage-electricity-chp",
             "energy-usage-heating",
-            "energy-usage-heating-chp",
             "energy-usage-steam",
-            "energy-usage-steam-chp",
-            "energy-usage-refrigeration",
-            "energy-usage-refrigeration-chp"
+            "energy-usage-refrigeration"
           ],
           "exclusive": "energy-usage-all"
         },
@@ -882,13 +858,9 @@
                 "options": [
                   "energy-usage-all",
                   "energy-usage-electricity",
-                  "energy-usage-electricity-chp",
                   "energy-usage-heating",
-                  "energy-usage-heating-chp",
                   "energy-usage-steam",
-                  "energy-usage-steam-chp",
-                  "energy-usage-refrigeration",
-                  "energy-usage-refrigeration-chp"
+                  "energy-usage-refrigeration"
                 ],
                 "exclusive": "energy-usage-all"
               },
@@ -982,13 +954,9 @@
           "options": [
             "energy-usage-all",
             "energy-usage-electricity",
-            "energy-usage-electricity-chp",
             "energy-usage-heating",
-            "energy-usage-heating-chp",
             "energy-usage-steam",
-            "energy-usage-steam-chp",
-            "energy-usage-refrigeration",
-            "energy-usage-refrigeration-chp"
+            "energy-usage-refrigeration"
           ],
           "exclusive": "energy-usage-all"
         },
@@ -1032,13 +1000,9 @@
           "options": [
             "energy-usage-all",
             "energy-usage-electricity",
-            "energy-usage-electricity-chp",
             "energy-usage-heating",
-            "energy-usage-heating-chp",
             "energy-usage-steam",
-            "energy-usage-steam-chp",
-            "energy-usage-refrigeration",
-            "energy-usage-refrigeration-chp"
+            "energy-usage-refrigeration"
           ],
           "exclusive": "energy-usage-all"
         },
@@ -1272,13 +1236,9 @@
                 "options": [
                   "energy-usage-all",
                   "energy-usage-electricity",
-                  "energy-usage-electricity-chp",
                   "energy-usage-heating",
-                  "energy-usage-heating-chp",
                   "energy-usage-steam",
-                  "energy-usage-steam-chp",
-                  "energy-usage-refrigeration",
-                  "energy-usage-refrigeration-chp"
+                  "energy-usage-refrigeration"
                 ],
                 "exclusive": "energy-usage-all"
               },
@@ -1372,13 +1332,9 @@
           "options": [
             "energy-usage-all",
             "energy-usage-electricity",
-            "energy-usage-electricity-chp",
             "energy-usage-heating",
-            "energy-usage-heating-chp",
             "energy-usage-steam",
-            "energy-usage-steam-chp",
-            "energy-usage-refrigeration",
-            "energy-usage-refrigeration-chp"
+            "energy-usage-refrigeration"
           ],
           "exclusive": "energy-usage-all"
         },
@@ -1413,13 +1369,9 @@
           "options": [
             "energy-usage-all",
             "energy-usage-electricity",
-            "energy-usage-electricity-chp",
             "energy-usage-heating",
-            "energy-usage-heating-chp",
             "energy-usage-steam",
-            "energy-usage-steam-chp",
-            "energy-usage-refrigeration",
-            "energy-usage-refrigeration-chp"
+            "energy-usage-refrigeration"
           ],
           "exclusive": "energy-usage-all"
         },
@@ -1614,13 +1566,9 @@
                 "options": [
                   "energy-usage-all",
                   "energy-usage-electricity",
-                  "energy-usage-electricity-chp",
                   "energy-usage-heating",
-                  "energy-usage-heating-chp",
                   "energy-usage-steam",
-                  "energy-usage-steam-chp",
-                  "energy-usage-refrigeration",
-                  "energy-usage-refrigeration-chp"
+                  "energy-usage-refrigeration"
                 ],
                 "exclusive": "energy-usage-all"
               },
@@ -1694,13 +1642,9 @@
           "options": [
             "energy-usage-all",
             "energy-usage-electricity",
-            "energy-usage-electricity-chp",
             "energy-usage-heating",
-            "energy-usage-heating-chp",
             "energy-usage-steam",
-            "energy-usage-steam-chp",
-            "energy-usage-refrigeration",
-            "energy-usage-refrigeration-chp"
+            "energy-usage-refrigeration"
           ],
           "exclusive": "energy-usage-all"
         },
@@ -1733,13 +1677,9 @@
           "options": [
             "energy-usage-all",
             "energy-usage-electricity",
-            "energy-usage-electricity-chp",
             "energy-usage-heating",
-            "energy-usage-heating-chp",
             "energy-usage-steam",
-            "energy-usage-steam-chp",
-            "energy-usage-refrigeration",
-            "energy-usage-refrigeration-chp"
+            "energy-usage-refrigeration"
           ],
           "exclusive": "energy-usage-all"
         },
@@ -1930,13 +1870,9 @@
                 "options": [
                   "energy-usage-all",
                   "energy-usage-electricity",
-                  "energy-usage-electricity-chp",
                   "energy-usage-heating",
-                  "energy-usage-heating-chp",
                   "energy-usage-steam",
-                  "energy-usage-steam-chp",
-                  "energy-usage-refrigeration",
-                  "energy-usage-refrigeration-chp"
+                  "energy-usage-refrigeration"
                 ],
                 "exclusive": "energy-usage-all"
               },
@@ -2008,13 +1944,9 @@
           "options": [
             "energy-usage-all",
             "energy-usage-electricity",
-            "energy-usage-electricity-chp",
             "energy-usage-heating",
-            "energy-usage-heating-chp",
             "energy-usage-steam",
-            "energy-usage-steam-chp",
-            "energy-usage-refrigeration",
-            "energy-usage-refrigeration-chp"
+            "energy-usage-refrigeration"
           ],
           "exclusive": "energy-usage-all"
         },
@@ -2045,13 +1977,9 @@
           "options": [
             "energy-usage-all",
             "energy-usage-electricity",
-            "energy-usage-electricity-chp",
             "energy-usage-heating",
-            "energy-usage-heating-chp",
             "energy-usage-steam",
-            "energy-usage-steam-chp",
-            "energy-usage-refrigeration",
-            "energy-usage-refrigeration-chp"
+            "energy-usage-refrigeration"    
           ],
           "exclusive": "energy-usage-all"
         },

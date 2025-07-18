@@ -122,10 +122,8 @@ jobs:
             LANGCHAIN_ENDPOINT=https://api.smith.langchain.com \
             LANGCHAIN_TRACING_V2=true \
             S3_BUCKET_NAME=openearth.cap \
-            TAVILY_SEARCH_MODE=basic \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
             LANGCHAIN_API_KEY=${{secrets.LANGCHAIN_API_KEY}} \
-            TAVILY_API_KEY=${{secrets.TAVILY_API_KEY}} \
             AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} \
             AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
 

@@ -47,6 +47,7 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
     }
     background_task_input = {
         "cityData": req.cityData,
+        "prioritizationType": req.prioritizationType,
     }
     try:
         thread = threading.Thread(
@@ -100,7 +101,7 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
     for idx, city_data in enumerate(req.cityDataList):
         thread = threading.Thread(
             target=_execute_prioritization_bulk_subtask,
-            args=(main_task_id, idx, city_data),
+            args=(main_task_id, idx, city_data, req.prioritizationType),
         )
         thread.daemon = True
         thread.start()

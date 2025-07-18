@@ -1,6 +1,16 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
+from enum import Enum
+
+# --- Enums ---
+
+
+class PrioritizationType(str, Enum):
+    MITIGATION = "mitigation"
+    ADAPTATION = "adaptation"
+    BOTH = "both"
+
 
 # --- Request models ---
 
@@ -39,10 +49,18 @@ class CityData(BaseModel):
 
 class PrioritizerRequest(BaseModel):
     cityData: CityData
+    prioritizationType: PrioritizationType = Field(
+        default=PrioritizationType.BOTH,
+        description="Type of actions to prioritize: mitigation, adaptation, or both",
+    )
 
 
 class PrioritizerRequestBulk(BaseModel):
     cityDataList: List[CityData]
+    prioritizationType: PrioritizationType = Field(
+        default=PrioritizationType.BOTH,
+        description="Type of actions to prioritize: mitigation, adaptation, or both",
+    )
 
 
 # --- Response models ---

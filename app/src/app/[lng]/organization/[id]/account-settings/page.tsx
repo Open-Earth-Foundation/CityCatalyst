@@ -111,13 +111,12 @@ const AccountSettingsPage = (props: {
                 <Box w="full">
                   <Heading
                     fontSize="headline.sm"
-                    mb={2}
+                    mb={4}
                     fontWeight="semibold"
                     lineHeight="32px"
                     fontStyle="normal"
                     textTransform="capitalize"
                     color="content.secondary"
-                    mt={12}
                   >
                     {t("account")}
                   </Heading>

@@ -1,7 +1,7 @@
 {
   "action-type-mitigation": "Minderung",
   "action-type-adaptation": "Anpassung",
-  "tab-cap-title": "Priorisierung von Klimamaßnahmen",
+  "tab-hiap-title": "Priorisierung von Klimamaßnahmen",
   "loading": "Lade Maßnahmen...",
   "priority": "Priorität",
   "action-name": "Name der Maßnahme",
@@ -17,6 +17,7 @@
   "action-description": "Beschreibung der Maßnahme",
   "adaptation-effectiveness-by-hazard": "Anpassungswirksamkeit nach Gefahr",
   "ranking": "Rangfolge",
+  "prioritizing-actions": "Aktionen werden für Ihre Stadt priorisiert. Bitte schauen Sie in 15 Minuten wieder vorbei.",
   "hazard": {
     "droughts": "Dürren",
     "heatwaves": "Hitzewellen",

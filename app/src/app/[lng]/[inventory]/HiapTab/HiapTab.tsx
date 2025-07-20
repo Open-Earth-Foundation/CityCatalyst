@@ -1,10 +1,5 @@
 import { InventoryResponse } from "@/util/types";
-import {
-  Action,
-  AdaptationAction,
-  MitigationAction,
-} from "@/app/[lng]/[inventory]/CapTab/types";
-import { LANGUAGES, ACTION_TYPES } from "@/util/types";
+import { LANGUAGES, ACTION_TYPES, HIAction, MitigationAction, AdaptationAction } from "@/util/types";
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import i18next from "i18next";
@@ -19,16 +14,17 @@ import {
   Row,
 } from "@tanstack/react-table";
 import { ActionDrawer } from "./ActionDrawer";
-import { useGetCapQuery } from "@/services/api";
+import { useGetHiapQuery } from "@/services/api";
 import { logger } from "@/services/logger";
+import { HighImpactActionRankingStatus } from "@/util/types";
 
-export const BarVisualization = ({ value, total }: { value: number; total: number }) => {
+export const BarVisualization = ({ value, total, width  = "16px"}: { value: number; total: number, width?: string }) => {
   return (
     <HStack gap={1}>
       {Array.from({ length: total }).map((_, index) => (
         <Box
           key={index}
-          w="16px"
+          w={width}
           h="4px"
           bg={index < value ? "blue.500" : "gray.200"}
           borderRadius="sm"
@@ -38,7 +34,7 @@ export const BarVisualization = ({ value, total }: { value: number; total: numbe
   );
 };
 
-export function CapActionTab({
+export function HiapTab({
   type,
   inventory,
 }: {
@@ -46,33 +42,36 @@ export function CapActionTab({
   inventory: InventoryResponse;
 }) {
   const lng = i18next.language as LANGUAGES;
-  const { t } = useTranslation(lng, "cap");
-  const [selectedAction, setSelectedAction] = useState<Action | null>(null);
+  const { t } = useTranslation(lng, "hiap");
+  const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
 
-  const { data: actions, isLoading, error } = useGetCapQuery({
+  const { data: hiapData, isLoading, error } = useGetHiapQuery({
     inventoryId: inventory.inventoryId,
     lng: lng,
     actionType: type
   });
 
+  const actions = hiapData?.rankedActions || [];
   const isAdaptation = type === ACTION_TYPES.Adaptation;
-
-  const columns: ColumnDef<Action>[] = [
+  
+  const isPending = hiapData?.status === HighImpactActionRankingStatus.PENDING;
+  
+  const columns: ColumnDef<HIAction>[] = [
     {
-      accessorKey: "actionPriority",
+      accessorKey: "rank",
       header: t("ranking"),
-      cell: ({ row }: { row: Row<Action> }) => (
-        <Badge colorScheme="blue">{row.original.actionPriority}</Badge>
+      cell: ({ row }: { row: Row<HIAction> }) => (
+        <Badge colorScheme="blue">{row.original.rank}</Badge>
       ),
     },
     {
-      accessorKey: "actionName",
+      accessorKey: "name",
       header: t("action-name"),
-      cell: ({ row }: { row: Row<Action> }) => (
+      cell: ({ row }: { row: Row<HIAction> }) => (
         <VStack alignItems="flex-start" gap={1}>
-          <Text fontWeight="bold">{row.original.actionName}</Text>
+          <Text fontWeight="bold">{row.original.name}</Text>
           <Text fontSize="sm" color="gray.600">
-            {row.original.action.Description}
+            {row.original.description}
           </Text>
         </VStack>
       ),
@@ -82,11 +81,12 @@ export function CapActionTab({
           {
             id: "hazards-covered",
             header: t("hazards-covered"),
-            cell: ({ row }: { row: Row<Action> }) => {
+            cell: ({ row }: { row: Row<HIAction> }) => {
               const action = row.original as AdaptationAction;
+              const hazardCount = Object.keys(action.hazard).length;
               return (
                 <Badge colorScheme="orange">
-                  {action.action.Hazard.length} {t("hazards")}
+                  {hazardCount} {t("hazards")}
                 </Badge>
               );
             },
@@ -94,14 +94,14 @@ export function CapActionTab({
           {
             id: "adaptation-effectiveness",
             header: t("effectiveness"),
-            cell: ({ row }: { row: Row<Action> }) => {
+            cell: ({ row }: { row: Row<HIAction> }) => {
               const action = row.original as AdaptationAction;
               const effectivenessMap: Record<string, number> = {
                 low: 1,
                 medium: 2,
                 high: 3,
               };
-              const blueBars = effectivenessMap[action.action.AdaptationEffectiveness] || 0;
+              const blueBars = effectivenessMap[action.adaptationEffectiveness] || 0;
               return <BarVisualization value={blueBars} total={3} />;
             },
           },
@@ -110,11 +110,11 @@ export function CapActionTab({
           {
             id: "sector",
             header: t("sector-label"),
-            cell: ({ row }: { row: Row<Action> }) => {
+            cell: ({ row }: { row: Row<HIAction> }) => {
               const action = row.original as MitigationAction;
               return (
                 <HStack gap={1} flexWrap="wrap">
-                  {action.action.Sector.map((sector) => (
+                  {(action.sector).map((sector) => (
                     <Badge key={sector} colorScheme="blue">
                       {t(`sector.${sector}`)}
                     </Badge>
@@ -126,11 +126,18 @@ export function CapActionTab({
           {
             id: "reduction-potential",
             header: t("ghg-reduction"),
-            cell: ({ row }: { row: Row<Action> }) => {
+            cell: ({ row }: { row: Row<HIAction> }) => {
               const action = row.original as MitigationAction;
-              const totalReduction = Object.values(action.action.GHGReductionPotential)
+              const totalReduction = Object.values(action.GHGReductionPotential)
                 .filter((value): value is string => value !== null)
-                .map(value => parseFloat(value))
+                .map(value => {
+                  // Parse range like "80-100" and take the average
+                  if (value.includes("-")) {
+                    const [min, max] = value.split("-").map(v => parseFloat(v));
+                    return (min + max) / 2;
+                  }
+                  return parseFloat(value);
+                })
                 .reduce((sum, value) => sum + value, 0);
               const blueBars = Math.min(Math.ceil(totalReduction / 20), 5);
               return <BarVisualization value={blueBars} total={5} />;
@@ -140,7 +147,7 @@ export function CapActionTab({
     {
       id: "actions",
       header: "",
-      cell: ({ row }: { row: Row<Action> }) => (
+      cell: ({ row }: { row: Row<HIAction> }) => (
         <IconButton
           aria-label="View details"
           variant="ghost"
@@ -157,11 +164,11 @@ export function CapActionTab({
   ];
 
   const table = useReactTable({
-    data: Array.isArray(actions) ? actions : [],
+    data: actions,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
+  
   if (isLoading) {
     return <Box p={4}>{t("loading")}</Box>;
   }
@@ -174,10 +181,20 @@ export function CapActionTab({
     );
   }
 
+  // Show pending message when ranking is in progress
+  if (isPending) {
+    return (
+      <Box p={4} textAlign="center">
+        <Text fontSize="lg" mb={2}>
+          {t("prioritizing-actions")}
+        </Text>
+      </Box>
+    );
+  }
+
   if (!actions || actions.length === 0) {
     return <Box p={4}>{t("no-actions-found")}</Box>;
   }
-
   return (
     <Box overflowX="auto">
       {selectedAction && (

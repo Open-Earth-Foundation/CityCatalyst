@@ -27,8 +27,12 @@ import { ActionCards } from "@/components/HomePage/ActionCards";
 import { InventoryPreferencesCard } from "@/components/HomePage/InventoryPreferencesCard";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
 import { Button } from "../ui/button";
-import CapTab from "@/app/[lng]/[inventory]/CapTab";
-import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import HiapTabWrapper from "@/app/[lng]/[inventory]/HiapTab";
+import {
+  hasFeatureFlag,
+  FeatureFlags,
+  getFeatureFlags,
+} from "@/util/feature-flags";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { logger } from "@/services/logger";
@@ -268,7 +272,7 @@ export default function HomePage({
                         "tab-emission-inventory-results-title",
                         ...(inventory?.city?.country === "Brazil" &&
                         hasFeatureFlag(FeatureFlags.CAP_TAB_ENABLED)
-                          ? ["tab-cap-title"]
+                          ? ["tab-hiap-title"]
                           : []),
                       ].map((tab, index) => (
                         <Tabs.Trigger key={index} value={tab}>
@@ -300,8 +304,8 @@ export default function HomePage({
                       />
                     </Tabs.Content>
                     {inventory?.city?.country === "Brazil" && (
-                      <Tabs.Content value="tab-cap-title">
-                        <CapTab inventory={inventory} lng={lng} />
+                      <Tabs.Content value="tab-hiap-title">
+                        <HiapTabWrapper inventory={inventory} lng={lng} />
                       </Tabs.Content>
                     )}
                   </Tabs.Root>

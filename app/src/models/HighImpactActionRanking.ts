@@ -42,7 +42,6 @@ export class HighImpactActionRanking
         locode: {
           type: DataTypes.STRING,
           allowNull: false,
-          field: "locode",
         },
         inventoryId: {
           type: DataTypes.UUID,

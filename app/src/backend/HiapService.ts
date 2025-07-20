@@ -1,5 +1,5 @@
 import { LANGUAGES, ACTION_TYPES } from "@/util/types";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {S3Client } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
@@ -7,7 +7,6 @@ import PopulationService from "./PopulationService";
 import {
   getTotalEmissionsBySector,
   EmissionsBySector,
-  SectorNamesInDB,
 } from "./ResultsService";
 import {
   HighImpactActionRanking,

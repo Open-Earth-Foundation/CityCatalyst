@@ -13,9 +13,16 @@ const sql_up = `
         created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         last_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
+    
+    CREATE INDEX idx_high_impact_action_ranking_inventory_id ON "HighImpactActionRanking" (inventory_id);
+    CREATE INDEX idx_high_impact_action_ranking_locode ON "HighImpactActionRanking" (locode);
+    CREATE INDEX idx_high_impact_action_ranking_lang ON "HighImpactActionRanking" (lang);
 `;
 
 const sql_down = `
+    DROP INDEX IF EXISTS idx_high_impact_action_ranking_inventory_id;
+    DROP INDEX IF EXISTS idx_high_impact_action_ranking_locode;
+    DROP INDEX IF EXISTS idx_high_impact_action_ranking_lang;
     DROP TABLE IF EXISTS "HighImpactActionRanking";
     DROP TYPE IF EXISTS hiap_ranking_status;
 `;

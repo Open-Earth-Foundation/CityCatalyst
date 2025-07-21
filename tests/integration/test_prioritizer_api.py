@@ -172,6 +172,63 @@ class TestPrioritizerAPI:
         # Should return 422 for missing request body
         assert response.status_code == 422
 
+    def test_start_prioritization_different_types(self, client):
+        """Test prioritization with different PrioritizationType values."""
+        base_request = {
+            "cityData": {
+                "cityContextData": {"locode": "BR RIO", "populationSize": 6748000},
+                "cityEmissionsData": {
+                    "stationaryEnergyEmissions": 1500.0,
+                    "transportationEmissions": 2200.0,
+                    "wasteEmissions": 800.0,
+                    "ippuEmissions": 300.0,
+                    "afoluEmissions": 150.0,
+                },
+            },
+            "language": ["en"],
+        }
+
+        # Test mitigation only
+        mitigation_request = base_request.copy()
+        mitigation_request["prioritizationType"] = "mitigation"
+        response = client.post(
+            "/prioritizer/v1/start_prioritization", json=mitigation_request
+        )
+        assert response.status_code == 202
+        data = response.json()
+        assert "taskId" in data
+        assert "status" in data
+
+        # Test adaptation only
+        adaptation_request = base_request.copy()
+        adaptation_request["prioritizationType"] = "adaptation"
+        response = client.post(
+            "/prioritizer/v1/start_prioritization", json=adaptation_request
+        )
+        assert response.status_code == 202
+        data = response.json()
+        assert "taskId" in data
+        assert "status" in data
+
+        # Test both (default value)
+        both_request = base_request.copy()
+        both_request["prioritizationType"] = "both"
+        response = client.post(
+            "/prioritizer/v1/start_prioritization", json=both_request
+        )
+        assert response.status_code == 202
+        data = response.json()
+        assert "taskId" in data
+        assert "status" in data
+
+        # Test invalid type
+        invalid_request = base_request.copy()
+        invalid_request["prioritizationType"] = "invalid_type"
+        response = client.post(
+            "/prioritizer/v1/start_prioritization", json=invalid_request
+        )
+        assert response.status_code == 422
+
 
 @pytest.mark.integration
 class TestPrioritizerWorkflow:

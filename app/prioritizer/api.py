@@ -35,7 +35,7 @@ LANGUAGES = ["en", "es", "pt"]
     response_model=StartPrioritizationResponse,
     status_code=202,
 )
-@limiter.limit("5/minute")
+@limiter.limit("10/minute")
 async def start_prioritization(request: Request, req: PrioritizerRequest):
     task_uuid = str(uuid.uuid4())
 
@@ -89,7 +89,7 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
     response_model=StartPrioritizationResponse,
     status_code=202,
 )
-@limiter.limit("5/minute")
+@limiter.limit("10/minute")
 async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBulk):
     main_task_id = str(uuid.uuid4())
 

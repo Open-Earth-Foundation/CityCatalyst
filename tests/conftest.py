@@ -166,7 +166,8 @@ def sample_city_data_request():
                 "ippuEmissions": 300.0,
                 "afoluEmissions": 150.0,
             },
-        }
+        },
+        "language": ["en", "es", "pt"],
     }
 
 
@@ -184,9 +185,11 @@ def sample_prioritizer_response():
     metadata = MetaData(locode="BR RIO", rankedDate=datetime.now())
 
     explanation = Explanation(
-        en="This action is highly effective for this city",
-        es="Esta acción es muy efectiva para esta ciudad",
-        pt="Esta ação é muito eficaz para esta cidade",
+        explanations={
+            "en": "This action is highly effective for this city",
+            "es": "Esta acción es muy efectiva para esta ciudad",
+            "pt": "Esta ação é muito eficaz para esta cidade",
+        }
     )
 
     ranked_action = RankedAction(actionId="TEST_001", rank=1, explanation=explanation)

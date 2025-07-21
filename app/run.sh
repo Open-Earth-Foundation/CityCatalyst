@@ -29,6 +29,10 @@ echo ""
 python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME" "$LOCAL_PATH"
 VECTOR_STORE_STATUS=$?
 
+# Debugging code:
+# Run without loading the vector store
+# VECTOR_STORE_STATUS=0
+
 # Check if the script failed
 if [ $VECTOR_STORE_STATUS -ne 0 ]; then
     echo "ERROR: Failed to load or create vector store. Exiting..."

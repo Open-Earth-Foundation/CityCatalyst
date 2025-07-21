@@ -21,7 +21,6 @@ from prioritizer.models import (
 # Import the shared task_storage from api.py (or move to a separate module if needed)
 from prioritizer.task_storage import task_storage
 
-LANGUAGES = ["en", "es", "pt"]
 logger = logging.getLogger(__name__)
 
 
@@ -56,6 +55,7 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
             requestData["afoluEmissions"] = background_task_input[
                 "cityData"
             ].cityEmissionsData.afoluEmissions
+            languages = background_task_input["language"]
 
             # API call to get city context data
             cityContext = get_context(requestData["locode"])
@@ -106,7 +106,7 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,
-                            languages=LANGUAGES,
+                            languages=languages,
                         ),
                     )
                     for action, rank in mitigationRanking
@@ -134,7 +134,7 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,
-                            languages=LANGUAGES,
+                            languages=languages,
                         ),
                     )
                     for action, rank in adaptationRanking
@@ -196,6 +196,7 @@ def _execute_prioritization_bulk_subtask(
             requestData["wasteEmissions"] = city_data.cityEmissionsData.wasteEmissions
             requestData["ippuEmissions"] = city_data.cityEmissionsData.ippuEmissions
             requestData["afoluEmissions"] = city_data.cityEmissionsData.afoluEmissions
+            languages = background_task_input["language"]
 
             cityContext = get_context(requestData["locode"])
             if not cityContext:
@@ -241,7 +242,7 @@ def _execute_prioritization_bulk_subtask(
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,
-                            languages=LANGUAGES,
+                            languages=languages,
                         ),
                     )
                     for action, rank in mitigationRanking
@@ -269,7 +270,7 @@ def _execute_prioritization_bulk_subtask(
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,
-                            languages=LANGUAGES,
+                            languages=languages,
                         ),
                     )
                     for action, rank in adaptationRanking

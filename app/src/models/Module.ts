@@ -6,7 +6,7 @@ export interface ModuleAttributes {
   name: string;
   description?: string;
   type?: string;
-  URL?: string;
+  url?: string;
 }
 
 export type ModuleCreationAttributes = Optional<ModuleAttributes, 'id'>;
@@ -16,7 +16,7 @@ export class Module extends Model<ModuleAttributes, ModuleCreationAttributes> im
   public step!: string;
   public name!: string;
   public type?: string;
-  public URL?: string;
+  public url?: string;
 
   static initModel(sequelize: Sequelize): typeof Module {
     Module.init(
@@ -38,7 +38,7 @@ export class Module extends Model<ModuleAttributes, ModuleCreationAttributes> im
           type: DataTypes.TEXT,
           allowNull: true,
         },
-        URL: {
+        url: {
           type: DataTypes.TEXT,
           allowNull: true,
         },

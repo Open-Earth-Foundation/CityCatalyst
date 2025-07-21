@@ -5,7 +5,9 @@ const sql_up = `
         id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
         project_id UUID NOT NULL REFERENCES "Project"(project_id),
         module_id UUID NOT NULL REFERENCES "Module"(id),
-        expires_on DATE
+        expires_on DATE,
+        created         timestamp,
+        last_updated    timestamp
     );
     CREATE INDEX idx_projectmodules_project_id ON "ProjectModules" (project_id);
     CREATE INDEX idx_projectmodules_module_id ON "ProjectModules" (module_id);

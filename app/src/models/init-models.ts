@@ -182,6 +182,10 @@ import {
   ThemeAttributes,
   ThemeCreationAttributes,
 } from "@/models/Theme";
+import type { ModuleAttributes, ModuleCreationAttributes } from "./Module";
+import { Module as _Module } from "./Module";
+import type { ProjectModulesAttributes, ProjectModulesCreationAttributes } from "./ProjectModules";
+import { ProjectModules as _ProjectModules } from "./ProjectModules";
 
 export {
   _ActivityData as ActivityData,
@@ -227,6 +231,8 @@ export {
   _ProjectAdmin as ProjectAdmin,
   _ProjectInvite as ProjectInvite,
   _Theme as Theme,
+  _Module as Module,
+  _ProjectModules as ProjectModules,
 };
 
 export type {
@@ -312,6 +318,10 @@ export type {
   ProjectInviteCreationAttributes,
   ThemeAttributes,
   ThemeCreationAttributes,
+  ModuleAttributes,
+  ModuleCreationAttributes,
+  ProjectModulesAttributes,
+  ProjectModulesCreationAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -360,6 +370,8 @@ export function initModels(sequelize: Sequelize) {
   const ProjectAdmin = _ProjectAdmin.initModel(sequelize);
   const ProjectInvite = _ProjectInvite.initModel(sequelize);
   const Theme = _Theme.initModel(sequelize);
+  const Module = _Module.initModel(sequelize);
+  const ProjectModules = _ProjectModules.initModel(sequelize);
 
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
@@ -920,6 +932,22 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "userId",
     as: "projectInvites",
   });
+  ProjectModules.belongsTo(Project, {
+    as: "project",
+    foreignKey: "project_id",
+  });
+  Project.hasMany(ProjectModules, {
+    as: "projectModules",
+    foreignKey: "project_id",
+  });
+  ProjectModules.belongsTo(Module, {
+    as: "module",
+    foreignKey: "module_id",
+  });
+  Module.hasMany(ProjectModules, {
+    as: "projectModules",
+    foreignKey: "module_id",
+  });
 
   return {
     ActivityData: ActivityData,
@@ -965,5 +993,7 @@ export function initModels(sequelize: Sequelize) {
     ProjectAdmin: ProjectAdmin,
     ProjectInvite: ProjectInvite,
     Theme: Theme,
+    Module: Module,
+    ProjectModules: ProjectModules,
   };
 }

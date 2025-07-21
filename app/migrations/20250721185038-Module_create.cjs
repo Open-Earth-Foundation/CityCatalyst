@@ -5,9 +5,10 @@ const sql_up = `
         id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
         step TEXT NOT NULL,
         name TEXT NOT NULL,
-        description TEXT,
         type TEXT,
-        URL TEXT
+        url TEXT,
+        created         timestamp,
+        last_updated    timestamp
     );
     CREATE INDEX idx_module_step ON "Module" (step);
     CREATE INDEX idx_module_name ON "Module" (name);

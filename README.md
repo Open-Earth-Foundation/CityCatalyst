@@ -16,3 +16,8 @@ Run the following commands:
 
 `docker build -t hiap-app .`
 `docker run -it --rm -p 8000:8000 --env-file .env hiap-app`
+
+## Testing
+
+To run the tests without the slow ones (recommended) run:
+`pytest -m "not slow"`

@@ -7,9 +7,9 @@ from enum import Enum
 
 
 class PrioritizationType(str, Enum):
-    MITIGATION = "mitigation"
-    ADAPTATION = "adaptation"
-    BOTH = "both"
+    MITIGATION = "mitigation"  # Set to mitigation to only run prioritization for mitigation actions
+    ADAPTATION = "adaptation"  # Set to adaptation to only run prioritization for adaptation actions
+    BOTH = "both"  # Set to both to run prioritization for both mitigation and adaptation actions
 
 
 # --- Request models ---

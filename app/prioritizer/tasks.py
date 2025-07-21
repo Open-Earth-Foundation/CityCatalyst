@@ -173,12 +173,13 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
 def _execute_prioritization_bulk_subtask(
     main_task_id: str,
     subtask_idx: int,
-    city_data: CityData,
-    prioritizationType: PrioritizationType,
+    background_task_input: dict,
 ):
+    city_data = background_task_input["cityData"]
+    prioritizationType = background_task_input["prioritizationType"]
     try:
         task_storage[main_task_id]["subtasks"][subtask_idx]["status"] = "running"
-        background_task_input = {"cityData": city_data}
+        # background_task_input = {"cityData": city_data}  # No longer needed, already provided
         # Reuse the single prioritization logic, but don't store in task_storage directly
         # Instead, collect the result and store in the subtask
         try:

@@ -233,6 +233,12 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         # Calculate total city emissions by summing emissions from all sectors
         df["total_city_emissions"] = df[list(sector_mapping.values())].sum(axis=1)
 
+        # Log if total emissions is zero for debugging
+        if (df["total_city_emissions"] == 0).any():
+            logger.debug(
+                "City has zero total emissions - emission reduction percentages will be set to 0"
+            )
+
         # For each action, calculate total absolute reduction and convert to a percentage reduction
         for action in ["actionA", "actionB"]:
             ghg_column = f"{action}_GHGReductionPotential"  # Column containing the reduction potential (dict)
@@ -254,9 +260,15 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
             # Normalize to get percentage reduction relative to total city emissions
             percentage_reduction_col = f"{action}_Percentage_Reduction"
-            df[percentage_reduction_col] = (
-                df[total_abs_reduction_col] / df["total_city_emissions"]
-            ) * 100
+            # Handle the case where total city emissions is zero
+            df[percentage_reduction_col] = df.apply(
+                lambda row: (
+                    (row[total_abs_reduction_col] / row["total_city_emissions"]) * 100
+                    if row["total_city_emissions"] > 0
+                    else 0.0
+                ),
+                axis=1,
+            )
 
         # Compute the percentage difference between Action A and Action B
         df["EmissionReduction_Percentage_Diff"] = (

@@ -1,11 +1,11 @@
 import { Tooltip } from "@/components/ui/tooltip";
-import { Box, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
+import type { OrganizationResponse } from "@/util/types";
+import { Box, Icon, Spinner, Text } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import dynamic from "next/dynamic";
 import { MdGridView, MdInfoOutline, MdLocationCity } from "react-icons/md";
 import { ModulesIcon } from "../icons";
 import { BodyLarge } from "../Texts/Body";
-import type { OrganizationResponse } from "@/util/types";
 import { DisplayMedium } from "../Texts/Display";
 
 // only render map on the client

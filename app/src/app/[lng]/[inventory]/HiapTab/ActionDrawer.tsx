@@ -26,7 +26,12 @@ import { Button } from "@/components/ui/button";
 import { TitleLarge, TitleMedium } from "@/components/Texts/Title";
 import { BodyLarge } from "@/components/Texts/Body";
 import { DisplayMedium } from "@/components/Texts/Display";
-import { HIAction, MitigationAction, AdaptationAction, ACTION_TYPES } from "@/util/types"
+import {
+  HIAction,
+  MitigationAction,
+  AdaptationAction,
+  ACTION_TYPES,
+} from "@/util/types";
 import { ButtonMedium } from "@/components/Texts/Button";
 import { BarVisualization } from "./HiapTab";
 
@@ -41,6 +46,71 @@ export function ActionDrawer({
   onClose: () => void;
   t: TFunction;
 }) {
+  // Extract GHG Reduction Potential entries
+  const ghgReductionEntries =
+    action.type === ACTION_TYPES.Mitigation
+      ? Object.entries(
+          (action as MitigationAction).GHGReductionPotential,
+        ).filter(([_, value]) => value !== null)
+      : [];
+
+  // Helper to get effectiveness bar value
+  const getEffectivenessValue = (effectiveness: string | null | undefined) => {
+    if (effectiveness === "high") return 3;
+    if (effectiveness === "medium") return 2;
+    return 1;
+  };
+
+  // Helper to render a single adaptation effectiveness row
+  const renderAdaptationEffectivenessRow = (
+    hazard: string,
+    effectiveness: string | null | undefined,
+    align: "center" | "space-between" = "center",
+  ) => (
+    <HStack
+      key={hazard}
+      gap={2}
+      align="center"
+      justify="space-between"
+      w="full"
+    >
+      <ButtonMedium>{t(`hazard.${hazard}`)}</ButtonMedium>
+      <HStack gap={2} align={align}>
+        <BarVisualization
+          value={getEffectivenessValue(effectiveness)}
+          total={3}
+        />
+        <Text fontSize="sm" color="gray.600">
+          {t(`effectiveness-level.${effectiveness}`)}
+        </Text>
+      </HStack>
+    </HStack>
+  );
+
+  // Extract and split adaptationEffectivenessPerHazard entries for columns
+  let adaptationEffectivenessFirstCol: [string, string | null][] = [];
+  let adaptationEffectivenessSecondCol: [string, string | null][] = [];
+  if (action.type === ACTION_TYPES.Adaptation) {
+    console.log(
+      "action",
+      JSON.stringify(action.adaptationEffectivenessPerHazard),
+    ); // TODO NINA
+    const entries = Object.entries(
+      (action as AdaptationAction).adaptationEffectivenessPerHazard,
+    ).filter(([_, effectiveness]) => effectiveness !== null);
+    const splitIndex = Math.ceil(entries.length / 2);
+    adaptationEffectivenessFirstCol = entries.slice(0, splitIndex);
+    console.log(
+      "adaptationEffectivenessFirstCol",
+      JSON.stringify(adaptationEffectivenessFirstCol),
+    ); // TODO NINA
+    adaptationEffectivenessSecondCol = entries.slice(splitIndex);
+    console.log(
+      "adaptationEffectivenessSecondCol",
+      JSON.stringify(adaptationEffectivenessSecondCol),
+    ); // TODO NINA
+  }
+
   return (
     <DrawerRoot
       open={isOpen}
@@ -65,9 +135,9 @@ export function ActionDrawer({
               {t("go-back")}
             </Button>
             <Stack gap={6}>
-              {action.sector && (
+              {action.sectors && (
                 <HStack gap={2} flexWrap="wrap">
-                  {action.sector.map((sector) => (
+                  {action.sectors.map((sector) => (
                     <ButtonMedium key={sector}>
                       {t(`sector.${sector}`)}
                     </ButtonMedium>
@@ -75,13 +145,15 @@ export function ActionDrawer({
                 </HStack>
               )}
               <TitleLarge>{action.name}</TitleLarge>
-              {action.primaryPurpose && (
+              {action.primaryPurposes && (
                 <HStack gap={2} flexWrap="wrap">
-                  <Badge color="green" key={action.primaryPurpose}>
-                    <ButtonMedium color="green" key={action.primaryPurpose}>
-                      {t(`primary-purpose.${action.primaryPurpose}`)}
-                    </ButtonMedium>
-                  </Badge>
+                  {action.primaryPurposes.map((primaryPurpose) => (
+                    <Badge color="green" key={primaryPurpose}>
+                      <ButtonMedium key={primaryPurpose}>
+                        {t(`primary-purpose.${primaryPurpose}`)}
+                      </ButtonMedium>
+                    </Badge>
+                  ))}
                 </HStack>
               )}
 
@@ -92,15 +164,11 @@ export function ActionDrawer({
                 {action.type === ACTION_TYPES.Mitigation && (
                   <>
                     <TitleMedium>{t("ghg-reduction")}</TitleMedium>
-                    {Object.entries(
-                      (action as MitigationAction).GHGReductionPotential,
-                    )
-                      .filter(([_, value]) => value !== null)
-                      .map(([sector, value]) => (
-                        <DisplayMedium key={sector} color="black">
-                          {t(`sector.${sector}`)}: {value as string}%
-                        </DisplayMedium>
-                      ))}
+                    {ghgReductionEntries.map(([sector, value]) => (
+                      <DisplayMedium key={sector} color="black">
+                        {t(`sector.${sector}`)}: {value as string}%
+                      </DisplayMedium>
+                    ))}
                   </>
                 )}
                 {action.type === ACTION_TYPES.Adaptation && (
@@ -116,15 +184,9 @@ export function ActionDrawer({
                     <HStack gap={2} align="center" width="full">
                       <BarVisualization
                         width="200px"
-                        value={
-                          (action as AdaptationAction)
-                            .adaptationEffectiveness === "high"
-                            ? 3
-                            : (action as AdaptationAction)
-                                  .adaptationEffectiveness === "medium"
-                              ? 2
-                              : 1
-                        }
+                        value={getEffectivenessValue(
+                          (action as AdaptationAction).adaptationEffectiveness,
+                        )}
                         total={3}
                       />
                     </HStack>
@@ -145,100 +207,31 @@ export function ActionDrawer({
                   </VStack>
                 </HStack>
 
-                {action.type === "adaptation" && (
+                {action.type === ACTION_TYPES.Adaptation && (
                   <>
                     <TitleMedium>
                       {t("adaptation-effectiveness-by-hazard")}
                     </TitleMedium>
                     <HStack align="start" gap={8}>
                       <VStack align="start" gap={2} flex={1}>
-                        {Object.entries(
-                          (action as AdaptationAction)
-                            .adaptationEffectivenessPerHazard,
-                        )
-                          .filter(
-                            ([_, effectiveness]) => effectiveness !== null,
-                          )
-                          .slice(
-                            0,
-                            Math.ceil(
-                              Object.keys(
-                                (action as AdaptationAction)
-                                  .adaptationEffectivenessPerHazard,
-                              ).length / 2,
+                        {adaptationEffectivenessFirstCol.map(
+                          ([hazard, effectiveness]) =>
+                            renderAdaptationEffectivenessRow(
+                              hazard,
+                              effectiveness,
+                              "space-between",
                             ),
-                          )
-                          .map(([hazard, effectiveness]) => {
-                            const value =
-                              effectiveness === "high"
-                                ? 3
-                                : effectiveness === "medium"
-                                  ? 2
-                                  : 1;
-                            return (
-                              <HStack
-                                key={hazard}
-                                gap={2}
-                                align="center"
-                                justify="space-between"
-                                w="full"
-                              >
-                                <ButtonMedium>
-                                  {t(`hazard.${hazard}`)}
-                                </ButtonMedium>
-                                <HStack gap={2} align="space-between">
-                                  <BarVisualization value={value} total={3} />
-                                  <Text fontSize="sm" color="gray.600">
-                                    {t(`effectiveness-level.${effectiveness}`)}
-                                  </Text>
-                                </HStack>
-                              </HStack>
-                            );
-                          })}
+                        )}
                       </VStack>
                       <VStack align="start" gap={2} flex={1}>
-                        {Object.entries(
-                          (action as AdaptationAction)
-                            .adaptationEffectivenessPerHazard,
-                        )
-                          .filter(
-                            ([_, effectiveness]) => effectiveness !== null,
-                          )
-                          .slice(
-                            Math.ceil(
-                              Object.keys(
-                                (action as AdaptationAction)
-                                  .adaptationEffectivenessPerHazard,
-                              ).length / 2,
+                        {adaptationEffectivenessSecondCol.map(
+                          ([hazard, effectiveness]) =>
+                            renderAdaptationEffectivenessRow(
+                              hazard,
+                              effectiveness,
+                              "center",
                             ),
-                          )
-                          .map(([hazard, effectiveness]) => {
-                            const value =
-                              effectiveness === "high"
-                                ? 3
-                                : effectiveness === "medium"
-                                  ? 2
-                                  : 1;
-                            return (
-                              <HStack
-                                key={hazard}
-                                gap={2}
-                                align="center"
-                                justify="space-between"
-                                w="full"
-                              >
-                                <ButtonMedium>
-                                  {t(`hazard.${hazard}`)}
-                                </ButtonMedium>
-                                <HStack gap={2} align="center">
-                                  <BarVisualization value={value} total={3} />
-                                  <Text fontSize="sm" color="gray.600">
-                                    {t(`effectiveness-level.${effectiveness}`)}
-                                  </Text>
-                                </HStack>
-                              </HStack>
-                            );
-                          })}
+                        )}
                       </VStack>
                     </HStack>
                   </>

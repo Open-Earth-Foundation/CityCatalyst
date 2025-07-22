@@ -3,11 +3,11 @@ import {S3Client } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
-import PopulationService from "./PopulationService";
+import PopulationService from "../PopulationService";
 import {
   getTotalEmissionsBySector,
   EmissionsBySector,
-} from "./ResultsService";
+} from "../ResultsService";
 import {
   HighImpactActionRanking,
 } from "@/models/HighImpactActionRanking";
@@ -17,51 +17,26 @@ import {
   checkPrioritizationProgress,
   getPrioritizationResult,
 } from "./HiapApiService";
-import { InventoryService } from "./InventoryService";
-import GlobalAPIService from "./GlobalAPIService";
+import { InventoryService } from "../InventoryService";
+import GlobalAPIService from "../GlobalAPIService";
+import { PrioritizerResponse, PrioritizerCityData } from "./types";
 
-export interface CityContextData {
-  locode: string;
-  populationSize: number | null;
-}
 
-export interface CityEmissionsData {
-  stationaryEnergyEmissions: number | null;
-  transportationEmissions: number | null;
-  wasteEmissions: number | null;
-  ippuEmissions: number | null;
-  afoluEmissions: number | null;
-}
 
-export interface PrioritizerCityData {
-  cityContextData: CityContextData;
-  cityEmissionsData: CityEmissionsData;
-}
 
-export interface PrioritizerRequest {
-  cityData: PrioritizerCityData;
-}
 
-export interface PrioritizerResponseMetadata {
-  locode: string;
-  rankedDate: string;
-}
 
-export interface PrioritizerRankedAction {
-  actionId: string;
-  rank: number;
-  explanation: {
-    en: string;
-    es: string;
-    pt: string;
-  };
-}
 
-export interface PrioritizerResponse {
-  metadata: PrioritizerResponseMetadata;
-  rankedActionsMitigation: PrioritizerRankedAction[];
-  rankedActionsAdaptation: PrioritizerRankedAction[];
-}
+
+
+
+
+
+
+
+
+
+
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 logger.info("Using HIAP API at", HIAP_API_URL);
@@ -137,7 +112,7 @@ export const findExistingRanking = async (
   lang: LANGUAGES,
 ) => {
   const ranking = await db.models.HighImpactActionRanking.findOne({
-    where: { locode, inventoryId, lang },
+    where: { locode, inventoryId, langs: [lang] },
     include: [
       {
         model: db.models.HighImpactActionRanked,
@@ -155,18 +130,21 @@ const startActionRankingJob = async (
   type: ACTION_TYPES,
 ) => {
   const contextData = await getCityContextAndEmissionsData(inventoryId);
-  if (!contextData) throw new Error("No city context/emissions data found");
-
-  // Use HiapApiService
-  const { taskId } = await startPrioritization(contextData);
-  if (!taskId) throw new Error("No taskId returned from HIAP API");
+  logger.info({ contextData }, 'City context and emissions data fetched');
+  if (!contextData) throw new Error('No city context/emissions data found');
+  const { taskId } = await startPrioritization(contextData, type);
+  logger.info({ taskId }, 'Task ID received from HIAP API');
+  if (!taskId) throw new Error('No taskId returned from HIAP API');
   const ranking = await db.models.HighImpactActionRanking.create({
     locode,
     inventoryId,
-    lang,
+    langs: Object.values(LANGUAGES),
+    type,
     jobId: taskId,
     status: HighImpactActionRankingStatus.PENDING,
   });
+  logger.info({ ranking }, 'Ranking created in DB');
+
   // Do not await here, it will make the request time out. Poll job in the background.
   checkActionRankingJob(ranking, lang, type);
   return ranking;
@@ -216,14 +194,13 @@ async function saveRankedActionsForLanguage(
   lang: LANGUAGES,
 ) {
   const updatedRanking = await db.models.HighImpactActionRanking.findByPk(ranking.id);
-  if (updatedRanking?.status === HighImpactActionRankingStatus.PENDING) {
+  if (updatedRanking?.status !== HighImpactActionRankingStatus.PENDING) {
     return;// trying to avoid race condition, if another thread already processed the ranking, don't store the actions again.
   }
   // Always fetch and merge details in the requested language
   const mergedRanked = await fetchAndMergeRankedActions(lang, rankedActions);
-  let savedCount = 0;
-  for (const rankedAction of mergedRanked) {
-    if (!rankedAction) continue;
+  const createRankedAction = async (rankedAction: any) => {
+    if (!rankedAction) return;
     try {
       await db.models.HighImpactActionRanked.create({
         hiaRankingId: ranking.id,
@@ -233,10 +210,10 @@ async function saveRankedActionsForLanguage(
         type: rankedAction.type,
         explanation: rankedAction.explanation,
         name: rankedAction.name,
-        hazard: rankedAction.hazard,
-        sector: rankedAction.sector,
-        subsector: rankedAction.subsector,
-        primaryPurpose: rankedAction.primaryPurpose,
+        hazards: rankedAction.hazard,
+        sectors: rankedAction.sector,
+        subsectors: rankedAction.subsector, 
+        primaryPurposes: rankedAction.primaryPurpose,
         description: rankedAction.description,
         cobenefits: rankedAction.cobenefits,
         equityAndInclusionConsiderations: rankedAction.equityAndInclusionConsiderations,
@@ -250,11 +227,15 @@ async function saveRankedActionsForLanguage(
         adaptationEffectivenessPerHazard: rankedAction.adaptationEffectivenessPerHazard,
         biome: rankedAction.biome,
       });
-      savedCount++;
+      return true;
     } catch (err) {
       logger.error("Failed to save ranked action", { rankedAction, err });
+      return false;
     }
-  }
+  };
+
+  const results = await Promise.all(mergedRanked.map(createRankedAction));
+  let savedCount = results.filter(Boolean).length;
   logger.info(`[saveRankedActionsForLanguage] Saved ${savedCount} out of ${mergedRanked.length} ranked actions for lang ${lang}.`);
 }
 
@@ -313,61 +294,42 @@ export const checkActionRankingJob = async (
   }
 };
 
+// Helper to get emissions for a sector by name
+function getSectorEmissions(emissionsBySector: any[], sectorName: string): number | null {
+  const value = emissionsBySector.find((s) => s.sectorName === sectorName)?.co2eq;
+  const num = Number(value);
+  return isNaN(num) ? null : num;
+}
+
 async function getCityContextAndEmissionsData(
   inventoryId: string,
 ): Promise<PrioritizerCityData> {
   // Get inventory to access city information
   const inventory = await db.models.Inventory.findByPk(inventoryId, {
-    include: [{ model: db.models.City, as: "city" }],
+    include: [
+      { model: db.models.City, as: "city" },
+      { model: db.models.InventoryValue, as: "inventoryValues" },
+    ],
   });
-  if (!inventory || !inventory.city) {
-    throw new Error("Inventory or city not found");
-  }
-
-  const locode = inventory.city.locode;
-  if (!locode) {
-    throw new Error("City locode not found");
-  }
-
-  const population = await PopulationService.getPopulationDataForCityYear(
-    inventory.city.cityId,
+  if (!inventory) throw new Error("Inventory not found");
+  const city = inventory.city;
+  if (!city) throw new Error("City not found for inventory");
+  const populationSize = await PopulationService.getPopulationDataForCityYear(
+    city.cityId,
     inventory.year!,
   );
-  const emissions: EmissionsBySector[] = await getTotalEmissionsBySector([
-    inventory.inventoryId,
-  ]);
-  
-  const cityData = {
+  const emissionsBySector = await getTotalEmissionsBySector([inventoryId]);
+  const cityData: PrioritizerCityData = {
     cityContextData: {
-      locode: locode,
-      populationSize: population.population || null,
+      locode: city.locode!,
+      populationSize: populationSize.population!,
     },
     cityEmissionsData: {
-      stationaryEnergyEmissions:
-        Number(
-          emissions.find((e) => e.sector_name === "Stationary Energy")?.co2eq,
-        ) ?? null,
-      transportationEmissions:
-        Number(
-          emissions.find((e) => e.sector_name === "Transportation")?.co2eq,
-        ) ?? null,
-      wasteEmissions:
-        Number(emissions.find((e) => e.sector_name === "Waste")?.co2eq) ?? null,
-      ippuEmissions:
-        Number(
-          emissions.find(
-            (e) =>
-              e.sector_name === "Industrial Processes and Product Uses (IPPU)",
-          )?.co2eq,
-        ) ?? null,
-      afoluEmissions:
-        Number(
-          emissions.find(
-            (e) =>
-              e.sector_name ===
-              "Agriculture, Forestry, and Other Land Use (AFOLU)",
-          )?.co2eq,
-        ) ?? null,
+      stationaryEnergyEmissions: getSectorEmissions(emissionsBySector, "Stationary Energy"),
+      transportationEmissions: getSectorEmissions(emissionsBySector, "Transportation"),
+      wasteEmissions: getSectorEmissions(emissionsBySector, "Waste"),
+      ippuEmissions: getSectorEmissions(emissionsBySector, "IPPU"),
+      afoluEmissions: getSectorEmissions(emissionsBySector, "Agriculture, Forestry, and Other Land Use (AFOLU)"),
     },
   };
   return cityData;
@@ -445,22 +407,25 @@ export const fetchRanking = async (
       }
       // If ranking is pending, trigger job in background and return empty actions
       if (ranking.status === HighImpactActionRankingStatus.PENDING) {
-        // Don't await, let it run in background
+        logger.info('Ranking is pending, triggering background job');
         checkActionRankingJob(ranking, lang, type);
         return { ...ranking.toJSON(), rankedActions: [] };
       } else if (ranking.status === HighImpactActionRankingStatus.SUCCESS) {
-        // Copy actions from any language to the requested language, if available
+        logger.info('Ranking is success, copying actions to requested language');
         const newRanked = await copyRankedActionsToLang(ranking, lang);
         return { ...ranking.toJSON(), rankedActions: newRanked };
       } else if (ranking.status === HighImpactActionRankingStatus.FAILURE) {
-        // Job failed, start again
+        logger.info('Ranking is failure, starting new job');
         return await startActionRankingJob(inventoryId, locode, lang, type);
       }
-      // No ranking found, start a new job
+      logger.info('No ranking found, starting new job');
+      return await startActionRankingJob(inventoryId, locode, lang, type);
+    } else {
+      logger.info('No ranking found at all, starting new job');
       return await startActionRankingJob(inventoryId, locode, lang, type);
     }
   } catch (err) {
-    logger.error({ err: err }, "Error fetching prioritized climate actions:");
+    logger.error({ err: err }, 'Error fetching prioritized climate actions:');
     throw err;
   }
 };

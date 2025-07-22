@@ -589,10 +589,10 @@ export interface BaseAction {
   lang: string;
   type: ACTION_TYPES;
   name: string;
-  hazard: string;
-  sector: string[];
-  subsector: string;
-  primaryPurpose: string;
+  hazards: string[];
+  sectors: string[];
+  subsectors: string[];
+  primaryPurposes: string[];
   description: string;
   dependencies: string[];
   cobenefits: CoBenefits;

@@ -1,15 +1,17 @@
+import { LANGUAGES } from "@/util/types";
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
+import { languages } from "@/i18n/settings";
 
 export interface HighImpactActionRankedAttributes {
   id: string;
   hiaRankingId: string;
   type: string;
   name: string;
-  hazard?: string[];
-  sector?: string[];
-  subsector?: string[];
-  primaryPurpose?: string[];
+  hazards?: string[];
+  sectors?: string[];
+  subsectors?: string[];
+  primaryPurposes?: string[];
   description?: string;
   dependencies?: string[];
   cobenefits?: Record<string, any>;
@@ -25,7 +27,7 @@ export interface HighImpactActionRankedAttributes {
   isSelected?: boolean;
   actionId: string;
   rank: number;
-  explanation: { en: string; es: string; pt: string };
+  explanation: { [key in keyof typeof languages]: string};
   lang: string;
   created?: Date;
   lastUpdated?: Date;
@@ -36,14 +38,17 @@ export type HighImpactActionRankedId = HighImpactActionRanked[HighImpactActionRa
 export type HighImpactActionRankedCreationAttributes = Optional<HighImpactActionRankedAttributes, "id">;
 
 export class HighImpactActionRanked
-  extends Model<HighImpactActionRankedAttributes, HighImpactActionRankedCreationAttributes>
+  extends Model<
+    HighImpactActionRankedAttributes,
+    HighImpactActionRankedCreationAttributes
+  >
   implements HighImpactActionRankedAttributes
 {
   id!: string;
   hiaRankingId!: string;
   actionId!: string;
   rank!: number;
-  explanation!: { en: string; es: string; pt: string };
+  explanation!: { [key in keyof typeof languages]: string };
   lang!: string;
   isSelected?: boolean;
   type!: string;
@@ -67,7 +72,9 @@ export class HighImpactActionRanked
   created?: Date;
   lastUpdated?: Date;
 
-  static initModel(sequelize: Sequelize.Sequelize): typeof HighImpactActionRanked {
+  static initModel(
+    sequelize: Sequelize.Sequelize,
+  ): typeof HighImpactActionRanked {
     return HighImpactActionRanked.init(
       {
         id: {
@@ -94,22 +101,22 @@ export class HighImpactActionRanked
           type: DataTypes.TEXT,
           allowNull: false,
         },
-        hazard: {
+        hazards: {
           type: DataTypes.ARRAY(DataTypes.TEXT),
           allowNull: true,
         },
-        sector: {
+        sectors: {
           type: DataTypes.ARRAY(DataTypes.TEXT),
           allowNull: true,
         },
-        subsector: {
+        subsectors: {
           type: DataTypes.ARRAY(DataTypes.TEXT),
           allowNull: true,
         },
-        primaryPurpose: {
+        primaryPurposes: {
           type: DataTypes.ARRAY(DataTypes.TEXT),
           allowNull: true,
-          field: "primary_purpose",
+          field: "primary_purposes",
         },
         description: {
           type: DataTypes.TEXT,

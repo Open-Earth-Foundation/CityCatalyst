@@ -1,12 +1,13 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
-import { HighImpactActionRankingStatus } from "@/util/types";
+import { ACTION_TYPES, HighImpactActionRankingStatus } from "@/util/types";
 
 export interface HighImpactActionRankingAttributes {
   id: string;
   locode: string;
   inventoryId: string;
-  lang: string;
+  type: ACTION_TYPES;
+  langs: string[];
   created?: Date;
   lastUpdated?: Date;
   jobId?: string | null;
@@ -24,7 +25,8 @@ export class HighImpactActionRanking
   id!: string;
   locode!: string;
   inventoryId!: string;
-  lang!: string;
+  type!: ACTION_TYPES;
+  langs!: string[];
   created?: Date;
   lastUpdated?: Date;
   jobId?: string | null;
@@ -48,9 +50,12 @@ export class HighImpactActionRanking
           allowNull: false,
           field: "inventory_id",
         },
-        // TODO NINA array of langs
-        lang: {
-          type: DataTypes.TEXT,
+        type: {
+          type: DataTypes.ENUM(...Object.values(ACTION_TYPES)),
+          allowNull: false,
+        },
+        langs: {
+          type: DataTypes.ARRAY(DataTypes.TEXT),
           allowNull: false,
         },
         jobId: {
@@ -80,6 +85,18 @@ export class HighImpactActionRanking
             name: "HighImpactActionRanking_pkey",
             unique: true,
             fields: [{ name: "id" }],
+          },
+          {
+            name: "idx_high_impact_action_ranking_inventory_id",
+            fields: [{ name: "inventory_id" }],
+          },
+          {
+            name: "idx_high_impact_action_ranking_locode",
+            fields: [{ name: "locode" }],
+          },
+          {
+            name: "idx_high_impact_action_ranking_lang",
+            fields: [{ name: "langs" }],
           },
         ],
       },

@@ -83,7 +83,7 @@ export function HiapTab({
             header: t("hazards-covered"),
             cell: ({ row }: { row: Row<HIAction> }) => {
               const action = row.original as AdaptationAction;
-              const hazardCount = Object.keys(action.hazard).length;
+              const hazardCount = action.hazards.length;
               return (
                 <Badge colorScheme="orange">
                   {hazardCount} {t("hazards")}
@@ -114,7 +114,7 @@ export function HiapTab({
               const action = row.original as MitigationAction;
               return (
                 <HStack gap={1} flexWrap="wrap">
-                  {(action.sector).map((sector) => (
+                  {action.sectors.map((sector) => (
                     <Badge key={sector} colorScheme="blue">
                       {t(`sector.${sector}`)}
                     </Badge>

@@ -1,7 +1,7 @@
 import { apiHandler } from "@/util/api";
 import { LANGUAGES } from "@/util/types";
 import { ACTION_TYPES } from "@/util/types";
-import { fetchRanking } from "@/backend/HiapService";
+import { fetchRanking } from "@/backend/hiap/HiapService";
 import { NextRequest } from "next/server";
 import UserService from "@/backend/UserService";
 import { logger } from "@/services/logger";

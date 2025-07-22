@@ -206,7 +206,7 @@ jobs:
             "NEXTAUTH_URL=https://citycatalyst.io" \
             "NEXT_PUBLIC_API_URL=https://api.citycatalyst.io" \
             "GLOBAL_API_URL=https://api.citycatalyst.io" \
-            "HIAP_API_URL=http://hiap-service" \
+            "HIAP_API_URL=http://hiap-service-dev" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://app.openclimate.network" \
             "OPENCLIMATE_API_URL=https://app.openclimate.network" \
             "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED" \

@@ -7,7 +7,8 @@ const sql_up = `
         locode TEXT NOT NULL,
         inventory_id UUID NOT NULL
             constraint HIRanking_Inventory_inventory_id_fk references "Inventory",
-        lang TEXT NOT NULL,
+        type TEXT NOT NULL,
+        langs TEXT[] NOT NULL,
         job_id TEXT NULL,
         status hiap_ranking_status NOT NULL DEFAULT 'PENDING',
         created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -16,7 +17,7 @@ const sql_up = `
     
     CREATE INDEX idx_high_impact_action_ranking_inventory_id ON "HighImpactActionRanking" (inventory_id);
     CREATE INDEX idx_high_impact_action_ranking_locode ON "HighImpactActionRanking" (locode);
-    CREATE INDEX idx_high_impact_action_ranking_lang ON "HighImpactActionRanking" (lang);
+    CREATE INDEX idx_high_impact_action_ranking_lang ON "HighImpactActionRanking" (langs);
 `;
 
 const sql_down = `

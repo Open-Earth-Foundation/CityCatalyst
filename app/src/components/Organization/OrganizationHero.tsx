@@ -1,17 +1,18 @@
 import { Tooltip } from "@/components/ui/tooltip";
-import type { OrganizationAttributes } from "@/models/Organization";
 import { Box, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import dynamic from "next/dynamic";
 import { MdGridView, MdInfoOutline, MdLocationCity } from "react-icons/md";
 import { ModulesIcon } from "../icons";
 import { BodyLarge } from "../Texts/Body";
+import type { OrganizationResponse } from "@/util/types";
+import { DisplayMedium } from "../Texts/Display";
 
 // only render map on the client
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 interface OrganizationHeroProps {
-  organization?: OrganizationAttributes;
+  organization?: OrganizationResponse;
   isLoading?: boolean;
   t: TFunction;
 }
@@ -26,22 +27,19 @@ export function OrganizationHero({
 
   return (
     <Box bg="content.alternative" w="full" px="56px" py="56px">
-      <Box className="flex mx-auto max-w-full w-[950px] h-[240px]">
+      <Box className="flex mx-auto max-w-full w-[980px] h-[260px]">
         <Box className="flex gap-[24px] flex-col w-full">
-          <Box className="flex flex-col gap-2">
+          <Box className="flex flex-col gap-2 mr-8">
             <Box className="flex items-center gap-4">
               {organization ? (
-                <Heading
-                  fontSize="display.md"
+                <DisplayMedium
+                  data-testid="hero-organization-name"
                   color="base.light"
-                  fontWeight="semibold"
-                  lineHeight="52"
-                  className="flex"
+                  maxW="550px"
+                  truncate
                 >
-                  <span data-testid="hero-organization-name">
-                    {organization.name}
-                  </span>
-                </Heading>
+                  {organization.name}
+                </DisplayMedium>
               ) : (
                 isLoading && <Spinner size="lg" color="white" />
               )}

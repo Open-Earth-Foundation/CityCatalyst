@@ -22,7 +22,6 @@ const NotAvailable = ({ lng }: { lng: string }) => {
         layout="fill"
         objectFit="cover"
         sizes="100vw"
-        position="relative"
         alt="not-found page background"
         style={{ position: "relative" }}
       />

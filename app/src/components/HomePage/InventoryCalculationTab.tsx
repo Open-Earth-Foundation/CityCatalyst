@@ -57,13 +57,20 @@ export default function InventoryCalculationTab({
   return (
     <>
       {inventory && (
-        <Box className="flex flex-col gap-[8px] w-full">
+        <Box display="flex" flexDirection="column" gap={2} w="full">
           <TabHeader
             t={t}
             inventory={inventory}
             title={"emission-inventory-calculation-title"}
           />
-          <Box className="flex w-full justify-between items-center mt-2 gap-6">
+          <Box
+            display="flex"
+            w="full"
+            justifyContent="space-between"
+            alignItems="center"
+            mt={2}
+            gap={6}
+          >
             <SegmentedProgress
               values={[thirdPartyProgress, uploadedProgress]}
               colors={["interactive.connected", "interactive.tertiary"]}
@@ -71,12 +78,12 @@ export default function InventoryCalculationTab({
             <Heading
               fontWeight="semibold"
               fontSize="body.md"
-              className="whitespace-nowrap"
+              whiteSpace="nowrap"
             >
               {formatPercent(totalProgress)}% <Trans t={t}>completed</Trans>
             </Heading>
           </Box>
-          <Box className="flex gap-4 mt-2">
+          <Box display="flex" gap={4} mt={2}>
             <Badge>
               <Icon as={CircleIcon} boxSize={6} color="interactive.connected" />
               {formatPercent(thirdPartyProgress)}%{" "}
@@ -88,7 +95,7 @@ export default function InventoryCalculationTab({
               <Trans t={t}>uploaded-data</Trans>
             </Badge>
           </Box>
-          <Box className=" flex flex-col gap-[24px] py-[24px]">
+          <Box display="flex" flexDirection="column" gap={24} py={24}>
             <BlueSubtitle t={t} text={"sector-data"} />
             <Text
               fontFamily="heading"

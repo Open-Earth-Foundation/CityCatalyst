@@ -114,7 +114,7 @@ export function TabHeader({
         fontSize="body.lg"
         color="interactive.control"
         letterSpacing="wide"
-        className="mt-3"
+        mt={3}
       >
         {" "}
         {!isPublic ? (

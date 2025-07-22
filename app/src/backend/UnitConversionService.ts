@@ -58,6 +58,7 @@ export default class UnitConversionService {
     "fuel-type-charcoal": 250, // Charcoal: 200-300 kg/m³
     "fuel-type-natural-gas-oil": 820, // Natural Gas Oil: ~820 kg/m³
     "fuel-type-peat": 450, // Peat: ~400-500 kg/m³
+    "fuel-type-propane": 493, // Propane: ~493 kg/m³
   };
 
   public static convertUnits(

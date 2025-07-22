@@ -36,12 +36,8 @@ export function OrganizationHero({
   const totalCityCount = 32;
 
   return (
-    <Box
-      bg="content.alternative"
-      className="w-full h-[491px] pt-[150px]"
-      px={8}
-    >
-      <Box className="flex mx-auto max-w-full w-[1090px]">
+    <Box bg="content.alternative" w="full" px="56px" py="56px">
+      <Box className="flex mx-auto max-w-full">
         <Box className="w-full h-[240px] flex flex-col justify-center">
           <Box className="flex h-[240px]">
             <Box className="flex gap-[24px] flex-col h-full w-full">
@@ -196,7 +192,7 @@ export function OrganizationHero({
                 </Box>
               </Box>
             </Box>
-            <Box mt={-25}>
+            <Box mt={-50}>
               {/* TODO create organization map or re-use project map? */}
               <CityMap locode="BR SAO" width={422} height={317} />
             </Box>

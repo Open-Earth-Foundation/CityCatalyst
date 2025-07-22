@@ -135,5 +135,6 @@
   "downloading-data": "Descargando tus datos",
   "download-failed": "Descarga fallida",
   "download-error": "Hubo un error durante la descarga",
-  "change-to-admin": "Cambiar a administrador"
+  "change-to-admin": "Cambiar a administrador",
+  "frozen": "Congelado"
 }

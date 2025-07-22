@@ -1,5 +1,7 @@
 {
   "all-projects": "All Projects",
+  "default-organization": "Default Organization",
+  "default-project": "Default Project",
   "explore-projects-description": "Explore the projects you've created within CityCatalyst. Navigate through to discover additional cities.",
   "learning": "Learning",
   "learn-more-blog": "Want to learn more? Check our Blog",

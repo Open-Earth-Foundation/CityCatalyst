@@ -38,7 +38,9 @@ export function OrganizationHero({
                   maxW="550px"
                   truncate
                 >
-                  {organization.name}
+                  {organization.name === "cc_organization_default"
+                    ? t("default-organization")
+                    : organization.name}
                 </DisplayMedium>
               ) : (
                 isLoading && <Spinner size="lg" color="white" />

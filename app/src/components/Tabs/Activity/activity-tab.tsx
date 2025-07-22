@@ -292,7 +292,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
                 fontSize="body.md"
                 fontFamily="body"
                 flex="1 0 0"
-                className="overflow-ellipsis line-clamp-2"
+                truncate
+                noOfLines={2}
               >
                 <Text fontSize="body.md" fontFamily="body">
                   <strong> {t("reason")}: </strong>
@@ -303,7 +304,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
                 fontSize="body.md"
                 flex="1 0 0"
                 fontFamily="body"
-                className="line-clamp-2"
+                truncate
+                noOfLines={2}
               >
                 {inventoryValue.unavailableExplanation}
               </Text>

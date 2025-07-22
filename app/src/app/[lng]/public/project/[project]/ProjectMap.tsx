@@ -177,12 +177,16 @@ export const ProjectMap: FC<ProjectMapProps> = ({
   }, [projectBoundaries, height, width]);
 
   return (
-    <Box w={width} h={height} className="relative">
+    <Box w={width} h={height} position="relative">
       {isLoading && (
         <Box
           w={width}
           h={height}
-          className="absolute top-0 left-0 z-[1000] pointer-events-none"
+          position="absolute"
+          top={0}
+          left={0}
+          zIndex={1000}
+          pointerEvents="none"
         >
           <Center h="full">
             <Spinner size="lg" />

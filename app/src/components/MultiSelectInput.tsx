@@ -60,7 +60,7 @@ const CustomOption = (props: OptionProps<any>) => {
       px="16px"
     >
       <Checkbox
-        className="pointer-events-none !mb-[0px]"
+        style={{ pointerEvents: "none", marginBottom: 0 }}
         checked={isSelected}
       />
       <Text fontSize="14px" color="content.secondary">

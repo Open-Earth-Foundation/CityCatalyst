@@ -136,8 +136,10 @@ const DeleteInventoryDialog: FC<DeleteInventoryDialogProps> = ({
                   >
                     <Trans t={t} i18nKey="delete-inventory-prompt">
                       Are you sure you want to{" "}
-                      <span className="font-bold">permanently delete</span> this
-                      city&nbsp;s inventory?
+                      <span style={{ fontWeight: "bold" }}>
+                        permanently delete
+                      </span>{" "}
+                      this city&nbsp;s inventory?
                     </Trans>
                   </Text>
                 </Box>

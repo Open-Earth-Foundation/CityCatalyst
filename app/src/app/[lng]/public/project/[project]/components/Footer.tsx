@@ -14,22 +14,37 @@ export interface FooterProps {
 const Footer = ({ copyright, links }: FooterProps) => {
   const { organization } = useOrganizationContext();
   return (
-    <Box className="bg-[#010018] py-6 px-6 text-white" w="100%">
-      <Box className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center">
+    <Box bg="#010018" py={6} px={6} color="white" w="100%">
+      <Box
+        maxW="7xl"
+        mx="auto"
+        display="flex"
+        flexDirection={{ base: "column", lg: "row" }}
+        justifyContent="space-between"
+        alignItems="center"
+      >
         {/* Copyright text */}
-        <Box className="mb-4 lg:mb-0 text-sm text-gray-300">{copyright}</Box>
+        <Box mb={{ base: 4, lg: 0 }} fontSize="sm" color="gray.300">
+          {copyright}
+        </Box>
 
         {/* Powered by section */}
-        <Box className="flex items-center gap-4 mb-4 lg:mb-0 order-first lg:order-none">
-          <Text className="text-sm text-gray-300">
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={4}
+          mb={{ base: 4, lg: 0 }}
+          order={{ base: -1, lg: "unset" }}
+        >
+          <Text fontSize="sm" color="gray.300">
             Powered by open technology from
           </Text>
-          <Box className="flex items-center gap-3">
+          <Box display="flex" alignItems="center" gap={3}>
             <a
               href="https://openearth.org"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block"
+              style={{ display: "inline-block" }}
             >
               {organization.logoUrl ? (
                 <img
@@ -51,17 +66,23 @@ const Footer = ({ copyright, links }: FooterProps) => {
         </Box>
 
         {/* Footer links */}
-        <div className="flex gap-6">
+        <Box display="flex" gap={6}>
           {links.map((link, index) => (
             <a
               key={index}
               href={link.href}
-              className="text-sm text-gray-300 hover:text-white transition-colors"
+              style={{
+                fontSize: "0.875rem",
+                color: "#D1D5DB",
+                transition: "color 0.2s",
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.color = "#fff")}
+              onMouseOut={(e) => (e.currentTarget.style.color = "#D1D5DB")}
             >
               {link.label}
             </a>
           ))}
-        </div>
+        </Box>
       </Box>
     </Box>
   );

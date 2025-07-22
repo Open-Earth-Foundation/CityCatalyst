@@ -157,7 +157,7 @@ const FilesTable = ({ t, files }: { t: TFunction; files: UserFile[] }) => {
                           <Link
                             href={`/api/v0/city/${file.cityId}/file/${file.id}/download-file`}
                             download
-                            className="flex gap-4"
+                            style={{ display: "flex", gap: "4px" }}
                           >
                             <MdOutlineFileDownload size={24} />
 
@@ -167,7 +167,13 @@ const FilesTable = ({ t, files }: { t: TFunction; files: UserFile[] }) => {
                               letterSpacing="wide"
                               fontWeight="normal"
                               fontSize="body.lg"
-                              className="group group-hover:text-white"
+                              style={{
+                                color: "content.secondary",
+                                fontFamily: "heading",
+                                letterSpacing: "wide",
+                                fontWeight: "normal",
+                                fontSize: "body.lg",
+                              }}
                             >
                               {t("download-file")}
                             </Text>
@@ -199,7 +205,13 @@ const FilesTable = ({ t, files }: { t: TFunction; files: UserFile[] }) => {
                             letterSpacing="wide"
                             fontWeight="normal"
                             fontSize="body.lg"
-                            className="group group-hover:text-white"
+                            style={{
+                              color: "content.secondary",
+                              fontFamily: "heading",
+                              letterSpacing: "wide",
+                              fontWeight: "normal",
+                              fontSize: "body.lg",
+                            }}
                           >
                             {t("delete-file")}
                           </Text>
@@ -226,7 +238,13 @@ const FilesTable = ({ t, files }: { t: TFunction; files: UserFile[] }) => {
                             letterSpacing="wide"
                             fontWeight="normal"
                             fontSize="body.lg"
-                            className="group group-hover:text-white"
+                            style={{
+                              color: "content.secondary",
+                              fontFamily: "heading",
+                              letterSpacing: "wide",
+                              fontWeight: "normal",
+                              fontSize: "body.lg",
+                            }}
                           >
                             {t("mark-as-completed")}
                           </Text>

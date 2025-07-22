@@ -27,4 +27,6 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.drop_column(
         'formula_input', 
-        'formula_name')
+        'formula_name',
+        schema='modelled'
+    )

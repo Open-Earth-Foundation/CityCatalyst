@@ -123,7 +123,7 @@ export function OrganizationHero({
                         fontWeight="semibold"
                         lineHeight="32"
                       >
-                        {totalCityCount}
+                        {totalCityCount} {t("cities")}
                       </Text>
                       <Tooltip
                         content={t("city-count-tooltip")}
@@ -147,7 +147,7 @@ export function OrganizationHero({
                       lineHeight="20px"
                       letterSpacing="wide"
                     >
-                      <Trans t={t}>total-population</Trans>
+                      {t("across-projects")}
                     </Text>
                   </Box>
                 </Box>

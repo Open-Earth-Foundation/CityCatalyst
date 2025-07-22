@@ -8,17 +8,18 @@ api_router = APIRouter(prefix="/api/v0")
 def get_ipcc_formulainput_mappings():
     """
     Retrieve formula input values datasource mappings where publisher_name = 'IPCC'.
-    Returns a JSON object with a list of mappings under the key 'formulainput_datasource'.
+    Returns a JSON object with a list of mappings under the key 'formula_input_datasource'.
     """
     with SessionLocal() as session:
         query = text(
             """
-            select  distinct a.dataset_id, 
-                            b.formula_input_id
-            from modelled.publisher_datasource a
-            inner join modelled.formula_input b
-            on a.publisher_id = b.publisher_id 
-            where publisher_name = 'IPCC'
+            SELECT DISTINCT 
+                a.dataset_id, 
+                b.formula_input_id
+            FROM modelled.publisher_datasource a
+            INNER JOIN modelled.formula_input b
+            ON a.publisher_id = b.publisher_id 
+            WHERE publisher_name = 'IPCC'
             """
         )
         result = session.execute(query).mappings().all()
@@ -34,4 +35,4 @@ def get_ipcc_formulainput_mappings():
         for row in result
     ]
 
-    return {"formulainput_datasource": mappings} 
+    return {"formula_input_datasource": mappings} 

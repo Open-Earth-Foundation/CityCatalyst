@@ -8,17 +8,20 @@ api_router = APIRouter(prefix="/api/v0")
 def get_emissionfactor_publishers():
     """
     Retrieve the formula input values publishers where publisher_name = 'IPCC'.
-    Returns a JSON object with a list of publishers under the key 'formulainput_publisher'.
+    Returns a JSON object with a list of publishers under the key 'formula_input_publisher'.
     """
     with SessionLocal() as session:
         query = text(
             """
-            select distinct a.publisher_name, a.publisher_url, a.publisher_id
-            from modelled.publisher_datasource a
-            inner join modelled.formula_input b
-            on a.publisher_id = b.publisher_id 
-            and a.dataset_id = b.dataset_id
-            where publisher_name = 'IPCC'
+            SELECT DISTINCT 
+                a.publisher_name, 
+                a.publisher_url, 
+                a.publisher_id
+            FROM modelled.publisher_datasource a
+            INNER JOIN modelled.formula_input b
+            ON a.publisher_id = b.publisher_id 
+            AND a.dataset_id = b.dataset_id
+            WHERE publisher_name = 'IPCC'
             """
         )
         result = session.execute(query).mappings().all()

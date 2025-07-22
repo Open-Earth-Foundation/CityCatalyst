@@ -9,19 +9,23 @@ api_router = APIRouter(prefix="/api/v0")
 def get_formulainput_methodologies() -> Dict[str, List[Dict[str, Union[int, str, None]]]]:
     """
     Retrieve formula input values methodologies where publisher_name = 'IPCC'.
-    Returns a JSON object with a list of methodologies under the key 'formulainput_methodology'.
+    Returns a JSON object with a list of methodologies under the key 'formula_input_methodology'.
     """
     with SessionLocal() as session:
         query = text(
             """
-            select distinct c.method_id, c.methodology_name, null as methodology_url, a.dataset_id
-            from modelled.publisher_datasource a
-            inner join modelled.formula_input b
-            on a.publisher_id = b.publisher_id 
-            and a.dataset_id = b.dataset_id
-            inner join modelled.ghgi_methodology c
-            on b.method_id = c.method_id
-            where publisher_name = 'IPCC'
+            SELECT DISTINCT
+                c.method_id, 
+                c.methodology_name, 
+                null as methodology_url, 
+                a.dataset_id
+            FROM modelled.publisher_datasource a
+            INNER JOIN modelled.formula_input b
+            ON a.publisher_id = b.publisher_id 
+            AND a.dataset_id = b.dataset_id
+            INNER JOIN modelled.ghgi_methodology c
+            ON b.method_id = c.method_id
+            WHERE publisher_name = 'IPCC'
             """
         )
         result = session.execute(query).mappings().all()
@@ -39,4 +43,4 @@ def get_formulainput_methodologies() -> Dict[str, List[Dict[str, Union[int, str,
         for row in result
     ]
 
-    return {"formulainput_methodology": methodologies}
+    return {"formula_input_methodology": methodologies}

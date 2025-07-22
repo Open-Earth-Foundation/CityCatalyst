@@ -8,7 +8,7 @@ api_router = APIRouter(prefix="/api/v0")
 def get_formulainput_datasources():
     """
     Retrieve the formula input values datasources where publisher_name = 'IPCC'.
-    Returns a JSON object with a list of datasources under the key 'formulainput_datasource'.
+    Returns a JSON object with a list of datasources under the key 'formula_input_datasource'.
     """
     with SessionLocal() as session:
         query = text(

@@ -1,37 +1,36 @@
 "use client";
-import { use } from "react";
-
-import { Button, Card, HStack, Icon, VStack } from "@chakra-ui/react";
-import { SimpleGrid } from "@chakra-ui/react";
-
-import { useTranslation } from "@/i18n/client";
+import { OrganizationHero } from "@/components/Organization/OrganizationHero";
+import { BodyLarge, BodyMedium } from "@/components/Texts/Body";
+import { ButtonMedium } from "@/components/Texts/Button";
 import { HeadlineLarge, HeadlineSmall } from "@/components/Texts/Headline";
 import { LabelLarge } from "@/components/Texts/Label";
+import { useTranslation } from "@/i18n/client";
+import type { CityAttributes } from "@/models/City";
+import type { ProjectAttributes } from "@/models/Project";
+import { useGetProjectsQuery, useGetOrganizationQuery } from "@/services/api";
+import { ProjectWithCities } from "@/util/types";
+import { Card, HStack, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
+import NextLink from "next/link";
+import { use } from "react";
 import {
   MdArrowForward,
   MdLocationCity,
   MdPersonOutline,
 } from "react-icons/md";
-import { BodyLarge, BodyMedium } from "@/components/Texts/Body";
-import NextLink from "next/link";
-import { OrganizationHero } from "@/components/Organization/OrganizationHero";
-import { OrganizationAttributes } from "@/models/Organization";
-import { ButtonMedium } from "@/components/Texts/Button";
 
-function ProjectCard(props: { t: TFunction }) {
-  const cityCount = 50;
-  const userCount = 8;
+interface ProjectCardProps {
+  t: TFunction;
+  project: ProjectWithCities;
+}
 
+function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Card.Root shadow="2dp" borderRadius="8px">
       <Card.Header>
-        <HeadlineSmall>Project Name</HeadlineSmall>
+        <HeadlineSmall>{project.name}</HeadlineSmall>
       </Card.Header>
-      <Card.Body>
-        Phase I of the BPJP work done for C40 and GCoM, under the Resilient
-        Cities program.
-      </Card.Body>
+      <Card.Body>{project.description}</Card.Body>
       <Card.Footer>
         <HStack>
           <Icon
@@ -39,13 +38,13 @@ function ProjectCard(props: { t: TFunction }) {
             boxSize="24px"
             color="interactive.control"
           />
-          <BodyMedium>{cityCount}</BodyMedium>
+          <BodyMedium>{project.cities.length}</BodyMedium>
           <Icon
             as={MdPersonOutline}
             boxSize="24px"
             color="interactive.control"
           />
-          <BodyMedium>{userCount}</BodyMedium>
+          <BodyMedium>{project.cities.length}</BodyMedium>
         </HStack>
       </Card.Footer>
     </Card.Root>
@@ -53,16 +52,38 @@ function ProjectCard(props: { t: TFunction }) {
 }
 
 export default function OrganizationPage(props: {
-  params: Promise<{ lng: string }>;
+  params: Promise<{ lng: string; id: string }>;
 }) {
-  const { lng } = use(props.params);
+  const { lng, id } = use(props.params);
   const { t } = useTranslation(lng, "organization");
-  const organization: OrganizationAttributes = {
-    name: "Test Organization",
-    active: true,
-    organizationId: "70bbe1ea-7869-45e5-af37-c564b82a599f",
-    // description: "This is a test organization description.",
-  };
+
+  const {
+    data: organization,
+    isLoading: orgLoading,
+    error: orgError,
+  } = useGetOrganizationQuery(id);
+
+  const {
+    data: projects,
+    isLoading: projectsLoading,
+    error: projectsError,
+  } = useGetProjectsQuery({ organizationId: id });
+
+  if (orgLoading || projectsLoading) {
+    return (
+      <VStack w="full" h="full" alignItems="center" justifyContent="center">
+        <BodyLarge>{t("loading")}</BodyLarge>
+      </VStack>
+    );
+  }
+
+  if (orgError || projectsError || !organization) {
+    return (
+      <VStack w="full" h="full" alignItems="center" justifyContent="center">
+        <BodyLarge color="danger">{t("error-loading-data")}</BodyLarge>
+      </VStack>
+    );
+  }
 
   return (
     <VStack>
@@ -81,12 +102,13 @@ export default function OrganizationPage(props: {
           <BodyLarge>{t("explore-projects-description")}</BodyLarge>
         </VStack>
         <SimpleGrid minChildWidth="xs" gap="24px" w="full">
-          {
-            // use Array.from to fix iterator warning
-            Array.from(Array(5).keys()).map((i) => (
-              <ProjectCard t={t} key={i} />
+          {projects && projects.length > 0 ? (
+            projects.map((project: ProjectWithCities) => (
+              <ProjectCard t={t} project={project} key={project.projectId} />
             ))
-          }
+          ) : (
+            <BodyMedium>{t("no-projects-found")}</BodyMedium>
+          )}
         </SimpleGrid>
         <NextLink
           href="https://citycatalyst.openearth.org"

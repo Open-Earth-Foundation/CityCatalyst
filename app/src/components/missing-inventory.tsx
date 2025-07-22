@@ -24,13 +24,20 @@ const MissingInventory = ({ lng }: { lng: string }) => {
 
   if (!isUserInfoLoading && userInfo?.defaultInventoryId) {
     return (
-      <Box className="flex w-full justify-center relative h-[100vh] z-10">
+      <Box
+        display="flex"
+        w="full"
+        justifyContent="center"
+        position="relative"
+        h="100vh"
+        zIndex={10}
+      >
         <Image
           src="/assets/not-found-background.svg"
           layout="fill"
           objectFit="cover"
           sizes="100vw"
-          className="relative"
+          style={{ position: "relative" }}
           alt="not-found page background"
         />
         <Box
@@ -91,11 +98,7 @@ const MissingInventory = ({ lng }: { lng: string }) => {
     );
   }
   return (
-    <Box
-      alignItems="center"
-      justifyContent="center"
-      className="flex w-full relative h-[100vh] z-10"
-    >
+    <Box display="flex" w="full" position="relative" h="100vh" zIndex={10}>
       <ProgressCircleRoot value={null} size="sm">
         <ProgressCircleRing cap="round" />
       </ProgressCircleRoot>

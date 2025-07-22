@@ -206,25 +206,3 @@ export function OrganizationHero({
     </Box>
   );
 }
-
-function ProjectTitle({
-  inventory,
-  t,
-}: {
-  inventory: InventoryResponse;
-  t: TFunction;
-}) {
-  return (
-    <Text
-      fontSize="title.md"
-      w="max-content"
-      fontWeight="semibold"
-      color="white"
-      data-testid="hero-project-name"
-    >
-      {inventory?.city?.project?.name === "cc_project_default"
-        ? t("default-project")
-        : inventory?.city?.project?.name}
-    </Text>
-  );
-}

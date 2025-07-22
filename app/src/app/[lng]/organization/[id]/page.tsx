@@ -50,7 +50,7 @@ export default function OrganizationPage(props: {
 
   return (
     <VStack>
-      <OrganizationHero t={t} organization={organization} />
+      <OrganizationHero t={t} organization={organization} projects={projects} />
       <VStack
         spaceY="56px"
         p="56px"

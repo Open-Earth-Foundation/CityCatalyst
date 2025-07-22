@@ -1,5 +1,5 @@
 import { Tooltip } from "@/components/ui/tooltip";
-import type { OrganizationResponse } from "@/util/types";
+import type { OrganizationResponse, ProjectWithCities } from "@/util/types";
 import { Box, Icon, Spinner, Text } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import dynamic from "next/dynamic";
@@ -15,15 +15,24 @@ interface OrganizationHeroProps {
   organization?: OrganizationResponse;
   isLoading?: boolean;
   t: TFunction;
+  projects?: ProjectWithCities[];
 }
 
-export function OrganizationHero({
-  organization,
-  isLoading,
+export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
   t,
-}: OrganizationHeroProps) {
-  const projectCount = 5;
-  const totalCityCount = 32;
+  organization,
+  projects,
+  isLoading = false,
+}) => {
+  // Calculate stats
+  const totalProjects = projects?.length ?? 0;
+  const totalCities = new Set(
+    projects?.flatMap((project) => project.cities.map((city) => city.cityId)),
+  ).size;
+  const displayName =
+    organization?.name === "cc_organization_default"
+      ? t("default-organization")
+      : organization?.name;
 
   return (
     <Box bg="content.alternative" w="full" px="56px" py="56px">
@@ -38,9 +47,7 @@ export function OrganizationHero({
                   maxW="550px"
                   truncate
                 >
-                  {organization.name === "cc_organization_default"
-                    ? t("default-organization")
-                    : organization.name}
+                  {displayName}
                 </DisplayMedium>
               ) : (
                 isLoading && <Spinner size="lg" color="white" />
@@ -62,10 +69,7 @@ export function OrganizationHero({
                     fontWeight="semibold"
                     lineHeight="32"
                   >
-                    <>
-                      {projectCount}{" "}
-                      <span className="text-[16px]">{t("projects")}</span>
-                    </>
+                    {totalProjects} {t("projects")}
                   </Text>
                   <Tooltip
                     content={t("active-projects-tooltip")}
@@ -102,7 +106,7 @@ export function OrganizationHero({
                     fontWeight="semibold"
                     lineHeight="32"
                   >
-                    {totalCityCount} {t("cities")}
+                    {totalCities} {t("cities")}
                   </Text>
                   <Tooltip
                     content={t("city-count-tooltip")}
@@ -178,4 +182,4 @@ export function OrganizationHero({
       </Box>
     </Box>
   );
-}
+};

@@ -105,11 +105,7 @@ export function OrganizationHero({
                   </Box>
                 </Box>
                 <Box className="flex align-baseline gap-3">
-                  <Icon
-                    as={MdLocationCity}
-                    boxSize={6}
-                    fill="background.overlay"
-                  />
+                  <Icon as={MdLocationCity} boxSize={6} fill="base.light" />
                   <Box>
                     <Box className="flex gap-1">
                       <Text
@@ -148,11 +144,7 @@ export function OrganizationHero({
                   </Box>
                 </Box>
                 <Box className="flex align-baseline gap-3">
-                  <Icon
-                    as={ModulesIcon}
-                    boxSize={6}
-                    fill="background.overlay"
-                  />
+                  <Icon as={ModulesIcon} boxSize={6} fill="base.light" />
                   <Box>
                     <Box className="flex gap-1">
                       <Text

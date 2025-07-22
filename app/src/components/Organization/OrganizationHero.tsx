@@ -26,7 +26,7 @@ export function OrganizationHero({
 
   return (
     <Box bg="content.alternative" w="full" px="56px" py="56px">
-      <Box className="flex mx-auto max-w-full h-[240px]">
+      <Box className="flex mx-auto max-w-full w-[950px] h-[240px]">
         <Box className="flex gap-[24px] flex-col w-full">
           <Box className="flex flex-col gap-2">
             <Box className="flex items-center gap-4">

@@ -1,13 +1,14 @@
 "use client";
-import { Box, Card, Heading, Text } from "@chakra-ui/react";
-
-import React, { useState } from "react";
-import { format } from "date-fns";
-import { de, enUS, es, fr, it, pt } from "date-fns/locale";
 import { api } from "@/services/api";
+import { Card, Box, Text, Heading, Icon, SimpleGrid } from "@chakra-ui/react";
+import { Button } from "@/components/ui/button";
+import { de, enUS, es, fr, it, pt } from "date-fns/locale";
+import { format } from "date-fns";
 import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import { TFunction } from "i18next";
-
+import { Trans } from "react-i18next/TransWithoutContext";
+import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
 import {
   AccordionItem,
   AccordionItemContent,
@@ -53,7 +54,15 @@ function YearCard({
     <Card.Root
       onClick={onClick}
       key={year}
-      className="flex flex-row h-[120px] duration-300 cursor-pointer items-center px-4 gap-4 shadow-none"
+      display="flex"
+      flexDirection="row"
+      h="120px"
+      transitionDuration="300ms"
+      cursor="pointer"
+      alignItems="center"
+      px={4}
+      gap={4}
+      shadow="none"
       backgroundColor={isActive ? "background.neutral" : ""}
       borderWidth="2px"
       border="solid"
@@ -67,7 +76,7 @@ function YearCard({
           : {}
       }
     >
-      <Box className="flex flex-col gap-2">
+      <Box display="flex" flexDirection="column" gap={2}>
         <Heading
           fontSize="title.sm"
           fontWeight="medium"
@@ -113,9 +122,13 @@ export function YearSelectorCard({
     <Box
       backgroundColor="base.light"
       borderRadius="rounded"
-      className="max-w-full flex flex-col px-6 py-8"
+      maxW="full"
+      display="flex"
+      flexDirection="column"
+      px={6}
+      py={8}
     >
-      <Box className="grid grid-cols-4 gap-4 py-4">
+      <SimpleGrid columns={4} gap={4} py={4}>
         {inventories.slice(0, 4).map((year, i) => (
           <YearCard
             cityId={cityId}
@@ -128,11 +141,11 @@ export function YearSelectorCard({
             t={t}
           />
         ))}
-      </Box>
+      </SimpleGrid>
       {
         /*if more than 4*/
         inventories.length > 4 && (
-          <Box className="w-full items-center justify-center">
+          <Box w="full" alignItems="center" justifyContent="center">
             <AccordionRoot border="none" collapsible w="full">
               <AccordionItem
                 value=""
@@ -141,7 +154,7 @@ export function YearSelectorCard({
                 border="none"
               >
                 <AccordionItemContent padding={0}>
-                  <Box className="grid grid-cols-4 gap-4">
+                  <SimpleGrid columns={4} gap={4}>
                     {inventories.slice(4).map((year, i) => (
                       <YearCard
                         key={year.year}
@@ -154,11 +167,12 @@ export function YearSelectorCard({
                         t={t}
                       />
                     ))}
-                  </Box>
+                  </SimpleGrid>
                 </AccordionItemContent>
                 <AccordionItemTrigger
                   onClick={toggleAccordion}
-                  className="flex justify-center"
+                  display="flex"
+                  justifyContent="center"
                   background="none"
                   color="content.tertiary"
                   gap={2}
@@ -169,7 +183,7 @@ export function YearSelectorCard({
                     fontSize="button.md"
                     letterSpacing="wider"
                     fontStyle="normal"
-                    className="hover:underline hover:text-[#001EA7]"
+                    _hover={{ textDecoration: "underline", color: "#001EA7" }}
                   >
                     {isAccordionOpen ? t("view-less") : t("view-more")}
                   </Text>

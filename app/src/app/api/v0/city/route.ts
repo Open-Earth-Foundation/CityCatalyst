@@ -49,7 +49,8 @@ export const POST = apiHandler(async (req, { session }) => {
     throw new createHttpError.Forbidden("Organization is not active");
   }
 
-  if (project.cities.length === project.cityCountLimit) {
+  if (Number(project.cities.length) >= Number(project.cityCountLimit)) {
+    logger.error("City count limit reached for project");
     throw new createHttpError.BadRequest("city-count-limit-reached");
   }
 

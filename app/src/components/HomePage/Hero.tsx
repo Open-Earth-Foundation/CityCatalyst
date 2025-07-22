@@ -56,15 +56,23 @@ export function Hero({
 
   return (
     <>
-      <Box
-        bg="content.alternative"
-        className="w-full h-[491px] pt-[150px]"
-        px={8}
-      >
-        <Box className="flex mx-auto max-w-full w-[1090px]">
-          <Box className="w-full h-[240px] flex flex-col justify-center">
-            <Box className="flex h-[240px]">
-              <Box className="flex gap-[24px] flex-col h-full w-full">
+      <Box bg="content.alternative" w="full" h="491px" pt="150px" px={8}>
+        <Box display="flex" mx="auto" maxW="full" w="1090px">
+          <Box
+            w="full"
+            h="240px"
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+          >
+            <Box display="flex" h="240px">
+              <Box
+                display="flex"
+                gap="24px"
+                flexDirection="column"
+                h="full"
+                w="full"
+              >
                 <Text
                   fontSize="headline.sm"
                   color="background.overlay"
@@ -73,7 +81,7 @@ export function Hero({
                 >
                   {!inventory ? <>{t("welcome")}</> : null}
                 </Text>
-                <Box className="flex flex-col gap-2">
+                <Box display="flex" flexDirection="column" gap={2}>
                   {!isPublic &&
                   hasFeatureFlag(FeatureFlags.PROJECT_OVERVIEW_ENABLED) ? (
                     <Link
@@ -84,7 +92,7 @@ export function Hero({
                   ) : (
                     <ProjectTitle inventory={inventory} t={t} />
                   )}
-                  <Box className="flex items-center gap-4">
+                  <Box display="flex" alignItems="center" gap={4}>
                     {inventory?.city ? (
                       <>
                         <CircleFlag
@@ -100,7 +108,7 @@ export function Hero({
                           color="base.light"
                           fontWeight="semibold"
                           lineHeight="52"
-                          className="flex"
+                          display="flex"
                         >
                           <span data-testid="hero-city-name">
                             {inventory?.city?.name}
@@ -112,15 +120,15 @@ export function Hero({
                     )}
                   </Box>
                 </Box>
-                <Box className="flex gap-8 mt-[24px]">
-                  <Box className="flex align-baseline gap-3">
+                <Box display="flex" gap={8} mt="24px">
+                  <Box display="flex" alignItems="baseline" gap={3}>
                     <Icon
                       as={MdArrowOutward}
                       boxSize={6}
                       fill="sentiment.negativeDefault"
                     />
                     <Box>
-                      <Box className="flex gap-1">
+                      <Box display="flex" gap={1}>
                         <Text
                           fontFamily="heading"
                           color="base.light"
@@ -131,7 +139,9 @@ export function Hero({
                           <>
                             {value}{" "}
                             {/* eslint-disable-next-line i18next/no-literal-string */}
-                            <span className="text-[16px]">{unit}CO2e</span>
+                            <Text as="span" fontSize="16px">
+                              {unit}CO2e
+                            </Text>
                           </>
                         </Text>
                         <Tooltip
@@ -162,10 +172,10 @@ export function Hero({
                       </Text>
                     </Box>
                   </Box>
-                  <Box className="flex align-baseline gap-3">
+                  <Box display="flex" alignItems="baseline" gap={3}>
                     <Icon as={MdGroup} boxSize={6} fill="background.overlay" />
                     <Box>
-                      <Box className="flex gap-1">
+                      <Box display="flex" gap={1}>
                         {population?.population ? (
                           <Text
                             fontFamily="heading"
@@ -175,11 +185,11 @@ export function Hero({
                             lineHeight="32"
                           >
                             {shortenNumber(population.population)}
-                            <span className="text-[16px]">
+                            <Text as="span" fontSize="16px">
                               {population?.population
                                 ? getShortenNumberUnit(population.population)
                                 : ""}
-                            </span>
+                            </Text>
                           </Text>
                         ) : (
                           <Text
@@ -228,14 +238,14 @@ export function Hero({
                       </Text>
                     </Box>
                   </Box>
-                  <Box className="flex align-baseline gap-3">
+                  <Box display="flex" alignItems="baseline" gap={3}>
                     <Icon
                       as={MdOutlineAspectRatio}
                       boxSize={6}
                       fill="background.overlay"
                     />
                     <Box>
-                      <Box className="flex gap-1">
+                      <Box display="flex" gap={1}>
                         {inventory?.city.area === null ||
                         inventory?.city.area! === 0 ? (
                           <Text
@@ -257,9 +267,9 @@ export function Hero({
                           >
                             {Math.round(inventory?.city.area!).toLocaleString()}
                             {/* eslint-disable-next-line i18next/no-literal-string */}
-                            <span className="text-[16px]">
+                            <Text as="span" fontSize="16px">
                               km<sup>2</sup>
-                            </span>
+                            </Text>
                           </Text>
                         )}
                         <Tooltip

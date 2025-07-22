@@ -74,7 +74,7 @@ export default function OrganizationPage(props: {
           )}
         </SimpleGrid>
         <NextLink
-          href="https://citycatalyst.openearth.org"
+          href="https://citycatalyst.openearth.org/learning-hub"
           target="_blank"
           rel="noopener noreferrer"
           style={{ width: "100%" }}

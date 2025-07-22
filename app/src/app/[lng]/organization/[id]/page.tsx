@@ -1,55 +1,18 @@
 "use client";
 import { OrganizationHero } from "@/components/Organization/OrganizationHero";
+import ProjectCard from "@/components/Organization/ProjectCard";
+import ProgressLoader from "@/components/ProgressLoader";
 import { BodyLarge, BodyMedium } from "@/components/Texts/Body";
 import { ButtonMedium } from "@/components/Texts/Button";
 import { HeadlineLarge, HeadlineSmall } from "@/components/Texts/Headline";
 import { LabelLarge } from "@/components/Texts/Label";
 import { useTranslation } from "@/i18n/client";
-import type { CityAttributes } from "@/models/City";
-import type { ProjectAttributes } from "@/models/Project";
-import { useGetProjectsQuery, useGetOrganizationQuery } from "@/services/api";
+import { useGetOrganizationQuery, useGetProjectsQuery } from "@/services/api";
 import { ProjectWithCities } from "@/util/types";
-import { Card, HStack, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
-import type { TFunction } from "i18next";
+import { Card, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { use } from "react";
-import {
-  MdArrowForward,
-  MdLocationCity,
-  MdPersonOutline,
-} from "react-icons/md";
-
-interface ProjectCardProps {
-  t: TFunction;
-  project: ProjectWithCities;
-}
-
-function ProjectCard({ project }: ProjectCardProps) {
-  return (
-    <Card.Root shadow="2dp" borderRadius="8px">
-      <Card.Header>
-        <HeadlineSmall>{project.name}</HeadlineSmall>
-      </Card.Header>
-      <Card.Body>{project.description}</Card.Body>
-      <Card.Footer>
-        <HStack>
-          <Icon
-            as={MdLocationCity}
-            boxSize="24px"
-            color="interactive.control"
-          />
-          <BodyMedium>{project.cities.length}</BodyMedium>
-          <Icon
-            as={MdPersonOutline}
-            boxSize="24px"
-            color="interactive.control"
-          />
-          <BodyMedium>{project.cities.length}</BodyMedium>
-        </HStack>
-      </Card.Footer>
-    </Card.Root>
-  );
-}
+import { MdArrowForward } from "react-icons/md";
 
 export default function OrganizationPage(props: {
   params: Promise<{ lng: string; id: string }>;
@@ -72,7 +35,7 @@ export default function OrganizationPage(props: {
   if (orgLoading || projectsLoading) {
     return (
       <VStack w="full" h="full" alignItems="center" justifyContent="center">
-        <BodyLarge>{t("loading")}</BodyLarge>
+        <ProgressLoader />
       </VStack>
     );
   }

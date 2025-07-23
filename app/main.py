@@ -41,6 +41,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:8000",  # Domain for using Swagger UI for local testing
+        "http://localhost:3000",  # Frontend development server
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],

@@ -53,6 +53,7 @@ import {
   FormulaInputValuesResponse,
   DataSourceResponse,
 } from "@/util/types";
+import type { HIAPResponse } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -83,7 +84,7 @@ export const api = createApi({
     "ProjectUsers",
     "UserAccessStatus",
     "Cities",
-    "Cap",
+    "Hiap",
     "Themes",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
@@ -1136,16 +1137,18 @@ export const api = createApi({
         }),
         providesTags: ["Inventory"],
       }),
-      getCap: builder.query<
-        string,
+      getHiap: builder.query<
+        HIAPResponse,
         { inventoryId: string; actionType: ACTION_TYPES; lng: LANGUAGES }
       >({
         query: ({ inventoryId, actionType, lng }) => ({
-          url: `inventory/${inventoryId}/cap?actionType=${actionType}&lng=${lng}`,
+          url: `inventory/${inventoryId}/hiap?actionType=${actionType}&lng=${lng}`,
           method: "GET",
         }),
-        transformResponse: (response: { data: string }) => response.data,
-        providesTags: ["Cap"],
+        transformResponse: (response: { data: HIAPResponse }) => {
+          return response.data;
+        },
+        providesTags: ["Hiap"],
       }),
       setOrgWhiteLabel: builder.mutation({
         query: (data: {
@@ -1362,7 +1365,7 @@ export const {
   useGetAllCitiesInSystemQuery,
   useGetUserProjectsQuery,
   useTransferCitiesMutation,
-  useGetCapQuery,
+  useGetHiapQuery,
   useGetThemesQuery,
   useSetOrgWhiteLabelMutation,
   useGetOrganizationForInventoryQuery,

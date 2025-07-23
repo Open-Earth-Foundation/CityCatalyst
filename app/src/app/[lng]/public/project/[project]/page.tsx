@@ -183,7 +183,7 @@ export default function ProjectPage(props: {
             methodologyLink=""
           />
           <LinkCard
-            title="CAP"
+            title="HIAP"
             description="Climate risk assessment, focusing on vulnerabilities and adaptations strategies."
             link={`https://cap.openearth.dev/#/city/${selectedCity?.name}`}
             disabled={!selectedCity}

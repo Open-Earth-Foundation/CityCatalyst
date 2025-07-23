@@ -1,8 +1,10 @@
 {
   "action-type-mitigation": "Atténuation",
   "action-type-adaptation": "Adaptation",
-  "tab-cap-title": "Priorisation de l'action climatique",
+  "tab-hiap-title": "Priorisation des actions climatiques",
   "loading": "Chargement des actions...",
+  "error-loading-data": "Erreur lors du chargement des données",
+  "no-actions-found": "Aucune action trouvée",
   "priority": "Priorité",
   "action-name": "Nom de l'Action",
   "hazards": "Dangers",
@@ -17,9 +19,5 @@
   "action-description": "Description de l'action",
   "adaptation-effectiveness-by-hazard": "Efficacité de l'Adaptation par Risque",
   "ranking": "Classement",
-  "hazard": "",
-  "sector": "",
-  "effectiveness-level": "",
-  "cost-level": "",
-  "timeline": "[object Object]"
+  "prioritizing-actions": "Les actions sont en cours de priorisation pour votre ville. Veuillez revenir dans 15 minutes."
 }

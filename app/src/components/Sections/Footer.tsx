@@ -14,8 +14,8 @@ const Footer = ({ lng }: { lng: string }) => {
   const { organization } = useOrganizationContext();
   const logoUrl = organization?.logoUrl;
   return (
-    <Box as="footer" w="full" h="320px" bg="#00001f" pt={48}>
-      <Box w="full" px={64}>
+    <Box as="footer" w="full" h="320px" bg="#00001f" pt={"48px"}>
+      <Box w="full" px={"64px"}>
         <Box display="flex" justifyContent="space-between" w="full" pb={10}>
           <Box>
             {logoUrl ? (
@@ -86,7 +86,7 @@ const Footer = ({ lng }: { lng: string }) => {
           </Box>
           <Box>
             <Link href="mailto:info@openearth.org">
-              <Button h={48} minW={150} gap={3} borderRadius="full">
+              <Button h={"48px"} minW={"150px"} gap={3} borderRadius="48px">
                 <Text
                   color="base.light"
                   fontFamily="heading"
@@ -121,11 +121,13 @@ const Footer = ({ lng }: { lng: string }) => {
             <>v{currentVersion}</>
           </Text>
           <Box
-            h={20}
-            w={61}
+            h={"20px"}
+            w={"61px"}
             display="flex"
             alignItems="center"
             justifyContent="center"
+            bg="border.neutral"
+            borderRadius="20px"
           >
             <Text
               fontFamily="heading"

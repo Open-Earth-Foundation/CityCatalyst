@@ -24,13 +24,7 @@ const ActionCardSmall: React.FC<ActionCardSmallProps> = ({
       py={0}
       px={6}
     >
-      <Box
-        display="flex"
-        alignItems="center"
-        h="100px"
-        _hover={{ shadow: "xl" }}
-        cursor="pointer"
-      >
+      <Box display="flex" alignItems="center" h="100px" cursor="pointer">
         <Box
           display="flex"
           alignItems="center"
@@ -38,6 +32,8 @@ const ActionCardSmall: React.FC<ActionCardSmallProps> = ({
           minH="48px"
           minW="48px"
           borderRadius="full"
+          bg="interactive.secondary"
+          color="white"
         >
           {icon}
         </Box>

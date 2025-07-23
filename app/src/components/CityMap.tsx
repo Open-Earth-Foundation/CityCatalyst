@@ -51,7 +51,7 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
         <Box
           w={width}
           h={height}
-          className="absolute top-0 left-0 z-[1000] pointer-events-none"
+          className="relative top-0 left-0 z-[1000] pointer-events-none"
         >
           <Center h="full">
             <Spinner size="lg" />
@@ -73,7 +73,9 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
           }}
         >
           {data?.data && (
-            <GeoJsonFeature feature={{ type: "Feature", geometry: data.data }} />
+            <GeoJsonFeature
+              feature={{ type: "Feature", geometry: data.data }}
+            />
           )}
         </GeoJson>
       </Map>

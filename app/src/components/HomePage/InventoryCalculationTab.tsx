@@ -95,7 +95,7 @@ export default function InventoryCalculationTab({
               <Trans t={t}>uploaded-data</Trans>
             </Badge>
           </Box>
-          <Box display="flex" flexDirection="column" gap={24} py={24}>
+          <Box display="flex" flexDirection="column" gap={8} py={8}>
             <BlueSubtitle t={t} text={"sector-data"} />
             <Text
               fontFamily="heading"

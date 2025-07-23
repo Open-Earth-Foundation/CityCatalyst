@@ -28,6 +28,7 @@ import {
   Input,
   InputAddon,
   Link,
+  Stack,
   Text,
 } from "@chakra-ui/react";
 import { MdCheck, MdInfoOutline, MdSearch, MdWarning } from "react-icons/md";
@@ -306,7 +307,7 @@ export default function SelectCityStep({
       <Box w="full">
         <Card.Root p={6} shadow="none" px="24px" py="32px">
           <Card.Body>
-            <form className="space-y-8">
+            <Stack gap="4">
               {EnterpriseMode && (
                 <Box w="full">
                   <SelectRoot
@@ -391,7 +392,21 @@ export default function SelectCityStep({
                 {onInputClicked && (
                   <Box
                     shadow="2dp"
-                    className="h-auto max-h-[272px] transition-all duration-150 overflow-scroll flex flex-col py-3 gap-3 rounded-lg w-full absolute bg-white z-50 mt-2 border border-[1px solid #E6E7FF] mt-20"
+                    h="auto"
+                    maxH="272px"
+                    transition="all 150ms"
+                    overflow="auto"
+                    display="flex"
+                    flexDirection="column"
+                    py={3}
+                    gap={3}
+                    borderRadius="lg"
+                    w="full"
+                    position="absolute"
+                    bg="white"
+                    zIndex={50}
+                    mt={20}
+                    border="1px solid #E6E7FF"
                   >
                     {!isLoading && !cityInputQuery && <RecentSearches t={t} />}
                     {isLoading && <p className="px-4">Fetching Cities...</p>}
@@ -402,21 +417,31 @@ export default function SelectCityStep({
                           <Box
                             onClick={() => handleSetCity(city)}
                             key={city.actor_id}
-                            className="h-[72px] py-3 w-full flex flex-col justify-center group px-4 hover:bg-[#2351DC] transition-all duration-150 cursor-pointer"
+                            h="72px"
+                            py={3}
+                            w="full"
+                            display="flex"
+                            flexDirection="column"
+                            justifyContent="center"
+                            px={4}
+                            transition="all 150ms"
+                            cursor="pointer"
+                            className="group"
+                            _hover={{ bg: "#2351DC" }}
                           >
                             <Text
-                              className="group-hover:text-white"
                               color="content.secondary"
                               fontSize="body.lg"
                               fontFamily="body"
                               fontWeight="normal"
                               lineHeight="24"
                               letterSpacing="wide"
+                              _groupHover={{ color: "white" }}
                             >
                               {city.name}
                             </Text>
                             <Text
-                              className="group-hover:text-[#E8EAFB]"
+                              _groupHover={{ color: "#E8EAFB" }}
                               color="content.tertiary"
                               fontSize="body.lg"
                               fontFamily="body.md"
@@ -547,7 +572,7 @@ export default function SelectCityStep({
                   </Box>
                 </Box>
               )}
-            </form>
+            </Stack>
           </Card.Body>
         </Card.Root>
       </Box>

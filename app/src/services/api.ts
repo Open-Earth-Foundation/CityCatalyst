@@ -1261,11 +1261,11 @@ export const api = createApi({
       }),
       getModules: builder.query<ModuleAttributes[], void>({
         query: () => "modules",
-        transformResponse: (response: ModuleAttributes[]) => response,
+        transformResponse: (response: { data: ModuleAttributes[] }) => response.data,
       }),
       getProjectModules: builder.query<ModuleAttributes[], string>({
         query: (projectId: string) => `projects/${projectId}/modules`,
-        transformResponse: (response: ModuleAttributes[]) => response,
+        transformResponse: (response: { data: ModuleAttributes[] }) => response.data,
       }),
     };
   },

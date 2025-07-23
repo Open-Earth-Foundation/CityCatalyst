@@ -4,6 +4,7 @@ import {
   type InventoryValueAttributes,
   type PopulationAttributes,
   type UserAttributes,
+  type ModuleAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import {
@@ -1258,6 +1259,14 @@ export const api = createApi({
         }),
         invalidatesTags: ["ProjectUsers"],
       }),
+      getModules: builder.query<ModuleAttributes[], void>({
+        query: () => "modules",
+        transformResponse: (response: { data: ModuleAttributes[] }) => response.data,
+      }),
+      getProjectModules: builder.query<ModuleAttributes[], string>({
+        query: (projectId: string) => `projects/${projectId}/modules`,
+        transformResponse: (response: { data: ModuleAttributes[] }) => response.data,
+      }),
     };
   },
 });
@@ -1362,5 +1371,7 @@ export const {
   useUpdateOrganizationActiveStatusMutation,
   useGetDataSourceQuery,
   useUpdateUserRoleInOrganizationMutation,
+  useGetModulesQuery,
+  useGetProjectModulesQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

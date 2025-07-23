@@ -49,5 +49,9 @@
     "<5 years": "Weniger als 5 Jahre",
     "5-10 years": "5 bis 10 Jahre",
     ">10 years": "Mehr als 10 Jahre"
-  }
+  },
+  "error-loading-data": "Fehler beim Laden der Daten",
+  "no-actions-found": "Keine Aktionen gefunden",
+  "adaptation-effectiveness": "Anpassungseffektivität",
+  "primary-purpose": "[object Object]"
 }

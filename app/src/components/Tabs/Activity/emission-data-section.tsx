@@ -307,14 +307,14 @@ const EmissionDataSection = ({
                     }
                   >
                     <Icon
-                      className="group-hover:text-white"
+                      _hover={{ color: "white" }}
                       color="sentiment.negativeDefault"
                       as={FiTrash2}
                       h="24px"
                       w="24px"
                     />
                     <Text
-                      className="group-hover:text-white"
+                      _hover={{ color: "white" }}
                       color="content.primary"
                       fontSize="body.lg"
                     >

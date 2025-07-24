@@ -327,12 +327,22 @@ export default function OnboardingSetup(props: {
             />
           )}
         </Box>
-        <div className="bg-white w-full fixed z-[9999] bottom-0 left-0  pb-8 px-1 transition-all">
+        <Box
+          bg="white"
+          w="full"
+          position="fixed"
+          bottom={0}
+          left={0}
+          pb={8}
+          px={1}
+          zIndex={9999}
+          transition="all"
+        >
           <Box w="full" display="flex" flexDir="column" gap="32px">
-            <Box className="w-full">
-              <div className="w-full">
+            <Box w="full">
+              <Box w="full">
                 <ProgressSteps steps={steps} currentStep={activeStep} />
-              </div>
+              </Box>
             </Box>
             <Box w="full" display="flex" justifyContent="end" px="135px">
               {activeStep == 0 && (
@@ -407,7 +417,7 @@ export default function OnboardingSetup(props: {
               )}
             </Box>
           </Box>
-        </div>
+        </Box>
       </Box>
     </>
   );

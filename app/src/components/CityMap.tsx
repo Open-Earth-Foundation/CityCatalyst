@@ -46,12 +46,18 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
   }, [locode, data, height, width]);
 
   return (
-    <Box w={width} h={height} className="relative">
+    <Box w={width} h={height} position="relative">
       {isLoading && (
         <Box
           w={width}
           h={height}
-          className="relative top-0 left-0 z-[1000] pointer-events-none"
+          style={{
+            position: "relative",
+            top: 0,
+            left: 0,
+            zIndex: 1000,
+            pointerEvents: "none",
+          }}
         >
           <Center h="full">
             <Spinner size="lg" />

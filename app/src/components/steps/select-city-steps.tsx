@@ -321,7 +321,7 @@ export default function SelectCityStep({
                     <SelectLabel display="flex" alignItems="center" gap="8px">
                       <Text
                         fontFamily="heading"
-                        className="capitalize"
+                        textTransform="capitalize"
                         color="content.secondary"
                       >
                         {t("project")}
@@ -409,7 +409,7 @@ export default function SelectCityStep({
                     border="1px solid #E6E7FF"
                   >
                     {!isLoading && !cityInputQuery && <RecentSearches t={t} />}
-                    {isLoading && <p className="px-4">Fetching Cities...</p>}
+                    {isLoading && <Text px={4}>Fetching Cities...</Text>}
                     {isSuccess &&
                       cities &&
                       cities.map((city: OCCityAttributes) => {
@@ -455,7 +455,13 @@ export default function SelectCityStep({
                         );
                       })}
                     {isSuccess && cities.length == 0 && (
-                      <Box className="py-2 w-full items-center flex gap-4 px-4">
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={4}
+                        px={4}
+                        py={2}
+                      >
                         <Box h="full" display="flex" alignItems="center">
                           <Icon
                             as={NoResultsIcon}

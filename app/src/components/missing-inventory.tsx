@@ -69,7 +69,8 @@ const MissingInventory = ({ lng }: { lng: string }) => {
           >
             {t("not_part_of_team_description")}. {t("possible_mistake")}{" "}
             <Link
-              className="underline text-nowrap"
+              textDecoration="underline"
+              whiteSpace="nowrap"
               fontWeight="semibold"
               color="content.link"
               href={"mailto://" + process.env.NEXT_PUBLIC_SUPPORT_EMAILS}

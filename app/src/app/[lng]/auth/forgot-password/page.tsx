@@ -56,7 +56,10 @@ export default function ForgotPassword(props: {
       <Text my={4} color="#7A7B9A">
         {t("forgot-password-details")}
       </Text>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{ gap: "16px", display: "flex", flexDirection: "column" }}
+      >
         <EmailInput register={register} error={errors.email} t={t} />
         {error && <Text color="semantic.danger">{error}</Text>}
         <Button

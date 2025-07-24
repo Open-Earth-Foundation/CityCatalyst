@@ -39,9 +39,9 @@ const CustomMultiValue = (props: MultiValueProps<any>) => {
       <Text fontSize="sm" fontWeight="bold" color="content.alternative" mr={2}>
         {data.label}
       </Text>
-      <div className="" onClick={removeProps.onClick}>
+      <Box onClick={removeProps.onClick}>
         <CloseButton size="sm" color="content.alternative" />
-      </div>
+      </Box>
     </Box>
   );
 };

@@ -68,10 +68,13 @@ export default function UpdatePassword(props: {
   return (
     <>
       <Heading size="xl">{t("update-password-heading")}</Heading>
-      <Text className="my-4" color="#7A7B9A">
+      <Text my={4} color="#7A7B9A">
         {t("update-password-details")}
       </Text>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{ gap: "16px", display: "flex", flexDirection: "column" }}
+      >
         <Field
           helperText={
             <>

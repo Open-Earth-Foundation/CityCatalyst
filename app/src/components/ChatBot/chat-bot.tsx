@@ -492,11 +492,8 @@ export default function ChatBot({
   };
 
   return (
-    <div className="flex flex-col w-full stretch">
-      <div
-        className="overflow-y-auto max-h-[35vh] space-y-4"
-        ref={messagesWrapperRef}
-      >
+    <Box display="flex" flexDirection="column" w="full" h="stretch">
+      <Box overflowY="auto" maxH="35vh" spaceY={4} ref={messagesWrapperRef}>
         {messages.map((m, i) => {
           const isUser = m.role === "user";
           return (
@@ -514,12 +511,18 @@ export default function ChatBot({
                 </Box>
                 <Spacer />
                 <Box
-                  className={`rounded-2xl border-r-t px-6 py-4 ${isUser ? userStyles : botStyles}`}
+                  borderTopLeftRadius={isUser ? "2xl" : "0"}
+                  borderBottomLeftRadius={isUser ? "2xl" : "0"}
+                  borderTopRightRadius={isUser ? "0" : "2xl"}
+                  borderBottomRightRadius={isUser ? "0" : "2xl"}
+                  borderTopRadius="2xl"
+                  px={6}
+                  py={4}
                   bg={isUser ? "content.link" : "base.light"}
                 >
                   <>
                     <Text
-                      className="whitespace-pre-wrap"
+                      whiteSpace="pre-wrap"
                       color={isUser ? "base.light" : "content.tertiary"}
                       letterSpacing="0.5px"
                       lineHeight="24px"
@@ -591,11 +594,11 @@ export default function ChatBot({
           );
         })}
         {/* <div ref={messagesEndRef} /> */}
-      </div>
+      </Box>
 
       <Box divideX="2px" mt={2} mb={6} borderColor="border.neutral" />
 
-      <div className="overflow-x-auto space-x-2 whitespace-nowrap pb-3">
+      <Box display="flex" overflowX="auto" gap={2} whiteSpace="nowrap" pb="3">
         {suggestions.map((suggestion, i) => (
           <Button
             key={i}
@@ -619,7 +622,7 @@ export default function ChatBot({
             {suggestion.preview}
           </Button>
         ))}
-      </div>
+      </Box>
 
       <form onSubmit={handleSubmit} ref={formRef}>
         <HStack mt={1}>
@@ -632,7 +635,9 @@ export default function ChatBot({
           <Textarea
             h="80px"
             ref={inputRef}
-            className="flex-grow w-full p-4"
+            flexGrow={1}
+            w="full"
+            p={4}
             value={userInput}
             placeholder={t("ask-assistant")}
             onChange={(e) => setUserInput(e.target.value)}
@@ -659,6 +664,6 @@ export default function ChatBot({
           )}
         </HStack>
       </form>
-    </div>
+    </Box>
   );
 }

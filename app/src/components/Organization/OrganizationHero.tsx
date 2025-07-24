@@ -146,7 +146,7 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
           </Box>
         </Box>
         <Box mt={-50}>
-          {/* TODO create organization map or re-use project map? */}
+          {/* TODO ON-4362 create organization map */}
           <CityMap locode="BR SAO" width={422} height={317} />
         </Box>
       </Box>

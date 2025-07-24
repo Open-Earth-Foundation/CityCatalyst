@@ -12,9 +12,6 @@ export const GET = apiHandler(async (_req, { session, params }) => {
   }
   let inventoryId = params.inventory;
 
-  if (inventoryId === "default") {
-    inventoryId = await UserService.updateDefaultInventoryId(session.user.id);
-  }
   const inventory = await UserService.findUserInventory(
     inventoryId,
     session,
@@ -33,7 +30,9 @@ export const GET = apiHandler(async (_req, { session, params }) => {
     ],
     true,
   );
-
+  if (inventoryId === "default") {
+    inventoryId = await UserService.updateDefaults(session.user.id);
+  }
   const progressData =
     await InventoryProgressService.getInventoryProgress(inventory);
 

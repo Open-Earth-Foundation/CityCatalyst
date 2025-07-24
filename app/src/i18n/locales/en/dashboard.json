@@ -204,5 +204,19 @@
   "yes-i-understand": "Yes, I understand",
   "account-frozen-warning-text": "Your account is frozen. Please reach out to an admin or to <bold>{{email}}</bold> to reactivate it",
   "account-frozen-header": "Your account is frozen",
-  "multiple-sources": "Multiple sources"
+  "multiple-sources": "Multiple sources",
+  "all-projects": "All projects",
+  "check-your-dashboard": "Check your dashboard",
+  "check-your-dashboard-description": "Keep track of your city's main metrics in one place",
+  "go-to-dashboard-cta": "Go to dashboard",
+  "tools-title": "Your tools",
+  "by": "By {{author}}",
+  "open": "OPEN",
+  "journey": {
+    "assess-and-analyze": "Assess and analyze",
+    "plan": "Plan",
+    "implement": "Implement",
+    "GHGI": "GHG Inventories",
+    "HIAP": "Actions & Plans"
+  }
 }

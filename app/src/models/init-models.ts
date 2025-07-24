@@ -537,6 +537,11 @@ export function initModels(sequelize: Sequelize) {
     as: "dataSourceActivityData",
     foreignKey: "activitydataId",
   });
+  User.belongsTo(City, { as: "defaultCity", foreignKey: "defaultCityId" });
+  City.hasMany(User, {
+    as: "usersWithDefaultCity",
+    foreignKey: "defaultCityId",
+  });
   User.belongsToMany(City, {
     through: CityUser,
     as: "cities",

@@ -119,11 +119,17 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
       logger.error("[UserInviteAccept] No inventory found", { cityIds });
       throw new createHttpError.InternalServerError("No inventory found");
     }
-    await user.update({ defaultInventoryId: inventory.inventoryId });
-    logger.info("[UserInviteAccept] Updated user defaultInventoryId", {
-      userId: user.userId,
-      inventoryId: inventory.inventoryId,
+    await user.update({
+      defaultInventoryId: inventory.inventoryId,
+      defaultCityId: inventory.cityId,
     });
+    logger.info(
+      "[UserInviteAccept] Updated user defaultInventoryId and defaultCityId",
+      {
+        userId: user.userId,
+        inventoryId: inventory.inventoryId,
+      },
+    );
   }
 
   logger.info("[UserInviteAccept] PATCH complete", {

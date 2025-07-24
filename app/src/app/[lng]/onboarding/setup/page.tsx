@@ -10,7 +10,7 @@ import {
   useSetUserInfoMutation,
 } from "@/services/api";
 
-import { OCCityAttributes, ProjectResponse } from "@/util/types";
+import { OCCityAttributes } from "@/util/types";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
@@ -215,10 +215,11 @@ export default function OnboardingSetup(props: {
         globalWarmingPotentialType: globalWarmingPotential,
       }).unwrap();
       await setUserInfo({
-        cityId: city?.cityId!,
         defaultInventoryId: inventory.inventoryId,
+        defaultCityId: city?.cityId!,
       }).unwrap();
       setConfirming(false);
+      // [ON-4301] TODO reroute to new home
       router.push(
         `/onboarding/done/${data.locode}/${data.year}/${inventory.inventoryId}?project=${projectId}`,
       );

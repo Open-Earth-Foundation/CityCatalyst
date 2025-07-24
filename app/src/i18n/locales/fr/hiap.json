@@ -19,5 +19,12 @@
   "action-description": "Description de l'action",
   "adaptation-effectiveness-by-hazard": "Efficacité de l'Adaptation par Risque",
   "ranking": "Classement",
-  "prioritizing-actions": "Les actions sont en cours de priorisation pour votre ville. Veuillez revenir dans 15 minutes."
+  "prioritizing-actions": "Les actions sont en cours de priorisation pour votre ville. Veuillez revenir dans 15 minutes.",
+  "adaptation-effectiveness": "Efficacité de l'Adaptation",
+  "hazard": "",
+  "sector": "",
+  "effectiveness-level": "",
+  "cost-level": "",
+  "timeline": "[object Object]",
+  "primary-purpose": ""
 }

@@ -229,7 +229,8 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
       <Box backgroundColor="white" borderRadius="8px" boxShadow="2dp">
         <Box>
           <Box
-            className="py-3 px-4"
+            py={3}
+            px={4}
             borderBottom="1px solid"
             borderColor="border.overlay"
           >
@@ -244,16 +245,26 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
               {tData("total-emissions")}
             </Text>
           </Box>
-          <Box py="3" px="4" className="flex flex-col gap-2.5 mt-2">
+          <Box
+            py={3}
+            px={4}
+            display="flex"
+            flexDirection="column"
+            gap={2.5}
+            mt={2}
+          >
             {point.data.segments
               .filter((s) => s.value != 0)
               .map((segment) => (
                 <Box
                   key={segment.id}
-                  className="flex text-start items-center gap-2 justify-between"
+                  display="flex"
+                  flexDirection="column"
+                  gap={2}
+                  justifyContent="space-between"
                 >
                   <Box
-                    className="h-4 w-4"
+                    boxSize="4"
                     style={{ backgroundColor: segment.color }}
                   ></Box>
                   <Text
@@ -283,11 +294,11 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
               ))}
           </Box>
           <Box
-            marginTop="2"
+            mt={2}
             display="flex"
             justifyContent="space-between"
-            py="3"
-            px="4"
+            py={3}
+            px={4}
             borderTop="1px solid"
             borderColor="border.overlay"
             alignItems="center"
@@ -296,7 +307,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
               fontSize="body.md"
               fontWeight="600"
               textAlign="left"
-              className="capitalize"
+              textTransform="capitalize"
               color="content.primary"
             >
               {tData("total")}
@@ -337,8 +348,8 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
   const margin = { top: 50, right: 130, bottom: 50, left: 120 };
 
   return (
-    <div className="min-h-[600px]">
-      <div className="h-[600px] relative">
+    <Box h="600px">
+      <Box h="600px" position="relative">
         <ResponsiveBar
           borderRadius={5}
           enableLabel={false}
@@ -416,39 +427,46 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
               }),
           ]}
         />
-      </div>
+      </Box>
       <Text
         color="content.secondary"
         fontSize="label.large"
-        className="capitalize"
+        textTransform="capitalize"
         fontWeight="500"
       >
         {tData("legend")}
       </Text>
-      <Box className="flex items-center justify-start flex-wrap mt-3 gap-2">
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="flex-start"
+        flexWrap="wrap"
+        mt={3}
+        gap={2}
+      >
         {SECTORS.map((sector, index) => (
           <Box
             key={sector.name}
             backgroundColor="background.neutral"
             borderRadius="50px"
-            className="flex items-center justify-center px-3 py-1.5"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            px={3}
+            py={1.5}
             mr={4}
           >
             <Box
-              className="h-4 w-4"
+              boxSize="4"
               style={{ backgroundColor: allSectorColors[index] }}
             ></Box>
-            <Text
-              fontSize="body.md"
-              className="ml-2"
-              color="content.alternative"
-            >
+            <Text fontSize="body.md" ml={2} color="content.alternative">
               {tData(toKebabCaseModified(sector.name))}
             </Text>
           </Box>
         ))}
       </Box>
-    </div>
+    </Box>
   );
 };
 

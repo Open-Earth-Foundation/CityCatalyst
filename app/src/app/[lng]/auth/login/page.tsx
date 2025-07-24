@@ -120,15 +120,18 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
       <Text my={4} color="content.tertiary">
         {t("login-details")}
       </Text>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{ gap: "16px", display: "flex", flexDirection: "column" }}
+      >
         <EmailInput register={register} error={errors.email} t={t} />
         <PasswordInput register={register} error={errors.password} t={t} />
         <Text color="semantic.danger">{error}</Text>
-        <div className="w-full text-right">
-          <Link href="/auth/forgot-password" className="underline">
+        <Box w="full" textAlign="right">
+          <Link href="/auth/forgot-password" textDecoration="underline">
             {t("forgot-password")}
           </Link>
-        </div>
+        </Box>
         <Button
           type="submit"
           formNoValidate
@@ -142,13 +145,16 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
       </form>
       {callbackUrl.includes("token") && (
         <Text
-          className="w-full text-center mt-4 text-sm"
+          w="full"
+          textAlign="center"
+          mt={4}
+          fontSize="sm"
           color="content.tertiary"
         >
           {t("no-account")}{" "}
           <Link
             href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-            className="underline"
+            textDecoration="underline"
           >
             {t("sign-up")}
           </Link>

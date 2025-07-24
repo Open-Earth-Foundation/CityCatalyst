@@ -26,7 +26,7 @@ export default function AddDataIntro(props: {
   const { data: inventoryData } = api.useGetInventoryQuery(inventory);
 
   return (
-    <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
+    <Box pt={16} pb={16} w="1090px" mx="auto" px={4}>
       <Link href={`/${lng}/${inventory}`} _hover={{ textDecoration: "none" }}>
         <Box
           display="flex"

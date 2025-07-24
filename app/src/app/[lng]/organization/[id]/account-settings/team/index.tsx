@@ -398,15 +398,19 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
                             }}
                           >
                             <Icon
-                              className="group-hover:text-white"
                               color="sentiment.negativeDefault"
                               as={RiDeleteBin6Line}
                               h="24px"
                               w="24px"
+                              _groupHover={{
+                                color: "white",
+                              }}
                             />
                             <Text
-                              className="group-hover:text-white"
                               color="content.primary"
+                              _groupHover={{
+                                color: "white",
+                              }}
                             >
                               {t("remove-user")}
                             </Text>

@@ -73,12 +73,10 @@ const AdminOrganizationTeamPage = (props: {
 
   const { showSuccessToast } = UseSuccessToast({
     title: t("role-update-success-toast-title"),
-    description: t("role-update-success-toast-description"),
   });
 
   const { showErrorToast } = UseErrorToast({
     title: t("invite-error-toast-title"),
-    description: t("invite-error-toast-description"),
   });
 
   const [selectedProject, setSelectedProject] = React.useState<string[]>([]);

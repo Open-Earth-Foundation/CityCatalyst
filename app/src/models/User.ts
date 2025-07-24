@@ -22,6 +22,7 @@ export interface UserAttributes {
   title?: string;
   // User's preferred language for emails and UI
   preferredLanguage?: string;
+  defaultCityId?: string | null;
 }
 
 export type UserPk = "userId";
@@ -36,7 +37,8 @@ export type UserOptionalAttributes =
   | "lastUpdated"
   | "defaultInventoryId"
   | "title"
-  | "preferredLanguage";
+  | "preferredLanguage"
+  | "defaultCityId";
 export type UserCreationAttributes = Optional<
   UserAttributes,
   UserOptionalAttributes
@@ -57,6 +59,7 @@ export class User
   defaultInventoryId?: string;
   title?: string;
   preferredLanguage?: LANGUAGES;
+  defaultCityId?: string | null;
 
   // User belongsTo Inventory via defaultInventoryId
   defaultInventory!: Inventory;
@@ -197,6 +200,15 @@ export class User
           type: DataTypes.STRING(255),
           allowNull: true,
           field: "preferred_language",
+        },
+        defaultCityId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "City",
+            key: "city_id",
+          },
+          field: "default_city_id",
         },
       },
       {

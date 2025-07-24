@@ -25,6 +25,7 @@ import {
   FailedSourceResult,
   RemovedSourceResult,
 } from "@/backend/DataSourceService";
+import { ProjectAttributes } from "@/models/Project";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -91,6 +92,7 @@ export interface UserInfoResponse {
   userId: string;
   name: string;
   defaultInventoryId: string | null;
+  defaultCityId: string | null;
   role: Roles;
   email?: string;
   preferredLanguage?: string;
@@ -478,22 +480,8 @@ export enum ACTION_TYPES {
   Adaptation = "adaptation",
 }
 
-export type CityWithProjectDataResponse = {
-  cityId: string;
-  name: string;
-  locode: string;
-  populationYear: number;
-  country: string;
-  population: number;
-  project?: {
-    name: string;
-    cityCountLimit: number;
-    organization: {
-      organizationId: string;
-      name: string;
-      contactEmail: string;
-    };
-  };
+export type CityWithProjectDataResponse = CityAttributes & {
+  project?: ProjectAttributes;
 };
 
 export type ThemeResponse = {

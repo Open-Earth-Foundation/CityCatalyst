@@ -91,24 +91,12 @@ export function ActionDrawer({
   let adaptationEffectivenessFirstCol: [string, string | null][] = [];
   let adaptationEffectivenessSecondCol: [string, string | null][] = [];
   if (action.type === ACTION_TYPES.Adaptation) {
-    console.log(
-      "action",
-      JSON.stringify(action.adaptationEffectivenessPerHazard),
-    ); // TODO NINA
     const entries = Object.entries(
       (action as AdaptationAction).adaptationEffectivenessPerHazard,
     ).filter(([_, effectiveness]) => effectiveness !== null);
     const splitIndex = Math.ceil(entries.length / 2);
     adaptationEffectivenessFirstCol = entries.slice(0, splitIndex);
-    console.log(
-      "adaptationEffectivenessFirstCol",
-      JSON.stringify(adaptationEffectivenessFirstCol),
-    ); // TODO NINA
     adaptationEffectivenessSecondCol = entries.slice(splitIndex);
-    console.log(
-      "adaptationEffectivenessSecondCol",
-      JSON.stringify(adaptationEffectivenessSecondCol),
-    ); // TODO NINA
   }
 
   return (

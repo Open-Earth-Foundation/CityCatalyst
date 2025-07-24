@@ -19,6 +19,7 @@ const userData: UserAttributes = {
 
 const userUpdate = {
   defaultInventoryId: inventoryId,
+  defaultCityId: cityId,
 };
 
 const invalidUserUpdate = {
@@ -63,6 +64,7 @@ describe("User API", () => {
     });
     expect(user).not.toBeNull();
     expect(user!.defaultInventoryId).toBe(inventoryId);
+    expect(user!.defaultCityId).toBe(cityId);
   });
 
   it("should not update a user with invalid data", async () => {
@@ -76,5 +78,6 @@ describe("User API", () => {
     expect(user!.defaultInventoryId).not.toBe(
       invalidUserUpdate.defaultInventoryId,
     );
+    expect(user!.defaultCityId).not.toBe(invalidUserUpdate.defaultCityId);
   });
 });

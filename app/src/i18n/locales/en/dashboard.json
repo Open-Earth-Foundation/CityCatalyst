@@ -204,5 +204,27 @@
   "yes-i-understand": "Yes, I understand",
   "account-frozen-warning-text": "Your account is frozen. Please reach out to an admin or to <bold>{{email}}</bold> to reactivate it",
   "account-frozen-header": "Your account is frozen",
-  "multiple-sources": "Multiple sources"
+  "multiple-sources": "Multiple sources",
+  "all-projects": "All projects",
+  "check-your-dashboard": "Check your dashboard",
+  "check-your-dashboard-description": "Keep track of your city's main metrics in one place",
+  "go-to-dashboard-cta": "Go to dashboard",
+  "tools-title": "Your tools",
+  "by": "By {{author}}",
+  "launch": "Launch",
+  "no-modules-available": "No modules available yet",
+  "no-modules-description": "You don't have any active modules for this stage! Contact us to get personalized help.",
+  "contact-us": "CONTACT US",
+  "journey": {
+    "assess-&-analyze": "Assess and Analyze",
+    "assess-&-analyze-description": "Support cities in creating a solid evidence base to understand their climate impact and vulnerabilities. This phase focuses on assessing emissions and climate risks to set the foundation for effective planning.",
+    "plan": "Plan",
+    "plan-description": "Enable cities to transition from understanding to strategy. This phase supports action planning and aligning efforts with available financing opportunities.",
+    "implement": "Implement",
+    "implement-description": "Support cities in moving from plans to funding and execution. This phase ensures ideas turn into funded projects aligned with city goals and financing mechanisms.",
+    "monitor-evaluate-&-report": "Monitor, Evaluate & Report",
+    "monitor-evaluate-&-report-description": "Support cities in moving from plans to funding and execution. This phase ensures ideas turn into funded projects aligned with city goals and financing mechanisms.",
+    "GHGI": "GHG Inventories",
+    "HIAP": "Actions & Plans"
+  }
 }

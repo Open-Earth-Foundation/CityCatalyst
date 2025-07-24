@@ -11,23 +11,26 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
+import { useTranslation } from "@/i18n/client";
 
 interface ProjectLimitModalProps {
-  t: TFunction;
+  lng: string;
   onOpenChange: (val: boolean) => void;
   isOpen: boolean;
   onClose: () => void;
 }
 
 const ProjectLimitModal = ({
-  t,
   onOpenChange,
   isOpen,
   onClose,
+  lng,
 }: ProjectLimitModalProps) => {
   const closeFunction = () => {
     onClose();
   };
+
+  const { t } = useTranslation(lng, "dashboard");
 
   return (
     <DialogRoot

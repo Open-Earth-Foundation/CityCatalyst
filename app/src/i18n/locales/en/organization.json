@@ -16,5 +16,6 @@
   "city-count-tooltip": "The number of cities in which the organization has active projects.",
   "pro": "Pro",
   "active-plan-tooltip": "The organization is currently subscribed to this plan.",
-  "active-plan": "Active Plan"
+  "active-plan": "Active Plan",
+  "organization-load-failed": "Unable to load organization"
 }

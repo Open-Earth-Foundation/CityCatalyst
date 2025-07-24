@@ -40,7 +40,9 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
         <Box className="flex gap-[24px] flex-col w-full">
           <Box className="flex flex-col gap-2 mr-8">
             <Box className="flex items-center gap-4">
-              {organization ? (
+              {isLoading ? (
+                <Spinner size="lg" color="white" />
+              ) : organization ? (
                 <DisplayMedium
                   data-testid="hero-organization-name"
                   color="base.light"
@@ -50,7 +52,7 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
                   {displayName}
                 </DisplayMedium>
               ) : (
-                isLoading && <Spinner size="lg" color="white" />
+                <Text color="base.light">{t("organization-load-failed")}</Text>
               )}
             </Box>
             <BodyLarge color="background.overlay">

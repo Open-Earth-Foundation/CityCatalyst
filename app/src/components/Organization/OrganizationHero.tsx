@@ -5,8 +5,9 @@ import type { TFunction } from "i18next";
 import dynamic from "next/dynamic";
 import { MdGridView, MdInfoOutline, MdLocationCity } from "react-icons/md";
 import { ModulesIcon } from "../icons";
-import { BodyLarge } from "../Texts/Body";
+import { BodyLarge, BodyMedium } from "../Texts/Body";
 import { DisplayMedium } from "../Texts/Display";
+import { HeadlineSmall } from "../Texts/Headline";
 
 // only render map on the client
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
@@ -52,7 +53,9 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
                   {displayName}
                 </DisplayMedium>
               ) : (
-                <Text color="base.light">{t("organization-load-failed")}</Text>
+                <HeadlineSmall color="base.light">
+                  {t("organization-load-failed")}
+                </HeadlineSmall>
               )}
             </Box>
             <BodyLarge color="background.overlay">
@@ -85,31 +88,18 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
                     />
                   </Tooltip>
                 </Box>
-                <Text
-                  fontSize="body.md"
-                  color="background.overlay"
-                  fontStyle="normal"
-                  fontWeight={400}
-                  lineHeight="20px"
-                  letterSpacing="wide"
-                >
+                <BodyMedium color="background.overlay">
                   {t("active-in-total")}
-                </Text>
+                </BodyMedium>
               </Box>
             </Box>
             <Box className="flex align-baseline gap-3">
               <Icon as={MdLocationCity} boxSize={6} fill="base.light" />
               <Box>
                 <Box className="flex gap-1">
-                  <Text
-                    fontFamily="heading"
-                    color="base.light"
-                    fontSize="headline.sm"
-                    fontWeight="semibold"
-                    lineHeight="32"
-                  >
+                  <HeadlineSmall color="base.light">
                     {totalCities} {t("cities")}
-                  </Text>
+                  </HeadlineSmall>
                   <Tooltip
                     content={t("city-count-tooltip")}
                     positioning={{
@@ -124,31 +114,16 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
                     />
                   </Tooltip>
                 </Box>
-                <Text
-                  fontSize="body.md"
-                  color="background.overlay"
-                  fontStyle="normal"
-                  fontWeight={400}
-                  lineHeight="20px"
-                  letterSpacing="wide"
-                >
+                <BodyMedium color="background.overlay">
                   {t("across-projects")}
-                </Text>
+                </BodyMedium>
               </Box>
             </Box>
             <Box className="flex align-baseline gap-3">
               <Icon as={ModulesIcon} boxSize={6} fill="base.light" />
               <Box>
                 <Box className="flex gap-1">
-                  <Text
-                    fontFamily="heading"
-                    color="base.light"
-                    fontSize="headline.sm"
-                    fontWeight="semibold"
-                    lineHeight="32"
-                  >
-                    {t("pro")}
-                  </Text>
+                  <HeadlineSmall color="base.light">{t("pro")}</HeadlineSmall>
                   <Tooltip
                     content={t("active-plan-tooltip")}
                     positioning={{
@@ -163,16 +138,9 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
                     />
                   </Tooltip>
                 </Box>
-                <Text
-                  fontSize="body.md"
-                  color="background.overlay"
-                  fontStyle="normal"
-                  fontWeight={400}
-                  lineHeight="20px"
-                  letterSpacing="wide"
-                >
+                <BodyMedium color="background.overlay">
                   {t("active-plan")}
-                </Text>
+                </BodyMedium>
               </Box>
             </Box>
           </Box>

@@ -34,12 +34,17 @@ export default function CitiesLayout(props: {
   }, [data?.user.role, lng, router, t]);
 
   return (
-    <Box className="h-full flex flex-col" bg="background.backgroundLight">
+    <Box
+      h="full"
+      display="flex"
+      flexDirection="column"
+      bg="background.backgroundLight"
+    >
       <NavigationBar lng={lng} />
       <Toaster />
-      <div className="w-full h-full">
+      <Box w="full" h="full">
         {data?.user?.role === Roles.Admin ? children : <ProgressLoader />}
-      </div>
+      </Box>
     </Box>
   );
 }

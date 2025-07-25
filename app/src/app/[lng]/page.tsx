@@ -18,7 +18,7 @@ export default function PrivateHome(props: {
       bg="background.backgroundLight"
     >
       <NavigationBar showMenu lng={lng} />
-      <HomePage lng={lng} isPublic={false} />;
+      <HomePage lng={lng} isPublic={false} />
     </Box>
   );
 }

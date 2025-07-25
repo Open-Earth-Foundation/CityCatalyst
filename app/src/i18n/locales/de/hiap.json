@@ -1,7 +1,7 @@
 {
   "action-type-mitigation": "Minderung",
   "action-type-adaptation": "Anpassung",
-  "tab-cap-title": "Priorisierung von Klimamaßnahmen",
+  "tab-hiap-title": "Priorisierung von Klimamaßnahmen",
   "loading": "Lade Maßnahmen...",
   "priority": "Priorität",
   "action-name": "Name der Maßnahme",
@@ -17,6 +17,7 @@
   "action-description": "Beschreibung der Maßnahme",
   "adaptation-effectiveness-by-hazard": "Anpassungswirksamkeit nach Gefahr",
   "ranking": "Rangfolge",
+  "prioritizing-actions": "Aktionen werden für Ihre Stadt priorisiert. Bitte schauen Sie in 15 Minuten wieder vorbei.",
   "hazard": {
     "droughts": "Dürren",
     "heatwaves": "Hitzewellen",
@@ -48,5 +49,9 @@
     "<5 years": "Weniger als 5 Jahre",
     "5-10 years": "5 bis 10 Jahre",
     ">10 years": "Mehr als 10 Jahre"
-  }
+  },
+  "error-loading-data": "Fehler beim Laden der Daten",
+  "no-actions-found": "Keine Aktionen gefunden",
+  "adaptation-effectiveness": "Anpassungseffektivität",
+  "primary-purpose": "[object Object]"
 }

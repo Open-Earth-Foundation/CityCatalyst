@@ -182,6 +182,12 @@ import {
   ThemeAttributes,
   ThemeCreationAttributes,
 } from "@/models/Theme";
+import type { ModuleAttributes, ModuleCreationAttributes } from "./Module";
+import { Module as _Module } from "./Module";
+import type { ProjectModulesAttributes, ProjectModulesCreationAttributes } from "./ProjectModules";
+import { ProjectModules as _ProjectModules } from "./ProjectModules";
+import { HighImpactActionRanking as _HighImpactActionRanking, HighImpactActionRankingAttributes, HighImpactActionRankingCreationAttributes } from "./HighImpactActionRanking";
+import { HighImpactActionRanked as _HighImpactActionRanked, HighImpactActionRankedAttributes, HighImpactActionRankedCreationAttributes } from "./HighImpactActionRanked";
 
 export {
   _ActivityData as ActivityData,
@@ -227,6 +233,10 @@ export {
   _ProjectAdmin as ProjectAdmin,
   _ProjectInvite as ProjectInvite,
   _Theme as Theme,
+  _HighImpactActionRanking as HighImpactActionRanking,
+  _HighImpactActionRanked as HighImpactActionRanked,
+  _Module as Module,
+  _ProjectModules as ProjectModules,
 };
 
 export type {
@@ -312,6 +322,14 @@ export type {
   ProjectInviteCreationAttributes,
   ThemeAttributes,
   ThemeCreationAttributes,
+  HighImpactActionRankingAttributes,
+  HighImpactActionRankingCreationAttributes,
+  HighImpactActionRankedAttributes,
+  HighImpactActionRankedCreationAttributes,
+  ModuleAttributes,
+  ModuleCreationAttributes,
+  ProjectModulesAttributes,
+  ProjectModulesCreationAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -360,6 +378,10 @@ export function initModels(sequelize: Sequelize) {
   const ProjectAdmin = _ProjectAdmin.initModel(sequelize);
   const ProjectInvite = _ProjectInvite.initModel(sequelize);
   const Theme = _Theme.initModel(sequelize);
+  const HighImpactActionRankingModel = _HighImpactActionRanking.initModel(sequelize);
+  const HighImpactActionRankedModel = _HighImpactActionRanked.initModel(sequelize);
+  const Module = _Module.initModel(sequelize);
+  const ProjectModules = _ProjectModules.initModel(sequelize);
 
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
@@ -920,6 +942,41 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "userId",
     as: "projectInvites",
   });
+  ProjectModules.belongsTo(Project, {
+    as: "project",
+    foreignKey: "project_id",
+  });
+  Project.hasMany(ProjectModules, {
+    as: "projectModules",
+    foreignKey: "project_id",
+  });
+  ProjectModules.belongsTo(Module, {
+    as: "module",
+    foreignKey: "module_id",
+  });
+  Module.hasMany(ProjectModules, {
+    as: "projectModules",
+    foreignKey: "module_id",
+  });
+
+  // Associations for HighImpactActionRanking and HighImpactActionRanked
+  HighImpactActionRankingModel.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(HighImpactActionRankingModel, {
+    as: "highImpactActionRankings",
+    foreignKey: "inventoryId",
+  });
+
+  HighImpactActionRankedModel.belongsTo(HighImpactActionRankingModel, {
+    as: "highImpactActionRanking",
+    foreignKey: "hiaRankingId",
+  });
+  HighImpactActionRankingModel.hasMany(HighImpactActionRankedModel, {
+    as: "highImpactActionRanked",
+    foreignKey: "hiaRankingId",
+  });
 
   return {
     ActivityData: ActivityData,
@@ -965,5 +1022,9 @@ export function initModels(sequelize: Sequelize) {
     ProjectAdmin: ProjectAdmin,
     ProjectInvite: ProjectInvite,
     Theme: Theme,
+    HighImpactActionRanking: HighImpactActionRankingModel,
+    HighImpactActionRanked: HighImpactActionRankedModel,
+    Module: Module,
+    ProjectModules: ProjectModules,
   };
 }

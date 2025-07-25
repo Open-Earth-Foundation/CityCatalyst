@@ -4,15 +4,15 @@ import { InventoryResponse } from "@/util/types";
 import { Box, Tabs } from "@chakra-ui/react";
 import React from "react";
 import { ACTION_TYPES } from "@/util/types";
-import { CapActionTab } from "@/app/[lng]/[inventory]/CapTab/CapActionTab";
+import { HiapTab } from "@/app/[lng]/[inventory]/HiapTab/HiapTab";
 
-interface capTabProps {
+interface HiapTabWrapperProps {
   lng: string;
   inventory: InventoryResponse;
 }
 
-const CapTab = ({ lng, inventory }: capTabProps) => {
-  const { t } = useTranslation(lng, "cap");
+const HiapTabWrapper = ({ lng, inventory }: HiapTabWrapperProps) => {
+  const { t } = useTranslation(lng, "hiap");
 
   return (
     <Box>
@@ -26,7 +26,7 @@ const CapTab = ({ lng, inventory }: capTabProps) => {
         </Tabs.List>
         {Object.values(ACTION_TYPES).map((actionType) => (
           <Tabs.Content key={actionType} value={actionType}>
-            <CapActionTab type={actionType} inventory={inventory} />
+            <HiapTab type={actionType} inventory={inventory} />
           </Tabs.Content>
         ))}
       </Tabs.Root>
@@ -34,4 +34,4 @@ const CapTab = ({ lng, inventory }: capTabProps) => {
   );
 };
 
-export default CapTab;
+export default HiapTabWrapper;

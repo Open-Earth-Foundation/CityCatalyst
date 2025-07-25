@@ -183,7 +183,10 @@ export function YearSelectorCard({
                     fontSize="button.md"
                     letterSpacing="wider"
                     fontStyle="normal"
-                    _hover={{ textDecoration: "underline", color: "#001EA7" }}
+                    _hover={{
+                      textDecoration: "underline",
+                      color: "content.alternative",
+                    }}
                   >
                     {isAccordionOpen ? t("view-less") : t("view-more")}
                   </Text>

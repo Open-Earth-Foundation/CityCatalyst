@@ -167,13 +167,6 @@ const FilesTable = ({ t, files }: { t: TFunction; files: UserFile[] }) => {
                               letterSpacing="wide"
                               fontWeight="normal"
                               fontSize="body.lg"
-                              style={{
-                                color: "content.secondary",
-                                fontFamily: "heading",
-                                letterSpacing: "wide",
-                                fontWeight: "normal",
-                                fontSize: "body.lg",
-                              }}
                             >
                               {t("download-file")}
                             </Text>
@@ -205,13 +198,6 @@ const FilesTable = ({ t, files }: { t: TFunction; files: UserFile[] }) => {
                             letterSpacing="wide"
                             fontWeight="normal"
                             fontSize="body.lg"
-                            style={{
-                              color: "content.secondary",
-                              fontFamily: "heading",
-                              letterSpacing: "wide",
-                              fontWeight: "normal",
-                              fontSize: "body.lg",
-                            }}
                           >
                             {t("delete-file")}
                           </Text>
@@ -238,13 +224,6 @@ const FilesTable = ({ t, files }: { t: TFunction; files: UserFile[] }) => {
                             letterSpacing="wide"
                             fontWeight="normal"
                             fontSize="body.lg"
-                            style={{
-                              color: "content.secondary",
-                              fontFamily: "heading",
-                              letterSpacing: "wide",
-                              fontWeight: "normal",
-                              fontSize: "body.lg",
-                            }}
                           >
                             {t("mark-as-completed")}
                           </Text>

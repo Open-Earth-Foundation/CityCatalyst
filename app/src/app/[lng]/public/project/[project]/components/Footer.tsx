@@ -1,7 +1,8 @@
 /* eslint-disable i18next/no-literal-string */
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Link, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import NextLink from "next/link";
 
 export interface FooterProps {
   copyright: string;
@@ -40,11 +41,11 @@ const Footer = ({ copyright, links }: FooterProps) => {
             Powered by open technology from
           </Text>
           <Box display="flex" alignItems="center" gap={3}>
-            <a
+            <Link
               href="https://openearth.org"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ display: "inline-block" }}
+              display="inline-block"
             >
               {organization.logoUrl ? (
                 <img
@@ -61,26 +62,26 @@ const Footer = ({ copyright, links }: FooterProps) => {
                   alt="CityCatalyst logo"
                 />
               )}
-            </a>
+            </Link>
           </Box>
         </Box>
 
         {/* Footer links */}
         <Box display="flex" gap={6}>
           {links.map((link, index) => (
-            <a
+            <Link
               key={index}
               href={link.href}
-              style={{
-                fontSize: "0.875rem",
-                color: "#D1D5DB",
-                transition: "color 0.2s",
-              }}
+              target="_blank"
+              rel="noopener noreferrer"
+              fontSize="0.875rem"
+              color="#D1D5DB"
+              transition="color 0.2s"
               onMouseOver={(e) => (e.currentTarget.style.color = "#fff")}
               onMouseOut={(e) => (e.currentTarget.style.color = "#D1D5DB")}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </Box>
       </Box>

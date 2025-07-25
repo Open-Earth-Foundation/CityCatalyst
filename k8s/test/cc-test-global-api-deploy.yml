@@ -21,19 +21,12 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: cc-global-api-db-configmap
           env:
             - name: PROJECT_NAME
-              value: "CityCatalyst Global API Test"
-            - name: DB_HOST
-              value: "cc-global-api-db"
-            - name: DB_PORT
-              value: "5432"
-            - name: DB_USER
-              value: "ccglobaltest"
-            - name: DB_PASSWORD
-              value: "ccglobaltest"
-            - name: DB_NAME
-              value: "ccglobaltest"
+              value: "CityCatalyst Global API"
           resources:
             limits:
               memory: "1024Mi"

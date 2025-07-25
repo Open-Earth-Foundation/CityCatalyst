@@ -72,6 +72,17 @@ from pathlib import Path
 import shap
 import logging
 
+# make the next line a relative import from the current file
+
+from ..data.test_data import (
+    dict_brcci,
+    dict_icare_0145,
+    dict_icare_0140,
+    dict_ipcc_0005,
+    dict_c40_0054,
+    DUMMY_CITY,
+)
+
 # Setup logging configuration
 logger = logging.getLogger(__name__)
 
@@ -132,8 +143,8 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
     action_A (dict): The details of the first action to compare.
     action_B (dict): The details of the second action to compare.
 
-    Returns:
-    int: 1 for action_A is preferred, -1 for action_B is preferred.
+        Returns:
+        int: 1 for action_A is preferred, -1 for action_B is preferred, 0 for uncertain prediction.
 
     Raises:
         ValueError: If the transformed dataframe contains keys with missing values.
@@ -669,24 +680,39 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
         return df
 
-    def predict_xgb(df: pd.DataFrame) -> int:
+    def predict_xgb(
+        df: pd.DataFrame, threshold: float = 0.5, margin: float = 0.0
+    ) -> int:
         """
-        Make a prediction based on the input DataFrame.
+        Make a prediction based on the input DataFrame using probabilities and a custom margin.
 
         Parameters:
             df (pd.DataFrame): The input DataFrame with transformed features.
+            threshold (float): Probability threshold for classification (default: 0.5).
+            margin (float): Margin around threshold for uncertain predictions (default: 0.1).
+                             If probability is within [threshold-margin, threshold+margin],
+                             the prediction is considered uncertain.
 
         Returns:
             int: The predicted label (1 for Action A, -1 for Action B).
         """
 
-        # Make a prediction using the model
-        prediction = loaded_model.predict(df)
+        # Get probability predictions using the model
+        # predict_proba returns probabilities for each class [P(class_0), P(class_1)]
+        probabilities = loaded_model.predict_proba(df)
 
-        # XBBoost model returns 1 for Action A and 0 for Action B
-        # Convert the prediction to the expected output format (1 or -1)
-        if prediction == 1:
-            return 1
+        # Extract probability for first element of the array (only one element) and Action A (class 1)
+        prob_action_a = probabilities[0][1]
+
+        # Define decision boundaries
+        lower_bound = threshold - margin
+        upper_bound = threshold + margin
+
+        # model.predict returns 1 for probability > 0.5 and 0 for probability <= 0.5
+        # We can model this behaviour here with .predict_proba to have more control over the margin
+        # However, this would only be fully relevant in a multi-class (e.g. 1, 0, -1) setting
+        if prob_action_a > upper_bound:
+            return 1  # Action A is preferred
         else:
             return -1
 
@@ -731,9 +757,11 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         raise ValueError(error_message)
 
     logger.debug("DataFrame input for model: \n%s", df_transformed.T)
-    # input("Press Enter to continue...")
 
     # Make a prediction with the model
+    # You can customize threshold and margin here with e.g. threshold=0.5 and margin=0.025
+    # Only use for multi-class (e.g. 1, 0, -1) setting
+    # If used, predict_xgb return values need to be adjusted.
     prediction = predict_xgb(df_transformed)
 
     # (Optional for explanation) Create a SHAP waterfall plot
@@ -743,412 +771,14 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
 
 if __name__ == "__main__":
-    from utils.logging_config import setup_logger
-    import logging
-
-    # Set up logging configuration
-    setup_logger()
-    logger = logging.getLogger(__name__)
-    # Calling it with test data
-    logger.info("Starting ml_comparator test run")
-
     # This is the same data used as in colab.
     # Notice: We changed the city data and the data we now use in production is different.
     # We cannot use the new city data for training, because the experts ranked on the old city data.
     # Therefore essentially all the new city data 'is new' to the model.
     # Here we use the same data to make sure we have the same pipeline in place both in this repo and in colab.
-    dict_brcci = {
-        "locode": "BRCCI",
-        "name": "Camaçari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "populationSize": 300372,
-        "populationDensity": 382.43,
-        "area": 758.73,
-        "elevation": 36,
-        "biome": "tropical_rainforest",
-        "socioEconomicFactors": {"lowIncome": "very_high"},
-        "accessToPublicServices": {
-            "inadequateWaterAccess": "very_low",
-            "inadequateSanitation": "low",
-        },
-        "totalEmissions": 3390145659.0,
-        "stationaryEnergyEmissions": 176766789.0,
-        "transportationEmissions": 295693000.0,
-        "wasteEmissions": 1124796988.0,
-        "ippuEmissions": 1720470000,
-        "afoluEmissions": 72418882.0,
-        "scope1Emissions": 3214434494.0,
-        "scope2Emissions": 171982146.0,
-        "scope3Emissions": 3729019.0,
-        "ccra": [
-            {
-                "keyimpact": "public health",
-                "hazard": "diseases",
-                "normalised_risk_score": 0.99,
-            },
-            {
-                "keyimpact": "water resources",
-                "hazard": "droughts",
-                "normalised_risk_score": 0.35978153341031,
-            },
-            {
-                "keyimpact": "food security",
-                "hazard": "droughts",
-                "normalised_risk_score": 0.644653441267234,
-            },
-            {
-                "keyimpact": "energy security",
-                "hazard": "droughts",
-                "normalised_risk_score": 0.989051161784754,
-            },
-            {
-                "keyimpact": "biodiversity",
-                "hazard": "droughts",
-                "normalised_risk_score": 0.0625445839710777,
-            },
-            {
-                "keyimpact": "public health",
-                "hazard": "heatwaves",
-                "normalised_risk_score": 0.99,
-            },
-            {
-                "keyimpact": "infrastructure",
-                "hazard": "heatwaves",
-                "normalised_risk_score": 0.493855416086134,
-            },
-            {
-                "keyimpact": "biodiversity",
-                "hazard": "heatwaves",
-                "normalised_risk_score": 0.223576599435519,
-            },
-            {
-                "keyimpact": "energy security",
-                "hazard": "heatwaves",
-                "normalised_risk_score": 0.99,
-            },
-            {
-                "keyimpact": "infrastructure",
-                "hazard": "landslides",
-                "normalised_risk_score": 0.797726778999126,
-            },
-            {
-                "keyimpact": "food security",
-                "hazard": "floods",
-                "normalised_risk_score": 0.99,
-            },
-            {
-                "keyimpact": "infrastructure",
-                "hazard": "sea-level-rise",
-                "normalised_risk_score": 0.00,
-            },
-        ],
-    }
-
-    dict_icare_0075 = {
-        "ActionID": "icare_0075",
-        "ActionName": "Set carbon emissions reduction targets for industrial sectors",
-        "ActionType": ["mitigation"],
-        "Hazard": None,
-        "Sector": ["ippu"],
-        "Subsector": ["industrial_processes"],
-        "PrimaryPurpose": ["ghg_reduction"],
-        "Description": "Establish clear and achievable carbon emissions reduction goals for industries and require periodic reporting to ensure progress.",
-        "CoBenefits": {
-            "air_quality": 2,
-            "water_quality": 1,
-            "habitat": 1,
-            "cost_of_living": 0,
-            "housing": 0,
-            "mobility": 0,
-            "stakeholder_engagement": 2,
-        },
-        "EquityAndInclusionConsiderations": None,
-        "GHGReductionPotential": {
-            "stationary_energy": None,
-            "transportation": None,
-            "waste": None,
-            "ippu": "80-100",
-            "afolu": None,
-        },
-        "AdaptationEffectiveness": None,
-        "CostInvestmentNeeded": "low",
-        "TimelineForImplementation": "5-10 years",
-        "Dependencies": [
-            "Development of a standardized carbon emissions measurement and reporting system.",
-            "Creation of regulatory frameworks to enforce emissions reduction goals.",
-            "Capacity-building for industries to monitor and report emissions effectively.",
-        ],
-        "KeyPerformanceIndicators": [
-            "Percentage of industries with established carbon reduction targets (%).",
-            "Reduction in total sectoral GHG emissions compared to baseline (tons of CO\u2082e).",
-            "Increase in adoption of renewable energy sources by industries (%).",
-        ],
-        "PowersAndMandates": ["local"],
-    }
-
-    dict_c40_0009 = {
-        "ActionID": "c40_0009",
-        "ActionName": "New Building Standards",
-        "ActionType": ["mitigation"],
-        "Hazard": None,
-        "Sector": ["stationary_energy"],
-        "Subsector": ["all"],
-        "PrimaryPurpose": ["ghg_reduction"],
-        "Description": '"New Building Standards" set guidelines for environmentally responsible construction, ensuring that new structures adhere to energy-efficient practices, thereby reducing carbon emissions and promoting sustainable urban development.',
-        "CoBenefits": {
-            "air_quality": 1,
-            "water_quality": 0,
-            "habitat": 0,
-            "cost_of_living": 0,
-            "housing": -1,
-            "mobility": 0,
-            "stakeholder_engagement": 0,
-        },
-        "EquityAndInclusionConsiderations": 'The "New Building Standards" promote equity and inclusion by ensuring that all new constructions, including those in vulnerable or underserved communities, adhere to energy-efficient practices. This helps to reduce energy costs for residents, making housing more affordable and accessible. Additionally, by prioritizing sustainable urban development, these standards can lead to improved living conditions and health outcomes in these communities, which often face disproportionate environmental burdens. Furthermore, the implementation of these standards can create job opportunities in green construction, benefiting local workers and fostering economic empowerment in underserved areas. Overall, the action considers the needs of vulnerable populations by promoting sustainable practices that enhance their quality of life and economic stability.',
-        "GHGReductionPotential": {
-            "stationary_energy": "0-19",
-            "transportation": None,
-            "waste": None,
-            "ippu": None,
-            "afolu": None,
-        },
-        "AdaptationEffectiveness": None,
-        "CostInvestmentNeeded": "low",
-        "TimelineForImplementation": "<5 years",
-        "Dependencies": [
-            "Regulatory framework to enforce building standards",
-            "Availability of sustainable construction materials",
-            "Training and education for builders and architects on energy-efficient practices",
-            "Monitoring and evaluation systems to assess compliance with standards",
-            "Public awareness and support for sustainable building practices",
-        ],
-        "KeyPerformanceIndicators": [
-            "Reduction in carbon emissions from new buildings",
-            "Percentage of new buildings meeting energy efficiency standards",
-            "Increase in the use of sustainable materials in construction",
-            "Number of buildings certified under green building standards",
-            "Energy consumption reduction in new constructions",
-            "Percentage of urban development projects incorporating green spaces",
-        ],
-        "PowersAndMandates": None,
-        "AdaptationEffectivenessPerHazard": None,
-        "biome": "none",
-    }
-
-    dict_c40_0023 = {
-        "ActionID": "c40_0023",
-        "ActionName": "Bus Emissions",
-        "ActionType": ["mitigation"],
-        "Hazard": None,
-        "Sector": ["transportation"],
-        "Subsector": ["on-road"],
-        "PrimaryPurpose": ["ghg_reduction"],
-        "Description": '"Bus Emissions" mitigation focuses on reducing the environmental impact of bus fleets. Implementing cleaner technologies and fuels helps minimize emissions, contributing to improved air quality and sustainable urban transportation.',
-        "CoBenefits": {
-            "air_quality": 1,
-            "water_quality": 0,
-            "habitat": 0,
-            "cost_of_living": 0,
-            "housing": 0,
-            "mobility": 0,
-            "stakeholder_engagement": 0,
-        },
-        "EquityAndInclusionConsiderations": 'The "Bus Emissions" mitigation action promotes equity and inclusion by targeting improvements in air quality, which directly benefits vulnerable and underserved communities that are often disproportionately affected by pollution. By implementing cleaner technologies and fuels in bus fleets, the action reduces harmful emissions in areas where low-income populations and marginalized groups reside, thereby addressing environmental justice concerns. Additionally, enhancing urban transportation through cleaner buses ensures that all community members, including those who rely on public transit, have access to healthier and more sustainable transportation options. This approach fosters inclusivity by prioritizing the needs of those who may have limited mobility or financial resources, ensuring that the benefits of cleaner air and improved transit are equitably distributed.',
-        "GHGReductionPotential": {
-            "stationary_energy": None,
-            "transportation": "20-39",
-            "waste": None,
-            "ippu": None,
-            "afolu": None,
-        },
-        "AdaptationEffectiveness": None,
-        "CostInvestmentNeeded": "medium",
-        "TimelineForImplementation": "<5 years",
-        "Dependencies": [
-            "Availability of cleaner technologies and fuels for bus fleets",
-            "Investment in infrastructure to support cleaner bus operations",
-            "Regulatory support and incentives for adopting low-emission buses",
-            "Public awareness and acceptance of cleaner transportation options",
-            "Collaboration between government, transit authorities, and manufacturers",
-        ],
-        "KeyPerformanceIndicators": [
-            "Reduction in CO2 emissions (tons)",
-            "Percentage of bus fleet using clean technologies",
-            "Fuel efficiency of bus fleet (miles per gallon)",
-            "Number of buses retrofitted or replaced with cleaner models",
-            "Air quality improvement metrics (e.g., PM2.5 levels)",
-            "Public transportation ridership rates",
-            "Cost savings from fuel efficiency improvements",
-            "Percentage reduction in nitrogen oxides (NOx) emissions",
-        ],
-        "PowersAndMandates": None,
-        "AdaptationEffectivenessPerHazard": None,
-        "biome": "none",
-    }
-
-    dict_icare_0145 = {
-        "ActionID": "icare_0145",
-        "ActionName": "Strengthen the healthcare network to attend to climate victims",
-        "ActionType": ["adaptation"],
-        "Hazard": [
-            "heatwaves",
-            "diseases",
-            "landslides",
-            "floods",
-            "storms",
-            "droughts",
-        ],
-        "Sector": None,
-        "Subsector": None,
-        "PrimaryPurpose": ["climate_resilience"],
-        "Description": "Improve the infrastructure of healthcare units to assist people who require medical care due to impacts associated with climate risks (climate victims), such as those affected by heat waves or floods, especially in more vulnerable areas. Develop action plans to prepare the healthcare network for extreme climate-related situations.",
-        "CoBenefits": {
-            "air_quality": 0,
-            "water_quality": 0,
-            "habitat": 0,
-            "cost_of_living": 0,
-            "housing": 0,
-            "mobility": 0,
-            "stakeholder_engagement": 2,
-        },
-        "EquityAndInclusionConsiderations": None,
-        "GHGReductionPotential": None,
-        "AdaptationEffectiveness": "high",
-        "CostInvestmentNeeded": "high",
-        "TimelineForImplementation": ">10 years",
-        "Dependencies": [
-            "Investment in the renovation and expansion of healthcare facilities, ensuring they are equipped to handle climate-related health impacts, particularly in vulnerable areas.",
-            "Development of action plans and training programs for healthcare professionals to respond to extreme climate events like heatwaves and floods.",
-            "Collaboration with local authorities, emergency response teams, and climate experts to create a comprehensive framework for preparing the healthcare network for climate risks.",
-        ],
-        "KeyPerformanceIndicators": [
-            "Number of healthcare facilities upgraded for climate-related emergencies.",
-            "Increase in healthcare staff trained in climate emergency response (%).",
-            "Number of climate-related injuries treated successfully.",
-            ".",
-        ],
-        "PowersAndMandates": ["national"],
-        "AdaptationEffectivenessPerHazard": {
-            "heatwaves": "high",
-            "diseases": "medium",
-            "landslides": "medium",
-            "floods": "high",
-            "storms": "high",
-            "droughts": "medium",
-        },
-    }
-
-    dict_icare_0140 = {
-        "ActionID": "icare_0140",
-        "ActionName": "Landslide Risk Assessment and Management",
-        "ActionType": ["adaptation"],
-        "Hazard": ["landslides"],
-        "Sector": None,
-        "Subsector": None,
-        "PrimaryPurpose": ["climate_resilience"],
-        "Description": "This action involves assessing and managing landslide risks by collecting data, mapping hazard areas, and conducting evacuation simulations. It aims to reduce the risks associated with landslides in areas prone to these events.",
-        "CoBenefits": {
-            "air_quality": 1,
-            "water_quality": 2,
-            "habitat": 2,
-            "cost_of_living": 1,
-            "housing": 1,
-            "mobility": 1,
-            "stakeholder_engagement": 2,
-        },
-        "EquityAndInclusionConsiderations": None,
-        "GHGReductionPotential": None,
-        "AdaptationEffectiveness": "high",
-        "CostInvestmentNeeded": "low",
-        "TimelineForImplementation": "<5 years",
-        "Dependencies": [
-            "Comprehensive planning and policy framework",
-            "Stakeholder participation",
-            "Capacity building and institutional support",
-        ],
-        "KeyPerformanceIndicators": [
-            "Coastal erosion rates",
-            "Water quality",
-            "Habitat health",
-        ],
-        "PowersAndMandates": ["local"],
-        "AdaptationEffectivenessPerHazard": {"landslides": "high"},
-    }
-
-    dict_icare_0141 = {
-        "ActionID": "icare_0141",
-        "ActionName": "Implementation of Wetlands",
-        "ActionType": ["adaptation"],
-        "Hazard": ["diseases", "floods"],
-        "Sector": None,
-        "Subsector": None,
-        "PrimaryPurpose": ["climate_resilience"],
-        "Description": "Implementation of wetlands using phytoremediation to remove pollutants from water and improve water quality.",
-        "CoBenefits": {
-            "air_quality": 1,
-            "water_quality": 2,
-            "habitat": 1,
-            "cost_of_living": 1,
-            "housing": 0,
-            "mobility": 0,
-            "stakeholder_engagement": 1,
-        },
-        "EquityAndInclusionConsiderations": None,
-        "GHGReductionPotential": None,
-        "AdaptationEffectiveness": "low",
-        "CostInvestmentNeeded": "medium",
-        "TimelineForImplementation": "<5 years",
-        "Dependencies": ["Maintenance"],
-        "KeyPerformanceIndicators": [
-            "Water quality improvement",
-            "Water flow rate",
-            "Maintenance costs",
-        ],
-        "PowersAndMandates": ["local"],
-        "AdaptationEffectivenessPerHazard": {"diseases": "low", "floods": "low"},
-        "biome": "wetlands",
-    }
-
-    dict_icare_0142 = {
-        "ActionID": "icare_0142",
-        "ActionName": "Improvement of Water Supply and Sanitation Systems",
-        "ActionType": ["adaptation"],
-        "Hazard": ["floods"],
-        "Sector": None,
-        "Subsector": None,
-        "PrimaryPurpose": ["climate_resilience"],
-        "Description": "This action involves implementing artesian wells, cisterns, and water supply systems, as well as improving water quality and expanding sanitation services in the city.",
-        "CoBenefits": {
-            "air_quality": 0,
-            "water_quality": 2,
-            "habitat": 1,
-            "cost_of_living": 1,
-            "housing": 1,
-            "mobility": 0,
-            "stakeholder_engagement": 1,
-        },
-        "EquityAndInclusionConsiderations": None,
-        "GHGReductionPotential": None,
-        "AdaptationEffectiveness": "high",
-        "CostInvestmentNeeded": "medium",
-        "TimelineForImplementation": "<5 years",
-        "Dependencies": [
-            "Infrastructure development",
-            "Financial resources",
-            "Technical expertise",
-        ],
-        "KeyPerformanceIndicators": [
-            "Access to safe water",
-            "Water quality",
-            "Sanitation coverage",
-        ],
-        "PowersAndMandates": ["local"],
-        "AdaptationEffectivenessPerHazard": {"floods": "high"},
-        "biome": "none",
-    }
 
     # result = ml_compare(dict_brcci, dict_icare_0145, dict_icare_0140)
-    result = ml_compare(dict_brcci, dict_c40_0009, dict_icare_0075)
+    result = ml_compare(DUMMY_CITY, dict_ipcc_0005, dict_c40_0054)
+    # result = ml_compare(DUMMY_CITY, dict_c40_0054, dict_ipcc_0005)
     # result = ml_compare(dict_brcci, dict_icare_0141, dict_icare_0142)
-    logger.info("Test completed. Preferred Action: %s", result)
+    print("Test completed. Preferred Action: %s", result)

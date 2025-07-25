@@ -3,6 +3,7 @@ from datetime import datetime
 import time
 import logging
 from prioritizer.utils.tournament import tournament_ranking
+from prioritizer.utils.tournament_quick_select import quickselect_top_k
 from prioritizer.utils.ml_comparator import ml_compare
 from utils.build_city_data import build_city_data
 from services.get_actions import get_actions
@@ -25,6 +26,15 @@ logger = logging.getLogger(__name__)
 
 
 def _execute_prioritization(task_uuid: str, background_task_input: Dict):
+    """
+    Execute a single prioritization task.
+
+    This function is called by the API to process a single city.
+    It extracts the necessary data from the city data, calls the prioritization logic,
+    and stores the result in the task.
+
+    It uses the slower but more accurate tournament_ranking function instead of the faster quickselect_top_k function.
+    """
     try:
         task_storage[task_uuid]["status"] = "running"
         logger.info(
@@ -175,8 +185,18 @@ def _execute_prioritization_bulk_subtask(
     subtask_idx: int,
     background_task_input: dict,
 ):
+    """
+    Execute a single subtask of a bulk prioritization task.
+
+    This function is called by the bulk prioritization task to process a single city.
+    It extracts the necessary data from the city data, calls the prioritization logic,
+    and stores the result in the subtask.
+
+    It uses the faster quickselect_top_k function instead of the slower tournament_ranking function.
+    """
     city_data = background_task_input["cityData"]
     prioritizationType = background_task_input["prioritizationType"]
+
     try:
         task_storage[main_task_id]["subtasks"][subtask_idx]["status"] = "running"
         # background_task_input = {"cityData": city_data}  # No longer needed, already provided
@@ -216,7 +236,6 @@ def _execute_prioritization_bulk_subtask(
                 _update_bulk_task_status(main_task_id)
                 return
             filteredActions = filter_actions_by_biome(cityData_dict, actions)
-
             rankedActionsMitigation = []
             rankedActionsAdaptation = []
 
@@ -231,8 +250,11 @@ def _execute_prioritization_bulk_subtask(
                     and isinstance(action["ActionType"], list)
                     and "mitigation" in action["ActionType"]
                 ]
-                mitigationRanking = tournament_ranking(
-                    cityData_dict, mitigationActions, comparator=ml_compare
+                mitigationRanking = quickselect_top_k(
+                    city=cityData_dict,
+                    actions=mitigationActions,
+                    k=20,
+                    comparator=ml_compare,
                 )
                 rankedActionsMitigation = [
                     RankedAction(
@@ -259,8 +281,11 @@ def _execute_prioritization_bulk_subtask(
                     and isinstance(action["ActionType"], list)
                     and "adaptation" in action["ActionType"]
                 ]
-                adaptationRanking = tournament_ranking(
-                    cityData_dict, adaptationActions, comparator=ml_compare
+                adaptationRanking = quickselect_top_k(
+                    city=cityData_dict,
+                    actions=adaptationActions,
+                    k=20,
+                    comparator=ml_compare,
                 )
                 rankedActionsAdaptation = [
                     RankedAction(
@@ -275,6 +300,7 @@ def _execute_prioritization_bulk_subtask(
                     )
                     for action, rank in adaptationRanking
                 ]
+
             prioritizer_response = PrioritizerResponse(
                 metadata=MetaData(
                     locode=city_data.cityContextData.locode,
@@ -283,11 +309,11 @@ def _execute_prioritization_bulk_subtask(
                 rankedActionsMitigation=rankedActionsMitigation,
                 rankedActionsAdaptation=rankedActionsAdaptation,
             )
+
             task_storage[main_task_id]["subtasks"][subtask_idx]["status"] = "completed"
-            task_storage[main_task_id]["subtasks"][subtask_idx][
-                "result"
-            ] = prioritizer_response
+            task_storage[main_task_id]["subtasks"][subtask_idx]["result"] = prioritizer_response
             _update_bulk_task_status(main_task_id)
+
         except Exception as e:
             logger.error(
                 f"Bulk Task {main_task_id} subtask {subtask_idx}: Error during prioritization: {str(e)}",
@@ -299,6 +325,7 @@ def _execute_prioritization_bulk_subtask(
             ] = f"Error during prioritization: {str(e)}"
             _update_bulk_task_status(main_task_id)
             return
+
     except Exception as e:
         logger.error(
             f"Bulk Task {main_task_id} subtask {subtask_idx}: Unexpected error during prioritization: {str(e)}",

@@ -120,28 +120,27 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
       <Text my={4} color="content.tertiary">
         {t("login-details")}
       </Text>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        style={{ gap: "16px", display: "flex", flexDirection: "column" }}
-      >
-        <EmailInput register={register} error={errors.email} t={t} />
-        <PasswordInput register={register} error={errors.password} t={t} />
-        <Text color="semantic.danger">{error}</Text>
-        <Box w="full" textAlign="right">
-          <Link href="/auth/forgot-password" textDecoration="underline">
-            {t("forgot-password")}
-          </Link>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Box display="flex" flexDirection="column" gap="16px">
+          <EmailInput register={register} error={errors.email} t={t} />
+          <PasswordInput register={register} error={errors.password} t={t} />
+          <Text color="semantic.danger">{error}</Text>
+          <Box w="full" textAlign="right">
+            <Link href="/auth/forgot-password" textDecoration="underline">
+              {t("forgot-password")}
+            </Link>
+          </Box>
+          <Button
+            type="submit"
+            formNoValidate
+            loading={isSubmitting}
+            h={16}
+            width="full"
+            bgColor="interactive.secondary"
+          >
+            {t("log-in")}
+          </Button>
         </Box>
-        <Button
-          type="submit"
-          formNoValidate
-          loading={isSubmitting}
-          h={16}
-          width="full"
-          bgColor="interactive.secondary"
-        >
-          {t("log-in")}
-        </Button>
       </form>
       {callbackUrl.includes("token") && (
         <Text

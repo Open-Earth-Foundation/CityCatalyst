@@ -37,7 +37,9 @@ function AddDataCard({
   const router = useRouter();
   return (
     <Card.Root
-      className="grow flex flex-col"
+      flexGrow={1}
+      display="flex"
+      flexDirection="column"
       boxShadow="none"
       data-testid={testId}
       p={6}
@@ -46,7 +48,7 @@ function AddDataCard({
       height="100%"
     >
       <VStack justify="space-between" gap="24px" height="100%">
-        <Box className="flex flex-col gap-6">
+        <Box display="flex" flexDirection="column" gap={6}>
           <VStack align="left" display="flex" gap="24px">
             <Icon
               as={icon}

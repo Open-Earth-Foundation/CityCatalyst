@@ -252,7 +252,7 @@ export default function OnboardingSetup(props: {
 
   return (
     <>
-      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto">
+      <Box pt={16} pb={16} maxW="full" mx="auto">
         <Button
           variant="ghost"
           onClick={() => {
@@ -263,7 +263,17 @@ export default function OnboardingSetup(props: {
           <Icon as={MdArrowBack} boxSize={6} />
           {t("go-back")}
         </Button>
-        <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top mt-8 md:mt-16 mb-48">
+        <Box
+          display="flex"
+          flexDirection={{ base: "column", md: "row" }}
+          columnGap={{ md: "48px" }}
+          rowGap={{ base: "48px", md: "0px" }}
+          alignItems="flex-start"
+          mt={{ base: 8, md: 16 }}
+          mb={48}
+          w={"1090px"}
+          mx="auto"
+        >
           {activeStep === 0 && (
             <SelectCityStep
               errors={errors}
@@ -316,13 +326,23 @@ export default function OnboardingSetup(props: {
               year={getValues("year")}
             />
           )}
-        </div>
-        <div className="bg-white w-full fixed z-[9999] bottom-0 left-0  pb-8 px-1 transition-all">
+        </Box>
+        <Box
+          bg="white"
+          w="full"
+          position="fixed"
+          bottom={0}
+          left={0}
+          pb={8}
+          px={1}
+          zIndex={9999}
+          transition="all"
+        >
           <Box w="full" display="flex" flexDir="column" gap="32px">
-            <Box className="w-full">
-              <div className="w-full">
+            <Box w="full">
+              <Box w="full">
                 <ProgressSteps steps={steps} currentStep={activeStep} />
-              </div>
+              </Box>
             </Box>
             <Box w="full" display="flex" justifyContent="end" px="135px">
               {activeStep == 0 && (
@@ -397,8 +417,8 @@ export default function OnboardingSetup(props: {
               )}
             </Box>
           </Box>
-        </div>
-      </div>
+        </Box>
+      </Box>
     </>
   );
 }

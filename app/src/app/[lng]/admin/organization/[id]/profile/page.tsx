@@ -152,7 +152,7 @@ const AdminOrganizationIdProfilePage = (props: {
           w={"50%"}
           mt="24px"
           flexDirection="column"
-          className="items-start"
+          alignItems="flex-start"
           gap="24px"
         >
           <Field labelClassName="font-semibold" label={t("organization-name")}>
@@ -184,7 +184,7 @@ const AdminOrganizationIdProfilePage = (props: {
             )}
           </Field>
         </HStack>
-        <Box className="flex justify-end">
+        <Box display="flex" justifyContent="flex-end">
           <Button
             onClick={handleSubmit(handleFormSubmit)}
             w="200px"

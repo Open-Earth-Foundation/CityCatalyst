@@ -331,14 +331,14 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                         }
                       >
                         <Icon
-                          className="group-hover:text-white"
+                          _hover={{ color: "white" }}
                           color="interactive.control"
                           as={MdModeEditOutline}
                           h="24px"
                           w="24px"
                         />
                         <Text
-                          className="group-hover:text-white"
+                          _hover={{ color: "white" }}
                           color="content.primary"
                         >
                           {t("update-activity")}
@@ -361,14 +361,14 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                         }
                       >
                         <Icon
-                          className="group-hover:text-white"
+                          _hover={{ color: "white" }}
                           color="sentiment.negativeDefault"
                           as={FiTrash2}
                           h="24px"
                           w="24px"
                         />
                         <Text
-                          className="group-hover:text-white"
+                          _hover={{ color: "white" }}
                           color="content.primary"
                         >
                           {t("delete-activity")}

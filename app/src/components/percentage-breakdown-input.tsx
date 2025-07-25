@@ -215,7 +215,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                     flex={1}
                     fontSize="label.lg"
                     fontWeight="bold"
-                    className="capitalize"
+                    textTransform="capitalize"
                   >
                     {t("categories")}
                   </Text>
@@ -223,7 +223,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                     w="116px"
                     fontSize="label.lg"
                     fontWeight="bold"
-                    className="capitalize"
+                    textTransform="capitalize"
                   >
                     {t("percentage")}
                   </Text>
@@ -272,7 +272,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                   fontWeight="bold"
                   mt={6}
                 >
-                  <Text fontSize="title.sm" className="uppercase" flex={1}>
+                  <Text fontSize="title.sm" textTransform="uppercase" flex={1}>
                     {t("total")}
                   </Text>
                   <Text fontSize="title.sm">
@@ -308,7 +308,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                           flex={1}
                           fontSize="label.lg"
                           fontWeight="bold"
-                          className="capitalize"
+                          textTransform="capitalize"
                         >
                           {t("categories")}
                         </Text>
@@ -316,7 +316,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                           w="116px"
                           fontSize="label.lg"
                           fontWeight="bold"
-                          className="capitalize"
+                          textTransform="capitalize"
                         >
                           {t("percentage")}
                         </Text>
@@ -337,7 +337,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                         color={totalPercent === 100 ? "green.500" : "red.500"}
                         fontWeight="bold"
                       >
-                        <Text className="uppercase" flex={1}>
+                        <Text textTransform="uppercase" flex={1}>
                           {t("total")}
                         </Text>
                         <Text>{totalPercent}%</Text>
@@ -364,7 +364,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
               flex={1}
               fontSize="label.lg"
               fontWeight="bold"
-              className="capitalize"
+              textTransform="capitalize"
             >
               {t("categories")}
             </Text>
@@ -372,7 +372,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
               w="116px"
               fontSize="label.lg"
               fontWeight="bold"
-              className="capitalize"
+              textTransform="capitalize"
             >
               {t("percentage")}
             </Text>
@@ -418,7 +418,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
             fontWeight="bold"
             mt={6}
           >
-            <Text fontSize="title.sm" className="uppercase" flex={1}>
+            <Text fontSize="title.sm" textTransform="uppercase" flex={1}>
               {t("total")}
             </Text>
             <Text fontSize="title.sm">

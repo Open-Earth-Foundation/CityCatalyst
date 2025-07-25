@@ -148,13 +148,21 @@ export function NavigationBar({
   }
 
   return (
-    <Box className="flex flex-col w-full">
+    <Box display="flex" flexDirection="column" w="full">
       <Box
-        className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50 w-full"
+        display="flex"
+        flexDirection="row"
+        px={8}
+        py={4}
+        alignItems="center"
+        gap={12}
+        position="relative"
+        zIndex={50}
+        w="full"
         bgColor="content.alternative"
       >
         <Box
-          className="flex"
+          display="flex"
           gap={6}
           flexShrink={logoUrl ? 0 : 1}
           w={logoUrl ? "250px" : "auto"}
@@ -197,17 +205,12 @@ export function NavigationBar({
             </>
           )}
         </Box>
-        <div className="w-full" />
+        <Box flex={1} />
         {showNav && !isPublic && (
           <>
             {" "}
             <Link href={dashboardPath}>
-              <Heading
-                color="base.light"
-                size="md"
-                className="opacity-75"
-                ml={6}
-              >
+              <Heading color="base.light" size="md" opacity={0.75} ml={6}>
                 {t("dashboard")}
               </Heading>
             </Link>
@@ -219,7 +222,8 @@ export function NavigationBar({
               <Heading
                 color="base.light"
                 size="md"
-                className="opacity-75 !text-nowrap"
+                opacity={0.75}
+                whiteSpace="nowrap"
                 ml={6}
               >
                 {t("learning-hub")}
@@ -286,7 +290,7 @@ export function NavigationBar({
                             : countryFromLanguage(language)
                         }
                         width="24"
-                        className="mr-4"
+                        style={{ marginRight: "16px" }}
                       />
                       <Text fontSize="title.md">{language.toUpperCase()}</Text>
                     </Box>
@@ -310,7 +314,8 @@ export function NavigationBar({
                 <MenuTrigger
                   asChild
                   minW="220px"
-                  className="whitespace-nowrap normal-case"
+                  whiteSpace="nowrap"
+                  textTransform="none"
                 >
                   <Button variant="ghost" ml={8}>
                     <Avatar
@@ -495,12 +500,7 @@ export function NavigationBar({
         />
       </Box>
       {isFrozen && !isPublic && !isAuth && (
-        <Box
-          py={2}
-          px={16}
-          bg="sentiment.warningDefault"
-          className="w-full z-50"
-        >
+        <Box py={2} px={16} bg="sentiment.warningDefault" w="full" zIndex={50}>
           <Text color="content.primary" fontSize="body.lg">
             <Trans
               i18nKey="account-frozen-warning-text"

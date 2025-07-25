@@ -246,7 +246,14 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
             </Text>
             <Separator borderColor="divider.neutral" borderWidth="2px" />
             <Box w="100%">
-              <form className="w-full flex flex-col gap-[36px]">
+              <form
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "36px",
+                }}
+              >
                 <Field
                   label={
                     <>

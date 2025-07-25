@@ -152,7 +152,7 @@ export function ActivityDataTab({
 
   return (
     <>
-      <HStack spaceX={4} spaceY={4} mb={12} className="items-start">
+      <HStack spaceX={4} spaceY={4} mb={12} alignItems="start">
         <Field
           invalid={!!resolve(prefix + "activityDataAmount", errors)}
           errorText={resolve(prefix + "activityDataAmount", errors)?.message}
@@ -180,12 +180,7 @@ export function ActivityDataTab({
                 })}
               />
             </NumberInputRoot>
-            <InputAddon
-              className="border-l-2"
-              pl={4}
-              pr={0}
-              bgColor="base.light"
-            >
+            <InputAddon borderLeftWidth={2} pl={4} pr={0} bgColor="base.light">
               <Select.Root
                 variant="unstyled"
                 {...register(prefix + "activityDataUnit")}
@@ -216,7 +211,7 @@ export function ActivityDataTab({
           </Select.Root>
         </Field>
       </HStack>
-      <Heading size="sm" mb={4} className="font-normal">
+      <Heading size="sm" mb={4} fontWeight="normal">
         {t("emission-factors-values")}{" "}
         <Tooltip
           showArrow
@@ -292,7 +287,7 @@ export function ActivityDataTab({
           </Group>
         </Field>
       </HStack>
-      <HStack className="items-start" mb={5}>
+      <HStack alignItems="start" mb={5}>
         <Icon as={MdOutlineInfo} mt={1} color="content.link" />
         <Text color="content.tertiary">{t("emissions-factor-details")}</Text>
       </HStack>
@@ -329,7 +324,7 @@ export function ActivityDataTab({
           })}
         />
       </Field>
-      <HStack className="items-start" mb={13}>
+      <HStack alignItems="start" mb={13}>
         <Icon as={MdOutlineInfo} mt={1} color="content.link" />
         <Text color="content.tertiary">
           <Trans t={t} i18nKey="calculations-details">

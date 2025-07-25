@@ -119,7 +119,9 @@ const ExternalDataSection = ({
           variant="outline"
           borderColor={hovered ? "semantic.danger" : "interactive.tertiary"}
           borderWidth={2}
-          className="shadow-none hover:drop-shadow-xl transition-shadow"
+          boxShadow="none"
+          _hover={{ filter: "drop-shadow(0 10px 15px rgba(0,0,0,0.1))" }}
+          transition="box-shadow 0.2s"
         >
           <Card.Body>
             {/* TODO add icon to DataSource */}
@@ -148,7 +150,7 @@ const ExternalDataSection = ({
                 getTranslationFromDict(source.methodologyDescription)}
             </Text>
             <Link
-              className="underline"
+              textDecoration="underline"
               mt={4}
               mb={6}
               onClick={() => onSourceClick(source, null)}

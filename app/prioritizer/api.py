@@ -95,6 +95,9 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
 
     # Log the request
     logger.info(f"Task {main_task_id}: Received bulk prioritization request")
+    logger.info(
+        f"Task {main_task_id}: Locode: {req.cityDataList[0].cityContextData.locode}"
+    )
     logger.info(f"Task {main_task_id}: Prioritization type: {req.prioritizationType}")
     logger.info(f"Task {main_task_id}: Languages: {req.language}")
 

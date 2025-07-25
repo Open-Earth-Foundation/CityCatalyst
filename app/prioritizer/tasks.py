@@ -35,38 +35,35 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
 
     It uses the slower but more accurate tournament_ranking function instead of the faster quickselect_top_k function.
     """
+
     try:
         task_storage[task_uuid]["status"] = "running"
-        logger.info(
-            f"Task {task_uuid}: Starting prioritization for locode={background_task_input['cityData'].cityContextData.locode}"
+
+        # 1. Extract needed data from request into requestData
+        city_data = background_task_input["cityData"]
+        prioritizationType = background_task_input["prioritizationType"]
+        languages = background_task_input["language"]
+
+        requestData = {}
+        requestData["locode"] = city_data.cityContextData.locode
+        requestData["populationSize"] = city_data.cityContextData.populationSize
+        requestData["stationaryEnergyEmissions"] = (
+            city_data.cityEmissionsData.stationaryEnergyEmissions
         )
+        requestData["transportationEmissions"] = (
+            city_data.cityEmissionsData.transportationEmissions
+        )
+        requestData["wasteEmissions"] = city_data.cityEmissionsData.wasteEmissions
+        requestData["ippuEmissions"] = city_data.cityEmissionsData.ippuEmissions
+        requestData["afoluEmissions"] = city_data.cityEmissionsData.afoluEmissions
+
+        logger.info(
+            f"Task {task_uuid}: Starting prioritization for locode={city_data.cityContextData.locode}"
+        )
+        logger.info("API endpoint uses tournament_ranking function")
+
         start_time = time.time()
         try:
-            # 1. Extract needed data from request into requestData
-            requestData = {}
-            requestData["locode"] = background_task_input[
-                "cityData"
-            ].cityContextData.locode
-            requestData["populationSize"] = background_task_input[
-                "cityData"
-            ].cityContextData.populationSize
-            requestData["stationaryEnergyEmissions"] = background_task_input[
-                "cityData"
-            ].cityEmissionsData.stationaryEnergyEmissions
-            requestData["transportationEmissions"] = background_task_input[
-                "cityData"
-            ].cityEmissionsData.transportationEmissions
-            requestData["wasteEmissions"] = background_task_input[
-                "cityData"
-            ].cityEmissionsData.wasteEmissions
-            requestData["ippuEmissions"] = background_task_input[
-                "cityData"
-            ].cityEmissionsData.ippuEmissions
-            requestData["afoluEmissions"] = background_task_input[
-                "cityData"
-            ].cityEmissionsData.afoluEmissions
-            languages = background_task_input["language"]
-
             # API call to get city context data
             cityContext = get_context(requestData["locode"])
             if not cityContext:
@@ -194,29 +191,35 @@ def _execute_prioritization_bulk_subtask(
 
     It uses the faster quickselect_top_k function instead of the slower tournament_ranking function.
     """
-    city_data = background_task_input["cityData"]
-    prioritizationType = background_task_input["prioritizationType"]
 
     try:
         task_storage[main_task_id]["subtasks"][subtask_idx]["status"] = "running"
-        # background_task_input = {"cityData": city_data}  # No longer needed, already provided
-        # Reuse the single prioritization logic, but don't store in task_storage directly
-        # Instead, collect the result and store in the subtask
+
+        # 1. Extract needed data from request into requestData
+        city_data = background_task_input["cityData"]
+        prioritizationType = background_task_input["prioritizationType"]
+        languages = background_task_input["language"]
+
+        requestData = {}
+        requestData["locode"] = city_data.cityContextData.locode
+        requestData["populationSize"] = city_data.cityContextData.populationSize
+        requestData["stationaryEnergyEmissions"] = (
+            city_data.cityEmissionsData.stationaryEnergyEmissions
+        )
+        requestData["transportationEmissions"] = (
+            city_data.cityEmissionsData.transportationEmissions
+        )
+        requestData["wasteEmissions"] = city_data.cityEmissionsData.wasteEmissions
+        requestData["ippuEmissions"] = city_data.cityEmissionsData.ippuEmissions
+        requestData["afoluEmissions"] = city_data.cityEmissionsData.afoluEmissions
+
+        logger.info(
+            f"Task {main_task_id}: Starting prioritization for locode={city_data.cityContextData.locode}"
+        )
+        logger.info("API endpoint uses quickselect_top_k function")
+
+        start_time = time.time()
         try:
-            # 1. Extract needed data from request into requestData
-            requestData = {}
-            requestData["locode"] = city_data.cityContextData.locode
-            requestData["populationSize"] = city_data.cityContextData.populationSize
-            requestData["stationaryEnergyEmissions"] = (
-                city_data.cityEmissionsData.stationaryEnergyEmissions
-            )
-            requestData["transportationEmissions"] = (
-                city_data.cityEmissionsData.transportationEmissions
-            )
-            requestData["wasteEmissions"] = city_data.cityEmissionsData.wasteEmissions
-            requestData["ippuEmissions"] = city_data.cityEmissionsData.ippuEmissions
-            requestData["afoluEmissions"] = city_data.cityEmissionsData.afoluEmissions
-            languages = background_task_input["language"]
 
             cityContext = get_context(requestData["locode"])
             if not cityContext:
@@ -311,9 +314,15 @@ def _execute_prioritization_bulk_subtask(
             )
 
             task_storage[main_task_id]["subtasks"][subtask_idx]["status"] = "completed"
-            task_storage[main_task_id]["subtasks"][subtask_idx]["result"] = prioritizer_response
+            task_storage[main_task_id]["subtasks"][subtask_idx][
+                "result"
+            ] = prioritizer_response
             _update_bulk_task_status(main_task_id)
 
+            process_time = time.time() - start_time
+            logger.info(
+                f"Task {main_task_id}: Prioritization completed in {process_time:.2f}s"
+            )
         except Exception as e:
             logger.error(
                 f"Bulk Task {main_task_id} subtask {subtask_idx}: Error during prioritization: {str(e)}",

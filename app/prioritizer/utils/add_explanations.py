@@ -1,5 +1,6 @@
 import os
-from typing import Optional
+from typing import Optional, Type, Dict, Any, cast
+from pydantic import create_model, BaseModel
 from openai import OpenAI
 from langsmith.wrappers import wrap_openai
 from langsmith import traceable
@@ -35,6 +36,24 @@ LANGCHAIN_PROJECT_NAME_PRIORITIZER = os.getenv("LANGCHAIN_PROJECT_NAME_PRIORITIZ
 openai_client = wrap_openai(OpenAI(api_key=OPENAI_API_KEY))
 
 
+def build_explanation_model(language_codes: list[str]) -> Type[BaseModel]:
+    """
+    Build a dynamic Pydantic model with the given language codes as fields.
+    OpenAI API requires models with defined fields for structured output.
+    We build a dynamic model with the given language codes as fields.
+
+    Args:
+        language_codes (list[str]): List of 2-letter ISO language codes.
+
+    Returns:
+        Type[BaseModel]: A Pydantic model with the given language codes as fields.
+    """
+    fields: Dict[str, tuple[type, Any]] = {code: (str, ...) for code in language_codes}
+
+    model = create_model("Explanation", **fields)  # type: ignore
+    return cast(Type[BaseModel], model)
+
+
 @traceable(run_type="llm", project_name=LANGCHAIN_PROJECT_NAME_PRIORITIZER)
 def generate_multilingual_explanation(
     city_data: dict,
@@ -57,6 +76,10 @@ def generate_multilingual_explanation(
     logger.info(
         f"Generating explanation for action_id={single_action['ActionID']}, rank={rank}, languages={languages}"
     )
+
+    # Build the dynamic explanation model
+    ExplanationModelDynamic = build_explanation_model(languages)
+
     # Build the system prompt for multilingual
     system_prompt = add_explanations_multilingual_system_prompt.format(
         city_data=city_data,
@@ -74,21 +97,22 @@ def generate_multilingual_explanation(
                 },
             ],
             temperature=0,
-            response_format=Explanation,
+            response_format=ExplanationModelDynamic,
         )
         explanation_obj = completion.choices[0].message.parsed
 
-        if not isinstance(explanation_obj, Explanation):
+        if not isinstance(explanation_obj, ExplanationModelDynamic):
             logger.error(
                 f"Parsed response is not an Explanation object: {explanation_obj}"
             )
             return None
 
-        return Explanation(
-            en=explanation_obj.en,
-            es=explanation_obj.es,
-            pt=explanation_obj.pt,
-        )
+        # Wrap the flat fields into .explanations using the Explanation model
+        wrapped_explanation = Explanation(explanations=explanation_obj.model_dump())
+
+        # Return the explanation object
+        return wrapped_explanation
+
     except Exception as e:
         logger.error(
             f"Error generating multilingual explanation for action '{single_action['ActionID']}': {str(e)}"

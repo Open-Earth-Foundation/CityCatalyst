@@ -35,19 +35,31 @@ LANGUAGES = ["en", "es", "pt"]
     response_model=StartPrioritizationResponse,
     status_code=202,
 )
-@limiter.limit("5/minute")
+@limiter.limit("10/minute")
 async def start_prioritization(request: Request, req: PrioritizerRequest):
     task_uuid = str(uuid.uuid4())
+
+    # Log the request
     logger.info(f"Task {task_uuid}: Received prioritization request")
     logger.info(f"Task {task_uuid}: Locode: {req.cityData.cityContextData.locode}")
+    logger.info(f"Task {task_uuid}: Prioritization type: {req.prioritizationType}")
+    logger.info(f"Task {task_uuid}: Languages: {req.language}")
+
+    # Log the request to the task storage
     task_storage[task_uuid] = {
         "status": "pending",
         "created_at": datetime.now().isoformat(),
         "locode": req.cityData.cityContextData.locode,
     }
+
+    # Create the background task input
     background_task_input = {
         "cityData": req.cityData,
+        "prioritizationType": req.prioritizationType,
+        "language": req.language,
     }
+
+    # Start the background thread
     try:
         thread = threading.Thread(
             target=_execute_prioritization, args=(task_uuid, background_task_input)
@@ -77,9 +89,16 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
     response_model=StartPrioritizationResponse,
     status_code=202,
 )
-@limiter.limit("5/minute")
+@limiter.limit("10/minute")
 async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBulk):
     main_task_id = str(uuid.uuid4())
+
+    # Log the request
+    logger.info(f"Task {main_task_id}: Received bulk prioritization request")
+    logger.info(f"Task {main_task_id}: Prioritization type: {req.prioritizationType}")
+    logger.info(f"Task {main_task_id}: Languages: {req.language}")
+
+    # Log the request to the task storage
     subtasks = []
     for city_data in req.cityDataList:
         subtasks.append(
@@ -90,6 +109,7 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
                 "error": None,
             }
         )
+
     task_storage[main_task_id] = {
         "status": "pending",
         "created_at": datetime.now().isoformat(),
@@ -98,9 +118,18 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
         "error": None,
     }
     for idx, city_data in enumerate(req.cityDataList):
+        background_task_input = {
+            "cityData": city_data,
+            "prioritizationType": req.prioritizationType,
+            "language": req.language,
+        }
         thread = threading.Thread(
             target=_execute_prioritization_bulk_subtask,
-            args=(main_task_id, idx, city_data),
+            args=(
+                main_task_id,
+                idx,
+                background_task_input,
+            ),
         )
         thread.daemon = True
         thread.start()

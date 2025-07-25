@@ -1,15 +1,16 @@
-name: HIAP Deployment
+name: HIAP Deployment Develop
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - main
+      - develop
     paths:
       - "**" # Since your project is not in a backend folder, watch all changes
       - ".github/workflows/backend.yml"
   pull_request:
     branches:
-      - main
+      - develop
     types: [opened, synchronize, reopened, closed]
 
 jobs:
@@ -51,13 +52,12 @@ jobs:
 
       - name: Run all tests
         run: |
-          pytest
+          pytest -m "not slow"
 
   build:
     needs: test
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
-
+    if: github.ref == 'refs/heads/develop'
     env:
       REGISTRY: ghcr.io
       REPOSITORY: open-earth-foundation/hiap # Replace with your GitHub username
@@ -91,8 +91,8 @@ jobs:
 
   deploy:
     needs: build
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
@@ -106,21 +106,29 @@ jobs:
       - name: Testing connection to EKS
         run: kubectl get pods -n default
 
-      - name: Re-deploying service
+      - name: Deploying development service
         run: |
-          kubectl apply -f k8s/
-          kubectl set env deployment/hiap \
+          # Apply development-specific manifests
+          kubectl apply -f k8s/deployment-dev.yml
+          kubectl apply -f k8s/service-dev.yml
+          kubectl apply -f k8s/persistent-volume-dev.yml
+
+          # Set environment variables for development
+          kubectl set env deployment/hiap-dev \
             OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-nano \
             OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY=gpt-4.1-mini \
-            LANGCHAIN_PROJECT=hiap-prod \
-            LANGCHAIN_PROJECT_NAME_PRIORITIZER=hiap-prod-prioritizer \
+            LANGCHAIN_PROJECT=hiap-dev \
+            LANGCHAIN_PROJECT_NAME_PRIORITIZER=hiap-dev-prioritizer \
             LANGCHAIN_ENDPOINT=https://api.smith.langchain.com \
             LANGCHAIN_TRACING_V2=true \
             S3_BUCKET_NAME=openearth.cap \
-            TAVILY_SEARCH_MODE=basic \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
             LANGCHAIN_API_KEY=${{secrets.LANGCHAIN_API_KEY}} \
-            TAVILY_API_KEY=${{secrets.TAVILY_API_KEY}} \
             AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} \
             AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
-          kubectl rollout restart deployment hiap -n default
+
+          # Restart the development deployment
+          kubectl rollout restart deployment hiap-dev -n default
+
+          # Wait for deployment to be ready
+          kubectl rollout status deployment/hiap-dev -n default

@@ -1,6 +1,16 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Annotated, Dict
 from datetime import datetime
+from enum import Enum
+
+# --- Enums ---
+
+
+class PrioritizationType(str, Enum):
+    MITIGATION = "mitigation"  # Set to mitigation to only run prioritization for mitigation actions
+    ADAPTATION = "adaptation"  # Set to adaptation to only run prioritization for adaptation actions
+    BOTH = "both"  # Set to both to run prioritization for both mitigation and adaptation actions
+
 
 # --- Request models ---
 
@@ -37,12 +47,29 @@ class CityData(BaseModel):
     cityEmissionsData: CityEmissionsData
 
 
+LanguageList = Annotated[List[str], Field(min_length=1)]
+
+
 class PrioritizerRequest(BaseModel):
     cityData: CityData
+    prioritizationType: PrioritizationType = Field(
+        default=PrioritizationType.BOTH,
+        description="Type of actions to prioritize: mitigation, adaptation, or both",
+    )
+    language: LanguageList = Field(
+        description="List of languages to return the explanations in",
+    )
 
 
 class PrioritizerRequestBulk(BaseModel):
     cityDataList: List[CityData]
+    prioritizationType: PrioritizationType = Field(
+        default=PrioritizationType.BOTH,
+        description="Type of actions to prioritize: mitigation, adaptation, or both",
+    )
+    language: LanguageList = Field(
+        description="List of languages to return the explanations in",
+    )
 
 
 # --- Response models ---
@@ -64,10 +91,11 @@ class MetaData(BaseModel):
 
 
 class Explanation(BaseModel):
-    en: str
-    es: str
-    pt: str
-    # Add all the languages required here and defined in api.py LANGUAGES constant
+    explanations: Dict[str, str] = Field(
+        ...,
+        description="Map of ISO 2-letter language codes to explanation texts",
+        min_length=1,  # At least one language is required
+    )
 
 
 class RankedAction(BaseModel):

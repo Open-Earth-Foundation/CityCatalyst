@@ -1,0 +1,136 @@
+name: HIAP Deployment Prod
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "**"
+      - ".github/workflows/main.yml"
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened, closed]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      LANGCHAIN_API_KEY: ${{ secrets.LANGCHAIN_API_KEY }}
+      TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      LANGCHAIN_PROJECT: hiap-test
+      LANGCHAIN_PROJECT_NAME_PRIORITIZER: hiap-test-prioritizer
+      LANGCHAIN_ENDPOINT: https://api.smith.langchain.com
+      LANGCHAIN_TRACING_V2: true
+      S3_BUCKET_NAME: openearth.cap
+      TAVILY_SEARCH_MODE: basic
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run all tests
+        run: |
+          pytest -m "not slow"
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    env:
+      REGISTRY: ghcr.io
+      REPOSITORY: open-earth-foundation/hiap # Replace with your GitHub username
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Git commit hash
+        id: vars
+        run: echo "::set-output name=commit_hash::$(git rev-parse --short HEAD)"
+
+      - name: Build and push image
+        uses: docker/build-push-action@v2
+        with:
+          context: . # TODO This I'm not sure about
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ steps.vars.outputs.commit_hash }}
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+
+      - name: Testing connection to EKS
+        run: kubectl get pods -n default
+
+      - name: Deploying production service
+        run: |
+          # Apply only production manifests (exclude dev files)
+          kubectl apply -f k8s/deployment.yml
+          kubectl apply -f k8s/service.yml
+          kubectl apply -f k8s/persistent-volume.yml
+
+          # Set environment variables for production
+          kubectl set env deployment/hiap \
+            OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-nano \
+            OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY=gpt-4.1-mini \
+            LANGCHAIN_PROJECT=hiap-prod \
+            LANGCHAIN_PROJECT_NAME_PRIORITIZER=hiap-prod-prioritizer \
+            LANGCHAIN_ENDPOINT=https://api.smith.langchain.com \
+            LANGCHAIN_TRACING_V2=true \
+            S3_BUCKET_NAME=openearth.cap \
+            TAVILY_SEARCH_MODE=basic \
+            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
+            LANGCHAIN_API_KEY=${{secrets.LANGCHAIN_API_KEY}} \
+            TAVILY_API_KEY=${{secrets.TAVILY_API_KEY}} \
+            AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} \
+            AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
+
+          # Restart the production deployment
+          kubectl rollout restart deployment hiap -n default
+
+          # Wait for deployment to be ready
+          kubectl rollout status deployment/hiap -n default

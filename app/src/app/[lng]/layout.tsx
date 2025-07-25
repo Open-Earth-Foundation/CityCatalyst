@@ -9,6 +9,7 @@ import ClientRootLayout from "@/components/ClientRootLayout";
 import { use } from "react";
 import { HighlightInit } from "@highlight-run/next/client";
 import HighlightIdentifier from "@/components/HighlightIdentifier";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 export const metadata: Metadata = {
   title: "CityCatalyst",
@@ -24,24 +25,23 @@ export default function RootLayout(props: {
   params: Promise<{ lng: string }>;
 }) {
   const { lng } = use(props.params);
-  console.log(
-    process.env.NEXT_PUBLIC_HIGHLIGHT_BACKEND_URL,
-    process.env.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID,
-  );
+  const isHighlightEnabled = hasFeatureFlag(FeatureFlags.HIGHLIGHT_ENABLED);
 
   return (
     <>
-      <HighlightInit
-        projectId={process.env.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID}
-        serviceName="citycatalyst"
-        tracingOrigins
-        // backendUrl={process.env.NEXT_PUBLIC_HIGHLIGHT_BACKEND_URL}
-        networkRecording={{
-          enabled: true,
-          recordHeadersAndBody: true,
-          urlBlocklist: [],
-        }}
-      />
+      {isHighlightEnabled && (
+        <HighlightInit
+          projectId={process.env.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID}
+          serviceName="citycatalyst"
+          tracingOrigins
+          backendUrl={process.env.NEXT_PUBLIC_HIGHLIGHT_BACKEND_URL}
+          networkRecording={{
+            enabled: true,
+            recordHeadersAndBody: true,
+            urlBlocklist: [],
+          }}
+        />
+      )}
       <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
         <head>
           <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
@@ -50,7 +50,7 @@ export default function RootLayout(props: {
         </head>
         <body>
           <Providers>
-            <HighlightIdentifier />
+            {isHighlightEnabled && <HighlightIdentifier />}
             <Toaster />
             <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
           </Providers>

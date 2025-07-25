@@ -59,10 +59,7 @@ const CustomOption = (props: OptionProps<any>) => {
       py="12px"
       px="16px"
     >
-      <Checkbox
-        style={{ pointerEvents: "none", marginBottom: 0 }}
-        checked={isSelected}
-      />
+      <Checkbox style={{ pointerEvents: "none" }} checked={isSelected} />
       <Text fontSize="14px" color="content.secondary">
         {data.label}
       </Text>

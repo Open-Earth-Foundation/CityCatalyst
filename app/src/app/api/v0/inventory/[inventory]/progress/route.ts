@@ -11,7 +11,12 @@ export const GET = apiHandler(async (_req, { session, params }) => {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
   let inventoryId = params.inventory;
-
+  if (inventoryId === "default") {
+    inventoryId = await UserService.updateDefaults(session.user.id);
+  }
+  if (!inventoryId) {
+    throw new createHttpError.NotFound("Inventory not found");
+  }
   const inventory = await UserService.findUserInventory(
     inventoryId,
     session,
@@ -30,9 +35,7 @@ export const GET = apiHandler(async (_req, { session, params }) => {
     ],
     true,
   );
-  if (inventoryId === "default") {
-    inventoryId = await UserService.updateDefaults(session.user.id);
-  }
+
   const progressData =
     await InventoryProgressService.getInventoryProgress(inventory);
 

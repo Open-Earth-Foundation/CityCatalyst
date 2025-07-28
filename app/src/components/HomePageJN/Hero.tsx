@@ -159,7 +159,8 @@ export function Hero({
                           fontSize="lg"
                           fontWeight="normal"
                         >
-                          km²
+                          {/* eslint-disable-next-line i18next/no-literal-string */}
+                          km<sup>2</sup>
                         </HeadlineSmall>
                       </>
                     ) : (

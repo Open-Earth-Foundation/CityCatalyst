@@ -192,7 +192,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
               <HStack
                 mt="24px"
                 flexDirection="column"
-                className="items-start"
+                alignItems="start"
                 gap="24px"
               >
                 <Field
@@ -248,7 +248,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
               <HStack
                 mt="24px"
                 flexDirection="column"
-                className="items-start"
+                alignItems="start"
                 gap="24px"
               >
                 <Field labelClassName="font-semibold" label={t("project-name")}>

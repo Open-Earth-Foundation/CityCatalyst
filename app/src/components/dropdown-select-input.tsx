@@ -43,7 +43,7 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
   };
 
   return (
-    <Box className="w-full">
+    <Box w="full">
       <Box
         borderWidth="1px"
         borderColor={showDropdown ? "interactive.secondary" : "border.neutral"}

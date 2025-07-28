@@ -196,7 +196,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
   return (
     <Box py={4}>
       <Table.Root variant="line">
-        <Table.Header className="uppercase">
+        <Table.Header textTransform="uppercase">
           <Table.ColumnHeader>
             <ButtonSmall>{tData("subsector")}</ButtonSmall>
           </Table.ColumnHeader>

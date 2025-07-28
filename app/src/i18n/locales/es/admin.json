@@ -136,5 +136,6 @@
   "download-failed": "Descarga fallida",
   "download-error": "Hubo un error durante la descarga",
   "change-to-admin": "Cambiar a administrador",
+  "user-removed": "Usuario eliminado con éxito",
   "frozen": "Congelado"
 }

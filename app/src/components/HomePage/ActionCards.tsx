@@ -22,7 +22,7 @@ export function ActionCards({
   inventory?: InventoryAttributes;
 }) {
   return (
-    <Box className="flex gap-[24px] w-full">
+    <Box display="flex" gap="24px" w="full">
       <NextLink
         data-testid={"add-data-to-inventory-card"}
         href={`/${inventoryId}/data`}
@@ -34,21 +34,27 @@ export function ActionCards({
           backgroundColor="base.light"
           borderColor="interactive.accent"
           borderWidth="thin"
-          className="h-[208px] hover:shadow-xl"
+          h="208px"
+          _hover={{ shadow: "xl" }}
           py={0}
           px={6}
         >
-          <Box className="flex items-center" height={"100%"}>
+          <Box display="flex" alignItems="center" height={"100%"}>
             <Box>
               <Box
-                className="flex items-center justify-center h-[48px] w-[48px] rounded-full"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                h="48px"
+                w="48px"
+                borderRadius="full"
                 backgroundColor={"interactive.primary"}
               >
-                <MdOutlineAddchart className="text-white" size={24} />
+                <MdOutlineAddchart color="white" size={24} />
               </Box>
             </Box>
             <Box display="flex" flexDir="column" gap="12px">
-              <CardHeader className="flex h-[20px] gap-2">
+              <CardHeader display="flex" h="20px" gap={2}>
                 <Text
                   fontFamily="heading"
                   fontSize="title.lg"
@@ -58,7 +64,7 @@ export function ActionCards({
                   <Trans t={t}>add-data-to-inventory</Trans>
                 </Text>
               </CardHeader>
-              <CardBody className="h-[75px]">
+              <CardBody h="75px">
                 <Text
                   fontSize="body.lg"
                   color="body"
@@ -72,7 +78,7 @@ export function ActionCards({
           </Box>
         </Card.Root>
       </NextLink>
-      <Box className="flex flex-col gap-[8px]">
+      <Box display="flex" flexDirection="column" gap="8px">
         <AddCollaboratorButton lng={lng} />
         <DownloadButton
           lng={lng}

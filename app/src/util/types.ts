@@ -543,3 +543,97 @@ export interface FormulaInputValuesResponse {
   formulaName: string;
   region: string;
 }
+export enum HighImpactActionRankingStatus {
+  PENDING = "PENDING",
+  SUCCESS = "SUCCESS",
+  FAILURE = "FAILURE"
+}
+export interface CoBenefits {
+  air_quality: number;
+  water_quality: number;
+  habitat: number;
+  cost_of_living: number;
+  housing: number;
+  mobility: number;
+  stakeholder_engagement: number;
+}
+
+export interface GHGReductionPotential {
+  stationary_energy: string | null;
+  transportation: string | null;
+  waste: string | null;
+  ippu: string | null;
+  afolu: string | null;
+}
+
+export interface AdaptationEffectivenessPerHazard {
+  floods: string | null;
+  storms: string | null;
+  diseases: string | null;
+  droughts: string | null;
+  heatwaves: string | null;
+  wildfires: string | null;
+  landslides: string | null;
+  "sea-level-rise": string | null;
+}
+
+export interface Explanation {
+  en: string;
+  es: string;
+  pt: string;
+}
+
+export interface BaseAction {
+  id: string;
+  hiaRankingId: string;
+  lang: string;
+  type: ACTION_TYPES;
+  name: string;
+  hazards: string[];
+  sectors: string[];
+  subsectors: string[];
+  primaryPurposes: string[];
+  description: string;
+  dependencies: string[];
+  cobenefits: CoBenefits;
+  adaptationEffectivenessPerHazard: AdaptationEffectivenessPerHazard;
+  equityAndInclusionConsiderations: string | null;
+  costInvestmentNeeded: string;
+  timelineForImplementation: string;
+  keyPerformanceIndicators: string[];
+  powersAndMandates: string[];
+  biome: string | null;
+  isSelected: boolean;
+  actionId: string;
+  rank: number;
+  explanation: Explanation;
+  created: Date;
+  last_updated: Date;
+}
+
+export interface MitigationAction extends BaseAction {
+  type: ACTION_TYPES.Mitigation;
+  GHGReductionPotential: GHGReductionPotential;
+  adaptationEffectiveness: null;
+  
+}
+
+export interface AdaptationAction extends BaseAction {
+  type: ACTION_TYPES.Adaptation;
+  GHGReductionPotential: null;
+  adaptationEffectiveness: string;
+}
+
+export type HIAction = MitigationAction | AdaptationAction;
+
+export type HIAPResponse = {
+  id: string;
+  locode: string;
+  inventoryId: string;
+  lang: string;
+  jobId: string;
+  status: HighImpactActionRankingStatus;
+  created: Date;
+  last_updated: Date;
+  rankedActions: HIAction[];
+}

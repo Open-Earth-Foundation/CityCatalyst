@@ -17,7 +17,21 @@ export default function OnboardingDone(props: {
   const projectId = searchParams.get("project");
 
   return (
-    <div className="pt-[148px] w-[1024px] h-[100vh] max-w-full mx-auto px-4 pb-12 flex flex-col items-center bg-city bg-no-repeat bg-top">
+    <Box
+      pt="148px"
+      w="1024px"
+      h="100vh"
+      maxW="full"
+      mx="auto"
+      px={4}
+      pb={12}
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      bgRepeat="no-repeat"
+      backgroundPosition="top"
+      bgImage="url('/images/city-bg.png')"
+    >
       <Heading
         mt={12}
         mb="24px"
@@ -61,6 +75,6 @@ export default function OnboardingDone(props: {
           </Button>
         </NextLink>
       </Box>
-    </div>
+    </Box>
   );
 }

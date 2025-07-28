@@ -62,7 +62,7 @@ const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
   }
 
   return (
-    <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
+    <Box pt={16} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
       <Link href={`/${lng}`} _hover={{ textDecoration: "none" }}>
         <Box
           display="flex"
@@ -87,7 +87,7 @@ const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
           color="content.primary"
           mb={12}
           mt={2}
-          className="w-full"
+          w="full"
         >
           {t("cities-heading")}
         </Heading>
@@ -195,14 +195,18 @@ const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
                         }}
                       >
                         <Icon
-                          className="group-hover:text-white"
+                          _groupHover={{
+                            color: "white",
+                          }}
                           color="interactive.control"
                           as={MdOutlineGroup}
                           h="24px"
                           w="24px"
                         />
                         <Text
-                          className="group-hover:text-white"
+                          _groupHover={{
+                            color: "white",
+                          }}
                           color="content.primary"
                         >
                           {t("move-to")}

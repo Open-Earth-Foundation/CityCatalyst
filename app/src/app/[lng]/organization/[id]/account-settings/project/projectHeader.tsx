@@ -91,7 +91,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                 fontWeight="normal"
                 truncate
                 cursor="pointer"
-                className="capitalize"
+                textTransform="capitalize"
               >
                 {view === "project-view" ? (
                   <Text
@@ -122,7 +122,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                     fontWeight="normal"
                     truncate
                     cursor="pointer"
-                    className="capitalize"
+                    textTransform="capitalize"
                   >
                     {selectedCityData?.name}{" "}
                   </BreadcrumbLink>
@@ -131,7 +131,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             )}
             {selectedInventory && (
               <BreadcrumbCurrentLink color="content.link">
-                <Text truncate lineClamp={1} className="capitalize">
+                <Text truncate lineClamp={1} textTransform="capitalize">
                   {t("ghg-inventory-year", { year: selectedInventory?.year })}
                 </Text>
               </BreadcrumbCurrentLink>

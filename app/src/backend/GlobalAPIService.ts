@@ -27,6 +27,49 @@ export class GlobalAPIService {
       return undefined;
     }
   }
+
+  public static async fetchAllClimateActions( lang: string) {
+    try {
+      const url = `${GLOBAL_API_URL}/api/v0/climate_actions`;
+      const params = new URLSearchParams({
+        language: lang,
+      });
+
+      logger.info("Fetching climate actions from API", {
+        url,
+        lang,
+      });
+
+      const response = await fetch(`${url}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        logger.error("API request failed", {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText,
+          lang,
+        });
+        throw new Error(
+          `API request failed: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      const data = await response.json();
+      logger.info("Successfully fetched climate actions", {
+        lang,
+      });
+      return data;
+    } catch (err) {
+      logger.error({ err: err }, "Error fetching climate actions from API:");
+      throw err;
+    }
+  }
 }
 
 export default GlobalAPIService;

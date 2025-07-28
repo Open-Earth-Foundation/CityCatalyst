@@ -219,7 +219,7 @@ const SingleProjectView = ({
       <ProjectLimitModal
         isOpen={isProjectLimitModalOpen}
         onClose={() => setIsProjectLimitModalOpen(false)}
-        t={t as any}
+        lng={lng}
         onOpenChange={setIsProjectLimitModalOpen}
       />
     </HStack>

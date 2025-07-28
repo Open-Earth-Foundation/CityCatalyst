@@ -237,22 +237,17 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                           bg: "content.link",
                           cursor: "pointer",
                         }}
-                        className="group"
                         onClick={() =>
                           isFrozenCheck() ? null : onEditActivity(activity)
                         }
                       >
                         <Icon
-                          className="group-hover:text-white"
                           color="interactive.control"
                           as={MdModeEditOutline}
                           h="24px"
                           w="24px"
                         />
-                        <Text
-                          className="group-hover:text-white"
-                          color="content.primary"
-                        >
+                        <Text color="content.primary">
                           {t("update-activity")}
                         </Text>
                       </MenuItem>
@@ -268,22 +263,17 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                           cursor: "pointer",
                         }}
                         data-testid="delete-activity-button"
-                        className="group"
                         onClick={() =>
                           isFrozenCheck() ? null : onDeleteActivity(activity)
                         }
                       >
                         <Icon
-                          className="group-hover:text-white"
                           color="sentiment.negativeDefault"
                           as={FiTrash2}
                           h="24px"
                           w="24px"
                         />
-                        <Text
-                          className="group-hover:text-white"
-                          color="content.primary"
-                        >
+                        <Text color="content.primary">
                           {t("delete-activity")}
                         </Text>
                       </MenuItem>

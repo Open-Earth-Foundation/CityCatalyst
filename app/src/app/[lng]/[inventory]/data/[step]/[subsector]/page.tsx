@@ -199,14 +199,18 @@ function SubSectorPage(props: {
     <Tabs.Root defaultValue="0">
       <MotionBox
         bg="background.backgroundLight"
-        className="fixed z-10 top-0 w-full transition-all"
+        position="fixed"
+        zIndex={10}
+        top={0}
+        w="full"
+        transition="all 50ms linear"
         style={{
           paddingTop: paddingTop,
         }}
         borderColor="border.neutral"
         borderBottomWidth="1px"
       >
-        <MotionBox className="w-[1090px] max-w-full mx-auto px-4">
+        <MotionBox w="1090px" maxW="full" mx="auto" px={4}>
           <AnimatePresence>
             {isVisible && (
               <MotionBox
@@ -401,9 +405,10 @@ function SubSectorPage(props: {
             </AnimatePresence>
           </MotionBox>
         </MotionBox>
-        <Box className="w-[1090px] max-w-full mx-auto px-4">
+        <Box w="1090px" maxW="full" mx="auto" px={4}>
           <MotionTabList
-            className="w-[1090px] z-10"
+            w="1090px"
+            zIndex={10}
             layout
             bg="background.backgroundLight"
             borderBottomWidth="0px"
@@ -428,7 +433,7 @@ function SubSectorPage(props: {
           </MotionTabList>
         </Box>
       </MotionBox>
-      <div className="pt-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
+      <Box pt={16} w="1090px" maxW="full" mx="auto" px={4} pb={100} mt={240}>
         <Box mt="48px">
           {loadingState ? (
             <LoadingState />
@@ -458,7 +463,7 @@ function SubSectorPage(props: {
             })
           )}
         </Box>
-      </div>
+      </Box>
     </Tabs.Root>
   );
 }

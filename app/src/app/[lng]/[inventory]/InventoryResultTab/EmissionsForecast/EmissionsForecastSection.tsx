@@ -26,7 +26,7 @@ export const EmissionsForecastSection = ({
         fontSize="title.lg"
         fontWeight="semibold"
         lineHeight="24"
-        className="pb-[8px]"
+        pb="8px"
       >
         {t("sector-emissions-forecast")}
       </Heading>

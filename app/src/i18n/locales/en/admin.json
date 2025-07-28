@@ -137,6 +137,6 @@
   "unfreeze-account": "Unfreeze account",
   "change-to-admin": "Change to admin",
   "user-removed": "User removed successfully",
-  "role-update-success-toast-title": "Role updated successfully"
-
+  "role-update-success-toast-title": "Role updated successfully",
+  "frozen": "Frozen"
 }

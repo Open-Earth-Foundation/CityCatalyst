@@ -137,5 +137,6 @@
   "download-error": "Ocorreu um erro durante o download",
   "change-to-admin": "Mudar para administrador",
   "user-removed": "Usuário removido com sucesso",
+  "frozen": "Congelado",
   "role-update-success-toast-title": "Função atualizada com sucesso"
 }

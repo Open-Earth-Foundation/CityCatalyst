@@ -137,5 +137,6 @@
   "download-error": "Une erreur s'est produite pendant le téléchargement",
   "change-to-admin": "Changer en admin",
   "user-removed": "Utilisateur supprimé avec succès",
-  "role-update-success-toast-title": "Rôle mis à jour avec succès"
+  "role-update-success-toast-title": "Rôle mis à jour avec succès",
+  "frozen": "Gelé"
 }

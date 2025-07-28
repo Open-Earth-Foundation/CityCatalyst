@@ -51,7 +51,7 @@ export default function AdminOrganizationLayout(props: {
   }
 
   return (
-    <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
+    <Box pt={16} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
       <Box>
         <BreadcrumbRoot
           gap="8px"
@@ -75,13 +75,13 @@ export default function AdminOrganizationLayout(props: {
               color="content.tertiary"
               fontWeight="normal"
               truncate
-              className="capitalize"
+              textTransform="capitalize"
             >
               {t("admin-heading")}
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbCurrentLink color="content.primary">
-            <Text truncate lineClamp={1} className="capitalize">
+            <Text truncate lineClamp={1} textTransform="capitalize">
               {!organization ? (
                 <Spinner size="xs" />
               ) : (
@@ -94,7 +94,7 @@ export default function AdminOrganizationLayout(props: {
       <Text
         fontSize="headline.lg"
         marginTop={2}
-        className="capitalize"
+        textTransform="capitalize"
         fontWeight="semibold"
       >
         {!organization ? (

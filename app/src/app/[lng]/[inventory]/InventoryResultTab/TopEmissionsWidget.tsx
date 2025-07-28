@@ -42,7 +42,7 @@ const EmissionsTable = ({
   return (
     <Table.Root my={4} variant="outline">
       <Table.Header
-        className="uppercase"
+        textTransform="uppercase"
         backgroundColor="background.backgroundLight"
       >
         <Table.ColumnHeader>
@@ -61,7 +61,9 @@ const EmissionsTable = ({
             <Table.Cell css={{ maxWidth: "50%", wordBreak: "break-word" }}>
               <Text
                 fontFamily="heading"
-                className="text-sm leading-5 tracking-[0.5px]"
+                fontSize="sm"
+                lineHeight="5"
+                letterSpacing="0.5px"
                 css={{ whiteSpace: "normal" }}
               >
                 {t(toKebabCase(emission.subsectorName))}
@@ -69,7 +71,9 @@ const EmissionsTable = ({
               <Text
                 fontFamily="heading"
                 color="content.tertiary"
-                className="text-xs leading-4 tracking-[0.5px] "
+                fontSize="xs"
+                lineHeight="4"
+                letterSpacing="0.5px"
               >
                 {`${capitalizeFirstLetter(t("scope"))} ${t(toKebabCase(emission.scopeName))} - ${t(toKebabCase(emission.sectorName))}`}
               </Text>

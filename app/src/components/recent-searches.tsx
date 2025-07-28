@@ -23,7 +23,7 @@ const RecentSearches = ({ t }: { t: TFunction }) => {
   const hasRecentSearches = false;
   return (
     <Box>
-      <Box className="px-4">
+      <Box px={4}>
         <Text
           color="content.tertiary"
           fontWeight="extrabold"
@@ -37,12 +37,22 @@ const RecentSearches = ({ t }: { t: TFunction }) => {
       </Box>
       {hasRecentSearches ? (
         <Box>
-          <ul className="list-none">
+          <ul style={{ listStyle: "none" }}>
             {data.map((data) => (
               <li key={data.id}>
-                <Box className="h-[72px] w-full flex flex-col justify-center group px-4 hover:bg-[#2351DC] transition-all duration-150 cursor-pointer">
+                <Box
+                  h={72}
+                  w="full"
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="center"
+                  px={4}
+                  _hover={{ bg: "#2351DC" }}
+                  transition="all 150ms"
+                  cursor="pointer"
+                >
                   <Text
-                    className="group-hover:text-white"
+                    _groupHover={{ color: "white" }}
                     color="content.secondary"
                     fontSize="body.lg"
                     fontFamily="body"
@@ -53,7 +63,7 @@ const RecentSearches = ({ t }: { t: TFunction }) => {
                     {data.name}
                   </Text>
                   <Text
-                    className="group-hover:text-[#E8EAFB]"
+                    _groupHover={{ color: "#E8EAFB" }}
                     color="content.tertiary"
                     fontSize="body.lg"
                     fontFamily="body.md"
@@ -69,9 +79,9 @@ const RecentSearches = ({ t }: { t: TFunction }) => {
           </ul>
         </Box>
       ) : (
-        <Box className="mt-4 px-4">
+        <Box mt={4} px={4}>
           <Text
-            className="group-hover:text-white"
+            _groupHover={{ color: "white" }}
             color="content.tertiary"
             fontSize="body.lg"
             fontFamily="body"

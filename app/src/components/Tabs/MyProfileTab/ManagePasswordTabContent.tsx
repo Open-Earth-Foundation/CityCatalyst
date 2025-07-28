@@ -74,12 +74,15 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
     <Box backgroundColor="white" p={6}>
       <VStack alignItems={"space-between"} justifyContent={"space-between"}>
         <TitleMedium>{t("manage-password")}</TitleMedium>
-        <Text className="my-4" color="content.tertiary">
+        <Text my={4} color="content.tertiary">
           {t("update-password-details")}
         </Text>
       </VStack>
       <Box>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          style={{ display: "flex", flexDirection: "column", gap: "24px" }}
+        >
           <PasswordInput
             register={register}
             error={errors.currentPassword}

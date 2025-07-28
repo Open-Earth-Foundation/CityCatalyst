@@ -182,7 +182,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
             {t("brand-settings-description")}
           </Text>
           <Box mt={9}>
-            <Field className="w-full" label={t("logo")}>
+            <Field w="full" label={t("logo")}>
               <FileUploadRoot accept={{ "image/*": [] }} maxFiles={1}>
                 <LogoUploadCard
                   defaultUrl={clearImage ? undefined : organization?.logoUrl}
@@ -203,7 +203,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
                 </Text>
               </HStack>
             </Field>
-            <Field mt={9} className="w-full" label={t("primary-color")}>
+            <Field mt={9} w="full" label={t("primary-color")}>
               <SelectRoot
                 collection={options}
                 value={[selectedTheme]}

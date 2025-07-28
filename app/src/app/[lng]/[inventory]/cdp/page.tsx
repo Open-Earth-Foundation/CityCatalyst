@@ -37,17 +37,25 @@ function Page(props: { params: Promise<{ lng: string; inventory: string }> }) {
     }
   };
   return (
-    <Box className="h-[100vh] w-full flex justify-center items-center">
+    <Box
+      h="100vh"
+      w="full"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+    >
       <Card.Root minH="300px" minW="300px">
         <CardHeader
           fontFamily="heading"
           fontWeight="bold"
           fontSize="headline.lg"
-          className="flex items-center justify-center"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
         >
           <Text>{t("add-data")}</Text>
         </CardHeader>
-        <CardBody className="flex items-center justify-center">
+        <CardBody display="flex" justifyContent="center" alignItems="center">
           <VStack>
             <Text color={wasSuccessful ? "green" : "red"} textAlign="center">
               {statusMessage}

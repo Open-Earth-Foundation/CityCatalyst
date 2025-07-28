@@ -49,9 +49,15 @@ export function TabHeader({
 
   return (
     <>
-      <Box className="flex items-center justify-between">
-        <Box className="flex flex-col w-full">
-          <Box className="flex items-center justify-between gap-3 w-full">
+      <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Box display="flex" flexDirection="column" w="full">
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            gap={3}
+            w="full"
+          >
             <Heading
               fontSize="headline.sm"
               fontWeight="semibold"
@@ -75,7 +81,7 @@ export function TabHeader({
               </Button>
             )}
           </Box>
-          <Box className="flex items-center gap-3">
+          <Box display="flex" alignItems="center" gap={3}>
             <Badge>
               <MdOutlineCalendarToday size="20px" style={{ marginRight: 1 }} />
               {t("year")}: {inventory?.year}
@@ -89,7 +95,7 @@ export function TabHeader({
           </Box>
         </Box>
         {isPublic && (targetYears?.length as number) > 1 ? (
-          <Box className="">
+          <Box>
             <Selector
               options={
                 targetYears?.map((year) => year.year.toString() as string) || []
@@ -108,7 +114,7 @@ export function TabHeader({
         fontSize="body.lg"
         color="interactive.control"
         letterSpacing="wide"
-        className="mt-3"
+        mt={3}
       >
         {" "}
         {!isPublic ? (

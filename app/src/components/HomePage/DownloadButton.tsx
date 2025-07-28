@@ -62,7 +62,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
       ) : (
         <ActionCardSmall
           onClick={onDownloadShareOpen}
-          icon={<FiDownload className="text-white" size={24} />}
+          icon={<FiDownload color="white" size={24} />}
           title={t("download-and-report")}
         />
       )}

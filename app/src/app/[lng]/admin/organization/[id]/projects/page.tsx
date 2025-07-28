@@ -103,13 +103,23 @@ const AdminOrganizationProjectsPage = (props: {
       </Box>
       <Box>
         {isProjectDataLoading && (
-          <div className="flex items-center justify-center w-full">
-            <Box className="w-full py-12 flex items-center justify-center">
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            w="full"
+          >
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              w="full"
+            >
               <ProgressCircleRoot value={null}>
                 <ProgressCircleRing cap="round" />
               </ProgressCircleRoot>
             </Box>
-          </div>
+          </Box>
         )}
         {!isProjectDataLoading && projects?.length === 0 && (
           <Text color="content.tertiary" fontSize="body.lg">
@@ -138,12 +148,21 @@ const AdminOrganizationProjectsPage = (props: {
             <Table.Row key={idx}>
               <Table.Cell>{item.name}</Table.Cell>
               <Table.Cell>{item.cities}</Table.Cell>
-              <Table.Cell className="truncate" maxW="200px">
+              <Table.Cell
+                maxW="200px"
+                textOverflow="ellipsis"
+                overflow="hidden"
+                whiteSpace="nowrap"
+                truncate
+              >
                 {item.admin}
               </Table.Cell>
               <Table.Cell
-                className="truncate"
                 maxW="200px"
+                textOverflow="ellipsis"
+                overflow="hidden"
+                whiteSpace="nowrap"
+                truncate
                 title={item.description}
               >
                 {item.description}
@@ -184,14 +203,18 @@ const AdminOrganizationProjectsPage = (props: {
                       }}
                     >
                       <Icon
-                        className="group-hover:text-white"
+                        _groupHover={{
+                          color: "white",
+                        }}
                         color="interactive.control"
                         as={RiEditLine}
                         h="24px"
                         w="24px"
                       />
                       <Text
-                        className="group-hover:text-white"
+                        _groupHover={{
+                          color: "white",
+                        }}
                         color="content.primary"
                       >
                         {t("edit-project")}
@@ -220,14 +243,18 @@ const AdminOrganizationProjectsPage = (props: {
                       }}
                     >
                       <Icon
-                        className="group-hover:text-white"
+                        _groupHover={{
+                          color: "white",
+                        }}
                         color="sentiment.negativeDefault"
                         as={RiDeleteBin6Line}
                         h="24px"
                         w="24px"
                       />
                       <Text
-                        className="group-hover:text-white"
+                        _groupHover={{
+                          color: "white",
+                        }}
                         color="content.primary"
                       >
                         {t("remove")}

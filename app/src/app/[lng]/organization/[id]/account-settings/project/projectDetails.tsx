@@ -126,7 +126,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
 
   return (
     <Box w="full">
-      <Box className="bg-white" p={6} rounded={2} mt={12}>
+      <Box backgroundColor="white" p={6} rounded={2} mt={12}>
         <ProjectHeader
           t={t}
           lng={lng}
@@ -235,7 +235,11 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                         <Text
                           color="content.link"
                           fontWeight="normal"
-                          className="truncate capitalize underline"
+                          textOverflow="ellipsis"
+                          overflow="hidden"
+                          whiteSpace="nowrap"
+                          textTransform="capitalize"
+                          textDecoration="underline"
                           fontSize="label.lg"
                         >
                           {item.name}
@@ -243,7 +247,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                       </Button>
                     </Table.Cell>
                     <Table.Cell>{item.inventories.length}</Table.Cell>
-                    <Table.Cell w={10} className="w-10">
+                    <Table.Cell w="10">
                       <MenuRoot>
                         <MenuTrigger>
                           <IconButton
@@ -283,14 +287,18 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                             }}
                           >
                             <Icon
-                              className="group-hover:text-white"
+                              _groupHover={{
+                                color: "white",
+                              }}
                               color="sentiment.negativeDefault"
                               as={RiDeleteBin6Line}
                               h="24px"
                               w="24px"
                             />
                             <Text
-                              className="group-hover:text-white"
+                              _groupHover={{
+                                color: "white",
+                              }}
                               color="content.primary"
                             >
                               {t("delete-city")}
@@ -325,7 +333,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                         {TagMapping[item.role as OrganizationRole].text}
                       </Tag>
                     </Table.Cell>
-                    <Table.Cell className="w-10">
+                    <Table.Cell w="10">
                       <MenuRoot>
                         <MenuTrigger>
                           <IconButton
@@ -355,14 +363,18 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                             onClick={() => {}}
                           >
                             <Icon
-                              className="group-hover:text-white"
+                              _groupHover={{
+                                color: "white",
+                              }}
                               color="sentiment.negativeDefault"
                               as={RiDeleteBin6Line}
                               h="24px"
                               w="24px"
                             />
                             <Text
-                              className="group-hover:text-white"
+                              _groupHover={{
+                                color: "white",
+                              }}
                               color="content.primary"
                             >
                               {t("remove-user")}
@@ -380,7 +392,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                 color="content.tertiary"
                 mb={2}
                 mt={6}
-                className="uppercase"
+                textTransform="uppercase"
                 fontWeight="bold"
               >
                 {t("all-inventory-years")}
@@ -412,7 +424,11 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                           <Text
                             color="content.link"
                             fontWeight="normal"
-                            className="truncate capitalize underline"
+                            textOverflow="ellipsis"
+                            overflow="hidden"
+                            whiteSpace="nowrap"
+                            textTransform="capitalize"
+                            textDecoration="underline"
                             fontSize="label.lg"
                           >
                             {item.year}
@@ -472,14 +488,18 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                               }}
                             >
                               <Icon
-                                className="group-hover:text-white"
+                                _groupHover={{
+                                  color: "white",
+                                }}
                                 color="content.secondary"
                                 as={FiFolder}
                                 h="24px"
                                 w="24px"
                               />
                               <Text
-                                className="group-hover:text-white"
+                                _groupHover={{
+                                  color: "white",
+                                }}
                                 color="content.primary"
                               >
                                 {t("open-inventory")}
@@ -503,14 +523,18 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                               }}
                             >
                               <Icon
-                                className="group-hover:text-white"
+                                _groupHover={{
+                                  color: "white",
+                                }}
                                 color="sentiment.negativeDefault"
                                 as={RiDeleteBin6Line}
                                 h="24px"
                                 w="24px"
                               />
                               <Text
-                                className="group-hover:text-white"
+                                _groupHover={{
+                                  color: "white",
+                                }}
                                 color="content.primary"
                               >
                                 {t("delete-inventory")}

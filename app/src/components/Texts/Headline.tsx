@@ -1,4 +1,4 @@
-import { Heading, HeadingProps } from "@chakra-ui/react";
+import { Heading, HeadingProps, Box } from "@chakra-ui/react";
 
 interface HeadlineProps extends HeadingProps {
   text?: string;
@@ -18,14 +18,19 @@ export const HeadlineSmall = ({ text, children, ...props }: HeadlineProps) => (
   </Heading>
 );
 
-export const HeadlineLarge = ({ children, className,...props }: HeadingProps) => (
+export const HeadlineLarge = ({
+  children,
+  className,
+  ...props
+}: HeadingProps) => (
   <Heading
     fontFamily="heading"
     fontWeight="bold"
     fontSize="headline.lg"
-    className={className ?? "flex items-center justify-center"}
     {...props}
   >
-    {children}
+    <Box display="flex" alignItems="center" justifyContent="center">
+      {children}
+    </Box>
   </Heading>
 );

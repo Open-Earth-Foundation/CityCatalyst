@@ -91,7 +91,7 @@ const OrganizationDetailsTab = ({
           w={"50%"}
           mt="24px"
           flexDirection="column"
-          className="items-start"
+          alignItems="flex-start"
           gap="24px"
         >
           <Field labelClassName="font-semibold" label={t("organization-name")}>
@@ -124,7 +124,7 @@ const OrganizationDetailsTab = ({
             )}
           </Field>
         </HStack>
-        <Box className="flex justify-end">
+        <Box display="flex" justifyContent="flex-end">
           <Button
             onClick={handleSubmit(handleFormSubmit)}
             w="200px"

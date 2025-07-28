@@ -34,7 +34,7 @@ export function MethodologyContent() {
         <DisplayMedium py="12px" color="content.secondary">
           {t("methodologies-introduction.title")}
         </DisplayMedium>
-        <HeadlineLarge py="12px" textAlign={"left"} className="">
+        <HeadlineLarge py="12px" textAlign={"left"}>
           {t("methodologies-introduction.introduction")}
         </HeadlineLarge>
         <TitleLarge py="12px">
@@ -61,7 +61,7 @@ export function MethodologyContent() {
               id={sector}
               style={{ padding: "96px 0", scrollMarginTop: "100px" }}
             >
-              <HeadlineLarge textAlign={"left"} className={""}>
+              <HeadlineLarge textAlign={"left"}>
                 {[sector_roman_numeral, t(sector)]
                   .filter((x) => !!x)
                   .join(". ")}

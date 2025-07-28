@@ -1,7 +1,7 @@
 "use client";
 import SubSectorCard from "@/components/Cards/SubSectorCard";
 import { InventoryResponse, SectorProgress } from "@/util/types";
-import { Box, Heading, Icon, Text } from "@chakra-ui/react";
+import { Box, Heading, Icon, Text, SimpleGrid } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
 import NextLink from "next/link";
 
@@ -63,21 +63,30 @@ export function SectorCard({
     <Box
       backgroundColor="base.light"
       borderRadius="rounded"
-      className="max-w-full flex flex-col min-h-[268px] px-6 py-8"
+      maxW="full"
+      display="flex"
+      flexDirection="column"
+      minH="268px"
+      px={6}
+      py={8}
     >
-      <Box className="flex gap-5 w-full">
-        <Box className="flex items-start mt-2">
+      <Box display="flex" gap={5} w="full">
+        <Box display="flex" alignItems="flex-start" mt={2}>
           <Icon color="content.link" boxSize={8} as={sectorIcon} />
         </Box>
-        <Box className="w-full">
-          <Box className="flex items-center justify-between">
-            <Box className="flex flex-col">
-              <Box className="flex gap-2 py-1">
+        <Box w="full">
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Box display="flex" flexDirection="column">
+              <Box display="flex" gap={2} py={1}>
                 <Heading
                   fontSize="title.lg"
                   fontWeight="semibold"
                   lineHeight="24"
-                  className="pb-[8px]"
+                  pb="8px"
                   data-testid={sectorName}
                 >
                   {t(sectorName)}
@@ -96,7 +105,7 @@ export function SectorCard({
                 fontSize="body.md"
                 lineHeight="20"
                 letterSpacing="wide"
-                className="py-[16px]"
+                py="16px"
               >
                 {InventoryTypeEnum.GPC_BASIC_PLUS === inventory?.inventoryType
                   ? t("scope-required-for-gpc+")
@@ -111,7 +120,11 @@ export function SectorCard({
               >
                 <Button
                   variant="outline"
-                  className="border-2 w-[256px] h-[48px] py-[16px] gap-2"
+                  borderWidth={2}
+                  w="256px"
+                  h="48px"
+                  py="16px"
+                  gap={2}
                   ml={2}
                 >
                   <BsPlus />
@@ -122,7 +135,13 @@ export function SectorCard({
               </NextLink>
             </Box>
           </Box>
-          <Box className="flex w-full justify-between items-center just gap-6">
+          <Box
+            display="flex"
+            w="full"
+            justifyContent="space-between"
+            alignItems="center"
+            gap={6}
+          >
             <SegmentedProgress
               values={[thirdPartyProgress, uploadedProgress]}
               colors={["interactive.connected", "interactive.tertiary"]}
@@ -132,21 +151,21 @@ export function SectorCard({
               fontFamily="heading"
               fontWeight="semibold"
               fontSize="body.md"
-              className="whitespace-nowrap"
+              whiteSpace="nowrap"
             >
               {formatPercent(totalProgress)}% <Trans t={t}>completed</Trans>
             </Text>
           </Box>
         </Box>
       </Box>
-      <Box className="w-full pt-[24px] items-center justify-center">
+      <Box w="full" pt="24px" alignItems="center" justifyContent="center">
         <AccordionRoot border="none" w="full" collapsible>
           <AccordionItem value="" border="none">
             <AccordionItemContent padding={0}>
-              <Text className="font-[600]">
+              <Text fontWeight={600}>
                 <Trans t={t}>sub-sectors-required</Trans>
               </Text>
-              <Box className="grid grid-cols-3 gap-4 py-4">
+              <SimpleGrid columns={3} gap={4} py={4}>
                 {sectorProgress?.subSectors?.map((subSector, i) => (
                   <NextLink
                     key={i}
@@ -163,11 +182,12 @@ export function SectorCard({
                     />
                   </NextLink>
                 ))}
-              </Box>
+              </SimpleGrid>
             </AccordionItemContent>
             <AccordionItemTrigger
               onClick={toggleAccordion}
-              className="flex justify-center"
+              display="flex"
+              justifyContent="center"
               background="none"
               color="content.tertiary"
               gap={2}
@@ -178,7 +198,7 @@ export function SectorCard({
                 fontSize="button.md"
                 letterSpacing="wider"
                 fontStyle="normal"
-                className="hover:underline hover:text-[#001EA7]"
+                _hover={{ textDecoration: "underline", color: "#001EA7" }}
               >
                 {isAccordionOpen ? t("view-less") : t("view-more")}
               </Text>

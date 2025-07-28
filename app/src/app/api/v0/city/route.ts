@@ -50,7 +50,9 @@ export const POST = apiHandler(async (req, { session }) => {
   }
 
   if (Number(project.cities.length) >= Number(project.cityCountLimit)) {
-    logger.error("City count limit reached for project");
+    logger.error(
+      `City count limit reached for project ${project.projectId}. Current count: ${project?.cities?.length}, Limit: ${project?.cityCountLimit}`,
+    );
     throw new createHttpError.BadRequest("city-count-limit-reached");
   }
 

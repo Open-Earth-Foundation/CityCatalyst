@@ -12,21 +12,40 @@
     </p>
     <script>
       async function getAccessToken(
+        access_token_url,
         client_id,
         redirect_uri,
         code,
         code_challenge
       ) {
-        return "fake_token";
+        const params = new URLSearchParams({
+          grant_type: "authorization_code",
+          client_id,
+          redirect_uri,
+          code,
+          code_challenge
+        })
+        const res = await fetch(access_token_url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: params.toString()
+        })
+        if (!res.ok) {
+          throw new Error("Response was bad")
+        }
+        const json = await res.json()
+        return json.access_token
       }
 
       function setStatus(text) {
         document.getElementById("status").innerHTML = text;
       }
       document.addEventListener("DOMContentLoaded", () => {
-        const authorize_url = "http://localhost:3000/authorize";
-        const access_token_url = "http://localhost:3000/api/auth/token";
-        const client_id = "fake_client_id";
+        const authorize_url = "http://localhost:3000/authorize/";
+        const access_token_url = "http://localhost:3000/api/v0/auth/token/";
+        const client_id = "phc7oUo_rq_QmrWX5ZPbZ";
         const redirect_uri = "http://localhost:2000";
         const params = new URLSearchParams(window.location.search);
         if (params.get("state")) {
@@ -75,7 +94,7 @@
               const code = params.get("code");
               const code_challenge = sessionStorage.getItem("oauth_code_challenge")
               sessionStorage.removeItem("oauth_code_challenge")
-              getAccessToken(client_id, redirect_uri, code, code_challenge).then(
+              getAccessToken(access_token_url, redirect_uri, code, code_challenge).then(
                 (token) => {
                   setStatus(`Got access token: ${token}`);
                 }

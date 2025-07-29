@@ -24,6 +24,7 @@ const userUpdate = {
 
 const invalidUserUpdate = {
   defaultInventoryId: "invalid",
+  defaultCityId: "invalid",
 };
 
 const emptyParams = { params: Promise.resolve({}) };
@@ -32,6 +33,13 @@ describe("User API", () => {
   beforeAll(async () => {
     setupTests();
     await db.initialize();
+
+    // First, update any users that might have this city as their default
+    await db.models.User.update(
+      { defaultCityId: null },
+      { where: { defaultCityId: cityId } },
+    );
+
     await db.models.Inventory.destroy({
       where: { inventoryId },
     });
@@ -50,6 +58,20 @@ describe("User API", () => {
   });
 
   afterAll(async () => {
+    // Clean up in the correct order to avoid foreign key constraint violations
+    await db.models.Inventory.destroy({
+      where: { inventoryId },
+    });
+
+    // Update any users that might have this city as their default
+    await db.models.User.update(
+      { defaultCityId: null },
+      { where: { defaultCityId: cityId } },
+    );
+
+    await db.models.CityUser.destroy({ where: { cityUserId } });
+    await db.models.City.destroy({ where: { cityId } });
+
     if (db.sequelize) await db.sequelize.close();
   });
 

@@ -8,6 +8,7 @@ from prioritizer.utils.ml_comparator import ml_compare
 from utils.build_city_data import build_city_data
 from services.get_actions import get_actions
 from services.get_context import get_context
+from services.get_ccra import get_ccra
 from prioritizer.utils.filter_actions_by_biome import filter_actions_by_biome
 from prioritizer.utils.add_explanations import generate_multilingual_explanation
 from prioritizer.models import (
@@ -64,7 +65,7 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
 
         start_time = time.time()
         try:
-            # API call to get city context data
+            # API call to get city context data from global API
             cityContext = get_context(requestData["locode"])
             if not cityContext:
                 task_storage[task_uuid]["status"] = "failed"
@@ -72,8 +73,16 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                     "error"
                 ] = "No city context data found from global API."
                 return
+
+            # API call to get CCRA data from global API
+            cityCCRA = get_ccra(requestData["locode"], "current")
+            if not cityCCRA:
+                task_storage[task_uuid]["status"] = "failed"
+                task_storage[task_uuid]["error"] = "No CCRA data found from CCRA API."
+                return
+
             # Build city data
-            cityData_dict = build_city_data(cityContext, requestData)
+            cityData_dict = build_city_data(cityContext, requestData, cityCCRA)
 
             # API call to get actions data
             actions = get_actions()

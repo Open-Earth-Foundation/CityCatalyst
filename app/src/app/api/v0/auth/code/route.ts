@@ -7,6 +7,7 @@ import { logger } from "@/services/logger";
 import { v4 } from "uuid";
 import { getClient } from "@/util/client";
 import { Client, LangMap } from "@/util/types";
+import crypto from "node:crypto";
 
 const CODE_EXPIRY = 5 * 60;
 
@@ -25,12 +26,23 @@ const CODE_EXPIRY = 5 * 60;
     );
   }
 
+  const csrfSecret = session.csrfSecret;
+
+  if (!csrfSecret) {
+    throw createHttpError.InternalServerError("Error in server");
+  }
+
   const {
     clientId,
     redirectUri,
     codeChallenge,
-    scope
+    scope,
+    csrfToken
   } = await _req.json();
+
+  if (csrfToken !== crypto.createHmac('sha256', csrfSecret).digest('hex')) {
+    throw createHttpError.BadRequest("csrfToken does not match")
+  }
 
   const client = await getClient(clientId);
 

@@ -1305,12 +1305,14 @@ export const api = createApi({
           clientId,
           redirectUri,
           codeChallenge,
-          scope
+          scope,
+          csrfToken
         }: {
           clientId: string,
           redirectUri: string,
           codeChallenge: string,
-          scope: string
+          scope: string,
+          csrfToken: string
         }) => ({
           method: "POST",
           url: `/auth/code/`,
@@ -1318,7 +1320,8 @@ export const api = createApi({
             clientId,
             redirectUri,
             codeChallenge,
-            scope
+            scope,
+            csrfToken
           },
         }),
         transformResponse: (response: { data: any }) => response.data.code

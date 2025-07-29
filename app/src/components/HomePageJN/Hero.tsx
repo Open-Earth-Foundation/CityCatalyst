@@ -154,12 +154,12 @@ export function Hero({
                     {city.area && city.area > 0 ? (
                       <>
                         {Math.round(city.area).toLocaleString()}
+                        {/* eslint-disable-next-line i18next/no-literal-string */}
                         <HeadlineSmall
                           as="span"
                           fontSize="lg"
                           fontWeight="normal"
                         >
-                          {/* eslint-disable-next-line i18next/no-literal-string */}
                           km<sup>2</sup>
                         </HeadlineSmall>
                       </>

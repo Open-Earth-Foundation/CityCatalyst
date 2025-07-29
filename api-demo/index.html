@@ -10,45 +10,22 @@
       <button id="login">Login with CityCatalyst</button>
       <span id="status"></span>
     </p>
-    <script>
-      async function toChallenge(verifier) {
-        const data = new TextEncoder().encode(verifier);
-        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashString = hashArray.map(b => String.fromCharCode(b)).join("");
-        const base64 = btoa(hashString)                                         // standard base64
-          .replace(/\+/g, "-")                                                   // URL‑safe
-          .replace(/\//g, "_")
-          .replace(/=+$/, "");
-        return base64;
-      }
-      async function getAccessToken(
-        access_token_url,
-        client_id,
-        redirect_uri,
-        code,
-        code_verifier
-      ) {
-        const params = new URLSearchParams({
-          grant_type: "authorization_code",
-          client_id,
-          redirect_uri,
-          code,
-          code_verifier
-        })
-        const res = await fetch(access_token_url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          body: params.toString()
-        })
-        if (!res.ok) {
-          throw new Error("Response was bad")
-        }
-        const json = await res.json()
-        return json.access_token
-      }
+    <script type="module">
+      import * as oauth from 'https://cdn.jsdelivr.net/npm/oauth4webapi@3.6.0/build/index.min.js'
+      const username_url = "http://localhost:3000/api/v0/user/whoami/"
+
+      const issuer = {
+        issuer: 'https://localhost:3000/',
+        authorization_endpoint: "http://localhost:3000/authorize/",
+        token_endpoint: "http://localhost:3000/api/v0/token/"
+      };
+
+      const client = {
+        client_id: "phc7oUo_rq_QmrWX5ZPbZ"
+      };
+
+      const redirect_uri = "http://localhost:2000";
+
       async function getUsername(username_url, token) {
         const res = await fetch(username_url, {
           headers: {
@@ -64,18 +41,18 @@
       function setStatus(text) {
         document.getElementById("status").textContent = text;
       }
-      document.addEventListener("DOMContentLoaded", () => {
-        const authorize_url = "http://localhost:3000/authorize/";
-        const access_token_url = "http://localhost:3000/api/v0/token/";
-        const client_id = "phc7oUo_rq_QmrWX5ZPbZ";
-        const redirect_uri = "http://localhost:2000";
-        const username_url = "http://localhost:3000/api/v0/user/whoami/"
+
+      document.addEventListener("DOMContentLoaded", async () => {
         const params = new URLSearchParams(window.location.search);
-        if (params.get("state")) {
-          if (params.get("state") !== sessionStorage.getItem("oauth_state")) {
+        if (sessionStorage.getItem('access_token')) {
+          const access_token = sessionStorage.getItem('access_token');
+          const username = await getUsername(username_url, access_token);
+          setStatus(`Hello, ${username}`);
+        } else if (params.get("state")) {
+          if (params.get("state") !== sessionStorage.getItem("state")) {
             setStatus(`Invalid state`);
           } else {
-            sessionStorage.removeItem("oauth_state")
+            sessionStorage.removeItem("state")
             const error = params.get("error");
             const error_description = params.get("error_description")
             if (error) {
@@ -115,44 +92,47 @@
               }
             } else {
               const code = params.get("code");
-              const code_verifier = sessionStorage.getItem("oauth_code_verifier")
-              sessionStorage.removeItem("oauth_code_verifier")
-              getAccessToken(
-                access_token_url,
-                client_id,
-                redirect_uri,
-                code,
-                code_verifier
-              ).then(
-                (token) => {
-                  getUsername(username_url, token)
-                  .then((username) => {
-                    setStatus(`Hello, ${username}!`)
-                  })
-                }
-              ).catch((err) => {
-                setStatus(err.message)
-              })
+              const code_verifier = sessionStorage.getItem('code_verifier');
+              const response = await fetch(issuer.token_endpoint, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                  grant_type: 'authorization_code',
+                  code,
+                  client_id: client.client_id,
+                  redirect_uri,
+                  code_verifier,
+                }),
+              });
+              const result = await response.json();
+              const access_token = result.access_token;
+              sessionStorage.setItem('access_token', access_token);
+              window.location.href = '/';
             }
           }
         }
         document.getElementById("login").addEventListener("click", async () => {
           setStatus("Logging in...");
-          const state = crypto.randomUUID();
-          sessionStorage.setItem("oauth_state", state)
-          const code_verifier = crypto.randomUUID();
-          sessionStorage.setItem("oauth_code_verifier", code_verifier);
-          const code_challenge = await toChallenge(code_verifier);
-          const params = new URLSearchParams({
-            client_id,
-            redirect_uri,
-            response_type: "code",
-            code_challenge,
-            code_challenge_method: "S256",
-            state,
-            scope: "read write",
-          });
-          window.location = `${authorize_url}?${params}`;
+          const code_verifier = oauth.generateRandomCodeVerifier();
+          const code_challenge = await oauth.calculatePKCECodeChallenge(code_verifier);
+          const state = crypto.randomUUID()
+
+          sessionStorage.setItem('code_verifier', code_verifier);
+          sessionStorage.setItem('state', state);
+
+          const url = new URL(issuer.authorization_endpoint);
+
+          url.searchParams.set('client_id', client.client_id);
+          url.searchParams.set('redirect_uri', redirect_uri);
+          url.searchParams.set('response_type', 'code');
+          url.searchParams.set('scope', 'read write');
+          url.searchParams.set('code_challenge', code_challenge);
+          url.searchParams.set('code_challenge_method', 'S256');
+          url.searchParams.set('state', state);
+
+          window.location.href = url.toString();  // redirect to auth server
         });
       });
     </script>

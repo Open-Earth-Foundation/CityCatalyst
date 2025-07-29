@@ -7,7 +7,7 @@ import { BodyMedium, BodySmall } from "../Texts/Body";
 import { MdArrowForward } from "react-icons/md";
 import { MdInfoOutline } from "react-icons/md";
 import { TitleLarge } from "../Texts/Title";
-import { Module } from "@/models/Module";
+import { ModuleAttributes } from "@/models/Module";
 
 export function ModuleCard({
   module,
@@ -16,17 +16,20 @@ export function ModuleCard({
   baseUrl,
   language,
 }: {
-  module: Module;
+  module: ModuleAttributes;
   t: TFunction;
   enabled?: boolean;
   baseUrl: string;
   language: string;
 }) {
   const { name, author, description, tagline, url } = module;
-  const getTranslationInLanguage = (obj: { [lng: string]: string }) => {
+  const getTranslationInLanguage = (
+    obj: { [lng: string]: string } | undefined,
+  ) => {
     // 3rd party developers might not add a translation for all the languages,
     // try to use the user's language, then fallback to English, then fallback to the first language
-    return obj[language] || obj.en || Object.keys(obj)[0];
+    if (!obj) return "";
+    return obj[language] || obj.en || Object.keys(obj)[0] || "";
   };
   return (
     <Card.Root
@@ -44,7 +47,7 @@ export function ModuleCard({
       <Card.Body gap={2}>
         <VStack w="full" align="start" gap={2}>
           <HStack justify="space-between" w="full">
-            <Image src="/assets/icon_inverted.svg" boxSize={8} />
+            <Image src="/assets/icon_inverted.svg" boxSize={8} alt="" />
 
             <Tooltip
               content={getTranslationInLanguage(description)}

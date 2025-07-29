@@ -33,10 +33,6 @@ const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
   const { t } = useTranslation(lng, "admin");
   const isAdmin = useAdminGuard(lng, t);
 
-  if (!isAdmin) {
-    return <ProgressLoader />;
-  }
-
   const { data, isLoading } = useGetAllCitiesInSystemQuery({});
   const { data: organizationData, isLoading: isLoadingOrganizationData } =
     useGetOrganizationsQuery({});
@@ -63,6 +59,10 @@ const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
   const selectedCityIds = useMemo(() => {
     return singleRowSelected ? [singleRowSelected] : selectedRowKeys;
   }, [selectedRowKeys, singleRowSelected]);
+
+  if (!isAdmin) {
+    return <ProgressLoader />;
+  }
 
   if (isLoading || isLoadingOrganizationData) {
     return <ProgressLoader />;

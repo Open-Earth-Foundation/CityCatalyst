@@ -155,7 +155,7 @@ export default function HomePage({
             mx="auto"
           >
             <HStack mb={8}>
-              <Image src="/assets/automation.svg" />
+              <Image src="/assets/automation.svg" alt="" />
               <HeadlineMedium>{t("tools-title")}</HeadlineMedium>
             </HStack>
             <Separator borderColor="divider.neutral" borderWidth="2px" />
@@ -188,6 +188,7 @@ export default function HomePage({
                               height={"24px"}
                               src={`/assets/stages/${stage}.svg`}
                               marginRight={2}
+                              alt=""
                             />
                             <TitleLarge color="interactive.secondary">
                               {t("journey." + stage)}

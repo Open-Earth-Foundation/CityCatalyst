@@ -201,7 +201,8 @@ function mapCsvUnitsToSystemUnits(csvUnit: string): string {
 
 async function loadManualTestData(): Promise<ManualTestData[]> {
   const csvPath = path.join(
-    __dirname,
+    process.cwd(),
+    "tests",
     "emission_factors_sample_data",
     "stationary_energy_full_data.csv",
   );

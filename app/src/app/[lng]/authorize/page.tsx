@@ -14,8 +14,8 @@ import { toaster } from "@/components/ui/toaster";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, use } from "react";
 import { useEffect } from "react";
-import { getScopesForInventoryAndSector } from "@/util/constants";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { useGetClientQuery } from "@/services/api";
 
 async function generateCode(clientId: string, codeChallenge: string) {
   return "fake_code";
@@ -34,6 +34,8 @@ export default function Authorize(props: { params: Promise<{ lng: string }> }) {
   const scope = searchParams.get("scope")!;
   const codeChallenge = searchParams.get("code_challenge")!;
   const codeChallengeMethod = searchParams.get("code_challenge_method")!;
+  const { data: client, isLoading: isClientLoading } =
+    useGetClientQuery(clientId);
 
   useEffect(() => {
     if (!clientId || !redirectUri) {
@@ -43,7 +45,21 @@ export default function Authorize(props: { params: Promise<{ lng: string }> }) {
         duration: 5000,
       });
     }
-  }, [t, clientId, redirectUri]);
+    if (!isClientLoading && !client) {
+      toaster.error({
+        title: t("error"),
+        description: t("oauth-unknown-client-id"),
+        duration: 5000,
+      });
+    }
+    if (!isClientLoading && client && client.redirectUri !== redirectUri) {
+      toaster.error({
+        title: t("error"),
+        description: t("oauth-mismatch-redirect-uri"),
+        duration: 5000,
+      });
+    }
+  }, [t, isClientLoading, client, clientId, redirectUri]);
 
   useEffect(() => {
     if (redirectUri && clientId && !oauthEnabled) {
@@ -134,7 +150,7 @@ export default function Authorize(props: { params: Promise<{ lng: string }> }) {
       <Box maxW="md" mx="auto" mt={12} p={6} borderWidth={1} borderRadius="lg">
         <VStack gap={4} textAlign="center">
           <Heading size="lg">{t("oauth-authorize-heading")}</Heading>
-          <Text>{t("oauth-authorize-prompt", { client: clientId })}</Text>
+          <Text>{t("oauth-authorize-prompt", { clientName: (isClientLoading) ? t("oauth-unknown-app") : client?.name.en })}</Text>
           <ButtonGroup>
             <Button colorScheme="blue" onClick={handleAuthorize}>
               {t("oauth-ok")}

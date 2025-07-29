@@ -52,6 +52,8 @@ import {
   UpdateUserPayload,
   FormulaInputValuesResponse,
   DataSourceResponse,
+  Client,
+  LangMap
 } from "@/util/types";
 import type { HIAPResponse } from "@/util/types";
 import type { GeoJSON } from "geojson";
@@ -1290,6 +1292,14 @@ export const api = createApi({
         transformResponse: (response: { data: ModuleAttributes[] }) =>
           response.data,
       }),
+      getClient: builder.query<
+        Client,
+        string
+      >({
+        query: (clientId: string) => `client/${clientId}/`,
+        transformResponse: (response: { data: Client }) =>
+          response.data,
+      })
     };
   },
 });
@@ -1398,5 +1408,6 @@ export const {
   useUpdateUserRoleInOrganizationMutation,
   useGetModulesQuery,
   useGetProjectModulesQuery,
+  useGetClientQuery
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

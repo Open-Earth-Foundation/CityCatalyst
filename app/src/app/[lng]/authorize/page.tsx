@@ -13,7 +13,7 @@ import {
 import { toaster } from "@/components/ui/toaster";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, use } from "react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { useGetClientQuery } from "@/services/api";
 
@@ -26,10 +26,13 @@ export default function Authorize(props: { params: Promise<{ lng: string }> }) {
   const { t } = useTranslation(lng, "oauth");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const oauthEnabled = hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)
+  const oauthEnabled = useMemo(
+    () => hasFeatureFlag(FeatureFlags.OAUTH_ENABLED),
+    []
+  );
   const clientId = searchParams.get("client_id")!;
   const redirectUri = searchParams.get("redirect_uri")!;
-  const state = searchParams.get("state")!;
+  const state = searchParams.get("state");
   const responseType = searchParams.get("response_type");
   const scope = searchParams.get("scope")!;
   const codeChallenge = searchParams.get("code_challenge")!;
@@ -133,10 +136,19 @@ export default function Authorize(props: { params: Promise<{ lng: string }> }) {
   }
 
   const handleAuthorize = async () => {
-    const code = await generateCode(clientId, codeChallenge);
-
-    const params = new URLSearchParams(state ? { code, state } : { code });
-    router.push(`${redirectUri}?${params}`);
+    try {
+      const code = await generateCode(clientId, codeChallenge);
+      const params = new URLSearchParams(state ? { code, state } : { code });
+      router.push(`${redirectUri}?${params}`);
+    } catch (error) {
+      const errorDescription = error instanceof Error ? error.message : 'Unknown error occurred';
+      const params = new URLSearchParams({
+        error: 'server_error',
+        error_description: errorDescription,
+        ...(state && { state })
+      });
+      router.push(`${redirectUri}?${params}`);
+    }
   };
 
   const handleCancel = () => {

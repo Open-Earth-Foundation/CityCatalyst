@@ -9,14 +9,21 @@ import NextLink from "next/link";
 const NotAvailable = ({ lng }: { lng: string }) => {
   const { t } = useTranslation(lng, "inventory-not-found");
   return (
-    <Box className="flex w-full justify-center relative h-[100vh] z-10">
+    <Box
+      display="flex"
+      w="full"
+      justifyContent="center"
+      position="relative"
+      h="100vh"
+      zIndex={10}
+    >
       <Image
         src="/assets/not-found-background.svg"
         layout="fill"
         objectFit="cover"
         sizes="100vw"
-        className="relative"
         alt="not-found page background"
+        style={{ position: "relative" }}
       />
       <Box
         display="flex"

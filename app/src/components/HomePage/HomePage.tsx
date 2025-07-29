@@ -28,8 +28,12 @@ import { ActionCards } from "@/components/HomePage/ActionCards";
 import { InventoryPreferencesCard } from "@/components/HomePage/InventoryPreferencesCard";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
 import { Button } from "../ui/button";
-import CapTab from "@/app/[lng]/[inventory]/CapTab";
-import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import HiapTabWrapper from "@/app/[lng]/[inventory]/HiapTab";
+import {
+  hasFeatureFlag,
+  FeatureFlags,
+  getFeatureFlags,
+} from "@/util/feature-flags";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { logger } from "@/services/logger";
@@ -200,7 +204,7 @@ export default function HomePage({
             population={population}
           />
 
-          <Box className="flex mx-auto mt-[80px] w-full max-w-[1090px]">
+          <Box display="flex" mx="auto" mt="80px" w="full" maxW="1090px">
             <VStack align="start">
               <InventoryPreferencesCard t={t} isPublic={isPublic} />
               {!isPublic && (
@@ -215,15 +219,23 @@ export default function HomePage({
             </VStack>
           </Box>
           <Box
-            className="h-full pt-[48px] pb-[100px]"
+            h="full"
+            pt="48px"
+            pb="100px"
             bg="background.backgroundLight"
             px={8}
           >
-            <Box className="mx-auto w-full max-w-[1090px] css-0">
+            <Box mx="auto" w="full" maxW="1090px">
               {/* Years section */}
               {!isPublic ? (
                 <>
-                  <Box className="w-full mb-6 flex items-center justify-between">
+                  <Box
+                    w="full"
+                    mb={6}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
                     <Text
                       color="content.primary"
                       fontWeight="bold"
@@ -258,7 +270,7 @@ export default function HomePage({
                     t={t}
                   />
                   <Tabs.Root
-                    className="mt-12"
+                    mt={12}
                     variant="line"
                     lazyMount
                     defaultValue="tab-emission-inventory-calculation-title"
@@ -269,7 +281,7 @@ export default function HomePage({
                         "tab-emission-inventory-results-title",
                         ...(inventory?.city?.country === "Brazil" &&
                         hasFeatureFlag(FeatureFlags.CAP_TAB_ENABLED)
-                          ? ["tab-cap-title"]
+                          ? ["tab-hiap-title"]
                           : []),
                       ].map((tab, index) => (
                         <Tabs.Trigger key={index} value={tab}>
@@ -301,8 +313,8 @@ export default function HomePage({
                       />
                     </Tabs.Content>
                     {inventory?.city?.country === "Brazil" && (
-                      <Tabs.Content value="tab-cap-title">
-                        <CapTab inventory={inventory} lng={lng} />
+                      <Tabs.Content value="tab-hiap-title">
+                        <HiapTabWrapper inventory={inventory} lng={lng} />
                       </Tabs.Content>
                     )}
                   </Tabs.Root>

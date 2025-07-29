@@ -5,19 +5,15 @@ import type { User, UserId } from "./User";
 
 export interface CityUserAttributes {
   cityUserId: string;
-  userId?: string;
-  cityId?: string;
+  userId: string;
+  cityId: string;
   created?: Date;
   lastUpdated?: Date;
 }
 
 export type CityUserPk = "cityUserId";
 export type CityUserId = CityUser[CityUserPk];
-export type CityUserOptionalAttributes =
-  | "userId"
-  | "cityId"
-  | "created"
-  | "lastUpdated";
+export type CityUserOptionalAttributes = "created" | "lastUpdated";
 export type CityUserCreationAttributes = Optional<
   CityUserAttributes,
   CityUserOptionalAttributes
@@ -28,8 +24,8 @@ export class CityUser
   implements Partial<CityUserAttributes>
 {
   cityUserId!: string;
-  userId?: string;
-  cityId?: string;
+  userId!: string;
+  cityId!: string;
   created?: Date;
   lastUpdated?: Date;
 
@@ -56,7 +52,7 @@ export class CityUser
         },
         userId: {
           type: DataTypes.UUID,
-          allowNull: true,
+          allowNull: false,
           references: {
             model: "User",
             key: "user_id",
@@ -65,7 +61,7 @@ export class CityUser
         },
         cityId: {
           type: DataTypes.UUID,
-          allowNull: true,
+          allowNull: false,
           references: {
             model: "City",
             key: "city_id",

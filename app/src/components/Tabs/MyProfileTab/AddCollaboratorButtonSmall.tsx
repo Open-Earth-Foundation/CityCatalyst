@@ -27,7 +27,7 @@ export function AddCollaboratorButtonSmall({ lng }: { lng: string }) {
         color={"interactive.secondary"}
         padding={4}
       >
-        <MdPersonAdd className="text-white" size={24} />
+        <MdPersonAdd color="white" size={24} />
         <ButtonMedium color="background.default" marginLeft={2}>
           {t("invite")}
         </ButtonMedium>

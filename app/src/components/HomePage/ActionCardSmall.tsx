@@ -16,15 +16,23 @@ const ActionCardSmall: React.FC<ActionCardSmallProps> = ({
     <Card.Root
       onClick={onClick}
       shadow="2dp"
-      backgroundColor="base.light"
-      className="h-[100px] hover:shadow-xl cursor-pointer"
+      w="100%"
+      h="100px"
+      _hover={{ boxShadow: "xl" }}
+      cursor="pointer"
       py={0}
       px={6}
     >
-      <Box className="flex items-center h-full">
+      <Box display="flex" alignItems="center" h="100px" cursor="pointer">
         <Box
-          bg="content.link"
-          className="flex items-center justify-center min-h-[48px] min-w-[48px] rounded-full"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          minH="48px"
+          minW="48px"
+          borderRadius="full"
+          bg="interactive.secondary"
+          color="white"
         >
           {icon}
         </Box>

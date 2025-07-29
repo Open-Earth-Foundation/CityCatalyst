@@ -1,13 +1,17 @@
 import { Badge, Box, Flex, useToken, VStack } from "@chakra-ui/react";
 
 export function SegmentedProgressWithNames({
-                                             values,
-                                             colors = ["interactive.connected", "interactive.tertiary", "interactive.secondary"],
-                                             max = 1,
-                                             height = 4,
-                                             t
-                                           }: {
-  values: { name: string, value: number }[];
+  values,
+  colors = [
+    "interactive.connected",
+    "interactive.tertiary",
+    "interactive.secondary",
+  ],
+  max = 1,
+  height = 4,
+  t,
+}: {
+  values: { name: string; value: number }[];
   colors?: string[];
   max?: number;
   height?: number;
@@ -19,7 +23,8 @@ export function SegmentedProgressWithNames({
       <Box
         backgroundColor="background.neutral"
         w="full"
-        className="flex flex-row"
+        display="flex"
+        flexDirection="row"
         borderRadius="full"
       >
         {values.map((value, i) => (
@@ -34,34 +39,32 @@ export function SegmentedProgressWithNames({
             borderEndRadius={i == values.length - 1 ? "full" : undefined}
           />
         ))}
-
       </Box>
-      <Box
-        w="full"
-        className="flex flex-row"
-        borderRadius="full">
-        {values.map((v, i) => <Badge
-          key={v.name}
-          borderWidth="1px"
-          borderColor="border.neutral"
-          py={1}
-          px={2}
-          marginRight={2}
-          borderRadius="full"
-          bg="base.light"
-        >
-          <Flex>
-            <Box
-              width={3}
-              height={3}
-              bg={colors[i]}
-              borderRadius="full"
-              mx={2}
-              my={1}
-            />
-            {t(v.name)}
-          </Flex>
-        </Badge>)}
+      <Box w="full" display="flex" flexDirection="row" borderRadius="full">
+        {values.map((v, i) => (
+          <Badge
+            key={v.name}
+            borderWidth="1px"
+            borderColor="border.neutral"
+            py={1}
+            px={2}
+            marginRight={2}
+            borderRadius="full"
+            bg="base.light"
+          >
+            <Flex>
+              <Box
+                width={3}
+                height={3}
+                bg={colors[i]}
+                borderRadius="full"
+                mx={2}
+                my={1}
+              />
+              {t(v.name)}
+            </Flex>
+          </Badge>
+        ))}
       </Box>
     </VStack>
   );

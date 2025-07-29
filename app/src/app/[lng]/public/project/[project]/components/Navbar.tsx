@@ -16,25 +16,28 @@ const ProjectDashboardNavbar = ({
       <>
         <Link
           href={`/${lng}/public/project/${project}`}
-          className="flex items-center"
+          display="flex"
+          alignItems="center"
         >
-          <Heading color="base.light" size="md" className="opacity-75">
+          <Heading color="base.light" size="md" opacity={0.75}>
             {t("dashboard")}
           </Heading>
         </Link>
         <Link
           href={`/${lng}/public/project/${project}/about`}
-          className="flex items-center"
+          display="flex"
+          alignItems="center"
         >
-          <Heading color="base.light" size="md" className="opacity-75">
+          <Heading color="base.light" size="md" opacity={0.75}>
             {t("about")}
           </Heading>
         </Link>
         <Link
           href={`/${lng}/public/project/${project}/collaborators`}
-          className="flex items-center"
+          display="flex"
+          alignItems="center"
         >
-          <Heading color="base.light" size="md" className="opacity-75">
+          <Heading color="base.light" size="md" opacity={0.75}>
             {t("collaborators")}
           </Heading>
         </Link>

@@ -58,10 +58,17 @@ export default function DataLayout(props: {
   }
 
   return (
-    <Box className="h-full flex flex-col" bg="background.backgroundLight">
+    <Box
+      h="full"
+      display="flex"
+      flexDirection="column"
+      bg="background.backgroundLight"
+    >
       <NavigationBar showMenu lng={lng} />
       <Toaster />
-      <div className="w-full h-full">{children}</div>
+      <Box w="full" h="full">
+        {children}
+      </Box>
       <ChatPopover inventoryId={inventory} />
     </Box>
   );

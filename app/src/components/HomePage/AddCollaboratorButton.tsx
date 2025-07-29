@@ -23,7 +23,7 @@ export function AddCollaboratorButton({ lng }: { lng: string }) {
       />
       <ActionCardSmall
         onClick={onModalOpen}
-        icon={<MdPersonAdd className="text-white" size={24} />}
+        icon={<MdPersonAdd color="white" size={24} />}
         title={t("invite-collaborators")}
       />
     </>

@@ -43,10 +43,17 @@ export default function DataLayout(props: {
   }
 
   return (
-    <Box className="h-full flex flex-col" bg="background.backgroundLight">
+    <Box
+      h="full"
+      display="flex"
+      flexDirection="column"
+      bg="background.backgroundLight"
+    >
       <NavigationBar lng={lng} isPublic={true} />
       <Toaster />
-      <div className="w-full h-full">{props.children}</div>
+      <Box w="full" h="full">
+        {props.children}
+      </Box>
     </Box>
   );
 }

@@ -26,7 +26,7 @@ const LoadingCard = () => (
 );
 
 const LoadingState = () => (
-  <Box w="full" className="animate-pulse">
+  <Box w="full" animation="pulse">
     <Box display="flex" flexDir="column" gap="16px">
       <Box h="16px" w="461px" bg="background.backgroundLoading" />
       <Box h="8px" w="300px" bg="background.backgroundLoading" />

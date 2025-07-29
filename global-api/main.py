@@ -34,6 +34,13 @@ from routes.emissionfactor_datasource_endpoint import api_router as emissionfact
 from routes.emissionfactor_emissionfactor_datasource_endpoint import api_router as emissionfactor_emissionfactor_datasource_route
 from routes.emissionfactor_emissionsfactor_endpoint import api_router as emissionfactor_emissionsfactor_route
 
+# Formula Input endpoints
+from routes.formulainput_publisher_endpoint import api_router as formulainput_publisher_route
+from routes.formulainput_methodology_endpoint import api_router as formulainput_methodology_route
+from routes.formulainput_datasource_endpoint import api_router as formulainput_datasource_route
+from routes.formulainput_formulainput_datasource_endpoint import api_router as formulainput_formulainput_datasource_route
+from routes.formulainput_formulainput_endpoint import api_router as formulainput_formulainput_route
+
 """
 Logger instance initialized and configured
     - filename  Name of the file where all the logs will be stored.
@@ -204,6 +211,32 @@ app.include_router(
 app.include_router(
     emissionfactor_emissionsfactor_route,
     tags=["GHGI Emission Factors"],
+)
+
+# Formula Input endpoints
+app.include_router(
+    formulainput_publisher_route,
+    tags=["GHGI Formula Inputs"],
+)
+
+app.include_router(
+    formulainput_methodology_route,
+    tags=["GHGI Formula Inputs"],
+)
+
+app.include_router(
+    formulainput_datasource_route,
+    tags=["GHGI Formula Inputs"],
+)
+
+app.include_router(
+    formulainput_formulainput_datasource_route,
+    tags=["GHGI Formula Inputs"],
+)
+
+app.include_router(
+    formulainput_formulainput_route,
+    tags=["GHGI Formula Inputs"],
 )
 
 ## Endpoints for CCRA

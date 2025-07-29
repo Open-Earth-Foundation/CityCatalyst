@@ -208,6 +208,8 @@ export class User
             model: "City",
             key: "city_id",
           },
+          onDelete: "SET NULL",
+          onUpdate: "CASCADE",
           field: "default_city_id",
         },
       },

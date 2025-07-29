@@ -59,7 +59,7 @@ export function Hero({
   );
 
   return (
-    <Box bg="white" py={12} px={8}>
+    <Box bg="white" py={12} w="full">
       <Box maxW="1090px" mx="auto">
         <HStack align="start" gap={8}>
           {/* Left Panel - Text Information */}
@@ -154,13 +154,12 @@ export function Hero({
                     {city.area && city.area > 0 ? (
                       <>
                         {Math.round(city.area).toLocaleString()}
-                        {/* eslint-disable-next-line i18next/no-literal-string */}
                         <HeadlineSmall
                           as="span"
                           fontSize="lg"
                           fontWeight="normal"
                         >
-                          km<sup>2</sup>
+                          {t("km2")}
                         </HeadlineSmall>
                       </>
                     ) : (

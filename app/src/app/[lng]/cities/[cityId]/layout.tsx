@@ -13,6 +13,7 @@ import {
 import { useTranslation } from "@/i18n/client";
 import { useSession } from "next-auth/react";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import ProgressLoader from "@/components/ProgressLoader";
 
 export default function AdminLayout(props: {
   children: React.ReactNode;
@@ -61,9 +62,7 @@ export default function AdminLayout(props: {
               alignItems="center"
               justifyContent="center"
             >
-              <ProgressCircleRoot value={null}>
-                <ProgressCircleRing cap="round" />
-              </ProgressCircleRoot>
+              <ProgressLoader />
             </Box>
           </Box>
         )}

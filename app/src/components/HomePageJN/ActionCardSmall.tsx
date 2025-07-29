@@ -21,6 +21,7 @@ const ActionCardSmall: React.FC<ActionCardSmallProps> = ({
       px={6}
       cursor="pointer"
       h="100px"
+      transition="box-shadow 0.2s ease-in-out"
       _hover={{ boxShadow: "xl" }}
     >
       <Box display="flex" alignItems="center" h="full">

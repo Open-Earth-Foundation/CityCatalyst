@@ -26,7 +26,7 @@ export function ActionCards({
           gap={6}
           alignItems="stretch"
         >
-          {/* Large blue card */}
+          {/* Large blue card  - Check your dashboard CTA*/}
           <GridItem
             colSpan={1}
             rowSpan={{ base: 1, md: 2 }}

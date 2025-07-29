@@ -31,7 +31,7 @@ export const NoModulesCard = ({
             {t("no-modules-description")}
           </BodyMedium>
           <Link
-            href={`mailto://${emails}`}
+            href={`mailto:${emails}`}
             color="content.link"
             fontSize="sm"
             fontWeight="bold"

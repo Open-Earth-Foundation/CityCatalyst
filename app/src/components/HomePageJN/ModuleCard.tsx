@@ -4,30 +4,30 @@ import React from "react";
 import type { TFunction } from "i18next";
 import { ButtonMedium } from "@/components/Texts/Button";
 import { BodyMedium, BodySmall } from "../Texts/Body";
-import { HeadlineSmall } from "../Texts/Headline";
 import { MdArrowForward } from "react-icons/md";
 import { MdInfoOutline } from "react-icons/md";
 import { TitleLarge } from "../Texts/Title";
+import { Module } from "@/models/Module";
 
 export function ModuleCard({
-  name,
-  author,
-  description,
-  tagline,
-  url,
+  module,
   t,
   enabled = true,
   baseUrl,
+  language,
 }: {
-  name: string;
-  author: string;
-  description: string;
-  tagline: string;
-  url: string;
+  module: Module;
   t: TFunction;
   enabled?: boolean;
   baseUrl: string;
+  language: string;
 }) {
+  const { name, author, description, tagline, url } = module;
+  const getTranslationInLanguage = (obj: { [lng: string]: string }) => {
+    // 3rd party developers might not add a translation for all the languages,
+    // try to use the user's language, then fallback to English, then fallback to the first language
+    return obj[language] || obj.en || Object.keys(obj)[0];
+  };
   return (
     <Card.Root
       width="320px"
@@ -47,7 +47,7 @@ export function ModuleCard({
             <Image src="/assets/icon_inverted.svg" boxSize={8} />
 
             <Tooltip
-              content={description}
+              content={getTranslationInLanguage(description)}
               showArrow
               contentProps={{
                 bg: "content.secondary",
@@ -69,14 +69,16 @@ export function ModuleCard({
           <HStack align="start" gap={4} justify="space-between">
             <HStack align="start" gap={4}>
               <Card.Title mt={2} as="div">
-                <TitleLarge>{name}</TitleLarge>
+                <TitleLarge>{getTranslationInLanguage(name)}</TitleLarge>
               </Card.Title>
             </HStack>
           </HStack>
         </VStack>
         <BodySmall>{t("by", { author: author })}</BodySmall>
         <Card.Description as="div">
-          <BodyMedium lineClamp={2}>{tagline}</BodyMedium>
+          <BodyMedium lineClamp={2}>
+            {getTranslationInLanguage(tagline)}
+          </BodyMedium>
         </Card.Description>
       </Card.Body>
       <Card.Footer justifyContent="flex-end">

@@ -3,7 +3,7 @@ import { use } from "react";
 
 import HomePage from "@/components/HomePageJN/HomePage";
 import { NavigationBar } from "@/components/navigation-bar";
-import { Box } from "@chakra-ui/react";
+import { VStack } from "@chakra-ui/react";
 
 export default function PrivateHome(props: {
   params: Promise<{ lng: string }>;
@@ -11,9 +11,9 @@ export default function PrivateHome(props: {
   const { lng } = use(props.params);
 
   return (
-    <Box className="h-full flex flex-col" bg="background.backgroundLight">
+    <VStack h="full" bg="background.backgroundLight">
       <NavigationBar showMenu lng={lng} />
       <HomePage lng={lng} isPublic={false} />
-    </Box>
+    </VStack>
   );
 }

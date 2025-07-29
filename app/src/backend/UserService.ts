@@ -194,8 +194,6 @@ export default class UserService {
       return inventory?.inventory_id;
     }
 
-    // throw new createHttpError.NotFound("Inventory not found");
-
     const adminData = await db.models.OrganizationAdmin.findOne({
       where: {
         userId: userId,

@@ -39,6 +39,7 @@ import { BodyLarge } from "@/components/Texts/Body";
 import { TitleLarge } from "@/components/Texts/Title";
 import { LuChevronDown } from "react-icons/lu";
 import { NoModulesCard } from "./NoModulesCard";
+import { StageNames } from "@/util/constants";
 
 export default function HomePage({
   lng,
@@ -55,11 +56,7 @@ export default function HomePage({
   isPublic || CheckUserSession();
   const language = cookieLanguage ?? lng;
   const { cityId, year } = useParams();
-  const getTranslationInLanguage = (obj: { [lng: string]: string }) => {
-    // 3rd party developers might not add a translation for all the languages,
-    // try to use the user's language, then fallback to English, then fallback to the first language
-    return obj[language] || obj.en || Object.keys(obj)[0];
-  };
+
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
@@ -95,12 +92,6 @@ export default function HomePage({
     useGetModulesQuery();
   const { data: projectModules, isLoading: isProjectModulesLoading } =
     useGetProjectModulesQuery(city?.projectId!, { skip: !city?.projectId });
-  enum StageNames {
-    "Assess And Analyze" = "assess-&-analyze",
-    "Plan" = "plan",
-    "Implement" = "implement",
-    "Monitor, Evaluate & Report" = "monitor-evaluate-&-report",
-  }
 
   const modulesByStage =
     allModules?.reduce(
@@ -217,19 +208,12 @@ export default function HomePage({
                               <ModuleCard
                                 key={mod.id}
                                 t={t}
-                                name={getTranslationInLanguage(mod.name)}
-                                description={getTranslationInLanguage(
-                                  mod.description ?? {},
-                                )}
-                                tagline={getTranslationInLanguage(
-                                  mod.tagline ?? {},
-                                )}
-                                author={mod.author}
-                                url={mod.url}
+                                module={mod}
                                 enabled={projectModules.some(
                                   (m) => m.id === mod.id,
                                 )}
                                 baseUrl={`/${lng}/cities/${cityId}`}
+                                language={language}
                               />
                             ))
                           ) : (

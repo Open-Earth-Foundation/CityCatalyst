@@ -40,7 +40,7 @@
       }
 
       function setStatus(text) {
-        document.getElementById("status").innerHTML = text;
+        document.getElementById("status").textContent = text;
       }
       document.addEventListener("DOMContentLoaded", () => {
         const authorize_url = "http://localhost:3000/authorize/";

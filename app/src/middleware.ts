@@ -20,9 +20,20 @@ const inviteMatcher = /^\/[a-z]{2}\/(organization|user)\/invites\/?$/;
 const publicMatcher = /^\/[a-z]{0,2}\/public\//;
 const cookieName = "i18next";
 
+const excludedApi = [
+  /^\/api\/auth\//,
+  /^\/api\/v0\/auth\//,
+  /^\/api\/v0\/check\//,
+  /^\/api\/v0\/mock\//,
+  /^\/api\/v0\/chat\//
+]
+
 export async function middleware(req: NextRequestWithAuth) {
 
   if (req.nextUrl.pathname.startsWith('/api')) {
+    if (excludedApi.some(ptrn => req.nextUrl.pathname.match(ptrn))) {
+      return NextResponse.next();
+    }
     if (req.method === 'OPTIONS') {
       return new Response(null, {
         status: 200,
@@ -34,7 +45,7 @@ export async function middleware(req: NextRequestWithAuth) {
         },
       });
     }
-     const response = NextResponse.next();
+    const response = NextResponse.next();
     response.headers.set('Access-Control-Allow-Origin', '*');
     response.headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
     response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');

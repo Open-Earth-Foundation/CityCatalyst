@@ -55,6 +55,10 @@ export const POST = apiHandler(async (_req, { params, session }) => {
     throw new createHttpError.BadRequest("grant_type must be a string")
   }
 
+  if (grantType !== "authorization_code") {
+    throw new createHttpError.BadRequest("grant_type must 'authorization_code'")
+  }
+
   if (code == null) {
     throw new createHttpError.BadRequest("code is required")
   }

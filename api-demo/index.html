@@ -11,19 +11,30 @@
       <span id="status"></span>
     </p>
     <script>
+      async function toChallenge(verifier) {
+        const data = new TextEncoder().encode(verifier);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashString = hashArray.map(b => String.fromCharCode(b)).join("");
+        const base64 = btoa(hashString)                                         // standard base64
+          .replace(/\+/g, "-")                                                   // URL‑safe
+          .replace(/\//g, "_")
+          .replace(/=+$/, "");
+        return base64;
+      }
       async function getAccessToken(
         access_token_url,
         client_id,
         redirect_uri,
         code,
-        code_challenge
+        code_verifier
       ) {
         const params = new URLSearchParams({
           grant_type: "authorization_code",
           client_id,
           redirect_uri,
           code,
-          code_challenge
+          code_verifier
         })
         const res = await fetch(access_token_url, {
           method: "POST",
@@ -92,9 +103,15 @@
               }
             } else {
               const code = params.get("code");
-              const code_challenge = sessionStorage.getItem("oauth_code_challenge")
-              sessionStorage.removeItem("oauth_code_challenge")
-              getAccessToken(access_token_url, redirect_uri, code, code_challenge).then(
+              const code_verifier = sessionStorage.getItem("oauth_code_verifier")
+              sessionStorage.removeItem("oauth_code_verifier")
+              getAccessToken(
+                access_token_url,
+                client_id,
+                redirect_uri,
+                code,
+                code_verifier
+              ).then(
                 (token) => {
                   setStatus(`Got access token: ${token}`);
                 }
@@ -102,12 +119,13 @@
             }
           }
         }
-        document.getElementById("login").addEventListener("click", () => {
-          setStatus("");
-          const state = "fake_state"
+        document.getElementById("login").addEventListener("click", async () => {
+          setStatus("Logging in...");
+          const state = crypto.randomUUID();
           sessionStorage.setItem("oauth_state", state)
-          const code_challenge = "fake_challenge"
-          sessionStorage.setItem("oauth_code_challenge", code_challenge)
+          const code_verifier = crypto.randomUUID();
+          sessionStorage.setItem("oauth_code_verifier", code_verifier);
+          const code_challenge = await toChallenge(code_verifier);
           const params = new URLSearchParams({
             client_id,
             redirect_uri,

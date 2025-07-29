@@ -25,6 +25,8 @@ import {
   FailedSourceResult,
   RemovedSourceResult,
 } from "@/backend/DataSourceService";
+import type { ProjectAttributes } from "@/models/Project";
+import type { OrganizationAttributes } from "@/models/Organization";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -91,6 +93,7 @@ export interface UserInfoResponse {
   userId: string;
   name: string;
   defaultInventoryId: string | null;
+  defaultCityId: string | null;
   role: Roles;
   email?: string;
   preferredLanguage?: string;
@@ -359,7 +362,6 @@ export type BreakdownByActivity = Record<
   Record<string, Record<string, GroupedActivity>> & { totals: SubsectorTotals }
 >;
 
-
 export interface ActivityDataByScope {
   activityTitle: string;
   scopes: { [key: string]: Decimal };
@@ -478,22 +480,8 @@ export enum ACTION_TYPES {
   Adaptation = "adaptation",
 }
 
-export type CityWithProjectDataResponse = {
-  cityId: string;
-  name: string;
-  locode: string;
-  populationYear: number;
-  country: string;
-  population: number;
-  project?: {
-    name: string;
-    cityCountLimit: number;
-    organization: {
-      organizationId: string;
-      name: string;
-      contactEmail: string;
-    };
-  };
+export type CityWithProjectDataResponse = CityAttributes & {
+  project?: ProjectAttributes & { organization: OrganizationAttributes };
 };
 
 export type ThemeResponse = {
@@ -546,7 +534,7 @@ export interface FormulaInputValuesResponse {
 export enum HighImpactActionRankingStatus {
   PENDING = "PENDING",
   SUCCESS = "SUCCESS",
-  FAILURE = "FAILURE"
+  FAILURE = "FAILURE",
 }
 export interface CoBenefits {
   air_quality: number;
@@ -615,7 +603,6 @@ export interface MitigationAction extends BaseAction {
   type: ACTION_TYPES.Mitigation;
   GHGReductionPotential: GHGReductionPotential;
   adaptationEffectiveness: null;
-  
 }
 
 export interface AdaptationAction extends BaseAction {
@@ -636,4 +623,5 @@ export type HIAPResponse = {
   created: Date;
   last_updated: Date;
   rankedActions: HIAction[];
-}
+};
+

@@ -30,7 +30,7 @@ export const InventorySelect = ({
     // get the latest inventory for the city
     let targetInventory = years[0];
     await setUserInfo({
-      cityId: city.cityId!,
+      defaultCityId: city.cityId!,
       defaultInventoryId: targetInventory.inventoryId,
     }).unwrap();
     router.push(`/${targetInventory.inventoryId}`);

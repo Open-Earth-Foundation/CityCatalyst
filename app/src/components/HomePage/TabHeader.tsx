@@ -41,7 +41,7 @@ export function TabHeader({
 
     setUserInfo({
       defaultInventoryId: targetYear?.inventoryId as string,
-      cityId: inventory?.city.cityId as string,
+      defaultCityId: inventory?.city.cityId as string,
     });
 
     router.push(`${isPublic ? "/public" : ""}/${targetYear?.inventoryId}`);

@@ -1,8 +1,10 @@
 {
   "action-type-mitigation": "Mitigation",
   "action-type-adaptation": "Adaptation",
-  "tab-cap-title": "Climate action prioritization",
+  "tab-hiap-title": "Climate action prioritization",
   "loading": "Loading actions...",
+  "error-loading-data": "Error loading data",
+  "no-actions-found": "No actions found",
   "priority": "Priority",
   "action-name": "Action Name",
   "hazards": "Hazards",
@@ -15,8 +17,10 @@
   "n-a": "N/A",
   "go-back": "Go back",
   "action-description": "Action description",
+  "adaptation-effectiveness": "Adaptation Effectiveness",
   "adaptation-effectiveness-by-hazard": "Adaptation Effectiveness by Hazard",
   "ranking": "Ranking",
+  "prioritizing-actions": "Actions are being prioritized for your city. Please check back in 15 minutes.",
   "hazard": {
     "droughts": "Droughts",
     "heatwaves": "Heatwaves",
@@ -48,5 +52,9 @@
     "<5 years": "Less than 5 years",
     "5-10 years": "5 to 10 years",
     ">10 years": "More than 10 years"
+  },
+  "primary-purpose": {
+    "ghg_reduction": "GHG Reduction",
+    "climate_resilience": "Climate Resilience"
   }
 }

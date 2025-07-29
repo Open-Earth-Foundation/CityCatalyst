@@ -67,19 +67,20 @@ const OrganizationList = ({
     <HStack w="full" flexDirection="column" alignItems="start" gap={6}>
       <Text
         fontSize="title.md"
-        className="capitalize"
+        textTransform="capitalize"
         fontWeight="semibold"
         color="content.tertiary"
       >
         {t("organizations")}
       </Text>
       <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      <Box w="full" className="overflow-scroll">
+      <Box w="full" overflow="scroll">
         {filteredOrganizationList?.map((org) => (
           <Button
             variant="ghost"
             rounded={0}
-            className="flex justify-between"
+            display="flex"
+            justifyContent="space-between"
             w="full"
             key={org.organizationId}
             onClick={() => selectOrganization(org.organizationId)}
@@ -128,7 +129,9 @@ const ProjectListStep = ({
         <Button
           variant="ghost"
           rounded={0}
-          className="flex gap-2 justify-start"
+          display="flex"
+          gap={2}
+          justifyContent="flex-start"
           w="full"
           onClick={() => {
             clearSelectedOrganization();
@@ -142,7 +145,7 @@ const ProjectListStep = ({
           />
           <Text
             fontSize="title.md"
-            className="capitalize"
+            textTransform="capitalize"
             fontWeight="semibold"
             color="content.tertiary"
           >
@@ -151,7 +154,7 @@ const ProjectListStep = ({
         </Button>
       </Flex>
       <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      <Box w="full" className="overflow-scroll">
+      <Box w="full" overflow="scroll">
         {filteredOrganizationList?.length === 0 && (
           <Text color="content.tertiary" fontSize="body.lg">
             {t("no-data")}
@@ -161,7 +164,8 @@ const ProjectListStep = ({
           <Button
             variant="ghost"
             rounded={0}
-            className="flex justify-between"
+            display="flex"
+            justifyContent="space-between"
             w="full"
             key={project.projectId}
             onClick={() => selectProject(project.projectId)}

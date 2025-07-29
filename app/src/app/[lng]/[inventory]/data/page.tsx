@@ -26,7 +26,7 @@ export default function AddDataIntro(props: {
   const { data: inventoryData } = api.useGetInventoryQuery(inventory);
 
   return (
-    <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
+    <Box pt={16} pb={16} w="1090px" mx="auto" px={4}>
       <Link href={`/${lng}/${inventory}`} _hover={{ textDecoration: "none" }}>
         <Box
           display="flex"
@@ -52,11 +52,11 @@ export default function AddDataIntro(props: {
         data-testid="add-data-step-title"
         mb={6}
         mt={12}
-        className="w-full"
+        w="full"
       >
         {t("data-heading")}
       </Heading>
-      <Text color="content.tertiary" className="w-full">
+      <Text color="content.tertiary" w="full">
         <Trans
           i18nKey={
             inventoryData?.inventoryType === InventoryTypeEnum.GPC_BASIC
@@ -68,7 +68,7 @@ export default function AddDataIntro(props: {
           Add data or connect third-party data for your city and complete your
           city&apos;s emission inventory using the GPC Basic methodology.{" "}
           <Link
-            className="underline"
+            textDecoration="underline"
             href="https://ghgprotocol.org/ghg-protocol-cities"
             target="_blank"
             rel="noopener noreferrer"

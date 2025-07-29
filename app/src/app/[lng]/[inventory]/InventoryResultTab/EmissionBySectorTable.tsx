@@ -49,7 +49,7 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
       >
         <Table.Header
           backgroundColor="background.backgroundLight"
-          className="uppercase"
+          textTransform="uppercase"
         >
           <Table.ColumnHeader>
             <ButtonSmall>{tData("sector")}</ButtonSmall>
@@ -88,7 +88,8 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
                   {sectorBreakDown.totalInventoryPercentage}%
                 </Table.Cell>
                 <Table.Cell
-                  className="flex items-center"
+                  display="flex"
+                  alignItems="center"
                   color={
                     (sectorBreakDown.percentageChange ?? 0) < 0
                       ? "sentiment.positiveDefault"

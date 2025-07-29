@@ -14,11 +14,9 @@ export default function OrganizationSettingsLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lng: string; id: string }>;
 }) {
+  const { lng, id } = use(props.params);
 
-    const { lng, id } = use(props.params);
-
-
-    const { data: orgData, isLoading: isOrgDataFetching } =
+  const { data: orgData, isLoading: isOrgDataFetching } =
     useGetOrganizationQuery(id, {
       skip: !id,
     });
@@ -48,10 +46,17 @@ export default function OrganizationSettingsLayout(props: {
   }
 
   return (
-    <Box className="h-full flex flex-col" bg="background.backgroundLight">
+    <Box
+      h="full"
+      display="flex"
+      flexDirection="column"
+      bg="background.backgroundLight"
+    >
       <NavigationBar showMenu lng={lng} />
       <Toaster />
-      <Box className="w-full h-full">{props.children}</Box>
+      <Box w="full" h="full">
+        {props.children}
+      </Box>
     </Box>
   );
 }

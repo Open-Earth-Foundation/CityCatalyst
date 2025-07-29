@@ -1,3 +1,5 @@
+import { Box, Heading, Text, Link } from "@chakra-ui/react";
+
 /**
  * Hero section with title, description and call-to-action
  * @param overviewLabel - Small label above the main heading
@@ -30,45 +32,73 @@ const Hero = () => {
   };
 
   return (
-    <section
-      className="relative py-32 px-6 bg-cover bg-center"
-      style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), url(/assets/projects_dashboard/rio_background.png)`,
-        minHeight: "100vh",
-      }}
+    <Box
+      as="section"
+      position="relative"
+      py={32}
+      px={6}
+      backgroundImage={`linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), url(/assets/projects_dashboard/rio_background.png)`}
+      backgroundSize="cover"
+      backgroundPosition="center"
+      minHeight="100vh"
     >
-      <div className="max-w-7xl mx-auto relative z-10 pt-20">
+      <Box maxW="7xl" mx="auto" position="relative" zIndex={10} pt={20}>
         {/* Overview label */}
-        <div className="text-gray-100 uppercase text-sm tracking-wider font-medium mb-4">
+        <Text
+          color="gray.100"
+          textTransform="uppercase"
+          fontSize="sm"
+          letterSpacing="wider"
+          fontWeight="medium"
+          mb={4}
+        >
           {heroText.overviewLabel}
-        </div>
+        </Text>
 
         {/* Main heading */}
-        <h1 className="text-4xl md:text-6xl font-bold mb-8 text-white leading-tight">
+        <Heading
+          fontSize={{ base: "4xl", md: "6xl" }}
+          fontWeight="bold"
+          mb={8}
+          color="white"
+          lineHeight="tight"
+        >
           {heroText.heading}
-        </h1>
+        </Heading>
 
         {/* First descriptive paragraph */}
-        <p className="text-white text-base max-w-2xl mb-6">
+        <Text color="white" fontSize="base" maxW="2xl" mb={6}>
           {heroText.mainParagraph}
-        </p>
+        </Text>
 
         {/* Second descriptive paragraph */}
-        <p className="text-white text-base max-w-2xl mb-10">
+        <Text color="white" fontSize="base" maxW="2xl" mb={10}>
           {heroText.secondaryParagraph}
-        </p>
+        </Text>
 
         {/* Call-to-action button */}
-        <div>
-          <a
+        <Box>
+          <Link
             href={heroText.ctaLink}
-            className="inline-block px-8 py-3 rounded-full border-2 border-white text-white uppercase text-sm tracking-wider font-medium hover:bg-white/10 transition-colors"
+            display="inline-block"
+            px={8}
+            py={3}
+            borderRadius="full"
+            borderWidth={2}
+            borderColor="white"
+            color="white"
+            textTransform="uppercase"
+            fontSize="sm"
+            letterSpacing="wider"
+            fontWeight="medium"
+            _hover={{ bg: "rgba(255, 255, 255, 0.1)" }}
+            transition="all 0.2s"
           >
             {heroText.ctaText}
-          </a>
-        </div>
-      </div>
-    </section>
+          </Link>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

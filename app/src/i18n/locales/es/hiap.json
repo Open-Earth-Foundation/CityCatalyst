@@ -1,8 +1,10 @@
 {
   "action-type-mitigation": "Mitigación",
   "action-type-adaptation": "Adaptación",
-  "tab-cap-title": "Priorización de acciones climáticas",
+  "tab-hiap-title": "Priorización de acciones climáticas",
   "loading": "Cargando acciones...",
+  "error-loading-data": "Error al cargar datos",
+  "no-actions-found": "No se encontraron acciones",
   "priority": "Prioridad",
   "action-name": "Nombre de la acción",
   "hazards": "Peligros",
@@ -16,7 +18,8 @@
   "go-back": "Volver",
   "action-description": "Descripción de la acción",
   "adaptation-effectiveness-by-hazard": "Efectividad de adaptación por riesgo",
-  "ranking": "Clasificación",
+  "ranking": "Ranking",
+  "prioritizing-actions": "Las acciones están siendo priorizadas para tu ciudad. Por favor, vuelve a verificar en 15 minutos.",
   "hazard": {
     "droughts": "Sequías",
     "heatwaves": "Olas de calor",
@@ -48,5 +51,7 @@
     "<5 years": "Menos de 5 años",
     "5-10 years": "5 a 10 años",
     ">10 years": "Más de 10 años"
-  }
+  },
+  "adaptation-effectiveness": "Eficacia de la Adaptación",
+  "primary-purpose": ""
 }

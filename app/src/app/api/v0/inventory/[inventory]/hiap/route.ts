@@ -1,7 +1,7 @@
 import { apiHandler } from "@/util/api";
 import { LANGUAGES } from "@/util/types";
 import { ACTION_TYPES } from "@/util/types";
-import { readFile } from "@/backend/CapService";
+import { fetchRanking } from "@/backend/hiap/HiapService";
 import { NextRequest } from "next/server";
 import UserService from "@/backend/UserService";
 import { logger } from "@/services/logger";
@@ -24,11 +24,13 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
   }
 
   try {
-    logger.info({"locode": inventory.city.locode!});
-    const data = await readFile(inventory.city.locode!, type, lng);
-    return Response.json({ data });
+    const data = await fetchRanking(params.inventory, type, lng);
+    return Response.json({data});
   } catch (error) {
-    logger.error({ err: error }, "Error fetching CAP data:");
-    throw new Error(`Failed to fetch CAP data for city ${inventory.city.locode}: ${(error as Error).message}`, { cause: error });
+    logger.error("Error fetching HIAP data:", { err: error, inventory: params.inventory, type, lng });
+    throw new Error(
+      `Failed to fetch HIAP data for city ${inventory.city.locode}: ${(error as Error).message}`,
+      { cause: error },
+    );
   }
 });

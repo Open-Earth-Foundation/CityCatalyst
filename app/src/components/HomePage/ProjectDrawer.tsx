@@ -62,7 +62,7 @@ const ProjectList = ({
     <HStack flexDirection="column" alignItems="start" gap={6}>
       <Text
         fontSize="title.md"
-        className="capitalize"
+        textTransform="capitalize"
         fontWeight="semibold"
         color="content.tertiary"
       >
@@ -74,7 +74,8 @@ const ProjectList = ({
           <Button
             variant="ghost"
             rounded={0}
-            className="flex justify-between"
+            display="flex"
+            justifyContent="space-between"
             w="full"
             key={project.projectId}
             onClick={() => selectProject(project.projectId)}
@@ -154,7 +155,9 @@ const SingleProjectView = ({
       <Button
         variant="ghost"
         rounded={0}
-        className="flex gap-2 justify-start"
+        display="flex"
+        gap={2}
+        justifyContent="flex-start"
         w="full"
         key={project.projectId}
         onClick={backToProjects}
@@ -187,13 +190,15 @@ const SingleProjectView = ({
         w="full"
         gap={2}
         flex={1}
-        className="overflow-scroll"
+        overflow="scroll"
       >
         {filteredCitiesList.map((city) => (
           <Button
             variant="ghost"
             rounded={0}
-            className="flex justify-start gap-2.5"
+            display="flex"
+            justifyContent="flex-start"
+            gap={2.5}
             w="full"
             key={city.cityId}
             onClick={() => goToCityInventory(city)}
@@ -214,7 +219,7 @@ const SingleProjectView = ({
       <ProjectLimitModal
         isOpen={isProjectLimitModalOpen}
         onClose={() => setIsProjectLimitModalOpen(false)}
-        t={t as any}
+        lng={lng}
         onOpenChange={setIsProjectLimitModalOpen}
       />
     </HStack>
@@ -266,9 +271,9 @@ const ProjectDrawer = ({
     >
       <DrawerBackdrop />
       <DrawerContent>
-        <DrawerHeader className="border-b-2" borderColor="background.neutral">
+        <DrawerHeader borderBottomWidth={2} borderColor="background.neutral">
           <DrawerTitle>
-            <Box className="flex justify-between">
+            <Box display="flex" justifyContent="space-between">
               <Text fontSize="headline.sm" color="base.dark">
                 {t("go-to")}
               </Text>
@@ -284,8 +289,19 @@ const ProjectDrawer = ({
         </DrawerHeader>
         <DrawerBody paddingY={6}>
           {isLoading && (
-            <Box className="flex items-center justify-center w-full">
-              <Box className="w-full py-12 flex items-center justify-center">
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              w="full"
+            >
+              <Box
+                w="full"
+                py={12}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
                 <ProgressCircleRoot value={null}>
                   <ProgressCircleRing cap="round" />
                 </ProgressCircleRoot>

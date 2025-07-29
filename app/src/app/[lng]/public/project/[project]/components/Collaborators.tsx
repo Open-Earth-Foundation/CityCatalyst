@@ -2,7 +2,7 @@
 
 import { Box, Container, Flex, Grid, Heading, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import NextLink from "next/link";
 import Image from "next/image";
 
 const Collaborators = ({ lng, project }: { lng: string; project: string }) => {
@@ -120,12 +120,11 @@ const Collaborators = ({ lng, project }: { lng: string; project: string }) => {
               width={80}
             />
           </Flex>
-          <Link
-            href={`/${lng}/public/project/${project}/collaborators`}
-            className="mt-2"
-          >
-            <Button variant="outline">About the collaborators</Button>
-          </Link>
+          <Box mt={2}>
+            <NextLink href={`/${lng}/public/project/${project}/collaborators`}>
+              <Button variant="outline">About the collaborators</Button>
+            </NextLink>
+          </Box>
         </Flex>
       </Container>
     </Box>

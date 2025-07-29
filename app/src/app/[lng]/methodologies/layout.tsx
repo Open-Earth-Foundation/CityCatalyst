@@ -14,10 +14,17 @@ export default async function MethodologiesLayout({
 }) {
   const { lng } = await params;
   return (
-    <Box className="h-full flex flex-col" bg="background.backgroundLight">
+    <Box
+      h="full"
+      display="flex"
+      flexDirection="column"
+      bg="background.backgroundLight"
+    >
       <NavigationBar lng={lng} />
       <Toaster />
-      <div className="w-full h-full">{children}</div>
+      <Box w="full" h="full">
+        {children}
+      </Box>
     </Box>
   );
 }

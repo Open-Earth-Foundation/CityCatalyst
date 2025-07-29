@@ -6,5 +6,6 @@
   "oauth-ok": "OK",
   "oauth-cancel": "Cancel",
   "oauth-unknown-client-id": "Unrecognized client ID",
-  "oauth-mismatch-redirect-uri": "redirect_uri mismatch for client_id parameter"
+  "oauth-mismatch-redirect-uri": "redirect_uri mismatch for client_id parameter",
+  "oauth-generating-authorization-code": "Generating authorization code"
 }

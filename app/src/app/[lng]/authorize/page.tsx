@@ -15,11 +15,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, use } from "react";
 import { useEffect, useMemo } from "react";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { useGetClientQuery } from "@/services/api";
-
-async function generateCode(clientId: string, codeChallenge: string) {
-  return "fake_code";
-}
+import { useGetClientQuery, useGenerateCodeMutation } from "@/services/api";
 
 export default function Authorize(props: { params: Promise<{ lng: string }> }) {
   const { lng } = use(props.params);
@@ -39,6 +35,9 @@ export default function Authorize(props: { params: Promise<{ lng: string }> }) {
   const codeChallengeMethod = searchParams.get("code_challenge_method")!;
   const { data: client, isLoading: isClientLoading } =
     useGetClientQuery(clientId);
+
+  const [generateCode, { isLoading: isGeneratingCode }] =
+    useGenerateCodeMutation();
 
   useEffect(() => {
     if (!clientId || !redirectUri) {
@@ -136,11 +135,22 @@ export default function Authorize(props: { params: Promise<{ lng: string }> }) {
   }
 
   const handleAuthorize = async () => {
-    try {
-      const code = await generateCode(clientId, codeChallenge);
+    toaster.loading({
+      title: t("oauth-generating-authorization-code"),
+      type: "info",
+    });
+    const { data, error } = await generateCode({
+      clientId,
+      redirectUri,
+      codeChallenge,
+      scope
+    });
+    toaster.dismiss();
+    if (!error) {
+      const code = data;
       const params = new URLSearchParams(state ? { code, state } : { code });
       router.push(`${redirectUri}?${params}`);
-    } catch (error) {
+    } else {
       const errorDescription = error instanceof Error ? error.message : 'Unknown error occurred';
       const params = new URLSearchParams({
         error: 'server_error',

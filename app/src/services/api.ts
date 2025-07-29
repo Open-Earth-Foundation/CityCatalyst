@@ -1299,7 +1299,30 @@ export const api = createApi({
         query: (clientId: string) => `client/${clientId}/`,
         transformResponse: (response: { data: Client }) =>
           response.data,
-      })
+      }),
+      generateCode: builder.mutation({
+        query: ({
+          clientId,
+          redirectUri,
+          codeChallenge,
+          scope
+        }: {
+          clientId: string,
+          redirectUri: string,
+          codeChallenge: string,
+          scope: string
+        }) => ({
+          method: "POST",
+          url: `/auth/code/`,
+          body: {
+            clientId,
+            redirectUri,
+            codeChallenge,
+            scope
+          },
+        }),
+        transformResponse: (response: { data: any }) => response.data.code
+      }),
     };
   },
 });
@@ -1408,6 +1431,7 @@ export const {
   useUpdateUserRoleInOrganizationMutation,
   useGetModulesQuery,
   useGetProjectModulesQuery,
-  useGetClientQuery
+  useGetClientQuery,
+  useGenerateCodeMutation
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

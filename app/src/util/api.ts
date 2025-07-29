@@ -14,6 +14,7 @@ import { ManualInputValidationError } from "@/lib/custom-errors/manual-input-err
 import { logger } from "@/services/logger";
 import { Organization } from "@/models/Organization";
 import { Roles } from "@/util/types";
+import jwt from "jsonwebtoken";
 
 export type ApiResponse = NextResponse | StreamingTextResponse;
 
@@ -147,6 +148,39 @@ const organizationContextCheck = async ({
   }
 };
 
+function getBearerToken(header: string): any {
+  const match = header.match(/^Bearer\s+(.*)$/)
+  if (!match) {
+    throw new createHttpError.BadRequest(`Malformed Authorization header`)
+  }
+  if (!process.env.VERIFICATION_TOKEN_SECRET) {
+    logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
+    throw createHttpError.InternalServerError("Configuration error");
+  }
+  return jwt.verify(
+    match[1],
+    process.env.VERIFICATION_TOKEN_SECRET
+  )
+}
+
+async function makeOAuthUserSession(token: any): Promise<AppSession> {
+  const userId = token.sub;
+  const user = await db.models.User.findOne({ where: { userId } })
+  if (!user) {
+    throw new createHttpError.BadRequest(`Malformed Authorization header`)
+  }
+  return {
+    expires: token.iat,
+    user: {
+      id: user.userId,
+      name: user.name,
+      email: user.email,
+      image: user.pictureUrl,
+      role: user.role || Roles.User
+    }
+  }
+}
+
 export function apiHandler(handler: NextHandler) {
   return async (
     req: NextRequest,
@@ -161,7 +195,17 @@ export function apiHandler(handler: NextHandler) {
         await db.initialize();
       }
 
-      session = await Auth.getServerSession();
+      const authorization = req.headers.get('Authorization')
+
+      if (authorization) {
+        const token = getBearerToken(authorization)
+        if (token.aud !== (new URL(req.url)).origin) {
+          throw new createHttpError.Unauthorized("Wrong server for token")
+        }
+        session = await makeOAuthUserSession(token);
+      } else {
+        session = await Auth.getServerSession();
+      }
 
       const orgContextCheckResult = await organizationContextCheck({
         req,

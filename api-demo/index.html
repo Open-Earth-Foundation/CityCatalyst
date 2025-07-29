@@ -49,7 +49,18 @@
         const json = await res.json()
         return json.access_token
       }
-
+      async function getUsername(username_url, token) {
+        const res = await fetch(username_url, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          }
+        })
+        if (!res.ok) {
+          throw new Error("Response was bad")
+        }
+        const json = await res.json()
+        return json.data.name
+      }
       function setStatus(text) {
         document.getElementById("status").textContent = text;
       }
@@ -58,6 +69,7 @@
         const access_token_url = "http://localhost:3000/api/v0/auth/token/";
         const client_id = "phc7oUo_rq_QmrWX5ZPbZ";
         const redirect_uri = "http://localhost:2000";
+        const username_url = "http://localhost:3000/api/v0/user/whoami/"
         const params = new URLSearchParams(window.location.search);
         if (params.get("state")) {
           if (params.get("state") !== sessionStorage.getItem("oauth_state")) {
@@ -113,9 +125,14 @@
                 code_verifier
               ).then(
                 (token) => {
-                  setStatus(`Got access token: ${token}`);
+                  getUsername(username_url, token)
+                  .then((username) => {
+                    setStatus(`Hello, ${username}!`)
+                  })
                 }
-              );
+              ).catch((err) => {
+                setStatus(err.message)
+              })
             }
           }
         }

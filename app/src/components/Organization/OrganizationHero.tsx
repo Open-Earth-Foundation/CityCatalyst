@@ -1,6 +1,6 @@
 import { Tooltip } from "@/components/ui/tooltip";
 import type { OrganizationResponse, ProjectWithCities } from "@/util/types";
-import { Box, Icon, Spinner, Text } from "@chakra-ui/react";
+import { Box, Icon, Spinner, Text, Flex } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import dynamic from "next/dynamic";
 import { MdGridView, MdInfoOutline, MdLocationCity } from "react-icons/md";
@@ -37,10 +37,10 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
 
   return (
     <Box bg="content.alternative" w="full" px="56px" py="56px">
-      <Box className="flex mx-auto max-w-full w-[980px] h-[260px]">
-        <Box className="flex gap-[24px] flex-col w-full">
-          <Box className="flex flex-col gap-2 mr-8">
-            <Box className="flex items-center gap-4">
+      <Flex mx="auto" maxW="980px" w="full" h="260px">
+        <Flex direction="column" gap="24px" w="full">
+          <Box display="flex" flexDirection="column" gap={2} mr={8}>
+            <Flex align="center" gap={4}>
               {isLoading ? (
                 <Spinner size="lg" color="white" />
               ) : organization ? (
@@ -57,16 +57,16 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
                   {t("organization-load-failed")}
                 </HeadlineSmall>
               )}
-            </Box>
+            </Flex>
             <BodyLarge color="background.overlay">
               {t("organization-name")}
             </BodyLarge>
           </Box>
-          <Box className="flex gap-8 mt-[24px]">
-            <Box className="flex align-baseline gap-3">
+          <Flex gap={8} mt="24px">
+            <Flex align="baseline" gap={3}>
               <Icon as={MdGridView} boxSize={6} fill="base.light" />
               <Box>
-                <Box className="flex gap-1">
+                <Flex gap={1}>
                   <Text
                     fontFamily="heading"
                     color="base.light"
@@ -87,16 +87,16 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
                       color="background.overlay"
                     />
                   </Tooltip>
-                </Box>
+                </Flex>
                 <BodyMedium color="background.overlay">
                   {t("active-in-total")}
                 </BodyMedium>
               </Box>
-            </Box>
-            <Box className="flex align-baseline gap-3">
+            </Flex>
+            <Flex align="baseline" gap={3}>
               <Icon as={MdLocationCity} boxSize={6} fill="base.light" />
               <Box>
-                <Box className="flex gap-1">
+                <Flex gap={1}>
                   <HeadlineSmall color="base.light">
                     {totalCities} {t("cities")}
                   </HeadlineSmall>
@@ -113,16 +113,16 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
                       color="background.overlay"
                     />
                   </Tooltip>
-                </Box>
+                </Flex>
                 <BodyMedium color="background.overlay">
                   {t("across-projects")}
                 </BodyMedium>
               </Box>
-            </Box>
-            <Box className="flex align-baseline gap-3">
+            </Flex>
+            <Flex align="baseline" gap={3}>
               <Icon as={ModulesIcon} boxSize={6} fill="base.light" />
               <Box>
-                <Box className="flex gap-1">
+                <Flex gap={1}>
                   <HeadlineSmall color="base.light">{t("pro")}</HeadlineSmall>
                   <Tooltip
                     content={t("active-plan-tooltip")}
@@ -137,19 +137,19 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
                       color="background.overlay"
                     />
                   </Tooltip>
-                </Box>
+                </Flex>
                 <BodyMedium color="background.overlay">
                   {t("active-plan")}
                 </BodyMedium>
               </Box>
-            </Box>
-          </Box>
-        </Box>
+            </Flex>
+          </Flex>
+        </Flex>
         <Box mt={-50}>
           {/* TODO ON-4362 create organization map */}
           <CityMap locode="BR SAO" width={422} height={317} />
         </Box>
-      </Box>
+      </Flex>
     </Box>
   );
 };

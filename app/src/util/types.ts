@@ -25,7 +25,8 @@ import {
   FailedSourceResult,
   RemovedSourceResult,
 } from "@/backend/DataSourceService";
-import { ProjectAttributes } from "@/models/Project";
+import type { ProjectAttributes } from "@/models/Project";
+import type { OrganizationAttributes } from "@/models/Organization";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -361,7 +362,6 @@ export type BreakdownByActivity = Record<
   Record<string, Record<string, GroupedActivity>> & { totals: SubsectorTotals }
 >;
 
-
 export interface ActivityDataByScope {
   activityTitle: string;
   scopes: { [key: string]: Decimal };
@@ -481,7 +481,7 @@ export enum ACTION_TYPES {
 }
 
 export type CityWithProjectDataResponse = CityAttributes & {
-  project?: ProjectAttributes;
+  project?: ProjectAttributes & { organization: OrganizationAttributes };
 };
 
 export type ThemeResponse = {
@@ -534,7 +534,7 @@ export interface FormulaInputValuesResponse {
 export enum HighImpactActionRankingStatus {
   PENDING = "PENDING",
   SUCCESS = "SUCCESS",
-  FAILURE = "FAILURE"
+  FAILURE = "FAILURE",
 }
 export interface CoBenefits {
   air_quality: number;
@@ -603,7 +603,6 @@ export interface MitigationAction extends BaseAction {
   type: ACTION_TYPES.Mitigation;
   GHGReductionPotential: GHGReductionPotential;
   adaptationEffectiveness: null;
-  
 }
 
 export interface AdaptationAction extends BaseAction {
@@ -624,4 +623,5 @@ export type HIAPResponse = {
   created: Date;
   last_updated: Date;
   rankedActions: HIAction[];
-}
+};
+

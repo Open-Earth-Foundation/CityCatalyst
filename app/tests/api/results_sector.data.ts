@@ -10,7 +10,7 @@ export const inventoryValues = [
     id: inventoryValueId1,
     activityUnits: null,
     activityValue: null,
-    co2eq: "500",
+    co2eq: "750",
     subCategoryId: "942f2e36-ab1f-3fbf-af9e-31d997f518c7",
     inventoryId,
     co2eqYears: 100,

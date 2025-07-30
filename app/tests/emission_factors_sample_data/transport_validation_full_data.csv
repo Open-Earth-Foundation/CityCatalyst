@@ -1,0 +1,29 @@
+subsector,methodology_id,methodology_name,methodology_status,fuel_type,covered json,values available from IPCC,Units Global API,CO2 Global API,CH4 Global API,N2O Global API,Test fuel value,CO2 emissions,CH4 emissions,N20 emissions,Total CO2eq,CO2 prod,CH4 prod,N2O prod,units prod,Final emissions CO2e (prod) (tonnes),Comments,Related Bugs,Retested
+II.1.1,fuel-sales-on-road-transport-methodology,fuel-sales,Active,fuel-type-gasoline,yes,yes,kg/m3,2111.304,0.135876,0.135876,100.0,211130.4,380.4528,3600.714,215.11,2111.304,0.135876,0.135876,kg/m3,215.11,,ON-4248,fixed
+II.1.1,fuel-sales-on-road-transport-methodology,fuel-sales,Active,fuel-type-diesel,yes,yes,kg/m3,2332.494,0.150111,0.150111,100.0,233249.4,420.3108,3977.9415,237.65,2332.494,0.150111,0.150111,kg/m3,237.65,,ON-4248,fixed
+II.1.1,fuel-sales-on-road-transport-methodology,fuel-sales,Active,fuel-type-liquefied-petroleum-gases,yes,yes,kg/m3,1323.024,1.58968,0.005128,100.0,132302.4,4451.104,135.892,136.89,1323.024,1.58968,0.005128,kg/m3,136.89,,ON-4248,fixed
+II.1.1,fuel-sales-on-road-transport-methodology,fuel-sales,Active,fuel-type-cng,yes,yes,kg/m3,1241.1,2.17488,0.07092,100.0,124110.0,6089.664,1879.38,132.08,1241.1,2.17488,0.07092,kg/m3,132.08,,ON-4248,fixed
+II.1.1,fuel-sales-on-road-transport-methodology,fuel-sales,Active,fuel-type-biofuel,yes,yes,kg/kg,1.58646,0.0004932,0.00112339999999999,100.0,158.646,1.38096,29.7701,0.19,1968.6,0.612,1.394,kg/kg,0.27,not working for kg,ON-4248,fixed
+II.1.1,fuel-sales-on-road-transport-methodology,fuel-sales,Active,fuel-type-biofuel,yes,yes,kg/m3,1968.6,0.612,1.394,100.0,196860.0,1713.6,36941.0,235.51,1968.6,0.612,1.394,kg/m3,235.51,,ON-4248,fixed
+II.2.1,fuel-sales-railways-methodology,fuel-sales,Active,fuel-type-gasoline,yes,no,,,,,,,,,,,,,,,,,
+II.2.1,fuel-sales-railways-methodology,fuel-sales,Active,fuel-type-diesel,yes,yes,kg/m3,2332.494,0.1597335,1.100814,100.0,233249.4,447.2538,29171.571,262.87,2332.494,0.1597335,1.100814,kg/m3,262.87,,ON-4248,fixed
+II.2.1,fuel-sales-railways-methodology,fuel-sales,Active,fuel-type-liquefied-petroleum-gases,yes,no,,,,,,,,,,,,,,,,,
+II.2.1,fuel-sales-railways-methodology,fuel-sales,Active,fuel-type-cng,yes,no,,,,,,,,,,,,,,,,,
+II.2.1,fuel-sales-railways-methodology,fuel-sales,Active,fuel-type-biofuel,yes,no,,,,,,,,,,,,,,,,,
+II.3.1,fuel-sales-waterborne-navigation-methodology,fuel-sales,Active,fuel-type-gasoline,yes,no,,,,,,,,,,,,,,,,,
+II.3.1,fuel-sales-waterborne-navigation-methodology,fuel-sales,Active,fuel-type-diesel,yes,yes,kg/m3,2332.494,0.26943,0.07698,100.0,233249.4,754.404,2039.97,236.04,2332.494,0.26943,0.07698,kg/m3,236.04,,ON-4248,fixed
+II.3.1,fuel-sales-waterborne-navigation-methodology,fuel-sales,Active,fuel-type-liquefied-petroleum-gases,yes,no,,,,,,,,,,,,,,,,,
+II.3.1,fuel-sales-waterborne-navigation-methodology,fuel-sales,Active,fuel-type-cng,yes,no,,,,,,,,,,,,,,,,,
+II.3.1,fuel-sales-waterborne-navigation-methodology,fuel-sales,Active,fuel-type-biofuel,yes,no,,,,,,,,,,,,,,,,,
+II.4.1,fuel-sales-aviation-methodology,fuel-sales,Active,fuel-type-aviation-gasoline,yes,yes,kg/m3,1916.685,0.016725,0.0669,100.0,191668.5,46.83,1772.85,193.49,1916.685,0.016725,0.0669,kg/m3,193.49,,ON-4248,fixed
+II.4.1,fuel-sales-aviation-methodology,fuel-sales,Active,fuel-type-diesel,yes,no,,,,,,,,,,,,,,,,,
+II.4.1,fuel-sales-aviation-methodology,fuel-sales,Active,fuel-type-jet-gasoline,yes,yes,kg/m3,1916.685,0.016725,0.0669,100.0,191668.5,46.83,1772.85,193.49,1916.685,0.016725,0.0669,kg/m3,193.49,,ON-4248,fixed
+II.4.1,fuel-sales-aviation-methodology,fuel-sales,Active,fuel-type-jet-kerosene,yes,yes,kg/m3,2201.355,0.018815,0.07526,100.0,220135.5,52.682,1994.39,222.18,2201.355,0.018815,0.07526,kg/m3,222.18,,ON-4248,fixed
+II.4.1,fuel-sales-aviation-methodology,fuel-sales,Active,fuel-type-liquefied-petroleum-gases,yes,no,,,,,,,,,,,,,,,,,
+II.4.1,fuel-sales-aviation-methodology,fuel-sales,Active,fuel-type-gasoline,yes,no,,,,,,,,,,,,,,,,,
+II.4.1,fuel-sales-aviation-methodology,fuel-sales,Active,fuel-type-natural-gas-liquids,yes,no,,,,,,,,,,,,,,,,,
+II.5.1,fuel-sales-off-road-transport-activity,fuel-sales,Active,fuel-type-gasoline,yes,yes,kg/m3,2111.304,6.2712,0.06968,100.0,211130.4,17559.36,1846.52,230.54,2111.304,6.2712,0.06968,kg/m3,228.08,,ON-4248,fixed
+II.5.1,fuel-sales-off-road-transport-activity,fuel-sales,Active,fuel-type-diesel,yes,yes,kg/m3,2332.494,0.1597335,1.100814,100.0,233249.4,447.2538,29171.571,262.87,2332.494,0.1597335,1.100814,kg/m3,262.87,,ON-4248,fixed
+II.5.1,fuel-sales-off-road-transport-activity,fuel-sales,Active,fuel-type-liquefied-petroleum-gases,yes,no,,,,,,,,,,,,,,,,,
+II.5.1,fuel-sales-off-road-transport-activity,fuel-sales,Active,fuel-type-cng,yes,no,,,,,,,,,,,,,,,,,
+II.5.1,fuel-sales-off-road-transport-activity,fuel-sales,Active,fuel-type-biofuel,yes,no,,,,,,,,,,,,,,,,,

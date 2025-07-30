@@ -204,5 +204,17 @@
   "yes-i-understand": "Ja, ich verstehe",
   "account-frozen-warning-text": "Ihr Konto ist eingefroren. Bitte wenden Sie sich an einen Administrator oder an <bold>{{email}}</bold>, um es zu reaktivieren.",
   "account-frozen-header": "Ihr Konto ist eingefroren",
-  "multiple-sources": "Mehrere Quellen"
+  "multiple-sources": "Mehrere Quellen",
+  "km2": "km²",
+  "all-projects": "Alle Projekte",
+  "check-your-dashboard": "Überprüfen Sie Ihr Dashboard",
+  "check-your-dashboard-description": "Behalten Sie die Hauptmetriken Ihrer Stadt an einem Ort im Auge",
+  "go-to-dashboard-cta": "Gehe zum Dashboard",
+  "tools-title": "Ihre Werkzeuge",
+  "by": "Von {{author}}",
+  "launch": "Start",
+  "no-modules-available": "Noch keine Module verfügbar",
+  "no-modules-description": "Sie haben keine aktiven Module für diese Stufe! Kontaktieren Sie uns, um personalisierte Hilfe zu erhalten.",
+  "contact-us": "KONTAKTIEREN SIE UNS",
+  "journey": ""
 }

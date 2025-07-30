@@ -316,8 +316,6 @@ interface InventoryValueQueryResult {
   inventory_value_id: string;
 }
 
-
-
 interface InventoryValuesBySector {
   sector_name?: SectorNamesInDB;
   subsector_name: string;
@@ -411,12 +409,7 @@ export const getEmissionsBreakdownBatch = async (
 
     const totalEmissions = bigIntToDecimal(
       emissionsForSector.reduce((sum, item) => {
-        // Sum the co2eq from all activities for this inventory value
-        const activitySum = item.activities.reduce(
-          (activitySum, activity) => activitySum + BigInt(activity.co2eq || 0n),
-          0n
-        );
-        return sum + activitySum;
+        return sum + BigInt(item.co2eq || 0n);
       }, 0n),
     );
 
@@ -430,17 +423,9 @@ export const getEmissionsBreakdownBatch = async (
 
         // Aggregate emissions by scope
         Object.entries(byScope).forEach(([scopeName, scopeItems]) => {
-          const scopeEmissions = scopeItems.reduce(
-            (sum, item) => {
-              // Sum the co2eq from all activities for this inventory value
-              const activitySum = item.activities.reduce(
-                (activitySum, activity) => activitySum.plus(bigIntToDecimal(activity.co2eq || 0n)),
-                new Decimal(0)
-              );
-              return sum.plus(activitySum);
-            },
-            new Decimal(0),
-          );
+          const scopeEmissions = scopeItems.reduce((sum, item) => {
+            return sum.plus(bigIntToDecimal(item.co2eq));
+          }, new Decimal(0));
           scopes[scopeName] = scopeEmissions;
           totalSectorEmissions = totalSectorEmissions.plus(scopeEmissions);
         });

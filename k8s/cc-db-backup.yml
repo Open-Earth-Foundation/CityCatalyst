@@ -42,7 +42,7 @@ spec:
                   name: cc-db-configmap
             args:
             - |
-              pg_dump | gzip > /var/backups/citycatalyst.sql.gz
+              pg_dump | gzip > /var/backups/citycatalyst-$(date +%Y%m%d).sql.gz
             command: ['/bin/bash', '-c']
             resources:
               limits:

@@ -1,5 +1,3 @@
-import { Roles } from "@/util/types";
-import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
@@ -9,6 +7,11 @@ import jwt from "jsonwebtoken";
 import { logger } from "@/services/logger";
 import { createHash } from "node:crypto";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import TTLCache from "@isaacs/ttlcache";
+
+// 10-minute cache, for checking jwtid replay
+
+const cache = new TTLCache({ max: 10000, ttl: 10 * 60 * 1000 })
 
 const ACCESS_TOKEN_EXPIRY = 7 * 24 * 60 * 60;
 const REFRESH_TOKEN_EXPIRY = 30 * 24 * 60 * 60;
@@ -144,6 +147,12 @@ export const POST = apiHandler(async (_req, { params, session }) => {
   if (!verifyPKCE(codeVerifier, codeChallenge)) {
     throw createHttpError.BadRequest("PKCE verification failed.");
   }
+
+  if (cache.has(decoded.jwtid)) {
+    throw createHttpError.BadRequest("Single-use code.");
+  }
+
+  cache.set(decoded.jwtid, true);
 
   const scope = decoded.scope;
 

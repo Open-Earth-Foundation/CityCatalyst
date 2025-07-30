@@ -16,6 +16,7 @@ import { Organization } from "@/models/Organization";
 import { Roles } from "@/util/types";
 import jwt from "jsonwebtoken";
 import { FeatureFlags, hasFeatureFlag } from "./feature-flags";
+import { getClient } from "@/util/client";
 
 export type ApiResponse = NextResponse | StreamingTextResponse;
 
@@ -200,8 +201,22 @@ export function apiHandler(handler: NextHandler) {
 
       if (authorization && hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
         const token = getBearerToken(authorization)
+        if (!token) {
+          throw new createHttpError.Unauthorized("Invalid or expired access token")
+        }
         if (token.aud !== (new URL(req.url)).origin) {
           throw new createHttpError.Unauthorized("Wrong server for token")
+        }
+        const client = await getClient(token.client_id)
+        if (!client) {
+          throw new createHttpError.Unauthorized("Invalid client")
+        }
+        const scopes = token.scope.split(" ")
+        if (req.method in ['GET', 'HEAD'] && !('read' in scopes)) {
+          throw new createHttpError.Unauthorized("No read scope available")
+        }
+        if (req.method in ['PUT', 'PATCH', 'POST', 'DELETE'] && !('write' in scopes)) {
+          throw new createHttpError.Unauthorized("No write scope available")
         }
         session = await makeOAuthUserSession(token);
       } else {

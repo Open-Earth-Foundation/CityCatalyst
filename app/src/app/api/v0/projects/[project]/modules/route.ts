@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export const GET = apiHandler(async (_req: Request, context) => {
   const projectId = context.params.project;
   const projectModules = await db.models.ProjectModules.findAll({
-    where: { project_id: projectId },
+    where: { projectId: projectId },
     include: [{ model: db.models.Module, as: "module" }],
   });
   const modules = projectModules.map((pm: any) => pm.module);

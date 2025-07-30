@@ -16,7 +16,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { TabHeader } from "@/components/HomePage/TabHeader";
+import { TabHeader } from "@/components/GHGIHomePage/TabHeader";
 import { BlueSubtitle } from "@/components/Texts/BlueSubtitle";
 import { getSectorsForInventory, SECTORS } from "@/util/constants";
 

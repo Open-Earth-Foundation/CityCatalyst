@@ -1,6 +1,6 @@
 import React from "react";
 import { MdPersonAdd } from "react-icons/md";
-import AddCollaboratorsModal from "../HomePage/AddCollaboratorModal/AddCollaboratorsModal";
+import AddCollaboratorsModal from "../GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { useDisclosure } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import ActionCardSmall from "./ActionCardSmall";

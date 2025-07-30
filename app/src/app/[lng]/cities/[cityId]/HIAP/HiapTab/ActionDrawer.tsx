@@ -33,7 +33,7 @@ import {
   ACTION_TYPES,
 } from "@/util/types";
 import { ButtonMedium } from "@/components/Texts/Button";
-import { BarVisualization } from "./HiapTab";
+import { BarVisualization } from ".";
 
 export function ActionDrawer({
   action,

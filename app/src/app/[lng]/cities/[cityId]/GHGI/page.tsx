@@ -5,7 +5,7 @@ import HomePage from "@/components/GHGIHomePage/HomePage";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Box } from "@chakra-ui/react";
 
-export default function PrivateHome(props: {
+export default function GHGI(props: {
   params: Promise<{ lng: string }>;
 }) {
   const { lng } = use(props.params);

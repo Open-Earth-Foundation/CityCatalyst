@@ -11,20 +11,30 @@
       <span id="status"></span>
     </p>
     <script type="module">
-      import * as oauth from 'https://cdn.jsdelivr.net/npm/oauth4webapi@3.6.0/build/index.min.js'
-      const username_url = "http://localhost:3000/api/v0/user/whoami/"
+
+      // Change this if you want to host elsewhere. Note that you have
+      // to set up the client in your env file!
+
+      const APP_ORIGIN = "http://localhost:2000"
+      const CC_ORIGIN = "http://localhost:3000"
+
+      import * as oauth from './oauth4webapi.min.js'
+
+      const username_url = `${CC_ORIGIN}/api/v0/user/whoami/`
 
       const issuer = {
-        issuer: 'https://localhost:3000/',
-        authorization_endpoint: "http://localhost:3000/authorize/",
-        token_endpoint: "http://localhost:3000/api/v0/token/"
+        issuer: `${CC_ORIGIN}/`,
+        authorization_endpoint: `${CC_ORIGIN}/authorize/`,
+        token_endpoint: `${CC_ORIGIN}/api/v0/token/`
       };
+
+      // This needs to be set up in your env file, also
 
       const client = {
         client_id: "phc7oUo_rq_QmrWX5ZPbZ"
       };
 
-      const redirect_uri = "http://localhost:2000";
+      const redirect_uri = `${APP_ORIGIN}`;
 
       async function getUsername(username_url, token) {
         const res = await fetch(username_url, {

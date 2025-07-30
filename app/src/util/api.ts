@@ -261,16 +261,6 @@ export function apiHandler(handler: NextHandler) {
       logger.info(record);
     }
 
-    result.headers.set("Access-Control-Allow-Origin", "*");
-    result.headers.set(
-      "Access-Control-Allow-Methods",
-      "GET,POST,PUT,PATCH,DELETE,OPTIONS"
-    );
-    result.headers.set(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization"
-    );
-
     return result;
   };
 }

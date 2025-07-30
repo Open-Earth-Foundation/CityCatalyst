@@ -204,5 +204,17 @@
   "yes-i-understand": "Oui, je comprends",
   "account-frozen-warning-text": "Votre compte est gelé. Veuillez contacter un administrateur ou <bold>{{email}}</bold> pour le réactiver",
   "account-frozen-header": "Votre compte est gelé",
-  "multiple-sources": "Sources multiples"
+  "multiple-sources": "Sources multiples",
+  "km2": "km²",
+  "all-projects": "Tous les projets",
+  "check-your-dashboard": "Vérifiez votre tableau de bord",
+  "check-your-dashboard-description": "Suivez les principales mesures de votre ville en un seul endroit",
+  "go-to-dashboard-cta": "Accéder au tableau de bord",
+  "tools-title": "Vos outils",
+  "by": "Par {{author}}",
+  "launch": "Lancement",
+  "no-modules-available": "Aucun module disponible pour le moment",
+  "no-modules-description": "Vous n'avez aucun module actif pour cette étape ! Contactez-nous pour obtenir de l'aide personnalisée.",
+  "contact-us": "CONTACTEZ-NOUS",
+  "journey": ""
 }

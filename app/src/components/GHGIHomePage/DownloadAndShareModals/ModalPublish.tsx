@@ -2,8 +2,8 @@ import { Box, Button, HStack, Image, Text } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { api } from "@/services/api";
 import { useState } from "react";
-import { UnpublishedView } from "@/components/HomePage/DownloadAndShareModals/UnpublishedView";
-import { PublishedView } from "@/components/HomePage/DownloadAndShareModals/PublishedView";
+import { UnpublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/UnpublishedView";
+import { PublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/PublishedView";
 import { InventoryResponse } from "@/util/types";
 
 import {

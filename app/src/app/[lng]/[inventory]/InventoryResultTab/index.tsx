@@ -11,7 +11,7 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import { TabHeader } from "@/components/HomePage/TabHeader";
+import { TabHeader } from "@/components/GHGIHomePage/TabHeader";
 import EmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsWidget";
 import TopEmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/TopEmissionsWidget";
 import { BlueSubtitle } from "@/components/Texts/BlueSubtitle";

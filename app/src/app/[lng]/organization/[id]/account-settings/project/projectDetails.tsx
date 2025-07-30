@@ -33,7 +33,7 @@ import { BsDownload } from "react-icons/bs";
 import { TagMapping } from "./index";
 import DeleteCityModal from "@/app/[lng]/organization/[id]/account-settings/project/deleteCityModal";
 import { TFunction } from "i18next";
-import DownloadButton from "@/components/HomePage/DownloadButton";
+import DownloadButton from "@/components/GHGIHomePage/DownloadButton";
 import InventoryView from "./InventoryView";
 import { FiFolder } from "react-icons/fi";
 import ProjectHeader from "./projectHeader";

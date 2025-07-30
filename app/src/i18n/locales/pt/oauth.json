@@ -1,0 +1,12 @@
+{
+  "oauth-authorize-missing-parameters": "Um ou mais dos seguintes parâmetros estão faltando: client_id, redirect_uri",
+  "oauth-authorize-heading": "Autorizar Aplicativo",
+  "oauth-authorize-prompt": "Permitir que {{clientName}} acesse seus dados?",
+  "oauth-unknown-app": "esta aplicação",
+  "oauth-ok": "OK",
+  "oauth-cancel": "Cancelar",
+  "oauth-unknown-client-id": "ID do cliente não reconhecido",
+  "oauth-mismatch-redirect-uri": "incompatibilidade de redirect_uri para o parâmetro client_id",
+  "oauth-generating-authorization-code": "Gerando código de autorização",
+  "oauth-not-enabled": "O acesso OAuth 2.0 não está habilitado neste servidor"
+}

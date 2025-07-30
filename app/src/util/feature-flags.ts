@@ -7,6 +7,7 @@ export enum FeatureFlags {
   ACCOUNT_SETTINGS_ENABLED = "ACCOUNT_SETTINGS_ENABLED",
   UPLOAD_OWN_DATA_ENABLED = "UPLOAD_OWN_DATA_ENABLED",
   JN_ENABLED = "JN_ENABLED",
+  OAUTH_ENABLED = "OAUTH_ENABLED"
 }
 
 let cachedFeatureFlags: string[] | null = null;

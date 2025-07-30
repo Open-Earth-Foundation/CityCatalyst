@@ -8,6 +8,7 @@ import { getClient } from "@/util/client";
 import jwt from "jsonwebtoken";
 import { logger } from "@/services/logger";
 import { createHash } from "node:crypto";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 const ACCESS_TOKEN_EXPIRY = 7 * 24 * 60 * 60;
 const REFRESH_TOKEN_EXPIRY = 30 * 24 * 60 * 60;
@@ -24,6 +25,10 @@ function verifyPKCE(verifier: string, challenge: string): boolean {
 
 /**  */
 export const POST = apiHandler(async (_req, { params, session }) => {
+
+  if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
+    throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
+  }
 
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
     logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");

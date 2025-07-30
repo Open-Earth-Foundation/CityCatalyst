@@ -7,5 +7,6 @@
   "oauth-cancel": "Cancel",
   "oauth-unknown-client-id": "Unrecognized client ID",
   "oauth-mismatch-redirect-uri": "redirect_uri mismatch for client_id parameter",
-  "oauth-generating-authorization-code": "Generating authorization code"
+  "oauth-generating-authorization-code": "Generating authorization code",
+  "oauth-not-enabled": "OAuth 2.0 access not enabled on this server"
 }

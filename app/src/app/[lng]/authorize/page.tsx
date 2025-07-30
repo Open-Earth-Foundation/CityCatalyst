@@ -1,9 +1,16 @@
 import crypto from 'crypto';
-import { cookies } from 'next/headers';
 import AuthorizeForm from './AuthorizeForm';
 import { Auth } from "@/lib/auth";
+import { hasFeatureFlag, FeatureFlags } from '@/util/feature-flags';
 
-export default async function AuthorizePage({ params }: { params: { lng: string } }) {
+export default async function AuthorizePage({ params }: { params: any }) {
+
+  // XXX: Fix i18n here
+  if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
+    return <div>{"OAuth 2.0 not enabled"}</div>
+  }
+
+  const { lng } = await params;
 
   const session = await Auth.getServerSession();
 
@@ -18,5 +25,5 @@ export default async function AuthorizePage({ params }: { params: { lng: string 
     .createHmac('sha256', session.csrfSecret)
     .digest('hex');
 
-  return <AuthorizeForm csrfToken={csrfToken} lng={params.lng} />;
+  return <AuthorizeForm csrfToken={csrfToken} lng={lng} />;
 }

@@ -15,6 +15,7 @@ import { logger } from "@/services/logger";
 import { Organization } from "@/models/Organization";
 import { Roles } from "@/util/types";
 import jwt from "jsonwebtoken";
+import { FeatureFlags, hasFeatureFlag } from "./feature-flags";
 
 export type ApiResponse = NextResponse | StreamingTextResponse;
 
@@ -197,7 +198,7 @@ export function apiHandler(handler: NextHandler) {
 
       const authorization = req.headers.get('Authorization')
 
-      if (authorization) {
+      if (authorization && hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
         const token = getBearerToken(authorization)
         if (token.aud !== (new URL(req.url)).origin) {
           throw new createHttpError.Unauthorized("Wrong server for token")

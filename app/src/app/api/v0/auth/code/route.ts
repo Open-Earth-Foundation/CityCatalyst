@@ -8,12 +8,17 @@ import { v4 } from "uuid";
 import { getClient } from "@/util/client";
 import { Client, LangMap } from "@/util/types";
 import crypto from "node:crypto";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 
 const CODE_EXPIRY = 5 * 60;
 
 /** Return an authorization code */
 
-  export const POST = apiHandler(async (_req, { params, session }) => {
+export const POST = apiHandler(async (_req, { params, session }) => {
+
+  if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
+    throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
+  }
 
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
     logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");

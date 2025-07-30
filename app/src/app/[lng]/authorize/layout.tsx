@@ -1,26 +1,41 @@
-"use client";
+import "../../globals.css";
+import type { Metadata } from "next";
+import { Providers } from "../../providers";
+import { dir } from "i18next";
+import { languages } from "@/i18n/settings";
+import { PublicEnvScript } from "next-runtime-env";
+import { Toaster } from "@/components/ui/toaster";
+import ClientRootLayout from "@/components/ClientRootLayout";
 import { use } from "react";
 
-import { NavigationBar } from "@/components/navigation-bar";
-import { Toaster } from "@/components/ui/toaster";
+export const metadata: Metadata = {
+  title: "CityCatalyst",
+  description: "Make building a climate inventory a breeze",
+};
 
-export default function AuthLayout(props: {
+export async function generateStaticParams() {
+  return languages.map((lng: string) => ({ lng }));
+}
+
+export default function AuthorizeRootLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lng: string }>;
 }) {
   const { lng } = use(props.params);
 
   return (
-    <main className="min-h-screen h-full flex flex-col">
-      <NavigationBar lng={lng} showNav={false} isAuth />
-      <div className="flex flex-row items-stretch flex-1">
-        <div className="w-full">
-          <div className="pt-[148px] pb-4 w-[480px] max-w-full mx-auto px-4">
-            <Toaster />
-            {props.children}
-          </div>
-        </div>
-      </div>
-    </main>
+    <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
+      <head>
+        <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
+        <link rel="icon" type="image/png" href="/assets/icon.png" />
+        <PublicEnvScript />
+      </head>
+      <body>
+        <Providers>
+          <Toaster />
+          <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
+        </Providers>
+      </body>
+    </html>
   );
 }

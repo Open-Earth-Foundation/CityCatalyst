@@ -26,7 +26,7 @@ function verifyPKCE(verifier: string, challenge: string): boolean {
   return base64url === challenge;
 }
 
-/**  */
+/** accept an authorization code and return an access token  */
 export const POST = apiHandler(async (_req, { params, session }) => {
 
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {

@@ -13,17 +13,6 @@ def get_emissionfactors():
     with SessionLocal() as session:
         query = text(
             """
-            WITH fuel_type_key AS (
-            SELECT
-                c.activity_id,
-                key AS fuel_type,
-                c.activity_subcategory_type ->> key AS fuel_typename
-            FROM
-                modelled.activity_subcategory c,
-                json_object_keys(c.activity_subcategory_type) AS key
-            WHERE
-                key ILIKE '%fuel-type%'
-            )
             SELECT  
             b.gas_name, 
             NULL AS region, 
@@ -32,18 +21,7 @@ def get_emissionfactors():
             b.emissionfactor_value,
             d.gpc_reference_number,
             d.methodology_name,
-            -- Conditionally add/update the JSON only if join succeeded
-            CASE 
-                WHEN l.fuel_type IS NOT NULL AND l.fuel_typename IS NOT NULL THEN
-                jsonb_set(
-                    c.activity_subcategory_type::jsonb,
-                    '{fuel_type}',
-                    to_jsonb(l.fuel_typename),
-                    true
-                )::json
-                ELSE
-                c.activity_subcategory_type 
-            END AS activity_subcategory_type,
+            c.activity_subcategory_type ,
             b.actor_id,
             EXTRACT(YEAR FROM b.active_from) AS year,
             d.method_id,
@@ -57,9 +35,6 @@ def get_emissionfactors():
             INNER JOIN
             modelled.activity_subcategory c
             ON b.activity_id = c.activity_id
-            LEFT JOIN
-            fuel_type_key l
-            ON c.activity_id = l.activity_id
             INNER JOIN
             modelled.ghgi_methodology d
             ON c.gpcmethod_id = d.method_id

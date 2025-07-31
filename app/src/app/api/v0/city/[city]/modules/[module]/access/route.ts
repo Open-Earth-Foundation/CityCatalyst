@@ -1,25 +1,22 @@
 import { ModuleAccessService } from "@/backend/ModuleAccessService";
-import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
-import createHttpError from "http-errors";
+import UserService from "@/backend/UserService";
+import { z } from "zod";
+
+const paramsSchema = z.object({
+  city: z.string().uuid("City ID must be a valid UUID"),
+  module: z.string().uuid("Module ID must be a valid UUID"),
+});
 
 export const GET = apiHandler(async (_req: Request, context) => {
-  const { city: cityId, module: moduleId } = context.params;
-  
-  const city = await db.models.City.findByPk(cityId, {
-    include: [{ model: db.models.Project, as: "project" }],
-  });
-  if (!city || !city.projectId) {
-    throw new createHttpError.NotFound("City not found");
-  }
+  const { city: cityId, module: moduleId } = paramsSchema.parse(context.params);
+  const { session } = context;
 
-  if (!moduleId) {
-    throw new createHttpError.BadRequest("ModuleId is missing");
-  }
+  const city = await UserService.findUserCity(cityId, session);
 
   const hasAccess = await ModuleAccessService.hasModuleAccess(
-    city.projectId,
+    city.project.projectId,
     moduleId,
   );
   return NextResponse.json({

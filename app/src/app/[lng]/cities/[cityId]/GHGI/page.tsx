@@ -5,9 +5,7 @@ import HomePage from "@/components/GHGIHomePage/HomePage";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Box } from "@chakra-ui/react";
 
-export default function GHGI(props: {
-  params: Promise<{ lng: string }>;
-}) {
+export default function GHGIPage(props: { params: Promise<{ lng: string }> }) {
   const { lng } = use(props.params);
 
   return (

@@ -19,18 +19,8 @@ export class ModuleAccessService {
     });
 
     const hasAccess = !!projectModule;
-
-    // Check if the module access has expired
-    let isExpired = false;
-    let expiresOn: Date | null = null;
-
-    if (hasAccess && projectModule) {
-      expiresOn = projectModule.expiresOn || null;
-      if (expiresOn) {
-        isExpired = new Date() > new Date(expiresOn);
-      }
-    }
-
+    const expiresOn = projectModule?.expiresOn || null;
+    const isExpired = expiresOn && new Date() > new Date(expiresOn);
     const result = hasAccess && !isExpired;
 
     logger.info(

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { use, useEffect } from "react";
+import { use } from "react";
 import { useTranslation } from "@/i18n/client";
 import {
   useGetCityPopulationQuery,
@@ -14,7 +14,7 @@ import { HiapTab } from "@/app/[lng]/cities/[cityId]/HIAP/HiapTab";
 import { NavigationBar } from "@/components/navigation-bar";
 import ProgressLoader from "@/components/ProgressLoader";
 
-export default function HIAP(props: {
+export default function HIAPPage(props: {
   params: Promise<{ lng: string; cityId: string }>;
 }) {
   const { lng, cityId } = use(props.params);

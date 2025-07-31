@@ -30,7 +30,7 @@ export default function OnboardingDone(props: {
       alignItems="center"
       bgRepeat="no-repeat"
       backgroundPosition="top"
-      bgImage="url('/images/city-bg.png')"
+      bgImage="url('/assets/city_vector_onboarding.svg')"
     >
       <Heading
         mt={12}

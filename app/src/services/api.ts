@@ -138,7 +138,7 @@ export const api = createApi({
           response.data,
       }),
       getInventoryByCityId: builder.query<InventoryResponse, string>({
-        query: (cityId: string) => `city/${cityId}/GHGI`,
+        query: (cityId: string) => `city/${cityId}/ghgi`,
         transformResponse: (response: { data: InventoryResponse }) =>
           response.data,
         providesTags: ["Inventory"],

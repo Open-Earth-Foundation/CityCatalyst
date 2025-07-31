@@ -15,6 +15,20 @@ logger = logging.getLogger(__name__)
 # If further documents are added, these should be added to a seperate collection and a separate tool should be defined for each collection
 # so that the LLM can more accurately retrieve information from the correct collection.
 @tool
+def retriever_main_action_tool(
+    search_query: str,
+) -> Union[list[Tuple[Document, float]], str]:
+
+    # TODO: COPY THE OLD IMPLEMENTATION from legaacy for backwards compatibility
+    """
+    Use this tool to retrieve chunks of text from a collection within a Chroma vector store.
+    The vector store contains a collections with documents related to the country's overall climate strategy.
+    """
+
+    return [(Document(page_content="test", metadata={"source": "test"}), 0.5)]
+
+
+@tool
 def retriever_national_strategy_tool(
     search_query: str,
     country_code: str = "BR",

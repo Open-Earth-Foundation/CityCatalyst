@@ -5,15 +5,15 @@ set -e
 set -o pipefail
 
 # Set the collection name variable
-COLLECTION_NAME="all_docs_db"
+COLLECTION_NAME="all_docs_db_small_chunks"
 
 # OS-specific paths
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
-  VENV_PYTHON="../.venv/bin/python"
-  VENV_ACTIVATE="../.venv/bin/activate"
+  VENV_PYTHON="../../../.venv/bin/python"
+  VENV_ACTIVATE="../../../.venv/bin/activate"
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "cygwin"* || "$OSTYPE" == "win32" ]]; then
-  VENV_PYTHON="../.venv/Scripts/python.exe"
-  VENV_ACTIVATE="../.venv/Scripts/activate"
+  VENV_PYTHON="../../../.venv/Scripts/python.exe"
+  VENV_ACTIVATE="../../../.venv/Scripts/activate"
 else
   echo "Unsupported OS: $OSTYPE"
   exit 1
@@ -40,11 +40,13 @@ echo "Adding diverse documents..."
 python add_document_to_vectorstore.py \
   --file_name Brazil_NDC_November_2024.pdf \
   --collection_name "$COLLECTION_NAME" \
-  --metadata main_action=true
+  --metadata main_action=true \
+  --metadata sub_actions=false
 python add_document_to_vectorstore.py \
   --file_name Brazil_NAP_2016.pdf \
   --collection_name "$COLLECTION_NAME" \
-  --metadata main_action=true
+  --metadata main_action=true \
+  --metadata sub_actions=false
 python add_document_to_vectorstore.py \
   --file_name Urban_Solid_Waste_Management_BRCXL.pdf \
   --collection_name "$COLLECTION_NAME" \
@@ -53,10 +55,12 @@ python add_document_to_vectorstore.py \
 python add_document_to_vectorstore.py \
   --file_name Worldbank_Green_Cities_Brazil.pdf \
   --collection_name "$COLLECTION_NAME" \
+  --metadata main_action=false \
   --metadata sub_actions=true
 python add_document_to_vectorstore.py \
   --file_name TNC_Brazil_Annual_Report_2023.pdf \
   --collection_name "$COLLECTION_NAME" \
+  --metadata main_action=false \
   --metadata sub_actions=true
 
 echo "Adding C40 documents to the vector store..."
@@ -530,6 +534,14 @@ python add_document_to_vectorstore.py \
   --collection_name "$COLLECTION_NAME" \
   --metadata main_action=true \
   --metadata sub_actions=true
+
+echo "Adding indicator documents to the vector store..."
+python add_document_to_vectorstore.py \
+  --file_name Indicators.pdf \
+  --collection_name "$COLLECTION_NAME" \
+  --metadata main_action=false \
+  --metadata sub_actions=false \
+  --metadata indicators=true
 
 # Ensure clean exit
 echo "Vector store setup for "$COLLECTION_NAME" completed successfully."

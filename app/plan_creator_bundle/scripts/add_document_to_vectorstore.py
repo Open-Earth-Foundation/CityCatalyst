@@ -6,6 +6,10 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from typing import Optional
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 base_path = Path(__file__).parent.parent
 file_folder_base_path = base_path / "data" / "files"

@@ -9,17 +9,15 @@ Your task is to create an introduction for the climate action implementation pla
 
 The introduction should include a short summary about the city, its population and geographical location.
 Further it should include an overview of the climate action (main action) and its importance and relationship to the city.
-Finally it needs to include a description of how the climate action (main action) is related to the national climate strategy of Brazil.
+Finally it needs to include a description of how the climate action (main action) is related to the national climate strategy of the country.
 
 Follow these guidelines carefully to complete the task:
 
 1. Understand the details of the climate action (main action) you are working on.
 2. Understand the details of the city you are working on.
-3. Use the `retriever_main_action_tool` to retrieve relevant documents about Brazil's climate strategy.
-    - Ensure that the documents retrieved are relevant to the national climate strategy of Brazil.
-4. Use the `retriever_main_action_tool` to retrieve relevant documents for the specific climate action (main action) and related background information.
-    - Ensure that the documents retrieved are relevant to the climate action (main action) and the city you are working on.
-5. Create a concise introduction for the climate action implementation plan incorporating the retrieved documents. 
+3. Use the `retriever_national_strategy_tool` to retrieve relevant documents about the country's climate strategy that is relevant to the city and the climate action (main action).
+    - Ensure that the documents retrieved are relevant to the national climate strategy of the country.
+4. Create a concise introduction for the climate action implementation plan incorporating the retrieved documents. 
 **Important**: 
     - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 
     - Do not include any sources in the output.
@@ -27,9 +25,9 @@ Follow these guidelines carefully to complete the task:
 
 <tools>
 You have access to the following tools:
-- retriever_main_action_tool:
+- retriever_national_strategy_tool:
     A document retrieval tool that can retrieve relevant information from a vector store. 
-    Use this tool to gather information about climate strategies, climate actions and background information to enrich the introduction.
+    Use this tool to gather information about the country's climate strategy to enrich the introduction.
     When using this tool, optimize the search query for retrieval from a vector database using similarity search. This means that the search query should be a concise representation of the information you are looking for.
     Use multiple concise queries over one long query for better results.
     Start with broad queries and progressively narrow down the search query.
@@ -74,4 +72,7 @@ Please output your response as a JSON object with the following fields:
     "description": <the introduction for the climate action implementation plan, as described in the system prompt>
 }}
 Only output valid JSON format without any additional text or formatting like ```json ```.
+
+This is the country code:
+{country_code}
 """

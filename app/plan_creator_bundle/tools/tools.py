@@ -11,21 +11,24 @@ logger = logging.getLogger(__name__)
 
 
 # Define tools for each agent
-# The document_retriever_tool is used to retrieve relevant information about Brazil's national climate strategy.
+# The document_retriever_tool is used to retrieve relevant information about a country's national climate strategy.
 # If further documents are added, these should be added to a seperate collection and a separate tool should be defined for each collection
 # so that the LLM can more accurately retrieve information from the correct collection.
 @tool
-def retriever_main_action_tool(
+def retriever_national_strategy_tool(
     search_query: str,
+    country_code: str = "BR",
 ) -> Union[list[Tuple[Document, float]], str]:
     """
     Use this tool to retrieve chunks of text from a collection within a Chroma vector store.
-    The vector store contains a collections with documents related to Brazil's overall climate strategy.
+    The vector store contains a collections with documents related to the country's overall climate strategy.
 
     **Input**:
     - search_query (str) - A concise search query.
         * Example: "What is Brazil's national climate strategy?"
+        * Example: "What is the national climate strategy of Mexico?"
         * Example: "What are [climate action] implementation strategies?"
+    - country_code (str) - ISO country code (e.g., "BR" for Brazil, "US" for United States)
 
     **Output**: A list of tuples in the form `[(document, relevance_score)]`.
     - Relevance scores range from `0` (lowest) to `1` (highest).
@@ -34,12 +37,23 @@ def retriever_main_action_tool(
     - Start with broad queries and progressively narrow down the search query.
     """
 
-    print("retriever_main_action_tool")
+    logger.info(f"Using retriever_national_strategy_tool")
+    logger.info(f"Search query: {search_query}")
+    logger.info(f"Country code: {country_code}")
 
-    vector_store = get_vectorstore(collection_name="all_docs_db_small_chunks")
+    # Load vector store based on country code
+    vector_store = get_vectorstore(
+        collection_name=f"{country_code.lower()}_all_docs_db_small_chunks"
+    )
 
     if not vector_store:
+        logger.error(
+            f"Could not load vector store for country {country_code}. Please ensure your vector DB is created."
+        )
         return "Could not load vector store. Please ensure your vector DB is created."
+
+    # Log the name of the collection
+    logger.info(f"Loaded vector store collection name: {vector_store._collection.name}")
 
     # Meta data filering using chroma
     #
@@ -58,16 +72,13 @@ def retriever_main_action_tool(
     # $in: In a list of values
     # $nin: Not in a list of values
 
-    metadata_filter = {"main_action": {"$eq": True}}
-
-    print("search_query", search_query)
-    print("metadata_filter", metadata_filter)
+    # metadata_filter = {"main_action": {"$eq": True}}
 
     docs_and_scores = vector_store.similarity_search_with_relevance_scores(
         query=search_query,
         k=5,
         score_threshold=0.40,
-        filter=metadata_filter,  # Dynamically apply metadata filter
+        # filter=metadata_filter,  # Dynamically apply metadata filter
     )
 
     return docs_and_scores

@@ -6,7 +6,7 @@ from langchain_openai import ChatOpenAI
 import logging
 
 from plan_creator_bundle.tools.tools import (
-    retriever_main_action_tool,
+    retriever_national_strategy_tool,
 )
 
 from plan_creator_bundle.plan_creator.models import Introduction
@@ -21,7 +21,7 @@ model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
 # model = ChatOpenAI(model="o3-mini", temperature=None)
 
 # Define tools for the agent
-tools = [retriever_main_action_tool]
+tools = [retriever_national_strategy_tool]
 
 # Define prompts for each agent
 system_prompt_agent_1 = SystemMessage(agent_1_system_prompt)
@@ -40,6 +40,7 @@ def build_custom_agent_1():
     def custom_agent_1(state: AgentState) -> AgentState:
 
         logger.info("Agent 1 start...")
+        logger.info(f"Country code: {state['country_code']}")
 
         result_state = react_chain.invoke(
             {
@@ -49,6 +50,7 @@ def build_custom_agent_1():
                             state["climate_action_data"], indent=2
                         ),
                         city_data=json.dumps(state["city_data"], indent=2),
+                        country_code=state["country_code"],
                     )
                 )
             }

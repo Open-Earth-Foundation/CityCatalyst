@@ -52,6 +52,12 @@ LanguageList = Annotated[List[str], Field(min_length=1)]
 
 class PrioritizerRequest(BaseModel):
     cityData: CityData
+    countryCode: str = Field(
+        default="BR",  # TODO: Field should be required but for now we default to Brazil
+        min_length=2,
+        max_length=2,
+        description="ISO 3166-1 alpha-2 code",
+    )
     prioritizationType: PrioritizationType = Field(
         default=PrioritizationType.BOTH,
         description="Type of actions to prioritize: mitigation, adaptation, or both",

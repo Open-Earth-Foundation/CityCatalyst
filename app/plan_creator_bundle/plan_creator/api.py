@@ -45,25 +45,26 @@ async def start_plan_creation(request: Request, req: PlanRequest):
         "locode": req.cityData.cityContextData.locode,
     }
 
-    # 2. Extract needed data from request into requestData
-    requestData = {}
+    # 2. Extract needed city data from request into requestCityData
+    requestCityData = {}
+
     # Extract city context data
-    requestData["locode"] = req.cityData.cityContextData.locode
-    requestData["populationSize"] = req.cityData.cityContextData.populationSize
+    requestCityData["locode"] = req.cityData.cityContextData.locode
+    requestCityData["populationSize"] = req.cityData.cityContextData.populationSize
 
     # Extract city emissions data
-    requestData["stationaryEnergyEmissions"] = (
+    requestCityData["stationaryEnergyEmissions"] = (
         req.cityData.cityEmissionsData.stationaryEnergyEmissions
     )
-    requestData["transportationEmissions"] = (
+    requestCityData["transportationEmissions"] = (
         req.cityData.cityEmissionsData.transportationEmissions
     )
-    requestData["wasteEmissions"] = req.cityData.cityEmissionsData.wasteEmissions
-    requestData["ippuEmissions"] = req.cityData.cityEmissionsData.ippuEmissions
-    requestData["afoluEmissions"] = req.cityData.cityEmissionsData.afoluEmissions
+    requestCityData["wasteEmissions"] = req.cityData.cityEmissionsData.wasteEmissions
+    requestCityData["ippuEmissions"] = req.cityData.cityEmissionsData.ippuEmissions
+    requestCityData["afoluEmissions"] = req.cityData.cityEmissionsData.afoluEmissions
 
     # 3. Fetch general city context data from global API
-    cityContext = get_context(requestData["locode"])
+    cityContext = get_context(requestCityData["locode"])
     if not cityContext:
         logger.error(
             f"Task {task_uuid}: No city context data found from global API.",
@@ -74,7 +75,7 @@ async def start_plan_creation(request: Request, req: PlanRequest):
         )
 
     # 4. Combine city context and city data
-    cityData = build_city_data(cityContext, requestData)
+    cityData = build_city_data(cityContext, requestCityData)
 
     # 5. Fetch actions from API and filter by actionId
     actions = get_actions()
@@ -103,6 +104,7 @@ async def start_plan_creation(request: Request, req: PlanRequest):
 
     # 6. Build dictionary with data for background task
     background_task_input = {
+        "countryCode": req.countryCode,
         "cityData": cityData,
         "action": action,
         "language": req.language,

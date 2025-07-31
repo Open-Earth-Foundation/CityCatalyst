@@ -39,6 +39,7 @@ def _execute_plan_creation(task_uuid: str, background_task_input):
         )
         graph = create_graph()
         initial_state: AgentState = {
+            "country_code": background_task_input["countryCode"],
             "climate_action_data": background_task_input["action"],
             "city_data": background_task_input["cityData"],
             "response_agent_1": Introduction(description=""),
@@ -59,6 +60,9 @@ def _execute_plan_creation(task_uuid: str, background_task_input):
         # 2. Generate the plan
         try:
             logger.info(f"Task {task_uuid}: Executing graph for plan generation")
+            logger.info(
+                f"Task {task_uuid}: Country code: {initial_state['country_code']}"
+            )
             result = graph.invoke(input=initial_state)
             logger.info(f"Task {task_uuid}: Graph execution completed successfully")
 

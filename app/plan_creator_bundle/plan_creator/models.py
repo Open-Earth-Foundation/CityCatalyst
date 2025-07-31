@@ -39,6 +39,12 @@ class CityData(BaseModel):
 
 class PlanRequest(BaseModel):
     cityData: CityData
+    countryCode: str = Field(
+        default="BR",  # TODO: Field should be required but for now we default to Brazil
+        min_length=2,
+        max_length=2,
+        description="ISO 3166-1 alpha-2 code",
+    )
     actionId: str = Field(..., min_length=1, description="Action ID")
     language: str = Field(
         default="en", min_length=2, max_length=2, description="ISO Language code"

@@ -279,13 +279,14 @@ export default function OnboardingSetup(props: {
 
   return (
     <>
-      <Box pt={16} pb={16} maxW="full" mx="auto">
+      <Box pt={16} pb={16} maxW="full" mx="auto" w="1090px">
         <Button
           variant="ghost"
           onClick={() => {
             activeStep === 0 ? router.back() : goToPrevStep();
           }}
           pl={0}
+          color="content.link"
         >
           <Icon as={MdArrowBack} boxSize={6} />
           {t("go-back")}

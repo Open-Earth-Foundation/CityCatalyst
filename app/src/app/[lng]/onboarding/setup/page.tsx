@@ -220,10 +220,11 @@ export default function OnboardingSetup(props: {
         globalWarmingPotentialType: globalWarmingPotential,
       }).unwrap();
       await setUserInfo({
-        cityId: city?.cityId!,
         defaultInventoryId: inventory.inventoryId,
+        defaultCityId: city?.cityId!,
       }).unwrap();
       setConfirming(false);
+      // [ON-4301] TODO reroute to new home
       router.push(
         `/onboarding/done/${data.locode}/${data.year}/${inventory.inventoryId}?project=${projectId}`,
       );

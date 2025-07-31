@@ -25,7 +25,7 @@ export function ActionCards({
     <Box display="flex" gap="24px" w="full">
       <NextLink
         data-testid={"add-data-to-inventory-card"}
-        href={`/${inventoryId}/data`}
+        href={`/${lng}/${inventoryId}/data`}
         role="button"
         aria-label={t("add-data-to-inventory")}
       >

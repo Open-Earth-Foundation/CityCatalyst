@@ -46,7 +46,7 @@ function YearCard({
   const router = useRouter();
 
   const onClick = () => {
-    setUserInfo({ defaultInventoryId: inventoryId, cityId: cityId });
+    setUserInfo({ defaultInventoryId: inventoryId, defaultCityId: cityId });
     router.push(`/${inventoryId}`);
   };
 

@@ -16,11 +16,10 @@ const ActionCardSmall: React.FC<ActionCardSmallProps> = ({
     <Card.Root
       onClick={onClick}
       shadow="2dp"
-      backgroundColor="base.light"
-      _hover={{ shadow: "xl" }}
-      transitionDuration="300ms"
-      cursor="pointer"
+      w="100%"
       h="100px"
+      _hover={{ boxShadow: "xl" }}
+      cursor="pointer"
       py={0}
       px={6}
     >

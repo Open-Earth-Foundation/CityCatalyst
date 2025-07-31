@@ -52,6 +52,8 @@ import {
   UpdateUserPayload,
   FormulaInputValuesResponse,
   DataSourceResponse,
+  Client,
+  LangMap
 } from "@/util/types";
 import type { HIAPResponse } from "@/util/types";
 import type { GeoJSON } from "geojson";
@@ -105,9 +107,9 @@ export const api = createApi({
           response.data,
         providesTags: ["CitiesAndInventories"],
       }),
-      getCity: builder.query<CityAttributes, string>({
+      getCity: builder.query<CityWithProjectDataResponse, string>({
         query: (cityId) => `city/${cityId}`,
-        transformResponse: (response: { data: CityAttributes }) =>
+        transformResponse: (response: { data: CityWithProjectDataResponse }) =>
           response.data,
       }),
       getCityBoundary: builder.query<
@@ -238,7 +240,7 @@ export const api = createApi({
       }),
       setUserInfo: builder.mutation<
         UserAttributes,
-        { cityId: string; defaultInventoryId: string }
+        { defaultInventoryId: string; defaultCityId: string }
       >({
         query: (data) => ({
           url: "/user",
@@ -436,6 +438,15 @@ export const api = createApi({
         query: (data) => `/city/${data.cityId}/population/${data.year}`,
         transformResponse: (response: { data: PopulationAttributes }) =>
           response.data,
+      }),
+      getMostRecentCityPopulation: builder.query<
+        { cityId: string; year: number; population: number },
+        { cityId: string }
+      >({
+        query: (data) => `/city/${data.cityId}/population`,
+        transformResponse: (response: {
+          data: { cityId: string; year: number; population: number };
+        }) => response.data,
       }),
       getUser: builder.query<
         UserAttributes,
@@ -1188,6 +1199,15 @@ export const api = createApi({
         transformResponse: (response: ThemeResponse[]) => response,
         providesTags: ["Themes"],
       }),
+      getOrganizationForCity: builder.query({
+        query: (cityId: string) => ({
+          method: "GET",
+          url: `/city/${cityId}/organization`,
+        }),
+        transformResponse: (response: OrganizationWithThemeResponse) =>
+          response,
+        providesTags: ["Organization"],
+      }),
       getOrganizationForInventory: builder.query({
         query: (inventoryId: string) => ({
           method: "GET",
@@ -1264,11 +1284,47 @@ export const api = createApi({
       }),
       getModules: builder.query<ModuleAttributes[], void>({
         query: () => "modules",
-        transformResponse: (response: { data: ModuleAttributes[] }) => response.data,
+        transformResponse: (response: { data: ModuleAttributes[] }) =>
+          response.data,
       }),
       getProjectModules: builder.query<ModuleAttributes[], string>({
         query: (projectId: string) => `projects/${projectId}/modules`,
-        transformResponse: (response: { data: ModuleAttributes[] }) => response.data,
+        transformResponse: (response: { data: ModuleAttributes[] }) =>
+          response.data,
+      }),
+      getClient: builder.query<
+        Client,
+        string
+      >({
+        query: (clientId: string) => `client/${clientId}/`,
+        transformResponse: (response: { data: Client }) =>
+          response.data,
+      }),
+      generateCode: builder.mutation({
+        query: ({
+          clientId,
+          redirectUri,
+          codeChallenge,
+          scope,
+          csrfToken
+        }: {
+          clientId: string,
+          redirectUri: string,
+          codeChallenge: string,
+          scope: string,
+          csrfToken: string
+        }) => ({
+          method: "POST",
+          url: `/auth/code/`,
+          body: {
+            clientId,
+            redirectUri,
+            codeChallenge,
+            scope,
+            csrfToken
+          },
+        }),
+        transformResponse: (response: { data: any }) => response.data.code
       }),
     };
   },
@@ -1313,6 +1369,7 @@ export const {
   useSetUserInfoMutation,
   useAddCityPopulationMutation,
   useGetCityPopulationQuery,
+  useGetMostRecentCityPopulationQuery,
   useGetUserQuery,
   useSetCurrentUserDataMutation,
   useGetCityUsersQuery,
@@ -1369,6 +1426,7 @@ export const {
   useGetThemesQuery,
   useSetOrgWhiteLabelMutation,
   useGetOrganizationForInventoryQuery,
+  useGetOrganizationForCityQuery,
   useDeleteCityMutation,
   useGetWasteCompositionValuesQuery,
   useUpdateOrganizationActiveStatusMutation,
@@ -1376,5 +1434,7 @@ export const {
   useUpdateUserRoleInOrganizationMutation,
   useGetModulesQuery,
   useGetProjectModulesQuery,
+  useGetClientQuery,
+  useGenerateCodeMutation
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

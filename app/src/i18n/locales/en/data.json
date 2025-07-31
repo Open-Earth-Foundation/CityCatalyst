@@ -116,7 +116,7 @@
   "more-datasets": "View more datasets",
   "less-datasets": "View less datasets",
   "add-data-heading": "Add Data to Your Inventory Data",
-  "add-data-details": "These are the subsectors to be completed according to the GPC methodology for the transport sector. Select a sub-sector and fill in the information to complete your inventory.",
+  "add-data-details": "These are the subsectors to be completed according to the GPC methodology for the current sector. Select a sub-sector and fill in the information to complete your inventory.",
   "select-subsector": "Select sub-sector",
   "residential-buildings": "Residential buildings",
   "residential-buildings-description": "Includes high rise buildings, landed buildings, workers’ quarters in industrial establishments, residential in agricultural farms.",

@@ -14,18 +14,67 @@ logger = logging.getLogger(__name__)
 # The document_retriever_tool is used to retrieve relevant information about a country's national climate strategy.
 # If further documents are added, these should be added to a seperate collection and a separate tool should be defined for each collection
 # so that the LLM can more accurately retrieve information from the correct collection.
+
+
+# The following tool is for the implementation in the legacy plan creator.
+# DO NOT make changes to this tool.
 @tool
 def retriever_main_action_tool(
     search_query: str,
 ) -> Union[list[Tuple[Document, float]], str]:
-
-    # TODO: COPY THE OLD IMPLEMENTATION from legaacy for backwards compatibility
     """
     Use this tool to retrieve chunks of text from a collection within a Chroma vector store.
-    The vector store contains a collections with documents related to the country's overall climate strategy.
+    The vector store contains a collections with documents related to Brazil's overall climate strategy.
+
+    **Input**:
+    - search_query (str) - A concise search query.
+        * Example: "What is Brazil's national climate strategy?"
+        * Example: "What are [climate action] implementation strategies?"
+
+    **Output**: A list of tuples in the form `[(document, relevance_score)]`.
+    - Relevance scores range from `0` (lowest) to `1` (highest).
+
+    **Query Strategies**:
+    - Start with broad queries and progressively narrow down the search query.
     """
 
-    return [(Document(page_content="test", metadata={"source": "test"}), 0.5)]
+    logger.info("retriever_main_action_tool")
+
+    vector_store = get_vectorstore(collection_name="all_docs_db_small_chunks")
+
+    if not vector_store:
+        return "Could not load vector store. Please ensure your vector DB is created."
+
+    # Meta data filering using chroma
+    #
+    # metadata_filter = {"key": {"$eq": value}}
+    # or
+    # metadata_filter = {
+    #     "$or": [{"key": {"$eq": value}}, {"key": {"$eq": value}}]
+    # }
+    # Chroma filter operators:
+    # $eq: Equal to
+    # $gt: Greater than
+    # $gte: Greater than or equal to
+    # $lt: Less than
+    # $lte: Less than or equal to
+    # $ne: Not equal to
+    # $in: In a list of values
+    # $nin: Not in a list of values
+
+    metadata_filter = {"main_action": {"$eq": True}}
+
+    logger.info("search_query", search_query)
+    logger.info("metadata_filter", metadata_filter)
+
+    docs_and_scores = vector_store.similarity_search_with_relevance_scores(
+        query=search_query,
+        k=5,
+        score_threshold=0.40,
+        filter=metadata_filter,  # Dynamically apply metadata filter
+    )
+
+    return docs_and_scores
 
 
 @tool
@@ -57,7 +106,7 @@ def retriever_national_strategy_tool(
 
     # Load vector store based on country code
     vector_store = get_vectorstore(
-        collection_name=f"{country_code.lower()}_all_docs_db_small_chunks"
+        collection_name=f"{country_code.lower()}_national_strategy"
     )
 
     if not vector_store:

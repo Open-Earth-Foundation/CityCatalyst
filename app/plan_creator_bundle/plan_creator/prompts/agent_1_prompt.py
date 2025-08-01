@@ -54,17 +54,19 @@ Avoid overly technical jargon; use language that is accessible to professionals 
 
 <important>
 When using information from the documents, ensure that the information is relevant to the city you are working on.
-Include the source of the information in the final output.
 Be concise, realistic, and specific. Focus on measurable impact and actionable steps. Avoid vague or overly general answers. 
 </important>
 """
 
 agent_1_user_prompt = """
-This is the climate action (main action) data: 
-{climate_action_data}
+This is the country code:
+{country_code}
 
 This is the city data: 
 {city_data}
+
+This is the climate action (main action) data: 
+{climate_action_data}
 
 # INSTRUCTIONS FOR OUTPUT FORMAT
 Please output your response as a JSON object with the following fields:
@@ -72,7 +74,4 @@ Please output your response as a JSON object with the following fields:
     "description": <the introduction for the climate action implementation plan, as described in the system prompt>
 }}
 Only output valid JSON format without any additional text or formatting like ```json ```.
-
-This is the country code:
-{country_code}
 """

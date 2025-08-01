@@ -8,12 +8,10 @@
 
 set -e
 
-# Set collection name and local path (update these as needed)
+# Set collection name (update these as needed)
 # Collection name is the name of the vector store in S3
-COLLECTION_NAME="all_docs_db_small_chunks"
-# Local path is the path to the directory where the vector store will be stored
-# It is relative to the app directory e.g. app/vector_stores
-LOCAL_PATH="plan_creator_bundle/vector_stores"
+COLLECTION_NAME_BR="br_national_strategy"
+COLLECTION_NAME_GENERAL="all_docs_db_small_chunks"
 
 echo ""
 echo "Running startup script:"
@@ -21,13 +19,25 @@ echo "Checking if vector store exists..."
 echo "If not, creating vector store..."
 echo "This may take a while."
 echo ""
-echo "Collection name: $COLLECTION_NAME"
-echo "Local path: $LOCAL_PATH"
+echo "Collection name for Brasil: $COLLECTION_NAME_BR"
+echo "Collection name for general use: $COLLECTION_NAME_GENERAL"
 echo ""
 
 # Run the vector store script and capture its exit code
-python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME" "$LOCAL_PATH"
-VECTOR_STORE_STATUS=$?
+# Download the vector store for Brasil
+python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME_BR"
+VECTOR_STORE_STATUS_BR=$?
+
+# Download the vector store for general use
+python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME_GENERAL"
+VECTOR_STORE_STATUS_GENERAL=$?
+
+# Check if either download failed
+if [ $VECTOR_STORE_STATUS_BR -ne 0 ] || [ $VECTOR_STORE_STATUS_GENERAL -ne 0 ]; then
+    VECTOR_STORE_STATUS=1
+else
+    VECTOR_STORE_STATUS=0
+fi
 
 # Debugging code:
 # Run without loading the vector store

@@ -5,7 +5,7 @@ set -e
 set -o pipefail
 
 # Set the collection name variable
-COLLECTION_NAME="br_national_strategies"
+COLLECTION_NAME="br_national_strategy"
 
 # OS-specific paths
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then

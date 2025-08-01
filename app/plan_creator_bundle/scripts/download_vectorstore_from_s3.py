@@ -7,7 +7,6 @@ at the start of the application.
 
 Args:
     collection_name: Name of the collection to download
-    path: Path to store the vector store (relative to project root)
 
 Returns:
     bool: True if vector store exists locally or was successfully downloaded
@@ -21,9 +20,6 @@ Call with (from app/ directory):
 """
 
 from dotenv import load_dotenv
-import logging
-
-logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
@@ -38,8 +34,11 @@ import sys
 # S3 Configuration
 S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
-# Get project root directory
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+# Get the vector stores directory relative to this script
+# Script is in: app/plan_creator_bundle/scripts/
+# Vector stores are in: app/plan_creator_bundle/vector_stores/
+# So relative path is: ../vector_stores/
+VECTOR_STORES_DIR = Path(__file__).parent.parent / "vector_stores"
 
 
 def is_valid_vectorstore(path: Path) -> bool:
@@ -76,30 +75,30 @@ def download_from_s3(collection_name: str, local_path: Path) -> bool:
 
         # List objects in the S3 bucket with the collection prefix
         s3_prefix = f"data/vector_stores/{collection_name}/"
-        logger.info(f"Looking for vector store in S3 at: {S3_BUCKET_NAME}/{s3_prefix}")
+        print(f"Looking for vector store in S3 at: {S3_BUCKET_NAME}/{s3_prefix}")
 
         try:
             response = s3_client.list_objects_v2(
                 Bucket=S3_BUCKET_NAME, Prefix=s3_prefix
             )
         except NoCredentialsError:
-            logger.error(
+            print(
                 "Error: No AWS credentials found. Please configure your AWS credentials."
             )
             return False
         except EndpointConnectionError as e:
-            logger.error(f"Error: Could not connect to S3 endpoint. Details: {e}")
+            print(f"Error: Could not connect to S3 endpoint. Details: {e}")
             return False
         except ClientError as e:
-            logger.error(f"Error: S3 client error occurred: {e}")
+            print(f"Error: S3 client error occurred: {e}")
             return False
         except Exception as e:
-            logger.error(f"Error: Unexpected error when connecting to S3: {e}")
+            print(f"Error: Unexpected error when connecting to S3: {e}")
             return False
 
         # Connection succeeded, but check if collection exists
         if "Contents" not in response:
-            logger.info(
+            print(
                 f"S3 connection succeeded, but no vector store found in S3 at {s3_prefix}"
             )
             return False
@@ -115,48 +114,62 @@ def download_from_s3(collection_name: str, local_path: Path) -> bool:
             local_file_path = local_path / relative_path
             local_file_path.parent.mkdir(parents=True, exist_ok=True)
 
-            logger.info(f"Downloading: {obj['Key']} -> {local_file_path}")
+            print(f"Downloading: {obj['Key']} -> {local_file_path}")
             # Download the file
             s3_client.download_file(S3_BUCKET_NAME, obj["Key"], str(local_file_path))
 
-        logger.info(f"Successfully downloaded vector store from S3 to {local_path}")
+        print(f"Successfully downloaded vector store from S3 to {local_path}")
         return True
 
     except Exception as e:
-        logger.error(f"Error downloading from S3: {e}")
+        print(f"Error downloading from S3: {e}")
         return False
 
 
-def get_vectorstore(collection_name: str, local_path: str) -> bool:
+def get_vectorstore(collection_name: str) -> bool:
     """
     Checks if a vector store exists locally, downloads it from S3 if it doesn't.
     Does not load the vector store into memory.
 
     Args:
         collection_name: Name of the collection to check/download
-        local_path: Path to store the vector store (relative to project root)
 
     Returns:
         bool: True if vector store exists locally or was successfully downloaded
     """
-    # Always use paths relative to project root
-    vector_store_path = PROJECT_ROOT / local_path / collection_name
+    # Use the vector stores directory directly
+    vector_store_path = VECTOR_STORES_DIR / collection_name
+
+    print(f"VECTOR_STORES_DIR: {VECTOR_STORES_DIR}")
+    print(f"collection_name: {collection_name}")
+    print(f"vector_store_path: {vector_store_path}")
+    print(f"vector_store_path.exists(): {vector_store_path.exists()}")
 
     # Check if we have a valid vector store locally
-    if vector_store_path.exists() and is_valid_vectorstore(vector_store_path):
-        logger.info(f"Found existing vector store at {vector_store_path}")
-        return True
+    if vector_store_path.exists():
+        print(f"Directory exists, checking if valid vector store...")
+        is_valid = is_valid_vectorstore(vector_store_path)
+        print(f"is_valid_vectorstore(): {is_valid}")
+
+        if is_valid:
+            print(f"Found existing vector store at {vector_store_path}")
+            return True
+        else:
+            print(f"Directory exists but is not a valid vector store")
+    else:
+        print(f"Directory does not exist at {vector_store_path}")
 
     # No valid local copy, try to download from S3
-    logger.info(f"No valid vector store found at {vector_store_path}")
-    logger.info(f"Looking for S3 bucket name: {S3_BUCKET_NAME}")
+    print(f"No valid vector store found at {vector_store_path}")
+    print(f"Looking for S3 bucket name: {S3_BUCKET_NAME}")
+
     if not S3_BUCKET_NAME:
-        logger.error(
+        print(
             "S3 bucket name not configured. Please set the S3_BUCKET_NAME environment variable. Terminate execution..."
         )
         return False
 
-    logger.info(f"Attempting to download from S3...")
+    print(f"Attempting to download from S3...")
     return download_from_s3(collection_name, vector_store_path)
 
 
@@ -166,17 +179,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "collection_name", type=str, help="Name of the collection to download"
     )
-    parser.add_argument(
-        "local_path",
-        type=str,
-        help="Path to store the vector store (relative to project root)",
-    )
     args = parser.parse_args()
 
     try:
-        success = get_vectorstore(
-            collection_name=args.collection_name, local_path=args.local_path
-        )
+        success = get_vectorstore(collection_name=args.collection_name)
         if not success:
             print("Failed to load or create vector store")
         sys.exit(0)

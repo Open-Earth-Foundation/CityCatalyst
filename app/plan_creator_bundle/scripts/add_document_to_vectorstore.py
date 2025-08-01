@@ -11,8 +11,9 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-base_path = Path(__file__).parent.parent
-file_folder_base_path = base_path / "data" / "files"
+# Base path to app directory
+base_path = Path(__file__).parent.parent.parent
+file_folder_base_path = base_path / "plan_creator_bundle" / "files"
 
 
 def add_document_to_vectorstore(

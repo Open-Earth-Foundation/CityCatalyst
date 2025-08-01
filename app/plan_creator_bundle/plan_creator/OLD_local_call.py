@@ -4,7 +4,7 @@ from graph_definition import create_graph
 from state.agent_state import AgentState
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from pathlib import Path
-from plan_creator.utils.OLD_get_vectorstore_from_s3 import get_vectorstore
+from plan_creator_bundle.utils.OLD_get_vectorstore_from_s3 import get_vectorstore
 
 
 def mock_api_body(climate_action_id: str, locode: str):
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     print("Loading vector store...")
     # Attempt to get the vector store
     success = get_vectorstore(
-        collection_name="all_docs_db_small_chunks", local_path="vector_stores"
+        collection_name="all_docs_db_small_chunks", local_path="temp/vector_stores"
     )
 
     if success:

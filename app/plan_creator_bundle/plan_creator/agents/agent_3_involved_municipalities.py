@@ -61,8 +61,6 @@ def build_custom_agent_3():
             }
         )
 
-        logger.info(f"Agent 3 output: {result_state}")
-
         # Extract the structured response from the result_state
         agent_output_structured: InstitutionList = result_state["structured_response"]
         result_state["response_agent_3"] = agent_output_structured

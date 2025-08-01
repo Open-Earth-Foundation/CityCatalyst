@@ -55,7 +55,7 @@ def download_from_s3(file_name: str) -> bool:
         local_file_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Define the S3 object key
-        s3_key = f"data/context/{file_name}"
+        s3_key = f"data/json_files/{file_name}"
         print(f"Looking for JSON file in S3 at: {S3_BUCKET_NAME}/{s3_key}")
 
         try:

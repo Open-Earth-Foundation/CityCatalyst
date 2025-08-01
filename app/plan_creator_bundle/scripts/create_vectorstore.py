@@ -8,12 +8,14 @@ from pathlib import Path
 def create_vectorstore(collection_name: str, embedding_model: str):
     """
     Function that creates a new vector store.
-    Vector store is created in the folder /vector_stores/collection_name.
+    Vector store is created in the folder /temp/vector_stores/collection_name.
 
     Input: collection_name (str), embedding_model (str)
     """
 
-    vector_store_path = Path(__file__).parent.parent / "vector_stores" / collection_name
+    vector_store_path = (
+        Path(__file__).parent.parent / "temp" / "vector_stores" / collection_name
+    )
 
     # Create embeddings model
     embeddings = OpenAIEmbeddings(

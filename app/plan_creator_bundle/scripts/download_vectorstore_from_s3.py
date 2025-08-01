@@ -12,11 +12,11 @@ Returns:
     bool: True if vector store exists locally or was successfully downloaded
 
 Example:
-    >>> get_vectorstore("my_collection", "vector_stores")
+    >>> get_vectorstore("my_collection")
     True
 
 Call with (from app/ directory):
-    python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "all_docs_db_small_chunks" "plan_creator_bundle/vector_stores"
+    python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "all_docs_db_small_chunks"
 """
 
 from dotenv import load_dotenv
@@ -36,9 +36,9 @@ S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 # Get the vector stores directory relative to this script
 # Script is in: app/plan_creator_bundle/scripts/
-# Vector stores are in: app/plan_creator_bundle/vector_stores/
-# So relative path is: ../vector_stores/
-VECTOR_STORES_DIR = Path(__file__).parent.parent / "vector_stores"
+# Vector stores are in: app/plan_creator_bundle/temp/vector_stores/
+# So relative path is: ../temp/vector_stores/
+VECTOR_STORES_DIR = Path(__file__).parent.parent / "temp" / "vector_stores"
 
 
 def is_valid_vectorstore(path: Path) -> bool:
@@ -56,13 +56,12 @@ def is_valid_vectorstore(path: Path) -> bool:
     return path.is_dir() and all((path / file).exists() for file in required_files)
 
 
-def download_from_s3(collection_name: str, local_path: Path) -> bool:
+def download_from_s3(collection_name: str) -> bool:
     """
-    Downloads a vector store from S3 to a local directory.
+    Downloads a vector store from S3 to the fixed vector stores directory.
 
     Args:
         collection_name: Name of the collection to download
-        local_path: Local path to store the downloaded files
 
     Returns:
         bool: True if download successful, False otherwise
@@ -70,6 +69,8 @@ def download_from_s3(collection_name: str, local_path: Path) -> bool:
     try:
         # Initialize S3 client
         s3_client = boto3.client("s3")
+        # Always use the fixed vector stores directory
+        local_path = VECTOR_STORES_DIR / collection_name
         # Create the local directory if it doesn't exist
         local_path.mkdir(parents=True, exist_ok=True)
 
@@ -137,7 +138,7 @@ def get_vectorstore(collection_name: str) -> bool:
     Returns:
         bool: True if vector store exists locally or was successfully downloaded
     """
-    # Use the vector stores directory directly
+    # Always use the fixed vector stores directory
     vector_store_path = VECTOR_STORES_DIR / collection_name
 
     print(f"VECTOR_STORES_DIR: {VECTOR_STORES_DIR}")
@@ -170,7 +171,7 @@ def get_vectorstore(collection_name: str) -> bool:
         return False
 
     print(f"Attempting to download from S3...")
-    return download_from_s3(collection_name, vector_store_path)
+    return download_from_s3(collection_name)
 
 
 # Execute the script when called directly

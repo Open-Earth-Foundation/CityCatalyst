@@ -29,7 +29,7 @@ def add_document_to_vectorstore(
     Loads documents from `directory`, splits them, and adds them to the vector store.
     `collection_name` is the name of the Chroma collection.
 
-    Adds documents to the vector store in the folder /vector_stores/collection_name.
+    Adds documents to the vector store in the folder /temp/vector_stores/collection_name.
 
     Input:
     file_name (str),
@@ -47,7 +47,9 @@ def add_document_to_vectorstore(
         else file_folder_base_path / file_name
     )
 
-    vector_store_path = Path(__file__).parent.parent / "vector_stores" / collection_name
+    vector_store_path = (
+        Path(__file__).parent.parent / "temp" / "vector_stores" / collection_name
+    )
 
     if vector_store_path.exists():
         # Load existing vector store

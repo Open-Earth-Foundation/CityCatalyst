@@ -7,7 +7,7 @@ __pycache__/
 # global
 .env
 .venv
-app/plan_creator_bundle/vector_stores/
+app/plan_creator_bundle/temp/
 app/plan_creator_bundle/files/
 
 # Plan creator

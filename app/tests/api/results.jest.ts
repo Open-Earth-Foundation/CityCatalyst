@@ -35,12 +35,23 @@ describe("Results API", () => {
   beforeAll(async () => {
     setupTests();
     await db.initialize();
+
+    // Create city with explicit cityId
+    const cityId = randomUUID();
     city = await db.models.City.create({
-      cityId: randomUUID(),
+      cityId,
       locode,
     });
+
+    // Verify city was created
+    const createdCity = await db.models.City.findByPk(cityId);
+    if (!createdCity) {
+      throw new Error(`Failed to create city with ID ${cityId}`);
+    }
+
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city.addUser(testUserID);
+
     inventory = await db.models.Inventory.create({
       inventoryId,
       ...baseInventory,
@@ -64,6 +75,12 @@ describe("Results API", () => {
     });
     await db.models.InventoryValue.destroy({ where: { inventoryId } });
     await db.models.Inventory.destroy({ where: { inventoryId } });
+    // Clean up any other inventories created during tests
+    await db.models.Inventory.destroy({
+      where: {
+        inventoryName: "ReportResultEmptyInventory",
+      },
+    });
     await db.models.City.destroy({ where: { cityId: city.cityId } });
     if (db.sequelize) await db.sequelize.close();
   });
@@ -140,15 +157,30 @@ describe("Results API", () => {
 
   it("should return empty arrays when Inventory has no data", async () => {
     const emptyInventoryId = randomUUID();
-    const emptyInventory = await db.models.Inventory.create({
-      inventoryId: emptyInventoryId,
-      ...baseInventory,
-      inventoryName: "ReportResultEmptyInventory",
-      cityId: city.cityId,
-      inventoryType: InventoryTypeEnum.GPC_BASIC,
-      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
-      year: 2022,
-    });
+
+    // Ensure the city exists before creating the inventory
+    const cityExists = await db.models.City.findByPk(city.cityId);
+    if (!cityExists) {
+      throw new Error(`City with ID ${city.cityId} does not exist`);
+    }
+
+    let emptyInventory;
+    try {
+      emptyInventory = await db.models.Inventory.create({
+        inventoryId: emptyInventoryId,
+        ...baseInventory,
+        inventoryName: "ReportResultEmptyInventory",
+        cityId: city.cityId,
+        inventoryType: InventoryTypeEnum.GPC_BASIC,
+        globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+        year: 2022,
+      });
+    } catch (error) {
+      console.error("Failed to create inventory:", error);
+      console.error("City ID:", city.cityId);
+      console.error("City exists:", await db.models.City.findByPk(city.cityId));
+      throw error;
+    }
     const req = mockRequest();
     const res = await getResults(req, {
       params: Promise.resolve({ inventory: emptyInventory.inventoryId }),

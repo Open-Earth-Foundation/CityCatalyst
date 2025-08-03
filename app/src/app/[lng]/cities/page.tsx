@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useMemo, useState, use } from "react";
 import { useTranslation } from "@/i18n/client";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
 import {
   useGetAllCitiesInSystemQuery,
   useGetOrganizationsQuery,
@@ -30,6 +31,8 @@ import { CityWithProjectDataResponse } from "@/util/types";
 const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "admin");
+  const isAdmin = useAdminGuard(lng, t);
+
   const { data, isLoading } = useGetAllCitiesInSystemQuery({});
   const { data: organizationData, isLoading: isLoadingOrganizationData } =
     useGetOrganizationsQuery({});
@@ -57,12 +60,16 @@ const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
     return singleRowSelected ? [singleRowSelected] : selectedRowKeys;
   }, [selectedRowKeys, singleRowSelected]);
 
+  if (!isAdmin) {
+    return <ProgressLoader />;
+  }
+
   if (isLoading || isLoadingOrganizationData) {
     return <ProgressLoader />;
   }
 
   return (
-    <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
+    <Box pt={16} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
       <Link href={`/${lng}`} _hover={{ textDecoration: "none" }}>
         <Box
           display="flex"
@@ -87,7 +94,7 @@ const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
           color="content.primary"
           mb={12}
           mt={2}
-          className="w-full"
+          w="full"
         >
           {t("cities-heading")}
         </Heading>
@@ -195,14 +202,18 @@ const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
                         }}
                       >
                         <Icon
-                          className="group-hover:text-white"
+                          _groupHover={{
+                            color: "white",
+                          }}
                           color="interactive.control"
                           as={MdOutlineGroup}
                           h="24px"
                           w="24px"
                         />
                         <Text
-                          className="group-hover:text-white"
+                          _groupHover={{
+                            color: "white",
+                          }}
                           color="content.primary"
                         >
                           {t("move-to")}

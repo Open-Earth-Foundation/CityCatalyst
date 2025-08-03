@@ -90,7 +90,7 @@ function DataTable<T extends Record<string, any>>({
     filteredData.length > 0 ? Math.ceil(filteredData.length / itemsPerPage) : 1;
 
   return (
-    <Box className="bg-white" p={6} rounded={2} mt={12}>
+    <Box bg="white" p={6} borderRadius={2} mt={12}>
       <Text fontWeight="bold" fontSize="title.md" mb={2}>
         {title}
       </Text>

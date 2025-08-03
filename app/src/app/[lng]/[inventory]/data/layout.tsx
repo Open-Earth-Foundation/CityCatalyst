@@ -5,9 +5,16 @@ import { Toaster } from "@/components/ui/toaster";
 
 export default function DataLayout(props: { children: React.ReactNode }) {
   return (
-    <Box className="h-full flex flex-col" bg="background.backgroundLight">
+    <Box
+      h="full"
+      display="flex"
+      flexDirection="column"
+      bg="background.backgroundLight"
+    >
       <Toaster />
-      <div className="w-full h-full">{props.children}</div>
+      <Box w="full" h="full">
+        {props.children}
+      </Box>
     </Box>
   );
 }

@@ -171,7 +171,7 @@ const CreateEditProjectModal: FC<CreateEditProjectModalProps> = ({
           <HStack
             mt="24px"
             flexDirection="column"
-            className="items-start"
+            alignItems="start"
             gap="24px"
           >
             <Field labelClassName="font-semibold" label={t("project-name")}>

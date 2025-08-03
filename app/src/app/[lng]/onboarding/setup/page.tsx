@@ -10,7 +10,7 @@ import {
   useSetUserInfoMutation,
 } from "@/services/api";
 
-import { OCCityAttributes, ProjectResponse } from "@/util/types";
+import { OCCityAttributes } from "@/util/types";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
@@ -28,6 +28,7 @@ import { UseErrorToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
+import ProjectLimitModal from "@/components/project-limit";
 
 export type Inputs = {
   city: string;
@@ -122,6 +123,7 @@ export default function OnboardingSetup(props: {
   });
   const [ocCityData, setOcCityData] = useState<OCCityAttributes>();
   const [isConfirming, setConfirming] = useState(false);
+  const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
 
   const makeErrorToast = (title: string, description?: string) => {
     const { showErrorToast } = UseErrorToast({ description, title });
@@ -200,7 +202,10 @@ export default function OnboardingSetup(props: {
       await addCityPopulation(populationData).unwrap();
     } catch (err: any) {
       logger.error({ err }, "Onboarding - Failed to add city or population");
-      makeErrorToast("failed-to-add-city", err.data?.error?.message);
+      makeErrorToast(
+        t("failed-to-add-city"),
+        t(err.data?.error?.message ?? ""),
+      );
       setConfirming(false);
       return;
     }
@@ -215,10 +220,11 @@ export default function OnboardingSetup(props: {
         globalWarmingPotentialType: globalWarmingPotential,
       }).unwrap();
       await setUserInfo({
-        cityId: city?.cityId!,
         defaultInventoryId: inventory.inventoryId,
+        defaultCityId: city?.cityId!,
       }).unwrap();
       setConfirming(false);
+      // [ON-4301] TODO reroute to new home
       router.push(
         `/onboarding/done/${data.locode}/${data.year}/${inventory.inventoryId}?project=${projectId}`,
       );
@@ -230,6 +236,27 @@ export default function OnboardingSetup(props: {
   };
 
   const onSubmit: SubmitHandler<Inputs> = async (formData) => {
+    const selectedProjectId =
+      selectedProject.length > 0 ? selectedProject[0] : undefined;
+
+    if (EnterpriseMode && selectedProjectId) {
+      const project = projectsList?.find(
+        (proj) => proj.projectId === selectedProjectId,
+      );
+      const isCityAlreadyAdded = project?.cities.some(
+        (city) =>
+          city.name === formData.city && city.locode === ocCityData?.actor_id,
+      );
+      if (
+        Number(project?.cities.length) >=
+          Number(project?.cityCountLimit as unknown as string) &&
+        !isCityAlreadyAdded
+      ) {
+        setIsProjectLimitModalOpen(true);
+        return;
+      }
+    }
+
     setData({
       ...data,
       ...formData,
@@ -252,18 +279,29 @@ export default function OnboardingSetup(props: {
 
   return (
     <>
-      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto">
+      <Box pt={16} pb={16} maxW="full" mx="auto" w="1090px">
         <Button
           variant="ghost"
           onClick={() => {
             activeStep === 0 ? router.back() : goToPrevStep();
           }}
           pl={0}
+          color="content.link"
         >
           <Icon as={MdArrowBack} boxSize={6} />
           {t("go-back")}
         </Button>
-        <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top mt-8 md:mt-16 mb-48">
+        <Box
+          display="flex"
+          flexDirection={{ base: "column", md: "row" }}
+          columnGap={{ md: "48px" }}
+          rowGap={{ base: "48px", md: "0px" }}
+          alignItems="flex-start"
+          mt={{ base: 8, md: 16 }}
+          mb={48}
+          w={"1090px"}
+          mx="auto"
+        >
           {activeStep === 0 && (
             <SelectCityStep
               errors={errors}
@@ -316,13 +354,23 @@ export default function OnboardingSetup(props: {
               year={getValues("year")}
             />
           )}
-        </div>
-        <div className="bg-white w-full fixed z-[9999] bottom-0 left-0  pb-8 px-1 transition-all">
+        </Box>
+        <Box
+          bg="white"
+          w="full"
+          position="fixed"
+          bottom={0}
+          left={0}
+          pb={8}
+          px={1}
+          zIndex={9999}
+          transition="all"
+        >
           <Box w="full" display="flex" flexDir="column" gap="32px">
-            <Box className="w-full">
-              <div className="w-full">
+            <Box w="full">
+              <Box w="full">
                 <ProgressSteps steps={steps} currentStep={activeStep} />
-              </div>
+              </Box>
             </Box>
             <Box w="full" display="flex" justifyContent="end" px="135px">
               {activeStep == 0 && (
@@ -397,8 +445,14 @@ export default function OnboardingSetup(props: {
               )}
             </Box>
           </Box>
-        </div>
-      </div>
+        </Box>
+      </Box>
+      <ProjectLimitModal
+        isOpen={isProjectLimitModalOpen}
+        onClose={() => setIsProjectLimitModalOpen(false)}
+        lng={lng}
+        onOpenChange={setIsProjectLimitModalOpen}
+      />
     </>
   );
 }

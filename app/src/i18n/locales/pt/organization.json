@@ -1,0 +1,21 @@
+{
+  "all-projects": "Todos os Projetos",
+  "default-organization": "Organização Padrão",
+  "default-project": "Projeto Padrão",
+  "explore-projects-description": "Explore os projetos que você criou dentro do CityCatalyst. Navegue para descobrir cidades adicionais.",
+  "learning": "Aprendizado",
+  "learn-more-blog": "Quer aprender mais? Confira nosso Blog",
+  "read-blog-description": "Leia nossos artigos de blog para descobrir as melhores práticas e diretrizes em ação climática",
+  "visit-blog": "Visite o Blog",
+  "organization-name": "Nome da organização",
+  "projects": "Projetos",
+  "active-projects-tooltip": "Estes projetos pertencem à organização e estão atualmente ativos.",
+  "active-in-total": "Ativo no Total",
+  "cities": "cidades",
+  "across-projects": "Através de projetos",
+  "city-count-tooltip": "O número de cidades em que a organização tem projetos ativos.",
+  "pro": "Pró",
+  "active-plan-tooltip": "A organização está atualmente inscrita neste plano.",
+  "active-plan": "Plano Ativo",
+  "organization-load-failed": "Não foi possível carregar a organização"
+}

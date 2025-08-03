@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { Box, Heading, Text } from "@chakra-ui/react";
 
 export interface MetricItem {
   value: number | string;
@@ -19,36 +20,47 @@ const Metrics = ({
   isLoading = false,
 }: MetricsProps) => {
   return (
-    <section className="py-16 px-6">
-      <div className="max-w-7xl mx-auto">
+    <Box as="section" py={16} px={6}>
+      <Box maxW="7xl" mx="auto">
         {/* Optional section title and description */}
         {title && (
-          <h2 className="text-3xl font-bold text-gray-800 mb-8">{title}</h2>
+          <Heading fontSize="3xl" fontWeight="bold" color="gray.800" mb={8}>
+            {title}
+          </Heading>
         )}
 
         {description && (
-          <p className="max-w-3xl mb-10 text-gray-600">{description}</p>
+          <Text maxW="3xl" mb={10} color="gray.600">
+            {description}
+          </Text>
         )}
 
         {/* Metrics grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap={4}>
           {metrics.map((metric, index) => (
-            <div key={index} className="bg-white p-6 rounded-md">
-              <div className="text-gray-500 uppercase text-xs tracking-wider font-medium mb-2">
+            <Box key={index} bg="white" p={6} rounded="md">
+              <Text
+                color="gray.500"
+                textTransform="uppercase"
+                fontSize="xs"
+                fontWeight="medium"
+                mb={2}
+                letterSpacing="wider"
+              >
                 {metric.label}
-              </div>
+              </Text>
               {isLoading ? (
-                <Skeleton className="h-12 w-24 bg-gray-200" />
+                <Skeleton h="12" w="24" bg="gray.200" />
               ) : (
-                <div className="text-4xl md:text-5xl font-bold text-gray-800">
+                <Text fontSize="4xl" fontWeight="bold" color="gray.800">
                   {metric.value}
-                </div>
+                </Text>
               )}
-            </div>
+            </Box>
           ))}
-        </div>
-      </div>
-    </section>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

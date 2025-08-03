@@ -1,3 +1,5 @@
+import { Box, SimpleGrid, Image } from "@chakra-ui/react";
+
 interface PartnerLogo {
   id: string;
   name: string;
@@ -10,27 +12,46 @@ interface PartnerLogosProps {
 
 const PartnerLogos = ({ partners }: PartnerLogosProps) => {
   return (
-    <section className="py-12 px-6 bg-white border-t border-gray-100">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-8 items-center justify-items-center">
+    <Box
+      as="section"
+      py={12}
+      px={6}
+      bg="white"
+      borderTopWidth={1}
+      borderColor="gray.100"
+    >
+      <Box maxW="7xl" mx="auto">
+        <SimpleGrid
+          columns={{ base: 2, sm: 3, md: 5, lg: 6 }}
+          gap={8}
+          alignItems="center"
+          justifyItems="center"
+        >
           {partners.map((partner) => (
-            <div
+            <Box
               key={partner.id}
-              className="h-10 flex items-center justify-center"
+              h={10}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
               aria-label={`Logo of ${partner.name}`}
             >
               {partner.logo && (
-                <img
+                <Image
                   src={partner.logo}
                   alt={partner.name}
-                  className="max-h-full max-w-full object-contain hover:opacity-100 hover:grayscale-0 transition-all duration-300"
+                  maxH="full"
+                  maxW="full"
+                  objectFit="contain"
+                  _hover={{ opacity: 1, filter: "grayscale(0)" }}
+                  transition="all 0.3s"
                 />
               )}
-            </div>
+            </Box>
           ))}
-        </div>
-      </div>
-    </section>
+        </SimpleGrid>
+      </Box>
+    </Box>
   );
 };
 

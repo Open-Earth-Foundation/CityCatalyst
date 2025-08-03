@@ -73,5 +73,6 @@
   "recent-searches-no-results": "Sie haben keine kürzlichen Suchen",
   "failed-to-add-city": "Fehler beim Hinzufügen der Stadt",
   "failed-to-create-inventory": "Fehler beim Erstellen des Inventars",
-  "select-project": "Projekt auswählen"
+  "select-project": "Projekt auswählen",
+  "city-count-limit-reached": "Stadtanzahllimit erreicht"
 }

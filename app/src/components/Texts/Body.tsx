@@ -45,3 +45,17 @@ export const BodyMedium = ({ text, children, ...props }: BodyProps) => (
     {children}
   </Text>
 );
+
+export const BodySmall = ({ text, children, ...props }: BodyProps) => (
+  <Text
+    fontFamily="body"
+    fontSize="body.sm"
+    fontWeight="regular"
+    lineHeight="16"
+    color="content.tertiary"
+    {...props}
+  >
+    {text}
+    {children}
+  </Text>
+);

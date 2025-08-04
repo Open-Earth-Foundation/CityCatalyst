@@ -14,6 +14,7 @@ import {
   Icon,
   IconButton,
   Input,
+  Link,
   NativeSelect,
   Popover,
   Portal,
@@ -29,9 +30,10 @@ import {
   MdOutlineLocationOn,
   MdSearch,
   MdKeyboardArrowDown,
+  MdHome,
 } from "react-icons/md";
 import { InputGroup } from "@/components/ui/input-group";
-import { LuSearch } from "react-icons/lu";
+import { LuLayoutGrid, LuSearch } from "react-icons/lu";
 import type {
   CityResponse,
   ProjectWithCities,
@@ -56,7 +58,8 @@ import SearchInput from "@/components/SearchInput";
 import { logger } from "@/services/logger";
 import { Field } from "../ui/field";
 import { RiForbidLine } from "react-icons/ri";
-import { BiCaretDown } from "react-icons/bi";
+import { BiCaretDown, BiHomeAlt, BiSolidBarChartAlt2 } from "react-icons/bi";
+import { HiHome } from "react-icons/hi2";
 
 // Custom Select Component
 interface CustomSelectOption {
@@ -801,6 +804,37 @@ const ProjectDrawer = ({
             />
           )}
           <Box w="full" border="1px solid" borderColor="border.neutral" />
+          <Box w="full" display="flex" flexDirection="column" px={4} py="24px">
+            {/* Menu links with icons */}
+            <VStack w="full" justifyContent="space-between">
+              <Link rounded={0} w="full" h="48px">
+                <Icon as={BiHomeAlt} color={"content.tertiary"} boxSize={6} />
+                <Text fontSize="body.lg" color="content.secondary">
+                  {t("home")}
+                </Text>
+              </Link>
+              <Link rounded={0} w="full" h="48px">
+                <Icon
+                  as={BiSolidBarChartAlt2}
+                  color={"content.tertiary"}
+                  boxSize={6}
+                />
+                <Text fontSize="body.lg" color="content.secondary">
+                  {t("dashboard")}
+                </Text>
+              </Link>
+              <Link rounded={0} w="full" h="48px">
+                <Icon
+                  as={LuLayoutGrid}
+                  color={"content.tertiary"}
+                  boxSize={6}
+                />
+                <Text fontSize="body.lg" color="content.secondary">
+                  {t("all-projects")}
+                </Text>
+              </Link>
+            </VStack>
+          </Box>
         </DrawerBody>
       </DrawerContent>
     </DrawerRoot>

@@ -134,7 +134,7 @@
     "@types/swagger-ui-react": "^5.18.0",
     "@types/uuid": "^9.0.8",
     "@types/wellknown": "^0.5.8",
-    "eslint": "8.57.0",
+    "eslint": "9.32.0",
     "eslint-config-next": "^14.2.13",
     "eslint-plugin-i18next": "^6.1.1",
     "eslint-plugin-storybook": "^0.8.0",

@@ -137,6 +137,12 @@ export const api = createApi({
         transformResponse: (response: { data: InventoryPopulationsResponse }) =>
           response.data,
       }),
+      getInventoryByCityId: builder.query<InventoryResponse, string>({
+        query: (cityId: string) => `city/${cityId}/ghgi`,
+        transformResponse: (response: { data: InventoryResponse }) =>
+          response.data,
+        providesTags: ["Inventory"],
+      }),
       getRequiredScopes: builder.query<RequiredScopesResponse, string>({
         query: (sectorId) => `sector/${sectorId}/required-scopes`,
         transformResponse: (response: { data: RequiredScopesResponse }) =>
@@ -1292,6 +1298,15 @@ export const api = createApi({
         transformResponse: (response: { data: ModuleAttributes[] }) =>
           response.data,
       }),
+      getCityModuleAccess: builder.query<
+        { hasAccess: boolean },
+        { cityId: string; moduleId: string }
+      >({
+        query: ({ cityId, moduleId }) =>
+          `city/${cityId}/modules/${moduleId}/access`,
+        transformResponse: (response: { data: { hasAccess: boolean } }) =>
+          response.data,
+      }),
       getClient: builder.query<
         Client,
         string
@@ -1380,6 +1395,7 @@ export const {
   useGetVerificationTokenQuery,
   useGetCitiesQuery,
   useGetInventoriesQuery,
+  useGetInventoryByCityIdQuery,
   useAddUserFileMutation,
   useGetUserFilesQuery,
   useDeleteUserFileMutation,
@@ -1434,6 +1450,7 @@ export const {
   useUpdateUserRoleInOrganizationMutation,
   useGetModulesQuery,
   useGetProjectModulesQuery,
+  useGetCityModuleAccessQuery,
   useGetClientQuery,
   useGenerateCodeMutation
 } = api;

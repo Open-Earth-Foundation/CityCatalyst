@@ -1,4 +1,4 @@
-import HomePage from "@/components/HomePage/HomePage";
+import HomePage from "@/components/GHGIHomePage/HomePage";
 
 export default async function PublicHome(props: {
   params: Promise<{ lng: string }>;

@@ -1,7 +1,7 @@
 import React from "react";
 import { MdPersonAdd } from "react-icons/md";
 import { Button, useDisclosure } from "@chakra-ui/react";
-import AddCollaboratorsModal from "@/components/HomePage/AddCollaboratorModal/AddCollaboratorsModal";
+import AddCollaboratorsModal from "@/components/GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { ButtonMedium } from "@/components/Texts/Button";
 import { useTranslation } from "@/i18n/client";
 

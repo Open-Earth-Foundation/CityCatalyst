@@ -39,7 +39,7 @@ import { Avatar } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
 import { Roles } from "@/util/types";
-import ProjectDrawer from "@/components/HomePage/ProjectDrawer";
+import ProjectDrawer from "@/components/GHGIHomePage/ProjectDrawer";
 import { TbSettingsCog } from "react-icons/tb";
 import { useTheme } from "next-themes";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";

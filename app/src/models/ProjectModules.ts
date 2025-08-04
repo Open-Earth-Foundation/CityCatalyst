@@ -2,18 +2,24 @@ import { DataTypes, Model, Sequelize, Optional } from 'sequelize';
 
 export interface ProjectModulesAttributes {
   id: string;
-  project_id: string;
-  module_id: string;
-  expires_on?: Date;
+  projectId: string;
+  moduleId: string;
+  expiresOn?: Date;
 }
 
-export type ProjectModulesCreationAttributes = Optional<ProjectModulesAttributes, 'id'>;
+export type ProjectModulesCreationAttributes = Optional<
+  ProjectModulesAttributes,
+  "id"
+>;
 
-export class ProjectModules extends Model<ProjectModulesAttributes, ProjectModulesCreationAttributes> implements ProjectModulesAttributes {
+export class ProjectModules
+  extends Model<ProjectModulesAttributes, ProjectModulesCreationAttributes>
+  implements ProjectModulesAttributes
+{
   public id!: string;
-  public project_id!: string;
-  public module_id!: string;
-  public expires_on?: Date;
+  public projectId!: string;
+  public moduleId!: string;
+  public expiresOn?: Date;
 
   static initModel(sequelize: Sequelize): typeof ProjectModules {
     ProjectModules.init(
@@ -23,27 +29,38 @@ export class ProjectModules extends Model<ProjectModulesAttributes, ProjectModul
           defaultValue: DataTypes.UUIDV4,
           primaryKey: true,
         },
-        project_id: {
+        projectId: {
           type: DataTypes.UUID,
           allowNull: false,
+          references: {
+            model: "Projects",
+            key: "projectId",
+          },
+          field: "project_id",
         },
-        module_id: {
+        moduleId: {
           type: DataTypes.UUID,
           allowNull: false,
+          references: {
+            model: "Modules",
+            key: "id",
+          },
+          field: "module_id",
         },
-        expires_on: {
+        expiresOn: {
           type: DataTypes.DATE,
           allowNull: true,
+          field: "expires_on",
         },
       },
       {
         sequelize,
-        tableName: 'ProjectModules',
+        tableName: "ProjectModules",
         schema: "public",
         timestamps: true,
         createdAt: "created",
         updatedAt: "last_updated",
-      }
+      },
     );
     return ProjectModules;
   }

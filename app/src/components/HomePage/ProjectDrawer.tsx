@@ -570,9 +570,16 @@ const ProjectFilterSection = ({
   };
 
   return (
-    <Box w="full" h="full" display="flex" flexDirection="column" gap={"24px"}>
+    <Box
+      w="full"
+      h="auto"
+      display="flex"
+      flexDirection="column"
+      gap={"24px"}
+      py="24px"
+    >
       {/* Filter Section */}
-      <Box display="flex" flexDirection="column" gap={"24px"}>
+      <Box display="flex" flexDirection="column" gap={"24px"} w="full">
         {/* Search Input */}
         <InputGroup startElement={<Icon as={MdSearch} size="md" />}>
           <Input
@@ -648,7 +655,7 @@ const ProjectFilterSection = ({
           </Box>
         )}
         {/* Project dropdown */}
-        <Box display="flex" flexDirection="column" px={4}>
+        <Box display="flex" flexDirection="column" px={4} gap="24px">
           {/* Project Dropdown */}
           <CustomSelect
             options={filteredProjectOptions}
@@ -682,6 +689,29 @@ const ProjectFilterSection = ({
             t={t}
             label={t("city")}
           />
+          <Box w="full" display="flex" justifyContent="flex-start">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                router.push(`/onboarding/setup?project=${selectedProject}`);
+              }}
+              rounded={0}
+              w="full"
+              h="48px"
+              display="flex"
+              justifyContent="flex-start"
+              textTransform="lowercase"
+              px={0}
+              ml={-1}
+              fontWeight="normal"
+              fontFamily="body"
+            >
+              <Icon as={MdAdd} color={"content.secondary"} boxSize={6} />
+              <Text fontSize="body.lg" color="content.secondary">
+                {t("add-new-city")}
+              </Text>
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Box>
@@ -760,13 +790,7 @@ const ProjectDrawer = ({
               </Box>
             </Box>
           )}
-          {/* {!isLoading && projectsData && !selectedProject && (
-            <ProjectList
-              t={t}
-              data={projectsData}
-              selectProject={selectProject}
-            />
-          )} */}
+
           {/* Project / City Filter Section*/}
           {!isLoading && projectsData && (
             <ProjectFilterSection
@@ -776,16 +800,7 @@ const ProjectDrawer = ({
               currentInventoryId={currentInventoryId}
             />
           )}
-
-          {selectedProjectData && currentInventoryId && (
-            <SingleProjectView
-              t={t}
-              currentInventoryId={currentInventoryId}
-              project={selectedProjectData}
-              lng={lng}
-              backToProjects={() => setSelectedProject(null)}
-            />
-          )}
+          <Box w="full" border="1px solid" borderColor="border.neutral" />
         </DrawerBody>
       </DrawerContent>
     </DrawerRoot>

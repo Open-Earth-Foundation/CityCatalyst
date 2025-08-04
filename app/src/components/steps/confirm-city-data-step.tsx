@@ -1,10 +1,8 @@
-import { CalendarIcon, DataFormatIcon } from "@/components/icons";
-import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
 import { Box, Card, Heading, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import dynamic from "next/dynamic";
 import { CircleFlag } from "react-circle-flags";
-import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
+import { MdOutlineAspectRatio } from "react-icons/md";
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 export default function ConfirmStep({
@@ -12,17 +10,11 @@ export default function ConfirmStep({
   t,
   locode,
   area,
-  population,
-  inventoryGoal,
-  year,
 }: {
   cityName: String;
   t: TFunction;
   locode: string;
   area: number;
-  population?: number;
-  inventoryGoal: string;
-  year: number;
 }) {
   return (
     <Box w="full">
@@ -73,133 +65,10 @@ export default function ConfirmStep({
               <Box
                 borderBottomWidth="2px"
                 borderColor="border.overlay"
-                py="36px"
-                w="full"
-                display="flex"
-                justifyContent="space-between"
-              >
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  h="44px"
-                  gap="16px"
-                  w="full"
-                >
-                  <Box h="full">
-                    <Icon as={CalendarIcon} color="interactive.control" />
-                  </Box>
-                  <Box h="full">
-                    <Text
-                      fontSize="title.md"
-                      fontWeight="600"
-                      lineHeight="24px"
-                      fontStyle="normal"
-                      color="content.secondary"
-                      fontFamily="heading"
-                      data-testid="confirm-city-data-year"
-                    >
-                      {year}
-                    </Text>
-                    <Text
-                      fontSize="label.md"
-                      fontWeight="500"
-                      lineHeight="16px"
-                      fontStyle="normal"
-                      color="content.tertiary"
-                      letterSpacing="wide"
-                    >
-                      {t("inventory-year")}
-                    </Text>
-                  </Box>
-                </Box>
-                <Box
-                  w="full"
-                  display="flex"
-                  alignItems="center"
-                  h="44px"
-                  gap="16px"
-                >
-                  <Box h="full">
-                    <Icon as={DataFormatIcon} color="interactive.control" />
-                  </Box>
-                  <Box h="full">
-                    <Text
-                      fontSize="title.md"
-                      fontWeight="600"
-                      lineHeight="24px"
-                      fontStyle="normal"
-                      color="content.secondary"
-                      fontFamily="heading"
-                      data-testid="confirm-city-data-inventory-goal"
-                    >
-                      {t(inventoryGoal)}
-                    </Text>
-                    <Text
-                      fontSize="label.md"
-                      fontWeight="500"
-                      lineHeight="16px"
-                      fontStyle="normal"
-                      color="content.tertiary"
-                      letterSpacing="wide"
-                    >
-                      {t("inventory-format")}
-                    </Text>
-                  </Box>
-                </Box>
-              </Box>
-              <Box
-                borderBottomWidth="2px"
-                borderColor="border.overlay"
                 w="full"
                 display="flex"
                 py="36px"
               >
-                <Box
-                  w="full"
-                  display="flex"
-                  alignItems="center"
-                  h="44px"
-                  gap="16px"
-                >
-                  <Box h="full">
-                    <Icon
-                      h="24px"
-                      w="24px"
-                      as={MdOutlinePeopleAlt}
-                      color="interactive.control"
-                    />
-                  </Box>
-                  <Box h="full">
-                    <Text
-                      fontSize="title.md"
-                      fontWeight="600"
-                      lineHeight="24px"
-                      fontStyle="normal"
-                      color="content.secondary"
-                      fontFamily="heading"
-                      data-testid="confirm-city-data-population"
-                    >
-                      {population ? (
-                        <>
-                          {shortenNumber(population)}
-                          {getShortenNumberUnit(population)}
-                        </>
-                      ) : (
-                        "N/A"
-                      )}
-                    </Text>
-                    <Text
-                      fontSize="label.md"
-                      fontWeight="500"
-                      lineHeight="16px"
-                      fontStyle="normal"
-                      color="content.tertiary"
-                      letterSpacing="wide"
-                    >
-                      {t("total-population")}
-                    </Text>
-                  </Box>
-                </Box>
                 <Box
                   w="full"
                   display="flex"

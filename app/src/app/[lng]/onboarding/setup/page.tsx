@@ -2,13 +2,7 @@
 
 import { useTranslation } from "@/i18n/client";
 import type { CityAttributes } from "@/models/City";
-import {
-  api,
-  useAddCityMutation,
-  useAddCityPopulationMutation,
-  useAddInventoryMutation,
-  useSetUserInfoMutation,
-} from "@/services/api";
+import { api, useAddCityMutation } from "@/services/api";
 
 import { OCCityAttributes } from "@/util/types";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
@@ -19,8 +13,6 @@ import React, { use, useEffect, useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SelectCityStep from "@/components/steps/select-city-steps";
-import SetInventoryDetailsStep from "@/components/steps/add-inventory-details-step";
-import SetPopulationDataStep from "@/components/steps/add-population-data-step";
 import ConfirmStep from "@/components/steps/confirm-city-data-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
@@ -32,29 +24,11 @@ import ProjectLimitModal from "@/components/project-limit";
 
 export type Inputs = {
   city: string;
-  year: number;
-  inventoryGoal: string;
-  globalWarmingPotential: string;
-  cityPopulation: number;
-  cityPopulationYear: number;
-  regionPopulation: number;
-  regionPopulationYear: number;
-  countryPopulation: number;
-  countryPopulationYear: number;
-  totalCountryEmissions: number;
-};
-
-export type CountryEmissionsEntry = {
-  year: number;
-  total_emissions: number;
 };
 
 export type OnboardingData = {
   name: string;
   locode: string;
-  year: number;
-  inventoryGoal: string;
-  globalWarmingPotential: string;
 };
 
 export default function OnboardingSetup(props: {
@@ -75,7 +49,6 @@ export default function OnboardingSetup(props: {
   } = useForm<Inputs>();
 
   const params = useSearchParams();
-
   const projectId = params.get("project");
 
   const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
@@ -93,12 +66,7 @@ export default function OnboardingSetup(props: {
     }
   }, [projectsList]);
 
-  const steps = [
-    { title: t("setup-step") },
-    { title: t("set-inventory-details-step") },
-    { title: t("set-population-step") },
-    { title: t("confirm-step") },
-  ];
+  const steps = [{ title: t("setup-step") }, { title: t("confirm-step") }];
 
   const {
     value: activeStep,
@@ -110,16 +78,10 @@ export default function OnboardingSetup(props: {
   });
 
   const [addCity] = useAddCityMutation();
-  const [addCityPopulation] = useAddCityPopulationMutation();
-  const [addInventory] = useAddInventoryMutation();
-  const [setUserInfo] = useSetUserInfoMutation();
 
   const [data, setData] = useState<OnboardingData>({
     name: "",
     locode: "",
-    year: -1,
-    inventoryGoal: "",
-    globalWarmingPotential: "",
   });
   const [ocCityData, setOcCityData] = useState<OCCityAttributes>();
   const [isConfirming, setConfirming] = useState(false);
@@ -129,26 +91,6 @@ export default function OnboardingSetup(props: {
     const { showErrorToast } = UseErrorToast({ description, title });
     showErrorToast();
   };
-
-  // Population data
-
-  const cityPopulation = watch("cityPopulation");
-  const regionPopulation = watch("regionPopulation");
-  const countryPopulation = watch("countryPopulation");
-  const cityPopulationYear = watch("cityPopulationYear");
-  const regionPopulationYear = watch("regionPopulationYear");
-  const countryPopulationYear = watch("countryPopulationYear");
-
-  // Inventory data
-  const inventoryGoal = watch("inventoryGoal");
-  const globalWarmingPotential = watch("globalWarmingPotential");
-
-  const currentYear = new Date().getFullYear();
-  const numberOfYearsDisplayed = 20;
-  const years = Array.from(
-    { length: numberOfYearsDisplayed },
-    (_x, i) => currentYear - i,
-  );
 
   const { data: cityArea, isLoading: isCityAreaLoading } =
     api.useGetCityBoundaryQuery(data.locode!, {
@@ -185,52 +127,14 @@ export default function OnboardingSetup(props: {
         projectId: EnterpriseMode ? projectId : undefined,
       }).unwrap();
 
-      // Log population data before sending
-      const populationData = {
-        cityId: city.cityId,
-        locode: city.locode!,
-        cityPopulation: cityPopulation!,
-        cityPopulationYear: cityPopulationYear!,
-        regionPopulation: regionPopulation!,
-        regionPopulationYear: regionPopulationYear!,
-        countryPopulation: countryPopulation!,
-        countryPopulationYear: countryPopulationYear!,
-      };
-
-      logger.info({ populationData }, "Onboarding - Sending population data");
-
-      await addCityPopulation(populationData).unwrap();
+      setConfirming(false);
+      router.push(`/${lng}/cities/${city?.cityId}`);
     } catch (err: any) {
-      logger.error({ err }, "Onboarding - Failed to add city or population");
+      logger.error({ err }, "Onboarding - Failed to add city");
       makeErrorToast(
         t("failed-to-add-city"),
         t(err.data?.error?.message ?? ""),
       );
-      setConfirming(false);
-      return;
-    }
-
-    try {
-      const inventory = await addInventory({
-        cityId: city?.cityId!,
-        year: typeof data.year === "string" ? parseInt(data.year) : data.year,
-        inventoryName: `${data.name} - ${data.year}`,
-        totalCountryEmissions: getValues("totalCountryEmissions"),
-        inventoryType: inventoryGoal,
-        globalWarmingPotentialType: globalWarmingPotential,
-      }).unwrap();
-      await setUserInfo({
-        defaultInventoryId: inventory.inventoryId,
-        defaultCityId: city?.cityId!,
-      }).unwrap();
-      setConfirming(false);
-      // [ON-4301] TODO reroute to new home
-      router.push(
-        `/onboarding/done/${data.locode}/${data.year}/${inventory.inventoryId}?project=${projectId}`,
-      );
-    } catch (err: any) {
-      logger.error({ err: err }, "Failed to create new inventory!");
-      makeErrorToast("failed-to-create-inventory", err.data?.error?.message);
       setConfirming(false);
     }
   };
@@ -319,39 +223,11 @@ export default function OnboardingSetup(props: {
             />
           )}
           {activeStep === 1 && (
-            <SetInventoryDetailsStep
-              t={t}
-              register={register}
-              errors={errors}
-              control={control}
-              setValue={setValue}
-              years={years}
-            />
-          )}
-          {activeStep === 2 && (
-            <SetPopulationDataStep
-              t={t}
-              register={register}
-              control={control}
-              errors={errors}
-              years={years}
-              numberOfYearsDisplayed={numberOfYearsDisplayed}
-              setData={setData}
-              setOcCityData={setOcCityData}
-              setValue={setValue}
-              watch={watch}
-              ocCityData={ocCityData}
-            />
-          )}
-          {activeStep === 3 && (
             <ConfirmStep
               cityName={getValues("city")}
               t={t}
               locode={data.locode}
               area={cityArea?.area!}
-              population={cityPopulation}
-              inventoryGoal={getValues("inventoryGoal")}
-              year={getValues("year")}
             />
           )}
         </Box>
@@ -394,44 +270,6 @@ export default function OnboardingSetup(props: {
                 </Button>
               )}
               {activeStep == 1 && (
-                <Button
-                  w="auto"
-                  gap="8px"
-                  py="16px"
-                  onClick={handleSubmit(onSubmit)}
-                  px="24px"
-                  h="64px"
-                >
-                  <Text
-                    fontFamily="button.md"
-                    fontWeight="600"
-                    letterSpacing="wider"
-                  >
-                    {t("continue")}
-                  </Text>
-                  <MdArrowForward height="24px" width="24px" />
-                </Button>
-              )}
-              {activeStep == 2 && (
-                <Button
-                  w="auto"
-                  gap="8px"
-                  py="16px"
-                  onClick={handleSubmit(onSubmit)}
-                  px="24px"
-                  h="64px"
-                >
-                  <Text
-                    fontFamily="button.md"
-                    fontWeight="600"
-                    letterSpacing="wider"
-                  >
-                    {t("continue")}
-                  </Text>
-                  <MdArrowForward height="24px" width="24px" />
-                </Button>
-              )}
-              {activeStep == 3 && (
                 <Button
                   h={16}
                   w="auto"

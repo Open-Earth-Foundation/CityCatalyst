@@ -148,13 +148,12 @@ export default function HomePage({
             h="full"
             w="full"
             maxW="1090px"
-            pt="48px"
             pb="100px"
             bg="background.backgroundLight"
             px={8}
             mx="auto"
           >
-            <HStack mb={8}>
+            <HStack my={8}>
               <Image src="/assets/automation.svg" alt="" />
               <HeadlineMedium>{t("tools-title")}</HeadlineMedium>
             </HStack>

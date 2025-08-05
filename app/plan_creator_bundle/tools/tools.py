@@ -1,11 +1,12 @@
 import logging
-from typing import Tuple, Union, Optional
+from typing import Tuple, Union, Optional, Dict, Any
 from langchain.tools import tool
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain.schema import Document
 from openai import OpenAI
 from plan_creator_bundle.utils.get_vectorstore_local import get_vectorstore
+from plan_creator_bundle.utils.get_json_file import get_json_from_file
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +79,7 @@ def retriever_main_action_tool(
 
 
 @tool
-def retriever_national_strategy_tool(
+def retriever_vectorstore_national_strategy_tool(
     search_query: str,
     country_code: str = "BR",
 ) -> Union[list[Tuple[Document, float]], str]:
@@ -98,9 +99,12 @@ def retriever_national_strategy_tool(
 
     **Query Strategies**:
     - Start with broad queries and progressively narrow down the search query.
+
+    **Error Handling**:
+    - If the vector store is not found, it means it does not exist. Proceed with the next tool or continue with the task.
     """
 
-    logger.info(f"Using retriever_national_strategy_tool")
+    logger.info(f"Using retriever_vectorstore_national_strategy_tool")
     logger.info(f"Search query: {search_query}")
     logger.info(f"Country code: {country_code}")
 
@@ -145,6 +149,38 @@ def retriever_national_strategy_tool(
     )
 
     return docs_and_scores
+
+
+@tool
+def retriever_json_document_national_strategy_tool(
+    country_code: str = "BR",
+) -> Union[Dict[Any, Any], str]:
+    """
+    Use this tool to load a JSON document from a predefined directory.
+    The documents contain information related to a country's climate strategy.
+
+    **Input**:
+    - country_code (str) - ISO country code (e.g., "BR" for Brazil, "US" for United States)
+
+    **Output**:
+    - A dictionary containing the content of the JSON file.
+
+    **Error Handling**:
+    - If the file is not found or invalid, proceed with the next tool or continue with the task.
+    """
+    logger.info(f"Using retriever_json_document_national_strategy_tool")
+    logger.info(f"Country code: {country_code}")
+
+    json_content = get_json_from_file(country_code.lower() + "_country_strategy")
+
+    if not json_content:
+        logger.error(
+            f"Could not load JSON file for country code {country_code}. Please ensure the file exists and is valid."
+        )
+        return f"Could not load JSON file for country code {country_code}. Please ensure the file exists and is valid."
+
+    logger.info(f"Successfully loaded JSON file for country code: {country_code}")
+    return json_content
 
 
 @tool

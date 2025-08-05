@@ -19,6 +19,7 @@ from prioritizer.models import (
     PrioritizerResponseBulk,
     PrioritizationType,
 )
+from plan_creator_bundle.utils.get_json_file import get_json_from_file
 
 # Import the shared task_storage from api.py (or move to a separate module if needed)
 from prioritizer.task_storage import task_storage
@@ -44,6 +45,7 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
         city_data = background_task_input["cityData"]
         prioritizationType = background_task_input["prioritizationType"]
         languages = background_task_input["language"]
+        country_code = background_task_input["countryCode"]
 
         requestData = {}
         requestData["locode"] = city_data.cityContextData.locode
@@ -97,6 +99,11 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                 "prioritizationType", PrioritizationType.BOTH
             )
 
+            # Load country strategy
+            country_strategy = get_json_from_file(
+                country_code.lower() + "_country_strategy"
+            )
+
             rankedActionsMitigation = []
             rankedActionsAdaptation = []
 
@@ -119,6 +126,7 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                         actionId=action["ActionID"],
                         rank=rank,
                         explanation=generate_multilingual_explanation(
+                            country_strategy=country_strategy,
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,
@@ -147,6 +155,7 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                         actionId=action["ActionID"],
                         rank=rank,
                         explanation=generate_multilingual_explanation(
+                            country_strategy=country_strategy,
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,
@@ -208,6 +217,7 @@ def _execute_prioritization_bulk_subtask(
         city_data = background_task_input["cityData"]
         prioritizationType = background_task_input["prioritizationType"]
         languages = background_task_input["language"]
+        country_code = background_task_input["countryCode"]
 
         requestData = {}
         requestData["locode"] = city_data.cityContextData.locode
@@ -248,6 +258,12 @@ def _execute_prioritization_bulk_subtask(
                 _update_bulk_task_status(main_task_id)
                 return
             filteredActions = filter_actions_by_biome(cityData_dict, actions)
+
+            # Load country strategy
+            country_strategy = get_json_from_file(
+                country_code.lower() + "_country_strategy"
+            )
+
             rankedActionsMitigation = []
             rankedActionsAdaptation = []
 
@@ -273,6 +289,7 @@ def _execute_prioritization_bulk_subtask(
                         actionId=action["ActionID"],
                         rank=rank,
                         explanation=generate_multilingual_explanation(
+                            country_strategy=country_strategy,
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,
@@ -304,6 +321,7 @@ def _execute_prioritization_bulk_subtask(
                         actionId=action["ActionID"],
                         rank=rank,
                         explanation=generate_multilingual_explanation(
+                            country_strategy=country_strategy,
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,

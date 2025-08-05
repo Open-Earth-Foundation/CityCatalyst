@@ -15,9 +15,8 @@ Follow these guidelines carefully to complete the task:
 
 1. Understand the details of the climate action (main action) you are working on.
 2. Understand the details of the city you are working on.
-3. Use the `retriever_national_strategy_tool` to retrieve relevant documents about the country's climate strategy that is relevant to the city and the climate action (main action).
-    - Ensure that the documents retrieved are relevant to the national climate strategy of the country.
-4. Create a concise introduction for the climate action implementation plan incorporating the retrieved documents. 
+3. Use the provided tools to retrieve information about the country's climate strategy that is relevant to the city and the climate action (main action).
+4. Create a concise introduction for the climate action implementation plan incorporating the retrieved information. 
 **Important**: 
     - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 
     - Do not include any sources in the output.
@@ -25,12 +24,15 @@ Follow these guidelines carefully to complete the task:
 
 <tools>
 You have access to the following tools:
-- retriever_national_strategy_tool:
+- retriever_vectorstore_national_strategy_tool:
     A document retrieval tool that can retrieve relevant information from a vector store. 
     Use this tool to gather information about the country's climate strategy to enrich the introduction.
     When using this tool, optimize the search query for retrieval from a vector database using similarity search. This means that the search query should be a concise representation of the information you are looking for.
     Use multiple concise queries over one long query for better results.
     Start with broad queries and progressively narrow down the search query.
+- retriever_json_document_national_strategy_tool:
+    A tool that can load relevant information from a JSON file.
+    Use this tool to gather information about the country's climate strategy to enrich the introduction.
 </tools>
 
 <output>
@@ -38,11 +40,12 @@ The final output should include:
 - the introduction for the climate action implementation plan.
 
 Ensure the introduction remains under 300 words, presenting a structured summary that flows logically. 
-Use appropriate paragraphs/spacing to organize the information.
+The individual parts of the introduction must be separated by a line break.
 
 <sample_output>
 [Brief overview of the city, including population and geographical location]
 [Summary of the main climate action and its importance to the city]
+
 [Explanation of how the climate action aligns with national climate policies and further background information]
 </sample_output>
 </output>
@@ -69,7 +72,7 @@ This is the climate action (main action) data:
 {climate_action_data}
 
 # INSTRUCTIONS FOR OUTPUT FORMAT
-Please output your response as a JSON object with the following fields:
+Output your response as a JSON object with the following fields:
 {{
     "description": <the introduction for the climate action implementation plan, as described in the system prompt>
 }}

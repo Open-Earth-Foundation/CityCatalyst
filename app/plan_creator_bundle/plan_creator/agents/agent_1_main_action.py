@@ -6,7 +6,8 @@ from langchain_openai import ChatOpenAI
 import logging
 
 from plan_creator_bundle.tools.tools import (
-    retriever_national_strategy_tool,
+    retriever_vectorstore_national_strategy_tool,
+    retriever_json_document_national_strategy_tool,
 )
 
 from plan_creator_bundle.plan_creator.models import Introduction
@@ -21,7 +22,10 @@ model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
 # model = ChatOpenAI(model="o3-mini", temperature=None)
 
 # Define tools for the agent
-tools = [retriever_national_strategy_tool]
+tools = [
+    retriever_vectorstore_national_strategy_tool,
+    retriever_json_document_national_strategy_tool,
+]
 
 # Define prompts for each agent
 system_prompt_agent_1 = SystemMessage(agent_1_system_prompt)

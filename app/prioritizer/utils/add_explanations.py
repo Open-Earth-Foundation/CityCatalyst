@@ -1,4 +1,5 @@
 import os
+import json
 from typing import Optional, Type, Dict, Any, cast
 from pydantic import create_model, BaseModel
 from openai import OpenAI
@@ -11,6 +12,7 @@ from prioritizer.models import Explanation
 from prioritizer.prompts.add_explanations_prompt import (
     add_explanations_multilingual_system_prompt,
 )
+from plan_creator_bundle.utils.get_json_file import get_json_from_file
 
 load_dotenv()
 
@@ -56,6 +58,7 @@ def build_explanation_model(language_codes: list[str]) -> Type[BaseModel]:
 
 @traceable(run_type="llm", project_name=LANGCHAIN_PROJECT_NAME_PRIORITIZER)
 def generate_multilingual_explanation(
+    country_strategy: dict,
     city_data: dict,
     single_action: dict,
     rank: int,
@@ -74,7 +77,7 @@ def generate_multilingual_explanation(
         Optional[dict[str, str]]: Dictionary mapping language codes to explanation strings, or None if generation fails.
     """
     logger.info(
-        f"Generating explanation for action_id={single_action['ActionID']}, rank={rank}, languages={languages}"
+        f"Generating explanation for action_id={single_action['ActionID']}, rank={rank}, languages={languages}."
     )
 
     # Build the dynamic explanation model
@@ -82,8 +85,9 @@ def generate_multilingual_explanation(
 
     # Build the system prompt for multilingual
     system_prompt = add_explanations_multilingual_system_prompt.format(
-        city_data=city_data,
-        single_action=single_action,
+        country_strategy=json.dumps(country_strategy, indent=2),
+        city_data=json.dumps(city_data, indent=2),
+        single_action=json.dumps(single_action, indent=2),
         rank=rank,
         languages=languages,
     )

@@ -116,7 +116,7 @@ jobs:
 
           # Set environment variables for production
           kubectl set env deployment/hiap \
-            OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-nano \
+            OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-mini \
             OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY=gpt-4.1-mini \
             OPENAI_MODEL_NAME_PLAN_CREATOR=gpt-4.1-mini \
             LANGCHAIN_PROJECT=hiap-prod \

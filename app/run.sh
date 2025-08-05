@@ -9,31 +9,56 @@
 set -e
 
 # Set collection name (update these as needed)
-# Collection name is the name of the vector store in S3
-COLLECTION_NAME_BR="br_national_strategy"
+# Names are the name of the vector stores or json files in S3
 COLLECTION_NAME_GENERAL="all_docs_db_small_chunks"
+COLLECTION_NAME_BR="br_national_strategy"
+JSON_COUNTRY_STRATEGY_BR="br_country_strategy.json"
+JSON_COUNTRY_STRATEGY_DE="de_country_strategy.json"
 
 echo ""
 echo "Running startup script:"
-echo "Checking if vector store exists..."
-echo "If not, creating vector store..."
+echo "Checking if vector stores and json files exist locally."
+echo "If not, downloading them from S3."
 echo "This may take a while."
 echo ""
-echo "Collection name for Brasil: $COLLECTION_NAME_BR"
 echo "Collection name for general use: $COLLECTION_NAME_GENERAL"
+echo "Collection name for Brasil: $COLLECTION_NAME_BR"
+echo "JSON file for Brasil country strategy: $JSON_COUNTRY_STRATEGY_BR"
+echo "JSON file for Germany country strategy: $JSON_COUNTRY_STRATEGY_DE"
 echo ""
 
 # Run the vector store script and capture its exit code
-# Download the vector store for Brasil
-python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME_BR"
-VECTOR_STORE_STATUS_BR=$?
+# Initialize download status tracking
+DOWNLOAD_FAILED=false
 
 # Download the vector store for general use
-python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME_GENERAL"
-VECTOR_STORE_STATUS_GENERAL=$?
+echo "Downloading vector store for general use: $COLLECTION_NAME_GENERAL"
+if ! python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME_GENERAL"; then
+    echo "ERROR: Failed to download vector store for general use"
+    DOWNLOAD_FAILED=true
+fi
 
-# Check if either download failed
-if [ $VECTOR_STORE_STATUS_BR -ne 0 ] || [ $VECTOR_STORE_STATUS_GENERAL -ne 0 ]; then
+# Download the vector store for Brasil
+echo "Downloading vector store for Brasil: $COLLECTION_NAME_BR"
+if ! python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "$COLLECTION_NAME_BR"; then
+    echo "ERROR: Failed to download vector store for Brasil"
+    DOWNLOAD_FAILED=true
+fi
+
+# Download the json files for the country strategies
+echo "Downloading country strategy files..."
+if ! python -m plan_creator_bundle.scripts.download_json_files_from_s3 "$JSON_COUNTRY_STRATEGY_BR"; then
+    echo "ERROR: Failed to download Brasil country strategy file"
+    DOWNLOAD_FAILED=true
+fi
+
+if ! python -m plan_creator_bundle.scripts.download_json_files_from_s3 "$JSON_COUNTRY_STRATEGY_DE"; then
+    echo "ERROR: Failed to download Germany country strategy file"
+    DOWNLOAD_FAILED=true
+fi
+
+# Check if any download failed
+if [ "$DOWNLOAD_FAILED" = true ]; then
     VECTOR_STORE_STATUS=1
 else
     VECTOR_STORE_STATUS=0

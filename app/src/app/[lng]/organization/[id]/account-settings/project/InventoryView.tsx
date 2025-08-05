@@ -24,7 +24,7 @@ import {
 } from "@/util/helpers";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
-import DownloadButton from "@/components/HomePage/DownloadButton";
+import DownloadButton from "@/components/GHGIHomePage/DownloadButton";
 import { CityResponse } from "@/util/types";
 import { BsDownload } from "react-icons/bs";
 import { formatEmissions } from "@/util/helpers";

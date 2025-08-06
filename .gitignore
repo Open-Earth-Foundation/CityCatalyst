@@ -7,8 +7,8 @@ __pycache__/
 # global
 .env
 .venv
-app/plan_creator_bundle/temp/
-app/plan_creator_bundle/files/
+app/runtime_data/
+app/files/
 
 # Plan creator
 app/plan_creator/data/output/

@@ -19,7 +19,7 @@ from prioritizer.models import (
     PrioritizerResponseBulk,
     PrioritizationType,
 )
-from plan_creator_bundle.utils.get_json_file import get_json_from_file
+from utils.get_json_file import get_json_from_file
 
 # Import the shared task_storage from api.py (or move to a separate module if needed)
 from prioritizer.task_storage import task_storage
@@ -99,11 +99,6 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                 "prioritizationType", PrioritizationType.BOTH
             )
 
-            # Load country strategy
-            country_strategy = get_json_from_file(
-                country_code.lower() + "_country_strategy"
-            )
-
             rankedActionsMitigation = []
             rankedActionsAdaptation = []
 
@@ -121,6 +116,13 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                 mitigationRanking = tournament_ranking(
                     cityData_dict, mitigationActions, comparator=ml_compare
                 )
+
+                # Load country strategy after the ranking is done
+                # This is done to avoid loading the country strategy for every action
+                country_strategy = get_json_from_file(
+                    country_code.lower() + "_country_strategy"
+                )
+
                 rankedActionsMitigation = [
                     RankedAction(
                         actionId=action["ActionID"],
@@ -259,11 +261,6 @@ def _execute_prioritization_bulk_subtask(
                 return
             filteredActions = filter_actions_by_biome(cityData_dict, actions)
 
-            # Load country strategy
-            country_strategy = get_json_from_file(
-                country_code.lower() + "_country_strategy"
-            )
-
             rankedActionsMitigation = []
             rankedActionsAdaptation = []
 
@@ -284,6 +281,13 @@ def _execute_prioritization_bulk_subtask(
                     k=20,
                     comparator=ml_compare,
                 )
+
+                # Load country strategy after the ranking is done
+                # This is done to avoid loading the country strategy for every action
+                country_strategy = get_json_from_file(
+                    country_code.lower() + "_country_strategy"
+                )
+
                 rankedActionsMitigation = [
                     RankedAction(
                         actionId=action["ActionID"],

@@ -11,7 +11,7 @@ Returns:
     bool: True if JSON file exists locally or was successfully downloaded
 
 Example Call (from app/ directory):
-    python -m plan_creator_bundle.scripts.download_json_files_from_s3 "br_cxl.json"
+    python -m scripts.download_json_files_from_s3 "br_cxl.json"
 """
 
 from dotenv import load_dotenv
@@ -30,9 +30,9 @@ import sys
 S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 # Get the JSON files directory relative to this script
-# Script is in: app/plan_creator_bundle/scripts/
-# JSON files are in: app/plan_creator_bundle/temp/json_files/
-JSON_FILES_DIR = Path(__file__).parent.parent / "temp" / "json_files"
+# Script is in: app/scripts/
+# JSON files are in: app/runtime_data/json_files/
+JSON_FILES_DIR = Path(__file__).parent.parent / "runtime_data" / "json_files"
 
 
 def download_from_s3(file_name: str) -> bool:

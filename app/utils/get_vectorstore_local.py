@@ -20,15 +20,18 @@ def load_vectorstore(
     collection_name: str, embedding_model: str = "text-embedding-3-large"
 ) -> Optional[Chroma]:
     """
-    Loads an existing vector store from folder /temp/vector_stores and returns it.
-    Looks for the vector store in the folder /temp/vector_stores/collection_name.
+    Loads an existing vector store from folder /runtime_data/vector_stores and returns it.
+    Looks for the vector store in the folder /runtime_data/vector_stores/collection_name.
 
     Input: collection_name (str), embedding_model (str)
     Returns: vector_store (Chroma)
     """
 
     vector_store_path = (
-        Path(__file__).parent.parent / "temp" / "vector_stores" / collection_name
+        Path(__file__).parent.parent
+        / "runtime_data"
+        / "vector_stores"
+        / collection_name
     )
 
     if vector_store_path.exists():

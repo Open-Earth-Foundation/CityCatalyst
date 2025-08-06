@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Base path to app directory
-base_path = Path(__file__).parent.parent.parent
+base_path = Path(__file__).parent.parent
 file_folder_base_path = base_path / "plan_creator_bundle" / "files"
 
 
@@ -29,7 +29,7 @@ def add_document_to_vectorstore(
     Loads documents from `directory`, splits them, and adds them to the vector store.
     `collection_name` is the name of the Chroma collection.
 
-    Adds documents to the vector store in the folder /temp/vector_stores/collection_name.
+    Adds documents to the vector store in the folder /runtime_data/vector_stores/collection_name.
 
     Input:
     file_name (str),
@@ -48,7 +48,10 @@ def add_document_to_vectorstore(
     )
 
     vector_store_path = (
-        Path(__file__).parent.parent / "temp" / "vector_stores" / collection_name
+        Path(__file__).parent.parent
+        / "runtime_data"
+        / "vector_stores"
+        / collection_name
     )
 
     if vector_store_path.exists():

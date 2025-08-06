@@ -12,7 +12,6 @@ from prioritizer.models import Explanation
 from prioritizer.prompts.add_explanations_prompt import (
     add_explanations_multilingual_system_prompt,
 )
-from plan_creator_bundle.utils.get_json_file import get_json_from_file
 
 load_dotenv()
 

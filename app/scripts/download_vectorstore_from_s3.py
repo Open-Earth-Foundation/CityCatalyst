@@ -16,7 +16,7 @@ Example:
     True
 
 Call with (from app/ directory):
-    python -m plan_creator_bundle.scripts.download_vectorstore_from_s3 "all_docs_db_small_chunks"
+    python -m scripts.download_vectorstore_from_s3 "all_docs_db_small_chunks"
 """
 
 from dotenv import load_dotenv
@@ -35,10 +35,10 @@ import sys
 S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 # Get the vector stores directory relative to this script
-# Script is in: app/plan_creator_bundle/scripts/
-# Vector stores are in: app/plan_creator_bundle/temp/vector_stores/
-# So relative path is: ../temp/vector_stores/
-VECTOR_STORES_DIR = Path(__file__).parent.parent / "temp" / "vector_stores"
+# Script is in: app/scripts/
+# Vector stores are in: app/runtime_data/vector_stores/
+# So relative path is: ../runtime_data/vector_stores/
+VECTOR_STORES_DIR = Path(__file__).parent.parent / "runtime_data" / "vector_stores"
 
 
 def is_valid_vectorstore(path: Path) -> bool:

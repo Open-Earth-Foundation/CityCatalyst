@@ -11,7 +11,7 @@ def get_json_from_file(file_name: str) -> Optional[Dict[Any, Any]]:
     Loads a JSON file from the predefined directory.
 
     The path is constructed relative to this script's location, assuming the script is in
-    `plan_creator_bundle/utils/` and the JSON files are in `plan_creator_bundle/temp/json_files/`.
+    `utils/` and the JSON files are in `runtime_data/json_files/`.
 
     Args:
         file_name (str): The name of the JSON file (without the .json extension).
@@ -23,9 +23,9 @@ def get_json_from_file(file_name: str) -> Optional[Dict[Any, Any]]:
     try:
         # Construct the path to the JSON file relative to the current file.
         # Path(__file__).parent -> .../utils/
-        # .parent -> .../plan_creator_bundle/
-        # then -> temp/json_files/
-        base_path = Path(__file__).parent.parent / "temp" / "json_files"
+        # .parent -> .../app/
+        # then -> runtime_data/json_files/
+        base_path = Path(__file__).parent.parent / "runtime_data" / "json_files"
         json_file_path = base_path / f"{file_name}.json"
 
         logger.info(f"Attempting to load JSON file from: {json_file_path}")

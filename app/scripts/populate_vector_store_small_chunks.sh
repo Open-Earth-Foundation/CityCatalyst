@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script is used to create a vector store with several documents.
+# The vector store is saved in the directory: app/runtime_data/vector_stores/
+
 # Exit immediately if a command exits with a non-zero status
 set -e
 set -o pipefail
@@ -9,11 +12,11 @@ COLLECTION_NAME="all_docs_db_small_chunks"
 
 # OS-specific paths
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
-  VENV_PYTHON="../../../.venv/bin/python"
-  VENV_ACTIVATE="../../../.venv/bin/activate"
+  VENV_PYTHON="../../.venv/bin/python"
+  VENV_ACTIVATE="../../.venv/bin/activate"
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "cygwin"* || "$OSTYPE" == "win32" ]]; then
-  VENV_PYTHON="../../../.venv/Scripts/python.exe"
-  VENV_ACTIVATE="../../../.venv/Scripts/activate"
+  VENV_PYTHON="../../.venv/Scripts/python.exe"
+  VENV_ACTIVATE="../../.venv/Scripts/activate"
 else
   echo "Unsupported OS: $OSTYPE"
   exit 1

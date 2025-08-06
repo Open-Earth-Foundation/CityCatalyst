@@ -45,6 +45,9 @@ import {
   useGetProjectsQuery,
   useGetProjectUsersQuery,
   useGetUserProjectsQuery,
+  useGetModulesQuery,
+  useGetProjectModulesQuery,
+  api,
 } from "@/services/api";
 import {
   ProgressCircleRing,
@@ -75,6 +78,7 @@ import { GoArrowRight } from "react-icons/go";
 import { PlanIcon } from "../icons";
 import { NavigationAccordion } from "../ui/navigation-accordion";
 import { NavigationLinks } from "../ui/navigation-links";
+import { StageNames } from "@/util/constants";
 
 // Custom Select Component
 interface CustomSelectOption {
@@ -566,10 +570,50 @@ const JNDrawer = ({
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
 
   const [selectedProject, setSelectedProject] = React.useState<string | null>();
+  const [selectedCity, setSelectedCity] = React.useState<string>("");
+
+  // Module data fetching
+  const { data: allModules, isLoading: isAllModulesLoading } =
+    useGetModulesQuery();
+  const { data: projectModules, isLoading: isProjectModulesLoading } =
+    useGetProjectModulesQuery(selectedProject!, { skip: !selectedProject });
+
+  // Initialize with current project and city based on currentInventoryId
+  useEffect(() => {
+    if (currentInventoryId && projectsData) {
+      // Find the project and city that contains the current inventory
+      for (const project of projectsData) {
+        for (const city of project.cities) {
+          if (
+            city.inventories?.some(
+              (inv) => inv.inventoryId === currentInventoryId,
+            )
+          ) {
+            setSelectedProject(project.projectId);
+            setSelectedCity(city.cityId);
+            return;
+          }
+        }
+      }
+    }
+  }, [currentInventoryId, projectsData]);
 
   const selectProject = (projectId: string) => {
     setSelectedProject(projectId);
   };
+
+  // Module filtering by stage - same logic as HomePage
+  const modulesByStage = useMemo(() => {
+    if (!allModules) return {};
+    return allModules.reduce(
+      (acc, mod) => {
+        if (!acc[mod.stage]) acc[mod.stage] = [];
+        acc[mod.stage].push(mod);
+        return acc;
+      },
+      {} as Record<string, typeof allModules>,
+    );
+  }, [allModules]);
 
   const selectedProjectData = useMemo<ProjectWithCities | null>(() => {
     if (!selectedProject) return null;
@@ -587,9 +631,6 @@ const JNDrawer = ({
       open={isOpen}
       placement="start"
       onOpenChange={onOpenChange}
-      onExitComplete={() => {
-        setSelectedProject(null);
-      }}
       size="sm"
     >
       <DrawerBackdrop />
@@ -636,37 +677,67 @@ const JNDrawer = ({
               {
                 label: "home",
                 icon: BiHomeAlt,
+                href: `/${lng}/cities/${selectedCity}`,
               },
               {
                 label: "dashboard",
                 icon: BiSolidBarChartAlt2,
+                href: `/#`,
               },
               {
                 label: "all-projects",
                 icon: LuLayoutGrid,
+                href: `/${lng}/organization/${organizationId}/projects`,
               },
             ]}
             t={t}
           />
           <Box w="full" border="1px solid" borderColor="border.neutral" />
-          {/* Analyse and assess accordion */}
-          <NavigationAccordion
-            title="Analyse and Assess"
-            icon={CgEye}
-            items={[
-              { label: "ghg-inventories" },
-              { label: "climate-risks" },
-              { label: "cc-inventories" },
-            ]}
-            t={t}
-          />
-          {/* Plan */}
-          <NavigationAccordion
-            title="Plan"
-            icon={PlanIcon}
-            items={[{ label: "actions" }, { label: "finance-readiness" }]}
-            t={t}
-          />
+          {/* Dynamic Module Accordions - based on HomePage logic */}
+          {modulesByStage && projectModules && selectedProject && (
+            <>
+              {[
+                {
+                  stage: StageNames["Assess And Analyze"],
+                  title: "Analyse and Assess",
+                  icon: CgEye,
+                },
+                { stage: StageNames.Plan, title: "Plan", icon: PlanIcon },
+                {
+                  stage: StageNames.Implement,
+                  title: "Implement",
+                  icon: BiArrowToRight,
+                },
+                {
+                  stage: StageNames["Monitor, Evaluate & Report"],
+                  title: "Monitor, Evaluate & Report",
+                  icon: IoMdEye,
+                },
+              ].map(({ stage, title, icon }) => {
+                const modules = projectModules.filter(
+                  (mod) => mod.stage === stage,
+                );
+
+                if (modules.length === 0) return null;
+
+                return (
+                  <NavigationAccordion
+                    key={stage}
+                    title={title}
+                    icon={icon}
+                    items={modules.map((mod) => ({
+                      label:
+                        mod.name.en ||
+                        mod.name[Object.keys(mod.name)[0]] ||
+                        mod.id,
+                      href: `/${lng}/cities/${selectedCity}${mod.url}`,
+                    }))}
+                    t={t}
+                  />
+                );
+              })}
+            </>
+          )}
         </DrawerBody>
       </DrawerContent>
     </DrawerRoot>

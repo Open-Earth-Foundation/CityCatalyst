@@ -5,7 +5,7 @@ This module provides functionality to download all JSON files from an S3 folder.
 It is intended to be used as a standalone script.
 
 Example Call (from app/ directory):
-    python -m scripts.download_json_files_from_s3_bulk
+    python -m app.scripts.download_json_files_from_s3_bulk
 """
 
 from dotenv import load_dotenv

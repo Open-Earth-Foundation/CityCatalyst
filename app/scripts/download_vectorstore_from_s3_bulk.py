@@ -5,7 +5,7 @@ This module provides functionality to download all vector stores from S3.
 It is intended to be used as a standalone script.
 
 Example Call (from app/ directory):
-    python -m scripts.download_vectorstore_from_s3_bulk
+    python -m app.scripts.download_vectorstore_from_s3_bulk
 """
 
 from dotenv import load_dotenv

@@ -11,7 +11,7 @@ Returns:
     bool: True if JSON file exists locally or was successfully downloaded
 
 Example Call (from app/ directory):
-    python -m scripts.download_json_files_from_s3 "br_cxl.json"
+    python -m app.scripts.download_json_files_from_s3 "br_cxl.json"
 """
 
 from dotenv import load_dotenv

@@ -16,7 +16,7 @@ Example:
     True
 
 Call with (from app/ directory):
-    python -m scripts.download_vectorstore_from_s3 "all_docs_db_small_chunks"
+    python -m app.scripts.download_vectorstore_from_s3 "all_docs_db_small_chunks"
 """
 
 from dotenv import load_dotenv

@@ -4,6 +4,7 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from plan_creator_bundle.plan_creator.state.agent_state import AgentState
 from langchain_openai import ChatOpenAI
 import logging
+import os
 
 from plan_creator_bundle.tools.tools import (
     retriever_vectorstore_national_strategy_tool,
@@ -16,10 +17,10 @@ from plan_creator_bundle.plan_creator.prompts.agent_1_prompt import (
     agent_1_user_prompt,
 )
 
-# Create the agents
-model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
+OPENAI_MODEL_NAME_PLAN_CREATOR = os.environ["OPENAI_MODEL_NAME_PLAN_CREATOR"]
 
-# model = ChatOpenAI(model="o3-mini", temperature=None)
+# Create the agents
+model = ChatOpenAI(model=OPENAI_MODEL_NAME_PLAN_CREATOR, temperature=0.0, seed=42)
 
 # Define tools for the agent
 tools = [

@@ -1,3 +1,5 @@
+import logging
+import os
 import json
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
@@ -13,12 +15,12 @@ from plan_creator_bundle.plan_creator.prompts.agent_10_prompt import (
     agent_10_user_prompt,
 )
 
-import logging
-
 logger = logging.getLogger(__name__)
 
+OPENAI_MODEL_NAME_PLAN_CREATOR = os.environ["OPENAI_MODEL_NAME_PLAN_CREATOR"]
+
 # Create the agents
-model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
+model = ChatOpenAI(model=OPENAI_MODEL_NAME_PLAN_CREATOR, temperature=0.0, seed=42)
 
 # Define tools for the agent
 tools = [placeholder_tool]

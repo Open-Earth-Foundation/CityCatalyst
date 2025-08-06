@@ -16,6 +16,8 @@ Follow these guidelines carefully to complete the task:
 1. Understand the details of the climate action (main action) you are working on.
 2. Understand the details of the city you are working on.
 3. Use the provided tools to retrieve information about the country's climate strategy that is relevant to the city and the climate action (main action).
+    - Use the retriever_vectorstore_national_strategy_tool to retrieve information from the vector store. When using this tool, use different queries going from broad to specific.
+    - Use the retriever_json_document_national_strategy_tool to retrieve information from the JSON file.
 4. Create a concise introduction for the climate action implementation plan incorporating the retrieved information. 
 **Important**: 
     - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 

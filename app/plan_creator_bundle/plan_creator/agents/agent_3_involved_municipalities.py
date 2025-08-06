@@ -16,9 +16,7 @@ from plan_creator_bundle.plan_creator.prompts.agent_3_prompt import (
 
 logger = logging.getLogger(__name__)
 
-OPENAI_MODEL_NAME_PLAN_CREATOR = os.getenv(
-    "OPENAI_MODEL_NAME_PLAN_CREATOR", "gpt-4.1-mini"
-)
+OPENAI_MODEL_NAME_PLAN_CREATOR = os.environ["OPENAI_MODEL_NAME_PLAN_CREATOR"]
 
 # Create the agents
 model = ChatOpenAI(model=OPENAI_MODEL_NAME_PLAN_CREATOR, temperature=0.0, seed=42)

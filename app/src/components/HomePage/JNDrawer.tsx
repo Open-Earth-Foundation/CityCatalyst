@@ -431,11 +431,10 @@ const ProjectFilterSection = ({
         {searchResults.length > 0 && (
           <Box
             position="absolute"
-            top="65px"
+            top="95px"
             left="24px"
             right="0"
             w="347px"
-            mt="4px"
             bg="base.light"
             border="1px solid"
             borderColor="border.neutral"

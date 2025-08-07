@@ -8,16 +8,12 @@ import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { useSearchParams } from "next/navigation";
 
-export default function OnboardingDone(props: {
-  params: Promise<{ lng: string; year: number; inventory: string }>;
-}) {
-  const { lng, year, inventory } = use(props.params);
+export default function OnboardingDone(props: { params: Promise<{ lng: string; cityId: string; }> }) {
+  const { lng, cityId } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
   const searchParams = useSearchParams();
-  const projectIdUnsafe = searchParams.get("project");
-  const projectId = projectIdUnsafe?.match(/^[a-zA-Z0-9-_]+$/)
-    ? projectIdUnsafe
-    : "";
+  const projectId = searchParams.get("project");
+
   return (
     <Box
       pt="148px"
@@ -56,7 +52,7 @@ export default function OnboardingDone(props: {
         </Text>
       </Box>
       <Box display="flex" gap="24px" mt="24px">
-        <NextLink href={`/${lng}/onboarding/setup?project=${projectId}`}>
+        <NextLink href={`/${lng}/cities/onboarding/setup?project=${projectId}`}>
           <Button
             variant="ghost"
             h={16}
@@ -65,12 +61,12 @@ export default function OnboardingDone(props: {
             color="content.link"
             borderWidth="2px"
             borderColor="content.link"
-            data-testid="add-new-inventory"
+            data-testid="add-new-city"
           >
-            {t("add-new-inventory")}
+            {t("add-new-city")}
           </Button>
         </NextLink>
-        <NextLink href={`/${lng}/${inventory}`}>
+        <NextLink href={`/${lng}/cities/${cityId}`}>
           <Button h={16} px={6} data-testid="check-dashboard">
             {t("check-dashboard")}
             <MdArrowForward width="24px" height="24px" />

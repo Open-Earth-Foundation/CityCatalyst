@@ -16,7 +16,7 @@ export default function Onboarding(props: {
   const { t } = useTranslation(lng, "onboarding");
   const router = useRouter();
 
-  const steps = [1, 2, 3, 4];
+  const steps = [1, 2];
 
   return (
     <>
@@ -33,7 +33,7 @@ export default function Onboarding(props: {
               fontSize="title.sm"
               data-testid="start-page-title"
             >
-              {t("create-inventory")}
+              {t("welcome-top")}
             </Text>
             <Heading
               as="h1"
@@ -44,7 +44,7 @@ export default function Onboarding(props: {
               fontStyle="normal"
               data-testid="start-page-heading"
             >
-              {t("create-ghg-inventory")}
+              {t("welcome-title")}
             </Heading>
             <Text
               color="content.tertiary"
@@ -54,7 +54,7 @@ export default function Onboarding(props: {
               letterSpacing="wide"
               data-testid="start-page-description"
             >
-              {t("inventory-creation-description")}
+              {t("welcome-description")}
             </Text>
           </Box>
           <Box>
@@ -94,10 +94,10 @@ export default function Onboarding(props: {
             py="16px"
             px="24px"
             h="64px"
-            onClick={() => router.push("/onboarding/setup")}
+            onClick={() => router.push("setup")}
           >
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-              {t("start-inventory")}
+              {t("welcome-CTA")}
             </Text>
             <MdArrowForward height="24px" width="24px" />
           </Button>

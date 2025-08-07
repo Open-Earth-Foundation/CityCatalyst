@@ -4,10 +4,9 @@ import { use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
 import Image from "next/image";
-import NextLink from "next/link";
 import { MdArrowForward } from "react-icons/md";
-import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useRouter } from "next/navigation";
+import ProgressSteps from "@/components/steps/progress-steps";
 
 export default function Onboarding(props: {
   params: Promise<{ lng: string }>;
@@ -16,7 +15,11 @@ export default function Onboarding(props: {
   const { t } = useTranslation(lng, "onboarding");
   const router = useRouter();
 
-  const steps = [1, 2, 3, 4];
+  const steps = [
+    { title: t("ghgi-onboarding-inventory-step") },
+    { title: t("ghgi-onboarding-population-step") },
+    { title: t("ghgi-onboarding-confirm-step") },
+  ];
 
   return (
     <>
@@ -68,18 +71,10 @@ export default function Onboarding(props: {
         </Box>
       </Box>
       <Box bg="base.light" h="145px" w="full" pos="fixed" bottom="0" left="0">
-        {/* Place holder steppers */}
-        <HStack p="4px">
-          {steps.map((step) => (
-            <Box
-              key={step}
-              h="8px"
-              bg="background.neutral"
-              w="full"
-              borderRadius="8px"
-            ></Box>
-          ))}
-        </HStack>
+        {/* Progress Steps */}
+        <Box p="4px">
+          <ProgressSteps steps={steps} currentStep={-1} />
+        </Box>
         <Box
           h="full"
           w="full"
@@ -94,7 +89,7 @@ export default function Onboarding(props: {
             py="16px"
             px="24px"
             h="64px"
-            onClick={() => router.push("/onboarding/setup")}
+            onClick={() => router.push("setup")}
           >
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
               {t("start-inventory")}

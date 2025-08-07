@@ -5,6 +5,7 @@ import {
   FieldErrors,
   UseFormRegister,
 } from "react-hook-form";
+import type { GHGIFormInputs } from "@/util/GHGI/types";
 import { FC, useEffect, useState } from "react";
 import {
   Box,
@@ -28,24 +29,9 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { Field } from "@/components/ui/field";
-import { Button } from "../ui/button";
-import { InventoryButtonCheckIcon } from "../icons";
-import CustomSelectableButton from "../custom-selectable-buttons";
-
-// Type for general onboarding inputs
-type GeneralInputs = {
-  city: string;
-  year: number;
-  inventoryGoal: string;
-  globalWarmingPotential: string;
-  cityPopulation: number;
-  cityPopulationYear: number;
-  regionPopulation: number;
-  regionPopulationYear: number;
-  countryPopulation: number;
-  countryPopulationYear: number;
-  totalCountryEmissions: number;
-};
+import { Button } from "../../ui/button";
+import { InventoryButtonCheckIcon } from "../../icons";
+import CustomSelectableButton from "../../custom-selectable-buttons";
 
 export default function SetInventoryDetailsStep({
   t,
@@ -56,9 +42,9 @@ export default function SetInventoryDetailsStep({
   years,
 }: {
   t: TFunction;
-  register: UseFormRegister<GeneralInputs>;
-  errors: FieldErrors<GeneralInputs>;
-  control: Control<GeneralInputs>;
+  register: UseFormRegister<GHGIFormInputs>;
+  errors: FieldErrors<GHGIFormInputs>;
+  control: Control<GHGIFormInputs>;
   setValue: any;
   years: number[];
 }) {
@@ -228,7 +214,7 @@ export default function SetInventoryDetailsStep({
               <Trans i18nKey="inventory-goal-description" t={t}>
                 Want to learn more about these inventory formats?{" "}
                 <Link
-                  href="/app/public"
+                  href="/"
                   fontFamily="heading"
                   fontWeight="bold"
                   color="content.link"
@@ -323,7 +309,7 @@ export default function SetInventoryDetailsStep({
               <Trans i18nKey="gwp-description" t={t}>
                 Want to learn more about these inventory formats?{" "}
                 <Link
-                  href="/app/public"
+                  href="/"
                   fontFamily="heading"
                   fontWeight="bold"
                   color="content.link"

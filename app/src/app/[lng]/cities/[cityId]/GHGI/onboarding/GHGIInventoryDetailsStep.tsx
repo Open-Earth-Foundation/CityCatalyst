@@ -5,6 +5,7 @@ import {
   FieldErrors,
   UseFormRegister,
 } from "react-hook-form";
+import { GHGIFormInputs } from "@/util/GHGI/types";
 import { FC, useEffect, useState } from "react";
 import {
   Box,
@@ -28,26 +29,15 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { Field } from "@/components/ui/field";
-import { Button } from "../ui/button";
-import { InventoryButtonCheckIcon } from "../icons";
-import CustomSelectableButton from "../custom-selectable-buttons";
+import { Button } from "@/components/ui/button";
+import { InventoryButtonCheckIcon } from "@/components/icons";
+import CustomSelectableButton from "@/components/custom-selectable-buttons";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
-// Type for general onboarding inputs
-type GeneralInputs = {
-  city: string;
-  year: number;
-  inventoryGoal: string;
-  globalWarmingPotential: string;
-  cityPopulation: number;
-  cityPopulationYear: number;
-  regionPopulation: number;
-  regionPopulationYear: number;
-  countryPopulation: number;
-  countryPopulationYear: number;
-  totalCountryEmissions: number;
-};
-
-export default function SetInventoryDetailsStep({
+export default function GHGIInventoryDetailsStep({
   t,
   register,
   errors,
@@ -56,9 +46,9 @@ export default function SetInventoryDetailsStep({
   years,
 }: {
   t: TFunction;
-  register: UseFormRegister<GeneralInputs>;
-  errors: FieldErrors<GeneralInputs>;
-  control: Control<GeneralInputs>;
+  register: UseFormRegister<GHGIFormInputs>;
+  errors: FieldErrors<GHGIFormInputs>;
+  control: Control<GHGIFormInputs>;
   setValue: any;
   years: number[];
 }) {
@@ -69,14 +59,20 @@ export default function SetInventoryDetailsStep({
     setSelectedGlobalWarmingPotentialValue,
   ] = useState("");
   let year;
-  const inventoryGoalOptions: string[] = ["gpc_basic", "gpc_basic_plus"];
-  const globalWarmingPotential: string[] = ["ar5", "ar6"];
+  const inventoryGoalOptions: string[] = [
+    InventoryTypeEnum.GPC_BASIC,
+    InventoryTypeEnum.GPC_BASIC_PLUS,
+  ];
+  const globalWarmingPotential: string[] = [
+    GlobalWarmingPotentialTypeEnum.ar5,
+    GlobalWarmingPotentialTypeEnum.ar6,
+  ];
 
   // Handle inventory Goal Radio Input
   // Set default inventory goal form value
   useEffect(() => {
-    setValue("inventoryGoal", "gpc_basic");
-    setValue("globalWarmingPotential", "ar6");
+    setValue("inventoryGoal", InventoryTypeEnum.GPC_BASIC);
+    setValue("globalWarmingPotential", GlobalWarmingPotentialTypeEnum.ar6);
   }, [setValue]);
 
   const yearsCollection = createListCollection({
@@ -96,8 +92,8 @@ export default function SetInventoryDetailsStep({
         gap="24px"
         mb="48px"
       >
-        <Heading data-testid="inventory-details-heading" size="xl">
-          {t("setup-inventory-details-heading")}
+        <Heading data-testid="ghgi-inventory-details-heading" size="xl">
+          {t("setup-ghgi-inventory-details-heading")}
         </Heading>
         <Text
           color="content.tertiary"
@@ -105,9 +101,9 @@ export default function SetInventoryDetailsStep({
           fontStyle="normal"
           fontWeight="400"
           letterSpacing="wide"
-          data-testid="inventory-details-description"
+          data-testid="ghgi-inventory-details-description"
         >
-          {t("setup-inventory-details-description")}
+          {t("setup-ghgi-inventory-details-description")}
         </Text>
       </Box>
       {/* Inventory Year */}
@@ -169,7 +165,7 @@ export default function SetInventoryDetailsStep({
                   size="lg"
                   w="400px"
                   _placeholder={{ color: "content.tertiary" }}
-                  data-testid="inventory-detils-year"
+                  data-testid="ghgi-inventory-details-year"
                   {...register("year", {
                     required: t("inventory-year-required"),
                   })}
@@ -228,7 +224,7 @@ export default function SetInventoryDetailsStep({
               <Trans i18nKey="inventory-goal-description" t={t}>
                 Want to learn more about these inventory formats?{" "}
                 <Link
-                  href="/app/public"
+                  href="/"
                   fontFamily="heading"
                   fontWeight="bold"
                   color="content.link"
@@ -323,7 +319,7 @@ export default function SetInventoryDetailsStep({
               <Trans i18nKey="gwp-description" t={t}>
                 Want to learn more about these inventory formats?{" "}
                 <Link
-                  href="/app/public"
+                  href="/"
                   fontFamily="heading"
                   fontWeight="bold"
                   color="content.link"
@@ -374,4 +370,4 @@ export default function SetInventoryDetailsStep({
       </Box>
     </Box>
   );
-}
+} 

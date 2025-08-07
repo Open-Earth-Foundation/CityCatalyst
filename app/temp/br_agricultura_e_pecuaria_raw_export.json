@@ -1,0 +1,245 @@
+[
+  {
+    "action_code": "AGR.I.01",
+    "action_name": "Expand the adoption of Direct Planting (SPDH and SPDG) in agricultural areas - ABC+ Plan",
+    "action_description": "Expand the adoption of the set of conservation agriculture technologies of the Direct Planting System (SPD), which consists of: 1. minimal soil disturbance, limited to seeding lines only, maintaining crop residues on the surface; 2. permanent soil cover (living plants or straw); and 3. crop rotation diversification, with the addition of plant organic matter in quantities, qualities and frequencies compatible with soil demand. SPD promotes favorable conditions for the accumulation of organic matter—and thus carbon—in the soil via crop residues (straw and roots). Additionally, SPD use requires less fossil fuel compared to conventional tillage and increases nutrient-use efficiency. Direct Planting (PD) differs from SPD by adopting only items 1 and 2. SPDG is the direct-planting system for grains and SPDH is the direct-planting system for horticultural crops.",
+    "target": "2030: Expand to 12.50 million ha total—4.50 M ha under SPD and 8 M ha under PD—and add 0.08 M ha under horticultural direct planting. 2035: Expand to 12.63 million ha total—4.63 M ha under SPD and 8 M ha under PD—and add 0.08 M ha under horticultural direct planting.",
+    "associated_national_objectives": [
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition."
+    ]
+  },
+  {
+    "action_code": "AGR.I.02",
+    "action_name": "Recover Degraded Pastures - ABC+ Plan",
+    "action_description": "The application of techniques to restore pasture vigor has the potential to reduce livestock’s GHG footprint. Degraded pasture areas emit greenhouse gases, produce low-quality forage, and support low stocking rates. In contrast, improving soil quality and promoting greater pasture growth reduces methane-producing microorganisms, increases soil organic matter accumulation and carbon sequestration, improves forage quality and carrying capacity, shortens time to slaughter, lowers emissions, and reduces land demand for livestock.",
+    "target": "2030: Increase recovered pasture area by 30 million hectares. 2035: Increase recovered pasture area by 30 million hectares.",
+    "associated_national_objectives": [
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition."
+    ]
+  },
+  {
+    "action_code": "AGR.I.03",
+    "action_name": "Expand the implementation of Integrated Systems (ILP, ILPF and SAF) – ABC+ Plan",
+    "action_description": "Crop-Livestock-Forest Integration (ILPF) is a sustainable production strategy that integrates agricultural, livestock and/or forestry activities in the same area, whether in consortium, succession or rotation. It comprises four production systems: Crop-Livestock Integration (ILP), Crop-Forest Integration (ILF), Livestock-Forest Integration (IPF) and Crop-Livestock-Forest Integration (ILPF). Especially in degraded pasture areas, its use can transform areas that are net GHG emitters into sinks, since they can sequester carbon both in the soil and in the wood from tree plantings. The expansion proposal under the ABC+ Plan for this system by 2030 is 10 million hectares, including 1 million hectares planted with native tree species (timber, forage or fruit).",
+    "target": "2030: Expand the area under integrated systems by 10.1 million hectares (ILP, ILF, ILPF, IPF). 2035: Expand the area under integrated systems by 20.3 million hectares.",
+    "associated_national_objectives": [
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition."
+    ]
+  },
+  {
+    "action_code": "AGR.I.04",
+    "action_name": "Expand the production of Planted Forests for sustainable use – ABC+ Plan",
+    "action_description": "Under the ABC+ Plan, Planted Forests (PF) are promoted both for commercial production—industrial and energy uses—and for environmental restoration, as defined by specific legislation. Fast-growing plantations typically capture carbon quickly but are limited by economic harvest cycles. Native vegetation restoration plantations capture carbon more slowly but are not constrained by harvesting, allowing total carbon stocks to approach those of natural forests over time. ABC+‐supported PFs serve two purposes: commercial production of timber, fibers, food, bioenergy and non‐timber forest products (latex, tannins, resins, bioproducts) on private land; and environmental liability recovery under specific law. Industrial plantations currently cover about 10 million hectares, mainly eucalyptus and pine, with other species (e.g., yerba‐mate, acacia, teak, rubber tree, araucaria, mahogany, cuiabano pine, macaúba) present in various regions. PFs play a key economic and environmental role by alleviating pressure on native forests. Ongoing productivity gains—driven by genetic improvement and silvicultural practices—are accounted for in GHG removal estimates for planted forests.",
+    "target": "2030: Increase planted forest area by 4 million hectares. 2035: Increase planted forest area by 4.25 million hectares.",
+    "associated_national_objectives": [
+      "National Objective 2: Promote broad adoption of sustainable, low‐GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition."
+    ]
+  },
+  {
+    "action_code": "AGR.I.05",
+    "action_name": "Expand the adoption of Intensive Finishing – ABC+ Plan",
+    "action_description": "Consists of intensifying feeding management in the final production phase of cattle destined for slaughter, primarily through adoption of confinement, semi-confinement, and pasture-supplementation regimes. Intensive Finishing reduces emission intensity directly by lowering methane emissions during rumen fermentation and indirectly by shortening the production cycle, allowing younger animals to be slaughtered.",
+    "target": "2030: Increase by 5 million the annual number of cattle slaughtered at up to 36 months of age. 2035: Increase by 29.1 million the annual number of cattle slaughtered at up to 36 months of age.",
+    "associated_national_objectives": [
+      "National Objective 2: Foster broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 9: Generate jobs, income, and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive, and sustainable socioeconomic transition."
+    ]
+  },
+  {
+    "action_code": "AGR.I.06",
+    "action_name": "Expand the use of bio-inputs – ABC+ Plan",
+    "action_description": "Promote the use of biological inputs for Nitrogen Fixation and other plant growth–promoting microorganisms (PGPM), as well as multifunctional microbes and macroorganisms for nutrient availability enhancement and biological control. This includes systems, strategies, processes or solutions for using inoculants for biological nitrogen fixation—covering phosphate-solubilizing microorganisms and biological fixation for grasses—as low-carbon alternatives to NPK.",
+    "target": "2030: Increase by 13 million hectares the area using bio-inputs. 2035: Increase by 15 million hectares the area using bio-inputs.",
+    "associated_national_objectives": [
+      "National Objective 2: Foster broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition."
+    ]
+  },
+  {
+    "action_code": "AGR.I.07",
+    "action_name": "Optimize and expand the sustainable use of irrigated systems – ABC+ Plan",
+    "action_description": "Expanding areas under irrigated systems promotes increases in production, productivity, and profitability, with positive social impacts, stable creation of direct and indirect jobs, and the ability to produce even during dry periods, boosting output in already anthropized areas. It is a key strategy for adapting agriculture and livestock to climate change and ensuring the production of numerous agricultural crops.",
+    "target": "2030: Expand irrigated areas in the country by 3 million hectares. 2035: Expand irrigated areas in the country by 4 million hectares.",
+    "associated_national_objectives": [
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 9: Generate jobs, income, and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive, and sustainable socioeconomic transition."
+    ]
+  },
+  {
+    "action_code": "AGR.I.08",
+    "action_name": "Manage animal production residues for biogas production – ABC+ Plan",
+    "action_description": "Expand the adoption of technologies for treating all types of residues from animal production, such as liquid waste (a mixture of cleaning water, feces, urine and food residues), bedding, carcasses of animals that died on-farm, physiological residues, and proper stabilization of their effluents. Biogas systems (MRPA) offer an alternative to high-emitting manure lagoons, significantly reducing methane emissions.",
+    "target": "2030: Treat 208.4 million m³ of animal waste (5,000 farms). 2035: Treat 228 million m³ of animal waste (5,300 farms).",
+    "associated_national_objectives": [
+      "National Objective 2: Foster broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition."
+    ]
+  },
+  {
+    "action_code": "AGR.I.09",
+    "action_name": "Increase productivity in livestock (genetic improvement, health, nutrition and management)",
+    "action_description": "Livestock is a major source of GHG emissions, especially methane. Increasing milk productivity is key to meeting high-quality animal protein demand without expanding herd sizes or production areas, reducing pressure on deforestation. Brazil’s dairy sector has improved but remains inefficient, raising the carbon footprint of milk. The Saúde Leite Mais (PMLS) program—providing fiscal incentives to dairy processors for MAPA-approved projects—has boosted milk quality and yield; scaling PMLS would further enhance productivity, income and sustainability. Beef cattle represent the largest herd and methane emissions; raising beef productivity meets protein demand without increasing herds (or even reducing them), supporting food security and lowering land pressure. This action proposes programs—ATEg, financing, genetic improvement and best practices—to drive a ~3% annual productivity gain in Brazil, exceeding the OECD/FAO’s 1.1% global projection and enabling herd reduction and emissions cuts.",
+    "target": "2030: Increase milk yield from 2,141 L (2019) to 2,650 L per dairy cow per year, and carcass yield from 38.3 kg (2019) to 46 kg per existing bovine per year. 2035: Increase milk yield from 2,141 L to 3,000 L per dairy cow per year, and carcass yield from 38.3 kg to 55 kg per existing bovine per year.",
+    "associated_national_objectives": [
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition."
+    ]
+  },
+  {
+    "action_code": "AGR.I.10",
+    "action_name": "Expand adoption of GHG mitigation practices in irrigated rice cultivation",
+    "action_description": "Lowland rice cultivation in Brazil is highly sensitive to climatic factors, and global warming poses a significant threat. Rising temperatures negatively affect grain quality, productivity, and methane emissions. A 2023 ANA mapping indicated 1.155 million hectares of irrigated rice in Brazil, with Rio Grande do Sul accounting for 72.3%, Santa Catarina 12.2%, and Tocantins 8.9%. Flooded rice cultivation emits methane and nitrous oxide, heightening climate risks and underscoring the need to address both climate challenges and emissions regionally.\n\nThe adoption of specific agricultural practices helps reduce GHG emissions, including: incorporation of rice straw immediately after harvest to avoid residual matter contributing to methane emissions in the next flooded season; drainage of rice paddies 50–60 days after planting, which can cut methane emissions by up to 17%; no-till planting with minimal soil disturbance; crop rotation (e.g., soybean), which can reduce emissions by up to 59% and increase rice productivity by 26%; and higher yields, which lower emissions per kilogram produced. This action aims to promote and scale these technologies and practices to reduce emissions in irrigated rice cultivation, making farms more productive and climate-resilient while improving food and water security.",
+    "target": "2030: Increase by 20% the area adopting mitigation practices in rice irrigation. 2035: Increase by 30% the area adopting mitigation practices in rice irrigation.",
+    "associated_national_objectives": [
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition."
+    ]
+  },
+  {
+    "action_code": "AGR.I.11",
+    "action_name": "Expand low-carbon agroecological and traditional productive systems in family farming – ABC+ Plan",
+    "action_description": "Promote the agroecological transition and strengthen sustainable, low-carbon productive systems in family farming by improving land access, technical assistance, financing, valuing traditional agricultural knowledge and systems, and reinforcing local and institutional markets. This action enhances agrobiodiversity, supports the productive autonomy of women and traditional peoples and communities, and integrates production, marketing and supply, resulting in GHG reduction and removal while bolstering food security and climate justice.",
+    "target": "Implement 180 projects for native vegetation recovery and restoration; support 1,680 family farms with agroecological production recovery systems; and establish 200 demonstration units for soil management and conservation by 2027.",
+    "associated_national_objectives": [
+      "National Objective 1: Ensure the integrity of national biomes through conservation, restoration and sustainable use of their ecosystems."
+    ]
+  },
+  {
+    "action_code": "AGR.I.12",
+    "action_name": "Implement and strengthen agroforestry systems in family farming under the Productive Forests Program",
+    "action_description": "Promote the transition from traditional productive systems to sustainable, low-carbon models by establishing and reinforcing agroforestry systems (SAFs) and productive forests on family farms and in collective territories of traditional peoples and communities, with priority focus in the Legal Amazon. The action combines productive and ecological restoration, soil and biomass carbon capture, and strengthening of sociobiodiversity and local value chains. Activities include technical assistance and rural extension (ATER), training, and support for territorial projects, contributing to socio-environmental development, food security, and GHG emission mitigation.",
+    "target": "• Establish SAFs and productive forests on 5,000 hectares, benefiting 2,500 family farming households and collective territories in Amapá, Maranhão and Pará by 2028, with support from the Caixa Socio-environmental Fund.  \n• Provide technical assistance and SAF training to 5,000 families in Amapá and Maranhão by 2028.  \n• Deliver ATER services to qualify agroforestry systems and sociobiodiversity value chains for 1,000 extractivist families in the Médio Solimões region of Amazonas by 2027.",
+    "associated_national_objectives": [
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all."
+    ]
+  },
+  {
+    "action_code": "AGR.I.13",
+    "action_name": "Expand the adoption of social technologies for mitigation and sustainable management in family farming",
+    "action_description": "Promote the adoption of social technologies in family farming focused on GHG mitigation, sustainable waste management, rural sanitation, food security, and clean energy generation. Technologies include biodigesters, agroecological stoves, Embrapa’s Sistemas Embrapa, SARA/Insa, and water filtration systems, which reduce CH₄, N₂O, and CO₂ emissions while fostering productive inclusion, public health, socio-environmental development, and just energy transition in rural areas.",
+    "target": "Install 15,000 biodigesters on family farms by 2035; and, by 2027, acquire and implement social technologies for productive inclusion and socio-environmental development—such as biodigesters, agroecological stoves, Sistemas Embrapa, SARA/Insa, and water filtration systems—benefiting 12,960 family farmers.",
+    "associated_national_objectives": [
+      "National Objective 11: Undertake specific actions to mitigate high-impact non-CO₂ pollutants in global warming.",
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all."
+    ]
+  },
+  {
+    "action_code": "AGR.I.14",
+    "action_name": "Expand the production and use of bio-inputs in family farming",
+    "action_description": "This action aims to scale up the production and use of bio-inputs in family farming to promote sustainable, low-emission production systems. By replacing synthetic fertilizers—especially through biological nitrogen fixation (BNF) technologies—it helps reduce nitrous oxide (N₂O) emissions, improve soil health, and lower costs. Production will be carried out by family farming associations and cooperatives, enhancing their productive autonomy. Activities also include training farmers and ATER agents in the use, management, and production of bio-inputs, thereby strengthening mitigation, sustainability, and the agroecological transition in their territories.",
+    "target": "Install 270 bio-input production units by family farmers and their organizations by 2035; and train 10,000 family farmers and 2,000 ATER agents in the management, production, and use of bio-inputs focused on biological nitrogen fixation by 2035.",
+    "associated_national_objectives": [
+      "National Objective 11: Undertake specific actions to mitigate high-impact non-CO₂ pollutants in global warming.",
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all."
+    ]
+  },
+  {
+    "action_code": "AGR.I.15",
+    "action_name": "Expand sustainable, low-carbon practices in family dairy production",
+    "action_description": "This action aims to mitigate greenhouse gas emissions in family farming dairy production through adoption of sustainable practices such as Crop-Livestock-Forest Integration (ILPF), Rational Intensive Grazing (PRV), grass-legume consortia, and strategic feeding systems. These practices promote ecological balance between soil, plant, and animal, improve feed efficiency, reduce enteric methane (CH₄) emissions per liter of milk produced, and increase soil carbon sequestration. Implementation will be enabled via demonstration units, farmer training, and coordination with ATER services and research networks across different biomes.",
+    "target": "Install 100 sustainable production units with integrated low-carbon dairy production practices by 2035; and train 1,000 family farmers in sustainable dairy production practices focused on GHG mitigation by 2035.",
+    "associated_national_objectives": [
+      "National Objective 11: Undertake specific actions to mitigate high-impact non-CO₂ pollutants in global warming.",
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all."
+    ]
+  },
+  {
+    "action_code": "AGR.I.16",
+    "action_name": "Expand productive restoration and sustainable management of agrarian reform settlements",
+    "action_description": "This action aims to promote productive restoration and sustainable management in agrarian reform settlements through establishment of agroforestry systems, ecological recovery of degraded areas, and adoption of integrated fire management practices. Activities include technical assistance and rural extension (ATER), training and community mobilization focused on environmental regeneration, income generation and food security. With emphasis on the Legal Amazon, the action coordinates territorial investments—such as the Restaura Amazônia initiative and Community Protocols for Integrated Fire Management—directly contributing to GHG removal and reduction, biome protection, and strengthening environmental and productive sustainability in agrarian settlements.",
+    "target": "Serve 1,680 families with ATER services and training for implementation of agroforestry systems and forest recovery in 18 settlements, one quilombola territory and two extractive reserves in Pará by 2026; implement 200 Community Protocols for Integrated Fire Management in agrarian reform settlements by 2035; and support implementation of agroforestry systems and ecological and productive restoration in Legal Amazon settlements through three Restaura Amazônia calls, totaling R$ 150 million in investments and 2,000 ha restored by 2030.",
+    "associated_national_objectives": [
+      "National Objective 12: Prioritize mitigation measures with potential to generate co-benefits for adaptation and resilience to climate change and sustainable development.",
+      "National Objective 2: Foster broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all."
+    ]
+  },
+  {
+    "action_code": "AGR.I.17",
+    "action_name": "Implement agroecological corridors in metropolitan regions based on family farming",
+    "action_description": "This action aims to establish productive agroecological corridors in urban and peri-urban areas grounded in family farming, agroecology and organic production. It links food security, climate mitigation and sustainable territorial development. Corridors will be set up in priority metropolitan regions, combining agroecological production, environmental restoration, short marketing circuits and valuing traditional and popular knowledge. In addition to promoting carbon sequestration in soil and vegetation, the action helps reduce emissions from food transport and strengthens local food systems.",
+    "target": "By 2035, establish 100 hectares of productive agroecological corridors in priority metropolitan regions based on agroecological systems and sustainable land-use practices.",
+    "associated_national_objectives": [
+      "National Objective 12: Prioritize mitigation measures with potential to generate co-benefits for adaptation and resilience to climate change and sustainable development."
+    ]
+  },
+  {
+    "action_code": "AGR.I.18",
+    "action_name": "Foster agroecological and low-carbon rice production in family farming",
+    "action_description": "Promote reduction of greenhouse gas emissions associated with irrigated rice cultivation in family farming by transitioning to agroecological and low-carbon systems. Practices to be encouraged include organic/ecological rice cultivation, integration with rice-fish culture, use of bio-inputs, water-level management to reduce methane (CH₄) emissions, and organic fertilization. In addition to mitigation benefits, this action strengthens food security, income generation, and productive sustainability in family farming territories.",
+    "target": "Expand by 300 hectares the area of certified agroecological rice cultivation in agrarian reform settlements and family farming territories by 2030 and by 500 hectares by 2035.",
+    "associated_national_objectives": [
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all."
+    ]
+  },
+  {
+    "action_code": "AGR.I.19",
+    "action_name": "Expand the adoption of low-GHG emission models – Integrated Multitrophic Aquaculture (AMTI) and Aquaponics",
+    "action_description": "Increase and promote the adoption of sustainable aquaculture practices focused on reducing greenhouse gas emissions by incentivizing and scaling innovative, climate-resilient models such as Integrated Multitrophic Aquaculture (AMTI) and aquaponics.",
+    "target": "2030: Achieve 23,000 hectares under AMTI and aquaponics systems. 2035: Achieve 46,000 hectares under AMTI and aquaponics systems.",
+    "associated_national_objectives": [
+      "National Objective 2: Foster broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 5: Encourage substitution of fossil fuels by promoting development and use of sustainable biofuels and electrification solutions.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition.",
+      "National Objective 12: Prioritize mitigation measures with potential to generate co-benefits for adaptation and resilience to climate change and sustainable development."
+    ]
+  },
+  {
+    "action_code": "AGR.I.20",
+    "action_name": "Expand the use of bio-inputs from aquaculture to promote sustainable production",
+    "action_description": "Encourage, support and strengthen the production and use of seaweed (macroalgae) as bio-inputs to reduce greenhouse gas emissions.",
+    "target": "2030: Achieve 125,000 hectares of macroalgae cultivation for use as bio-inputs. 2035: Achieve 250,000 hectares of macroalgae cultivation for use as bio-inputs.",
+    "associated_national_objectives": [
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 6: Promote circularity through sustainable and efficient use of natural resources throughout production chains.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition."
+    ]
+  },
+  {
+    "action_code": "AGR.I.21",
+    "action_name": "Expand adoption of Recirculating Aquaculture Systems (RAS) and Bioflocs and incentivize inland shrimp farming",
+    "action_description": "Incentivize, support and strengthen closed and inland production systems, promoting economic diversification and regional development.",
+    "target": "2030: Expand to 15,000 ha the area adopting RAS and bioflocs and internalize 40% of new shrimp farming projects. 2035: Expand to 40,000 ha the area adopting RAS and bioflocs and internalize 80% of new shrimp farming projects.",
+    "associated_national_objectives": [
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition.",
+      "National Objective 12: Prioritize mitigation measures with potential to generate co-benefits for adaptation and resilience to climate change and sustainable development."
+    ]
+  },
+  {
+    "action_code": "AGR.I.22",
+    "action_name": "Reduce legal clearing of native vegetation on rural properties, agrarian reform settlements and quilombola territories",
+    "action_description": "Promote reduction of legally mandated clearing of native vegetation on rural properties, agrarian reform settlements and quilombola territories by strengthening land governance, environmental regularization and support for implementing sustainable productive practices, while respecting each territory’s sociocultural specificities.",
+    "target": "Reduce the rate of legal native vegetation clearing by 50% by 2030 and by 75% by 2035, relative to 2022.",
+    "associated_national_objectives": [
+      "National Objective 1: Ensure integrity of national biomes through conservation, restoration and sustainable use of their ecosystems.",
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 10: Transform Brazil’s comparative advantages into competitive advantages, making the country a provider of climate goods, services and solutions for a world transitioning to low-carbon development models.",
+      "National Objective 11: Undertake specific actions to mitigate high-impact non-CO₂ pollutants in global warming.",
+      "National Objective 12: Prioritize mitigation measures with potential to generate co-benefits for adaptation and resilience to climate change and sustainable development."
+    ]
+  },
+  {
+    "action_code": "AGR.I.23",
+    "action_name": "Prevent and reduce fires in native vegetation on rural properties, agrarian reform settlements and quilombola territories",
+    "action_description": "Prevent and reduce the occurrence of fires in native vegetation on rural properties, agrarian reform settlements and quilombola territories across all Brazilian biomes through implementation of Integrated Fire Management under guidance of the National Committee on Integrated Fire Management.",
+    "target": "Reduce burned area by 30% relative to the historical average by 2030 and by 60% by 2035.",
+    "associated_national_objectives": [
+      "National Objective 1: Ensure the integrity of national biomes through conservation, restoration and sustainable use of their ecosystems.",
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all."
+    ]
+  },
+  {
+    "action_code": "AGR.I.24",
+    "action_name": "Recover native vegetation on rural properties, agrarian reform settlements and quilombola territories",
+    "action_description": "Recover native vegetation within private rural properties, agrarian reform settlements and quilombola territories. Restoration can occur in Permanent Preservation Areas (APP), Legal Reserves (RL) and Restricted Use Areas (AUR) to comply with Law No. 12,651 of May 25, 2012, as well as in other parts of the rural property through establishment of integrated production systems (SAF, ILPF, native silviculture) that reconcile biodiversity conservation and ecosystem services with socioeconomic development.",
+    "target": "Restore 10 million hectares by 2030 and 13.2 million hectares by 2035.",
+    "associated_national_objectives": [
+      "National Objective 1: Ensure the integrity of national biomes through conservation, restoration and sustainable use of their ecosystems.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition."
+    ]
+  }
+]

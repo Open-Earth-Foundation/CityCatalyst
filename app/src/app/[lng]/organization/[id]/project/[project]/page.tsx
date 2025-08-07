@@ -71,7 +71,11 @@ export default function ProjectPage(props: {
         justifyContent="stretch"
       >
         <VStack spaceY="24px" alignItems="start" justifyContent="start">
-          <HeadlineLarge>{project?.name}</HeadlineLarge>
+          <HeadlineLarge>
+            {project?.name === "cc_project_default"
+              ? t("default-project")
+              : project?.name}
+          </HeadlineLarge>
           <BodyLarge>{t("discover-cities-description")}</BodyLarge>
         </VStack>
         {project?.cities && project.cities.length > 0 && (

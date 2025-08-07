@@ -87,7 +87,11 @@ export default function HomePage({
         !isFetchBaseQueryError(inventoryError) ||
         inventoryError.status !== 401
       ) {
-        router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
+        setTimeout(
+          () =>
+            router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`),
+          0,
+        );
       }
     } else if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
@@ -106,8 +110,6 @@ export default function HomePage({
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
         // If we have a cityId, redirect to GHGI onboarding, otherwise go to general onboarding
         setTimeout(() => {
-          console.log(`📍 HomePage:123`);
-          debugger;
           router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
         });
       }
@@ -252,15 +254,20 @@ export default function HomePage({
                       aria-label="activity-button"
                       fontSize="button.md"
                       gap="8px"
-                      onClick={() =>
-                        isFrozenCheck()
-                          ? null
-                          : inventory?.cityId || cityIdParam
-                            ? router.push(
-                                `/${language}/cities/${inventory?.cityId || cityIdParam}/GHGI/onboarding`,
-                              )
-                            : router.push(`/${language}/onboarding`)
-                      }
+                      onClick={() => {
+                        if (isFrozenCheck()) {
+                          return;
+                        }
+
+                        const cityId = inventory?.cityId || cityIdParam;
+                        if (cityId) {
+                          router.push(
+                            `/${language}/cities/${cityId}/GHGI/onboarding`,
+                          );
+                        } else {
+                          router.push(`/${language}/onboarding`);
+                        }
+                      }}
                     >
                       <Icon as={BsPlus} h="16px" w="16px" />
                       {t("add-new-inventory")}

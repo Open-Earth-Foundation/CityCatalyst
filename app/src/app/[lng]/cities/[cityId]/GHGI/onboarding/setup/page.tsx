@@ -17,9 +17,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
-import SetInventoryDetailsStep from "@/components/steps/add-inventory-details-step";
+import SetInventoryDetailsStep from "@/components/steps/GHGI/set-inventory-details-step";
 import SetPopulationDataStep from "@/components/steps/add-population-data-step";
-import ConfirmStep from "@/components/steps/confirm-inventory-data-step";
+import ConfirmStep from "@/components/steps/GHGI/confirm-inventory-data-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast } from "@/hooks/Toasts";
@@ -27,11 +27,7 @@ import ProgressLoader from "@/components/ProgressLoader";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 import ProjectLimitModal from "@/components/project-limit";
-import {
-  useGetCityQuery,
-  useGetOCCityDataQuery,
-  useGetOCCityQuery,
-} from "@/services/api";
+import { useGetCityQuery } from "@/services/api";
 
 type Inputs = GHGIFormInputs;
 type OnboardingData = GHGIOnboardingData;
@@ -59,17 +55,21 @@ export default function OnboardingSetup(props: {
 
   const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
 
-  const { data: projectsList, isLoading: isProjectsLoading } = api.useGetUserProjectsQuery(
-    {},
-    {
-      skip: !EnterpriseMode,
-    },
-  );
+  const { data: projectsList, isLoading: isProjectsLoading } =
+    api.useGetUserProjectsQuery(
+      {},
+      {
+        skip: !EnterpriseMode,
+      },
+    );
 
   // Fetch city data using the cityId from URL
-  const { data: cityData, isLoading: isCityLoading } = api.useGetCityQuery(cityId, {
-    skip: !cityId,
-  });
+  const { data: cityData, isLoading: isCityLoading } = api.useGetCityQuery(
+    cityId,
+    {
+      skip: !cityId,
+    },
+  );
 
   useEffect(() => {
     if (projectsList && projectsList.length > 0) {
@@ -80,7 +80,7 @@ export default function OnboardingSetup(props: {
   // Populate data state with city information when city data is loaded
   useEffect(() => {
     if (cityData) {
-      setData(prevData => ({
+      setData((prevData) => ({
         ...prevData,
         name: cityData.name || "",
         locode: cityData.locode || "",
@@ -118,22 +118,22 @@ export default function OnboardingSetup(props: {
   const [isConfirming, setConfirming] = useState(false);
   const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
 
-const { data: CCCityData } = useGetCityQuery(cityId, {
-  skip: !cityId,
-});
+  const { data: CCCityData } = useGetCityQuery(cityId, {
+    skip: !cityId,
+  });
 
-useEffect(() => {
-  if (CCCityData) {
-    setOcCityData({
-      actor_id: CCCityData.locode?.split("-").join(" ") as string,
-      name: CCCityData.name as string,
-      is_part_of: CCCityData.regionLocode as string,
-      root_path_geo: [],
-      area: 0,
-    });
-  }
-}, [CCCityData, setValue, setOcCityData]);
-  
+  useEffect(() => {
+    if (CCCityData) {
+      setOcCityData({
+        actor_id: CCCityData.locode?.split("-").join(" ") as string,
+        name: CCCityData.name as string,
+        is_part_of: CCCityData.regionLocode as string,
+        root_path_geo: [],
+        area: 0,
+      });
+    }
+  }, [CCCityData, setValue, setOcCityData]);
+
   const makeErrorToast = (title: string, description?: string) => {
     const { showErrorToast } = UseErrorToast({ description, title });
     showErrorToast();

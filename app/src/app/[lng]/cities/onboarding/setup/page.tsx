@@ -22,14 +22,7 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 import ProjectLimitModal from "@/components/project-limit";
 
-export type Inputs = {
-  city: string;
-};
-
-export type OnboardingData = {
-  name: string;
-  locode: string;
-};
+import { Inputs, OnboardingData } from "../../../onboarding/setup/page";
 
 export default function OnboardingSetup(props: {
   params: Promise<{ lng: string }>;
@@ -82,6 +75,9 @@ export default function OnboardingSetup(props: {
   const [data, setData] = useState<OnboardingData>({
     name: "",
     locode: "",
+    year: -1,
+    inventoryGoal: "",
+    globalWarmingPotential: "",
   });
   const [ocCityData, setOcCityData] = useState<OCCityAttributes>();
   const [isConfirming, setConfirming] = useState(false);

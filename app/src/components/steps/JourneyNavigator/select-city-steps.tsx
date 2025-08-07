@@ -1,5 +1,10 @@
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
-import { Inputs, OnboardingData } from "../../app/[lng]/onboarding/setup/page";
+import { Inputs } from "../../../app/[lng]/onboarding/setup/page";
+
+type JNOnboardingData = {
+  name: string;
+  locode: string;
+};
 import { TFunction } from "i18next";
 import {
   OCCityAttributes,
@@ -30,14 +35,14 @@ import {
 import { MdCheck, MdInfoOutline, MdSearch, MdWarning } from "react-icons/md";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { NoResultsIcon } from "../icons";
+import { NoResultsIcon } from "../../icons";
 import { useSearchParams } from "next/navigation";
 import { Trans } from "react-i18next";
 
 import RecentSearches from "@/components/recent-searches";
 import { useOutsideClick } from "@/lib/use-outside-click";
 import { Field } from "@/components/ui/field";
-import { InputGroup } from "../ui/input-group";
+import { InputGroup } from "../../ui/input-group";
 import {
   SelectContent,
   SelectItem,
@@ -74,7 +79,7 @@ export default function SelectCityStep({
   watch: Function;
   ocCityData?: OCCityAttributes;
   setOcCityData: (cityData: OCCityAttributes) => void;
-  setData: (data: OnboardingData) => void;
+  setData: (data: JNOnboardingData) => void;
   projectsList: ProjectWithCities[] | undefined;
   selectedProject: string[];
   setSelectedProject: (val: string[]) => void;

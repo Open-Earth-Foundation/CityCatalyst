@@ -60,6 +60,7 @@ function DataTableCore<T>({
   return (
     <Table.Root
       px={0}
+      w="full"
       variant="line"
       overflowX="hidden"
       rounded="20px"
@@ -84,7 +85,7 @@ function DataTableCore<T>({
               textTransform="uppercase"
               fontSize="body.sm"
               color="content.secondary"
-              key={String(col.accessor)}
+              key={String(col.accessor ?? col.header)}
             >
               {col.header}
             </Table.ColumnHeader>

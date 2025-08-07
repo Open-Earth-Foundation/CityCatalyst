@@ -80,7 +80,6 @@ export default function ProjectPage(props: {
             searchable
             pagination
             itemsPerPage={20}
-            title={t("manage-cities-heading")}
             columns={[
               { header: t("city-name"), accessor: "name" },
               {

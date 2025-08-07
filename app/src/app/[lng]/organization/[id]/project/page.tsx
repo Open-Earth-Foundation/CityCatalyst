@@ -67,7 +67,13 @@ export default function OrganizationPage(props: {
         <SimpleGrid minChildWidth="xs" gap="24px" w="full">
           {projects && projects.length > 0 ? (
             projects.map((project: ProjectWithCities) => (
-              <ProjectCard t={t} project={project} key={project.projectId} />
+              <ProjectCard
+                t={t}
+                project={project}
+                key={project.projectId}
+                lng={lng}
+                organizationId={organization.organizationId}
+              />
             ))
           ) : (
             <BodyMedium>{t("no-projects-found")}</BodyMedium>

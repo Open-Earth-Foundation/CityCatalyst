@@ -8,10 +8,8 @@ import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { useSearchParams } from "next/navigation";
 
-export default function OnboardingDone(props: {
-  params: Promise<{ lng: string; year: number; inventory: string }>;
-}) {
-  const { lng, year, inventory } = use(props.params);
+export default function OnboardingDone(props: { params: Promise<{ lng: string; cityId: string; }> }) {
+  const { lng, cityId } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
   const searchParams = useSearchParams();
   const projectId = searchParams.get("project");
@@ -68,7 +66,7 @@ export default function OnboardingDone(props: {
             {t("add-new-inventory")}
           </Button>
         </NextLink>
-        <NextLink href={`/${lng}/${inventory}`}>
+        <NextLink href={`/${lng}/cities/${cityId}`}>
           <Button h={16} px={6} data-testid="check-dashboard">
             {t("check-dashboard")}
             <MdArrowForward width="24px" height="24px" />

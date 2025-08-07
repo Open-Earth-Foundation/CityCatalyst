@@ -32,6 +32,10 @@ import { Field } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { InventoryButtonCheckIcon } from "@/components/icons";
 import CustomSelectableButton from "@/components/custom-selectable-buttons";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
 export default function GHGIInventoryDetailsStep({
   t,
@@ -55,14 +59,20 @@ export default function GHGIInventoryDetailsStep({
     setSelectedGlobalWarmingPotentialValue,
   ] = useState("");
   let year;
-  const inventoryGoalOptions: string[] = ["gpc_basic", "gpc_basic_plus"];
-  const globalWarmingPotential: string[] = ["ar5", "ar6"];
+  const inventoryGoalOptions: string[] = [
+    InventoryTypeEnum.GPC_BASIC,
+    InventoryTypeEnum.GPC_BASIC_PLUS,
+  ];
+  const globalWarmingPotential: string[] = [
+    GlobalWarmingPotentialTypeEnum.ar5,
+    GlobalWarmingPotentialTypeEnum.ar6,
+  ];
 
   // Handle inventory Goal Radio Input
   // Set default inventory goal form value
   useEffect(() => {
-    setValue("inventoryGoal", "gpc_basic");
-    setValue("globalWarmingPotential", "ar6");
+    setValue("inventoryGoal", InventoryTypeEnum.GPC_BASIC);
+    setValue("globalWarmingPotential", GlobalWarmingPotentialTypeEnum.ar6);
   }, [setValue]);
 
   const yearsCollection = createListCollection({

@@ -94,7 +94,7 @@ export default function Onboarding(props: {
             py="16px"
             px="24px"
             h="64px"
-            onClick={() => router.push("/onboarding/setup")}
+            onClick={() => router.push("setup")}
           >
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
               {t("welcome-CTA")}

@@ -52,7 +52,7 @@ export default function OnboardingDone(props: { params: Promise<{ lng: string; c
         </Text>
       </Box>
       <Box display="flex" gap="24px" mt="24px">
-        <NextLink href={`/${lng}/onboarding/setup?project=${projectId}`}>
+        <NextLink href={`/${lng}/cities/onboarding/setup?project=${projectId}`}>
           <Button
             variant="ghost"
             h={16}
@@ -61,9 +61,9 @@ export default function OnboardingDone(props: { params: Promise<{ lng: string; c
             color="content.link"
             borderWidth="2px"
             borderColor="content.link"
-            data-testid="add-new-inventory"
+            data-testid="add-new-city"
           >
-            {t("add-new-inventory")}
+            {t("add-new-city")}
           </Button>
         </NextLink>
         <NextLink href={`/${lng}/cities/${cityId}`}>

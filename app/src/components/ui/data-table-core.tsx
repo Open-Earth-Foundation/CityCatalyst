@@ -66,7 +66,7 @@ function DataTableCore<T>({
       rounded="20px"
       borderWidth="1px"
     >
-      <Table.Header bg="background.backgroundLight">
+      <Table.Header>
         <Table.Row>
           {selectable && (
             <Table.ColumnHeader>
@@ -85,6 +85,7 @@ function DataTableCore<T>({
               textTransform="uppercase"
               fontSize="body.sm"
               color="content.secondary"
+              bg="background.neutral"
               key={String(col.accessor ?? col.header)}
             >
               {col.header}

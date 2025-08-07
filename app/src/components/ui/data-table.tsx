@@ -142,7 +142,7 @@ function DataTable<T extends Record<string, any>>({
         </Flex>
 
         {pagination && (
-          <Flex mt={4} gap={2} align="center">
+          <Flex mt={4} gap={2} align="center" verticalAlign="middle">
             <Text fontSize="body.md" color="content.tertiary">
               {t("table-pagination", {
                 start: (currentPage - 1) * itemsPerPage + 1,

@@ -3,10 +3,10 @@ import { Box, Card, CardBody, CardHeader, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { MdOutlineAddchart } from "react-icons/md";
 import { Trans } from "react-i18next/TransWithoutContext";
-import DownloadButton from "@/components/HomePage/DownloadButton";
+import DownloadButton from "@/components/GHGIHomePage/DownloadButton";
 import type { CityAttributes } from "@/models/City";
 import type { InventoryAttributes } from "@/models/Inventory";
-import { AddCollaboratorButton } from "@/components/HomePage/AddCollaboratorButton";
+import { AddCollaboratorButton } from "@/components/GHGIHomePage/AddCollaboratorButton";
 
 export function ActionCards({
   city,

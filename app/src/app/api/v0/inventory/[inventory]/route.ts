@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 
 import { apiHandler } from "@/util/api";
-import { db } from "@/models";
 import createHttpError from "http-errors";
 import UserService from "@/backend/UserService";
 import { upsertInventoryRequest } from "@/util/validation";
-import { QueryTypes } from "sequelize";
 import { validate } from "uuid";
+import { InventoryService } from "@/backend/InventoryService";
 
 function hasIsPublicProperty(
   inventory:
@@ -35,47 +34,16 @@ export const GET = apiHandler(async (req, { session, params }) => {
     }
   }
 
- if (!validate(inventoryId)) {
-    throw new createHttpError.BadRequest(`'${inventoryId}' is not a valid inventory id (uuid)`);
+  if (!validate(inventoryId)) {
+    throw new createHttpError.BadRequest(
+      `'${inventoryId}' is not a valid inventory id (uuid)`,
+    );
   }
 
-  const inventory = await UserService.findUserInventory(
+  const inventory = await InventoryService.getInventoryWithTotalEmissions(
     inventoryId,
     session,
-    [
-      {
-        model: db.models.City,
-        as: "city",
-        include: [
-          {
-            model: db.models.Project,
-            as: "project",
-            attributes: ["projectId", "name", "organizationId"],
-          },
-        ],
-      },
-    ],
-    true,
   );
-
-  if (!inventory) {
-    throw new createHttpError.NotFound("Inventory not found");
-  }
-
-  // TODO [ON-2429]: Save total emissions for inventory every time activity data is modified
-  const rawQuery = `
-    SELECT SUM(co2eq)
-    FROM "InventoryValue"
-    WHERE inventory_id = :inventoryId
-  `;
-
-  const [{ sum }] = (await db.sequelize!.query(rawQuery, {
-    replacements: { inventoryId },
-    type: QueryTypes.SELECT,
-    raw: true,
-  })) as unknown as { sum: number }[];
-
-  inventory.totalEmissions = sum;
   return NextResponse.json({ data: inventory });
 });
 

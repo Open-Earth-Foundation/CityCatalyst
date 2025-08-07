@@ -1,8 +1,8 @@
 import type { TFunction } from "i18next";
 import { Box, Text, Grid, GridItem, Icon, Link } from "@chakra-ui/react";
-import { AddCollaboratorButton } from "@/components/HomePage/AddCollaboratorButton";
+import { AddCollaboratorButton } from "@/components/GHGIHomePage/AddCollaboratorButton";
 import { MdBarChart } from "react-icons/md";
-import ActionCardSmall from "../HomePage/ActionCardSmall";
+import ActionCardSmall from "../GHGIHomePage/ActionCardSmall";
 import { useRouter } from "next/navigation";
 import { OrganizationWithThemeResponse } from "@/util/types";
 import { MdArrowForward } from "react-icons/md";

@@ -19,20 +19,14 @@ import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
 import { Box, Icon, Tabs, Text, VStack } from "@chakra-ui/react";
 import MissingInventory from "@/components/missing-inventory";
-import InventoryCalculationTab from "@/components/HomePage/InventoryCalculationTab";
+import InventoryCalculationTab from "./InventoryCalculationTab";
 import InventoryReportTab from "../../app/[lng]/[inventory]/InventoryResultTab";
 import NotAvailable from "@/components/NotAvailable";
-import { Hero } from "@/components/HomePage/Hero";
-import { ActionCards } from "@/components/HomePage/ActionCards";
-import { InventoryPreferencesCard } from "@/components/HomePage/InventoryPreferencesCard";
+import { Hero } from "./Hero";
+import { ActionCards } from "./ActionCards";
+import { InventoryPreferencesCard } from "./InventoryPreferencesCard";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
-import { Button } from "../ui/button";
-import HiapTabWrapper from "@/app/[lng]/[inventory]/HiapTab";
-import {
-  hasFeatureFlag,
-  FeatureFlags,
-  getFeatureFlags,
-} from "@/util/feature-flags";
+import { Button } from "@/components/ui/button";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { logger } from "@/services/logger";
@@ -278,10 +272,6 @@ export default function HomePage({
                       {[
                         "tab-emission-inventory-calculation-title",
                         "tab-emission-inventory-results-title",
-                        ...(inventory?.city?.country === "Brazil" &&
-                        hasFeatureFlag(FeatureFlags.CAP_TAB_ENABLED)
-                          ? ["tab-hiap-title"]
-                          : []),
                       ].map((tab, index) => (
                         <Tabs.Trigger key={index} value={tab}>
                           <Text
@@ -311,11 +301,6 @@ export default function HomePage({
                         inventory={inventory}
                       />
                     </Tabs.Content>
-                    {inventory?.city?.country === "Brazil" && (
-                      <Tabs.Content value="tab-hiap-title">
-                        <HiapTabWrapper inventory={inventory} lng={lng} />
-                      </Tabs.Content>
-                    )}
                   </Tabs.Root>
                 </>
               ) : (

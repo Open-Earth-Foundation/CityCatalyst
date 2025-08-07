@@ -11,7 +11,7 @@
   {
     "action_code": "CSN.I.2",
     "action_name": "Offset deforestation from land-use change by large enterprises and infrastructure projects with native vegetation restoration in public areas",
-    "action_description": "Consolidate preventive territorial and environmental governance to ensure these projects incorporate effective deforestation compensation measures from their outset, in alignment with zero-deforestation targets and Brazil’s NDC commitments; i.e., each hectare deforested is offset by one hectare of native vegetation restored.",
+    "action_description": "Consolidate preventive territorial and environmental governance to ensure these projects incorporate effective deforestation compensation measures from their outset, in alignment with zero-deforestation targets and Brazil's NDC commitments; i.e., each hectare deforested is offset by one hectare of native vegetation restored.",
     "target": "Offset deforested area with native vegetation restoration for all large public-area enterprises by 2035.",
     "associated_national_objectives": [
       "National Objective 1: Ensure the integrity of national biomes through conservation, restoration and sustainable use of their ecosystems."
@@ -21,7 +21,7 @@
     "action_code": "CSN.I.3",
     "action_name": "Reduce illegal timber extraction in public areas of the Amazon",
     "action_description": "Reduce degradation of native vegetation caused by illegal selective logging by increasing accountability for illegal timber extraction, expanding resources to combat environmental crimes, and strengthening monitoring of forest exploitation.",
-    "target": "Reduce the area of illegal timber extraction in public areas of the Amazon by 80% by 2035, relative to the five-year historical average (2020–2025).",
+    "target": "Reduce the area of illegal timber extraction in public areas of the Amazon by 80% by 2035, relative to the five-year historical average (2020-2025).",
     "associated_national_objectives": [
       "National Objective 1: Ensure the integrity of national biomes through conservation, restoration and sustainable use of their ecosystems."
     ]
@@ -30,7 +30,7 @@
     "action_code": "CSN.I.4",
     "action_name": "Prevent and reduce fires in vegetation in public areas",
     "action_description": "Institute and strengthen regulations and programs related to fire management—such as the Federal Brigades Program and the Volunteer Program—enhance investigation and accountability of those responsible for vegetation fires, and improve collaborative monitoring and prevention capacities with states and municipalities.",
-    "target": "Reduce burned vegetation area by 80% by 2035, relative to the five-year historical average (2020–2025).",
+    "target": "Reduce burned vegetation area by 80% by 2035, relative to the five-year historical average (2020-2025).",
     "associated_national_objectives": [
       "National Objective 1: Ensure the integrity of national biomes through conservation, restoration and sustainable use of their ecosystems."
     ]

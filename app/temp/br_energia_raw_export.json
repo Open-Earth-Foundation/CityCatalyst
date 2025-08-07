@@ -1,0 +1,76 @@
+[
+  {
+    "action_code": "ENR.I.01",
+    "action_name": "Meet demand growth by maintaining or increasing the share of renewables in the power matrix",
+    "action_description": "This action aims to ensure the growing demand for electricity is met by maintaining or expanding the share of renewable sources in the power matrix (including the national interconnected system, self-generation and isolated systems), with a focus on expanding solar and wind generation.",
+    "target": "82.7% renewable power matrix by 2030, and increase from 82.7% to 86.1% renewable share by 2035.",
+    "associated_national_objectives": [
+      "National Objective 4: Increase the participation of clean, renewable and low-carbon technologies and sources in the national power matrix, ensuring energy security and accessibility for all."
+    ]
+  },
+  {
+    "action_code": "ENR.I.02",
+    "action_name": "Strengthen the production and sustainable use of biofuels",
+    "action_description": "Strengthen policies, infrastructure and incentives to expand the production and use of sustainable biofuels such as biodiesel and ethanol (from sugarcane and corn), integrating regional production chains. The application of blending percentages depends on CNPE deliberation.",
+    "target": "Biodiesel: mandatory blend of 20% by 2030 and 25% by 2035; Ethanol: mandatory blend of 30% by 2030 and 35% by 2035.",
+    "associated_national_objectives": [
+      "National Objective 3: Expand the sustainable production of biofuels, promote technological innovation and develop value chains related to bioenergy."
+    ]
+  },
+  {
+    "action_code": "ENR.I.03",
+    "action_name": "Increase production of synthetic fuels from low-carbon sources",
+    "action_description": "This action aims to foster national production of low-carbon intensity synthetic fuels (such as SAF, green diesel and others) to replace fossil fuels.",
+    "target": "SAF: produce 1.6 billion liters by 2030 and between 2.6 and 4.5 billion liters by 2035; Green Diesel: produce 1.6 billion liters by 2030 and between 2.6 and 4.5 billion liters by 2035.",
+    "associated_national_objectives": [
+      "National Objective 5: Encourage substitution of fossil fuels by promoting development and use of sustainable biofuels and electrification solutions."
+    ]
+  },
+  {
+    "action_code": "ENR.I.04",
+    "action_name": "Expand the production and use of biomethane",
+    "action_description": "Expand national production of biomethane from agro-industrial, urban and sanitary organic residues, promoting substitution of fossil fuels and strengthening energy security.",
+    "target": "Reduce GHG emissions by up to 5% by 2030 and up to 10% by 2035, relative to the ten-year average natural gas supply from domestic production and imports.",
+    "associated_national_objectives": [
+      "National Objective 5: Encourage the substitution of fossil fuels by promoting the development and use of sustainable biofuels and electrification solutions."
+    ]
+  },
+  {
+    "action_code": "ENR.I.05",
+    "action_name": "Reduce the emissions intensity of the oil and natural gas Exploration & Production (E&P) segment",
+    "action_description": "Implement low-carbon technologies, process controls and energy efficiency measures in oil and natural gas exploration and production activities.",
+    "target": "Reduce emissions intensity by 32% (to 15 kg CO₂/boe) by 2030 relative to 2015; and maintain that intensity through 2035 (kg CO₂/boe).",
+    "associated_national_objectives": [
+      "National Objective 7: Advance innovative, low-carbon solutions in national production and develop carbon capture, utilization and storage technologies in bioenergy and fossil fuel sectors.",
+      "National Objective 11: Undertake specific actions to mitigate high-impact non-CO₂ pollutants in global warming."
+    ]
+  },
+  {
+    "action_code": "ENR.I.07",
+    "action_name": "Reduce emissions in the handling of oil, natural gas and derivatives",
+    "action_description": "Modernize the logistics and transport chain for oil and gas, focusing on energy efficiency, leak control and partial electrification of processes.",
+    "target": "Avoid consumption of up to 125 000 m³ of diesel oil for handling operations by 2030 and up to 156 000 m³ by 2035.",
+    "associated_national_objectives": [
+      "National Objective 5: Encourage the substitution of fossil fuels by promoting the development and use of sustainable biofuels and electrification solutions.",
+      "National Objective 11: Undertake specific actions to mitigate high-impact non-CO₂ pollutants in global warming."
+    ]
+  },
+  {
+    "action_code": "ENR.I.08",
+    "action_name": "Encourage energy efficiency and decarbonization in buildings",
+    "action_description": "Stimulate energy efficiency measures aimed at reducing energy consumption across multiple sectors by establishing minimum efficiency standards, adopting energy certifications/labeling, transitioning from traditional energy sources (e.g., firewood and charcoal) to modern, lower-intensity alternatives, and promoting innovation in building design.",
+    "target": "2% efficiency gain by 2030 and 5%-6.3% efficiency gains by 2035, relative to 2024.",
+    "associated_national_objectives": [
+      "National Objective 5: Encourage the substitution of fossil fuels by promoting the development and use of sustainable biofuels and electrification solutions."
+    ]
+  },
+  {
+    "action_code": "ENR.I.09",
+    "action_name": "Increase energy efficiency and decarbonization in industry",
+    "action_description": "Stimulate energy efficiency measures aimed at reducing energy consumption across various industrial sectors.",
+    "target": "3% efficiency gain by 2030 and 4%-8% efficiency gains by 2035, relative to 2024.",
+    "associated_national_objectives": [
+      "National Objective 5: Encourage the substitution of fossil fuels by promoting the development and use of sustainable biofuels and electrification solutions."
+    ]
+  }
+]

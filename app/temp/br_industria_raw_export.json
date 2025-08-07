@@ -1,0 +1,56 @@
+[
+  {
+    "action_code": "IND.I.01",
+    "action_name": "Expand cogeneration and use of renewable electric energy in industrial facilities",
+    "action_description": "Expand the use of renewable energy sources through strategies such as self-generation in industrial units, formalization of renewable energy purchase agreements (PPAs), investment in distributed generation projects (including solar PV, wind and biomass), and implementation of high-efficiency cogeneration systems, with the objective of reducing carbon footprint and increasing the energy security of operations.",
+    "target": "2030: Increase renewable electric energy consumption in industry to contribute to a Brazilian power matrix renewability above 82.7%. 2035: Increase renewable electric energy consumption in industry to contribute to a Brazilian power matrix renewability above 86.1%.",
+    "associated_national_objectives": [
+      "National Objective 4: Increase the participation of clean, renewable and low-carbon technologies and sources in the national power matrix, ensuring energy security and accessibility for all."
+    ]
+  },
+  {
+    "action_code": "IND.I.02",
+    "action_name": "Electrify industrial processes",
+    "action_description": "Promote electrification of industrial processes through measures that reduce the cost of acquiring renewable energy for industry and tax incentive programs for purchase of more efficient equipment.",
+    "target": "By 2035, increase the share of electricity in industrial energy consumption to at least 24%.",
+    "associated_national_objectives": [
+      "National Objective 5: Encourage substitution of fossil fuels by promoting the development and use of sustainable biofuels and electrification solutions."
+    ]
+  },
+  {
+    "action_code": "IND.I.03",
+    "action_name": "Expand the use of renewable fuels to replace fossil fuels",
+    "action_description": "Expand the use of renewable fuels—such as biogas, biomethane, biomass, processed residues, biodiesel and ethanol—in industrial processes to replace fossil fuels, aiming to reduce GHG emissions and diversify the energy matrix.",
+    "target": "2030: Increase renewable fuel consumption and ensure renewable energy sources account for over 65% of industrial energy use. 2035: Maintain renewable energy sources at over 65% of industrial energy use.",
+    "associated_national_objectives": [
+      "National Objective 3: Expand the sustainable production of biofuels, promote technological innovation and develop value chains related to bioenergy."
+    ]
+  },
+  {
+    "action_code": "IND.I.04",
+    "action_name": "Implement actions to increase efficiency in industry",
+    "action_description": "Develop and implement strategic measures to raise thermal and electrical efficiency in industrial processes through equipment modernization, optimization of production processes, adoption of low‐energy‐consumption technologies, waste heat recovery, and digitalization with intelligent management, aiming to reduce energy use, operational costs and GHG emissions.",
+    "target": "2030: Achieve 2% energy efficiency gains relative to 2023 levels. 2035: Achieve 4–8% energy efficiency gains relative to 2023 levels.",
+    "associated_national_objectives": [
+      "National Objective 4: Increase the participation of clean, renewable and low-carbon technologies and sources in the national power matrix, ensuring energy security and accessibility for all."
+    ]
+  },
+  {
+    "action_code": "IND.I.05",
+    "action_name": "Gradually reduce HFC consumption in Brazil",
+    "action_description": "Reduce HFC consumption through legislation (import quotas) and technical and financial support via cooperation projects, funded by the Multilateral Fund for Implementation of the Montreal Protocol.",
+    "target": "Reduce HFC consumption by 10% by 2029 and by 30% by 2035, relative to the baseline (Kigali Amendment).",
+    "associated_national_objectives": [
+      "National Objective 7: Advance innovative, low-carbon solutions in national production and develop carbon capture, utilization and storage technologies in bioenergy production and fossil fuel sectors."
+    ]
+  },
+  {
+    "action_code": "IND.I.06",
+    "action_name": "Support the use of biogas and biomethane in industry, in a transitional and strategic manner, the use of natural gas as fuel and/or reduction agent in industry, provided it replaces more polluting sources, while enabling reduced demand for fossil inputs, decreased carbon intensity of those inputs and expanded scaled supply of lower-emission energy inputs, as well as carbon capture and storage technologies",
+    "action_description": "Support the use of biogas and biomethane in industry, and, in a transitional and strategic manner, use natural gas as a fuel and/or reduction agent in industry, provided it replaces more polluting sources, while enabling reduced demand for fossil inputs, decreased carbon intensity of those inputs, expanded scaled supply of lower-emission energy inputs, and deployment of carbon capture and storage technologies.",
+    "target": "Support, in a transitional and strategic manner, use of natural gas as a fuel and/or reduction agent in industry—substituting more polluting sources—while enabling reduced demand for fossil inputs, decreased carbon intensity, expanded scaled supply of lower-emission energy inputs, and deployment of carbon capture and storage technologies.",
+    "associated_national_objectives": [
+      "National Objective 10: Transform Brazilian comparative advantages into competitive advantages, making the country a provider of climate goods, services and solutions for a world transitioning to low-carbon development models."
+    ]
+  }
+]

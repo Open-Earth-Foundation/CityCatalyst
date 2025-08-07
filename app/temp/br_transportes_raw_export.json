@@ -1,0 +1,78 @@
+[
+  {
+    "action_code": "TRP.I.01",
+    "action_name": "Increase the use of biofuels in the transport sector",
+    "action_description": "Article 33 of Law 14.993 of October 8, 2024 (Fuel of the Future) sets mandatory volumetric blending targets for biodiesel in diesel sold to end consumers nationwide. Technologies that enable higher biodiesel blends may also be used, including vehicles running 100% on biodiesel. Using biodiesel to replace fossil fuel is an important element for decarbonizing the sector.",
+    "target": "20% biodiesel blend in diesel sold to the end consumer by 2030 and 25% by 2035.",
+    "associated_national_objectives": [
+      "National Objective 5: Encourage the substitution of fossil fuels by promoting the development and use of sustainable biofuels and electrification solutions.",
+      "National Objective 3: Expand the sustainable production of biofuels, promote technological innovation, and develop value chains related to bioenergy.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition.",
+      "National Objective 10: Transform Brazilian comparative advantages into competitive advantages, making the country a provider of climate goods, services and solutions for a world transitioning to low-carbon development models.",
+      "National Objective 12: Prioritize mitigation measures with potential co-benefits for adaptation and climate resilience and for sustainable development."
+    ]
+  },
+  {
+    "action_code": "TRP.I.02",
+    "action_name": "Increase the use of Sustainable Aviation Fuel (SAF) in domestic air operations",
+    "action_description": "Law 14.993 of October 8, 2024 (Fuel of the Future) establishes obligations for air operators to reduce GHG emissions on domestic flights through the use of SAF, starting in 2027 with targets set through 2037. Because SAF can be produced via different technological routes with different emission impacts, the targets presented in this action are expressed as final GHG-reduction outcomes. In addition, technologies that enable higher blends of synthetic fuel may be used.",
+    "target": "Minimum domestic-flight emission reductions of 3% by 2030, 8% by 2035, and 10% by 2037 (via SAF use).",
+    "associated_national_objectives": [
+      "National Objective 5: Encourage the substitution of fossil fuels by promoting the development and use of sustainable biofuels and electrification solutions.",
+      "National Objective 3: Expand sustainable biofuel production, promote technological innovation, and develop value chains related to bioenergy.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition.",
+      "National Objective 10: Transform Brazilian comparative advantages into competitive advantages, making the country a provider of climate goods, services and solutions for a world transitioning to low-carbon development models."
+    ]
+  },
+  {
+    "action_code": "TRP.I.03",
+    "action_name": "Increase the use of low-carbon fuels in domestic navigation",
+    "action_description": "Aligned with international trends, the waterway sector can reduce its emissions by using sustainable, low-carbon-intensity fuels together with operational efficiency gains. Technologies that allow higher blends of biofuels and synthetic fuels may also be used, including vessels running 100% on biodiesel or ethanol. Given the sector’s different technology pathways and the expected increase in the mode’s share in the transport matrix, the action seeks to reduce emissions per ton-kilometer transported as a way to mitigate the sector’s total emissions.",
+    "target": "Reduce CO₂e/TKU emissions by 28% by 2035.",
+    "associated_national_objectives": [
+      "National Objective 5: Encourage the substitution of fossil fuels by promoting the development and use of sustainable biofuels and electrification solutions.",
+      "National Objective 3: Expand sustainable biofuel production, promote technological innovation, and develop value chains related to bioenergy.",
+      "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition.",
+      "National Objective 10: Transform Brazilian comparative advantages into competitive advantages, making the country a provider of climate goods, services and solutions for a world transitioning to low-carbon development models."
+    ]
+  },
+  {
+    "action_code": "TRP.I.04",
+    "action_name": "Improve pavement quality on federal highways",
+    "action_description": "Improve the quality of road pavements to reduce braking during trips and, consequently, fuel consumption. Investments on highways managed by DNIT will be carried out via the National Road Maintenance Program (PNMR) and monitored by the Pavement Surface Condition Index (ICS). For federal concessioned highways, pavement quality will be monitored through the Pavement Performance Index for Concessioned Highways (IDPAV).",
+    "target": "By 2030, increase by 5% the share of the length of roads under federal management that are in good condition and by 10% by 2035 (baseline: ICS 2024). Also increase the IDPAV indicator on federal concessioned highways by 5% by 2030 and maintain it through 2035 (baseline: 2024).",
+    "associated_national_objectives": [
+      "National Objective 12: Prioritize mitigation measures with potential co-benefits for adaptation and resilience to climate change and for sustainable development."
+    ]
+  },
+  {
+    "action_code": "TRP.I.05",
+    "action_name": "Reduce fossil-fuel consumption in transport infrastructure and operations",
+    "action_description": "Implement solutions that reduce inefficiencies in transport infrastructure and operations, directly cutting fossil-fuel consumption and other greenhouse-gas–emitting energy sources.",
+    "target": "Reduce the use of fossil-fuel-powered engines during taxiing by 25% by 2030 and by 50% by 2035.",
+    "associated_national_objectives": [
+      "National Objective 12: Prioritize mitigation measures with potential co-benefits for adaptation and resilience to climate change and for sustainable development."
+    ]
+  },
+  {
+    "action_code": "TRP.I.06",
+    "action_name": "Increase the share of rail and waterway modes in the freight transport matrix",
+    "action_description": "Investments in rail and waterway modes to improve their competitiveness versus road transport, attracting a greater volume of freight to these less-polluting modes.",
+    "target": "Shift road freight to rail by 31.5 billion TKU by 2030 and 38 billion TKU by 2035 with the FICO–FIOL corridor in operation; increase the share of domestic navigation from 15% to 18% by 2035.",
+    "associated_national_objectives": [
+      "National Objective 12: Prioritize mitigation measures with potential co-benefits for adaptation and resilience to climate change and for sustainable development."
+    ]
+  },
+  {
+    "action_code": "TRP.I.07",
+    "action_name": "Increase the use of green diesel in the transport sector",
+    "action_description": "Based on Law 14.993 of 8 Oct 2024 (Fuel of the Future), establish a mandatory minimum blend of green (synthetic) diesel in fossil diesel, allowing voluntary use above the mandate. Green diesel is treated as a new low-carbon fuel to support decarbonization of transport.",
+    "target": "Reach a 2% blend of green diesel in retail diesel by 2030, increasing to 3% by 2035.",
+    "associated_national_objectives": [
+      "Objective 5: Encourage the substitution of fossil fuels by promoting the development and use of sustainable biofuels and electrification solutions.",
+      "Objective 9: Generate jobs, income and productive inclusion in economic activities linked to decarbonization and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition.",
+      "Objective 10: Turn Brazil’s comparative advantages into competitive advantages, making the country a provider of climate goods, services and solutions for a world transitioning to low-carbon development models.",
+      "Objective 12: Prioritize mitigation measures with potential co-benefits for adaptation and resilience to climate change and for sustainable development."
+    ]
+  }
+]

@@ -12,7 +12,7 @@
   {
     "action_code": "AGR.I.02",
     "action_name": "Recover Degraded Pastures - ABC+ Plan",
-    "action_description": "The application of techniques to restore pasture vigor has the potential to reduce livestock’s GHG footprint. Degraded pasture areas emit greenhouse gases, produce low-quality forage, and support low stocking rates. In contrast, improving soil quality and promoting greater pasture growth reduces methane-producing microorganisms, increases soil organic matter accumulation and carbon sequestration, improves forage quality and carrying capacity, shortens time to slaughter, lowers emissions, and reduces land demand for livestock.",
+    "action_description": "The application of techniques to restore pasture vigor has the potential to reduce livestock's GHG footprint. Degraded pasture areas emit greenhouse gases, produce low-quality forage, and support low stocking rates. In contrast, improving soil quality and promoting greater pasture growth reduces methane-producing microorganisms, increases soil organic matter accumulation and carbon sequestration, improves forage quality and carrying capacity, shortens time to slaughter, lowers emissions, and reduces land demand for livestock.",
     "target": "2030: Increase recovered pasture area by 30 million hectares. 2035: Increase recovered pasture area by 30 million hectares.",
     "associated_national_objectives": [
       "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
@@ -21,7 +21,7 @@
   },
   {
     "action_code": "AGR.I.03",
-    "action_name": "Expand the implementation of Integrated Systems (ILP, ILPF and SAF) – ABC+ Plan",
+    "action_name": "Expand the implementation of Integrated Systems (ILP, ILPF and SAF) - ABC+ Plan",
     "action_description": "Crop-Livestock-Forest Integration (ILPF) is a sustainable production strategy that integrates agricultural, livestock and/or forestry activities in the same area, whether in consortium, succession or rotation. It comprises four production systems: Crop-Livestock Integration (ILP), Crop-Forest Integration (ILF), Livestock-Forest Integration (IPF) and Crop-Livestock-Forest Integration (ILPF). Especially in degraded pasture areas, its use can transform areas that are net GHG emitters into sinks, since they can sequester carbon both in the soil and in the wood from tree plantings. The expansion proposal under the ABC+ Plan for this system by 2030 is 10 million hectares, including 1 million hectares planted with native tree species (timber, forage or fruit).",
     "target": "2030: Expand the area under integrated systems by 10.1 million hectares (ILP, ILF, ILPF, IPF). 2035: Expand the area under integrated systems by 20.3 million hectares.",
     "associated_national_objectives": [
@@ -31,17 +31,17 @@
   },
   {
     "action_code": "AGR.I.04",
-    "action_name": "Expand the production of Planted Forests for sustainable use – ABC+ Plan",
-    "action_description": "Under the ABC+ Plan, Planted Forests (PF) are promoted both for commercial production—industrial and energy uses—and for environmental restoration, as defined by specific legislation. Fast-growing plantations typically capture carbon quickly but are limited by economic harvest cycles. Native vegetation restoration plantations capture carbon more slowly but are not constrained by harvesting, allowing total carbon stocks to approach those of natural forests over time. ABC+‐supported PFs serve two purposes: commercial production of timber, fibers, food, bioenergy and non‐timber forest products (latex, tannins, resins, bioproducts) on private land; and environmental liability recovery under specific law. Industrial plantations currently cover about 10 million hectares, mainly eucalyptus and pine, with other species (e.g., yerba‐mate, acacia, teak, rubber tree, araucaria, mahogany, cuiabano pine, macaúba) present in various regions. PFs play a key economic and environmental role by alleviating pressure on native forests. Ongoing productivity gains—driven by genetic improvement and silvicultural practices—are accounted for in GHG removal estimates for planted forests.",
+    "action_name": "Expand the production of Planted Forests for sustainable use - ABC+ Plan",
+    "action_description": "Under the ABC+ Plan, Planted Forests (PF) are promoted both for commercial production—industrial and energy uses—and for environmental restoration, as defined by specific legislation. Fast-growing plantations typically capture carbon quickly but are limited by economic harvest cycles. Native vegetation restoration plantations capture carbon more slowly but are not constrained by harvesting, allowing total carbon stocks to approach those of natural forests over time. ABC+‐supported PFs serve two purposes: commercial production of timber, fibers, food, bioenergy and non‐timber forest products (latex, tannins, resins, bioproducts) on private land; and environmental liability recovery under specific law. Industrial plantations currently cover about 10 million hectares, mainly eucalyptus and pine, with other species (e.g., yerba-mate, acacia, teak, rubber tree, araucaria, mahogany, cuiabano pine, macaúba) present in various regions. PFs play a key economic and environmental role by alleviating pressure on native forests. Ongoing productivity gains—driven by genetic improvement and silvicultural practices—are accounted for in GHG removal estimates for planted forests.",
     "target": "2030: Increase planted forest area by 4 million hectares. 2035: Increase planted forest area by 4.25 million hectares.",
     "associated_national_objectives": [
-      "National Objective 2: Promote broad adoption of sustainable, low‐GHG agricultural and livestock production models, ensuring food security for all.",
+      "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
       "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition."
     ]
   },
   {
     "action_code": "AGR.I.05",
-    "action_name": "Expand the adoption of Intensive Finishing – ABC+ Plan",
+    "action_name": "Expand the adoption of Intensive Finishing - ABC+ Plan",
     "action_description": "Consists of intensifying feeding management in the final production phase of cattle destined for slaughter, primarily through adoption of confinement, semi-confinement, and pasture-supplementation regimes. Intensive Finishing reduces emission intensity directly by lowering methane emissions during rumen fermentation and indirectly by shortening the production cycle, allowing younger animals to be slaughtered.",
     "target": "2030: Increase by 5 million the annual number of cattle slaughtered at up to 36 months of age. 2035: Increase by 29.1 million the annual number of cattle slaughtered at up to 36 months of age.",
     "associated_national_objectives": [
@@ -51,8 +51,8 @@
   },
   {
     "action_code": "AGR.I.06",
-    "action_name": "Expand the use of bio-inputs – ABC+ Plan",
-    "action_description": "Promote the use of biological inputs for Nitrogen Fixation and other plant growth–promoting microorganisms (PGPM), as well as multifunctional microbes and macroorganisms for nutrient availability enhancement and biological control. This includes systems, strategies, processes or solutions for using inoculants for biological nitrogen fixation—covering phosphate-solubilizing microorganisms and biological fixation for grasses—as low-carbon alternatives to NPK.",
+    "action_name": "Expand the use of bio-inputs - ABC+ Plan",
+    "action_description": "Promote the use of biological inputs for Nitrogen Fixation and other plant growth-promoting microorganisms (PGPM), as well as multifunctional microbes and macroorganisms for nutrient availability enhancement and biological control. This includes systems, strategies, processes or solutions for using inoculants for biological nitrogen fixation—covering phosphate-solubilizing microorganisms and biological fixation for grasses—as low-carbon alternatives to NPK.",
     "target": "2030: Increase by 13 million hectares the area using bio-inputs. 2035: Increase by 15 million hectares the area using bio-inputs.",
     "associated_national_objectives": [
       "National Objective 2: Foster broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
@@ -61,7 +61,7 @@
   },
   {
     "action_code": "AGR.I.07",
-    "action_name": "Optimize and expand the sustainable use of irrigated systems – ABC+ Plan",
+    "action_name": "Optimize and expand the sustainable use of irrigated systems - ABC+ Plan",
     "action_description": "Expanding areas under irrigated systems promotes increases in production, productivity, and profitability, with positive social impacts, stable creation of direct and indirect jobs, and the ability to produce even during dry periods, boosting output in already anthropized areas. It is a key strategy for adapting agriculture and livestock to climate change and ensuring the production of numerous agricultural crops.",
     "target": "2030: Expand irrigated areas in the country by 3 million hectares. 2035: Expand irrigated areas in the country by 4 million hectares.",
     "associated_national_objectives": [
@@ -71,7 +71,7 @@
   },
   {
     "action_code": "AGR.I.08",
-    "action_name": "Manage animal production residues for biogas production – ABC+ Plan",
+    "action_name": "Manage animal production residues for biogas production - ABC+ Plan",
     "action_description": "Expand the adoption of technologies for treating all types of residues from animal production, such as liquid waste (a mixture of cleaning water, feces, urine and food residues), bedding, carcasses of animals that died on-farm, physiological residues, and proper stabilization of their effluents. Biogas systems (MRPA) offer an alternative to high-emitting manure lagoons, significantly reducing methane emissions.",
     "target": "2030: Treat 208.4 million m³ of animal waste (5,000 farms). 2035: Treat 228 million m³ of animal waste (5,300 farms).",
     "associated_national_objectives": [
@@ -101,7 +101,7 @@
   },
   {
     "action_code": "AGR.I.11",
-    "action_name": "Expand low-carbon agroecological and traditional productive systems in family farming – ABC+ Plan",
+    "action_name": "Expand low-carbon agroecological and traditional productive systems in family farming - ABC+ Plan",
     "action_description": "Promote the agroecological transition and strengthen sustainable, low-carbon productive systems in family farming by improving land access, technical assistance, financing, valuing traditional agricultural knowledge and systems, and reinforcing local and institutional markets. This action enhances agrobiodiversity, supports the productive autonomy of women and traditional peoples and communities, and integrates production, marketing and supply, resulting in GHG reduction and removal while bolstering food security and climate justice.",
     "target": "Implement 180 projects for native vegetation recovery and restoration; support 1,680 family farms with agroecological production recovery systems; and establish 200 demonstration units for soil management and conservation by 2027.",
     "associated_national_objectives": [
@@ -177,7 +177,7 @@
   },
   {
     "action_code": "AGR.I.19",
-    "action_name": "Expand the adoption of low-GHG emission models – Integrated Multitrophic Aquaculture (AMTI) and Aquaponics",
+    "action_name": "Expand the adoption of low-GHG emission models - Integrated Multitrophic Aquaculture (AMTI) and Aquaponics",
     "action_description": "Increase and promote the adoption of sustainable aquaculture practices focused on reducing greenhouse gas emissions by incentivizing and scaling innovative, climate-resilient models such as Integrated Multitrophic Aquaculture (AMTI) and aquaponics.",
     "target": "2030: Achieve 23,000 hectares under AMTI and aquaponics systems. 2035: Achieve 46,000 hectares under AMTI and aquaponics systems.",
     "associated_national_objectives": [
@@ -212,12 +212,12 @@
   {
     "action_code": "AGR.I.22",
     "action_name": "Reduce legal clearing of native vegetation on rural properties, agrarian reform settlements and quilombola territories",
-    "action_description": "Promote reduction of legally mandated clearing of native vegetation on rural properties, agrarian reform settlements and quilombola territories by strengthening land governance, environmental regularization and support for implementing sustainable productive practices, while respecting each territory’s sociocultural specificities.",
+    "action_description": "Promote reduction of legally mandated clearing of native vegetation on rural properties, agrarian reform settlements and quilombola territories by strengthening land governance, environmental regularization and support for implementing sustainable productive practices, while respecting each territory's sociocultural specificities.",
     "target": "Reduce the rate of legal native vegetation clearing by 50% by 2030 and by 75% by 2035, relative to 2022.",
     "associated_national_objectives": [
       "National Objective 1: Ensure integrity of national biomes through conservation, restoration and sustainable use of their ecosystems.",
       "National Objective 2: Promote broad adoption of sustainable, low-GHG agricultural and livestock production models, ensuring food security for all.",
-      "National Objective 10: Transform Brazil’s comparative advantages into competitive advantages, making the country a provider of climate goods, services and solutions for a world transitioning to low-carbon development models.",
+      "National Objective 10: Transform Brazil's comparative advantages into competitive advantages, making the country a provider of climate goods, services and solutions for a world transitioning to low-carbon development models.",
       "National Objective 11: Undertake specific actions to mitigate high-impact non-CO₂ pollutants in global warming.",
       "National Objective 12: Prioritize mitigation measures with potential to generate co-benefits for adaptation and resilience to climate change and sustainable development."
     ]

@@ -27,7 +27,6 @@ const NotFound = (props: { params: Promise<{ lng: string }> }) => {
         layout="fill"
         objectFit="cover"
         sizes="100vw"
-        style={{ position: "relative" }}
         alt="not-found page background"
       />
       <Box

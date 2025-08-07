@@ -2,6 +2,7 @@ import { TFunction } from "i18next";
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
 import type {
   GHGICountryEmissionsEntry,
+  GHGIFormInputs,
 } from "@/util/GHGI/types";
 import { OCCityAttributes } from "@/util/types";
 import { useGetOCCityDataQuery } from "@/services/api";
@@ -57,9 +58,9 @@ export default function SetPopulationDataStep({
   setData,
 }: {
   t: TFunction;
-  register: UseFormRegister<GeneralInputs>;
-  errors: FieldErrors<GeneralInputs>;
-  control: Control<GeneralInputs>;
+  register: UseFormRegister<GHGIFormInputs>;
+  errors: FieldErrors<GHGIFormInputs>;
+  control: Control<GHGIFormInputs>;
   years: number[];
   watch: Function;
   ocCityData?: OCCityAttributes;
@@ -394,7 +395,8 @@ export default function SetPopulationDataStep({
                     color="content.tertiary"
                     fontStyle="normal"
                   >
-                    {errors.countryPopulation && errors.countryPopulation.message}
+                    {errors.countryPopulation &&
+                      errors.countryPopulation.message}
                   </Text>
                 </Box>
               }

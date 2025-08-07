@@ -13,7 +13,7 @@ import React, { use, useEffect, useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SelectCityStep from "@/components/steps/select-city-steps";
-import ConfirmStep from "@/components/steps/confirm-city-data-step";
+import ConfirmStep from "@/components/steps/JourneyNavigator/confirm-city-data-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast } from "@/hooks/Toasts";

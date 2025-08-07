@@ -10,6 +10,7 @@ import {
 import { Field } from "@/components/ui/field";
 import { MdError } from "react-icons/md";
 import { BodyMedium } from "@/components/Texts/Body";
+import { GHGIFormInputs } from "@/util/GHGI/types";
 
 // Type for general onboarding inputs
 type GeneralInputs = {
@@ -27,10 +28,10 @@ type GeneralInputs = {
 };
 
 function useFormattedNumber(
-  name: Path<GeneralInputs>,
-  control: Control<GeneralInputs>,
+  name: Path<GHGIFormInputs>,
+  control: Control<GHGIFormInputs>,
   rules?: Omit<
-    RegisterOptions<GeneralInputs, Path<GeneralInputs>>,
+    RegisterOptions<GHGIFormInputs, Path<GHGIFormInputs>>,
     "valueAsNumber" | "setValueAs"
   >,
 ) {
@@ -72,10 +73,10 @@ function useFormattedNumber(
 }
 
 interface FormattedNumberInputProps extends Omit<InputProps, "name"> {
-  control: Control<GeneralInputs>;
-  name: Path<GeneralInputs>;
+  control: Control<GHGIFormInputs>;
+  name: Path<GHGIFormInputs>;
   rules?: Omit<
-    RegisterOptions<GeneralInputs, Path<GeneralInputs>>,
+    RegisterOptions<GHGIFormInputs, Path<GHGIFormInputs>>,
     "valueAsNumber" | "setValueAs"
   >;
 }

@@ -1,10 +1,10 @@
 import { TFunction } from "i18next";
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
-import type {
-  GHGIFormInputs,
-  GHGICountryEmissionsEntry,
-  GHGIOnboardingData,
-} from "@/util/GHGI/types";
+import {
+  CountryEmissionsEntry,
+  Inputs,
+  OnboardingData,
+} from "@/app/[lng]/onboarding/setup/page";
 import { OCCityAttributes } from "@/util/types";
 import { useGetOCCityDataQuery } from "@/services/api";
 import { useEffect, useState } from "react";
@@ -45,13 +45,13 @@ export default function SetPopulationDataStep({
   numberOfYearsDisplayed,
 }: {
   t: TFunction;
-  register: UseFormRegister<GHGIFormInputs>;
-  errors: FieldErrors<GHGIFormInputs>;
-  control: Control<GHGIFormInputs>;
+  register: UseFormRegister<Inputs>;
+  errors: FieldErrors<Inputs>;
+  control: Control<Inputs>;
   years: number[];
   watch: Function;
   ocCityData?: OCCityAttributes;
-  setData: (data: GHGIOnboardingData) => void;
+  setData: (data: OnboardingData) => void;
   setValue: any;
   numberOfYearsDisplayed: number;
 }) {
@@ -125,7 +125,7 @@ export default function SetPopulationDataStep({
       const sourceId = keys.find((id) => id.startsWith("UNFCCC"));
 
       if (sourceId) {
-        const emissionsData: GHGICountryEmissionsEntry[] =
+        const emissionsData: CountryEmissionsEntry[] =
           countryData.emissions[sourceId].data;
         const emissions = emissionsData.find(
           (e) => e.year === year,
@@ -209,7 +209,7 @@ export default function SetPopulationDataStep({
                   )
                 }
               >
-                <FormattedThousandsNumberInput<GHGIFormInputs>
+                <FormattedThousandsNumberInput<Inputs>
                   name="countryPopulation"
                   control={control}
                   rules={{
@@ -324,7 +324,7 @@ export default function SetPopulationDataStep({
                   </Text>
                 }
               >
-                <FormattedThousandsNumberInput<GHGIFormInputs>
+                <FormattedThousandsNumberInput<Inputs>
                   name="regionPopulation"
                   control={control}
                   rules={{
@@ -430,7 +430,7 @@ export default function SetPopulationDataStep({
                   )
                 }
               >
-                <FormattedThousandsNumberInput<GHGIFormInputs>
+                <FormattedThousandsNumberInput<Inputs>
                   name="cityPopulation"
                   control={control}
                   rules={{

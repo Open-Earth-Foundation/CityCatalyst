@@ -18,7 +18,7 @@ import React, { use, useEffect, useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SetInventoryDetailsStep from "@/components/steps/GHGI/set-inventory-details-step";
-import SetPopulationDataStep from "@/components/steps/add-population-data-step";
+import SetPopulationDataStep from "@/components/steps/GHGI/set-population-data-step";
 import ConfirmStep from "@/components/steps/GHGI/confirm-inventory-data-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";

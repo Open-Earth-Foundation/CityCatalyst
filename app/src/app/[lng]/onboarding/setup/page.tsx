@@ -20,7 +20,7 @@ import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SelectCityStep from "@/components/steps/select-city-steps";
 import SetInventoryDetailsStep from "@/components/steps/add-inventory-details-step";
-import SetPopulationDataStep from "@/components/steps/JourneyNavigator/set-population-data-step";
+import SetPopulationDataStep from "@/components/steps/add-population-data-step";
 import ConfirmStep from "@/components/steps/confirm-city-data-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
@@ -347,6 +347,9 @@ export default function OnboardingSetup(props: {
               t={t}
               locode={data.locode}
               area={cityArea?.area!}
+              population={cityPopulation}
+              inventoryGoal={inventoryGoal}
+              year={getValues("year")}
             />
           )}
         </Box>

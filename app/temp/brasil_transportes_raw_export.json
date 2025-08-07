@@ -1,0 +1,462 @@
+[
+  {
+    "primaryAction": {
+      "code": "TRP.I.01",
+      "action": "Increase the use of biofuels in the transport sector",
+      "description": "Article 33 of Law 14.993 of October 8, 2024 (Fuel of the Future) establishes mandatory blending targets, by volume, of biodiesel into diesel oil sold to the end consumer anywhere in the national territory. In addition, technologies that allow higher biodiesel blends, including vehicles running 100% on biodiesel, may be used. The use of biodiesel as a substitute for fossil fuel is an important element in decarbonizing the sector.",
+      "target": "20% biodiesel blend in diesel oil sold to the end consumer by 2030 and 25% by 2035",
+      "actionType": "Impactful",
+      "impactType": [
+        "Reduction of CO₂ emissions",
+        "Reduction of other PCVC (black carbon, tropospheric O₃)"
+      ],
+      "associatedNationalObjectives": [
+        "National Objective 5: Encourage the substitution of fossil fuels by promoting the development and use of sustainable biofuels and electrification solutions.",
+        "National Objective 3: Expand the sustainable production of biofuels, promote technological innovation and develop value chains related to bioenergy.",
+        "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition.",
+        "National Objective 10: Transform Brazilian comparative advantages into competitive advantages, making the country a provider of climate goods, services and solutions for a world transitioning to low-carbon development models.",
+        "National Objective 12: Prioritize mitigation measures with potential to generate co-benefits for adaptation and resilience to climate change and for sustainable development."
+      ],
+      "responsible": ["MME", "CNPE", "ANP"],
+      "involvedActors": [
+        "MT",
+        "MPOR",
+        "MDIC",
+        "MCTI",
+        "MF",
+        "MTE",
+        "MDIC",
+        "Automotive sector",
+        "Truck and bus owners",
+        "Railway concessionaires",
+        "Shipping companies",
+        "CNT"
+      ]
+    },
+    "monitoring": {
+      "status": "Planned",
+      "indicator": [
+        "% biodiesel blend by volume in diesel oil. Uses as base the value of 14% biodiesel blend in diesel oil in 2024."
+      ],
+      "dataSource": "EPE Report: Biofuels Market Analysis"
+    },
+    "existingInstruments": [
+      {
+        "publicPolicies": "Programs: PATEN, Fuel of the Future",
+        "regulatory": "CNPE Resolution; Decree No. 12.435/2025;",
+        "financial": null
+      },
+      {
+        "publicPolicies": "Fuel of the Future, RenovaBio, MOVER, PNPB",
+        "regulatory": "Decree No. 12.437/2025;",
+        "financial": null
+      }
+    ],
+    "investmentAndFinancing": {
+      "estimatedInvestment": null,
+      "fundingSources": [],
+      "financingChannels": []
+    },
+    "enablingStructuralActions": [
+      {
+        "code": "TRP.E.01",
+        "action": "Make financial and fiscal incentives available for substituting medium and heavy vehicles, vessels, tugboats, locomotives and aircraft powered by fossil fuels with those powered by electricity (battery and fuel cell), hydrogen, biogas and low-carbon alternative fuels."
+      },
+      {
+        "code": "TRP.E.02",
+        "action": "Create a program to implement comprehensive refueling infrastructure, including ultra-fast electric charging networks, biofuel distribution networks, and distribution of hydrogen, natural gas and biogas."
+      },
+      {
+        "code": "TRP.E.03",
+        "action": "Promote the use of sustainable low-carbon intensity fuels in the transport sector."
+      }
+    ],
+    "connectionWithOtherActions": {
+      "code": "ENR.I.02",
+      "action": "Strengthen the production and sustainable use of biofuels"
+    },
+    "adaptationSectorInteraction": [
+      { "sector": "Health", "interactionType": "Positive" },
+      { "sector": "Industry", "interactionType": "Positive" },
+      { "sector": "Family farming", "interactionType": "Positive" }
+    ]
+  },
+  {
+    "primaryAction": {
+      "code": "TRP.I.02",
+      "action": "Increase the use of Sustainable Aviation Fuel (SAF) in domestic air operations",
+      "description": "Law 14.993 of October 8, 2024 (Fuel of the Future) establishes obligations for air operators to reduce GHG emissions on domestic flights through the use of SAF, starting in 2027 with targets set through 2037. Due to different technological production routes for SAF, which vary in emission impact, the targets presented in this action aim at net GHG reduction. Additionally, technologies that allow higher blends of synthetic fuel may also be used.",
+      "target": "Minimum emission reduction percentages on domestic flights of 3% in 2030, 8% in 2035 and 10% in 2037",
+      "actionType": "Impactful",
+      "impactType": [
+        "Reduction of CO₂ emissions",
+        "Reduction of other PCVC (black carbon, O₃ troposférico)"
+      ],
+      "associatedNationalObjectives": [
+        "National Objective 5: Encourage the substitution of fossil fuels by promoting the development and use of sustainable biofuels and electrification solutions.",
+        "National Objective 3: Expand the sustainable production of biofuels, promote technological innovation and develop value chains related to bioenergy.",
+        "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition.",
+        "National Objective 10: Transform Brazilian comparative advantages into competitive advantages, making the country a provider of climate goods, services and solutions for a world transitioning to low-carbon development models."
+      ],
+      "responsible": ["SAC", "ANAC", "CNPE", "ANP"],
+      "involvedActors": [
+        "MPOR",
+        "MDIC",
+        "MF",
+        "BNDES",
+        "Air operators",
+        "MCTI",
+        "MME",
+        "SAF producers and distributors",
+        "CNT"
+      ]
+    },
+    "monitoring": {
+      "status": "Planned",
+      "indicator": [
+        "% emissions reduced based on the volume of emissions from domestic operations carried out by the company in the corresponding year, assuming all operations used fossil fuel.",
+        "Volume of SAF used by air operators"
+      ],
+      "dataSource": "Air operators"
+    },
+    "existingInstruments": [
+      {
+        "publicPolicies": "Programs: Fuel of the Future, ProBioQAV; Civil aviation GHG reduction plan",
+        "regulatory": "Resolution A37-19",
+        "financial": null
+      }
+    ],
+    "investmentAndFinancing": {
+      "estimatedInvestment": null,
+      "fundingSources": [],
+      "financingChannels": []
+    },
+    "enablingStructuralActions": [
+      {
+        "code": "TRP.E.04",
+        "action": "Promote the use of sustainable low-carbon intensity fuels in the transport sector"
+      },
+      {
+        "code": "TRP.E.02",
+        "action": "Create a program to implement comprehensive refueling infrastructure, including ultra-fast electric charging networks, biofuel distribution networks, and distribution of hydrogen, natural gas and biogas"
+      }
+    ],
+    "connectionWithOtherActions": {
+      "code": "ENR.I.03",
+      "action": "Encourage the production of synthetic fuels from low-carbon emission sources"
+    },
+    "adaptationSectorInteraction": [
+      { "sector": "Health", "interactionType": "Positive" },
+      { "sector": "Industry", "interactionType": "Positive" }
+    ]
+  },
+  {
+    "primaryAction": {
+      "code": "TRP.I.03",
+      "action": "Increase the use of low-carbon emission fuels in domestic shipping",
+      "description": "Aligned with international trends, the aquatic sector can reduce its emissions through the use of sustainable low-carbon intensity fuels and by increasing operational efficiency. Additionally, technologies that allow higher blends of biofuels and synthetic fuels may be used, including vessels running 100% on biodiesel, ethanol, etc. With different technological route alternatives for the sector and considering the increased participation in the transport mode matrix, this action seeks to reduce emissions per ton-kilometer (TKU) of transported goods as a way to mitigate the sector’s total emissions.",
+      "target": "Reduce CO₂e emissions per TKU by 28% by 2035",
+      "actionType": "Impactful",
+      "impactType": [
+        "Reduction of CO₂ emissions",
+        "Reduction of other PCVC (black carbon, tropospheric O₃)"
+      ],
+      "associatedNationalObjectives": [
+        "National Objective 5: Encourage the substitution of fossil fuels by promoting the development and use of sustainable biofuels and electrification solutions.",
+        "National Objective 3: Expand the sustainable production of biofuels, promote technological innovation and develop value chains related to bioenergy.",
+        "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition.",
+        "National Objective 10: Transform Brazilian comparative advantages into competitive advantages, making the country a provider of climate goods, services and solutions for a world transitioning to low-carbon development models."
+      ],
+      "responsible": [
+        "MME",
+        "EPE",
+        "CNPE",
+        "MDIC",
+        "ANP",
+        "SNHN/MPOR",
+        "ANTAQ"
+      ],
+      "involvedActors": [
+        "Shipping companies",
+        "MCTI",
+        "MME",
+        "CNT",
+        "Associations",
+        "Board of Directors of the Merchant Marine Fund Manager (MPOR)"
+      ]
+    },
+    "monitoring": {
+      "status": "Proposed",
+      "indicator": ["% emissions per TKU"],
+      "dataSource": "Shipping companies, ANTAQ and National Emissions Inventory"
+    },
+    "existingInstruments": [
+      {
+        "publicPolicies": "Programs: PATEN, Fuel of the Future, RenovaBio, PNPB",
+        "regulatory": "ANP Resolution No. 903 of November 18, 2022",
+        "financial": null
+      }
+    ],
+    "investmentAndFinancing": {
+      "estimatedInvestment": null,
+      "fundingSources": [],
+      "financingChannels": []
+    },
+    "enablingStructuralActions": [
+      {
+        "code": "TRP.E.14",
+        "action": "Create regulation that establishes GHG reduction targets for domestic shipping through increased blending of biofuel and synthetic fuels in maritime fuel"
+      },
+      {
+        "code": "TRP.E.02",
+        "action": "Create a program to implement comprehensive refueling infrastructure, including ultra-fast electric charging networks, biofuel distribution networks, and distribution of hydrogen, natural gas and biogas"
+      }
+    ],
+    "connectionWithOtherActions": {
+      "code": "ENR.I.02",
+      "action": "Strengthen the production and sustainable use of biofuels"
+    },
+    "adaptationSectorInteraction": [
+      { "sector": "Health", "interactionType": "Positive" },
+      { "sector": "Industry", "interactionType": "Positive" },
+      { "sector": "Family farming", "interactionType": "Positive" }
+    ]
+  },
+  {
+    "primaryAction": {
+      "code": "TRP.I.04",
+      "action": "Improve pavement quality on federal highways",
+      "description": "Improving pavement quality on highways reduces braking during travel and, consequently, fuel consumption. Investments in the pavements of highways managed by DNIT are carried out through the National Highway Maintenance Program (PNMR) and monitored by the Surface Condition Index (ICS). For federal highways under concession, pavement quality is monitored through the Pavement Performance Index on Conceded Highways (IDPAV).",
+      "target": "Increase by 5% the share of federal highways under DNIT management in good condition by 2030 and by 10% by 2035, based on the 2024 ICS; and increase by 5% the IDPAV on concessioned federal highways by 2030 and maintain through 2035, based on the 2024 indicator.",
+      "actionType": "Impactful",
+      "impactType": [
+        "Reduction of CO₂ emissions",
+        "Reduction of other PCVC (black carbon, tropospheric O₃)"
+      ],
+      "associatedNationalObjectives": [
+        "National Objective 12: Prioritize mitigation measures with potential to generate co-benefits for adaptation and resilience to climate change and for sustainable development."
+      ],
+      "responsible": [
+        "DNIT",
+        "ANTT",
+        "Highway concessionaires",
+        "Highway associations",
+        "State regulatory agencies",
+        "DER"
+      ],
+      "involvedActors": ["Truck and bus owners", "CNT"]
+    },
+    "monitoring": {
+      "status": "Proposed",
+      "indicator": [
+        "% of total length of federal highways evaluated with pavement in good or excellent condition (ICS and IDPAV)"
+      ],
+      "dataSource": "DNIT: ICS and ANTT: IDPAV"
+    },
+    "existingInstruments": [
+      {
+        "publicPolicies": "New PAC; PNL2035",
+        "regulatory": "Ordinance 622/2024; DNIT Normative Instruction No. 69/2021; Ordinance No. 1 050/2015; LOA",
+        "financial": "Nonexistent or insufficient"
+      }
+    ],
+    "investmentAndFinancing": {
+      "estimatedInvestment": "Very high - Above R$ 1 B",
+      "fundingSources": ["National public", "National private"],
+      "financingChannels": ["OGU", "investments by concessionaires"]
+    },
+    "enablingStructuralActions": [],
+    "connectionWithOtherActions": null,
+    "adaptationSectorInteraction": [
+      { "sector": "Health", "interactionType": "Positive" }
+    ]
+  },
+  {
+    "primaryAction": {
+      "code": "TRP.I.05",
+      "action": "Reduce fossil fuel consumption in transport infrastructures and operations",
+      "description": "Implement solutions that reduce inefficiencies in transport infrastructures and operations, which can directly lower fossil fuel consumption and other greenhouse gas–emitting sources.",
+      "target": "Reduce the use of fossil-fuel-powered engines during taxiing by 25% by 2030 and by 50% by 2035",
+      "actionType": "Impactful",
+      "impactType": [
+        "Reduction of CO₂ emissions",
+        "Reduction of other PCVC (black carbon, tropospheric O₃)"
+      ],
+      "associatedNationalObjectives": [
+        "National Objective 12: Prioritize mitigation measures with potential to generate co-benefits for adaptation and resilience to climate change and for sustainable development."
+      ],
+      "responsible": ["SAC", "ANAC", "Air operators", "Airport operators"],
+      "involvedActors": []
+    },
+    "monitoring": {
+      "status": "Proposed",
+      "indicator": [
+        "Percentage of taxiing operations performed with engine off or electric assistance"
+      ],
+      "dataSource": "Airlines"
+    },
+    "existingInstruments": [
+      {
+        "publicPolicies": "Civil aviation GHG reduction plan",
+        "regulatory": "",
+        "financial": "Nonexistent or insufficient"
+      }
+    ],
+    "investmentAndFinancing": {
+      "estimatedInvestment": "Low - Between R$ 360 k and 4.8 M",
+      "fundingSources": ["National public"],
+      "financingChannels": [
+        "Climate Fund",
+        "FNAC (National Civil Aviation Fund)"
+      ]
+    },
+    "enablingStructuralActions": [
+      {
+        "code": "TRP.E.08",
+        "action": "Support innovation in the transport sector and related technologies for logistics efficiency, electrification, and decarbonization by facilitating partnerships with startups, creating innovation hubs, and implementing initiatives that promote innovation."
+      }
+    ],
+    "connectionWithOtherActions": null,
+    "adaptationSectorInteraction": []
+  },
+  {
+    "primaryAction": {
+      "code": "TRP.I.06",
+      "action": "Increase the share of rail and waterway modes in the freight transport matrix",
+      "description": "Investments in rail and waterway modes, enabling greater competitiveness compared to road transport, will attract greater volumes of cargo to these less polluting modes.",
+      "target": "Migrate cargo volume from road to rail by 31.5 billion TKU by 2030 and 38 billion TKU by 2035 with operation of the FICO-FIOL corridor; increase domestic waterway shipping participation by 15 % by 2035",
+      "actionType": "Impactful",
+      "impactType": [
+        "Reduction of CO₂ emissions",
+        "Reduction of other PCVC (black carbon, tropospheric O₃)"
+      ],
+      "associatedNationalObjectives": [
+        "National Objective 12: Prioritize mitigation measures with potential to generate co-benefits for adaptation and resilience to climate change and for sustainable development."
+      ],
+      "responsible": ["SNTF", "ANTT", "INFRA AS", "SFPLAN", "DNIT"],
+      "involvedActors": [
+        "Railway concessionaires",
+        "Associations",
+        "Shipping companies",
+        "SNP",
+        "Ministry of Defense (Brazilian Navy)",
+        "Waterway concessionaires",
+        "Shipping companies"
+      ]
+    },
+    "monitoring": {
+      "status": "Planned",
+      "indicator": [
+        "Volume of cargo transported in the FICO-FIOL corridor (in billions of TKU)",
+        "% of cargo transported by domestic navigation compared to total sector volume"
+      ],
+      "dataSource": "ANTAQ"
+    },
+    "existingInstruments": [
+      {
+        "publicPolicies": "Novo PAC; PNL2035; Plano Setorial Hidroviário; Programa BR do Mar",
+        "regulatory": "Law 14.273/2021; Portaria 689/2024 (Debêntures)",
+        "financial": "Equity; Concessional loan; Blended finance"
+      }
+    ],
+    "investmentAndFinancing": {
+      "estimatedInvestment": "Very high - Above R$ 1 B",
+      "fundingSources": ["National public", "National private"],
+      "financingChannels": ["Debentures"]
+    },
+    "enablingStructuralActions": [
+      {
+        "code": "TRP.E.11",
+        "action": "Make financial and fiscal incentives available for investments in rail, waterway transport infrastructure and intermodal terminals, aiming at efficiency and sustainability."
+      },
+      {
+        "code": "TRP.E.15",
+        "action": "Complete works planned on railways, waterways and ports under the Novo PAC."
+      },
+      {
+        "code": "TRP.E.16",
+        "action": "Implement concessions of waterway and railway infrastructure and maintenance service operation contracts."
+      },
+      {
+        "code": "TRP.E.12",
+        "action": "Enact the decrees regulating the BR do Mar."
+      },
+      {
+        "code": "TRP.E.13",
+        "action": "Create an Inland Navigation Development Program – BR dos Rios."
+      }
+    ],
+    "connectionWithOtherActions": {
+      "code": "TRP.E.03",
+      "action": "Induce the use of renewable energy to substitute fossil fuel consumption in parked equipment and vehicles at ports, airports, logistics terminals and rail lines."
+    },
+    "adaptationSectorInteraction": [
+      {
+        "sector": "Biodiversity; Ocean and coastal zone",
+        "interactionType": "Negative"
+      },
+      {
+        "sector": "Transport",
+        "interactionType": "Positive"
+      }
+    ]
+  },
+  {
+    "primaryAction": {
+      "code": "TRP.I.07",
+      "action": "Increase the use of green diesel in the transport sector",
+      "description": "Based on Law 14.993 of October 8, 2024 (Fuel of the Future), a minimum mandatory blending volume of green diesel into diesel oil will be established, with voluntary green diesel above this limit. Green synthetic diesel represents an important new fuel for sector decarbonization.",
+      "target": "2% green diesel blend in diesel oil sold to the end consumer by 2030, increasing to 3% by 2035",
+      "actionType": "Impactful",
+      "impactType": [
+        "Reduction of CO₂ emissions",
+        "Reduction of other PCVC (black carbon, tropospheric O₃)"
+      ],
+      "associatedNationalObjectives": [
+        "National Objective 5: Encourage the substitution of fossil fuels by promoting the development and use of sustainable biofuels and electrification solutions.",
+        "National Objective 9: Generate jobs, income and productive inclusion in economic activities related to decarbonizing the economy and sustainable development, promoting a just, inclusive and sustainable socioeconomic transition.",
+        "National Objective 10: Transform Brazilian comparative advantages into competitive advantages, making the country a provider of climate goods, services and solutions for a world transitioning to low-carbon development models.",
+        "National Objective 12: Prioritize mitigation measures with potential to generate co-benefits for adaptation and resilience to climate change and for sustainable development."
+      ],
+      "responsible": ["MME", "CNPE", "ANP"],
+      "involvedActors": [
+        "MT",
+        "MPOR",
+        "MCTI",
+        "MF",
+        "MDIC",
+        "Green diesel producers and associations"
+      ]
+    },
+    "monitoring": {
+      "status": "Planned",
+      "indicator": ["% green diesel blend by volume in diesel oil"],
+      "dataSource": "Published CNPE Resolution"
+    },
+    "existingInstruments": [
+      {
+        "publicPolicies": "Programs: PATEN, Fuel of the Future, PNDV",
+        "regulatory": "CNPE Resolution",
+        "financial": null
+      }
+    ],
+    "investmentAndFinancing": {
+      "estimatedInvestment": null,
+      "fundingSources": [],
+      "financingChannels": []
+    },
+    "enablingStructuralActions": [
+      {
+        "code": "TRP.E.04",
+        "action": "Promote the use of sustainable low-carbon intensity fuels in the transport sector"
+      }
+    ],
+    "connectionWithOtherActions": {
+      "code": "ENR.I.03",
+      "action": "Encourage the production of synthetic fuels from low-carbon emission sources"
+    },
+    "adaptationSectorInteraction": [
+      { "sector": "Health", "interactionType": "Positive" }
+    ]
+  }
+]

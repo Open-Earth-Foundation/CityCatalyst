@@ -444,15 +444,6 @@ export default function AddDataSteps(props: {
     }
   };
 
-  const onSkip = () => {
-    if (activeStep >= steps.length - 1) {
-      router.push(`/${inventory}/data/`);
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      goToNext();
-    }
-  };
-
   const [isDataSectionExpanded, setDataSectionExpanded] = useState(false);
 
   const getInventoryData = useSelector(

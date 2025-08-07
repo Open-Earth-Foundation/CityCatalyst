@@ -50,7 +50,7 @@ export default function HomePage({
   // Check if user is authenticated otherwise route to login page
   isPublic || CheckUserSession();
   const language = cookieLanguage ?? lng;
-  const { inventory: inventoryParam } = useParams();
+  const { inventory: inventoryParam, cityId: cityIdParam } = useParams();
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -82,12 +82,12 @@ export default function HomePage({
         "Failed to load inventory",
       );
 
-      // 401 status can be cached from logged-out state, ignore it but redirect to onboarding on other errors
+      // 401 status can be cached from logged-out state, ignore it but redirect to GHGI onboarding on other errors
       if (
         !isFetchBaseQueryError(inventoryError) ||
         inventoryError.status !== 401
       ) {
-        setTimeout(() => router.push("/onboarding"), 0);
+        router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
       }
     } else if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
@@ -104,7 +104,12 @@ export default function HomePage({
         }
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
-        setTimeout(() => router.push("/onboarding"), 0);
+        // If we have a cityId, redirect to GHGI onboarding, otherwise go to general onboarding
+        setTimeout(() => {
+          console.log(`📍 HomePage:123`);
+          debugger;
+          router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
+        });
       }
     }
   }, [
@@ -248,7 +253,13 @@ export default function HomePage({
                       fontSize="button.md"
                       gap="8px"
                       onClick={() =>
-                        isFrozenCheck() ? null : router.push("/onboarding")
+                        isFrozenCheck()
+                          ? null
+                          : inventory?.cityId || cityIdParam
+                            ? router.push(
+                                `/${language}/cities/${inventory?.cityId || cityIdParam}/GHGI/onboarding`,
+                              )
+                            : router.push(`/${language}/onboarding`)
                       }
                     >
                       <Icon as={BsPlus} h="16px" w="16px" />

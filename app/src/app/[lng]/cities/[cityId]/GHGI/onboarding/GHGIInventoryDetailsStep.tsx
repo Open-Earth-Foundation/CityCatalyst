@@ -5,7 +5,7 @@ import {
   FieldErrors,
   UseFormRegister,
 } from "react-hook-form";
-import type { GHGIFormInputs } from "@/util/GHGI/types";
+import { GHGIInputs } from "./page";
 import { FC, useEffect, useState } from "react";
 import {
   Box,
@@ -29,11 +29,11 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { Field } from "@/components/ui/field";
-import { Button } from "../ui/button";
-import { InventoryButtonCheckIcon } from "../icons";
-import CustomSelectableButton from "../custom-selectable-buttons";
+import { Button } from "@/components/ui/button";
+import { InventoryButtonCheckIcon } from "@/components/icons";
+import CustomSelectableButton from "@/components/custom-selectable-buttons";
 
-export default function SetInventoryDetailsStep({
+export default function GHGIInventoryDetailsStep({
   t,
   register,
   errors,
@@ -42,9 +42,9 @@ export default function SetInventoryDetailsStep({
   years,
 }: {
   t: TFunction;
-  register: UseFormRegister<GHGIFormInputs>;
-  errors: FieldErrors<GHGIFormInputs>;
-  control: Control<GHGIFormInputs>;
+  register: UseFormRegister<GHGIInputs>;
+  errors: FieldErrors<GHGIInputs>;
+  control: Control<GHGIInputs>;
   setValue: any;
   years: number[];
 }) {
@@ -82,8 +82,8 @@ export default function SetInventoryDetailsStep({
         gap="24px"
         mb="48px"
       >
-        <Heading data-testid="inventory-details-heading" size="xl">
-          {t("setup-inventory-details-heading")}
+        <Heading data-testid="ghgi-inventory-details-heading" size="xl">
+          {t("setup-ghgi-inventory-details-heading")}
         </Heading>
         <Text
           color="content.tertiary"
@@ -91,9 +91,9 @@ export default function SetInventoryDetailsStep({
           fontStyle="normal"
           fontWeight="400"
           letterSpacing="wide"
-          data-testid="inventory-details-description"
+          data-testid="ghgi-inventory-details-description"
         >
-          {t("setup-inventory-details-description")}
+          {t("setup-ghgi-inventory-details-description")}
         </Text>
       </Box>
       {/* Inventory Year */}
@@ -155,7 +155,7 @@ export default function SetInventoryDetailsStep({
                   size="lg"
                   w="400px"
                   _placeholder={{ color: "content.tertiary" }}
-                  data-testid="inventory-detils-year"
+                  data-testid="ghgi-inventory-details-year"
                   {...register("year", {
                     required: t("inventory-year-required"),
                   })}
@@ -360,4 +360,4 @@ export default function SetInventoryDetailsStep({
       </Box>
     </Box>
   );
-}
+} 

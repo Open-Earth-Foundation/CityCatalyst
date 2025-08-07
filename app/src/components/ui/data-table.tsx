@@ -16,7 +16,7 @@ type FilterOption<TValue> = TValue | { label: string; value: TValue };
 
 type DataTableProps<T> = {
   data: T[];
-  title: string;
+  title?: string;
   columns: { header: string; accessor: keyof T | null }[];
   searchable?: boolean;
   pagination?: boolean;
@@ -91,9 +91,11 @@ function DataTable<T extends Record<string, any>>({
 
   return (
     <Box bg="white" p={6} borderRadius={2} mt={12} w="full">
-      <Text fontWeight="bold" fontSize="title.md" mb={2}>
-        {title}
-      </Text>
+      {title && (
+        <Text fontWeight="bold" fontSize="title.md" mb={2}>
+          {title}
+        </Text>
+      )}
       {subtitle && (
         <Text fontSize="title.md" mb={4}>
           {subtitle}

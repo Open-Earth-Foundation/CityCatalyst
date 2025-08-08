@@ -603,7 +603,6 @@ export interface MitigationAction extends BaseAction {
   type: ACTION_TYPES.Mitigation;
   GHGReductionPotential: GHGReductionPotential;
   adaptationEffectiveness: null;
-
 }
 
 export interface AdaptationAction extends BaseAction {
@@ -624,7 +623,7 @@ export type HIAPResponse = {
   created: Date;
   last_updated: Date;
   rankedActions: HIAction[];
-}
+};
 
 export interface LangMap {
   [langCode: string]: string;
@@ -636,3 +635,12 @@ export interface Client {
   name: LangMap;
   description: LangMap;
 }
+
+export type CityLocationResponse = {
+  locode: string;
+  name: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+};
+

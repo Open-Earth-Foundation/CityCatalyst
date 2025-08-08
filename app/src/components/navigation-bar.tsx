@@ -103,7 +103,6 @@ export function NavigationBar({
   // get pathname
   const pathname = usePathname();
   const fullPath = pathname.replace(/^\/[A-Za-z]+/, "");
-  console.log("fullPath", fullPath);
 
   // Checks if language is set in cookie and updates URL if not
   useEffect(() => {

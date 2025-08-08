@@ -32,7 +32,7 @@ export default function ProjectPage(props: {
     error: projectsError,
   } = useGetProjectsQuery({ organizationId });
 
-  const [project, setProject] = useState<ProjectWithCities | null>();
+  const [project, setProject] = useState<ProjectWithCities | null>(null);
   useEffect(() => {
     if (projects && projectId) {
       const foundProject = projects.find(

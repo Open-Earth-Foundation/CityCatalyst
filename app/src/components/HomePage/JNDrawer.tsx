@@ -22,19 +22,13 @@ import React, { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
-import {
-  BiArrowToRight,
-  BiCaretDown,
-  BiHomeAlt,
-  BiSolidBarChartAlt2,
-} from "react-icons/bi";
-import { IoMdEye } from "react-icons/io";
-import { CgEye } from "react-icons/cg";
-import { PlanIcon } from "../icons";
+import { BiCaretDown, BiHomeAlt, BiSolidBarChartAlt2 } from "react-icons/bi";
+
 import { NavigationAccordion } from "../ui/navigation-accordion";
 import { NavigationLinks } from "../ui/navigation-links";
 import { StageNames } from "@/util/constants";
 import ProgressLoader from "../ProgressLoader";
+import { stageOrder, stageIcons } from "@/config/stages";
 
 // Custom Select Component
 interface CustomSelectOption {
@@ -647,24 +641,7 @@ const JNDrawer = ({
               {/* Dynamic Module Accordions - based on HomePage logic */}
               {modulesByStage && projectModules && selectedProject && (
                 <>
-                  {[
-                    {
-                      stage: StageNames["Assess And Analyze"],
-                      title: "Analyse and Assess",
-                      icon: CgEye,
-                    },
-                    { stage: StageNames.Plan, title: "Plan", icon: PlanIcon },
-                    {
-                      stage: StageNames.Implement,
-                      title: "Implement",
-                      icon: BiArrowToRight,
-                    },
-                    {
-                      stage: StageNames["Monitor, Evaluate & Report"],
-                      title: "Monitor, Evaluate & Report",
-                      icon: IoMdEye,
-                    },
-                  ].map(({ stage, title, icon }) => {
+                  {stageOrder.map((stage) => {
                     const modules = projectModules.filter(
                       (mod) => mod.stage === stage,
                     );
@@ -674,8 +651,8 @@ const JNDrawer = ({
                     return (
                       <NavigationAccordion
                         key={stage}
-                        title={title}
-                        icon={icon}
+                        title={t("journey." + stage)}
+                        icon={stageIcons[stage]}
                         items={modules.map((mod) => ({
                           label:
                             mod.name.en ||

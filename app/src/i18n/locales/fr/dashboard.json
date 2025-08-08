@@ -225,5 +225,10 @@
   "no-modules-available": "Aucun module disponible pour le moment",
   "no-modules-description": "Vous n'avez aucun module actif pour cette étape ! Contactez-nous pour obtenir de l'aide personnalisée.",
   "contact-us": "CONTACTEZ-NOUS",
-  "journey": ""
+  "journey": {
+    "assess-&-analyze": "Évaluer et Analyser",
+    "plan": "Planifier",
+    "implement": "Mettre en Œuvre",
+    "monitor-evaluate-&-report": "Surveiller, Évaluer et Rapporter"
+  }
 }

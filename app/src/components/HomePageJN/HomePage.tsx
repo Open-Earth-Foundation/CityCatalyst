@@ -40,6 +40,7 @@ import { TitleLarge } from "@/components/Texts/Title";
 import { LuChevronDown } from "react-icons/lu";
 import { NoModulesCard } from "./NoModulesCard";
 import { StageNames } from "@/util/constants";
+import { stageOrder } from "@/config/stages";
 
 export default function HomePage({
   lng,
@@ -162,12 +163,7 @@ export default function HomePage({
             {/* Accordions for stages */}
             {modulesByStage && projectModules && (
               <AccordionRoot multiple>
-                {[
-                  StageNames["Assess And Analyze"],
-                  StageNames.Plan,
-                  StageNames.Implement,
-                  StageNames["Monitor, Evaluate & Report"],
-                ].map((stage) => {
+                {stageOrder.map((stage) => {
                   const modules = projectModules.filter((mod) => {
                     return mod.stage === stage;
                   });

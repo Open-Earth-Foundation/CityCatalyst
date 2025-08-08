@@ -225,5 +225,10 @@
   "no-modules-available": "Noch keine Module verfügbar",
   "no-modules-description": "Sie haben keine aktiven Module für diese Phase! Kontaktieren Sie uns, um personalisierte Hilfe zu erhalten.",
   "contact-us": "KONTAKTIEREN SIE UNS",
-  "journey": ""
+  "journey": {
+    "assess-&-analyze": "Bewerten und Analysieren",
+    "plan": "Planen",
+    "implement": "Umsetzen",
+    "monitor-evaluate-&-report": "Überwachen, Bewerten und Berichten"
+  }
 }

@@ -297,6 +297,7 @@ const ProjectFilterSection = ({
   // Get search results for display
   const getSearchResults = () => {
     if (!searchTerm.trim()) return [];
+    const RESULTS_LIMIT = 5;
 
     const results: Array<{
       value: string;
@@ -334,7 +335,7 @@ const ProjectFilterSection = ({
       );
     });
 
-    return results.slice(0, 5); // Limit to 5 results
+    return results.slice(0, RESULTS_LIMIT); // Limit to 5 results
   };
 
   const searchResults = getSearchResults();

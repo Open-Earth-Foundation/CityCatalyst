@@ -31,6 +31,8 @@ export const NavigationLinks: React.FC<NavigationLinksProps> = ({
             gap="12px"
             href={item.href}
             onClick={item.onClick}
+            rel="noopener noreferrer"
+            target="_blank"
           >
             <Icon as={item.icon} color={"content.tertiary"} boxSize={6} />
             <Text fontSize="body.lg" color="content.secondary">

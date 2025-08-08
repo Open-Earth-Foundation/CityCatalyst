@@ -64,6 +64,8 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
                   justifyContent="space-between"
                   href={item.href}
                   onClick={item.onClick}
+                  rel="noopener noreferrer"
+                  target="_blank"
                 >
                   <Text fontSize="body.lg" color="content.primary">
                     {t(item.label)}

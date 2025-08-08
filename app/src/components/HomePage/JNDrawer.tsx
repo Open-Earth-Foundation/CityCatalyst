@@ -341,15 +341,7 @@ const ProjectFilterSection = ({
 
   // Handle city selection and navigation
   const handleCitySelection = (cityId: string, projectId: string) => {
-    const project = projectsData.find((p) => p.projectId === projectId);
-    const city = project?.cities.find((c) => c.cityId === cityId);
-
-    if (city && city.inventories && city.inventories.length > 0) {
-      const inventoryId = city.inventories[0].inventoryId;
-      if (inventoryId) {
-        router.push(`/${lng}/${inventoryId}`);
-      }
-    }
+    router.push(`/${lng}/cities/${cityId}`);
   };
 
   return (

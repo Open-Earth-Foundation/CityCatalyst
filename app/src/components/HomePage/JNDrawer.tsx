@@ -2,83 +2,39 @@ import {
   DrawerBackdrop,
   DrawerBody,
   DrawerContent,
-  DrawerHeader,
   DrawerRoot,
-  DrawerTitle,
 } from "@/components/ui/drawer";
 import { OpenChangeDetails } from "@zag-js/popover";
-import {
-  Accordion,
-  Box,
-  createListCollection,
-  HStack,
-  Icon,
-  IconButton,
-  Input,
-  Link,
-  NativeSelect,
-  Popover,
-  Portal,
-  Select,
-  Span,
-  Text,
-  useSelectContext,
-  VStack,
-} from "@chakra-ui/react";
-import {
-  MdAdd,
-  MdClose,
-  MdKeyboardArrowRight,
-  MdOutlineLocationOn,
-  MdSearch,
-  MdKeyboardArrowDown,
-  MdHome,
-} from "react-icons/md";
+import { Box, Icon, Input, Text, VStack } from "@chakra-ui/react";
+import { MdAdd, MdSearch } from "react-icons/md";
 import { InputGroup } from "@/components/ui/input-group";
-import { LuLayoutGrid, LuSearch } from "react-icons/lu";
+import { LuLayoutGrid } from "react-icons/lu";
 import type {
-  CityResponse,
   ProjectWithCities,
   ProjectWithCitiesResponse,
 } from "@/util/types";
 import {
-  useGetProjectsQuery,
-  useGetProjectUsersQuery,
   useGetUserProjectsQuery,
   useGetModulesQuery,
   useGetProjectModulesQuery,
-  api,
 } from "@/services/api";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import React, { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { FaLocationDot } from "react-icons/fa6";
 import { useTranslation } from "@/i18n/client";
-import ProjectLimitModal from "@/components/project-limit";
-import SearchInput from "@/components/SearchInput";
-import { logger } from "@/services/logger";
-import { Field } from "../ui/field";
-import { RiForbidLine } from "react-icons/ri";
 import {
-  BiArrowFromRight,
   BiArrowToRight,
   BiCaretDown,
-  BiChevronDown,
   BiHomeAlt,
   BiSolidBarChartAlt2,
 } from "react-icons/bi";
-import { HiHome } from "react-icons/hi2";
 import { IoMdEye } from "react-icons/io";
-import { CgEye, CgEyeAlt } from "react-icons/cg";
-import { GoArrowRight } from "react-icons/go";
+import { CgEye } from "react-icons/cg";
 import { PlanIcon } from "../icons";
 import { NavigationAccordion } from "../ui/navigation-accordion";
 import { NavigationLinks } from "../ui/navigation-links";
 import { StageNames } from "@/util/constants";
+import ProgressLoader from "../ProgressLoader";
 
 // Custom Select Component
 interface CustomSelectOption {
@@ -623,8 +579,6 @@ const JNDrawer = ({
     );
   }, [projectsData, selectedProject]);
 
-  console.log(projectsData);
-
   return (
     <DrawerRoot
       open={isOpen}
@@ -653,88 +607,88 @@ const JNDrawer = ({
                 justifyContent="center"
                 alignItems="center"
               >
-                <ProgressCircleRoot value={null}>
-                  <ProgressCircleRing cap="round" />
-                </ProgressCircleRoot>
+                <ProgressLoader />
               </Box>
             </Box>
           )}
 
           {/* Project / City Filter Section*/}
           {!isLoading && projectsData && (
-            <ProjectFilterSection
-              t={t}
-              projectsData={projectsData}
-              lng={lng}
-              currentInventoryId={currentInventoryId}
-            />
-          )}
-          <Box w="full" border="1px solid" borderColor="border.neutral" />
-          {/* Menu items */}
-          <NavigationLinks
-            items={[
-              {
-                label: "home",
-                icon: BiHomeAlt,
-                href: `/${lng}/cities/${selectedCity}`,
-              },
-              {
-                label: "dashboard",
-                icon: BiSolidBarChartAlt2,
-                href: `/#`,
-              },
-              {
-                label: "all-projects",
-                icon: LuLayoutGrid,
-                href: `/${lng}/organization/${organizationId}/projects`,
-              },
-            ]}
-            t={t}
-          />
-          <Box w="full" border="1px solid" borderColor="border.neutral" />
-          {/* Dynamic Module Accordions - based on HomePage logic */}
-          {modulesByStage && projectModules && selectedProject && (
             <>
-              {[
-                {
-                  stage: StageNames["Assess And Analyze"],
-                  title: "Analyse and Assess",
-                  icon: CgEye,
-                },
-                { stage: StageNames.Plan, title: "Plan", icon: PlanIcon },
-                {
-                  stage: StageNames.Implement,
-                  title: "Implement",
-                  icon: BiArrowToRight,
-                },
-                {
-                  stage: StageNames["Monitor, Evaluate & Report"],
-                  title: "Monitor, Evaluate & Report",
-                  icon: IoMdEye,
-                },
-              ].map(({ stage, title, icon }) => {
-                const modules = projectModules.filter(
-                  (mod) => mod.stage === stage,
-                );
+              <ProjectFilterSection
+                t={t}
+                projectsData={projectsData}
+                lng={lng}
+                currentInventoryId={currentInventoryId}
+              />
+              <Box w="full" border="1px solid" borderColor="border.neutral" />
+              {/* Menu items */}
+              <NavigationLinks
+                items={[
+                  {
+                    label: "home",
+                    icon: BiHomeAlt,
+                    href: `/${lng}/cities/${selectedCity}`,
+                  },
+                  {
+                    label: "dashboard",
+                    icon: BiSolidBarChartAlt2,
+                    href: `/#`,
+                  },
+                  {
+                    label: "all-projects",
+                    icon: LuLayoutGrid,
+                    href: `/${lng}/organization/${organizationId}/projects`,
+                  },
+                ]}
+                t={t}
+              />
+              <Box w="full" border="1px solid" borderColor="border.neutral" />
+              {/* Dynamic Module Accordions - based on HomePage logic */}
+              {modulesByStage && projectModules && selectedProject && (
+                <>
+                  {[
+                    {
+                      stage: StageNames["Assess And Analyze"],
+                      title: "Analyse and Assess",
+                      icon: CgEye,
+                    },
+                    { stage: StageNames.Plan, title: "Plan", icon: PlanIcon },
+                    {
+                      stage: StageNames.Implement,
+                      title: "Implement",
+                      icon: BiArrowToRight,
+                    },
+                    {
+                      stage: StageNames["Monitor, Evaluate & Report"],
+                      title: "Monitor, Evaluate & Report",
+                      icon: IoMdEye,
+                    },
+                  ].map(({ stage, title, icon }) => {
+                    const modules = projectModules.filter(
+                      (mod) => mod.stage === stage,
+                    );
 
-                if (modules.length === 0) return null;
+                    if (modules.length === 0) return null;
 
-                return (
-                  <NavigationAccordion
-                    key={stage}
-                    title={title}
-                    icon={icon}
-                    items={modules.map((mod) => ({
-                      label:
-                        mod.name.en ||
-                        mod.name[Object.keys(mod.name)[0]] ||
-                        mod.id,
-                      href: `/${lng}/cities/${selectedCity}${mod.url}`,
-                    }))}
-                    t={t}
-                  />
-                );
-              })}
+                    return (
+                      <NavigationAccordion
+                        key={stage}
+                        title={title}
+                        icon={icon}
+                        items={modules.map((mod) => ({
+                          label:
+                            mod.name.en ||
+                            mod.name[Object.keys(mod.name)[0]] ||
+                            mod.id,
+                          href: `/${lng}/cities/${selectedCity}${mod.url}`,
+                        }))}
+                        t={t}
+                      />
+                    );
+                  })}
+                </>
+              )}
             </>
           )}
         </DrawerBody>

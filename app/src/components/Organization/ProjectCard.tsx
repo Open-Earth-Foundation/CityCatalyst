@@ -26,7 +26,7 @@ export default function ProjectCard({
     <Link href={projectPath}>
       <Card.Root
         _hover={{ shadow: "2dp" }}
-        transition="all 0.4s ease-in-out"
+        transition="box-shadow 0.2s ease-in-out"
         borderRadius="8px"
       >
         <Card.Header>

@@ -22,21 +22,21 @@ const { resource: inventory } = await PermissionService.canEditInventory(session
 **Files to Update**:
 - ✅ `app/src/app/api/v0/inventory/[inventory]/activity-value/[id]/route.ts` (3 occurrences) - **COMPLETED**
 - ✅ `app/src/app/api/v0/inventory/[inventory]/activity-value/route.ts` (3 occurrences) - **COMPLETED**
-- `app/src/app/api/v0/inventory/[inventory]/route.ts` (2 occurrences)
-- `app/src/app/api/v0/inventory/[inventory]/results/[sectorName]/route.ts`
-- `app/src/app/api/v0/inventory/[inventory]/results/emissions-forecast/route.ts`
-- `app/src/app/api/v0/inventory/[inventory]/results/route.ts`
-- `app/src/app/api/v0/inventory/[inventory]/value/[subcategory]/route.ts` (2 occurrences)
-- `app/src/app/api/v0/inventory/[inventory]/value/route.ts`
-- `app/src/app/api/v0/inventory/[inventory]/value/subsector/[subsector]/route.ts` (3 occurrences)
-- `app/src/app/api/v0/datasource/[inventoryId]/datasource/[datasourceId]/route.ts` (2 occurrences)
+- ✅ `app/src/app/api/v0/inventory/[inventory]/route.ts` (2 occurrences) - **COMPLETED**
+- ✅ `app/src/app/api/v0/inventory/[inventory]/results/[sectorName]/route.ts` - **COMPLETED**
+- ✅ `app/src/app/api/v0/inventory/[inventory]/results/emissions-forecast/route.ts` - **COMPLETED**
+- ✅ `app/src/app/api/v0/inventory/[inventory]/results/route.ts` - **COMPLETED**
+- ✅ `app/src/app/api/v0/inventory/[inventory]/value/[subcategory]/route.ts` (2 occurrences) - **COMPLETED**
+- ✅ `app/src/app/api/v0/inventory/[inventory]/value/route.ts` - **COMPLETED**
+- ✅ `app/src/app/api/v0/inventory/[inventory]/value/subsector/[subsector]/route.ts` (3 occurrences) - **COMPLETED**
+- ✅ `app/src/app/api/v0/datasource/[inventoryId]/datasource/[datasourceId]/route.ts` (2 occurrences) - **COMPLETED**
 
 ### 2. Replace UserService.findUserInventory - Services
 **Pattern**: Service-to-service permission checking
 
 **Files to Update**:
-- `app/src/backend/InventoryService.ts`
-- `app/src/backend/InventoryDownloadService.ts`
+- ✅ `app/src/backend/InventoryService.ts` - **COMPLETED**
+- ✅ `app/src/backend/InventoryDownloadService.ts` - **COMPLETED**
 
 ### 3. Replace Manual Permission Checks in City Creation
 **Pattern**: Manual role checking for city creation
@@ -56,8 +56,8 @@ const { resource: project } = await PermissionService.canCreateCity(session, pro
 ```
 
 **Files to Update**:
-- `app/src/app/api/v0/city/route.ts`
-- `app/src/app/api/v0/city/[city]/inventory/route.ts`
+- ✅ `app/src/app/api/v0/city/route.ts` - **COMPLETED**
+- ✅ `app/src/app/api/v0/city/[city]/inventory/route.ts` - **COMPLETED**
 
 ## 🔴 High Priority 
 
@@ -301,9 +301,9 @@ throw PermissionErrorHelpers.roleRequired('ORG_ADMIN');
 
 ## 📊 Progress Tracking
 
-### Files Updated: 4 / 45
-### API Routes: 2 / 15  
-### Service Methods: 0 / 5
+### Files Updated: 14 / 45
+### API Routes: 12 / 15  
+### Service Methods: 2 / 5
 ### Admin Validations: 0 / 7
 
 ## 🎯 Success Criteria

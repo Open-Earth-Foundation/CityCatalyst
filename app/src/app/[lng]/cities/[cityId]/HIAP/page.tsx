@@ -7,12 +7,13 @@ import {
   useGetInventoryByCityIdQuery,
 } from "@/services/api";
 import { ACTION_TYPES } from "@/util/types";
-import { Box, Tabs } from "@chakra-ui/react";
+import { Box, Icon, Tabs } from "@chakra-ui/react";
 import { formatEmissions } from "@/util/helpers";
 import { Hero } from "@/components/GHGIHomePage/Hero";
 import { HiapTab } from "@/app/[lng]/cities/[cityId]/HIAP/HiapTab";
 import { NavigationBar } from "@/components/navigation-bar";
 import ProgressLoader from "@/components/ProgressLoader";
+import { AdaptationTabIcon, MitigationTabIcon } from "@/components/icons";
 
 export default function HIAPPage(props: {
   params: Promise<{ lng: string; cityId: string }>;
@@ -59,7 +60,23 @@ export default function HIAPPage(props: {
             >
               <Tabs.List>
                 {Object.values(ACTION_TYPES).map((actionType) => (
-                  <Tabs.Trigger key={actionType} value={actionType}>
+                  <Tabs.Trigger
+                    key={actionType}
+                    value={actionType}
+                    color="interactive.control"
+                    _selected={{
+                      color: "interactive.secondary",
+                      fontFamily: "heading",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <Icon
+                      as={
+                        actionType === ACTION_TYPES.Mitigation
+                          ? MitigationTabIcon
+                          : AdaptationTabIcon
+                      }
+                    />
                     {t(`action-type-${actionType}`)}
                   </Tabs.Trigger>
                 ))}

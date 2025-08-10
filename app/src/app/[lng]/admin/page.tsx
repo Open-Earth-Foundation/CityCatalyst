@@ -126,11 +126,11 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
       });
     } catch (error: any) {
       toaster.dismiss();
-      // Check if the error is about already being an admin
-      if (error?.data?.error?.message?.includes("already admins for another organization")) {
-        // Extract email from error message like: "The following users are already admins for another organization: email@example.com"
+      // Check if the error is about already being an admin using error code
+      if (error?.data?.error?.code === 'USER_ALREADY_ORG_ADMIN') {
+        // Get the email from the error data or fallback to the original email
         toaster.create({
-          title: t("already-registered-admin", { email, }),
+          title: t("already-registered-admin", { email }),
           type: "info",
           duration: 4000,
         });

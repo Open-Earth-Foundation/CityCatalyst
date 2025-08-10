@@ -18,7 +18,8 @@ export interface ResourceAccess {
 
 export interface PermissionOptions {
   requireActive?: boolean;
-  includeResource?: boolean;
+  includeResource?: boolean;  // Defaults to true
+  excludeResource?: boolean;  // Explicitly exclude resource loading
   allowPublicRead?: boolean;
 }
 

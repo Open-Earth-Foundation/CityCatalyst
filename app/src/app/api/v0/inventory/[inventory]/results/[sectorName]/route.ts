@@ -10,7 +10,7 @@ import {
 export const GET = apiHandler(
   async (_req, { session, params: { inventory, sectorName } }) => {
     // ensure inventory belongs to user (read-only access)
-    await PermissionService.canAccessInventory(session, inventory);
+    await PermissionService.canAccessInventory(session, inventory, { excludeResource: true });
 
     const emissionsBreakdown = await getEmissionsBreakdown(
       inventory,

@@ -8,8 +8,7 @@ export const GET = apiHandler(
     // ensure inventory belongs to user (read-only access with resource)
     const { resource: inventoryData } = await PermissionService.canAccessInventory(
       session,
-      inventory,
-      { includeResource: true }
+      inventory
     );
     const forecast = await getEmissionsForecasts(inventoryData);
     return NextResponse.json({

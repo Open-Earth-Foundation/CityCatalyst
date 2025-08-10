@@ -41,7 +41,7 @@ export const POST = apiHandler(
 export const GET = apiHandler(
   async (_req: NextRequest, { session, params }) => {
     // Check permission to access city
-    const { resource: city } = await PermissionService.canAccessCity(session, params.city, { includeResource: true });
+    const { resource: city } = await PermissionService.canAccessCity(session, params.city);
     const inventory = await db.models.Inventory.findAll({
       where: { cityId: city?.cityId },
     });

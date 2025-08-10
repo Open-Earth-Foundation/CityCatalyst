@@ -24,7 +24,10 @@ export const POST = apiHandler(async (req, { session }) => {
   }
 
   // Check permission to create city in this project (ORG_ADMIN or PROJECT_ADMIN required)
-  const { resource: project } = await PermissionService.canCreateCity(session, body.projectId);
+  const { resource: project } = await PermissionService.canCreateCity(
+    session,
+    body.projectId as string,
+  );
 
   if (!project) {
     throw new createHttpError.NotFound("Project not found");

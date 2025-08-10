@@ -44,9 +44,12 @@ export class PermissionService {
       throw new createHttpError.Unauthorized("Authentication required");
     }
 
+    // Default includeResource to true unless explicitly excluded
+    const shouldLoadResource = options.excludeResource ? false : (options.includeResource !== false);
+
     // System admins bypass all checks
     if (session.user.role === Roles.Admin) {
-      const resource = options.includeResource 
+      const resource = shouldLoadResource 
         ? await ResourceLoader.getResource(context) 
         : undefined;
       return {
@@ -86,8 +89,11 @@ export class PermissionService {
       throw createPermissionError(PERMISSION_ERRORS.NO_ACCESS_TO_RESOURCE);
     }
 
+    // Default includeResource to true unless explicitly excluded
+    const shouldLoadResource = options.excludeResource ? false : (options.includeResource !== false);
+    
     // Load resource if requested
-    const resource = options.includeResource 
+    const resource = shouldLoadResource 
       ? await ResourceLoader.getResource(context) 
       : undefined;
     
@@ -146,8 +152,7 @@ export class PermissionService {
     projectId: string
   ): Promise<ResourceAccess> {
     const access = await this.canAccessProject(session, projectId, { 
-      requireActive: true, 
-      includeResource: true 
+      requireActive: true
     });
     return access;
   }
@@ -221,7 +226,7 @@ export class PermissionService {
     session: AppSession | null,
     inventoryId: string
   ): Promise<ResourceAccess> {
-    return this.canAccessInventory(session, inventoryId, { includeResource: true });
+    return this.canAccessInventory(session, inventoryId);
   }
 
   /**

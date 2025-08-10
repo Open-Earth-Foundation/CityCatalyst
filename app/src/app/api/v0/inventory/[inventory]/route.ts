@@ -42,8 +42,8 @@ export const GET = apiHandler(async (req, { session, params }) => {
     );
   }
 
-  // Use PermissionService for access check
-  await PermissionService.canAccessInventory(session, inventoryId);
+  // Use PermissionService for access check only
+  await PermissionService.canAccessInventory(session, inventoryId, { excludeResource: true });
   
   const inventory = await InventoryService.getInventoryWithTotalEmissions(
     inventoryId,

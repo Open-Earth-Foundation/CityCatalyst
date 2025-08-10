@@ -20,6 +20,10 @@
   "adaptation-effectiveness-by-hazard": "Efectividad de adaptación por riesgo",
   "ranking": "Ranking",
   "prioritizing-actions": "Las acciones están siendo priorizadas para tu ciudad. Por favor, vuelve a verificar en 15 minutos.",
+  "generate-climate-actions-title": "Genera tu plan de acción climática",
+  "generate-climate-actions-description": "Revisa tus acciones clave para esta categoría. Explóralas para obtener conocimientos y crear borradores de planes de implementación para cada una.",
+  "no-actions-found-title": "Tus principales acciones climáticas están siendo procesadas",
+  "no-actions-found-description": "Este proceso puede tomar hasta 15 minutos. Recibirás un email y las verás aquí cuando esté listo",
   "hazard": {
     "droughts": "Sequías",
     "heatwaves": "Olas de calor",

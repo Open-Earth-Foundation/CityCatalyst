@@ -18,6 +18,10 @@
   "adaptation-effectiveness-by-hazard": "Anpassungswirksamkeit nach Gefahr",
   "ranking": "Rangfolge",
   "prioritizing-actions": "Aktionen werden für Ihre Stadt priorisiert. Bitte schauen Sie in 15 Minuten wieder vorbei.",
+  "generate-climate-actions-title": "Erstellen Sie Ihren Klimaaktionsplan",
+  "generate-climate-actions-description": "Schauen Sie sich Ihre wichtigsten Maßnahmen für diese Kategorie an. Erkunden Sie sie, um Einblicke zu gewinnen und Entwürfe für Umsetzungspläne für jede einzelne zu erstellen.",
+  "no-actions-found-title": "Ihre wichtigsten Klimamaßnahmen werden verarbeitet",
+  "no-actions-found-description": "Dieser Prozess kann bis zu 15 Minuten dauern. Sie erhalten eine E-Mail und sehen sie hier, wenn er abgeschlossen ist",
   "hazard": {
     "droughts": "Dürren",
     "heatwaves": "Hitzewellen",

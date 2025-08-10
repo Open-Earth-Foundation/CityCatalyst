@@ -21,6 +21,10 @@
   "adaptation-effectiveness-by-hazard": "Adaptation Effectiveness by Hazard",
   "ranking": "Ranking",
   "prioritizing-actions": "Actions are being prioritized for your city. Please check back in 15 minutes.",
+  "generate-climate-actions-title": "Generate your climate action plan",
+  "generate-climate-actions-description": "Check out your key actions for this category. Explore them to gain insights and create draft implementation plans for each.",
+  "no-actions-found-title": "Your top climate actions are being processed",
+  "no-actions-found-description": "This process can take up up to 15 mins. You'll get an email and see them here when done",
   "hazard": {
     "droughts": "Droughts",
     "heatwaves": "Heatwaves",

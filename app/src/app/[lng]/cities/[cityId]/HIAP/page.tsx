@@ -64,6 +64,8 @@ export default function HIAPPage(props: {
                     key={actionType}
                     value={actionType}
                     color="interactive.control"
+                    display="flex"
+                    gap="16px"
                     _selected={{
                       color: "interactive.secondary",
                       fontFamily: "heading",
@@ -82,7 +84,7 @@ export default function HIAPPage(props: {
                 ))}
               </Tabs.List>
               {Object.values(ACTION_TYPES).map((actionType) => (
-                <Tabs.Content key={actionType} value={actionType}>
+                <Tabs.Content key={actionType} value={actionType} p="0">
                   <HiapTab type={actionType} inventory={inventory} />
                 </Tabs.Content>
               ))}

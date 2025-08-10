@@ -1,6 +1,6 @@
 import { db } from "@/models";
 import { QueryTypes } from "sequelize";
-import UserService from "./UserService";
+import { PermissionService } from "./permissions/PermissionService";
 import { type AppSession } from "@/lib/auth";
 import { Inventory } from "@/models/Inventory";
 
@@ -28,10 +28,12 @@ export const InventoryService = {
     inventoryId: string,
     session: AppSession | null,
   ): Promise<Inventory> {
-    const inventory = await UserService.findUserInventory(
-      inventoryId,
-      session,
-      [
+    // Check read-only access permission
+    await PermissionService.canAccessInventory(session, inventoryId);
+    
+    // Load inventory with includes
+    const inventory = await db.models.Inventory.findByPk(inventoryId, {
+      include: [
         {
           model: db.models.City,
           as: "city",
@@ -44,8 +46,7 @@ export const InventoryService = {
           ],
         },
       ],
-      true,
-    );
+    });
 
     if (!inventory) {
       throw new Error("Inventory not found");

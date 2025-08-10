@@ -9,7 +9,7 @@ import DataSourceService from "@/backend/DataSourceService";
 
 /** disconnects a datasource from an inventory */
 export const DELETE = apiHandler(async (_req, { params, session }) => {
-  await PermissionService.canEditInventory(session, params.inventoryId, { excludeResource: true });
+  await PermissionService.canEditInventory(session, params.inventoryId);
 
   const inventoryValues = await db.models.InventoryValue.findAll({
     where: {
@@ -33,7 +33,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
 
 /** gets a datasource from an inventory and scales it if necessary */
 export const GET = apiHandler(async (_req, { params, session }) => {
-  await PermissionService.canEditInventory(session, params.inventoryId, { excludeResource: true });
+  await PermissionService.canEditInventory(session, params.inventoryId);
 
   const inventory = await db.models.Inventory.findOne({
     where: { inventoryId: params.inventoryId },

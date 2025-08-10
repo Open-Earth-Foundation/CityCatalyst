@@ -29,7 +29,7 @@ export const InventoryService = {
     session: AppSession | null,
   ): Promise<Inventory> {
     // Check read-only access permission
-    await PermissionService.canAccessInventory(session, inventoryId, { excludeResource: true });
+    await PermissionService.canAccessInventory(session, inventoryId);
     
     // Load inventory with includes
     const inventory = await db.models.Inventory.findByPk(inventoryId, {

@@ -20,7 +20,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   } = body;
 
   // just for access control
-  await PermissionService.canEditInventory(session, params.inventory, { excludeResource: true });
+  await PermissionService.canEditInventory(session, params.inventory);
 
   const result = await ActivityService.createActivity(
     data,

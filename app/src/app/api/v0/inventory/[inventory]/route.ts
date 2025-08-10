@@ -43,7 +43,7 @@ export const GET = apiHandler(async (req, { session, params }) => {
   }
 
   // Use PermissionService for access check only
-  await PermissionService.canAccessInventory(session, inventoryId, { excludeResource: true });
+  await PermissionService.canAccessInventory(session, inventoryId);
   
   const inventory = await InventoryService.getInventoryWithTotalEmissions(
     inventoryId,
@@ -71,6 +71,8 @@ export const PATCH = apiHandler(async (req, context) => {
     params.inventory
   );
 
+  let updatedInventory = inventory;
+  
   if (hasIsPublicProperty(body)) {
     const publishBody: { isPublic: boolean; publishedAt?: Date | null } = {
       ...body,
@@ -82,6 +84,6 @@ export const PATCH = apiHandler(async (req, context) => {
     }
     await inventory.update(publishBody);
   }
-  inventory = await inventory.update(body);
-  return NextResponse.json({ data: inventory });
+  updatedInventory = await inventory.update(body);
+  return NextResponse.json({ data: updatedInventory });
 });

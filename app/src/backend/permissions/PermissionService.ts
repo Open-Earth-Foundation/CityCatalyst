@@ -2,6 +2,7 @@ import type { AppSession } from "@/lib/auth";
 import { createPermissionError, PERMISSION_ERRORS } from "@/util/permission-errors";
 import createHttpError from "http-errors";
 import { Roles } from "@/util/types";
+import { logger } from "@/services/logger";
 
 import type { 
   UserRole, 
@@ -41,14 +42,22 @@ export class PermissionService {
     options: PermissionOptions = {}
   ): Promise<ResourceAccess> {
     if (!session?.user) {
+      logger.warn('Permission check failed: No authenticated session', { context });
       throw new createHttpError.Unauthorized("Authentication required");
     }
+    
+    logger.debug('Permission check initiated', {
+      userId: session.user.id,
+      context,
+      options
+    });
 
     // Default includeResource to true unless explicitly excluded
     const shouldLoadResource = options.excludeResource ? false : (options.includeResource !== false);
 
     // System admins bypass all checks
     if (session.user.role === Roles.Admin) {
+      logger.debug('System admin access granted', { userId: session.user.id });
       const resource = shouldLoadResource 
         ? await ResourceLoader.getResource(context) 
         : undefined;
@@ -86,8 +95,23 @@ export class PermissionService {
     const userRole = await RoleChecker.getUserRoleInOrganization(userId, orgId, context);
     
     if (userRole === 'NO_ACCESS') {
-      throw createPermissionError(PERMISSION_ERRORS.NO_ACCESS_TO_RESOURCE);
+      logger.warn('User has no access to resource', {
+        userId,
+        organizationId: orgId,
+        context
+      });
+      throw createPermissionError(PERMISSION_ERRORS.NO_ACCESS_TO_RESOURCE, 403, {
+        userId,
+        organizationId: orgId,
+        context
+      });
     }
+    
+    logger.debug('Permission check successful', {
+      userId,
+      userRole,
+      organizationId: orgId
+    });
 
     // Default includeResource to true unless explicitly excluded
     const shouldLoadResource = options.excludeResource ? false : (options.includeResource !== false);
@@ -121,7 +145,15 @@ export class PermissionService {
     const access = await this.checkAccess(session, { organizationId }, options);
     
     if (access.userRole !== 'ORG_ADMIN') {
-      throw createPermissionError(PERMISSION_ERRORS.CANNOT_ACCESS_ORGANIZATION);
+      logger.warn('Organization access denied: Not an org admin', {
+        organizationId,
+        userRole: access.userRole
+      });
+      throw createPermissionError(PERMISSION_ERRORS.CANNOT_ACCESS_ORGANIZATION, 403, {
+        organizationId,
+        requiredRole: 'ORG_ADMIN',
+        actualRole: access.userRole
+      });
     }
     
     return access;
@@ -138,7 +170,15 @@ export class PermissionService {
     const access = await this.checkAccess(session, { projectId }, options);
     
     if (!['ORG_ADMIN', 'PROJECT_ADMIN'].includes(access.userRole)) {
-      throw createPermissionError(PERMISSION_ERRORS.CANNOT_ACCESS_PROJECT);
+      logger.warn('Project access denied: Insufficient role', {
+        projectId,
+        userRole: access.userRole
+      });
+      throw createPermissionError(PERMISSION_ERRORS.CANNOT_ACCESS_PROJECT, 403, {
+        projectId,
+        requiredRoles: ['ORG_ADMIN', 'PROJECT_ADMIN'],
+        actualRole: access.userRole
+      });
     }
     
     return access;
@@ -182,7 +222,15 @@ export class PermissionService {
     const access = await this.checkAccess(session, { cityId });
     
     if (!['ORG_ADMIN', 'PROJECT_ADMIN'].includes(access.userRole)) {
-      throw createPermissionError(PERMISSION_ERRORS.CANNOT_CREATE_INVENTORY);
+      logger.warn('Create inventory denied: Insufficient role', {
+        cityId,
+        userRole: access.userRole
+      });
+      throw createPermissionError(PERMISSION_ERRORS.CANNOT_CREATE_INVENTORY, 403, {
+        cityId,
+        requiredRoles: ['ORG_ADMIN', 'PROJECT_ADMIN'],
+        actualRole: access.userRole
+      });
     }
     
     return access;
@@ -198,7 +246,15 @@ export class PermissionService {
     const access = await this.checkAccess(session, { cityId });
     
     if (access.userRole !== 'ORG_ADMIN') {
-      throw createPermissionError(PERMISSION_ERRORS.CANNOT_DELETE_CITY);
+      logger.warn('Delete city denied: Not an org admin', {
+        cityId,
+        userRole: access.userRole
+      });
+      throw createPermissionError(PERMISSION_ERRORS.CANNOT_DELETE_CITY, 403, {
+        cityId,
+        requiredRole: 'ORG_ADMIN',
+        actualRole: access.userRole
+      });
     }
     
     return access;
@@ -239,7 +295,15 @@ export class PermissionService {
     const access = await this.checkAccess(session, { inventoryId });
     
     if (access.userRole !== 'ORG_ADMIN') {
-      throw createPermissionError(PERMISSION_ERRORS.CANNOT_DELETE_INVENTORY);
+      logger.warn('Delete inventory denied: Not an org admin', {
+        inventoryId,
+        userRole: access.userRole
+      });
+      throw createPermissionError(PERMISSION_ERRORS.CANNOT_DELETE_INVENTORY, 403, {
+        inventoryId,
+        requiredRole: 'ORG_ADMIN',
+        actualRole: access.userRole
+      });
     }
     
     return access;

@@ -15,7 +15,7 @@ export default class InventoryDownloadService {
     session: AppSession | null,
   ) {
     // Check read access permission
-    await PermissionService.canAccessInventory(session, inventoryId, { excludeResource: true });
+    await PermissionService.canAccessInventory(session, inventoryId);
     
     // Load inventory with all necessary includes
     const inventory = await db.models.Inventory.findByPk(inventoryId, {

@@ -21,7 +21,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   } = body;
 
   // just for access control
-  await PermissionService.canEditInventory(session, params.inventory, { excludeResource: true });
+  await PermissionService.canEditInventory(session, params.inventory);
 
   const result = await ActivityService.updateActivity({
     id,
@@ -38,7 +38,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
   const id = z.string().uuid().parse(params.id);
 
   // just for access control
-  await PermissionService.canEditInventory(session, params.inventory, { excludeResource: true });
+  await PermissionService.canEditInventory(session, params.inventory);
 
   await ActivityService.deleteActivity(id);
 
@@ -48,7 +48,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
 export const GET = apiHandler(async (_req, { params, session }) => {
   const id = z.string().uuid().parse(params.id);
   // just for access control
-  await PermissionService.canEditInventory(session, params.inventory, { excludeResource: true });
+  await PermissionService.canEditInventory(session, params.inventory);
 
   const data = await db.models.ActivityValue.findOne({
     where: { id },

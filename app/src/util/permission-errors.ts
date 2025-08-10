@@ -1,3 +1,6 @@
+import createHttpError from 'http-errors';
+import { logger } from '@/services/logger';
+
 /**
  * Standardized permission error codes for resource-based permissions
  * Organized by resource type and operation for clarity
@@ -90,19 +93,29 @@ export const PERMISSION_ERROR_MESSAGES: Record<PermissionErrorCode, string> = {
 
 /**
  * Create a standardized permission error with code and message
+ * Uses http-errors for proper error handling in Next.js API routes
  */
 export function createPermissionError(
   code: PermissionErrorCode,
   statusCode: number = 403,
   additionalContext?: Record<string, any>
-): Error & { code: string; statusCode: number; data?: Record<string, any> } {
-  const error = new Error(PERMISSION_ERROR_MESSAGES[code]) as any;
-  error.code = code;
-  error.statusCode = statusCode;
-  error.expose = true; // Make it safe to expose to client
+): createHttpError.HttpError {
+  const message = PERMISSION_ERROR_MESSAGES[code];
+  
+  // Log the permission error with context
+  logger.warn('Permission denied', {
+    code,
+    statusCode,
+    message,
+    ...additionalContext
+  });
+  
+  // Create http-error that will be properly handled by Next.js
+  const error = createHttpError(statusCode, message);
+  (error as any).code = code;
   
   if (additionalContext) {
-    error.data = additionalContext;
+    (error as any).data = additionalContext;
   }
   
   return error;

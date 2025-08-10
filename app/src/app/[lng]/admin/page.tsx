@@ -112,25 +112,35 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
       title: t("sending-invite"),
       type: "info",
     });
-    const inviteResponse = await createOrganizationInvite({
-      organizationId,
-      inviteeEmails: [email],
-      role: OrganizationRole.ORG_ADMIN,
-    });
-    if (inviteResponse.data) {
+    try {
+      const inviteResponse = await createOrganizationInvite({
+        organizationId,
+        inviteeEmails: [email],
+        role: OrganizationRole.ORG_ADMIN,
+      }).unwrap();
       toaster.dismiss();
       toaster.create({
         title: t("invite-sent-success"),
         type: "success",
         duration: 3000,
       });
-    } else {
+    } catch (error: any) {
       toaster.dismiss();
-      toaster.create({
-        title: t("invite-sent-error"),
-        type: "error",
-        duration: 3000,
-      });
+      // Check if the error is about already being an admin
+      if (error?.data?.error?.message?.includes("already admins for another organization")) {
+        // Extract email from error message like: "The following users are already admins for another organization: email@example.com"
+        toaster.create({
+          title: t("already-registered-admin", { email, }),
+          type: "info",
+          duration: 4000,
+        });
+      } else {
+        toaster.create({
+          title: t("invite-sent-error"),
+          type: "error",
+          duration: 3000,
+        });
+      }
     }
   };
 

@@ -1,6 +1,6 @@
 import { db } from "@/models";
 import { hasOrgOwnerLevelAccess, hasProjectOwnerLevelAccess } from "@/backend/RoleBasedAccessService";
-import type { UserRole, PermissionContext } from "./PermissionTypes";
+import { UserRole, type PermissionContext } from "./PermissionTypes";
 
 /**
  * Handles role checking and hierarchy logic
@@ -17,21 +17,21 @@ export class RoleChecker {
   ): Promise<UserRole> {
     // Check org admin first (highest priority)
     const isOrgAdmin = await hasOrgOwnerLevelAccess(organizationId, userId);
-    if (isOrgAdmin) return 'ORG_ADMIN';
+    if (isOrgAdmin) return UserRole.ORG_ADMIN;
 
     // Check project admin (with context if available for performance)
     const isProjectAdmin = context.projectId
       ? await hasProjectOwnerLevelAccess(context.projectId, userId)
       : await this.isProjectAdminInOrg(userId, organizationId);
-    if (isProjectAdmin) return 'PROJECT_ADMIN';
+    if (isProjectAdmin) return UserRole.PROJECT_ADMIN;
 
     // Check collaborator (with context if available for performance)
     const isCollaborator = context.cityId
       ? await this.hasAccessToCity(context.cityId, userId)
       : await this.isCollaboratorInOrg(userId, organizationId);
-    if (isCollaborator) return 'COLLABORATOR';
+    if (isCollaborator) return UserRole.COLLABORATOR;
 
-    return 'NO_ACCESS';
+    return UserRole.NO_ACCESS;
   }
 
   /**

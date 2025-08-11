@@ -2,7 +2,7 @@ import type { AppSession } from "@/lib/auth";
 
 import { UserRole } from '@/util/types';
 
-export type { UserRole };
+export { UserRole };
 
 export interface PermissionContext {
   organizationId?: string;

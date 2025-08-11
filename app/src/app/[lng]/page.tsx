@@ -1,7 +1,7 @@
 "use client";
 import { use } from "react";
 
-import HomePage from "@/components/HomePage/HomePage";
+import HomePage from "@/components/GHGIHomePage/HomePage";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Box } from "@chakra-ui/react";
 
@@ -11,9 +11,14 @@ export default function PrivateHome(props: {
   const { lng } = use(props.params);
 
   return (
-    <Box className="h-full flex flex-col" bg="background.backgroundLight">
+    <Box
+      h="full"
+      display="flex"
+      flexDirection="column"
+      bg="background.backgroundLight"
+    >
       <NavigationBar showMenu lng={lng} />
-      <HomePage lng={lng} isPublic={false} />;
+      <HomePage lng={lng} isPublic={false} />
     </Box>
   );
 }

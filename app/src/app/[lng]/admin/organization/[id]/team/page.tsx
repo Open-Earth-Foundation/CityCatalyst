@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/menu";
 import { RiDeleteBin6Line, RiEditLine } from "react-icons/ri";
 import { Tag } from "@/components/ui/tag";
-import AddCollaboratorsModal from "@/components/HomePage/AddCollaboratorModal/AddCollaboratorsModal";
+import AddCollaboratorsModal from "@/components/GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
@@ -73,12 +73,10 @@ const AdminOrganizationTeamPage = (props: {
 
   const { showSuccessToast } = UseSuccessToast({
     title: t("role-update-success-toast-title"),
-    description: t("role-update-success-toast-description"),
   });
 
   const { showErrorToast } = UseErrorToast({
     title: t("invite-error-toast-title"),
-    description: t("invite-error-toast-description"),
   });
 
   const [selectedProject, setSelectedProject] = React.useState<string[]>([]);
@@ -413,8 +411,20 @@ const AdminOrganizationTeamPage = (props: {
                               upgradeRole({ contactEmail: item.email })
                             }
                           >
-                            <Icon as={MdOutlineGroup} h="24px" w="24px" />
-                            <Text color="content.primary">
+                            <Icon
+                              _groupHover={{
+                                color: "white",
+                              }}
+                              as={MdOutlineGroup}
+                              h="24px"
+                              w="24px"
+                            />
+                            <Text
+                              _groupHover={{
+                                color: "white",
+                              }}
+                              color="content.primary"
+                            >
                               {t("change-to-admin")}
                             </Text>
                           </MenuItem>
@@ -437,14 +447,18 @@ const AdminOrganizationTeamPage = (props: {
                           }}
                         >
                           <Icon
-                            className="group-hover:text-white"
+                            _groupHover={{
+                              color: "white",
+                            }}
                             color="sentiment.negativeDefault"
                             as={RiDeleteBin6Line}
                             h="24px"
                             w="24px"
                           />
                           <Text
-                            className="group-hover:text-white"
+                            _groupHover={{
+                              color: "white",
+                            }}
                             color="content.primary"
                           >
                             {t("remove-user")}

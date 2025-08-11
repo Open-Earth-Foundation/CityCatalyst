@@ -182,7 +182,9 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                     <Box>
                       <Box display="flex" gap="8px" alignItems="center">
                         <CircleFlag
-                          countryCode={city.countryLocode?.toLocaleLowerCase()!}
+                          countryCode={
+                            city.countryLocode?.substring(0, 2)?.toLowerCase() || ""
+                          }
                           height="32px"
                           width="32px"
                         />
@@ -303,7 +305,6 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                       <PopoverBody padding="0">
                                         <List.Root padding="0">
                                           <List.Item
-                                            className="group "
                                             display="flex"
                                             cursor="pointer"
                                             gap="16px"
@@ -325,7 +326,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                               letterSpacing="wide"
                                               fontWeight="normal"
                                               fontSize="body.lg"
-                                              className="group group-hover:text-white"
+                                              _groupHover={{ color: "white" }}
                                             >
                                               {t("download-csv")}
                                             </Text>
@@ -358,7 +359,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                               letterSpacing="wide"
                                               fontWeight="normal"
                                               fontSize="body.lg"
-                                              className="group group-hover:text-white"
+                                              _groupHover={{ color: "white" }}
                                             >
                                               {t("delete-inventory")}
                                             </Text>

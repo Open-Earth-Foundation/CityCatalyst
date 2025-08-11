@@ -4,6 +4,7 @@ import { apiHandler } from "@/util/api";
 import { createPopulationRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
+import PopulationService from "@/backend/PopulationService";
 
 export const POST = apiHandler(async (req, { session, params }) => {
   const body = createPopulationRequest.parse(await req.json());
@@ -68,5 +69,16 @@ export const POST = apiHandler(async (req, { session, params }) => {
 
   return NextResponse.json({
     data: { cityPopulation, regionPopulation, countryPopulation },
+  });
+});
+
+export const GET = apiHandler(async (_req: Request, { session, params }) => {
+  const city = await UserService.findUserCity(params.city, session, true);
+
+  const cityPopulationData =
+    await PopulationService.getMostRecentPopulationDataForCity(city.cityId);
+
+  return NextResponse.json({
+    data: cityPopulationData,
   });
 });

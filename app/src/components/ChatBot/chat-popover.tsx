@@ -51,10 +51,10 @@ export default function ChatPopover({
     const scrollPercentage = (scrollPosition / maxScroll) * 100;
     if (scrollPercentage > 90) {
       // Move up when near bottom
-      return "bottom-28";
+      return "105px";
     }
     // Default position
-    return "bottom-8";
+    return "8px";
   };
 
   useEffect(() => {
@@ -74,7 +74,11 @@ export default function ChatPopover({
       >
         <PopoverTrigger asChild>
           <Button
-            className={`fixed z-30 ${getDynamicBottomPosition()} right-16 transition-all duration-300`}
+            position="fixed"
+            zIndex={30}
+            right={16}
+            transition="all 300ms"
+            bottom={getDynamicBottomPosition()}
             fontSize="button.md"
             fontStyle="normal"
             fontWeight="600"

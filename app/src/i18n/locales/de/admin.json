@@ -136,5 +136,7 @@
   "download-failed": "Download fehlgeschlagen",
   "download-error": "Es gab einen Fehler beim Herunterladen",
   "change-to-admin": "Wechseln zu Admin",
-  "user-removed": "Benutzer erfolgreich entfernt"
+  "user-removed": "Benutzer erfolgreich entfernt",
+  "role-update-success-toast-title": "Rolle erfolgreich aktualisiert",
+  "frozen": "Eingefroren"
 }

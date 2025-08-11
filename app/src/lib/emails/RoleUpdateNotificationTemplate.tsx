@@ -56,22 +56,25 @@ export function RoleUpdateNotificationTemplate({
               <Section
                 style={{
                   backgroundColor: brandInformation.color || "#ffffff",
+                  paddingLeft: "24px",
+                  paddingRight: "24px",
                 }}
               >
-                <Img
-                  src={brandInformation.logoUrl ?? ImageURL}
-                  alt="logo"
-                  height="100"
-                />
+                {brandInformation.logoUrl ? (
+                  <Img src={brandInformation.logoUrl} alt="logo" height="100" />
+                ) : (
+                  <Text
+                    style={{
+                      ...brandHeading,
+                      ...(brandInformation.color ? { color: "#ffffff" } : {}),
+                    }}
+                  >
+                    {t("role-update.brand")}
+                  </Text>
+                )}
               </Section>
             ) : (
-              <Section>
-                <Img
-                  src={ImageURL}
-                  alt="City Catalyst logo"
-                  width="36"
-                  height="36"
-                />
+              <Section style={{ padding: "24px", paddingBottom: "0" }}>
                 <Text style={brandHeading}>{t("role-update.brand")}</Text>
               </Section>
             )}

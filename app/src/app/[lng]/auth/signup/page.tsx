@@ -122,7 +122,10 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
       <Text mt={4} mb={8} color="content.tertiary">
         {t("signup-details")}
       </Text>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{ gap: "16px", display: "flex", flexDirection: "column" }}
+      >
         <Field
           label={<LabelLarge>{t("full-name")}</LabelLarge>}
           invalid={!!errors.name}
@@ -221,7 +224,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
               Accept the{" "}
               <Link
                 href="https://citycatalyst.openearth.org/privacy"
-                className="underline"
+                textDecoration="underline"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -243,13 +246,16 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         </Button>
       </form>
       <Text
-        className="w-full text-center mt-4 text-sm"
+        w="full"
+        textAlign="center"
+        mt={4}
+        fontSize="sm"
         color="content.tertiary"
       >
         {t("have-account")}{" "}
         <Link
           href={`/auth/login?callbackUrl=${encodeURIComponent(`${callbackUrl ?? ""}&from=signup`)}`}
-          className="underline"
+          textDecoration="underline"
         >
           {t("log-in")}
         </Link>

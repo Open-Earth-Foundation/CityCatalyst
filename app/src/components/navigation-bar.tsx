@@ -39,12 +39,13 @@ import { Avatar } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
 import { Roles } from "@/util/types";
-import ProjectDrawer from "@/components/HomePage/ProjectDrawer";
+import ProjectDrawer from "@/components/GHGIHomePage/ProjectDrawer";
 import { TbSettingsCog } from "react-icons/tb";
 import { useTheme } from "next-themes";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Trans } from "react-i18next";
+import JNDrawer from "./HomePage/JNDrawer";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -99,6 +100,10 @@ export function NavigationBar({
     history.replaceState(null, "", newPath);
   };
 
+  // get pathname
+  const pathname = usePathname();
+  const fullPath = pathname.replace(/^\/[A-Za-z]+/, "");
+
   // Checks if language is set in cookie and updates URL if not
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -127,7 +132,6 @@ export function NavigationBar({
   const currentInventoryId =
     inventoryIdFromParam ?? userInfo?.defaultInventoryId;
   const router = useRouter();
-  const pathname = usePathname();
   const inventoryStub = inventoryIdFromParam ?? currentInventoryId;
   const dashboardPath = `/${lng}/${inventoryStub === null ? "" : inventoryStub}`;
   const { setTheme } = useTheme();
@@ -148,13 +152,21 @@ export function NavigationBar({
   }
 
   return (
-    <Box className="flex flex-col w-full">
+    <Box display="flex" flexDirection="column" w="full">
       <Box
-        className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50 w-full"
+        display="flex"
+        flexDirection="row"
+        px={8}
+        py={4}
+        alignItems="center"
+        gap={12}
+        position="relative"
+        zIndex={50}
+        w="full"
         bgColor="content.alternative"
       >
         <Box
-          className="flex"
+          display="flex"
           gap={6}
           flexShrink={logoUrl ? 0 : 1}
           w={logoUrl ? "250px" : "auto"}
@@ -197,17 +209,12 @@ export function NavigationBar({
             </>
           )}
         </Box>
-        <div className="w-full" />
+        <Box flex={1} />
         {showNav && !isPublic && (
           <>
             {" "}
             <Link href={dashboardPath}>
-              <Heading
-                color="base.light"
-                size="md"
-                className="opacity-75"
-                ml={6}
-              >
+              <Heading color="base.light" size="md" opacity={0.75} ml={6}>
                 {t("dashboard")}
               </Heading>
             </Link>
@@ -219,7 +226,8 @@ export function NavigationBar({
               <Heading
                 color="base.light"
                 size="md"
-                className="opacity-75 !text-nowrap"
+                opacity={0.75}
+                whiteSpace="nowrap"
                 ml={6}
               >
                 {t("learning-hub")}
@@ -286,7 +294,7 @@ export function NavigationBar({
                             : countryFromLanguage(language)
                         }
                         width="24"
-                        className="mr-4"
+                        style={{ marginRight: "16px" }}
                       />
                       <Text fontSize="title.md">{language.toUpperCase()}</Text>
                     </Box>
@@ -310,7 +318,8 @@ export function NavigationBar({
                 <MenuTrigger
                   asChild
                   minW="220px"
-                  className="whitespace-nowrap normal-case"
+                  whiteSpace="nowrap"
+                  textTransform="none"
                 >
                   <Button variant="ghost" ml={8}>
                     <Avatar
@@ -486,21 +495,31 @@ export function NavigationBar({
             )}
           </Box>
         </Box>
-        <ProjectDrawer
-          lng={lng}
-          currentInventoryId={currentInventoryId as string}
-          isOpen={isDrawerOpen}
-          onClose={() => setIsDrawerOpen(false)}
-          onOpenChange={({ open }) => setIsDrawerOpen(open)}
-        />
+        {/* JN Drawer */}
+        {/* Should be shown if JN is enabled and url has /cities*/}
+        {fullPath.includes("/cities") && (
+          <JNDrawer
+            lng={lng}
+            currentInventoryId={currentInventoryId as string}
+            isOpen={isDrawerOpen}
+            onClose={() => setIsDrawerOpen(false)}
+            onOpenChange={({ open }) => setIsDrawerOpen(open)}
+          />
+        )}
+        {/* TODO: Remove project drawer and replace with JN drawer after JN is live */}
+        {/* Project Drawer */}
+        {!fullPath.includes("/cities") && (
+          <ProjectDrawer
+            lng={lng}
+            currentInventoryId={currentInventoryId as string}
+            isOpen={isDrawerOpen}
+            onClose={() => setIsDrawerOpen(false)}
+            onOpenChange={({ open }) => setIsDrawerOpen(open)}
+          />
+        )}
       </Box>
       {isFrozen && !isPublic && !isAuth && (
-        <Box
-          py={2}
-          px={16}
-          bg="sentiment.warningDefault"
-          className="w-full z-50"
-        >
+        <Box py={2} px={16} bg="sentiment.warningDefault" w="full" zIndex={50}>
           <Text color="content.primary" fontSize="body.lg">
             <Trans
               i18nKey="account-frozen-warning-text"

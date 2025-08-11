@@ -182,7 +182,7 @@ function NoDataSourcesMessage({
           I<br />I
           <Link
             href={getMailURI(locode, sector, year)}
-            className="underline"
+            textDecoration="underline"
             color="content.link"
             fontWeight="bold"
           >
@@ -250,8 +250,8 @@ export default function AddDataSteps(props: {
       );
       if (!sectorProgress) {
         logger.error(
+          { referenceNumber: step.referenceNumber },
           "No progress entry found for sector",
-          step.referenceNumber,
         );
         return step;
       }
@@ -350,7 +350,7 @@ export default function AddDataSteps(props: {
       );
       return;
     }
-    logger.debug("Connect source", source);
+    logger.debug({ source }, "Connect source");
     setConnectingDataSourceId(source.datasourceId);
     try {
       const response = await connectDataSource({
@@ -422,12 +422,12 @@ export default function AddDataSteps(props: {
     onOpen: onSubsectorDrawerOpen,
   } = useDisclosure();
   const onSubsectorClick = (subsector: SubSectorWithRelations) => {
-    logger.debug(subsector);
+    logger.debug({ subsector });
     setSelectedSubsector(subsector);
     onSubsectorDrawerOpen();
   };
   const onSubsectorSave = (subsector: SubSectorWithRelations) => {
-    logger.debug("Save subsector", subsector);
+    logger.debug({ subsector }, "Save subsector");
   };
 
   const [isConfirming, setConfirming] = useState(false);
@@ -438,15 +438,6 @@ export default function AddDataSteps(props: {
     if (activeStep >= steps.length - 1) {
       router.push(`/${inventory}`);
       dispatch(clear());
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      goToNext();
-    }
-  };
-
-  const onSkip = () => {
-    if (activeStep >= steps.length - 1) {
-      router.push(`/${inventory}/data/`);
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
@@ -618,20 +609,25 @@ export default function AddDataSteps(props: {
     <>
       <Box id="top" />
       <Box
-        bg="background.backgroundLight"
+        position="fixed"
+        zIndex={10}
+        top={0}
+        w="full"
+        h={isExpanded ? "205px" : "400px"}
+        transition="all 50ms linear"
+        bg="white"
+        borderBottomWidth={isExpanded ? "1px" : "0px"}
         borderColor="border.neutral"
-        borderBottomWidth={isExpanded ? "1px" : ""}
-        pt={isExpanded ? "0px" : organization.active ? "120px" : "160px"}
-        className={`fixed z-10 top-0 w-full ${isExpanded ? "h-[200px]" : "h-[400px]"} transition-all duration-50 ease-linear`}
+        pt={isExpanded ? "0px" : "115px"}
       >
-        <div className=" w-[1090px] mx-auto px-4  ">
+        <Box w="1090px" mx="auto" px={4}>
           <Box
             w="full"
-            display="flex"
             alignItems="center"
             gap="16px"
             mb="24px"
-            className={`${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
+            transition="all 50ms linear"
+            display="flex"
           >
             <Button
               variant="ghost"
@@ -683,20 +679,20 @@ export default function AddDataSteps(props: {
             border="none"
             px={0}
           >
-            <Flex direction="row" className="w-full">
+            <Flex direction="row" w="full">
               <Icon
                 as={currentStep.icon}
                 boxSize={8}
                 color="interactive.secondary"
                 mr={4}
               />
-              <div className="space-y-4 w-[100%]">
+              <Box w="full" display="flex" flexDirection="column" gap={3}>
                 <Heading
                   fontWeight="semibold"
                   textTransform="capitalize"
                   lineHeight="32px"
                   mb={2}
-                  className="transition-all duration-50 ease-linear"
+                  transition="all 50ms linear"
                   fontSize={isExpanded ? "headline.sm" : "headline.md"}
                 >
                   {t(kebab(currentStep.name))}
@@ -725,15 +721,15 @@ export default function AddDataSteps(props: {
                     ]}
                     height={4}
                   />
-                  <Heading size="sm" ml={6} className="whitespace-nowrap -mt-1">
+                  <Heading size="sm" ml={6} mt={-1} whiteSpace="nowrap">
                     {t("completion-percent", {
                       progress: formatPercentage(totalStepCompletion),
                     })}
                   </Heading>
                 </Flex>
                 {scrollPosition <= 0 ? (
-                  <>
-                    <Badge mr={4}>
+                  <Box display="flex" flexDirection="row" gap={2}>
+                    <Badge mr={4} w="auto">
                       <Icon
                         as={CircleIcon}
                         boxSize={6}
@@ -745,7 +741,7 @@ export default function AddDataSteps(props: {
                         ),
                       })}
                     </Badge>
-                    <Badge>
+                    <Badge w="auto">
                       <Icon
                         as={CircleIcon}
                         boxSize={6}
@@ -755,16 +751,16 @@ export default function AddDataSteps(props: {
                         progress: formatPercentage(currentStep.addedProgress),
                       })}
                     </Badge>
-                  </>
+                  </Box>
                 ) : (
                   ""
                 )}
-              </div>
+              </Box>
             </Flex>
           </Box>
-        </div>
+        </Box>
       </Box>
-      <div className="pt-[48px] pb-16 w-[1090px] max-w-full mx-auto px-4">
+      <Box pt={"48px"} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
         {/*** Manual data entry section for subsectors ***/}
         <Card.Root mb={24} mt="350px" shadow="none" border="none">
           <Card.Body>
@@ -795,7 +791,11 @@ export default function AddDataSteps(props: {
                       w="full"
                       height="100px"
                       px={4}
-                      className="shadow-none border border-overlay hover:drop-shadow-xl !duration-300 transition-shadow"
+                      shadow="none"
+                      border="1px solid"
+                      borderColor="border.overlay"
+                      _hover={{ shadow: "xl" }}
+                      transition="all 300ms"
                       onClick={() => {
                         router.push(
                           `/${inventory}/data/${convertSectorReferenceNumberToNumber(currentStep.referenceNumber)}/${subSector.subsectorId}?refNo=${subSector.referenceNumber}`,
@@ -954,7 +954,9 @@ export default function AddDataSteps(props: {
                             : ""
                         }
                         borderWidth={2}
-                        className="shadow-none hover:drop-shadow-xl transition-shadow"
+                        shadow="none"
+                        _hover={{ shadow: "xl" }}
+                        transition="all 300ms"
                       >
                         <Card.Header>
                           {/* TODO add icon to DataSource */}
@@ -999,7 +1001,7 @@ export default function AddDataSteps(props: {
                               )}
                           </Text>
                           <Link
-                            className="underline"
+                            textDecoration="underline"
                             mt={4}
                             mb={6}
                             onClick={() => onSourceClick(source, data)}
@@ -1161,10 +1163,7 @@ export default function AddDataSteps(props: {
                                         </Button>
                                       </Box>
                                     </Box>
-                                    <Box
-                                      w="full"
-                                      className="relative pl-[63px]"
-                                    >
+                                    <Box w="full" position="relative" pl="63px">
                                       {file.subsectors
                                         ?.split(",")
                                         .map((item: any) => (
@@ -1220,7 +1219,7 @@ export default function AddDataSteps(props: {
           t={t}
           inventoryId={inventory}
         />
-      </div>
+      </Box>
     </>
   );
 }

@@ -112,25 +112,35 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
       title: t("sending-invite"),
       type: "info",
     });
-    const inviteResponse = await createOrganizationInvite({
-      organizationId,
-      inviteeEmails: [email],
-      role: OrganizationRole.ORG_ADMIN,
-    });
-    if (inviteResponse.data) {
+    try {
+      const inviteResponse = await createOrganizationInvite({
+        organizationId,
+        inviteeEmails: [email],
+        role: OrganizationRole.ORG_ADMIN,
+      }).unwrap();
       toaster.dismiss();
       toaster.create({
         title: t("invite-sent-success"),
         type: "success",
         duration: 3000,
       });
-    } else {
+    } catch (error: any) {
       toaster.dismiss();
-      toaster.create({
-        title: t("invite-sent-error"),
-        type: "error",
-        duration: 3000,
-      });
+      // Check if the error is about already being an admin using error code
+      if (error?.data?.error?.code === 'USER_ALREADY_ORG_ADMIN') {
+        // Get the email from the error data or fallback to the original email
+        toaster.create({
+          title: t("already-registered-admin", { email }),
+          type: "info",
+          duration: 4000,
+        });
+      } else {
+        toaster.create({
+          title: t("invite-sent-error"),
+          type: "error",
+          duration: 3000,
+        });
+      }
     }
   };
 
@@ -184,7 +194,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
     );
   };
   return (
-    <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
+    <Box pt={16} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
       <Link href={`/${lng}`} _hover={{ textDecoration: "none" }}>
         <Box
           display="flex"
@@ -208,7 +218,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
         color="content.primary"
         mb={12}
         mt={2}
-        className="w-full"
+        w="full"
       >
         {t("admin-heading")}
       </Heading>
@@ -322,14 +332,18 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
                               }
                             >
                               <Icon
-                                className="group-hover:text-white"
+                                _groupHover={{
+                                  color: "white",
+                                }}
                                 color="interactive.control"
                                 as={MdForwardToInbox}
                                 h="24px"
                                 w="24px"
                               />
                               <Text
-                                className="group-hover:text-white"
+                                _groupHover={{
+                                  color: "white",
+                                }}
                                 color="content.primary"
                               >
                                 {t("resend-invite")}
@@ -356,14 +370,18 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
                                 }}
                               >
                                 <Icon
-                                  className="group-hover:text-white"
+                                  _groupHover={{
+                                    color: "white",
+                                  }}
                                   color="interactive.control"
                                   as={MdPlayCircleOutline}
                                   h="24px"
                                   w="24px"
                                 />
                                 <Text
-                                  className="group-hover:text-white"
+                                  _groupHover={{
+                                    color: "white",
+                                  }}
                                   color="content.primary"
                                 >
                                   {t("unfreeze-account")}
@@ -390,14 +408,18 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
                                 }}
                               >
                                 <Icon
-                                  className="group-hover:text-white"
+                                  _groupHover={{
+                                    color: "white",
+                                  }}
                                   color="interactive.control"
                                   as={MdPauseCircleOutline}
                                   h="24px"
                                   w="24px"
                                 />
                                 <Text
-                                  className="group-hover:text-white"
+                                  _groupHover={{
+                                    color: "white",
+                                  }}
                                   color="content.primary"
                                 >
                                   {t("freeze-account")}
@@ -423,14 +445,18 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
                               }
                             >
                               <Icon
-                                className="group-hover:text-white"
+                                _groupHover={{
+                                  color: "white",
+                                }}
                                 color="interactive.control"
                                 as={MdOutlineGroup}
                                 h="24px"
                                 w="24px"
                               />
                               <Text
-                                className="group-hover:text-white"
+                                _groupHover={{
+                                  color: "white",
+                                }}
                                 color="content.primary"
                               >
                                 {t("account-details")}

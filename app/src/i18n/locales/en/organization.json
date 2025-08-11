@@ -1,0 +1,21 @@
+{
+  "all-projects": "All Projects",
+  "default-organization": "Default Organization",
+  "default-project": "Default Project",
+  "explore-projects-description": "Explore the projects you've created within CityCatalyst. Navigate through to discover additional cities.",
+  "learning": "Learning",
+  "learn-more-blog": "Want to learn more? Check our Blog",
+  "read-blog-description": "Read our blog articles to find out about the best practices and guidelines in climate action",
+  "visit-blog": "Visit Blog",
+  "organization-name": "Organization name",
+  "projects": "Projects",
+  "active-projects-tooltip": "These projects belong to the organization and are currently active.",
+  "active-in-total": "Active in Total",
+  "cities": "cities",
+  "across-projects": "Across projects",
+  "city-count-tooltip": "The number of cities in which the organization has active projects.",
+  "pro": "Pro",
+  "active-plan-tooltip": "The organization is currently subscribed to this plan.",
+  "active-plan": "Active Plan",
+  "organization-load-failed": "Unable to load organization"
+}

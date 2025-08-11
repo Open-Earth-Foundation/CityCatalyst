@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { apiHandler } from "@/util/api";
-import { db } from "@/models";
 import createHttpError from "http-errors";
 import UserService from "@/backend/UserService";
 import { upsertInventoryRequest } from "@/util/validation";
-import { QueryTypes } from "sequelize";
 import { validate } from "uuid";
+import { InventoryService } from "@/backend/InventoryService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 
 function hasIsPublicProperty(
   inventory:
@@ -29,60 +29,34 @@ export const GET = apiHandler(async (req, { session, params }) => {
   }
 
   if ("default" === inventoryId) {
+    // TODO: Add getUserDefaultInventory method to PermissionService
     inventoryId = await UserService.findUserDefaultInventory(session);
     if (!inventoryId) {
       throw new createHttpError.NotFound("user has no default inventory");
     }
   }
 
- if (!validate(inventoryId)) {
-    throw new createHttpError.BadRequest(`'${inventoryId}' is not a valid inventory id (uuid)`);
+  if (!validate(inventoryId)) {
+    throw new createHttpError.BadRequest(
+      `'${inventoryId}' is not a valid inventory id (uuid)`,
+    );
   }
 
-  const inventory = await UserService.findUserInventory(
+  // Use PermissionService for access check only
+  await PermissionService.canAccessInventory(session, inventoryId);
+  
+  const inventory = await InventoryService.getInventoryWithTotalEmissions(
     inventoryId,
     session,
-    [
-      {
-        model: db.models.City,
-        as: "city",
-        include: [
-          {
-            model: db.models.Project,
-            as: "project",
-            attributes: ["projectId", "name", "organizationId"],
-          },
-        ],
-      },
-    ],
-    true,
   );
-
-  if (!inventory) {
-    throw new createHttpError.NotFound("Inventory not found");
-  }
-
-  // TODO [ON-2429]: Save total emissions for inventory every time activity data is modified
-  const rawQuery = `
-    SELECT SUM(co2eq)
-    FROM "InventoryValue"
-    WHERE inventory_id = :inventoryId
-  `;
-
-  const [{ sum }] = (await db.sequelize!.query(rawQuery, {
-    replacements: { inventoryId },
-    type: QueryTypes.SELECT,
-    raw: true,
-  })) as unknown as { sum: number }[];
-
-  inventory.totalEmissions = sum;
   return NextResponse.json({ data: inventory });
 });
 
 export const DELETE = apiHandler(async (_req, { params, session }) => {
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
+  // Use PermissionService for delete permission (ORG_ADMIN only)
+  const { resource: inventory } = await PermissionService.canDeleteInventory(
     session,
+    params.inventory
   );
   await inventory.destroy();
   return NextResponse.json({ data: inventory, deleted: true });
@@ -91,11 +65,14 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
 export const PATCH = apiHandler(async (req, context) => {
   const { params, session } = context;
   const body = upsertInventoryRequest.parse(await req.json());
-  let inventory = await UserService.findUserInventory(
-    params.inventory,
+  // Use PermissionService for edit permission
+  const { resource: inventory } = await PermissionService.canEditInventory(
     session,
+    params.inventory
   );
 
+  let updatedInventory = inventory;
+  
   if (hasIsPublicProperty(body)) {
     const publishBody: { isPublic: boolean; publishedAt?: Date | null } = {
       ...body,
@@ -107,6 +84,6 @@ export const PATCH = apiHandler(async (req, context) => {
     }
     await inventory.update(publishBody);
   }
-  inventory = await inventory.update(body);
-  return NextResponse.json({ data: inventory });
+  updatedInventory = await inventory.update(body);
+  return NextResponse.json({ data: updatedInventory });
 });

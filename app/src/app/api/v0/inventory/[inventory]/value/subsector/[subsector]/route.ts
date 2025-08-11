@@ -1,15 +1,15 @@
 import { apiHandler } from "@/util/api";
 import { db } from "@/models";
-import UserService from "@/backend/UserService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 import { NextResponse } from "next/server";
 import { patchInventoryValue } from "@/util/validation";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
+  const { resource: inventory } = await PermissionService.canEditInventory(
     session,
+    params.inventory
   );
   const inventoryValues = await db.models.InventoryValue.findAll({
     where: {
@@ -34,9 +34,9 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const body = patchInventoryValue.parse(await req.json());
 
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
+  const { resource: inventory } = await PermissionService.canEditInventory(
     session,
+    params.inventory
   );
 
   if (!inventory) {
@@ -102,9 +102,9 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 });
 
 export const DELETE = apiHandler(async (_req, { params, session }) => {
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
+  const { resource: inventory } = await PermissionService.canEditInventory(
     session,
+    params.inventory
   );
 
   const inventoryValue = await db.models.InventoryValue.findOne({

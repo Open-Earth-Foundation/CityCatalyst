@@ -9,8 +9,14 @@ test.describe("Dashboard", () => {
       // Create inventory through onboarding
       await createInventoryThroughOnboarding(page, "Chicago");
 
-      // Navigate to Dashboard
-      await page.goto("/");
+      // After onboarding completion, we should be on the completion page
+      // Click the "Check Dashboard" button to navigate to the inventory dashboard
+      const checkDashboardButton = page.getByTestId("check-dashboard");
+      await expect(checkDashboardButton).toBeVisible();
+      await checkDashboardButton.click();
+
+      // Wait for the dashboard to load
+      await page.waitForLoadState("networkidle");
 
       // Verify Dashboard
       await page.waitForLoadState("networkidle");
@@ -29,6 +35,8 @@ test.describe("Dashboard", () => {
       const inventoryYearTitle = page.getByTestId("inventory-year-title");
       await expect(inventoryYearTitle).toHaveText("Inventory year");
 
+      // Note: Add inventory button is only visible for ORG_ADMIN and PROJECT_ADMIN users
+      // Test user is now an admin user, so the button should be visible
       const addNewInventoryButton = page.getByTestId(
         "add-new-inventory-button",
       );

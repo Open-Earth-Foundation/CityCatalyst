@@ -24,7 +24,7 @@ import {
 } from "@/util/helpers";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
-import DownloadButton from "@/components/HomePage/DownloadButton";
+import DownloadButton from "@/components/GHGIHomePage/DownloadButton";
 import { CityResponse } from "@/util/types";
 import { BsDownload } from "react-icons/bs";
 import { formatEmissions } from "@/util/helpers";
@@ -142,8 +142,11 @@ const InventoryView = ({
         })}
       </Text>
       <Box
-        className="flex w-full justify-between items-center mt-2 gap-6"
-        mt={8}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mt={2}
+        gap={6}
         mb={8}
       >
         <SegmentedProgress
@@ -153,11 +156,7 @@ const InventoryView = ({
           ]}
           colors={["interactive.connected", "interactive.tertiary"]}
         />
-        <Heading
-          fontWeight="semibold"
-          fontSize="body.md"
-          className="whitespace-nowrap"
-        >
+        <Heading fontWeight="semibold" fontSize="body.md" whiteSpace="nowrap">
           {formatPercent(progressDetails.totalProgress)}%{" "}
           <Trans t={t}>completed</Trans>
         </Heading>
@@ -242,11 +241,11 @@ const InventoryView = ({
                   lineHeight="32"
                 >
                   {shortenNumber(population.population)}
-                  <span className="text-[16px]">
+                  <Text as="span" fontSize="body.md">
                     {population?.population
                       ? getShortenNumberUnit(population.population)
                       : ""}
-                  </span>
+                  </Text>
                 </Text>
               ) : (
                 <Text
@@ -280,7 +279,7 @@ const InventoryView = ({
                 boxSize={6}
                 fill="background.overlay"
               />
-              <Box className="flex gap-1">
+              <Box display="flex" gap={1}>
                 {inventory?.city.area === null ||
                 inventory?.city.area! === 0 ? (
                   <Text
@@ -302,9 +301,9 @@ const InventoryView = ({
                   >
                     {Math.round(inventory?.city.area!).toLocaleString()}
                     {/* eslint-disable-next-line i18next/no-literal-string */}
-                    <span className="text-[16px]">
+                    <Text as="span" fontSize="body.md">
                       km<sup>2</sup>
-                    </span>
+                    </Text>
                   </Text>
                 )}
               </Box>

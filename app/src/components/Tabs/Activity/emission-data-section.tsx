@@ -131,7 +131,7 @@ const EmissionDataSection = ({
           >
             {t("activity-suggestion")}
           </Text>
-          <Box className="flex flex-col gap-4">
+          <Box display="flex" flexDirection="column" gap={4}>
             {suggestedActivities.map((suggestedActivity) => {
               const { id, prefills } = suggestedActivity;
               return (
@@ -267,20 +267,20 @@ const EmissionDataSection = ({
                     bg: "content.link",
                     cursor: "pointer",
                   }}
-                  className="group"
+                  _groupHover={{}}
                   onClick={() =>
                     isFrozenCheck() ? null : handleChangeMethodology()
                   }
                 >
                   <Icon
-                    className="group-hover:text-white"
+                    _groupHover={{ color: "white" }}
                     color="interactive.control"
                     as={FaNetworkWired}
                     h="24px"
                     w="24px"
                   />
                   <Text
-                    className="group-hover:text-white"
+                    _groupHover={{ color: "white" }}
                     color="content.primary"
                     fontSize="body.lg"
                   >
@@ -307,14 +307,14 @@ const EmissionDataSection = ({
                     }
                   >
                     <Icon
-                      className="group-hover:text-white"
+                      _hover={{ color: "white" }}
                       color="sentiment.negativeDefault"
                       as={FiTrash2}
                       h="24px"
                       w="24px"
                     />
                     <Text
-                      className="group-hover:text-white"
+                      _hover={{ color: "white" }}
                       color="content.primary"
                       fontSize="body.lg"
                     >

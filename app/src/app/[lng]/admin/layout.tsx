@@ -37,22 +37,38 @@ export default function AdminLayout(props: {
   }, [data, router, lng, t]);
 
   return (
-    <Box className="h-full flex flex-col" bg="background.backgroundLight">
+    <Box
+      h="full"
+      display="flex"
+      flexDirection="column"
+      bg="background.backgroundLight"
+    >
       <NavigationBar lng={lng} />
       <Toaster />
-      <div className="w-full h-full">
+      <Box w="full" h="full">
         {data?.user?.role === Roles.Admin ? (
           children
         ) : (
-          <div className="flex items-center justify-center w-full">
-            <Box className="w-full py-12 flex items-center justify-center">
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            w="full"
+          >
+            <Box
+              w="full"
+              py={12}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
               <ProgressCircleRoot value={null}>
                 <ProgressCircleRing cap="round" />
               </ProgressCircleRoot>
             </Box>
-          </div>
+          </Box>
         )}
-      </div>
+      </Box>
     </Box>
   );
 }

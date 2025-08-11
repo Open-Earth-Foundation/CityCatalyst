@@ -1,5 +1,6 @@
 "use client";
 
+import { Box } from "@chakra-ui/react";
 import { RefObject, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -48,5 +49,5 @@ export function ScrollAnchor({
     }
   }, [inView, trackVisibility, rootRef]);
 
-  return <div ref={ref} className="h-px w-full" />;
+  return <Box ref={ref} h="1px" w="full" />;
 }

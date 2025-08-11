@@ -196,18 +196,15 @@ const ActivityModalBody = ({
             mb="24px"
             display="flex"
             flexDirection="column"
-            className="items-start"
+            alignItems="flex-start"
             w="full"
           >
-            <Field
-              className="w-full"
-              label={t(methodology.activitySelectionField.id)}
-            >
+            <Field w="full" label={t(methodology.activitySelectionField.id)}>
               <RadioGroup>
                 <HStack
                   display="flex"
                   flexDirection="row"
-                  className="items-start"
+                  alignItems="flex-start"
                   w="full"
                 >
                   {methodology.activitySelectionField.options?.map((option) => (
@@ -224,7 +221,7 @@ const ActivityModalBody = ({
           mb="24px"
           display="flex"
           flexDirection="column"
-          className="items-start"
+          alignItems="flex-start"
           gap="24px"
         >
           {/* handle select, multi-select types, text  */}
@@ -232,7 +229,7 @@ const ActivityModalBody = ({
             return (
               <>
                 {f.options && (
-                  <Field key={idx} className="w-full">
+                  <Field key={idx} w="full">
                     <BuildingTypeSelectInput
                       options={f.options as string[]}
                       required={f.required}
@@ -269,7 +266,7 @@ const ActivityModalBody = ({
                   />
                 )}
                 {f.type === "text" && (
-                  <Field className="w-full" label={t(f.id)}>
+                  <Field w="full" label={t(f.id)}>
                     <Input
                       type="text"
                       borderRadius="4px"
@@ -321,7 +318,7 @@ const ActivityModalBody = ({
                   </Field>
                 )}
                 {f.type === "number" && (
-                  <Field className="w-full" label={t(f.id)}>
+                  <Field w="full" label={t(f.id)}>
                     <HStack>
                       <FormattedNumberInput
                         placeholder={t("activity-data-amount-placeholder")}
@@ -441,7 +438,7 @@ const ActivityModalBody = ({
                   </Field>
                 )}
                 {f.dependsOn && (
-                  <Field className="w-full" label={t(f.id)}>
+                  <Field w="full" label={t(f.id)}>
                     <DependentSelectInput
                       field={f}
                       register={register}
@@ -466,7 +463,7 @@ const ActivityModalBody = ({
             >
               <Field
                 invalid={!!resolve(prefix + "activityDataAmount", errors)}
-                label={<Text className="truncate">{t(title)}</Text>}
+                label={<Text truncate>{t(title)}</Text>}
               >
                 <HStack>
                   <FormattedNumberInput
@@ -721,7 +718,7 @@ const ActivityModalBody = ({
               <Heading
                 size="sm"
                 mb={4}
-                className="font-normal"
+                fontWeight="normal"
                 display="flex"
                 alignItems="center"
               >
@@ -735,7 +732,7 @@ const ActivityModalBody = ({
                   {t("emissions-factor-values")}
                 </Text>
               </Heading>
-              <HStack className="items-start" gap={4} mb={5}>
+              <HStack alignItems="flex-start" gap={4} mb={5}>
                 <Box>
                   <Field label={t("co2-emission-factor")}>
                     <FormattedNumberInput
@@ -929,7 +926,7 @@ const ActivityModalBody = ({
             )}
           </Field>
           {sourceField && (
-            <Field className="w-full" label={t("data-source")}>
+            <Field w="full" label={t("data-source")}>
               <Input
                 type="text"
                 borderRadius="4px"
@@ -1020,7 +1017,7 @@ const ActivityModalBody = ({
             )}
           </Field>
         </HStack>
-        <HStack className="items-start" mb={13}>
+        <HStack alignItems="flex-start" mb={13}>
           <Icon as={MdInfoOutline} mt={1} color="content.link" />
           <Text color="content.tertiary">
             {t("gwp-info-prefix")}{" "}

@@ -132,6 +132,13 @@ interface TotalEmissionsBySectorAndSubsector {
   ss_reference_number: string;
 }
 
+export interface EmissionsBySector {
+  co2eq: bigint;
+  inventory_id: string;
+  sector_name: SectorNamesInDB;
+  reference_number: string;
+}
+
 export async function getTotalEmissionsBySector(inventoryIds: string[]) {
   const rawQuery = `
     SELECT iv.inventory_id, SUM(iv.co2eq) AS co2eq, s.sector_name, s.reference_number
@@ -145,12 +152,7 @@ export async function getTotalEmissionsBySector(inventoryIds: string[]) {
   return (await db.sequelize!.query(rawQuery, {
     replacements: { inventoryIds },
     type: QueryTypes.SELECT,
-  })) as {
-    co2eq: bigint;
-    inventory_id: string;
-    sector_name: SectorNamesInDB;
-    reference_number: string;
-  }[];
+  })) as EmissionsBySector[];
 }
 
 export async function getTotalEmissionsBySectorAndSubsector(

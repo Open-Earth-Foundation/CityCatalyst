@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/menu";
 import { RiDeleteBin6Line, RiEditLine } from "react-icons/ri";
 import { Tag } from "@/components/ui/tag";
-import AddCollaboratorsModal from "@/components/HomePage/AddCollaboratorModal/AddCollaboratorsModal";
+import AddCollaboratorsModal from "@/components/GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
 import { Trans } from "react-i18next";
@@ -398,15 +398,19 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
                             }}
                           >
                             <Icon
-                              className="group-hover:text-white"
                               color="sentiment.negativeDefault"
                               as={RiDeleteBin6Line}
                               h="24px"
                               w="24px"
+                              _groupHover={{
+                                color: "white",
+                              }}
                             />
                             <Text
-                              className="group-hover:text-white"
                               color="content.primary"
+                              _groupHover={{
+                                color: "white",
+                              }}
                             >
                               {t("remove-user")}
                             </Text>

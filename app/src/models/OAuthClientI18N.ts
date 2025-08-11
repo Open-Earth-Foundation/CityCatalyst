@@ -52,6 +52,7 @@ export class OAuthClientI18N
           type: DataTypes.STRING(2),
           allowNull: false,
           primaryKey: true,
+          comment: 'ISO 639-1 two-letter language code',
         },
         name: {
           type: DataTypes.STRING(64),

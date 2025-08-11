@@ -89,7 +89,13 @@ async function fetchEmissionsFactorData(baseUrl: string) {
     }
     
     const data = await response.json();
-    // Handle the datasource mapping endpoint which returns emissions_factor_datasource
+    // Special case handling for the emissions_factor_datasource endpoint
+    // The API returns data with key "emissions_factor_datasource" but we already use that key
+    // for the /emissions_factor/datasource endpoint (line 72). To avoid collision in our results object,
+    // we store this endpoint's data under "emissions_factor_datasource_mapping" instead.
+    // This is just for organizing the API responses temporarily - the actual database tables
+    // (DataSourceEmissionsFactor) are determined by the transform function, not these keys.
+    // TODO: Work with the global API team to make response keys more consistent to avoid this confusion
     if (endpoint.path === "/emissions_factor/emissions_factor_datasource") {
       results[endpoint.key] = data["emissions_factor_datasource"] || [];
     } else {
@@ -110,6 +116,8 @@ function transformEmissionsFactorData(apiData: Record<string, any>) {
   const dataSources: DataSourceI18nCreationAttributes[] = apiData.emissions_factor_datasource.map((ds: EmissionsFactorDataSource) => ({
     datasourceId: ds.datasource_id,
     datasourceName: ds.datasource_name,
+    // TODO: Consider changing from { user: ... } to { en: ... } for clarity
+    // Currently matches the pattern used in the original seeder (20231114094254-emissions-factors.cjs)
     datasetName: ds.dataset_name ? JSON.stringify({ user: ds.dataset_name }) : null,
     sourceType: "emissions_factor",
     datasetUrl: ds.URL,
@@ -144,6 +152,13 @@ function transformEmissionsFactorData(apiData: Record<string, any>) {
     datasourceId: meth.datasource_id,
   }));
 
+  // Create a map of methodology_id to methodology name for lookup
+  const methodologyMap = new Map(
+    apiData.emissions_factor_methodologies.map((meth: EmissionsFactorMethodology) => 
+      [meth.methodology_id, meth.methodology]
+    )
+  );
+
   const emissionsFactors: EmissionsFactorCreationAttributes[] = apiData.emissions_factor.map((ef: EmissionsFactorValue) => ({
     id: ef.id,
     gas: ef.gas,
@@ -166,6 +181,7 @@ function transformEmissionsFactorData(apiData: Record<string, any>) {
     temporalGranularity: ef.temporal_granularity,
     url: ef.url,
     methodologyId: ef.methodology_id,
+    methodologyName: methodologyMap.get(ef.methodology_id) || null,
     metadata: ef.metadata ? (typeof ef.metadata === 'string' ? JSON.parse(ef.metadata) : ef.metadata) : null,
     deprecated: false,
   }));
@@ -194,33 +210,33 @@ async function markExistingEmissionsFactorsAsDeprecated() {
 
 async function syncPublishers(publishers: PublisherCreationAttributes[]) {
   logger.debug("Syncing publishers...");
-  for (const publisher of publishers) {
-    await db.models.Publisher.upsert(publisher);
-  }
+  await Promise.all(
+    publishers.map((publisher) => db.models.Publisher.upsert(publisher))
+  );
   console.log(`Synced ${publishers.length} publishers`);
 }
 
 async function syncDataSources(dataSources: DataSourceI18nCreationAttributes[]) {
   logger.debug("Syncing data sources...");
-  for (const dataSource of dataSources) {
-    await db.models.DataSource.upsert(dataSource);
-  }
+  await Promise.all(
+    dataSources.map((dataSource) => db.models.DataSource.upsert(dataSource))
+  );
   console.log(`Synced ${dataSources.length} data sources`);
 }
 
 async function syncMethodologies(methodologies: MethodologyCreationAttributes[]) {
   logger.debug("Syncing methodologies...");
-  for (const methodology of methodologies) {
-    await db.models.Methodology.upsert(methodology);
-  }
+  await Promise.all(
+    methodologies.map((methodology) => db.models.Methodology.upsert(methodology))
+  );
   console.log(`Synced ${methodologies.length} methodologies`);
 }
 
 async function syncEmissionsFactorsData(emissionsFactors: EmissionsFactorCreationAttributes[]) {
   logger.debug("Syncing emissions factors...");
-  for (const emissionsFactor of emissionsFactors) {
-    await db.models.EmissionsFactor.upsert(emissionsFactor);
-  }
+  await Promise.all(
+    emissionsFactors.map((emissionsFactor) => db.models.EmissionsFactor.upsert(emissionsFactor))
+  );
   console.log(`Synced ${emissionsFactors.length} emissions factors`);
 }
 

@@ -71,12 +71,12 @@ export function Hero({
                 <Link href={`/public/project/${city?.projectId}`}>
                   {city?.project?.name === "cc_project_default"
                     ? t("default-project")
-                    : city?.projectId}
+                    : city?.project?.name}
                 </Link>
               ) : city?.project?.name === "cc_project_default" ? (
                 t("default-project")
               ) : (
-                city?.projectId
+                city?.project?.name
               )}
             </TitleMedium>
 
@@ -94,50 +94,6 @@ export function Hero({
 
             {/* Statistics */}
             <HStack gap={8} align="start">
-              {/* Population */}
-              <VStack align="start" gap={2}>
-                <HStack gap={2} align="baseline">
-                  <Icon as={MdGroup} boxSize={5} color="content.primary" />
-                  <HeadlineSmall
-                    fontSize="2xl"
-                    fontWeight="bold"
-                    color="content.primary"
-                  >
-                    {population?.population ? (
-                      <>
-                        {shortenNumber(population.population)}
-                        <HeadlineSmall as="span">
-                          {getShortenNumberUnit(population.population)}
-                        </HeadlineSmall>
-                      </>
-                    ) : (
-                      t("N/A")
-                    )}
-                  </HeadlineSmall>
-                  <Tooltip
-                    content={
-                      <>
-                        {popWithDS
-                          ? popWithDS.datasource.name
-                          : t("source-open-climate")}
-                        <br />
-                        {t("population-year", { year: population?.year })}
-                      </>
-                    }
-                  >
-                    <Icon
-                      as={MdInfoOutline}
-                      boxSize={4}
-                      color="content.secondary"
-                      cursor="pointer"
-                    />
-                  </Tooltip>
-                </HStack>
-                <BodyMedium color="content.tertiary">
-                  {t("total-population")}
-                </BodyMedium>
-              </VStack>
-
               {/* Land Area */}
               <VStack align="start" gap={2}>
                 <HStack gap={2} align="baseline">
@@ -191,7 +147,7 @@ export function Hero({
           </VStack>
 
           {/* Right Panel - Map */}
-          <Box flex={1} h="317px">
+          <Box h="317px">
             {city ? (
               <CityMap locode={city?.locode ?? null} width={422} height={317} />
             ) : (

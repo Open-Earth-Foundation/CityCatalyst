@@ -1210,6 +1210,7 @@
   "deselect-all": "Alle abwählen",
   "success": "Erfolg",
   "notation-keys-updated": "Notenschlüssel aktualisiert",
+  "error-updating-notation-keys": "Fehler beim Aktualisieren der Notenschlüssel",
   "quick-action-applied": "Schnellaktion angewendet",
   "changes-can-be-lost": "Ihre Änderungen können verloren gehen",
   "changes-can-be-lost-description": "Möchten Sie alle Änderungen seit der letzten Bearbeitung verwerfen? Dies kann nicht rückgängig gemacht werden.",

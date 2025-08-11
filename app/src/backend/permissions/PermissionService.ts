@@ -83,7 +83,9 @@ export class PermissionService {
     // Resolve organization context
     const orgId = await PermissionResolver.resolveOrganizationId(context);
     if (!orgId) {
-      throw createPermissionError(PERMISSION_ERRORS.NO_ORGANIZATION_CONTEXT);
+      // If we can't resolve organization context, the resource likely doesn't exist
+      // Return 404 instead of 403 to allow proper API error handling
+      throw createPermissionError(PERMISSION_ERRORS.RESOURCE_NOT_FOUND, 404);
     }
 
     // Check organization status if required

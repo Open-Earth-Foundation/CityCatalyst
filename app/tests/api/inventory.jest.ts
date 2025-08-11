@@ -19,6 +19,7 @@ import {
   setupTests,
   testUserID,
 } from "../helpers";
+import { createTestData, cleanupTestData, TestData } from "../helpers/testDataCreationHelper";
 import { SubSector, SubSectorAttributes } from "@/models/SubSector";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
@@ -38,6 +39,8 @@ import {
   GlobalWarmingPotentialTypeEnum,
   InventoryTypeEnum,
 } from "@/util/enums";
+import { AppSession, Auth } from "@/lib/auth";
+import { Roles } from "@/util/types";
 
 jest.useFakeTimers();
 
@@ -50,6 +53,10 @@ const sectorName = "XX_INVENTORY_TEST_SECTOR";
 const subcategoryName = "XX_INVENTORY_TEST_SUBCATEGORY";
 const subsectorName = "XX_INVENTORY_TEST_SUBSECTOR_1";
 const subSectorName2 = "XX_INVENTORY_TEST_SUBSECTOR_2";
+
+// Test users with different permission levels
+const collaboratorUserId = randomUUID();
+const orgAdminUserId = randomUUID();
 
 process.env.CDP_MODE = "test";
 
@@ -91,6 +98,13 @@ describe("Inventory API", () => {
   let subCategory: SubCategory;
   let subSector: SubSector;
   let subSector2: SubSector;
+  let testData: TestData;
+  
+  // Mock sessions for different user types
+  const collaboratorSession: AppSession = { user: { id: collaboratorUserId, role: Roles.User }, expires: "1h" };
+  const orgAdminSession: AppSession = { user: { id: orgAdminUserId, role: Roles.User }, expires: "1h" };
+  
+  let prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
     setupTests();
@@ -121,14 +135,39 @@ describe("Inventory API", () => {
     await db.models.Sector.destroy({
       where: { sectorName: { [Op.like]: "XX_INVENTORY_PROGRESS_TEST%" } },
     });
-    city = await db.models.City.create({
-      cityId: randomUUID(),
+    
+    // Create proper test data hierarchy
+    testData = await createTestData({
+      cityName: cityName,
+      countryLocode: "XX"
+    });
+
+    city = await db.models.City.findByPk(testData.cityId);
+    if (!city) {
+      throw new Error(`Failed to find city with ID ${testData.cityId}`);
+    }
+    
+    // Update city with test-specific data
+    await city.update({
       name: cityName,
       country: cityCountry,
-      locode,
+      locode
     });
-    await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
-    await city.addUser(testUserID);
+    
+    // Create test users
+    await db.models.User.upsert({ userId: collaboratorUserId, name: "COLLABORATOR_USER" });
+    await db.models.User.upsert({ userId: orgAdminUserId, name: "ORG_ADMIN_USER" });
+    
+    // Set up permissions:
+    // 1. Collaborator - can only access/edit inventories, not create/delete
+    await city.addUser(collaboratorUserId);
+    
+    // 2. Org Admin - can create/delete inventories
+    await db.models.OrganizationAdmin.create({
+      organizationAdminId: randomUUID(),
+      userId: orgAdminUserId,
+      organizationId: testData.organizationId
+    });
     sector = await db.models.Sector.create({
       sectorId: randomUUID(),
       sectorName,
@@ -153,7 +192,7 @@ describe("Inventory API", () => {
     await db.models.Inventory.destroy({ where: { inventoryName } });
     inventory = await db.models.Inventory.create({
       inventoryId: randomUUID(),
-      cityId: city.cityId,
+      cityId: testData.cityId,
       ...inventoryData,
       inventoryType: InventoryTypeEnum.GPC_BASIC,
       globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
@@ -183,6 +222,7 @@ describe("Inventory API", () => {
   });
 
   afterAll(async () => {
+    Auth.getServerSession = prevGetServerSession;
     await db.models.SubCategory.destroy({
       where: { subcategoryId: subCategory.subcategoryId },
     });
@@ -193,11 +233,13 @@ describe("Inventory API", () => {
       where: { subsectorId: subSector2.subsectorId },
     });
     await db.models.Sector.destroy({ where: { sectorId: sector.sectorId } });
-    await db.models.City.destroy({ where: { locode } });
+    await cleanupTestData(testData);
     if (db.sequelize) await db.sequelize.close();
   });
 
-  it("should create an inventory", async () => {
+  it("should create an inventory as org admin", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
+    
     await db.models.Inventory.destroy({
       where: { inventoryName },
     });
@@ -216,6 +258,18 @@ describe("Inventory API", () => {
     expect(data.year).toEqual(inventory.year);
     expect(data.totalEmissions).toEqual(inventory.totalEmissions);
   });
+  
+  it("should reject inventory creation as collaborator", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(collaboratorSession));
+    
+    const req = mockRequest(inventoryData);
+    const res = await createInventory(req, {
+      params: Promise.resolve({ city: city.cityId }),
+    });
+    expect(res.status).toEqual(403);
+    const { error } = await res.json();
+    expect(error.message).toEqual("You do not have permission to create inventories in this city");
+  });
 
   it("should not create an inventory with invalid data", async () => {
     const req = mockRequest(invalidInventory);
@@ -229,7 +283,24 @@ describe("Inventory API", () => {
     expect(issues.length).toEqual(5);
   });
 
-  it("should find an inventory", async () => {
+  it("should find an inventory as org admin", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
+    
+    const req = mockRequest();
+    const res = await findInventory(req, {
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
+    });
+    expect(res.status).toEqual(200);
+    const { data } = await res.json();
+    expect(data.inventoryName).toEqual(inventory.inventoryName);
+    expect(data.year).toEqual(inventory.year);
+    const totalSumOfActivityValues = 79735;
+    expectToBeLooselyEqual(data.totalEmissions, totalSumOfActivityValues);
+  });
+  
+  it("should find an inventory as collaborator", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(collaboratorSession));
+    
     const req = mockRequest();
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
@@ -289,7 +360,19 @@ describe("Inventory API", () => {
     const body = await res.blob();
   });
 
-  it("should not find non-existing inventories", async () => {
+  it("should not find non-existing inventories as org admin", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
+    
+    const req = mockRequest(invalidInventory);
+    const res = await findInventory(req, {
+      params: Promise.resolve({ inventory: randomUUID() }),
+    });
+    expect(res.status).toEqual(404);
+  });
+  
+  it("should return 404 for non-existing inventories as collaborator", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(collaboratorSession));
+    
     const req = mockRequest(invalidInventory);
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: randomUUID() }),
@@ -321,7 +404,9 @@ describe("Inventory API", () => {
     expect(issues.length).toEqual(1);
   });
 
-  it("should delete an inventory", async () => {
+  it("should delete an inventory as org admin", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
+    
     const req = mockRequest();
     const res = await deleteInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
@@ -333,8 +418,22 @@ describe("Inventory API", () => {
     expect(data.year).toEqual(inventory.year);
     expect(data.totalEmissions).toEqual(inventory.totalEmissions);
   });
+  
+  it("should reject inventory deletion as collaborator", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(collaboratorSession));
+    
+    const req = mockRequest();
+    const res = await deleteInventory(req, {
+      params: Promise.resolve({ inventory: inventory.inventoryId }),
+    });
+    expect(res.status).toEqual(403);
+    const { error } = await res.json();
+    expect(error.message).toEqual("You do not have permission to delete this inventory");
+  });
 
-  it("should not delete a non-existing inventory", async () => {
+  it("should not delete a non-existing inventory as org admin", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
+    
     const req = mockRequest();
     const res = await deleteInventory(req, {
       params: Promise.resolve({ inventory: randomUUID() }),
@@ -477,7 +576,9 @@ describe("Inventory API", () => {
     expect(res.status).toEqual(400);
   });
 
-  it("should return 404 for a uuid string in that doesn't exist", async () => {
+  it("should return 404 for a uuid string in that doesn't exist as org admin", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
+    
     const req = mockRequest();
     const res = await findInventory(req, {
       params: Promise.resolve({

@@ -19,10 +19,10 @@ import { randomUUID } from "node:crypto";
 import { AppSession, Auth } from "@/lib/auth";
 import { Roles } from "@/util/types";
 
-const organizationData: CreateOrganizationRequest = {
-  name: "Test Organization",
-  contactEmail: "test@organization.com",
-};
+const getUniqueOrganizationData = (): CreateOrganizationRequest => ({
+  name: `Test Organization ${randomUUID().slice(0, 8)}`,
+  contactEmail: `test+${randomUUID().slice(0, 8)}@organization.com`,
+});
 
 const invalidOrganization = {
   name: "",
@@ -44,6 +44,7 @@ const emptyParams = { params: Promise.resolve({}) };
 describe("Organization API", () => {
   let organization: Organization;
   let prevGetServerSession = Auth.getServerSession;
+  let organizationData: CreateOrganizationRequest;
 
   beforeAll(async () => {
     setupTests();
@@ -51,9 +52,8 @@ describe("Organization API", () => {
   });
 
   beforeEach(async () => {
-    await db.models.Organization.destroy({
-      where: { name: organizationData.name },
-    });
+    // Create unique organization data for each test to avoid conflicts
+    organizationData = getUniqueOrganizationData();
     organization = await db.models.Organization.create({
       active: true,
       ...organizationData,
@@ -68,16 +68,15 @@ describe("Organization API", () => {
   });
 
   it("should create an organization", async () => {
-    await db.models.Organization.destroy({
-      where: { name: organizationData.name },
-    });
-
-    const req = mockRequest(organizationData);
+    // Create unique org data for this test
+    const uniqueOrgData = getUniqueOrganizationData();
+    
+    const req = mockRequest(uniqueOrgData);
     const res = await createOrganization(req, emptyParams);
     expect(res.status).toEqual(201);
     const data = await res.json();
-    expect(data.name).toEqual(organizationData.name);
-    expect(data.contactEmail).toEqual(organizationData.contactEmail);
+    expect(data.name).toEqual(uniqueOrgData.name);
+    expect(data.contactEmail).toEqual(uniqueOrgData.contactEmail);
   });
 
   it("should not create an organization with invalid data", async () => {
@@ -99,7 +98,8 @@ describe("Organization API", () => {
 
   it("should not allow non-admins to create an organization", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
-    const req = mockRequest(organizationData);
+    const uniqueOrgData = getUniqueOrganizationData();
+    const req = mockRequest(uniqueOrgData);
     const res = await createOrganization(req, emptyParams);
     expect(res.status).toEqual(403);
   });

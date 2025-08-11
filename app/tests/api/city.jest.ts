@@ -48,12 +48,21 @@ const invalidCity = {
   area: "",
 };
 
-const mockSession: AppSession = {
-  user: { id: testUserID, role: Roles.User },
+// Test users with different permission levels
+const collaboratorUserId = randomUUID();
+const orgAdminUserId = randomUUID();
+
+const collaboratorSession: AppSession = {
+  user: { id: collaboratorUserId, role: Roles.User },
   expires: "1h",
 };
 
-const mockAdminSession: AppSession = {
+const orgAdminSession: AppSession = {
+  user: { id: orgAdminUserId, role: Roles.User },
+  expires: "1h",
+};
+
+const systemAdminSession: AppSession = {
   user: { id: testUserID, role: Roles.Admin },
   expires: "1h",
 };
@@ -62,24 +71,55 @@ const emptyParams = { params: Promise.resolve({}) };
 
 describe("City API", () => {
   let city: City;
-  let user: User;
+  let collaboratorUser: User;
+  let orgAdminUser: User;
   let project: Project;
+  let organizationId: string;
 
   let prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
     setupTests();
     await db.initialize();
-    [user] = await db.models.User.upsert({
-      userId: testUserID,
-      name: "TEST_USER",
+    
+    // Create test users
+    [collaboratorUser] = await db.models.User.upsert({
+      userId: collaboratorUserId,
+      name: "COLLABORATOR_USER",
     });
-
-    Auth.getServerSession = jest.fn(() => Promise.resolve(mockSession));
+    [orgAdminUser] = await db.models.User.upsert({
+      userId: orgAdminUserId,
+      name: "ORG_ADMIN_USER",
+    });
 
     project = (await Project.findOne({
       where: { name: "cc_project_default" },
     })) as Project;
+    
+    if (!project) {
+      throw new Error("Default project not found. Test setup incomplete.");
+    }
+    
+    // Get the organization ID from the project
+    const projectWithOrg = await db.models.Project.findByPk(project.projectId, {
+      include: [{
+        model: db.models.Organization,
+        as: 'organization',
+        attributes: ['organizationId']
+      }]
+    });
+    organizationId = projectWithOrg?.organization?.organizationId;
+    
+    if (!organizationId) {
+      throw new Error("Could not find organization for default project");
+    }
+    
+    // Make orgAdminUser an organization admin
+    await db.models.OrganizationAdmin.create({
+      organizationAdminId: randomUUID(),
+      userId: orgAdminUserId,
+      organizationId: organizationId
+    });
   });
 
   beforeEach(async () => {
@@ -90,7 +130,7 @@ describe("City API", () => {
       cityId: randomUUID(),
       projectId: project.projectId,
     });
-    await city.addUser(user);
+    await city.addUser(collaboratorUser);
   });
 
   afterAll(async () => {
@@ -98,7 +138,9 @@ describe("City API", () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
-  it("should create a city", async () => {
+  it("should create a city as org admin", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
+    
     await db.models.City.destroy({ where: { locode: cityData.locode } });
 
     const req = mockRequest({ ...cityData, projectId: project?.projectId });
@@ -111,8 +153,20 @@ describe("City API", () => {
     assert.equal(data.region, cityData.region);
     assert.equal(data.area, cityData.area);
   });
+  
+  it("should reject city creation as collaborator", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(collaboratorSession));
+    
+    const req = mockRequest({ ...cityData, projectId: project?.projectId });
+    const res = await createCity(req, emptyParams);
+    assert.equal(res.status, 403);
+    const { error } = await res.json();
+    assert.equal(error.message, "You do not have access to this project");
+  });
 
-  it("should not create a city with invalid data", async () => {
+  it("should not create a city with invalid data as org admin", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
+    
     const req = mockRequest(invalidCity);
     const res = await createCity(req, emptyParams);
     assert.equal(res.status, 400);
@@ -122,7 +176,25 @@ describe("City API", () => {
     assert.equal(issues.length, 5);
   });
 
-  it("should find a city", async () => {
+  it("should find a city as org admin", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
+    
+    const req = mockRequest();
+    const res = await findCity(req, {
+      params: Promise.resolve({ city: city.cityId }),
+    });
+    assert.equal(res.status, 200);
+    const { data } = await res.json();
+    assert.equal(data.locode, cityData.locode);
+    assert.equal(data.name, cityData.name);
+    assert.equal(data.country, cityData.country);
+    assert.equal(data.region, cityData.region);
+    assert.equal(data.area, cityData.area);
+  });
+  
+  it("should find a city as collaborator", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(collaboratorSession));
+    
     const req = mockRequest();
     const res = await findCity(req, {
       params: Promise.resolve({ city: city.cityId }),
@@ -136,15 +208,15 @@ describe("City API", () => {
     assert.equal(data.area, cityData.area);
   });
 
-  it("should prevent unauthorized access to all city data", async () => {
-    Auth.getServerSession = jest.fn(() => Promise.resolve(mockSession));
+  it("should prevent unauthorized access to all city data as collaborator", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(collaboratorSession));
     const req = mockRequest();
     const res = await getAllCities(req, emptyParams);
     assert.equal(res.status, 403);
   });
 
-  it("should get all cities for admin", async () => {
-    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
+  it("should get all cities for system admin", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(systemAdminSession));
     const req = mockRequest();
     const res = await getAllCities(req, emptyParams);
     assert.equal(res.status, 200);
@@ -152,7 +224,19 @@ describe("City API", () => {
     assert.notEqual(data.length, 0);
   });
 
-  it("should not find a non-existing city", async () => {
+  it("should not find a non-existing city as org admin", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
+    
+    const req = mockRequest();
+    const res = await findCity(req, {
+      params: Promise.resolve({ city: randomUUID() }),
+    });
+    assert.equal(res.status, 404);
+  });
+  
+  it("should return 404 for non-existing city as collaborator", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(collaboratorSession));
+    
     const req = mockRequest();
     const res = await findCity(req, {
       params: Promise.resolve({ city: randomUUID() }),

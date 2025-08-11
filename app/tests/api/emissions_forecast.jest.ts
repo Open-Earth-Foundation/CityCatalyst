@@ -9,6 +9,7 @@ import { GET as getResults } from "@/app/api/v0/inventory/[inventory]/results/em
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
 import { mockRequest, setupTests, testUserID } from "../helpers";
+import { createTestData, cleanupTestData, TestData } from "../helpers/testDataCreationHelper";
 import {
   GlobalWarmingPotentialTypeEnum,
   InventoryTypeEnum,
@@ -24,6 +25,7 @@ describe("Emissions Forecast API", () => {
   let city: City;
   let inventory: Inventory;
   let mockGrowthRates: GrowthRatesResponse | undefined;
+  let testData: TestData;
 
   jest
     .spyOn(GlobalAPIService, "fetchGrowthRates")
@@ -34,10 +36,18 @@ describe("Emissions Forecast API", () => {
   beforeAll(async () => {
     setupTests();
     await db.initialize();
-    city = await db.models.City.create({
-      cityId: randomUUID(),
-      locode,
+    
+    // Create proper test data hierarchy
+    testData = await createTestData({
+      cityName: locode,
+      countryLocode: "XX"
     });
+
+    city = await db.models.City.findByPk(testData.cityId);
+    if (!city) {
+      throw new Error(`Failed to find city with ID ${testData.cityId}`);
+    }
+    
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city.addUser(testUserID);
     inventory = await db.models.Inventory.create({
@@ -56,7 +66,7 @@ describe("Emissions Forecast API", () => {
   afterAll(async () => {
     await db.models.InventoryValue.destroy({ where: { inventoryId } });
     await db.models.Inventory.destroy({ where: { inventoryId } });
-    await db.models.City.destroy({ where: { cityId: city.cityId } });
+    await cleanupTestData(testData);
     if (db.sequelize) await db.sequelize.close();
   });
 

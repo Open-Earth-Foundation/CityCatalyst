@@ -250,8 +250,8 @@ export default function AddDataSteps(props: {
       );
       if (!sectorProgress) {
         logger.error(
+          { referenceNumber: step.referenceNumber },
           "No progress entry found for sector",
-          step.referenceNumber,
         );
         return step;
       }
@@ -350,7 +350,7 @@ export default function AddDataSteps(props: {
       );
       return;
     }
-    logger.debug("Connect source", source);
+    logger.debug({ source }, "Connect source");
     setConnectingDataSourceId(source.datasourceId);
     try {
       const response = await connectDataSource({
@@ -422,12 +422,12 @@ export default function AddDataSteps(props: {
     onOpen: onSubsectorDrawerOpen,
   } = useDisclosure();
   const onSubsectorClick = (subsector: SubSectorWithRelations) => {
-    logger.debug(subsector);
+    logger.debug({ subsector });
     setSelectedSubsector(subsector);
     onSubsectorDrawerOpen();
   };
   const onSubsectorSave = (subsector: SubSectorWithRelations) => {
-    logger.debug("Save subsector", subsector);
+    logger.debug({ subsector }, "Save subsector");
   };
 
   const [isConfirming, setConfirming] = useState(false);
@@ -438,15 +438,6 @@ export default function AddDataSteps(props: {
     if (activeStep >= steps.length - 1) {
       router.push(`/${inventory}`);
       dispatch(clear());
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      goToNext();
-    }
-  };
-
-  const onSkip = () => {
-    if (activeStep >= steps.length - 1) {
-      router.push(`/${inventory}/data/`);
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();

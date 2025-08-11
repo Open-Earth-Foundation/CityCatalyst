@@ -637,3 +637,24 @@ export interface Client {
   description: LangMap;
 }
 
+// Permission system types
+export enum UserRole {
+  ORG_ADMIN = 'ORG_ADMIN',
+  PROJECT_ADMIN = 'PROJECT_ADMIN',
+  COLLABORATOR = 'COLLABORATOR',
+  NO_ACCESS = 'NO_ACCESS'
+}
+
+export type UserRoleType = keyof typeof UserRole;
+
+export interface PermissionCheckResponse {
+  hasAccess: boolean;
+  userRole: UserRole;
+  organizationId: string | null;
+  context: {
+    organizationId?: string;
+    projectId?: string;
+    cityId?: string;
+    inventoryId?: string;
+  };
+}

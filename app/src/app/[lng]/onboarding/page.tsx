@@ -20,7 +20,7 @@ export default function Onboarding(props: {
 
   return (
     <>
-      <Box pt={"100px"} w={"1090px"} maxW="full" mx="auto">
+      <Box w={"1090px"} maxW="full" mx="auto">
         <Box display="flex" gap="55px" alignItems="center">
           <Box w="full" h="full" display="flex" flexDir="column" gap="24px">
             <Text

@@ -182,7 +182,9 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                     <Box>
                       <Box display="flex" gap="8px" alignItems="center">
                         <CircleFlag
-                          countryCode={city.countryLocode?.toLocaleLowerCase()!}
+                          countryCode={
+                            city.countryLocode?.substring(0, 2)?.toLowerCase() || ""
+                          }
                           height="32px"
                           width="32px"
                         />

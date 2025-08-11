@@ -5,7 +5,6 @@ import {
   FieldErrors,
   UseFormRegister,
 } from "react-hook-form";
-import { Inputs } from "../../app/[lng]/onboarding/setup/page";
 import { FC, useEffect, useState } from "react";
 import {
   Box,
@@ -33,6 +32,21 @@ import { Button } from "../ui/button";
 import { InventoryButtonCheckIcon } from "../icons";
 import CustomSelectableButton from "../custom-selectable-buttons";
 
+// Type for general onboarding inputs
+type GeneralInputs = {
+  city: string;
+  year: number;
+  inventoryGoal: string;
+  globalWarmingPotential: string;
+  cityPopulation: number;
+  cityPopulationYear: number;
+  regionPopulation: number;
+  regionPopulationYear: number;
+  countryPopulation: number;
+  countryPopulationYear: number;
+  totalCountryEmissions: number;
+};
+
 export default function SetInventoryDetailsStep({
   t,
   register,
@@ -42,9 +56,9 @@ export default function SetInventoryDetailsStep({
   years,
 }: {
   t: TFunction;
-  register: UseFormRegister<Inputs>;
-  errors: FieldErrors<Inputs>;
-  control: Control<Inputs>;
+  register: UseFormRegister<GeneralInputs>;
+  errors: FieldErrors<GeneralInputs>;
+  control: Control<GeneralInputs>;
   setValue: any;
   years: number[];
 }) {
@@ -214,7 +228,7 @@ export default function SetInventoryDetailsStep({
               <Trans i18nKey="inventory-goal-description" t={t}>
                 Want to learn more about these inventory formats?{" "}
                 <Link
-                  href="/"
+                  href="/app/public"
                   fontFamily="heading"
                   fontWeight="bold"
                   color="content.link"
@@ -309,7 +323,7 @@ export default function SetInventoryDetailsStep({
               <Trans i18nKey="gwp-description" t={t}>
                 Want to learn more about these inventory formats?{" "}
                 <Link
-                  href="/"
+                  href="/app/public"
                   fontFamily="heading"
                   fontWeight="bold"
                   color="content.link"

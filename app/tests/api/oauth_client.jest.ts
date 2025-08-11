@@ -98,6 +98,8 @@ const clientCreationArgs: any = {
   }
 }
 
+const testClientDNE = "test-client-does-not-exist";
+
 describe("OAuth Client API", () => {
 
   beforeAll(async () => {
@@ -279,7 +281,7 @@ describe("OAuth Client API", () => {
       const res = await removeClient(req, {
         params: Promise.resolve({ client: toDelete.clientId }),
       })
-      expect(res.status).toEqual(200);
+      expect(res.status).toEqual(204);
     });
 
     it("should not be in the list of all clients", async () => {

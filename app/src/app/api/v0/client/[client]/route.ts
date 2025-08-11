@@ -58,5 +58,15 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
     throw new createHttpError.Unauthorized("Must be logged in!");
   }
 
-  throw createHttpError.NotImplemented("Not yet implemented!");
+  const { client: clientId } = params
+
+  const client = await OAuthClient.findByPk(clientId)
+
+  if (!client) {
+    throw new createHttpError.NotFound(`No client with id ${clientId}`);
+  }
+
+  await client.destroy();
+
+  return new NextResponse(null, { status: 204 });
 });

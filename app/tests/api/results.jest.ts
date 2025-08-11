@@ -8,6 +8,7 @@ import {
   setupTests,
   testUserID,
 } from "../helpers";
+import { createTestData, cleanupTestData, TestData } from "../helpers/testDataCreationHelper";
 
 import { Inventory } from "@/models/Inventory";
 import {
@@ -31,22 +32,22 @@ const locode = "XX_SUBCATEGORY_CITY";
 describe("Results API", () => {
   let inventory: Inventory;
   let city: City;
+  let testData: TestData;
 
   beforeAll(async () => {
     setupTests();
     await db.initialize();
 
-    // Create city with explicit cityId
-    const cityId = randomUUID();
-    city = await db.models.City.create({
-      cityId,
-      locode,
+    // Create proper test data hierarchy
+    testData = await createTestData({
+      cityName: locode,
+      countryLocode: "XX"
     });
 
-    // Verify city was created
-    const createdCity = await db.models.City.findByPk(cityId);
-    if (!createdCity) {
-      throw new Error(`Failed to create city with ID ${cityId}`);
+    // Get the created city
+    city = await db.models.City.findByPk(testData.cityId) as City;
+    if (!city) {
+      throw new Error(`Failed to find city with ID ${testData.cityId}`);
     }
 
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
@@ -81,7 +82,7 @@ describe("Results API", () => {
         inventoryName: "ReportResultEmptyInventory",
       },
     });
-    await db.models.City.destroy({ where: { cityId: city.cityId } });
+    await cleanupTestData(testData);
     if (db.sequelize) await db.sequelize.close();
   });
 

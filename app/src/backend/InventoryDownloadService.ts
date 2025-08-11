@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import UserService from "@/backend/UserService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 import { AppSession } from "@/lib/auth";
 import { db } from "@/models";
 import createHttpError from "http-errors";
@@ -14,10 +14,12 @@ export default class InventoryDownloadService {
     inventoryId: string,
     session: AppSession | null,
   ) {
-    const inventory = await UserService.findUserInventory(
-      inventoryId,
-      session,
-      [
+    // Check read access permission
+    await PermissionService.canAccessInventory(session, inventoryId);
+    
+    // Load inventory with all necessary includes
+    const inventory = await db.models.Inventory.findByPk(inventoryId, {
+      include: [
         {
           model: db.models.InventoryValue,
           as: "inventoryValues",
@@ -58,7 +60,11 @@ export default class InventoryDownloadService {
           ],
         },
       ],
-    );
+    });
+    
+    if (!inventory) {
+      throw new createHttpError.NotFound("Inventory not found");
+    }
 
     if (!inventory.year) {
       throw new createHttpError.BadRequest(

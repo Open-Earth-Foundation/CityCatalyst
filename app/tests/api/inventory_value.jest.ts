@@ -23,6 +23,7 @@ import {
   setupTests,
   testUserID,
 } from "../helpers";
+import { createTestData, cleanupTestData, TestData } from "../helpers/testDataCreationHelper";
 
 import { Inventory } from "@/models/Inventory";
 import { InventoryValue } from "@/models/InventoryValue";
@@ -71,6 +72,7 @@ describe("Inventory Value API", () => {
   let subCategory: SubCategory;
   let subSector: SubSector;
   let inventoryValue: InventoryValue;
+  let testData: TestData;
 
   beforeAll(async () => {
     setupTests();
@@ -82,7 +84,6 @@ describe("Inventory Value API", () => {
     await db.models.SubSector.destroy({
       where: { subsectorName },
     });
-    await db.models.City.destroy({ where: { locode } });
 
     const prevInventory = await db.models.Inventory.findOne({
       where: { inventoryName },
@@ -96,16 +97,23 @@ describe("Inventory Value API", () => {
       });
     }
 
-    const city = await db.models.City.create({
-      cityId: randomUUID(),
-      locode,
+    // Create proper test data hierarchy
+    testData = await createTestData({
+      cityName: locode,
+      countryLocode: "XX"
     });
+
+    const city = await db.models.City.findByPk(testData.cityId);
+    if (!city) {
+      throw new Error(`Failed to find city with ID ${testData.cityId}`);
+    }
+    
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city.addUser(testUserID);
     inventory = await db.models.Inventory.create({
       inventoryId: randomUUID(),
       inventoryName: "TEST_SUBCATEGORY_INVENTORY",
-      cityId: city.cityId,
+      cityId: testData.cityId,
     });
 
     subSector = await db.models.SubSector.create({
@@ -135,6 +143,7 @@ describe("Inventory Value API", () => {
   });
 
   afterAll(async () => {
+    await cleanupTestData(testData);
     if (db.sequelize) await db.sequelize.close();
   });
 

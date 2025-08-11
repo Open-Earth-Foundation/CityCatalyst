@@ -17,8 +17,8 @@ export default {
         primaryKey: true,
         allowNull: false,
       },
-      redirect_uri: {
-        type: Sequelize.STRING(256), // Sequelize does not have a URL type
+      redirect_uri: { // maximum 2048 chars, like Google or AWS
+        type: Sequelize.STRING(2048), // Sequelize does not have a URL type
         allowNull: false,
         unique: true,
       },

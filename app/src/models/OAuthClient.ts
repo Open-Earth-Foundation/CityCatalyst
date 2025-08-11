@@ -36,9 +36,10 @@ export class OAuthClient
         },
         redirectURI: {
           field: "redirect_uri",
-          type: DataTypes.STRING(256),
+          type: DataTypes.STRING(2048),
           allowNull: false,
           unique: true,
+          comment: 'URL format, length limit similar to Google or AWS'
         },
         createdAt: {
           field: "created_at",

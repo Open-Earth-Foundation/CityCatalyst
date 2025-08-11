@@ -47,7 +47,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
   return NextResponse.json({ data: results });
 })
 
-/** delete a client */
+/** deletes a client */
 export const DELETE = apiHandler(async (_req, { params, session }) => {
 
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {

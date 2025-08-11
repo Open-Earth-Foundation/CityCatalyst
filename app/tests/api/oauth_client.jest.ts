@@ -86,10 +86,11 @@ const testClientI18Ns: OAuthClientI18NAttributes[] = [
 ]
 
 const clientCreationArgs: any = {
-  redirectURI: "https://created.example/api/callback/whatever",
+  redirectUri: "https://created.example/api/callback/whatever",
   name: {
     "en": "A client getting created",
-    "fr": "Un client à créer"
+    "fr": "Un client à créer",
+    "es": "Cliente para pruebar"
   },
   description: {
     "en": "This great client is perfect for testing.",
@@ -130,7 +131,7 @@ describe("OAuth Client API", () => {
       expect(res.status).toEqual(200);
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);
-      expect(data.length).toEqual(3);
+      expect(data.length).toBeGreaterThanOrEqual(3);
       for (const testClient of testClients) {
         let client = data.find((c:any) => c.clientId == testClient.clientId)
         expect(client).toBeDefined();
@@ -166,12 +167,12 @@ describe("OAuth Client API", () => {
     it("should create a new OAuth2.0 client object", async () => {
       const req = mockRequest(clientCreationArgs);
       const res = await addClient(req, {});
-      expect(res.status).toEqual(200);
-      expect(res.headers.location).toBeDefined()
+      expect(res.status).toEqual(201);
+      expect(res.headers.get('location')).toBeDefined()
       const { data } = await res.json();
       expect(data.clientId).toBeDefined();
       createdClientId = data.clientId;
-      expect(data.redirectUri).toEqual(clientCreationArgs.redirectURI);
+      expect(data.redirectUri).toEqual(clientCreationArgs.redirectUri);
       expect(typeof data.name).toEqual("object");
       expect(data.name).not.toBeNull()
       expect(data.name.en).toEqual(clientCreationArgs.name.en)

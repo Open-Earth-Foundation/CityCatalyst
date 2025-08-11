@@ -1,6 +1,8 @@
 import type { AppSession } from "@/lib/auth";
 
-export type UserRole = 'ORG_ADMIN' | 'PROJECT_ADMIN' | 'COLLABORATOR' | 'NO_ACCESS';
+import { UserRole } from '@/util/types';
+
+export type { UserRole };
 
 export interface PermissionContext {
   organizationId?: string;

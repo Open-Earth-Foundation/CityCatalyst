@@ -13,7 +13,10 @@ export interface OAuthClientI18NAttributes {
 
 export type OAuthClientI18NPk = "clientId" | "language";
 export type OAuthClientI18NId = OAuthClientI18N[OAuthClientI18NPk];
-export type OAuthClientI18NOptionalAttributes = "description" | "createdAt" | "updatedAt";
+export type OAuthClientI18NOptionalAttributes =
+  | "description"
+  | "createdAt"
+  | "updatedAt";
 export type OAuthClientI18NCreationAttributes = Optional<
   OAuthClientI18NAttributes,
   OAuthClientI18NOptionalAttributes
@@ -39,8 +42,8 @@ export class OAuthClientI18N
           allowNull: false,
           primaryKey: true,
           references: {
-          model: "OAuthClient",
-          key: "client_id",
+            model: "OAuthClient",
+            key: "client_id",
           },
           onUpdate: "CASCADE",
           onDelete: "CASCADE",
@@ -76,7 +79,7 @@ export class OAuthClientI18N
         tableName: "OAuthClientI18N",
         schema: "public",
         timestamps: false,
-      }
+      },
     );
   }
 }

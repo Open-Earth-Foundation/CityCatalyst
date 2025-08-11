@@ -58,7 +58,7 @@ export class OAuthClient
         tableName: "OAuthClient",
         schema: "public",
         timestamps: false,
-      }
+      },
     );
   }
 }

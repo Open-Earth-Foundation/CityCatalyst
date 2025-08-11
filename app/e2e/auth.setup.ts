@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {});
 setup("authenticate", async ({ page, request }) => {
   test.setTimeout(30000);
   
-  // Login with the test admin (created by package.json script)
+  // Login with the test admin (created by global setup)
   await page.goto("/en/auth/login");
   await expectText(page, "Log In");
   await page.locator('input[name="email"]').fill(TEST_ADMIN_EMAIL);

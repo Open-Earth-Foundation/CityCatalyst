@@ -101,7 +101,7 @@ describe("DataSource API", () => {
       countryLocode: "XX"
     });
 
-    city = await db.models.City.findByPk(testData.cityId);
+    city = await db.models.City.findByPk(testData.cityId) as City;
     if (!city) {
       throw new Error(`Failed to find city with ID ${testData.cityId}`);
     }

@@ -108,7 +108,7 @@ describe("City API", () => {
         attributes: ['organizationId']
       }]
     });
-    organizationId = projectWithOrg?.organization?.organizationId;
+    organizationId = projectWithOrg?.organization?.organizationId as string;
     
     if (!organizationId) {
       throw new Error("Could not find organization for default project");

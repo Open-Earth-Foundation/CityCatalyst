@@ -117,10 +117,10 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                     cityData_dict, mitigationActions, comparator=ml_compare
                 )
 
-                # Load country strategy after the ranking is done
-                # This is done to avoid loading the country strategy for every action
-                country_strategy = get_json_from_file(
-                    country_code.lower() + "_country_strategy"
+                # Load national strategy after the ranking is done
+                # This is done to avoid loading the national strategy for every action
+                national_strategy = get_json_from_file(
+                    country_code.lower() + "_national_strategy"
                 )
 
                 rankedActionsMitigation = [
@@ -128,7 +128,7 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                         actionId=action["ActionID"],
                         rank=rank,
                         explanation=generate_multilingual_explanation(
-                            country_strategy=country_strategy,
+                            national_strategy=national_strategy,
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,
@@ -157,7 +157,7 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                         actionId=action["ActionID"],
                         rank=rank,
                         explanation=generate_multilingual_explanation(
-                            country_strategy=country_strategy,
+                            national_strategy=national_strategy,
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,
@@ -282,10 +282,10 @@ def _execute_prioritization_bulk_subtask(
                     comparator=ml_compare,
                 )
 
-                # Load country strategy after the ranking is done
-                # This is done to avoid loading the country strategy for every action
-                country_strategy = get_json_from_file(
-                    country_code.lower() + "_country_strategy"
+                # Load national strategy after the ranking is done
+                # This is done to avoid loading the national strategy for every action
+                national_strategy = get_json_from_file(
+                    country_code.lower() + "_national_strategy"
                 )
 
                 rankedActionsMitigation = [
@@ -293,7 +293,7 @@ def _execute_prioritization_bulk_subtask(
                         actionId=action["ActionID"],
                         rank=rank,
                         explanation=generate_multilingual_explanation(
-                            country_strategy=country_strategy,
+                            national_strategy=national_strategy,
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,
@@ -325,7 +325,7 @@ def _execute_prioritization_bulk_subtask(
                         actionId=action["ActionID"],
                         rank=rank,
                         explanation=generate_multilingual_explanation(
-                            country_strategy=country_strategy,
+                            national_strategy=national_strategy,
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,

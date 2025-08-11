@@ -21,17 +21,18 @@ logger = logging.getLogger(__name__)
 
 # Initialize OpenAI and OpenRouter clients
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
-# Check if API key is set
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY is not set")
 
-OPENAI_MODEL_NAME_EXPLANATIONS = os.getenv(
-    "OPENAI_MODEL_NAME_EXPLANATIONS", "gpt-4.1-nano"
-)
+OPENAI_MODEL_NAME_EXPLANATIONS = os.getenv("OPENAI_MODEL_NAME_EXPLANATIONS")
+if not OPENAI_MODEL_NAME_EXPLANATIONS:
+    raise ValueError("OPENAI_MODEL_NAME_EXPLANATIONS is not set")
+
 
 # Get LangSmith project name
 LANGCHAIN_PROJECT_NAME_PRIORITIZER = os.getenv("LANGCHAIN_PROJECT_NAME_PRIORITIZER")
+if not LANGCHAIN_PROJECT_NAME_PRIORITIZER:
+    raise ValueError("LANGCHAIN_PROJECT_NAME_PRIORITIZER is not set")
 
 # Use OpenAI client
 openai_client = wrap_openai(OpenAI(api_key=OPENAI_API_KEY))
@@ -57,7 +58,7 @@ def build_explanation_model(language_codes: list[str]) -> Type[BaseModel]:
 
 @traceable(run_type="llm", project_name=LANGCHAIN_PROJECT_NAME_PRIORITIZER)
 def generate_multilingual_explanation(
-    country_strategy: dict,
+    national_strategy: dict,
     city_data: dict,
     single_action: dict,
     rank: int,
@@ -67,7 +68,7 @@ def generate_multilingual_explanation(
     Generate qualitative explanation for a single prioritized climate action in multiple languages.
 
     Args:
-        country_strategy (dict): Contextual data for the country strategy.
+        national_strategy (dict): Contextual data for the national strategy.
         city_data (dict): Contextual data for the city.
         single_action (dict): The action to explain.
         rank (int): The action's rank among the top prioritized actions (1 = highest priority).
@@ -80,12 +81,12 @@ def generate_multilingual_explanation(
         f"Generating explanation for action_id={single_action['ActionID']}, rank={rank}, languages={languages}."
     )
 
-    # Filter the country_strategy dictionary to only include specified keys
-    # This is a workaround to avoid the model from hallucinating and including irrelevant details from the country strategy
-    # actions here refers to the actions in the country strategy like "AGR.I.01"
-    filtered_country_strategy = {}
-    if isinstance(country_strategy, dict):
-        for category, actions in country_strategy.items():
+    # Filter the national_strategy dictionary to only include specified keys
+    # This is a workaround to avoid the model from hallucinating and including irrelevant details from the national strategy
+    # actions here refers to the actions in the national strategy like "AGR.I.01"
+    filtered_national_strategy = {}
+    if isinstance(national_strategy, dict):
+        for category, actions in national_strategy.items():
             if isinstance(actions, list):
                 filtered_actions = []
                 for action in actions:
@@ -96,16 +97,16 @@ def generate_multilingual_explanation(
                             "action_description": action.get("action_description"),
                         }
                         filtered_actions.append(filtered_action)
-                filtered_country_strategy[category] = filtered_actions
+                filtered_national_strategy[category] = filtered_actions
             else:
-                filtered_country_strategy[category] = actions
+                filtered_national_strategy[category] = actions
 
     # Build the dynamic explanation model
     ExplanationModelDynamic = build_explanation_model(languages)
 
     # Build the system prompt for multilingual
     system_prompt = add_explanations_multilingual_system_prompt.format(
-        country_strategy=json.dumps(filtered_country_strategy, indent=2),
+        national_strategy=json.dumps(filtered_national_strategy, indent=2),
         city_data=json.dumps(city_data, indent=2),
         single_action=json.dumps(single_action, indent=2),
         rank=rank,
@@ -113,7 +114,7 @@ def generate_multilingual_explanation(
     )
     try:
         completion = openai_client.beta.chat.completions.parse(
-            model=OPENAI_MODEL_NAME_EXPLANATIONS,
+            model=OPENAI_MODEL_NAME_EXPLANATIONS,  # type: ignore
             messages=[
                 {
                     "role": "system",

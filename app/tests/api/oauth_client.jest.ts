@@ -236,6 +236,14 @@ describe("OAuth Client API", () => {
       expect(data.name.fr).toEqual(i18nFr.name);
       expect(data.description.fr).toEqual(i18nFr.description);
     });
+
+    it("should fail for a non-existent object", async () => {
+      const req = mockRequest();
+      const res = await getClient(req, {
+        params: Promise.resolve({ client: testClientDNE }),
+      });
+      expect(res.status).toEqual(404);
+    });
   })
 
   describe("DELETE /api/v0/client/[client]", () => {
@@ -292,6 +300,14 @@ describe("OAuth Client API", () => {
       expect(Array.isArray(data)).toBe(true);
       const found = data.find((cl: any) => cl.clientId === toDelete.clientId)
       expect(found).toBeUndefined()
+    });
+
+    it("should fail for a non-existent object", async () => {
+      const req = mockRequest();
+      const res = await removeClient(req, {
+        params: Promise.resolve({ client: testClientDNE }),
+      })
+      expect(res.status).toEqual(404);
     });
   });
 });

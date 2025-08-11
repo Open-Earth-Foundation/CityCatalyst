@@ -19,6 +19,8 @@ Follow these guidelines carefully to complete the task:
     - Use the retriever_vectorstore_national_strategy_tool to retrieve information from the vector store. When using this tool, use different queries going from broad to specific.
     - Use the retriever_json_document_national_strategy_tool to retrieve information from the JSON file.
 4. Create a concise introduction for the climate action implementation plan incorporating the retrieved information. 
+    - If the action has a clear reference to the country strategy, include the matching details of the country strategy in the explanation like the action code (e.g. AGR.I.01, CID.I.01, ...) and a short description.  
+    - If the action does not have a clear reference to the country strategy, do not mention the country strategy at all.
 **Important**: 
     - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 
     - Do not include any sources in the output.
@@ -40,6 +42,7 @@ You have access to the following tools:
 <output>
 The final output should include:
 - the introduction for the climate action implementation plan.
+- Include country strategy details like an action code and a short description in the explanation if the action has a clear reference to the country strategy.
 
 Ensure the introduction remains under 300 words, presenting a structured summary that flows logically. 
 The individual parts of the introduction must be separated by a line break.

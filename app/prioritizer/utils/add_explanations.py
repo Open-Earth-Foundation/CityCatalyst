@@ -67,6 +67,7 @@ def generate_multilingual_explanation(
     Generate qualitative explanation for a single prioritized climate action in multiple languages.
 
     Args:
+        country_strategy (dict): Contextual data for the country strategy.
         city_data (dict): Contextual data for the city.
         single_action (dict): The action to explain.
         rank (int): The action's rank among the top prioritized actions (1 = highest priority).
@@ -79,12 +80,32 @@ def generate_multilingual_explanation(
         f"Generating explanation for action_id={single_action['ActionID']}, rank={rank}, languages={languages}."
     )
 
+    # Filter the country_strategy dictionary to only include specified keys
+    # This is a workaround to avoid the model from hallucinating and including irrelevant details from the country strategy
+    # actions here refers to the actions in the country strategy like "AGR.I.01"
+    filtered_country_strategy = {}
+    if isinstance(country_strategy, dict):
+        for category, actions in country_strategy.items():
+            if isinstance(actions, list):
+                filtered_actions = []
+                for action in actions:
+                    if isinstance(action, dict):
+                        filtered_action = {
+                            "action_code": action.get("action_code"),
+                            "action_name": action.get("action_name"),
+                            "action_description": action.get("action_description"),
+                        }
+                        filtered_actions.append(filtered_action)
+                filtered_country_strategy[category] = filtered_actions
+            else:
+                filtered_country_strategy[category] = actions
+
     # Build the dynamic explanation model
     ExplanationModelDynamic = build_explanation_model(languages)
 
     # Build the system prompt for multilingual
     system_prompt = add_explanations_multilingual_system_prompt.format(
-        country_strategy=json.dumps(country_strategy, indent=2),
+        country_strategy=json.dumps(filtered_country_strategy, indent=2),
         city_data=json.dumps(city_data, indent=2),
         single_action=json.dumps(single_action, indent=2),
         rank=rank,

@@ -171,7 +171,28 @@ def retriever_json_document_national_strategy_tool(
     logger.info(f"Using retriever_json_document_national_strategy_tool")
     logger.info(f"Country code: {country_code}")
 
-    json_content = get_json_from_file(country_code.lower() + "_country_strategy")
+    json_content = get_json_from_file(country_code.lower() + "_national_strategy")
+
+    # Filter the country_strategy dictionary to only include specified keys
+    # This is a workaround to avoid the model from hallucinating and including irrelevant details from the country strategy
+    # actions here refers to the actions in the country strategy like "AGR.I.01"
+    filtered_json_content = {}
+    if isinstance(json_content, dict):
+        for category, actions in json_content.items():
+            if isinstance(actions, list):
+                filtered_actions = []
+                for action in actions:
+                    if isinstance(action, dict):
+                        filtered_action = {
+                            "action_code": action.get("action_code"),
+                            "action_name": action.get("action_name"),
+                            "action_description": action.get("action_description"),
+                            "target": action.get("target"),
+                        }
+                        filtered_actions.append(filtered_action)
+                filtered_json_content[category] = filtered_actions
+            else:
+                filtered_json_content[category] = actions
 
     if not json_content:
         logger.error(
@@ -180,7 +201,7 @@ def retriever_json_document_national_strategy_tool(
         return f"Could not load JSON file for country code {country_code}. Please ensure the file exists and is valid."
 
     logger.info(f"Successfully loaded JSON file for country code: {country_code}")
-    return json_content
+    return filtered_json_content
 
 
 @tool

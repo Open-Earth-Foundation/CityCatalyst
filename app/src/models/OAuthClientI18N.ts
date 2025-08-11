@@ -61,25 +61,15 @@ export class OAuthClientI18N
         description: {
           type: DataTypes.TEXT,
           allowNull: true,
-        },
-        createdAt: {
-          field: "created_at",
-          type: DataTypes.DATE,
-          allowNull: false,
-          defaultValue: DataTypes.NOW,
-        },
-        updatedAt: {
-          field: "updated_at",
-          type: DataTypes.DATE,
-          allowNull: false,
-          defaultValue: DataTypes.NOW,
-        },
+        }
       },
       {
         sequelize,
         tableName: "OAuthClientI18N",
         schema: "public",
-        timestamps: false,
+        timestamps: true,
+        createdAt: 'created_at',    // custom column for creation time
+        updatedAt: 'updated_at',    // custom column for update time
       },
     );
   }

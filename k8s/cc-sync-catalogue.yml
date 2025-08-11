@@ -1,9 +1,9 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: cc-sync-catalogue
+  name: cc-sync-data
 spec:
-  # run every monday
+  # run every monday - syncs both catalogue and formula values
   schedule: 0 0 * * 1
   jobTemplate:
     spec:
@@ -12,7 +12,7 @@ spec:
         spec:
           restartPolicy: OnFailure
           containers:
-            - name: cc-sync-catalogue
+            - name: cc-sync-data
               image: ghcr.io/open-earth-foundation/citycatalyst:latest
               imagePullPolicy: Always
               envFrom:
@@ -23,7 +23,8 @@ spec:
                   value: "development"
                 - name: npm_config_yes
                   value: "true"
-              command: ["npx", "tsx", "scripts/catalogue-sync.ts"]
+              command: ["/bin/sh", "-c"]
+              args: ["npx tsx scripts/catalogue-sync.ts && npx tsx scripts/formula-values-sync.ts"]
               resources:
                 limits:
                   memory: "1024Mi"

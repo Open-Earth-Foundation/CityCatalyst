@@ -133,7 +133,7 @@ describe("OAuth Client API", () => {
   describe("GET /api/v0/client", () => {
     it("should return an array of OAuth2.0 client objects with name and description in different languages", async () => {
       const req = mockRequest();
-      const res = await listClients(req, {});
+      const res = await listClients(req, { params: Promise.resolve({}) });
       expect(res.status).toEqual(200);
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);
@@ -174,7 +174,7 @@ describe("OAuth Client API", () => {
 
     it("should create a new OAuth2.0 client object", async () => {
       const req = mockRequest(clientCreationArgs);
-      const res = await addClient(req, {});
+      const res = await addClient(req, { params: Promise.resolve({}) });
       expect(res.status).toEqual(201);
       expect(res.headers.get("location")).toBeDefined();
       const { data } = await res.json();
@@ -193,7 +193,7 @@ describe("OAuth Client API", () => {
 
     it("should be in the list of all clients", async () => {
       const req = mockRequest();
-      const res = await listClients(req, {});
+      const res = await listClients(req, { params: Promise.resolve({}) });
       expect(res.status).toEqual(200);
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);
@@ -304,7 +304,7 @@ describe("OAuth Client API", () => {
 
     it("should not be in the list of all clients", async () => {
       const req = mockRequest();
-      const res = await listClients(req, {});
+      const res = await listClients(req, { params: Promise.resolve({}) });
       expect(res.status).toEqual(200);
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);

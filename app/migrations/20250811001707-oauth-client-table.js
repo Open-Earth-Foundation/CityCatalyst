@@ -1,6 +1,14 @@
 "use strict";
 
 /** @type {import('sequelize-cli').Migration} */
+
+/*
+
+- Create table for OAuth 2.0 clients with ID and redirectURI
+- Create i18n table for client names and descriptions
+
+*/
+
 export default {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("OAuthClient", {

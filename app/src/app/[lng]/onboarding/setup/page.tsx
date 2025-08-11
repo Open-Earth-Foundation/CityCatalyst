@@ -75,7 +75,6 @@ export default function OnboardingSetup(props: {
   } = useForm<Inputs>();
 
   const params = useSearchParams();
-
   const projectId = params.get("project");
 
   const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
@@ -337,7 +336,6 @@ export default function OnboardingSetup(props: {
               years={years}
               numberOfYearsDisplayed={numberOfYearsDisplayed}
               setData={setData}
-              setOcCityData={setOcCityData}
               setValue={setValue}
               watch={watch}
               ocCityData={ocCityData}
@@ -350,7 +348,7 @@ export default function OnboardingSetup(props: {
               locode={data.locode}
               area={cityArea?.area!}
               population={cityPopulation}
-              inventoryGoal={getValues("inventoryGoal")}
+              inventoryGoal={inventoryGoal}
               year={getValues("year")}
             />
           )}

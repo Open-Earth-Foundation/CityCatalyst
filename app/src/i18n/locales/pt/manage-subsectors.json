@@ -1210,6 +1210,7 @@
   "deselect-all": "Deselecionar tudo",
   "success": "Sucesso",
   "notation-keys-updated": "Chaves de notação atualizadas",
+  "error-updating-notation-keys": "Falha ao atualizar as chaves de notação",
   "quick-action-applied": "Ação rápida aplicada",
   "changes-can-be-lost": "As suas alterações podem ser perdidas",
   "changes-can-be-lost-description": "Deseja descartar todas as alterações feitas desde a última edição? Isso não pode ser desfeito.",

@@ -30,7 +30,7 @@ test.describe("Dashboard", () => {
       await expect(inventoryYearTitle).toHaveText("Inventory year");
 
       // Note: Add inventory button is only visible for ORG_ADMIN and PROJECT_ADMIN users
-      // Test user is now an Admin (Roles.Admin), so the button should be visible
+      // Test user is now an admin user, so the button should be visible
       const addNewInventoryButton = page.getByTestId(
         "add-new-inventory-button",
       );

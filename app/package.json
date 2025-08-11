@@ -11,7 +11,7 @@
     "test": "npm run jest & npm run e2e:test",
     "api:test": "npm run jest",
     "api:test-windows": "npm run jest:windows",
-    "e2e:test": "npx playwright test",
+    "e2e:test": "DEFAULT_ADMIN_EMAIL=e2e-test-admin@citycatalyst.local DEFAULT_ADMIN_PASSWORD=E2ETestAdmin123! npm run create-admin && npx playwright test",
     "e2e:debug": "playwright test --debug",
     "e2e:test:head": "npx playwright test -- --headed",
     "jest": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" NODE_ENV=\"test\" npx jest",

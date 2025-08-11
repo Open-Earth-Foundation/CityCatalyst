@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { OAuthClient } from "@/models/OAuthClient";
 import { OAuthClientI18N } from "@/models/OAuthClientI18N";
+import { Client } from "@/util/types";
 
 /** gets all available clients */
 export const GET = apiHandler(async (_req, { session }) => {
@@ -19,10 +20,10 @@ export const GET = apiHandler(async (_req, { session }) => {
   const clients = await OAuthClient.findAll();
   const i18ns = await OAuthClientI18N.findAll();
 
-  const results: any[] = clients.map(cl => {
+  const results: Client[] = clients.map(cl => {
     return {
       clientId: cl.clientId,
-      redirectURI: cl.redirectURI,
+      redirectUri: cl.redirectURI,
       name: {},
       description: {}
     }

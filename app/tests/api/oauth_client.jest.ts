@@ -4,6 +4,7 @@ import {
 } from "@/app/api/v0/client/route";
 
 import {
+  GET as getClient,
   DELETE as removeClient
 } from "@/app/api/v0/client/[client]/route";
 
@@ -119,6 +120,7 @@ describe("OAuth Client API", () => {
     for (const client of testClients) {
       await OAuthClient.destroy({ where: { clientId: client.clientId } });
     }
+    await db.sequelize?.close()
   });
 
   describe("GET /api/v0/client", () => {
@@ -132,7 +134,7 @@ describe("OAuth Client API", () => {
       for (const testClient of testClients) {
         let client = data.find((c:any) => c.clientId == testClient.clientId)
         expect(client).toBeDefined();
-        expect(client.redirectURI).toEqual(testClient.redirectURI);
+        expect(client.redirectUri).toEqual(testClient.redirectURI);
         expect(typeof client.name).toBe("object");
         expect(client.name).not.toBeNull();
         expect(typeof client.description).toBe("object");
@@ -169,7 +171,7 @@ describe("OAuth Client API", () => {
       const { data } = await res.json();
       expect(data.clientId).toBeDefined();
       createdClientId = data.clientId;
-      expect(data.redirectURI).toEqual(clientCreationArgs.redirectURI);
+      expect(data.redirectUri).toEqual(clientCreationArgs.redirectURI);
       expect(typeof data.name).toEqual("object");
       expect(data.name).not.toBeNull()
       expect(data.name.en).toEqual(clientCreationArgs.name.en)
@@ -191,15 +193,47 @@ describe("OAuth Client API", () => {
     });
 
     afterAll(async () => {
-      for (const language of ['en', 'fr', 'es']) {
-        await OAuthClientI18N.destroy({ where: {
-          clientId: createdClientId,
-          language
-        }});
+      if (createdClientId) {
+        for (const language of ['en', 'fr', 'es']) {
+          await OAuthClientI18N.destroy({ where: {
+            clientId: createdClientId,
+            language
+          }});
+        }
+        await OAuthClient.destroy({ where: { clientId: createdClientId } });
       }
-      await OAuthClient.destroy({ where: { clientId: createdClientId } });
     })
   });
+
+  describe("GET /api/v0/client/[client]", () => {
+    it("should get the client object", async () => {
+      const req = mockRequest();
+      const client = testClients[0]
+      const res = await getClient(req, {
+        params: Promise.resolve({ client: client.clientId }),
+      })
+      expect(res.status).toEqual(200);
+      const { data } = await res.json();
+      expect(data.clientId).toEqual(client.clientId);
+      expect(data.redirectUri).toEqual(client.redirectURI);
+      const i18nEn = testClientI18Ns.find(
+        cl => cl.clientId == client.clientId && cl.language == 'en'
+      );
+      if (!i18nEn) {
+        throw new Error(`No English i18n descriptors for ${client.clientId}`)
+      }
+      expect(data.name.en).toEqual(i18nEn.name);
+      expect(data.description.en).toEqual(i18nEn.description);
+      const i18nFr = testClientI18Ns.find(
+        cl => cl.clientId == client.clientId && cl.language == 'fr'
+      );
+      if (!i18nFr) {
+        throw new Error(`No French i18n descriptors for ${client.clientId}`)
+      }
+      expect(data.name.fr).toEqual(i18nFr.name);
+      expect(data.description.fr).toEqual(i18nFr.description);
+    });
+  })
 
   describe("DELETE /api/v0/client/[client]", () => {
     const toDelete: OAuthClientAttributes = {
@@ -249,7 +283,7 @@ describe("OAuth Client API", () => {
 
     it("should not be in the list of all clients", async () => {
       const req = mockRequest();
-      const res = await listClients(req, {});
+      const res = await listClients(req, {  });
       expect(res.status).toEqual(200);
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);

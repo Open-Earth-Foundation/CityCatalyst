@@ -105,7 +105,7 @@ const clientCreationArgs: any = {
 const testClientDNE = "test-client-does-not-exist";
 
 describe("OAuth Client API", () => {
-  let oldFeatureFlag: boolean
+  let oldFeatureFlag: boolean;
   beforeAll(async () => {
     setupTests();
     await db.initialize();

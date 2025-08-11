@@ -52,7 +52,7 @@ export class OAuthClientI18N
           type: DataTypes.STRING(2),
           allowNull: false,
           primaryKey: true,
-          comment: 'ISO 639-1 two-letter language code',
+          comment: "ISO 639-1 two-letter language code",
         },
         name: {
           type: DataTypes.STRING(64),
@@ -61,15 +61,15 @@ export class OAuthClientI18N
         description: {
           type: DataTypes.TEXT,
           allowNull: true,
-        }
+        },
       },
       {
         sequelize,
         tableName: "OAuthClientI18N",
         schema: "public",
         timestamps: true,
-        createdAt: 'created_at',    // custom column for creation time
-        updatedAt: 'updated_at',    // custom column for update time
+        createdAt: "created_at", // custom column for creation time
+        updatedAt: "updated_at", // custom column for update time
       },
     );
   }

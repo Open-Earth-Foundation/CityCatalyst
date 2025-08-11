@@ -17,7 +17,8 @@ export default {
         primaryKey: true,
         allowNull: false,
       },
-      redirect_uri: { // maximum 2048 chars, like Google or AWS
+      redirect_uri: {
+        // maximum 2048 chars, like Google or AWS
         type: Sequelize.STRING(2048), // Sequelize does not have a URL type
         allowNull: false,
         unique: true,
@@ -44,7 +45,8 @@ export default {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
-      language: { // ISO 639-1 two-letter language code
+      language: {
+        // ISO 639-1 two-letter language code
         type: Sequelize.STRING(2),
         allowNull: false,
       },

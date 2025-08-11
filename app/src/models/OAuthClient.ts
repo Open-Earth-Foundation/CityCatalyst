@@ -39,7 +39,7 @@ export class OAuthClient
           type: DataTypes.STRING(2048),
           allowNull: false,
           unique: true,
-          comment: 'URL format, length limit similar to Google or AWS'
+          comment: "URL format, length limit similar to Google or AWS",
         },
         createdAt: {
           field: "created_at",

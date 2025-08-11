@@ -149,7 +149,7 @@ module.exports = {
 
   async down(queryInterface) {
     // Skip rollback - emissions factors are now managed by sync script
-    console.log("Skipping emissions factors rollback - managed by sync script");
+    console.error("Skipping emissions factors rollback - managed by sync script");
     return;
     await queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.bulkDelete("DataSourceEmissionsFactor", null, {

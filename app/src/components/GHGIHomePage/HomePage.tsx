@@ -54,9 +54,6 @@ export default function HomePage({
   const language = cookieLanguage ?? lng;
   const { inventory: inventoryParam, cityId: cityIdParam } = useParams();
 
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
-
   // make sure that the inventory ID is using valid values
   let inventoryIdFromParam: string | undefined;
   if (inventoryId && inventoryId != "null") {
@@ -67,20 +64,68 @@ export default function HomePage({
     } else {
       inventoryIdFromParam = inventoryParam;
     }
-  } else {
-    inventoryIdFromParam = userInfo?.defaultInventoryId ?? undefined;
   }
 
   const {
     data: inventory,
     isLoading: isInventoryLoading,
     error: inventoryError,
-  } = api.useGetInventoryQuery(inventoryIdFromParam ?? "default");
+  } = api.useGetInventoryQuery(inventoryIdFromParam!, {
+    skip: !inventoryIdFromParam,
+  });
+
+  // Get city years data to find most recent inventory for the city
+  const { data: cityYearsForNavigation } = useGetCityYearsQuery(
+    cityIdParam as string,
+    {
+      skip: !cityIdParam,
+    },
+  );
 
   useEffect(() => {
+    // Don't redirect while loading
+    if (isInventoryLoading) {
+      return;
+    }
+    // Case 1: URL has a city ID but no inventory
+    if (cityIdParam && !inventoryIdFromParam) {
+      if (cityYearsForNavigation && cityYearsForNavigation.years.length > 0) {
+        // Find the most recent inventory for this city
+        const mostRecentInventory = cityYearsForNavigation.years.sort(
+          (a, b) =>
+            new Date(b.lastUpdate).getTime() - new Date(a.lastUpdate).getTime(),
+        )[0];
+
+        // Redirect to the most recent inventory
+        setTimeout(() => {
+          router.push(`/${language}/${mostRecentInventory.inventoryId}`);
+        }, 0);
+      } else {
+        // No inventory exists for this city, redirect to GHGI onboarding
+        setTimeout(() => {
+          router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
+        }, 0);
+      }
+      return;
+    }
+
+    // Case 2: URL has only an inventory ID - stay there (no redirect needed)
+    if (inventoryIdFromParam && !cityIdParam) {
+      return;
+    }
+
+    // Case 3: URL has no city and no inventory - redirect to /<LANG>
+    if (!cityIdParam && !inventoryIdFromParam) {
+      setTimeout(() => {
+        router.push(`/${language}`);
+      }, 0);
+      return;
+    }
+
+    // Case 4: Handle inventory errors
     if (inventoryError) {
       logger.error(
-        { inventoryError, inventoryId: inventoryIdFromParam ?? "default" },
+        { inventoryError, inventoryId: inventoryIdFromParam },
         "Failed to load inventory",
       );
 
@@ -89,37 +134,25 @@ export default function HomePage({
         !isFetchBaseQueryError(inventoryError) ||
         inventoryError.status !== 401
       ) {
-        setTimeout(
-          () =>
-            router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`),
-          0,
-        );
-      }
-    } else if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
-      if (inventory.inventoryId) {
-        // fix inventoryId in URL without reloading page
-        const newPath = "/" + language + "/" + inventory.inventoryId;
-        history.replaceState(null, "", newPath);
-        if (typeof window !== "undefined") {
-          const currentPath = window.location.pathname;
-          if (!currentPath.endsWith("/")) {
-            router.replace(`${currentPath}/`);
-          }
+        if (cityIdParam) {
+          // If we have a cityId, redirect to GHGI onboarding for that city
+          setTimeout(() => {
+            router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
+          }, 0);
         } else {
-          return;
+          // No city context, redirect to general onboarding
+          setTimeout(() => {
+            router.push(`/${language}/onboarding`);
+          }, 0);
         }
-      } else {
-        // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
-        // If we have a cityId, redirect to GHGI onboarding, otherwise go to general onboarding
-        setTimeout(() => {
-          router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
-        });
       }
     }
   }, [
     isInventoryLoading,
     inventory,
     inventoryIdFromParam,
+    cityIdParam,
+    cityYearsForNavigation,
     language,
     router,
     inventoryError,
@@ -143,7 +176,7 @@ export default function HomePage({
 
   const { data: cityYears, isLoading } = useGetCityYearsQuery(
     inventory?.cityId as string,
-    { skip: !inventory?.cityId || !inventory?.year },
+    { skip: !inventory?.cityId },
   );
 
   const formattedEmissions = inventory?.totalEmissions
@@ -184,18 +217,18 @@ export default function HomePage({
     }
   }, [isInventoryOrgDataLoading, inventoryOrgData, setTheme]);
 
-  if (isInventoryLoading || isInventoryOrgDataLoading || isUserInfoLoading) {
+  if (isInventoryLoading || isInventoryOrgDataLoading) {
     return <ProgressLoader />;
   }
 
   return (
     <>
-      {inventory === null && !isInventoryLoading && !isUserInfoLoading && (
+      {inventory === null && !isInventoryLoading && (
         <>
           {isPublic ? (
             <NotAvailable lng={language} />
           ) : (
-            <MissingInventory lng={language} />
+            <MissingInventory lng={language} cityId={cityIdParam as string} />
           )}
           <Footer lng={language} />
         </>

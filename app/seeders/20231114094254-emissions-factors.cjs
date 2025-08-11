@@ -57,7 +57,7 @@ async function parseFile(filename, folder) {
 module.exports = {
   async up(queryInterface) {
     // Skip emissions factors seeding - now handled by emissions-factors-sync.ts
-    console.log("Skipping emissions factors seeding - using sync script instead");
+    console.error("Skipping emissions factors seeding - using sync script instead");
     return;
     await queryInterface.sequelize.transaction(async (transaction) => {
       // set all existing emissions factors to deprecated
@@ -149,7 +149,7 @@ module.exports = {
 
   async down(queryInterface) {
     // Skip rollback - emissions factors are now managed by sync script
-    console.log("Skipping emissions factors rollback - managed by sync script");
+    console.error("Skipping emissions factors rollback - managed by sync script");
     return;
     await queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.bulkDelete("DataSourceEmissionsFactor", null, {

@@ -34,7 +34,7 @@
 - ✅ `util/types.ts` - UserRole enum and types
 - ✅ `services/api.ts` - RTK Query integration
 
-## 🔄 Remaining High Priority
+## Remaining High Priority
 
 ### Admin Validation Routes (7 occurrences)
 **Pattern**: Replace `UserService.validateIsAdmin()` with direct role check
@@ -80,18 +80,8 @@ inventoryId = await PermissionService.getUserDefaultInventory(session);
 **Files**:
 - `api/v0/inventory/[inventory]/route.ts` (TODO comment exists)
 
-## 🔄 Future Enhancements
+## Future Enhancements
 
-### Frontend Permission Checks
-- City deletion buttons (ORG_ADMIN only)
-- User management interfaces (ORG_ADMIN only)
-- Project management interfaces (ORG_ADMIN only)
-- Organization settings access
-
-### Missing PermissionService Methods
-- `getUserDefaultInventory(session)` - Get user's most recent inventory
-- `canInviteToCity(session, cityId)` - City invitation permissions
-- `canAccessInventoryReadOnly(session, inventoryId)` - Chat/assistant access
 
 ## 📋 Migration Pattern
 ```typescript
@@ -106,10 +96,3 @@ const { userRole } = useUserPermissions({ cityId, projectId, organizationId });
 // Backend validation  
 await PermissionService.canEditInventory(session, inventoryId);
 ```
-
-## 🎯 Benefits Achieved
-- **Security**: Centralized permission validation
-- **UX**: Role-appropriate UI for all user types  
-- **Maintainability**: Single source of truth for permissions
-- **Scalability**: Easy to add new permission checks
-- **Type Safety**: Enum-based role checking

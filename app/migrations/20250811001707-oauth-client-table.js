@@ -44,7 +44,7 @@ export default {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
-      language: {
+      language: { // ISO 639-1 two-letter language code
         type: Sequelize.STRING(2),
         allowNull: false,
       },

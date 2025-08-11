@@ -4,13 +4,13 @@ import { DataTypes, Model, Optional } from "sequelize";
 export interface OAuthClientAttributes {
   clientId: string;
   redirectURI: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  created?: Date;
+  lastUpdated?: Date;
 }
 
 export type OAuthClientPk = "clientId";
 export type OAuthClientId = OAuthClient[OAuthClientPk];
-export type OAuthClientOptionalAttributes = "createdAt" | "updatedAt";
+export type OAuthClientOptionalAttributes = "created" | "lastUpdated";
 export type OAuthClientCreationAttributes = Optional<
   OAuthClientAttributes,
   OAuthClientOptionalAttributes
@@ -22,8 +22,8 @@ export class OAuthClient
 {
   clientId!: string;
   redirectURI!: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  created?: Date;
+  lastUpdated?: Date;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof OAuthClient {
     return OAuthClient.init(
@@ -41,24 +41,25 @@ export class OAuthClient
           unique: true,
           comment: "URL format, length limit similar to Google or AWS",
         },
-        createdAt: {
-          field: "created_at",
+        created: {
           type: DataTypes.DATE,
           allowNull: false,
-          defaultValue: DataTypes.NOW,
+          defaultValue: DataTypes.NOW
         },
-        updatedAt: {
-          field: "updated_at",
+        lastUpdated: {
+          field: "last_updated",
           type: DataTypes.DATE,
           allowNull: false,
-          defaultValue: DataTypes.NOW,
-        },
+          defaultValue: DataTypes.NOW
+        }
       },
       {
         sequelize,
         tableName: "OAuthClient",
         schema: "public",
-        timestamps: false,
+        timestamps: true,
+        createdAt: "created",
+        updatedAt: "lastUpdated"
       },
     );
   }

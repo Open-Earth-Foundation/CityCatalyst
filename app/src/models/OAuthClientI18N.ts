@@ -7,16 +7,16 @@ export interface OAuthClientI18NAttributes {
   language: string;
   name: string;
   description?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  created?: Date;
+  lastUpdated?: Date;
 }
 
 export type OAuthClientI18NPk = "clientId" | "language";
 export type OAuthClientI18NId = OAuthClientI18N[OAuthClientI18NPk];
 export type OAuthClientI18NOptionalAttributes =
   | "description"
-  | "createdAt"
-  | "updatedAt";
+  | "created"
+  | "lastUpdated";
 export type OAuthClientI18NCreationAttributes = Optional<
   OAuthClientI18NAttributes,
   OAuthClientI18NOptionalAttributes
@@ -30,8 +30,8 @@ export class OAuthClientI18N
   language!: string;
   name!: string;
   description?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  created?: Date;
+  lastUpdated?: Date;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof OAuthClientI18N {
     return OAuthClientI18N.init(
@@ -62,14 +62,26 @@ export class OAuthClientI18N
           type: DataTypes.TEXT,
           allowNull: true,
         },
+        created: {
+          field: "created",
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: DataTypes.NOW
+        },
+        lastUpdated: {
+          field: "last_updated",
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: DataTypes.NOW
+        }
       },
       {
         sequelize,
         tableName: "OAuthClientI18N",
         schema: "public",
         timestamps: true,
-        createdAt: "created_at", // custom column for creation time
-        updatedAt: "updated_at", // custom column for update time
+        createdAt: "created", // custom column for creation time
+        updatedAt: "lastUpdated", // custom column for update time
       },
     );
   }

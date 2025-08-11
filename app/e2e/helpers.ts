@@ -67,7 +67,6 @@ export async function createInventoryThroughOnboarding(
   if (!page.url().includes("/onboarding/setup")) {
     console.log("Not on setup page, trying to click again...");
     await startButton.click();
-    await page.waitForLoadState("networkidle");
   }
 
   // Wait for the setup page to load by checking for a specific element

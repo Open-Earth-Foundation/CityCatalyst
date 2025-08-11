@@ -23,14 +23,15 @@ const MissingInventory = ({
   const { t } = useTranslation(lng, "inventory-not-found");
   const router = useRouter();
   useEffect(() => {
-    if (!isUserInfoLoading && !userInfo?.defaultInventoryId) {
-      // If we have a cityId, redirect to GHGI onboarding for that city
-      if (cityId) {
-        router.push(`/${lng}/cities/${cityId}/GHGI/onboarding`);
-      } else {
-        router.push("/onboarding");
-      }
+    if (isUserInfoLoading || userInfo?.defaultInventoryId) {
+      return;
     }
+
+    const redirectPath = cityId
+      ? `/${lng}/cities/${cityId}/GHGI/onboarding`
+      : "/onboarding";
+
+    router.push(redirectPath);
   }, [isUserInfoLoading, userInfo, router, lng, cityId]);
 
   if (!isUserInfoLoading && userInfo?.defaultInventoryId) {

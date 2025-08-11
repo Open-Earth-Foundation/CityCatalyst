@@ -9,14 +9,8 @@ test.describe("Dashboard", () => {
       // Create inventory through onboarding
       await createInventoryThroughOnboarding(page, "Chicago");
 
-      // After onboarding completion, we should be on the completion page
-      // Click the "Check Dashboard" button to navigate to the inventory dashboard
-      const checkDashboardButton = page.getByTestId("check-dashboard");
-      await expect(checkDashboardButton).toBeVisible();
-      await checkDashboardButton.click();
-
-      // Wait for the dashboard to load
-      await page.waitForLoadState("networkidle");
+      // Navigate to Dashboard
+      await page.goto("/");
 
       // Verify Dashboard
       await page.waitForLoadState("networkidle");

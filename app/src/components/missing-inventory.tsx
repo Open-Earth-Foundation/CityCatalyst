@@ -11,28 +11,16 @@ import {
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
 
-const MissingInventory = ({
-  lng,
-  cityId,
-}: {
-  lng: string;
-  cityId?: string;
-}) => {
+const MissingInventory = ({ lng }: { lng: string }) => {
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const { t } = useTranslation(lng, "inventory-not-found");
   const router = useRouter();
   useEffect(() => {
-    if (isUserInfoLoading || userInfo?.defaultInventoryId) {
-      return;
+    if (!isUserInfoLoading && !userInfo?.defaultInventoryId) {
+      router.push("/onboarding");
     }
-
-    const redirectPath = cityId
-      ? `/${lng}/cities/${cityId}/GHGI/onboarding`
-      : "/onboarding";
-
-    router.push(redirectPath);
-  }, [isUserInfoLoading, userInfo, router, lng, cityId]);
+  }, [isUserInfoLoading, userInfo, router]);
 
   if (!isUserInfoLoading && userInfo?.defaultInventoryId) {
     return (

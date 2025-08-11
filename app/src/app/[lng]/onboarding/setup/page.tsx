@@ -29,6 +29,7 @@ import ProgressLoader from "@/components/ProgressLoader";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 import ProjectLimitModal from "@/components/project-limit";
+import { trackEvent } from "@/lib/analytics";
 
 export type Inputs = {
   city: string;
@@ -218,6 +219,16 @@ export default function OnboardingSetup(props: {
         inventoryType: inventoryGoal,
         globalWarmingPotentialType: globalWarmingPotential,
       }).unwrap();
+      
+      // Track inventory creation
+      trackEvent("inventory_created", {
+        city_name: data.name,
+        inventory_year: data.year,
+        inventory_type: inventoryGoal,
+        gwp_type: globalWarmingPotential,
+        from_onboarding: true
+      });
+      
       await setUserInfo({
         defaultInventoryId: inventory.inventoryId,
         defaultCityId: city?.cityId!,

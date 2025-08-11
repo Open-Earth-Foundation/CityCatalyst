@@ -34,6 +34,7 @@ import {
   setupTests,
   testUserID,
 } from "../helpers";
+import { setFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 const testClients: OAuthClientAttributes[] = [
   {
@@ -104,9 +105,11 @@ const clientCreationArgs: any = {
 const testClientDNE = "test-client-does-not-exist";
 
 describe("OAuth Client API", () => {
+  let oldFeatureFlag: boolean
   beforeAll(async () => {
     setupTests();
     await db.initialize();
+    oldFeatureFlag = setFeatureFlag(FeatureFlags.OAUTH_ENABLED, true);
     for (const client of testClients) {
       await OAuthClient.create(client);
     }
@@ -128,6 +131,7 @@ describe("OAuth Client API", () => {
       await OAuthClient.destroy({ where: { clientId: client.clientId } });
     }
     await db.sequelize?.close();
+    setFeatureFlag(FeatureFlags.OAUTH_ENABLED, oldFeatureFlag);
   });
 
   describe("GET /api/v0/client", () => {

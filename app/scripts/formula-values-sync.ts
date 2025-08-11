@@ -200,7 +200,6 @@ async function syncFormulaValues() {
   let lastUpdate = 0;
 
   // For now, we'll skip timestamp checking since the formula endpoints don't have a last-update endpoint
-  // In the future, you might want to add a /api/v0/formula_input/last-update endpoint
   if (!SKIP_TIMESTAMP_CHECK) {
     console.warn("Timestamp checking not implemented for formula values yet, proceeding with sync");
   }
@@ -244,9 +243,9 @@ async function syncFormulaValues() {
 
     // Sync DataSource-FormulaInput relationships
     logger.debug("Syncing datasource-formulainput relationships...");
-    for (const mapping of transformedData.dataSourceFormulaInputs) {
-      await db.models.DataSourceFormulaInput.upsert(mapping);
-    }
+    await db.models.DataSourceFormulaInput.bulkCreate(transformedData.dataSourceFormulaInputs, {
+      ignoreDuplicates: true
+    });
     console.log(`Synced ${transformedData.dataSourceFormulaInputs.length} datasource-formulainput relationships`);
 
     await catalogue.update({ lastUpdate: new Date() });

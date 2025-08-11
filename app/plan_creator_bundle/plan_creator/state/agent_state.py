@@ -15,6 +15,7 @@ from plan_creator_bundle.plan_creator.models import (
 
 # Define the state
 class AgentState(TypedDict):
+    country_code: Annotated[str, "The country code"]
     climate_action_data: Annotated[
         dict, "The dictionary containing the climate action data"
     ]

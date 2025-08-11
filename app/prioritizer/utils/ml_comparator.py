@@ -63,7 +63,7 @@ Raises:
     The function will raise an error if the action types are not valid.
 
 Execute:
-python -m prioritizer.utils.ml_comparator
+python -m app.prioritizer.utils.ml_comparator
 """
 
 import pandas as pd
@@ -76,6 +76,8 @@ import logging
 
 from ..data.test_data import (
     dict_brcci,
+    dict_icare_0141,
+    dict_icare_0142,
     dict_icare_0145,
     dict_icare_0140,
     dict_ipcc_0005,
@@ -778,7 +780,8 @@ if __name__ == "__main__":
     # Here we use the same data to make sure we have the same pipeline in place both in this repo and in colab.
 
     # result = ml_compare(dict_brcci, dict_icare_0145, dict_icare_0140)
-    result = ml_compare(DUMMY_CITY, dict_ipcc_0005, dict_c40_0054)
+    # result = ml_compare(DUMMY_CITY, dict_ipcc_0005, dict_c40_0054)
     # result = ml_compare(DUMMY_CITY, dict_c40_0054, dict_ipcc_0005)
     # result = ml_compare(dict_brcci, dict_icare_0141, dict_icare_0142)
+    result = ml_compare(dict_brcci, dict_ipcc_0005, dict_c40_0054)
     print("Test completed. Preferred Action: %s", result)

@@ -13,9 +13,9 @@ from plan_creator_bundle.tools.tools import (
     retriever_indicators_tool,
 )
 
-OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY = os.getenv(
-    "OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY", "gpt-4.1-mini"
-)
+OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY = os.environ[
+    "OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY"
+]
 
 # Create the agents
 model = ChatOpenAI(

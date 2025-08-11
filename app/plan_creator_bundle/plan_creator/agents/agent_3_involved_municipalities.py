@@ -1,27 +1,27 @@
+import os
 import json
+import logging
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from plan_creator_bundle.plan_creator.state.agent_state import AgentState
 from langchain_openai import ChatOpenAI
 from plan_creator_bundle.plan_creator.models import InstitutionList
+from plan_creator_bundle.tools.tools import (
+    openai_web_search_tool,
+)
 from plan_creator_bundle.plan_creator.prompts.agent_3_prompt import (
     agent_3_system_prompt,
     agent_3_user_prompt,
 )
 
-import logging
-
 logger = logging.getLogger(__name__)
 
-tools = []
+OPENAI_MODEL_NAME_PLAN_CREATOR = os.environ["OPENAI_MODEL_NAME_PLAN_CREATOR"]
 
 # Create the agents
-model = ChatOpenAI(
-    model="gpt-4o",
-    model_kwargs={
-        "tools": [{"type": "web_search_preview"}],
-    },  # Built-in search tool from OpenAI
-)
+model = ChatOpenAI(model=OPENAI_MODEL_NAME_PLAN_CREATOR, temperature=0.0, seed=42)
+
+tools = [openai_web_search_tool]
 
 system_prompt_agent_3 = SystemMessage(agent_3_system_prompt)
 
@@ -31,7 +31,10 @@ def build_custom_agent_3():
 
     # The chain returned by create_react_agent
     react_chain = create_react_agent(
-        model, tools, prompt=system_prompt_agent_3, response_format=InstitutionList
+        model=model,
+        tools=tools,
+        prompt=system_prompt_agent_3,
+        response_format=InstitutionList,
     )
 
     def custom_agent_3(state: AgentState) -> AgentState:
@@ -55,8 +58,6 @@ def build_custom_agent_3():
                 )
             }
         )
-
-        logger.info(f"Agent 3 output: {result_state}")
 
         # Extract the structured response from the result_state
         agent_output_structured: InstitutionList = result_state["structured_response"]

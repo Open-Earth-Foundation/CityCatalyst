@@ -44,6 +44,7 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
     logger.info(f"Task {task_uuid}: Locode: {req.cityData.cityContextData.locode}")
     logger.info(f"Task {task_uuid}: Prioritization type: {req.prioritizationType}")
     logger.info(f"Task {task_uuid}: Languages: {req.language}")
+    logger.info(f"Task {task_uuid}: Country code: {req.countryCode}")
 
     # Log the request to the task storage
     task_storage[task_uuid] = {
@@ -57,6 +58,7 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
         "cityData": req.cityData,
         "prioritizationType": req.prioritizationType,
         "language": req.language,
+        "countryCode": req.countryCode,
     }
 
     # Start the background thread
@@ -100,6 +102,7 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
     )
     logger.info(f"Task {main_task_id}: Prioritization type: {req.prioritizationType}")
     logger.info(f"Task {main_task_id}: Languages: {req.language}")
+    logger.info(f"Task {main_task_id}: Country code: {req.countryCode}")
 
     # Log the request to the task storage
     subtasks = []
@@ -125,6 +128,7 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
             "cityData": city_data,
             "prioritizationType": req.prioritizationType,
             "language": req.language,
+            "countryCode": req.countryCode,
         }
         thread = threading.Thread(
             target=_execute_prioritization_bulk_subtask,

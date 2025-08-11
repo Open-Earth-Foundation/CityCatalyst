@@ -17,7 +17,7 @@ export const POST = apiHandler(async (req, { session }) => {
   const projectId = body.projectId;
 
   if (!projectId) {
-    logger.info("Project ID is not provided, defaulting to Default Project");
+    logger.info("Project ID is not provided, defaulting to Default Project ");
     body.projectId = DEFAULT_PROJECT_ID;
   }
 

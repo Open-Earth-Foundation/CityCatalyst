@@ -1,24 +1,24 @@
 import { expect, test as setup, test } from "@playwright/test";
-import { randomUUID } from "node:crypto";
-import { expectText, signup } from "./helpers";
+import { expectText } from "./helpers";
+import { createTestAdmin, TEST_ADMIN_EMAIL, TEST_ADMIN_PASSWORD } from "../scripts/test-admin-setup";
 
 const authFile = "playwright/.auth/user.json";
 
 test.beforeEach(async ({ page }) => {});
 
 setup("authenticate", async ({ page, request }) => {
-  // log the user in
-  // First set timeout to accommodate send email to finish process
+  // Create test admin user before authentication
   test.setTimeout(60000);
-  const email = `login-test+${randomUUID()}@openearth.org`;
-  const password = "Test123!";
-  await signup(request, email, password, password);
-
+  
+  // Create/recreate the test admin user (this is idempotent)
+  await createTestAdmin();
+  
+  // Login with the test admin credentials
   await page.goto("/en/auth/login");
 
   await expectText(page, "Log In");
-  await page.locator('input[name="email"]').fill(email);
-  await page.locator('input[name="password"]').fill(password);
+  await page.locator('input[name="email"]').fill(TEST_ADMIN_EMAIL);
+  await page.locator('input[name="password"]').fill(TEST_ADMIN_PASSWORD);
   await page.locator('button[type="submit"]').click();
 
   // TODO how to ensure that session route was called?

@@ -57,26 +57,13 @@ export async function createInventoryThroughOnboarding(
   // Click "Start Inventory" button
   const startButton = page.getByRole("button", { name: /Start inventory/i });
   await expect(startButton).toBeVisible();
-  await expect(startButton).toBeEnabled();
   await startButton.click();
 
-  // Step 2: Select City - wait for navigation and add some debugging
-  await page.waitForLoadState("networkidle");
-
-  // Check if we're on the setup page, if not, try clicking again
-  if (!page.url().includes("/onboarding/setup")) {
-    console.log("Not on setup page, trying to click again...");
-    await startButton.click();
-  }
-
-  // Wait for the setup page to load by checking for a specific element
-  await page.waitForLoadState("networkidle");
-
-  // Wait for the city input to be visible (this indicates the setup page has loaded)
-  const cityInput = page.locator('input[name="city"]');
-  await expect(cityInput).toBeVisible({ timeout: 15000 });
+  // Step 2: Select City
+  await page.waitForURL("**/onboarding/setup/");
 
   // Fill in the city input
+  const cityInput = page.locator('input[name="city"]');
   await cityInput.click();
   await page.keyboard.type(cityName, { delay: 100 });
 

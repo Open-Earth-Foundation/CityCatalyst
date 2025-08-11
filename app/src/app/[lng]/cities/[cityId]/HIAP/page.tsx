@@ -48,7 +48,7 @@ export default function HIAPPage(props: {
             currentInventoryId={inventory?.inventoryId}
             isInventoryLoading={isInventoryLoading}
             formattedEmissions={formattedEmissions}
-            t={t}
+            lng={lng}
             population={population}
           />
           <Box display="flex" mx="auto" mt="80px" w="full" maxW="1090px">

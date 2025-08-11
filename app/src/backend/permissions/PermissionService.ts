@@ -198,14 +198,37 @@ export class PermissionService {
 
   /**
    * Only ORG_ADMINs and PROJECT_ADMINs can create cities
+   * Exception: COLLABORATORs can create cities in the default organization
    */
   static async canCreateCity(
     session: AppSession | null,
     projectId: string
   ): Promise<ResourceAccess> {
-    const access = await this.canAccessProject(session, projectId, { 
+    const access = await this.checkAccess(session, { projectId }, { 
       requireActive: true
     });
+    
+    // Check if this is the default organization - allow collaborators there
+    const { DEFAULT_ORGANIZATION_ID } = await import("@/util/constants");
+    if (access.organizationId === DEFAULT_ORGANIZATION_ID) {
+      // In default org, all roles (including COLLABORATOR) can create cities
+      return access;
+    }
+    
+    // For all other organizations, only ORG_ADMIN and PROJECT_ADMIN can create cities
+    if (![UserRole.ORG_ADMIN, UserRole.PROJECT_ADMIN].includes(access.userRole)) {
+      logger.warn('Create city denied: Insufficient role for non-default org', {
+        projectId,
+        organizationId: access.organizationId,
+        userRole: access.userRole
+      });
+      throw createPermissionError(PERMISSION_ERRORS.CANNOT_ACCESS_PROJECT, 403, {
+        projectId,
+        requiredRoles: [UserRole.ORG_ADMIN, UserRole.PROJECT_ADMIN],
+        actualRole: access.userRole
+      });
+    }
+    
     return access;
   }
 
@@ -226,6 +249,7 @@ export class PermissionService {
 
   /**
    * Only ORG_ADMINs and PROJECT_ADMINs can create inventories
+   * Exception: COLLABORATORs can create inventories in the default organization
    */
   static async canCreateInventory(
     session: AppSession | null,
@@ -233,9 +257,18 @@ export class PermissionService {
   ): Promise<ResourceAccess> {
     const access = await this.checkAccess(session, { cityId });
     
+    // Check if this is the default organization - allow collaborators there
+    const { DEFAULT_ORGANIZATION_ID } = await import("@/util/constants");
+    if (access.organizationId === DEFAULT_ORGANIZATION_ID) {
+      // In default org, all roles (including COLLABORATOR) can create inventories
+      return access;
+    }
+    
+    // For all other organizations, only ORG_ADMIN and PROJECT_ADMIN can create inventories
     if (![UserRole.ORG_ADMIN, UserRole.PROJECT_ADMIN].includes(access.userRole)) {
-      logger.warn('Create inventory denied: Insufficient role', {
+      logger.warn('Create inventory denied: Insufficient role for non-default org', {
         cityId,
+        organizationId: access.organizationId,
         userRole: access.userRole
       });
       throw createPermissionError(PERMISSION_ERRORS.CANNOT_CREATE_INVENTORY, 403, {

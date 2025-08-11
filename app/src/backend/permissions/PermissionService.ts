@@ -16,16 +16,26 @@ import { ResourceLoader } from "./ResourceLoader";
 
 export type { UserRole, PermissionContext, ResourceAccess, PermissionOptions };
 
+/*
+==================================================================
+HOW TO USE:
+
+await PermissionService.canAccessInventory(session, inventoryId);
+await PermissionService.canCreateCity(session, projectId);
+await PermissionService.canAccessOrganization(session, organizationId);
+
+HOW TO EXTEND:
+- New resources: Add methods to PermissionService + update modules
+- New operations: Add can{Operation}{Resource} methods
+- New role logic: Extend RoleChecker.getUserRoleInOrganization
+================================================================================
+*/
+
 /**
  * Core Principle: Higher roles inherit all permissions of lower roles
  * - ORG_ADMIN: Can do anything within their organization
  * - PROJECT_ADMIN: Can do anything within their projects (except org management)
  * - COLLABORATOR: Can do anything within their assigned cities (except creation/deletion)
- * 
- * This class delegates to specialized modules for:
- * - Context resolution (PermissionResolver)
- * - Role checking (RoleChecker)  
- * - Resource loading (ResourceLoader)
  */
 export class PermissionService {
   
@@ -311,18 +321,3 @@ export class PermissionService {
     return access;
   }
 }
-
-/*
-================================================================================
-HOW TO USE:
-
-await PermissionService.canAccessInventory(session, inventoryId);
-await PermissionService.canCreateCity(session, projectId);
-await PermissionService.canAccessOrganization(session, organizationId);
-
-HOW TO EXTEND:
-- New resources: Add methods to PermissionService + update modules
-- New operations: Add can{Operation}{Resource} methods
-- New role logic: Extend RoleChecker.getUserRoleInOrganization
-================================================================================
-*/

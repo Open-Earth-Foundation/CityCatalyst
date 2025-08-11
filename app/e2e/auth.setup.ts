@@ -1,8 +1,6 @@
 import { expect, test as setup, test } from "@playwright/test";
 import { expectText, signup } from "./helpers";
-
-const TEST_ADMIN_EMAIL = "e2e-test-admin@citycatalyst.local";
-const TEST_ADMIN_PASSWORD = "E2ETestAdmin123!";
+import { TEST_ADMIN_EMAIL, TEST_ADMIN_PASSWORD } from "./test-constants";
 
 const authFile = "playwright/.auth/user.json";
 

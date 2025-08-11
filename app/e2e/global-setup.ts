@@ -1,5 +1,6 @@
 import { exec } from "child_process";
 import { promisify } from "util";
+import { TEST_ADMIN_EMAIL, TEST_ADMIN_PASSWORD } from "./test-constants";
 
 const execAsync = promisify(exec);
 
@@ -15,7 +16,7 @@ async function globalSetup() {
         const projectDir = process.cwd();
         env.default.loadEnvConfig(projectDir);
         if (!db.initialized) await db.initialize();
-        await db.models.User.destroy({ where: { email: 'e2e-test-admin@citycatalyst.local' } });
+        await db.models.User.destroy({ where: { email: '${TEST_ADMIN_EMAIL}' } });
         console.log('Cleaned up existing test admin user');
         await db.sequelize?.close();
       })()"
@@ -30,8 +31,8 @@ async function globalSetup() {
     const { stdout, stderr } = await execAsync("npm run create-admin", {
       env: {
         ...process.env,
-        DEFAULT_ADMIN_EMAIL: "e2e-test-admin@citycatalyst.local",
-        DEFAULT_ADMIN_PASSWORD: "E2ETestAdmin123!"
+        DEFAULT_ADMIN_EMAIL: TEST_ADMIN_EMAIL,
+        DEFAULT_ADMIN_PASSWORD: TEST_ADMIN_PASSWORD
       }
     });
     

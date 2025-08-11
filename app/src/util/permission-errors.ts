@@ -182,29 +182,3 @@ export const PermissionErrorHelpers = {
     );
   },
 };
-
-/*
-===============================================================================
-MIGRATION NOTES:
-
-This file has been updated to align with the new resource-based PermissionService:
-
-1. ✅ Removed action-specific errors (EDIT_INVENTORY, etc.)
-2. ✅ Added resource-level errors (CANNOT_ACCESS_INVENTORY, etc.)
-3. ✅ Organized by resource hierarchy (Organization → Project → City → Inventory)
-4. ✅ Added helper functions for common scenarios
-5. ✅ Maintained backwards compatibility where needed
-
-USAGE EXAMPLES:
-
-// Resource access errors
-throw PermissionErrorHelpers.inventoryAccess(inventoryId);
-throw PermissionErrorHelpers.cityAccess(cityId);
-
-// Role requirement errors
-throw PermissionErrorHelpers.roleRequired('ORG_ADMIN');
-
-// Custom errors
-throw createPermissionError(PERMISSION_ERRORS.CANNOT_CREATE_CITY, 403, { projectId });
-===============================================================================
-*/

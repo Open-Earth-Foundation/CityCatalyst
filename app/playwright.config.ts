@@ -13,6 +13,8 @@ export default defineConfig({
   testDir: "./e2e",
   /* Global setup to create admin user */
   globalSetup: "./e2e/global-setup.ts",
+  /* Global teardown to cleanup admin user */
+  globalTeardown: "./e2e/global-teardown.ts",
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */

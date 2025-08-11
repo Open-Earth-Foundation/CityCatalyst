@@ -189,6 +189,12 @@ import { ProjectModules as _ProjectModules } from "./ProjectModules";
 import { HighImpactActionRanking as _HighImpactActionRanking, HighImpactActionRankingAttributes, HighImpactActionRankingCreationAttributes } from "./HighImpactActionRanking";
 import { HighImpactActionRanked as _HighImpactActionRanked, HighImpactActionRankedAttributes, HighImpactActionRankedCreationAttributes } from "./HighImpactActionRanked";
 
+import { OAuthClient as _OAuthClient } from "./OAuthClient";
+import { OAuthClientAttributes, OAuthClientCreationAttributes, OAuthClientOptionalAttributes } from "./OAuthClient";
+import { OAuthClientI18N as _OAuthClientI18N } from "./OAuthClientI18N";
+import { OAuthClientI18NAttributes, OAuthClientI18NCreationAttributes, OAuthClientI18NOptionalAttributes, OAuthClientI18N } from "./OAuthClientI18N";
+import { se } from "date-fns/locale";
+
 export {
   _ActivityData as ActivityData,
   _ActivityValue as ActivityValue,
@@ -237,6 +243,8 @@ export {
   _HighImpactActionRanked as HighImpactActionRanked,
   _Module as Module,
   _ProjectModules as ProjectModules,
+  _OAuthClient as OAuthClient,
+  _OAuthClientI18N as OAuthClientI18N
 };
 
 export type {
@@ -330,6 +338,12 @@ export type {
   ModuleCreationAttributes,
   ProjectModulesAttributes,
   ProjectModulesCreationAttributes,
+  OAuthClientAttributes,
+  OAuthClientCreationAttributes,
+  OAuthClientOptionalAttributes,
+  OAuthClientI18NAttributes,
+  OAuthClientI18NCreationAttributes,
+  OAuthClientI18NOptionalAttributes
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -382,6 +396,8 @@ export function initModels(sequelize: Sequelize) {
   const HighImpactActionRankedModel = _HighImpactActionRanked.initModel(sequelize);
   const Module = _Module.initModel(sequelize);
   const ProjectModules = _ProjectModules.initModel(sequelize);
+  const OAuthClient = _OAuthClient.initModel(sequelize);
+  const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
 
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
@@ -982,6 +998,7 @@ export function initModels(sequelize: Sequelize) {
     as: "highImpactActionRanked",
     foreignKey: "hiaRankingId",
   });
+  OAuthClient.hasMany(OAuthClientI18N, { foreignKey: "clientId" });
 
   return {
     ActivityData: ActivityData,
@@ -1031,5 +1048,7 @@ export function initModels(sequelize: Sequelize) {
     HighImpactActionRanked: HighImpactActionRankedModel,
     Module: Module,
     ProjectModules: ProjectModules,
+    OAuthClient: OAuthClient,
+    OAuthClientI18N: OAuthClientI18N
   };
 }

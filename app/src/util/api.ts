@@ -281,7 +281,13 @@ function errorHandler(err: unknown, _req: NextRequest) {
     );
   } else if (createHttpError.isHttpError(err) && err.expose) {
     return NextResponse.json(
-      { error: { message: err.message } },
+      { 
+        error: { 
+          message: err.message,
+          code: (err as any).code || undefined,
+          data: (err as any).data || undefined
+        } 
+      },
       { status: err.statusCode },
     );
   } else if (err instanceof ZodError) {

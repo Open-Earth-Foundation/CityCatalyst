@@ -53,7 +53,8 @@ import {
   FormulaInputValuesResponse,
   DataSourceResponse,
   Client,
-  LangMap
+  LangMap,
+  PermissionCheckResponse
 } from "@/util/types";
 import type { HIAPResponse } from "@/util/types";
 import type { GeoJSON } from "geojson";
@@ -63,6 +64,7 @@ export const api = createApi({
   reducerPath: "api",
   tagTypes: [
     "UserInfo",
+    "UserPermissions",
     "InventoryProgress",
     "UserInventories",
     "SubSectorValue",
@@ -136,6 +138,12 @@ export const api = createApi({
         query: (inventoryId: string) => `inventory/${inventoryId}/populations`,
         transformResponse: (response: { data: InventoryPopulationsResponse }) =>
           response.data,
+      }),
+      getInventoryByCityId: builder.query<InventoryResponse, string>({
+        query: (cityId: string) => `city/${cityId}/ghgi`,
+        transformResponse: (response: { data: InventoryResponse }) =>
+          response.data,
+        providesTags: ["Inventory"],
       }),
       getRequiredScopes: builder.query<RequiredScopesResponse, string>({
         query: (sectorId) => `sector/${sectorId}/required-scopes`,
@@ -254,6 +262,27 @@ export const api = createApi({
         transformResponse: (response: { data: UserInfoResponse }) =>
           response.data,
         providesTags: ["UserInfo"],
+      }),
+      getUserPermissions: builder.query<
+        PermissionCheckResponse,
+        {
+          organizationId?: string;
+          projectId?: string;
+          cityId?: string;
+          inventoryId?: string;
+        }
+      >({
+        query: (params) => {
+          const searchParams = new URLSearchParams();
+          if (params.organizationId) searchParams.set('organizationId', params.organizationId);
+          if (params.projectId) searchParams.set('projectId', params.projectId);
+          if (params.cityId) searchParams.set('cityId', params.cityId);
+          if (params.inventoryId) searchParams.set('inventoryId', params.inventoryId);
+          return `/user/permissions?${searchParams.toString()}`;
+        },
+        transformResponse: (response: { data: PermissionCheckResponse }) =>
+          response.data,
+        providesTags: ["UserPermissions"],
       }),
       getAllDataSources: builder.query<
         GetDataSourcesResult,
@@ -411,7 +440,6 @@ export const api = createApi({
         PopulationAttributes,
         {
           cityId: string;
-          locode: string;
           cityPopulation: number;
           regionPopulation: number;
           countryPopulation: number;
@@ -1292,6 +1320,15 @@ export const api = createApi({
         transformResponse: (response: { data: ModuleAttributes[] }) =>
           response.data,
       }),
+      getCityModuleAccess: builder.query<
+        { hasAccess: boolean },
+        { cityId: string; moduleId: string }
+      >({
+        query: ({ cityId, moduleId }) =>
+          `city/${cityId}/modules/${moduleId}/access`,
+        transformResponse: (response: { data: { hasAccess: boolean } }) =>
+          response.data,
+      }),
       getClient: builder.query<
         Client,
         string
@@ -1380,6 +1417,7 @@ export const {
   useGetVerificationTokenQuery,
   useGetCitiesQuery,
   useGetInventoriesQuery,
+  useGetInventoryByCityIdQuery,
   useAddUserFileMutation,
   useGetUserFilesQuery,
   useDeleteUserFileMutation,
@@ -1434,7 +1472,9 @@ export const {
   useUpdateUserRoleInOrganizationMutation,
   useGetModulesQuery,
   useGetProjectModulesQuery,
+  useGetCityModuleAccessQuery,
   useGetClientQuery,
-  useGenerateCodeMutation
+  useGenerateCodeMutation,
+  useGetUserPermissionsQuery
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

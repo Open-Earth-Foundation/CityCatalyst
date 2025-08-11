@@ -48,7 +48,7 @@ test.describe("Onboarding Flow", () => {
       //   Verify tht the description is displayed
       const description = page.getByTestId("setup-city-description");
       await expect(description).toHaveText(
-        /Search and select the city or municipality for which you want to create your GHG emission inventory./i,
+        /Search and select the city or municipality you'll work with./i,
       );
 
       //   Verify that the search lable is visible

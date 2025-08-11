@@ -7,6 +7,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { InventoryTypeEnum } from "@/util/constants";
+import createHttpError from "http-errors";
 
 const validSectorRefNos = {
   [InventoryTypeEnum.GPC_BASIC]: ["I", "II", "III"],
@@ -82,15 +83,13 @@ const saveNotationKeysRequest = z.object({
   notationKeys: z.array(
     z.object({
       subCategoryId: z.string().uuid(),
-      unavailableReason: z
-        .enum([
-          "no-occurrance",
-          "not-estimated",
-          "confidential-information",
-          "included-elsewhere",
-        ])
-        .optional(),
-      unavailableExplanation: z.string().min(1).optional(),
+      unavailableReason: z.enum([
+        "no-occurrance",
+        "not-estimated",
+        "confidential-information",
+        "included-elsewhere",
+      ]),
+      unavailableExplanation: z.string().min(1),
     }),
   ),
 });
@@ -126,6 +125,10 @@ export const POST = apiHandler(async (req, { session, params }) => {
         lock: true,
       });
       if (existingInventoryValue) {
+        throw new createHttpError.BadRequest(
+          "Existing notation key found for this subcategory, remove it before setting notation key",
+        );
+        /* TODO decide if this behavior is desirable - UI warning/ confirmation would need to be implemented
         // reset emissions values of inventory value as notation key was used for it
         const inventoryValue = await existingInventoryValue.update(
           {
@@ -145,6 +148,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
           where: { inventoryValueId: existingInventoryValue.id },
           transaction,
         });
+        */
       } else {
         const inventoryValue = await db.models.InventoryValue.create(
           {

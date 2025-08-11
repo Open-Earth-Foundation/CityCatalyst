@@ -19,22 +19,18 @@ import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
 import { Box, Icon, Tabs, Text, VStack } from "@chakra-ui/react";
 import MissingInventory from "@/components/missing-inventory";
-import InventoryCalculationTab from "@/components/HomePage/InventoryCalculationTab";
+import InventoryCalculationTab from "./InventoryCalculationTab";
 import InventoryReportTab from "../../app/[lng]/[inventory]/InventoryResultTab";
 import NotAvailable from "@/components/NotAvailable";
-import { Hero } from "@/components/HomePage/Hero";
-import { ActionCards } from "@/components/HomePage/ActionCards";
-import { InventoryPreferencesCard } from "@/components/HomePage/InventoryPreferencesCard";
+import { Hero } from "./Hero";
+import { ActionCards } from "./ActionCards";
+import { InventoryPreferencesCard } from "./InventoryPreferencesCard";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
-import { Button } from "../ui/button";
-import HiapTabWrapper from "@/app/[lng]/[inventory]/HiapTab";
-import {
-  hasFeatureFlag,
-  FeatureFlags,
-  getFeatureFlags,
-} from "@/util/feature-flags";
+import { Button } from "@/components/ui/button";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
+import { UserRole } from "@/util/types";
 import { logger } from "@/services/logger";
 
 function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
@@ -56,7 +52,7 @@ export default function HomePage({
   // Check if user is authenticated otherwise route to login page
   isPublic || CheckUserSession();
   const language = cookieLanguage ?? lng;
-  const { inventory: inventoryParam } = useParams();
+  const { inventory: inventoryParam, cityId: cityIdParam } = useParams();
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -88,12 +84,16 @@ export default function HomePage({
         "Failed to load inventory",
       );
 
-      // 401 status can be cached from logged-out state, ignore it but redirect to onboarding on other errors
+      // 401 status can be cached from logged-out state, ignore it but redirect to GHGI onboarding on other errors
       if (
         !isFetchBaseQueryError(inventoryError) ||
         inventoryError.status !== 401
       ) {
-        setTimeout(() => router.push("/onboarding"), 0);
+        setTimeout(
+          () =>
+            router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`),
+          0,
+        );
       }
     } else if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
@@ -110,7 +110,10 @@ export default function HomePage({
         }
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
-        setTimeout(() => router.push("/onboarding"), 0);
+        // If we have a cityId, redirect to GHGI onboarding, otherwise go to general onboarding
+        setTimeout(() => {
+          router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
+        });
       }
     }
   }, [
@@ -151,6 +154,12 @@ export default function HomePage({
     if (!cityYears) return [];
     return [...cityYears.years].sort((a, b) => b.year - a.year) || [];
   }, [cityYears]);
+
+  // Check user permissions for this city
+  const { userRole } = useUserPermissions({
+    cityId: inventory?.cityId,
+    skip: !inventory?.cityId
+  });
 
   const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
     useGetOrganizationForInventoryQuery(inventoryIdFromParam!, {
@@ -246,20 +255,34 @@ export default function HomePage({
                     >
                       {t("inventory-year")}
                     </Text>
-                    <Button
-                      data-testid="add-new-inventory-button"
-                      title={t("add-new-inventory")}
-                      h="48px"
-                      aria-label="activity-button"
-                      fontSize="button.md"
-                      gap="8px"
-                      onClick={() =>
-                        isFrozenCheck() ? null : router.push("/onboarding")
-                      }
-                    >
-                      <Icon as={BsPlus} h="16px" w="16px" />
-                      {t("add-new-inventory")}
-                    </Button>
+                    {/* Only show add inventory button for ORG_ADMIN and PROJECT_ADMIN */}
+                    {userRole !== UserRole.COLLABORATOR && userRole !== UserRole.NO_ACCESS && (
+                      <Button
+                        data-testid="add-new-inventory-button"
+                        title={t("add-new-inventory")}
+                        h="48px"
+                        aria-label="activity-button"
+                        fontSize="button.md"
+                        gap="8px"
+                        onClick={() => {
+                          if (isFrozenCheck()) {
+                            return;
+                          }
+
+                          const cityId = inventory?.cityId || cityIdParam;
+                          if (cityId) {
+                            router.push(
+                              `/${language}/cities/${cityId}/GHGI/onboarding`,
+                            );
+                          } else {
+                            router.push(`/${language}/onboarding`);
+                          }
+                        }}
+                      >
+                        <Icon as={BsPlus} h="16px" w="16px" />
+                        {t("add-new-inventory")}
+                      </Button>
+                    )}
                   </Box>
                   <YearSelectorCard
                     cityId={inventory.cityId as string}
@@ -278,10 +301,6 @@ export default function HomePage({
                       {[
                         "tab-emission-inventory-calculation-title",
                         "tab-emission-inventory-results-title",
-                        ...(inventory?.city?.country === "Brazil" &&
-                        hasFeatureFlag(FeatureFlags.CAP_TAB_ENABLED)
-                          ? ["tab-hiap-title"]
-                          : []),
                       ].map((tab, index) => (
                         <Tabs.Trigger key={index} value={tab}>
                           <Text
@@ -311,11 +330,6 @@ export default function HomePage({
                         inventory={inventory}
                       />
                     </Tabs.Content>
-                    {inventory?.city?.country === "Brazil" && (
-                      <Tabs.Content value="tab-hiap-title">
-                        <HiapTabWrapper inventory={inventory} lng={lng} />
-                      </Tabs.Content>
-                    )}
                   </Tabs.Root>
                 </>
               ) : (

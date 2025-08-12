@@ -94,14 +94,26 @@ export function trackEvent(
   if (!shouldTrack()) {
     return;
   }
-  posthog.capture(eventName, properties);
+  
+  // Add environment to all events
+  const enhancedProperties = {
+    ...properties,
+    environment: process.env.NODE_ENV,
+    deployment_env: process.env.NEXT_PUBLIC_DEPLOYMENT_ENV || process.env.NODE_ENV,
+  };
+  
+  posthog.capture(eventName, enhancedProperties);
 }
 
 export function identifyUser(userId: string, properties?: Record<string, any>) {
   if (!shouldTrack()) {
     return;
   }
-  posthog.identify(userId, properties);
+  posthog.identify(userId, {
+    ...properties,
+    environment: process.env.NODE_ENV,
+    deployment_env: process.env.NEXT_PUBLIC_DEPLOYMENT_ENV || process.env.NODE_ENV,
+  });
 }
 
 export function resetUser() {
@@ -124,6 +136,8 @@ export function trackPageView(url?: string) {
   }
   posthog.capture("$pageview", {
     $current_url: url || window.location.href,
+    environment: process.env.NODE_ENV,
+    deployment_env: process.env.NEXT_PUBLIC_DEPLOYMENT_ENV || process.env.NODE_ENV,
   });
 }
 

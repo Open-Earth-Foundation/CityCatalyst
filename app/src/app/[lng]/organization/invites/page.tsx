@@ -9,6 +9,7 @@ import { emailPattern, tokenRegex, uuidRegex } from "@/util/validation";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import { useTranslation } from "@/i18n/client";
 import ProgressLoader from "@/components/ProgressLoader";
+import { trackEvent } from "@/lib/analytics";
 
 const AcceptInvitePage = (props: { params: Promise<{ lng: string }> }) => {
   const { lng } = use(props.params);
@@ -80,6 +81,11 @@ const AcceptInvitePage = (props: { params: Promise<{ lng: string }> }) => {
             if (!!error) {
               setError(true);
             } else {
+              // Track admin invitation acceptance
+              trackEvent("admin_invitation_accepted", {
+                organization_id: sanitizedOrganizationId,
+              });
+              
               showSuccessToast();
               router.push(`/`);
             }

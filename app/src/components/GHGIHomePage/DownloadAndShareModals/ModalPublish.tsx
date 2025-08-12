@@ -5,6 +5,7 @@ import { useState } from "react";
 import { UnpublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/UnpublishedView";
 import { PublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/PublishedView";
 import { InventoryResponse } from "@/util/types";
+import { trackEvent } from "@/lib/analytics";
 
 import {
   DialogRoot,
@@ -33,11 +34,25 @@ const ModalPublish = ({
 
   const [changePublishStatus, { isLoading: updateLoading }] =
     api.useUpdateInventoryMutation();
-  const handlePublishChange = () => {
-    return changePublishStatus({
+  const handlePublishChange = async () => {
+    const isPublishing = !inventory.isPublic;
+    
+    const result = await changePublishStatus({
       inventoryId: inventoryId!,
-      data: { isPublic: !inventory.isPublic },
+      data: { isPublic: isPublishing },
     });
+    
+    // Track publish/unpublish action
+    if (result.data) {
+      trackEvent(isPublishing ? "inventory_published" : "inventory_unpublished", {
+        inventory_id: inventoryId,
+        inventory_year: inventory.year,
+        city_name: inventory.city?.name,
+        city_locode: inventory.city?.locode,
+      });
+    }
+    
+    return result;
   };
 
   return (

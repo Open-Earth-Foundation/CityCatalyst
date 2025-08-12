@@ -19,6 +19,7 @@ import { signIn } from "next-auth/react";
 import { LANGUAGES } from "@/util/types";
 import { LanguageSelector } from "./LanguageSelector";
 import i18next from "i18next";
+import { trackEvent } from "@/lib/analytics";
 
 type Inputs = {
   inventory?: string;
@@ -97,6 +98,11 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
       // router.push(nextCallbackUrl);
       // automatic login after signup for simplified user flow
       const userData = (await res.json()) as any;
+
+      // Track user registration
+      trackEvent("user_registered", {
+        preferred_language: data.preferredLanguage,
+      });
 
       const loginResponse = await signIn("credentials", {
         redirect: false,

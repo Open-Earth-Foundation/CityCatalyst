@@ -7,6 +7,7 @@ import { logger } from "@/services/logger";
 import InviteErrorView from "./InviteErrorView";
 import { emailPattern, tokenRegex, uuidRegex } from "@/util/validation";
 import ProgressLoader from "@/components/ProgressLoader";
+import { trackEvent } from "@/lib/analytics";
 
 const AcceptInvitePage = (props: { params: Promise<{ lng: string }> }) => {
   const { lng } = use(props.params);
@@ -67,6 +68,11 @@ const AcceptInvitePage = (props: { params: Promise<{ lng: string }> }) => {
             if (!!error) {
               setError(true);
             } else {
+              // Track invitation acceptance
+              trackEvent("collaborator_invitation_accepted", {
+                num_cities: sanitizedCityIds.split(",").length,
+              });
+              
               router.push(`/`);
             }
           } catch (error) {

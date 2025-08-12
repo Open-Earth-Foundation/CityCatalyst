@@ -1,7 +1,11 @@
 import posthog from "posthog-js";
 import { env } from "next-runtime-env";
 import Cookies from "js-cookie";
-import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import {
+  FeatureFlags,
+  hasFeatureFlag,
+  hasServerFeatureFlag,
+} from "@/util/feature-flags";
 
 let isInitialized = false;
 
@@ -9,12 +13,15 @@ const CONSENT_COOKIE_NAME = "cc_analytics_consent";
 const CONSENT_EXPIRY_DAYS = 365;
 
 export function initializeAnalytics() {
-  if (typeof window === "undefined" || !hasFeatureFlag(FeatureFlags.ANALYTICS_ENABLED)) {
+  if (
+    typeof window === "undefined" ||
+    !hasServerFeatureFlag(FeatureFlags.ANALYTICS_ENABLED)
+  ) {
     return;
   }
 
-  const posthogKey = env("NEXT_PUBLIC_POSTHOG_KEY");
-  const posthogHost = env("NEXT_PUBLIC_POSTHOG_HOST");
+  const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+  const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST;
 
   if (!posthogKey) {
     console.warn("PostHog key not provided. Analytics disabled.");
@@ -49,14 +56,14 @@ export function getAnalyticsConsent(): boolean | null {
 
 export function setAnalyticsConsent(consent: boolean) {
   if (typeof window === "undefined") return;
-  
-  Cookies.set(CONSENT_COOKIE_NAME, consent.toString(), { 
+
+  Cookies.set(CONSENT_COOKIE_NAME, consent.toString(), {
     expires: CONSENT_EXPIRY_DAYS,
-    sameSite: "strict"
+    sameSite: "strict",
   });
-  
+
   if (!isInitialized) return;
-  
+
   if (consent) {
     posthog.opt_in_capturing();
   } else {
@@ -75,12 +82,15 @@ export function clearAnalyticsConsent() {
 }
 
 function shouldTrack(): boolean {
-  return hasFeatureFlag(FeatureFlags.ANALYTICS_ENABLED) && 
+  return hasServerFeatureFlag(FeatureFlags.ANALYTICS_ENABLED) && 
          isInitialized && 
          hasAnalyticsConsent();
 }
 
-export function trackEvent(eventName: string, properties?: Record<string, any>) {
+export function trackEvent(
+  eventName: string,
+  properties?: Record<string, any>,
+) {
   if (!shouldTrack()) {
     return;
   }

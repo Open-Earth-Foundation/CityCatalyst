@@ -44,19 +44,8 @@ const ActionPlanSection = ({ t }: { t: TFunction }) => {
           maxW="353px"
           bg="background.secondary"
           gap="16px"
+          pt="48px"
         >
-          <Card.Title display="flex" alignItems="center" gap="4px">
-            <Icon as={TopPickIcon} />
-            <Text
-              textTransform="uppercase"
-              fontSize="body.sm"
-              fontWeight="semibold"
-              color="content.link"
-              fontFamily="heading"
-            >
-              {t("top-pick-action-title")}
-            </Text>
-          </Card.Title>
           <Card.Description>
             <Text
               textOverflow="ellipsis"
@@ -76,10 +65,120 @@ const ActionPlanSection = ({ t }: { t: TFunction }) => {
                 "integrate-renewables-into-municipal-water-systems-description",
               )}
             </Text>
-            <Box display="flex" gap="8px">
+            <Box display="flex" gap="8px" py="12px">
               <LevelBadge level="high" type="reduction-potential" t={t} />
               <LevelBadge level="high" type="cost" t={t} />
               <LevelBadge level="high" type="effectiveness" t={t} />
+            </Box>
+            <Box
+              display="flex"
+              gap="8px"
+              alignItems="center"
+              justifyContent="space-between"
+              borderBottom="1px solid"
+              borderColor="border.overlay"
+              pb="12px"
+            >
+              <Text
+                fontSize="body.sm"
+                color="content.tertiary"
+                fontFamily="heading"
+                fontWeight="semibold"
+              >
+                {t("reduction-potential")}
+              </Text>
+              <Text
+                fontSize="title.md"
+                color="sentiment.negativeDefault"
+                fontFamily="heading"
+                fontWeight="bold"
+              >
+                {t("high")}
+              </Text>
+            </Box>
+            <Box
+              display="flex"
+              flexDirection="column"
+              gap="14px"
+              w="full"
+              py="28px"
+              fontFamily="heading"
+            >
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                w="full"
+              >
+                <Text
+                  color="content.tertiary"
+                  fontSize="body.sm"
+                  fontWeight="semibold"
+                >
+                  {t("sector-name")}
+                </Text>
+                <Text
+                  fontSize="title.sm"
+                  color="content.tertiary"
+                  fontWeight="semibold"
+                >
+                  {t("transport")}
+                </Text>
+              </Box>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                w="full"
+              >
+                <Text
+                  color="content.tertiary"
+                  fontSize="body.sm"
+                  fontWeight="semibold"
+                >
+                  {t("estimated-cost")}
+                </Text>
+                <Text
+                  fontSize="title.sm"
+                  color="content.tertiary"
+                  fontWeight="semibold"
+                >
+                  {t("medium")}
+                </Text>
+              </Box>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                w="full"
+              >
+                <Text
+                  color="content.tertiary"
+                  fontSize="body.sm"
+                  fontWeight="semibold"
+                >
+                  {t("implementation-time")}
+                </Text>
+                <Text
+                  fontSize="title.sm"
+                  color="content.tertiary"
+                  fontWeight="semibold"
+                >
+                  {t("less-than-5-years")}
+                </Text>
+              </Box>
+              <Box display="flex" justifyContent="flex-start">
+                <Button
+                  variant="ghost"
+                  color="content.link"
+                  textDecoration="underline"
+                  textTransform="none"
+                  textStyle="label.lg"
+                  pl="0px"
+                >
+                  {t("see-more-details")}
+                </Button>
+              </Box>
             </Box>
           </Card.Description>
         </Card.Root>
@@ -100,12 +199,12 @@ const LevelBadge = ({
   t: TFunction;
 }) => {
   return (
-    <Badge
-      bg="segmented.NegativeDefault"
+    <Box
+      bg="sentiment.negativeDefault"
       fontSize="xs"
       w="98px"
       h="5px"
       borderRadius="2.5px"
-    ></Badge>
+    ></Box>
   );
 };

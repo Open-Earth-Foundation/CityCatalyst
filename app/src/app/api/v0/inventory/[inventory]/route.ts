@@ -6,6 +6,7 @@ import UserService from "@/backend/UserService";
 import { upsertInventoryRequest } from "@/util/validation";
 import { validate } from "uuid";
 import { InventoryService } from "@/backend/InventoryService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 
 function hasIsPublicProperty(
   inventory:
@@ -28,6 +29,7 @@ export const GET = apiHandler(async (req, { session, params }) => {
   }
 
   if ("default" === inventoryId) {
+    // TODO: Add getUserDefaultInventory method to PermissionService
     inventoryId = await UserService.findUserDefaultInventory(session);
     if (!inventoryId) {
       throw new createHttpError.NotFound("user has no default inventory");
@@ -40,6 +42,9 @@ export const GET = apiHandler(async (req, { session, params }) => {
     );
   }
 
+  // Use PermissionService for access check only
+  await PermissionService.canAccessInventory(session, inventoryId);
+  
   const inventory = await InventoryService.getInventoryWithTotalEmissions(
     inventoryId,
     session,
@@ -48,9 +53,10 @@ export const GET = apiHandler(async (req, { session, params }) => {
 });
 
 export const DELETE = apiHandler(async (_req, { params, session }) => {
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
+  // Use PermissionService for delete permission (ORG_ADMIN only)
+  const { resource: inventory } = await PermissionService.canDeleteInventory(
     session,
+    params.inventory
   );
   await inventory.destroy();
   return NextResponse.json({ data: inventory, deleted: true });
@@ -59,11 +65,14 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
 export const PATCH = apiHandler(async (req, context) => {
   const { params, session } = context;
   const body = upsertInventoryRequest.parse(await req.json());
-  let inventory = await UserService.findUserInventory(
-    params.inventory,
+  // Use PermissionService for edit permission
+  const { resource: inventory } = await PermissionService.canEditInventory(
     session,
+    params.inventory
   );
 
+  let updatedInventory = inventory;
+  
   if (hasIsPublicProperty(body)) {
     const publishBody: { isPublic: boolean; publishedAt?: Date | null } = {
       ...body,
@@ -75,6 +84,6 @@ export const PATCH = apiHandler(async (req, context) => {
     }
     await inventory.update(publishBody);
   }
-  inventory = await inventory.update(body);
-  return NextResponse.json({ data: inventory });
+  updatedInventory = await inventory.update(body);
+  return NextResponse.json({ data: updatedInventory });
 });

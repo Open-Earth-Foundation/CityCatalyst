@@ -71,7 +71,7 @@ export default function Settings(props: { params: Promise<{ lng: string }> }) {
 
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">
-      <Box className="flex mx-auto w-[1090px] h-[100vh]">
+      <Box display="flex" mx="auto" w="full" maxW="1090px" px={4}>
         <Box w="full">
           <Box paddingTop="64px">
             <Text

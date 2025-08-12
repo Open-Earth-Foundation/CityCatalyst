@@ -44,7 +44,7 @@ async function createAdmin() {
 
   logger.info(
     "Created admin user with email %s and ID %s",
-    newUser.email,
+    newUser.email as string,
     newUser.userId,
   );
   await db.sequelize?.close();

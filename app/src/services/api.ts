@@ -54,6 +54,7 @@ import {
   DataSourceResponse,
   Client,
   LangMap,
+  PermissionCheckResponse
 } from "@/util/types";
 import type { CityLocationResponse, HIAPResponse } from "@/util/types";
 import type { GeoJSON } from "geojson";
@@ -63,6 +64,7 @@ export const api = createApi({
   reducerPath: "api",
   tagTypes: [
     "UserInfo",
+    "UserPermissions",
     "InventoryProgress",
     "UserInventories",
     "SubSectorValue",
@@ -260,6 +262,27 @@ export const api = createApi({
         transformResponse: (response: { data: UserInfoResponse }) =>
           response.data,
         providesTags: ["UserInfo"],
+      }),
+      getUserPermissions: builder.query<
+        PermissionCheckResponse,
+        {
+          organizationId?: string;
+          projectId?: string;
+          cityId?: string;
+          inventoryId?: string;
+        }
+      >({
+        query: (params) => {
+          const searchParams = new URLSearchParams();
+          if (params.organizationId) searchParams.set('organizationId', params.organizationId);
+          if (params.projectId) searchParams.set('projectId', params.projectId);
+          if (params.cityId) searchParams.set('cityId', params.cityId);
+          if (params.inventoryId) searchParams.set('inventoryId', params.inventoryId);
+          return `/user/permissions?${searchParams.toString()}`;
+        },
+        transformResponse: (response: { data: PermissionCheckResponse }) =>
+          response.data,
+        providesTags: ["UserPermissions"],
       }),
       getAllDataSources: builder.query<
         GetDataSourcesResult,
@@ -1469,5 +1492,6 @@ export const {
   useGetCityModuleAccessQuery,
   useGetClientQuery,
   useGenerateCodeMutation,
+  useGetUserPermissionsQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

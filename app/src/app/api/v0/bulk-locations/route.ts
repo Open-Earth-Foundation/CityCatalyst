@@ -17,7 +17,8 @@ export const GET = apiHandler(
     if (!session) {
       throw new createHttpError.Unauthorized("Unauthorized");
     }
-    const { organizationId, projectId } = bulkLocationRequest.parse(params);
+    const { organizationId, projectId } =
+      bulkLocationRequest.parse(searchParams);
     if (!organizationId && !projectId) {
       throw new createHttpError.BadRequest(
         "Either organizationId or projectId must be provided as URL parameter",
@@ -53,8 +54,13 @@ export const GET = apiHandler(
 
     const cityLocations = await Promise.all(
       cities.map(async (city) => {
+        if (!city.locode) {
+          logger.error({ cityId: city.cityId }, "Locode is missing for city");
+          return { error: "LOCODE_MISSING", cityId: city.cityId };
+        }
+
         const boundaryData = await CityBoundaryService.getCityBoundary(
-          params.city,
+          city.locode,
         );
         const boundingBox = boundaryData.boundingBox;
         const latitude = (boundingBox[1] + boundingBox[3]) / 2;

@@ -25,7 +25,7 @@ export type NextHandler = (
   props: {
     params: Record<string, string>;
     session: AppSession | null;
-    searchParams: URLSearchParams;
+    searchParams: Record<string, string>;
   },
 ) => Promise<ApiResponse>;
 
@@ -242,7 +242,7 @@ export function apiHandler(handler: NextHandler) {
       const { searchParams } = new URL(req.url);
       const context = {
         params: await props.params,
-        searchParams,
+        searchParams: Object.fromEntries(searchParams.entries()),
         session,
       };
 

@@ -78,7 +78,13 @@ export function hasAnalyticsConsent(): boolean {
 
 export function clearAnalyticsConsent() {
   if (typeof window === "undefined") return;
+  
   Cookies.remove(CONSENT_COOKIE_NAME);
+  
+  // Opt out of capturing when consent is cleared
+  if (isInitialized) {
+    posthog.opt_out_capturing();
+  }
 }
 
 function shouldTrack(): boolean {

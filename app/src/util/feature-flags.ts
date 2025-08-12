@@ -36,6 +36,29 @@ export function hasFeatureFlag(flag: FeatureFlags): boolean {
   return getFeatureFlags().includes(flag);
 }
 
+export function setFeatureFlag(flag: FeatureFlags, enabled: boolean): boolean {
+  // This forces the cache and always returns the same array
+  const flags: string[] = getFeatureFlags();
+  if (!flags) {
+    throw new Error("No feature flags");
+  }
+  const idx = flags.indexOf(flag);
+
+  if (enabled) {
+    if (idx === -1) {
+      flags.push(flag);
+    }
+  } else {
+    if (idx !== -1) {
+      flags.splice(idx, 1);
+    }
+  }
+
+  // Return old enabled value
+
+  return idx !== -1;
+}
+
 let cachedServerFeatureFlags: string[] | null = null;
 
 export function getServerFeatureFlags(): string[] {

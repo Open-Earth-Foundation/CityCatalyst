@@ -650,6 +650,14 @@ export interface Client {
   description: LangMap;
 }
 
+export type CityLocationResponse = {
+  locode: string;
+  name: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+};
+
 // Permission system types
 export enum UserRole {
   ORG_ADMIN = "ORG_ADMIN",

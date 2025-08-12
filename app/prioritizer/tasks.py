@@ -99,6 +99,11 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                 "prioritizationType", PrioritizationType.BOTH
             )
 
+            # Load national strategy
+            national_strategy = get_json_from_file(
+                country_code.lower() + "_national_strategy"
+            )
+
             rankedActionsMitigation = []
             rankedActionsAdaptation = []
 
@@ -115,12 +120,6 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                 ]
                 mitigationRanking = tournament_ranking(
                     cityData_dict, mitigationActions, comparator=ml_compare
-                )
-
-                # Load national strategy after the ranking is done
-                # This is done to avoid loading the national strategy for every action
-                national_strategy = get_json_from_file(
-                    country_code.lower() + "_national_strategy"
                 )
 
                 rankedActionsMitigation = [
@@ -261,6 +260,11 @@ def _execute_prioritization_bulk_subtask(
                 return
             filteredActions = filter_actions_by_biome(cityData_dict, actions)
 
+            # Load national strategy
+            national_strategy = get_json_from_file(
+                country_code.lower() + "_national_strategy"
+            )
+
             rankedActionsMitigation = []
             rankedActionsAdaptation = []
 
@@ -280,12 +284,6 @@ def _execute_prioritization_bulk_subtask(
                     actions=mitigationActions,
                     k=20,
                     comparator=ml_compare,
-                )
-
-                # Load national strategy after the ranking is done
-                # This is done to avoid loading the national strategy for every action
-                national_strategy = get_json_from_file(
-                    country_code.lower() + "_national_strategy"
                 )
 
                 rankedActionsMitigation = [

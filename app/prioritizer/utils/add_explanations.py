@@ -95,6 +95,7 @@ def generate_multilingual_explanation(
                             "action_code": action.get("action_code"),
                             "action_name": action.get("action_name"),
                             "action_description": action.get("action_description"),
+                            "target": action.get("target"),
                         }
                         filtered_actions.append(filtered_action)
                 filtered_national_strategy[category] = filtered_actions

@@ -10,7 +10,7 @@ Follow these guidelines carefully to complete the task:
 2. Understand the city context you are given.
 3. Understand the action and its rank you are given.
 4. Create a concise explanation for the action in the requested languages. 
-- If the action has a clear reference to the national strategy, include the matching details of the national strategy in the explanation like the action code (e.g. AGR.I.01, CID.I.01, ...) and a short description.  
+- If the action has a clear reference to the national strategy, include the matching details of the national strategy in the explanation like the action code (e.g. AGR.I.01, CID.I.01, ...), a short description and the target.  
 - If the action does not have a clear reference to the national strategy, do not mention the national strategy at all.
 </task>
 
@@ -22,7 +22,7 @@ Your input is:
 - the rank of the action
 - a list of languages
 
-The national strategy is a JSON object containing information about the country's climate strategy.
+The national strategy is a JSON object containing information about the country's national climate strategy.
 The rank is a number between 1 and 20, where 1 is the highest priority and 20 is the lowest priority. The rank is purely for your information, do not mention it in the explanation.
 </input>
 
@@ -30,7 +30,7 @@ The rank is a number between 1 and 20, where 1 is the highest priority and 20 is
 Each explanation must be 3-5 sentences describing why this action is a priority for the city, in the requested language.
 The explanation should be positive, with the tone influenced by the rank (higher rank = more positive tone).
 Do not include numeric scores or internal model references. Do not mention the rank in the explanation.
-Include national strategy details like an action code and a short description in the explanation if the action has a clear reference to the national strategy.
+Include national strategy details like action code, a short description and the target in the explanation if the action has a clear reference to the national strategy.
 Only include the requested languages as keys in the JSON object. Do not include any extra keys or text.
 </output>
 

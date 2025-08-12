@@ -33,3 +33,22 @@ function latitudeToRadians(lat: number): number {
 function zoom(mapPx: number, worldPx: number, fraction: number): number {
   return Math.floor(Math.log(mapPx / worldPx / fraction) / Math.LN2);
 }
+
+export function getBoundingBox(
+  points: { latitude: number; longitude: number }[],
+): BoundingBox {
+  if (points.length === 0) {
+    return [0, 0, 0, 0];
+  }
+
+  const { longitude, latitude } = points[0];
+  const result = [longitude, latitude, longitude, latitude] as BoundingBox;
+  for (let i = 1; i < points.length; i++) {
+    let point = points[i];
+    result[0] = Math.min(result[0], point.longitude);
+    result[1] = Math.max(result[1], point.latitude);
+    result[2] = Math.max(result[2], point.longitude);
+    result[3] = Math.min(result[3], point.latitude);
+  }
+  return result;
+}

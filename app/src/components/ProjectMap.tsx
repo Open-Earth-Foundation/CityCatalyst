@@ -1,35 +1,20 @@
 "use client";
 
 import { api } from "@/services/api";
-import { BoundingBox, getBoundsZoomLevel } from "@/util/geojson";
+import { getBoundingBox, getBoundsZoomLevel } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Map, Marker } from "pigeon-maps";
 
+/**
+ * Props for the ProjectMap component.
+ * Note: Either projectId OR organizationId should be provided, but not both.
+ */
 export interface ProjectMapProps {
   projectId?: string;
   organizationId?: string;
   width: number;
   height: number;
-}
-
-function getBoundingBox(
-  points: { latitude: number; longitude: number }[],
-): BoundingBox {
-  if (points.length === 0) {
-    return [0, 0, 0, 0];
-  }
-
-  const { longitude, latitude } = points[0];
-  const result = [longitude, latitude, longitude, latitude] as BoundingBox;
-  for (let i = 1; i < points.length; i++) {
-    let point = points[i];
-    result[0] = Math.min(result[0], point.longitude);
-    result[1] = Math.max(result[1], point.latitude);
-    result[2] = Math.max(result[2], point.longitude);
-    result[3] = Math.min(result[3], point.latitude);
-  }
-  return result;
 }
 
 export const ProjectMap: FC<ProjectMapProps> = ({
@@ -59,20 +44,27 @@ export const ProjectMap: FC<ProjectMapProps> = ({
   };
 
   // calculate compound bounding box from all lat/lngs
+  const { boundingBox, newCenter, newZoom } = useMemo(() => {
+    if (!cityLocations?.length) return {};
+    const boundingBox = getBoundingBox(cityLocations);
+    if (!boundingBox || boundingBox.some(isNaN)) return {};
+
+    return {
+      boundingBox,
+      newCenter: [
+        (boundingBox[1] + boundingBox[3]) / 2,
+        (boundingBox[0] + boundingBox[2]) / 2,
+      ] as [number, number],
+      newZoom: getBoundsZoomLevel(boundingBox, { width, height }),
+    };
+  }, [cityLocations, width, height]);
+
   useEffect(() => {
-    if (cityLocations && cityLocations.length > 0) {
-      const boundingBox = getBoundingBox(cityLocations);
-      if (boundingBox && !boundingBox.some(isNaN)) {
-        const newZoom = getBoundsZoomLevel(boundingBox, { width, height });
-        const newCenter: [number, number] = [
-          (boundingBox[1] + boundingBox[3]) / 2,
-          (boundingBox[0] + boundingBox[2]) / 2,
-        ];
-        setCenter(newCenter);
-        setZoom(newZoom);
-      }
+    if (newCenter && newZoom) {
+      setCenter(newCenter);
+      setZoom(newZoom);
     }
-  }, [cityLocations, height, width]);
+  }, [newCenter, newZoom]);
 
   return (
     <Box w={width} h={height} position="relative">

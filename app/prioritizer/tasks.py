@@ -100,9 +100,27 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
             )
 
             # Load national strategy
-            national_strategy = get_json_from_file(
-                country_code.lower() + "_national_strategy"
+            logger.info(
+                f"Task {task_uuid}: Loading national strategies for country {country_code}"
             )
+            national_strategy = get_json_from_file(
+                country_code.lower() + "_national_strategy_mitigation"
+            )
+            national_strategy_adaptation = get_json_from_file(
+                country_code.lower() + "_national_strategy_adaptation"
+            )
+            # Fallback if file not found or invalid
+            # If file not found or invalid, proceed without it
+            if not national_strategy:
+                logger.info(
+                    f"Task {task_uuid}: No national strategy mitigation found for country {country_code}. Proceeding without it."
+                )
+                national_strategy = {}
+            if not national_strategy_adaptation:
+                logger.info(
+                    f"Task {task_uuid}: No national strategy adaptation found for country {country_code}. Proceeding without it."
+                )
+                national_strategy_adaptation = {}
 
             rankedActionsMitigation = []
             rankedActionsAdaptation = []
@@ -156,7 +174,7 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                         actionId=action["ActionID"],
                         rank=rank,
                         explanation=generate_multilingual_explanation(
-                            national_strategy=national_strategy,
+                            national_strategy=national_strategy_adaptation,
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,
@@ -261,9 +279,27 @@ def _execute_prioritization_bulk_subtask(
             filteredActions = filter_actions_by_biome(cityData_dict, actions)
 
             # Load national strategy
-            national_strategy = get_json_from_file(
-                country_code.lower() + "_national_strategy"
+            logger.info(
+                f"Task {main_task_id}: Loading national strategies for country {country_code}"
             )
+            national_strategy = get_json_from_file(
+                country_code.lower() + "_national_strategy_mitigation"
+            )
+            national_strategy_adaptation = get_json_from_file(
+                country_code.lower() + "_national_strategy_adaptation"
+            )
+            # Fallback if file not found or invalid
+            # If file not found or invalid, proceed without it
+            if not national_strategy:
+                logger.info(
+                    f"Task {main_task_id}: No national strategy mitigation found for country {country_code}. Proceeding without it."
+                )
+                national_strategy = {}
+            if not national_strategy_adaptation:
+                logger.info(
+                    f"Task {main_task_id}: No national strategy adaptation found for country {country_code}. Proceeding without it."
+                )
+                national_strategy_adaptation = {}
 
             rankedActionsMitigation = []
             rankedActionsAdaptation = []
@@ -323,7 +359,7 @@ def _execute_prioritization_bulk_subtask(
                         actionId=action["ActionID"],
                         rank=rank,
                         explanation=generate_multilingual_explanation(
-                            national_strategy=national_strategy,
+                            national_strategy=national_strategy_adaptation,
                             city_data=cityData_dict,
                             single_action=action,
                             rank=rank,

@@ -58,6 +58,13 @@ export default function HomePage({
   function redirectToOnboarding() {
     setTimeout(() => {
       if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
+        if (!cityIdParam || cityIdParam === "null") {
+          logger.error(
+            "Failed to redirect to onboarding because of missing city ID param",
+          );
+          return;
+        }
+
         router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
       } else {
         router.push(`/${language}/onboarding`);

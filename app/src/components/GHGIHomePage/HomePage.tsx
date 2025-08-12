@@ -89,11 +89,7 @@ export default function HomePage({
         !isFetchBaseQueryError(inventoryError) ||
         inventoryError.status !== 401
       ) {
-        setTimeout(
-          () =>
-            router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`),
-          0,
-        );
+        setTimeout(() => router.push(`/${language}/onboarding`), 0);
       }
     } else if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
@@ -111,9 +107,7 @@ export default function HomePage({
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
         // If we have a cityId, redirect to GHGI onboarding, otherwise go to general onboarding
-        setTimeout(() => {
-          router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
-        });
+        setTimeout(() => router.push(`/${language}/onboarding`), 0);
       }
     }
   }, [
@@ -158,7 +152,7 @@ export default function HomePage({
   // Check user permissions for this city
   const { userRole } = useUserPermissions({
     cityId: inventory?.cityId,
-    skip: !inventory?.cityId
+    skip: !inventory?.cityId,
   });
 
   const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
@@ -256,33 +250,27 @@ export default function HomePage({
                       {t("inventory-year")}
                     </Text>
                     {/* Only show add inventory button for ORG_ADMIN and PROJECT_ADMIN */}
-                    {userRole !== UserRole.COLLABORATOR && userRole !== UserRole.NO_ACCESS && (
-                      <Button
-                        data-testid="add-new-inventory-button"
-                        title={t("add-new-inventory")}
-                        h="48px"
-                        aria-label="activity-button"
-                        fontSize="button.md"
-                        gap="8px"
-                        onClick={() => {
-                          if (isFrozenCheck()) {
-                            return;
-                          }
+                    {userRole !== UserRole.COLLABORATOR &&
+                      userRole !== UserRole.NO_ACCESS && (
+                        <Button
+                          data-testid="add-new-inventory-button"
+                          title={t("add-new-inventory")}
+                          h="48px"
+                          aria-label="activity-button"
+                          fontSize="button.md"
+                          gap="8px"
+                          onClick={() => {
+                            if (isFrozenCheck()) {
+                              return;
+                            }
 
-                          const cityId = inventory?.cityId || cityIdParam;
-                          if (cityId) {
-                            router.push(
-                              `/${language}/cities/${cityId}/GHGI/onboarding`,
-                            );
-                          } else {
                             router.push(`/${language}/onboarding`);
-                          }
-                        }}
-                      >
-                        <Icon as={BsPlus} h="16px" w="16px" />
-                        {t("add-new-inventory")}
-                      </Button>
-                    )}
+                          }}
+                        >
+                          <Icon as={BsPlus} h="16px" w="16px" />
+                          {t("add-new-inventory")}
+                        </Button>
+                      )}
                   </Box>
                   <YearSelectorCard
                     cityId={inventory.cityId as string}

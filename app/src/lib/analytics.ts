@@ -60,6 +60,7 @@ export function setAnalyticsConsent(consent: boolean) {
   Cookies.set(CONSENT_COOKIE_NAME, consent.toString(), {
     expires: CONSENT_EXPIRY_DAYS,
     sameSite: "strict",
+    secure: true,
   });
 
   if (!isInitialized) return;

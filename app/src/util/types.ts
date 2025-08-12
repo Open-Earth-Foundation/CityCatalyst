@@ -456,6 +456,7 @@ export type ListOrganizationsResponse = {
 export type CityResponse = {
   cityId: string;
   name: string;
+  country: string;
   countryLocode: string;
   locode: string;
   inventories: {
@@ -649,6 +650,14 @@ export interface Client {
   description: LangMap;
 }
 
+export type CityLocationResponse = {
+  locode: string;
+  name: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+};
+
 // Permission system types
 export enum UserRole {
   ORG_ADMIN = "ORG_ADMIN",
@@ -670,4 +679,3 @@ export interface PermissionCheckResponse {
     inventoryId?: string;
   };
 }
-

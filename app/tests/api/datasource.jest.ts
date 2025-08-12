@@ -161,6 +161,10 @@ describe("DataSource API", () => {
         .apiEndpoint!.replace(":locode", locode)
         .replace(":year", inventory.year!.toString())
         .replace(":gpcReferenceNumber", subCategory.referenceNumber!);
+      
+      // Update the datasource with the computed URL
+      await source.update({ url });
+      
       fetchMock.mock(url, mockGlobalApiResponses[i]);
     }
   });

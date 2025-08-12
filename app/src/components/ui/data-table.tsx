@@ -16,7 +16,7 @@ type FilterOption<TValue> = TValue | { label: string; value: TValue };
 
 type DataTableProps<T> = {
   data: T[];
-  title: string;
+  title?: string;
   columns: { header: string; accessor: keyof T | null }[];
   searchable?: boolean;
   pagination?: boolean;
@@ -90,10 +90,12 @@ function DataTable<T extends Record<string, any>>({
     filteredData.length > 0 ? Math.ceil(filteredData.length / itemsPerPage) : 1;
 
   return (
-    <Box bg="white" p={6} borderRadius={2} mt={12}>
-      <Text fontWeight="bold" fontSize="title.md" mb={2}>
-        {title}
-      </Text>
+    <Box bg="white" p={6} borderRadius={2} mt={12} w="full">
+      {title && (
+        <Text fontWeight="bold" fontSize="title.md" mb={2}>
+          {title}
+        </Text>
+      )}
       {subtitle && (
         <Text fontSize="title.md" mb={4}>
           {subtitle}
@@ -140,7 +142,7 @@ function DataTable<T extends Record<string, any>>({
         </Flex>
 
         {pagination && (
-          <Flex mt={4} gap={2} align="center">
+          <Flex mt={4} gap={2} align="center" verticalAlign="middle">
             <Text fontSize="body.md" color="content.tertiary">
               {t("table-pagination", {
                 start: (currentPage - 1) * itemsPerPage + 1,

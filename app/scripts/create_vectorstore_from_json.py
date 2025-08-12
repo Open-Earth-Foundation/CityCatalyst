@@ -29,21 +29,25 @@ def create_vectorstore_from_json(
     documents = []
     print("Processing documents...")
     for i, item in enumerate(data):
-        content = f"Action Name: {item.get('action_name', '')}\nDescription: {item.get('action_description', '')}"
+        content = f"Action Name: {item.get('action_name', "")}\nDescription: {item.get('action_description', "")}"
+
+        # Join the associated_national_objectives list into a string if its a list, otherwise use the value
+        # Otherwise, use the string value
+        associated_raw = item.get("associated_national_objectives", None)
+        if isinstance(associated_raw, list):
+            associated_value = ", ".join(associated_raw)
+        else:
+            associated_value = associated_raw
 
         metadata = {
             "category": item.get("category", ""),
             "action_code": item.get("action_code", ""),
             "target": item.get("target", ""),
-            "associated_national_objectives": ", ".join(
-                item.get("associated_national_objectives", [])
-            ),
+            "associated_national_objectives": associated_value,
         }
 
-        metadata = {k: v for k, v in metadata.items() if v is not None}
-
-        doc = Document(page_content=content, metadata=metadata)
-        documents.append(doc)
+        chunk = Document(page_content=content, metadata=metadata)
+        documents.append(chunk)
     print(f"Processed {len(documents)} documents.")
 
     vector_store_path = (
@@ -75,6 +79,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--file_name",
         type=str,
+        required=True,
         help="Name of the JSON file to use. The file must be in the app/files/json directory.",
     )
     parser.add_argument(

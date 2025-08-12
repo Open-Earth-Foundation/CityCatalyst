@@ -1,7 +1,6 @@
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
-import { getClient } from "@/util/client";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { OAuthClient } from "@/models/OAuthClient";
 import { OAuthClientI18N } from "@/models/OAuthClientI18N";

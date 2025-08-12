@@ -6,7 +6,7 @@ import type {
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
-import { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
+import type { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
 import {
   InventoryValue,
   InventoryValueAttributes,
@@ -20,8 +20,8 @@ import type {
   EmissionsFactorAttributes,
 } from "@/models/EmissionsFactor";
 import type { ActivityValue } from "@/models/ActivityValue";
-import Decimal from "decimal.js";
-import {
+import type Decimal from "decimal.js";
+import type {
   FailedSourceResult,
   RemovedSourceResult,
 } from "@/backend/DataSourceService";
@@ -46,6 +46,19 @@ export type FullInventoryValue = InventoryValue & {
     gasValues: (GasValue & { emissionsFactor?: EmissionsFactor })[];
   })[];
   dataSource: DataSourceAttributes;
+};
+
+export type InventoryDownloadResponse = InventoryAttributes & {
+  inventoryValues: (InventoryValueAttributes & {
+    dataSource?: DataSourceAttributes;
+    gasValues: (GasValueAttributes & {
+      emissionsFactor: EmissionsFactorAttributes;
+    })[];
+  })[];
+  city: CityAttributes & {
+    populationYear: number;
+    population: number;
+  };
 };
 
 export type InventoryResponse = RequiredInventoryAttributes & {
@@ -443,6 +456,7 @@ export type ListOrganizationsResponse = {
 export type CityResponse = {
   cityId: string;
   name: string;
+  country: string;
   countryLocode: string;
   locode: string;
   inventories: {
@@ -603,7 +617,6 @@ export interface MitigationAction extends BaseAction {
   type: ACTION_TYPES.Mitigation;
   GHGReductionPotential: GHGReductionPotential;
   adaptationEffectiveness: null;
-
 }
 
 export interface AdaptationAction extends BaseAction {
@@ -624,7 +637,7 @@ export type HIAPResponse = {
   created: Date;
   last_updated: Date;
   rankedActions: HIAction[];
-}
+};
 
 export interface LangMap {
   [langCode: string]: string;
@@ -637,12 +650,20 @@ export interface Client {
   description: LangMap;
 }
 
+export type CityLocationResponse = {
+  locode: string;
+  name: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+};
+
 // Permission system types
 export enum UserRole {
-  ORG_ADMIN = 'ORG_ADMIN',
-  PROJECT_ADMIN = 'PROJECT_ADMIN',
-  COLLABORATOR = 'COLLABORATOR',
-  NO_ACCESS = 'NO_ACCESS'
+  ORG_ADMIN = "ORG_ADMIN",
+  PROJECT_ADMIN = "PROJECT_ADMIN",
+  COLLABORATOR = "COLLABORATOR",
+  NO_ACCESS = "NO_ACCESS",
 }
 
 export type UserRoleType = keyof typeof UserRole;

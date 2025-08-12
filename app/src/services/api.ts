@@ -1377,7 +1377,7 @@ export const api = createApi({
             );
           }
 
-          return `bulk-locations?${params})}`;
+          return `bulk-locations?${params}`;
         },
         transformResponse: (response: { data: CityLocationResponse[] }) =>
           response.data,

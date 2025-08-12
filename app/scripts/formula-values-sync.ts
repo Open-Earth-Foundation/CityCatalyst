@@ -7,6 +7,8 @@ import { DataSourceFormulaInputCreationAttributes } from "@/models/DataSourceFor
 import env from "@next/env";
 import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
+import createHttpError from "http-errors";
+import _ from "lodash";
 
 interface FormulaInputPublisher {
   name: string;
@@ -77,8 +79,6 @@ async function fetchFormulaData(baseUrl: string) {
     { path: "/formula_input/formulainput_datasource", key: "formula_input_datasource_mapping" }
   ];
 
-  const results: Record<string, any> = {};
-
   const responsePairs = await Promise.all(endpoints.map(async (endpoint) => {
     const url = `${baseUrl}${endpoint.path}`;
     const response = await fetch(url);
@@ -88,22 +88,22 @@ async function fetchFormulaData(baseUrl: string) {
       );
     }
     const data = await response.json();
-    return [endpoint.key, data];
-  });
-  
-  const results = _.zipObject(responsePairs);
     
-    const data = await response.json();
     // Special case handling for the formulainput_datasource endpoint
     // The API returns data with key "formula_input_datasource" but we already use that key
     // for the /formula_input/datasource endpoint. To avoid collision in our results object,
     // we store this endpoint's data under "formula_input_datasource_mapping" instead.
+    let responseData;
     if (endpoint.path === "/formula_input/formulainput_datasource") {
-      results[endpoint.key] = data["formula_input_datasource"] || [];
+      responseData = data["formula_input_datasource"] || [];
     } else {
-      results[endpoint.key] = data[endpoint.key] || [];
+      responseData = data[endpoint.key] || [];
     }
-  }
+    
+    return [endpoint.key, responseData];
+  }));
+  
+  const results = _.fromPairs(responsePairs);
 
   return results;
 }

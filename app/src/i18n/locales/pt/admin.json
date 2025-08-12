@@ -138,5 +138,6 @@
   "change-to-admin": "Mudar para administrador",
   "user-removed": "Usuário removido com sucesso",
   "frozen": "Congelado",
-  "role-update-success-toast-title": "Função atualizada com sucesso"
+  "role-update-success-toast-title": "Função atualizada com sucesso",
+  "already-registered-admin": "{{email}} já está registrado como administrador"
 }

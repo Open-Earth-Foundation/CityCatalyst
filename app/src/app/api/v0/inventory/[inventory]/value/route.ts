@@ -1,4 +1,4 @@
-import UserService from "@/backend/UserService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
@@ -14,9 +14,9 @@ export const GET = apiHandler(async (req, { params, session }) => {
   }
   const subCategoryIds = subCategoryIdsParam.split(",");
 
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
+  const { resource: inventory } = await PermissionService.canEditInventory(
     session,
+    params.inventory
   );
 
   const inventoryValues = await db.models.InventoryValue.findAll({

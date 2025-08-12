@@ -486,7 +486,7 @@ export default class UserService {
         {
           model: db.models.City,
           as: "cities",
-          attributes: ["cityId", "name", "countryLocode"],
+          attributes: ["cityId", "name", "countryLocode", "country"],
           include: [
             {
               model: db.models.Inventory,
@@ -513,7 +513,7 @@ export default class UserService {
           {
             model: db.models.City,
             as: "cities",
-            attributes: ["cityId", "name", "countryLocode"],
+            attributes: ["cityId", "name", "countryLocode", "country"],
             include: [
               {
                 model: db.models.Inventory,
@@ -534,7 +534,7 @@ export default class UserService {
       include: {
         model: db.models.City,
         as: "city",
-        attributes: ["cityId", "name", "countryLocode"],
+        attributes: ["cityId", "name", "countryLocode", "country"],
         include: [
           {
             model: db.models.Project,
@@ -596,6 +596,7 @@ export default class UserService {
         name: city.name as string,
         cityId: city.cityId as string,
         inventories: city.inventories as any,
+        country: city.country as string,
         countryLocode: city.countryLocode as string,
         locode: city.locode as string,
       });

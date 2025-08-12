@@ -2,21 +2,19 @@ import { Tooltip } from "@/components/ui/tooltip";
 import type { OrganizationResponse, ProjectWithCities } from "@/util/types";
 import { Box, Icon, Spinner, Text, Flex } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
-import dynamic from "next/dynamic";
 import { MdGridView, MdInfoOutline, MdLocationCity } from "react-icons/md";
 import { ModulesIcon } from "../icons";
 import { BodyLarge, BodyMedium } from "../Texts/Body";
 import { DisplayMedium } from "../Texts/Display";
 import { HeadlineSmall } from "../Texts/Headline";
-
-// only render map on the client
-const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
+import ProjectMap from "../ProjectMap";
 
 interface OrganizationHeroProps {
   organization?: OrganizationResponse;
   isLoading?: boolean;
   t: TFunction;
   projects?: ProjectWithCities[];
+  projectId?: string;
 }
 
 export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
@@ -24,6 +22,7 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
   organization,
   projects,
   isLoading = false,
+  projectId,
 }) => {
   // Calculate stats
   const totalProjects = projects?.length ?? 0;
@@ -146,8 +145,12 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
           </Flex>
         </Flex>
         <Box mt={-50}>
-          {/* TODO ON-4362 create organization map */}
-          <CityMap locode="BR SAO" width={422} height={317} />
+          <ProjectMap
+            organizationId={organization?.organizationId}
+            projectId={projectId}
+            width={422}
+            height={317}
+          />
         </Box>
       </Flex>
     </Box>

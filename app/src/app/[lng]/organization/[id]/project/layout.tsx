@@ -19,7 +19,9 @@ export default function OrganizationLayout(props: {
     >
       <NavigationBar showMenu lng={lng} showNav={false} />
       <Toaster />
-      <Box className="w-full h-full bg-no-repeat">{props.children}</Box>
+      <Box w="full" h="full">
+        {props.children}
+      </Box>
     </Box>
   );
 }

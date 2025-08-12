@@ -5,6 +5,7 @@ import { getBoundingBox, getBoundsZoomLevel } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
 import { FC, useEffect, useMemo, useState } from "react";
 import { Map, Marker } from "pigeon-maps";
+import { logger } from "@/services/logger";
 
 const MARKER_COLOR = "#009a2f"; // Primary brand green for location markers
 
@@ -49,7 +50,13 @@ export const ProjectMap: FC<ProjectMapProps> = ({
   const { newCenter, newZoom } = useMemo(() => {
     if (!cityLocations?.length) return {};
     const boundingBox = getBoundingBox(cityLocations);
-    if (!boundingBox || boundingBox.some(isNaN)) return {};
+    if (!boundingBox || boundingBox.some(isNaN)) {
+      logger.error(
+        { boundingBox },
+        "Invalid coordinates detected in bounding box calculation on ProjectMap",
+      );
+      return {};
+    }
 
     return {
       boundingBox,

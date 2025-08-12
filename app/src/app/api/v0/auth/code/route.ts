@@ -5,7 +5,7 @@ import { z } from "zod";
 import jwt from "jsonwebtoken";
 import { logger } from "@/services/logger";
 import { v4 } from "uuid";
-import { getClient } from "@/util/client";
+import { OAuthClient } from "@/models/OAuthClient";
 import { Client, LangMap } from "@/util/types";
 import crypto from "node:crypto";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
@@ -49,7 +49,7 @@ export const POST = apiHandler(async (_req, { params, session }) => {
     throw createHttpError.BadRequest("csrfToken does not match")
   }
 
-  const client = await getClient(clientId);
+  const client = await OAuthClient.findByPk(clientId);
 
   if (!client) {
     throw new createHttpError.BadRequest(
@@ -57,7 +57,7 @@ export const POST = apiHandler(async (_req, { params, session }) => {
     );
   }
 
-  if (client.redirectUri !== redirectUri) {
+  if (client.redirectURI !== redirectUri) {
     throw new createHttpError.BadRequest(
       'Redirect URI mismatch'
     );

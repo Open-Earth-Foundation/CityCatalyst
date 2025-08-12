@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import Cookies from "js-cookie";
 
@@ -52,6 +52,7 @@ export default function HomePage({
 }) {
   const { t } = useTranslation(lng, "dashboard");
   const cookieLanguage = Cookies.get("i18next");
+  const router = useRouter();
 
   // Check if user is authenticated otherwise route to login page
   isPublic || CheckUserSession();
@@ -65,16 +66,45 @@ export default function HomePage({
   let cityIdFromParam = (cityId as string) ?? userInfo?.defaultCityId;
   const parsedYear = parseInt(year as string);
 
+  // If no city ID and no default city, redirect to cities onboarding
+  useEffect(() => {
+    if (!isUserInfoLoading && !cityIdFromParam) {
+      console.log(
+        "🔄 HomePageJN: No city ID, redirecting to cities onboarding",
+      );
+      router.push(`/${lng}/cities/onboarding`);
+    }
+  }, [isUserInfoLoading, cityIdFromParam, lng, router]);
+
+  console.log("🔍 HomePageJN render:", {
+    lng,
+    cityId,
+    year,
+    userInfoDefaultCity: userInfo?.defaultCityId,
+    cityIdFromParam,
+    parsedYear,
+    isUserInfoLoading,
+    userInfo: userInfo ? "exists" : "null",
+  });
+
   // query API data
   // TODO maybe rework this logic into one RTK query:
   // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#performing-multiple-requests-with-a-single-query
 
-  const { data: city, isLoading: isCityLoading } = api.useGetCityQuery(
-    cityIdFromParam!,
-    {
-      skip: !cityIdFromParam,
-    },
-  );
+  const {
+    data: city,
+    isLoading: isCityLoading,
+    error: cityError,
+  } = api.useGetCityQuery(cityIdFromParam!, {
+    skip: !cityIdFromParam,
+  });
+
+  console.log("🏙️ HomePageJN city query:", {
+    cityIdFromParam,
+    city: city ? "exists" : "null",
+    isCityLoading,
+    skip: !cityIdFromParam,
+  });
 
   const { data: population } = useGetMostRecentCityPopulationQuery(
     { cityId: cityIdFromParam! },
@@ -85,6 +115,23 @@ export default function HomePage({
     api.useGetOrganizationForCityQuery(cityIdFromParam!, {
       skip: !cityIdFromParam,
     });
+
+  console.log("🏢 HomePageJN org query:", {
+    cityIdFromParam,
+    orgData: orgData ? "exists" : "null",
+    isOrgDataLoading,
+    skip: !cityIdFromParam,
+  });
+
+  // If city query fails (e.g., non-existing city ID), redirect to cities onboarding
+  useEffect(() => {
+    if (cityError) {
+      console.log(
+        "🔄 HomePageJN: City query failed, redirecting to cities onboarding",
+      );
+      router.push(`/${lng}/cities`);
+    }
+  }, [cityError, cityIdFromParam, lng, router]);
 
   const { organization, setOrganization } = useOrganizationContext();
   const { setTheme } = useTheme();
@@ -126,6 +173,13 @@ export default function HomePage({
   ) {
     return <ProgressLoader />;
   }
+
+  console.log("🎨 HomePageJN: Render condition:", {
+    cityIdFromParam: !!cityIdFromParam,
+    city: !!city,
+    orgData: !!orgData,
+    willRender: !!(cityIdFromParam && city && orgData),
+  });
 
   return (
     <>
@@ -208,7 +262,7 @@ export default function HomePage({
                                 enabled={projectModules.some(
                                   (m) => m.id === mod.id,
                                 )}
-                                baseUrl={`/${lng}/cities/${cityId}`}
+                                baseUrl={`/${lng}/cities/${cityIdFromParam}`}
                                 language={language}
                               />
                             ))

@@ -11,16 +11,66 @@ import {
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
 
-const MissingInventory = ({ lng }: { lng: string }) => {
+const MissingInventory = ({
+  lng,
+  cityId,
+}: {
+  lng: string;
+  cityId?: string;
+}) => {
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const { t } = useTranslation(lng, "inventory-not-found");
   const router = useRouter();
+
+  console.log("🔍 MissingInventory render:", {
+    lng,
+    cityId,
+    isUserInfoLoading,
+    userInfo: userInfo ? "exists" : "null",
+    defaultInventoryId: userInfo?.defaultInventoryId,
+    currentUrl: typeof window !== "undefined" ? window.location.href : "server",
+  });
+
   useEffect(() => {
-    if (!isUserInfoLoading && !userInfo?.defaultInventoryId) {
-      router.push("/onboarding");
+    console.log("🚀 MissingInventory useEffect triggered:", {
+      isUserInfoLoading,
+      hasDefaultInventory: !!userInfo?.defaultInventoryId,
+      cityId,
+      willRedirect:
+        !isUserInfoLoading && !userInfo?.defaultInventoryId && !!cityId,
+    });
+
+    if (isUserInfoLoading) {
+      console.log("⏳ MissingInventory: Still loading user info, waiting...");
+      return;
     }
-  }, [isUserInfoLoading, userInfo, router]);
+
+    if (userInfo?.defaultInventoryId) {
+      console.log(
+        "✅ MissingInventory: User has default inventory, redirecting to:",
+        userInfo.defaultInventoryId,
+      );
+      // TODO send to JNHome [ON-4452]
+      router.push(`/${lng}/${userInfo.defaultInventoryId}`);
+      return;
+    }
+
+    // Only redirect if we have a cityId (meaning we're in a city context)
+    // If no cityId, we're on the root language page and should redirect to cities onboarding
+    if (cityId) {
+      console.log(
+        "🔄 MissingInventory: Redirecting to GHGI onboarding for city:",
+        cityId,
+      );
+      router.push(`/${lng}/cities/${cityId}/GHGI/onboarding`);
+    } else {
+      console.log(
+        "🏠 MissingInventory: No cityId - redirecting to cities onboarding",
+      );
+      router.push(`/${lng}/cities/onboarding`);
+    }
+  }, [isUserInfoLoading, userInfo, router, lng, cityId]);
 
   if (!isUserInfoLoading && userInfo?.defaultInventoryId) {
     return (
@@ -34,10 +84,9 @@ const MissingInventory = ({ lng }: { lng: string }) => {
       >
         <Image
           src="/assets/not-found-background.svg"
-          layout="fill"
-          objectFit="cover"
+          fill
+          style={{ objectFit: "cover" }}
           sizes="100vw"
-          style={{ position: "relative" }}
           alt="not-found page background"
         />
         <Box
@@ -79,13 +128,15 @@ const MissingInventory = ({ lng }: { lng: string }) => {
             </Link>{" "}
           </Text>
           <Button
-            onClick={() =>
-              router.push(
-                userInfo?.defaultInventoryId
-                  ? `/${userInfo?.defaultInventoryId}`
-                  : "/onboarding",
-              )
-            }
+            onClick={() => {
+              if (userInfo?.defaultInventoryId) {
+                router.push(`/${userInfo?.defaultInventoryId}`);
+              } else if (cityId) {
+                router.push(`/${lng}/cities/${cityId}/GHGI/onboarding`);
+              } else {
+                router.push(`/${lng}/cities/onboarding`);
+              }
+            }}
             gap="8px"
             h="48px"
             px="24px"

@@ -15,9 +15,8 @@ Follow these guidelines carefully to complete the task:
 
 1. Understand the details of the climate action (main action) you are working on.
 2. Understand the details of the city you are working on.
-3. Use the provided tools to retrieve information about the country's national climate strategy that is relevant to the city and the climate action (main action).
+3. Use the provided tool to retrieve information about the country's national climate strategy that is relevant to the city and the climate action (main action).
     - Use the retriever_vectorstore_national_strategy_tool to retrieve information from the vector store. When using this tool, use different queries going from broad to specific.
-    - Use the retriever_json_document_national_strategy_tool to retrieve information from the JSON file.
 4. Create a concise introduction for the climate action implementation plan incorporating the retrieved information. 
     - If the action has a clear reference to the national strategy, include the matching details of the national strategy in the explanation like the action code (e.g. AGR.I.01, CID.I.01, ...), a short description and the target.  
     - If the action does not have a clear reference to the national strategy, do not mention the national strategy at all.
@@ -34,9 +33,6 @@ You have access to the following tools:
     When using this tool, optimize the search query for retrieval from a vector database using similarity search. This means that the search query should be a concise representation of the information you are looking for.
     Use multiple concise queries over one long query for better results.
     Start with broad queries and progressively narrow down the search query.
-- retriever_json_document_national_strategy_tool:
-    A tool that can load relevant information from a JSON file.
-    Use this tool to gather information about the country's national climate strategy to enrich the introduction.
 </tools>
 
 <output>
@@ -83,3 +79,10 @@ Output your response as a JSON object with the following fields:
 }}
 Only output valid JSON format without any additional text or formatting like ```json ```.
 """
+
+# - Use the retriever_json_document_national_strategy_tool to retrieve information from the JSON file.
+
+
+# - retriever_json_document_national_strategy_tool:
+#     A tool that can load relevant information from a JSON file.
+#     Use this tool to gather information about the country's national climate strategy to enrich the introduction.

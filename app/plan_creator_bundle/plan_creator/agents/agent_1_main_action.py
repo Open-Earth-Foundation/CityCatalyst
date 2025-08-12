@@ -8,7 +8,6 @@ import os
 
 from plan_creator_bundle.tools.tools import (
     retriever_vectorstore_national_strategy_tool,
-    retriever_json_document_national_strategy_tool,
 )
 
 from plan_creator_bundle.plan_creator.models import Introduction
@@ -25,7 +24,6 @@ model = ChatOpenAI(model=OPENAI_MODEL_NAME_PLAN_CREATOR, temperature=0.0, seed=4
 # Define tools for the agent
 tools = [
     retriever_vectorstore_national_strategy_tool,
-    retriever_json_document_national_strategy_tool,
 ]
 
 # Define prompts for each agent

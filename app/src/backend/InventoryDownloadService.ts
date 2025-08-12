@@ -1,29 +1,16 @@
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import type { AppSession } from "@/lib/auth";
 import { db } from "@/models";
-import type { CityAttributes } from "@/models/City";
-import type { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
-import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
-import type { GasValueAttributes } from "@/models/GasValue";
-import type { InventoryAttributes } from "@/models/Inventory";
-import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import { findClosestYearToInventory, PopulationEntry } from "@/util/helpers";
-import type { InventoryResponse } from "@/util/types";
+import type {
+  InventoryDownloadResponse,
+  InventoryResponse,
+} from "@/util/types";
 import createHttpError from "http-errors";
 import { Op } from "sequelize";
 
 // Maximum years to look forward/backward for population data
 const MAX_POPULATION_YEAR_DIFFERENCE = 10;
-
-export type InventoryDownloadResponse = InventoryAttributes & {
-  inventoryValues: (InventoryValueAttributes & {
-    dataSource?: DataSourceAttributes;
-    gasValues: (GasValueAttributes & {
-      emissionsFactor: EmissionsFactorAttributes;
-    })[];
-  })[];
-  city: CityAttributes;
-};
 
 export default class InventoryDownloadService {
   public static async queryInventoryData(
@@ -32,7 +19,6 @@ export default class InventoryDownloadService {
   ): Promise<{
     inventory: InventoryDownloadResponse;
     output: InventoryResponse;
-    cityPopulation: { populationYear: number; population: number };
   }> {
     // Check read access permission
     await PermissionService.canAccessInventory(session, inventoryId);
@@ -125,12 +111,16 @@ export default class InventoryDownloadService {
     }
 
     const output: InventoryResponse = inventory.toJSON();
+    const city = inventory.city.toJSON();
     return {
       output,
-      inventory,
-      cityPopulation: {
-        populationYear: population.year,
-        population: population.population || 0,
+      inventory: {
+        ...inventory,
+        city: {
+          ...city,
+          populationYear: population.year,
+          population: population.population || 0,
+        },
       },
     };
   }

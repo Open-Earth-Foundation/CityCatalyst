@@ -5,13 +5,14 @@ import { NextResponse } from "next/server";
 
 import CSVDownloadService from "@/backend/CSVDownloadService";
 import ECRFDownloadService from "@/backend/ECRFDownloadService";
-import InventoryDownloadService, {
-  InventoryDownloadResponse,
-} from "@/backend/InventoryDownloadService";
+import InventoryDownloadService from "@/backend/InventoryDownloadService";
 import { db } from "@/models";
 import { logger } from "@/services/logger";
 import { getTranslationFromDictionary, keyBy } from "@/util/helpers";
-import type { InventoryWithInventoryValuesAndActivityValues } from "@/util/types";
+import type {
+  InventoryDownloadResponse,
+  InventoryWithInventoryValuesAndActivityValues,
+} from "@/util/types";
 
 const CIRIS_TEMPLATE_PATH = "./templates/CIRIS_template.xlsm";
 

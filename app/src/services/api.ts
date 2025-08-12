@@ -1401,6 +1401,37 @@ export const api = createApi({
         transformResponse: (response: { data: CityLocationResponse[] }) =>
           response.data,
       }),
+      getClients: builder.query<Client[], void>({
+        query: () => `client/`,
+        transformResponse: (response: { data: Client[] }) =>
+          response.data,
+      }),
+      addClient: builder.mutation({
+        query: ({
+          redirectUri,
+          name,
+          description
+        }: {
+         redirectUri: string,
+          name: Record<string,string>,
+          description: Record<string,string>
+        }) => ({
+          method: "POST",
+          url: `/client/`,
+          body: {
+            redirectUri,
+            name,
+            description
+          },
+        }),
+        transformResponse: (response: { data: Client }) => response.data
+      }),
+      deleteClient: builder.mutation<void,string>({
+        query: (clientId: string) => ({
+          method: "DELETE",
+          url: `/client/${clientId}`
+        })
+      }),
     };
   },
 });
@@ -1515,5 +1546,8 @@ export const {
   useGetClientQuery,
   useGenerateCodeMutation,
   useGetUserPermissionsQuery,
+  useGetClientsQuery,
+  useAddClientMutation,
+  useDeleteClientMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

@@ -16,6 +16,7 @@ import { useTranslation } from "@/i18n/client";
 import { BsPlus } from "react-icons/bs";
 import React, { FC, useState, use } from "react";
 import CreateOrganizationModal from "@/app/[lng]/admin/CreateOrganizationModal";
+import OAuthClientList from "@/app/[lng]/admin/OAuthClientList";
 import { api } from "@/services/api";
 import DataTable from "@/components/ui/data-table";
 import { Tag } from "@/components/ui/tag";
@@ -39,6 +40,7 @@ import BulkDownloadTabContent from "./bulk-inventory-actions/BulkDownloadTabCont
 import { OrganizationRole } from "@/util/types";
 import { toaster } from "@/components/ui/toaster";
 import ProgressLoader from "@/components/ProgressLoader";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 
 interface OrgData {
   contactEmail: string;
@@ -228,6 +230,9 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
           <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
             <TabTrigger title="organizations" />
             <TabTrigger title="bulk-actions" />
+            { hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) &&
+              <TabTrigger title="oauth-clients" />
+            }
             <Tabs.Indicator rounded="l2" />
           </Tabs.List>
           <Tabs.Content value="organizations">
@@ -529,6 +534,11 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
               </Tabs.Content>
             </Tabs.Root>
           </Tabs.Content>
+          { hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) &&
+              <Tabs.Content value="oauth-clients">
+                <OAuthClientList lng={lng} />
+              </Tabs.Content>
+          }
         </Tabs.Root>
       </Box>
 

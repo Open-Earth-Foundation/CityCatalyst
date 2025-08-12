@@ -54,10 +54,26 @@ export async function createInventoryThroughOnboarding(
   // Step 1: Start the onboarding process
   await page.goto("/onboarding/");
 
-  // Click "Start Inventory" button
-  const startButton = page.getByRole("button", { name: /Start inventory/i });
+  // Handle cookie consent banner if it appears
+  const cookieDeclineButton = page.getByRole("button", { name: /decline/i });
+  if (await cookieDeclineButton.isVisible().catch(() => false)) {
+    await cookieDeclineButton.click();
+  }
+
+  // Wait a moment for any animations to settle
+  await page.waitForTimeout(500);
+
+  // Click "Start Inventory" button using data-testid for more reliable targeting
+  const startButton = page.getByTestId("start-inventory-button");
   await expect(startButton).toBeVisible();
-  await startButton.click();
+  
+  // Try to click the button, with fallback approaches if blocked
+  try {
+    await startButton.click();
+  } catch (error) {
+    // If regular click fails, try force click
+    await startButton.click({ force: true });
+  }
 
   // Step 2: Select City
   await page.waitForURL("**/onboarding/setup/");

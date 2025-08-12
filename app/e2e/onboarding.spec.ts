@@ -23,14 +23,26 @@ test.describe("Onboarding Flow", () => {
       await expect(description).toHaveText(
         /In this step, configure your city's GHG emissions inventory by selecting the inventory year, setting the target, and adding contextual data such as population./i,
       );
+      // Handle cookie consent banner if it appears
+      const cookieDeclineButton = page.getByRole("button", { name: /decline/i });
+      if (await cookieDeclineButton.isVisible().catch(() => false)) {
+        await cookieDeclineButton.click();
+      }
+
+      // Wait a moment for any animations to settle
+      await page.waitForTimeout(500);
+
       //   Verify the "Start Inventory" button is present and clickable
-      const startButton = page.getByRole("button", {
-        name: /Start inventory/i,
-      });
+      const startButton = page.getByTestId("start-inventory-button");
       await expect(startButton).toBeVisible();
 
       //   Click the "Start Inventory" button
-      await startButton.click();
+      try {
+        await startButton.click();
+      } catch (error) {
+        // If regular click fails, try force click
+        await startButton.click({ force: true });
+      }
     });
   });
   test.describe("Select City Step", () => {

@@ -132,6 +132,10 @@ The standard port is 3000 and the application can be opend at http://localhost:3
 
 Use `johndeo@example.com` and `password` to login.
 
+#### HIAP
+To connect to the HIAP prioritizer/plan creator, run
+kubectl port-forward svc/hiap-service 8000:80
+
 ### Docker
 
 You can also run the app in a Docker container. To do so, you'll need to build the Docker image:

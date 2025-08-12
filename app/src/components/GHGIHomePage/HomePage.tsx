@@ -32,6 +32,7 @@ import { useOrganizationContext } from "@/hooks/organization-context-provider/us
 import { useUserPermissions } from "@/hooks/useUserPermissions";
 import { UserRole } from "@/util/types";
 import { logger } from "@/services/logger";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 
 function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
   return typeof error === "object" && error != null && "status" in error;
@@ -53,6 +54,16 @@ export default function HomePage({
   isPublic || CheckUserSession();
   const language = cookieLanguage ?? lng;
   const { inventory: inventoryParam, cityId: cityIdParam } = useParams();
+
+  function redirectToOnboarding() {
+    setTimeout(() => {
+      if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
+        router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
+      } else {
+        router.push(`/${language}/onboarding`);
+      }
+    }, 0);
+  }
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -89,7 +100,7 @@ export default function HomePage({
         !isFetchBaseQueryError(inventoryError) ||
         inventoryError.status !== 401
       ) {
-        setTimeout(() => router.push(`/${language}/onboarding`), 0);
+        redirectToOnboarding();
       }
     } else if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
@@ -107,7 +118,7 @@ export default function HomePage({
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
         // If we have a cityId, redirect to GHGI onboarding, otherwise go to general onboarding
-        setTimeout(() => router.push(`/${language}/onboarding`), 0);
+        redirectToOnboarding();
       }
     }
   }, [
@@ -264,7 +275,7 @@ export default function HomePage({
                               return;
                             }
 
-                            router.push(`/${language}/onboarding`);
+                            redirectToOnboarding();
                           }}
                         >
                           <Icon as={BsPlus} h="16px" w="16px" />

@@ -17,20 +17,20 @@ import { MdArrowForward } from "react-icons/md";
 export default function OrganizationPage(props: {
   params: Promise<{ lng: string; id: string }>;
 }) {
-  const { lng, id } = use(props.params);
+  const { lng, id: organizationId } = use(props.params);
   const { t } = useTranslation(lng, "organization");
 
   const {
     data: organization,
     isLoading: orgLoading,
     error: orgError,
-  } = useGetOrganizationQuery(id);
+  } = useGetOrganizationQuery(organizationId);
 
   const {
     data: projects,
     isLoading: projectsLoading,
     error: projectsError,
-  } = useGetProjectsQuery({ organizationId: id });
+  } = useGetProjectsQuery({ organizationId });
 
   if (orgLoading || projectsLoading) {
     return (
@@ -67,7 +67,13 @@ export default function OrganizationPage(props: {
         <SimpleGrid minChildWidth="xs" gap="24px" w="full">
           {projects && projects.length > 0 ? (
             projects.map((project: ProjectWithCities) => (
-              <ProjectCard t={t} project={project} key={project.projectId} />
+              <ProjectCard
+                t={t}
+                project={project}
+                key={project.projectId}
+                lng={lng}
+                organizationId={organizationId}
+              />
             ))
           ) : (
             <BodyMedium>{t("no-projects-found")}</BodyMedium>

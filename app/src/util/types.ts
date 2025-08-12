@@ -456,6 +456,7 @@ export type ListOrganizationsResponse = {
 export type CityResponse = {
   cityId: string;
   name: string;
+  country: string;
   countryLocode: string;
   locode: string;
   inventories: {
@@ -670,4 +671,3 @@ export interface PermissionCheckResponse {
     inventoryId?: string;
   };
 }
-

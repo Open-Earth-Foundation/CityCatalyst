@@ -1,13 +1,11 @@
+import CityBoundaryService from "@/backend/CityBoundaryService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 import { db } from "@/models";
+import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
-import { createCityRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
-import { logger } from "@/services/logger";
-import { DEFAULT_PROJECT_ID } from "@/util/constants";
-import EmailService from "@/backend/EmailService";
 import z from "zod";
-import CityBoundaryService from "@/backend/CityBoundaryService";
 
 const bulkLocationRequest = z.object({
   organizationId: z.string().optional(),
@@ -25,7 +23,9 @@ export const GET = apiHandler(async (_req, { session, params }) => {
     );
   }
 
-  // TODO check access to organization or project
+  // check access to organization or project
+  await PermissionService.checkAccess(session, { organizationId, projectId });
+
   const cities = await db.models.City.findAll({
     where: { projectId },
     attributes: ["locode", "name", "country"],

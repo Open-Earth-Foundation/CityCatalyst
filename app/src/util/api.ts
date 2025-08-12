@@ -22,7 +22,11 @@ export type ApiResponse = NextResponse | StreamingTextResponse;
 
 export type NextHandler = (
   req: NextRequest,
-  props: { params: Record<string, string>; session: AppSession | null },
+  props: {
+    params: Record<string, string>;
+    session: AppSession | null;
+    searchParams: URLSearchParams;
+  },
 ) => Promise<ApiResponse>;
 
 // TODO extend this to other endpoints that need to skip the frozen check
@@ -151,25 +155,22 @@ const organizationContextCheck = async ({
 };
 
 function getBearerToken(header: string): any {
-  const match = header.match(/^Bearer\s+(.*)$/)
+  const match = header.match(/^Bearer\s+(.*)$/);
   if (!match) {
-    throw new createHttpError.BadRequest(`Malformed Authorization header`)
+    throw new createHttpError.BadRequest(`Malformed Authorization header`);
   }
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
     logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
-  return jwt.verify(
-    match[1],
-    process.env.VERIFICATION_TOKEN_SECRET
-  )
+  return jwt.verify(match[1], process.env.VERIFICATION_TOKEN_SECRET);
 }
 
 async function makeOAuthUserSession(token: any): Promise<AppSession> {
   const userId = token.sub;
-  const user = await db.models.User.findOne({ where: { userId } })
+  const user = await db.models.User.findOne({ where: { userId } });
   if (!user) {
-    throw new createHttpError.BadRequest(`Malformed Authorization header`)
+    throw new createHttpError.BadRequest(`Malformed Authorization header`);
   }
   return {
     expires: token.iat,
@@ -178,9 +179,9 @@ async function makeOAuthUserSession(token: any): Promise<AppSession> {
       name: user.name,
       email: user.email,
       image: user.pictureUrl,
-      role: user.role || Roles.User
-    }
-  }
+      role: user.role || Roles.User,
+    },
+  };
 }
 
 export function apiHandler(handler: NextHandler) {
@@ -197,26 +198,31 @@ export function apiHandler(handler: NextHandler) {
         await db.initialize();
       }
 
-      const authorization = req.headers.get('Authorization')
+      const authorization = req.headers.get("Authorization");
 
       if (authorization && hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
-        const token = getBearerToken(authorization)
+        const token = getBearerToken(authorization);
         if (!token) {
-          throw new createHttpError.Unauthorized("Invalid or expired access token")
+          throw new createHttpError.Unauthorized(
+            "Invalid or expired access token",
+          );
         }
-        if (token.aud !== (new URL(req.url)).origin) {
-          throw new createHttpError.Unauthorized("Wrong server for token")
+        if (token.aud !== new URL(req.url).origin) {
+          throw new createHttpError.Unauthorized("Wrong server for token");
         }
-        const client = await OAuthClient.findByPk(token.client_id)
+        const client = await OAuthClient.findByPk(token.client_id);
         if (!client) {
-          throw new createHttpError.Unauthorized("Invalid client")
+          throw new createHttpError.Unauthorized("Invalid client");
         }
-        const scopes = token.scope.split(" ")
-        if (req.method in ['GET', 'HEAD'] && !('read' in scopes)) {
-          throw new createHttpError.Unauthorized("No read scope available")
+        const scopes = token.scope.split(" ");
+        if (req.method in ["GET", "HEAD"] && !("read" in scopes)) {
+          throw new createHttpError.Unauthorized("No read scope available");
         }
-        if (req.method in ['PUT', 'PATCH', 'POST', 'DELETE'] && !('write' in scopes)) {
-          throw new createHttpError.Unauthorized("No write scope available")
+        if (
+          req.method in ["PUT", "PATCH", "POST", "DELETE"] &&
+          !("write" in scopes)
+        ) {
+          throw new createHttpError.Unauthorized("No write scope available");
         }
         session = await makeOAuthUserSession(token);
       } else {
@@ -233,8 +239,10 @@ export function apiHandler(handler: NextHandler) {
         return orgContextCheckResult;
       }
 
+      const { searchParams } = new URL(req.url);
       const context = {
         params: await props.params,
+        searchParams,
         session,
       };
 
@@ -281,12 +289,12 @@ function errorHandler(err: unknown, _req: NextRequest) {
     );
   } else if (createHttpError.isHttpError(err) && err.expose) {
     return NextResponse.json(
-      { 
-        error: { 
+      {
+        error: {
           message: err.message,
           code: (err as any).code || undefined,
-          data: (err as any).data || undefined
-        } 
+          data: (err as any).data || undefined,
+        },
       },
       { status: err.statusCode },
     );

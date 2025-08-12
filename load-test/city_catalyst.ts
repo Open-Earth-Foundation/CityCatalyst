@@ -4,6 +4,10 @@ import { sleep, check } from "k6";
 export const options = {
   vus: 10,
   duration: "30s",
+  thresholds: {
+    http_req_duration: ["p(95)<5000"], // 95% of requests must complete below 5s
+    http_req_failed: ["rate<0.1"],
+  },
 };
 
 const BASE_URL = "http://localhost:3000";

@@ -57,11 +57,13 @@ const ModalDownloadReport = ({
             inventoryYear={inventory.year}
           />
           <Box divideX="2px" my="12px" />
-          <ModalPublishButtons
-            t={t}
-            onClose={onDownloadShareClose}
-            onPublishOpen={onPublishOpen}
-          />
+          <Box px="16px">
+            <ModalPublishButtons
+              t={t}
+              onClose={onDownloadShareClose}
+              onPublishOpen={onPublishOpen}
+            />
+          </Box>
         </DialogBody>
       </DialogContent>
     </DialogRoot>

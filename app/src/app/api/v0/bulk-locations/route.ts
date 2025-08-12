@@ -1,4 +1,6 @@
-import CityBoundaryService from "@/backend/CityBoundaryService";
+import CityBoundaryService, {
+  CityBoundary,
+} from "@/backend/CityBoundaryService";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { db } from "@/models";
 import { logger } from "@/services/logger";
@@ -59,17 +61,20 @@ export const GET = apiHandler(async (_req, { session, searchParams }) => {
         return { error: "LOCODE_MISSING", cityId: city.cityId };
       }
 
-      const boundaryData = await CityBoundaryService.getCityBoundary(
-        city.locode,
-      );
+      let boundaryData: CityBoundary | null = null;
+      try {
+        boundaryData = await CityBoundaryService.getCityBoundary(city.locode);
+      } catch (err) {
+        logger.error(
+          { cityId: city.cityId, err },
+          "Error fetching boundary data for city",
+        );
+        return { error: "FAILED_TO_LOAD_CITY_BOUNDARY", cityId: city.cityId };
+      }
+
       const boundingBox = boundaryData.boundingBox;
       const latitude = (boundingBox[1] + boundingBox[3]) / 2;
       const longitude = (boundingBox[0] + boundingBox[2]) / 2;
-
-      if (!location) {
-        logger.warn(`Location not found for city with locode: ${city.locode}`);
-        return { locode: city.locode, latitude: null, longitude: null };
-      }
 
       return {
         locode: city.locode,

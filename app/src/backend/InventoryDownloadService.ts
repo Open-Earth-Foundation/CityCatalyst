@@ -110,14 +110,12 @@ export default class InventoryDownloadService {
       );
     }
 
-    const output: InventoryResponse = inventory.toJSON();
-    const city = inventory.city.toJSON();
     return {
-      output,
+      output: inventory.toJSON() as InventoryResponse,
       inventory: {
-        ...inventory,
+        ...inventory.toJSON(),
         city: {
-          ...city,
+          ...inventory.city.toJSON(),
           populationYear: population.year,
           population: population.population || 0,
         },

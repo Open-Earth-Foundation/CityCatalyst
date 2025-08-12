@@ -31,6 +31,7 @@ import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useUserPermissions } from "@/hooks/useUserPermissions";
 import { UserRole } from "@/util/types";
+import { DEFAULT_ORGANIZATION_ID } from "@/util/constants";
 import { logger } from "@/services/logger";
 
 function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
@@ -189,7 +190,7 @@ export default function HomePage({
   }, [cityYears]);
 
   // Check user permissions for this city
-  const { userRole } = useUserPermissions({
+  const { userRole, organizationId } = useUserPermissions({
     cityId: inventory?.cityId,
     skip: !inventory?.cityId
   });
@@ -288,8 +289,9 @@ export default function HomePage({
                     >
                       {t("inventory-year")}
                     </Text>
-                    {/* Only show add inventory button for ORG_ADMIN and PROJECT_ADMIN */}
-                    {userRole !== UserRole.COLLABORATOR && userRole !== UserRole.NO_ACCESS && (
+                    {/* Only show add inventory button for ORG_ADMIN and PROJECT_ADMIN, or COLLABORATORs in default org */}
+                    {userRole !== UserRole.NO_ACCESS && 
+                     (userRole !== UserRole.COLLABORATOR || organizationId === DEFAULT_ORGANIZATION_ID) && (
                       <Button
                         data-testid="add-new-inventory-button"
                         title={t("add-new-inventory")}

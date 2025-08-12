@@ -39,6 +39,7 @@ import ProjectLimitModal from "@/components/project-limit";
 import SearchInput from "@/components/SearchInput";
 import { useUserPermissions } from "@/hooks/useUserPermissions";
 import { UserRole } from "@/util/types";
+import { DEFAULT_ORGANIZATION_ID } from "@/util/constants";
 import { logger } from "@/services/logger";
 
 const ProjectList = ({
@@ -116,7 +117,7 @@ const SingleProjectView = ({
   const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
   
   // Check user permissions for this project
-  const { userRole } = useUserPermissions({
+  const { userRole, organizationId } = useUserPermissions({
     projectId: project.projectId,
     skip: !project.projectId
   });
@@ -182,8 +183,9 @@ const SingleProjectView = ({
         </Text>
       </Button>
       <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      {/* Only show add city button for ORG_ADMIN and PROJECT_ADMIN */}
-      {userRole !== UserRole.COLLABORATOR && userRole !== UserRole.NO_ACCESS && (
+      {/* Only show add city button for ORG_ADMIN and PROJECT_ADMIN, or COLLABORATORs in default org */}
+      {userRole !== UserRole.NO_ACCESS && 
+       (userRole !== UserRole.COLLABORATOR || organizationId === DEFAULT_ORGANIZATION_ID) && (
         <Button
           variant="ghost"
           w="full"

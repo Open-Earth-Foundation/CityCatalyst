@@ -17,5 +17,8 @@
   "pro": "Pro",
   "active-plan-tooltip": "L'organisation est actuellement abonnée à ce plan.",
   "active-plan": "Plan Actif",
-  "organization-load-failed": "Impossible de charger l'organisation"
+  "organization-load-failed": "Impossible de charger l'organisation",
+  "discover-cities-description": "Découvrez les villes présentées dans ce projet. Cliquez sur chaque ville pour voir son tableau de bord et les modules disponibles.",
+  "country-name": "Nom du pays",
+  "city-name": "Nom de la ville"
 }

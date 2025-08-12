@@ -144,8 +144,10 @@
   "role-update-success-toast-title": "Role updated successfully",
   "frozen": "Frozen",
   "already-registered-admin": "{{email}} is already a registered admin",
+  "oauth-clients": "OAuth 2.0 Clients",
   "oauth-clients-heading": "OAuth 2.0 Clients",
   "oauth-no-clients": "No clients.",
   "oauth-no-name": "(No name)",
-  "oauth-no-description": "(No description)"
+  "oauth-no-description": "(No description)",
+  "oauth-redirect-uri": "Redirect URL"
 }

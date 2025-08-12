@@ -80,9 +80,9 @@ export type UserRole = 'ORG_ADMIN' | 'PROJECT_ADMIN' | 'COLLABORATOR' | 'NO_ACCE
 - **Permissions**:
   - ✅ EDIT_INVENTORY (only for assigned cities)
   - ✅ VIEW_CITY (only assigned cities)
+  - ✅ CREATE_CITY (only in default organization)
+  - ✅ CREATE_INVENTORY (only in default organization)
   - ❌ VIEW_ORGANIZATION (cannot view organization-wide data)
-  - ❌ CREATE_CITY
-  - ❌ CREATE_INVENTORY
   - ❌ DELETE_CITY
   - ❌ MANAGE_USERS
   - ❌ MANAGE_PROJECTS
@@ -91,6 +91,7 @@ export type UserRole = 'ORG_ADMIN' | 'PROJECT_ADMIN' | 'COLLABORATOR' | 'NO_ACCE
 - Edit inventory data for cities they've been assigned to
 - View city-specific data and analytics
 - Upload and manage data files for their assigned cities
+- **Default Organization Only**: Create cities and inventories in the default organization
 - **Important**: Cannot view other cities, projects, or organization-wide information
 
 ### 4. NO_ACCESS
@@ -186,8 +187,8 @@ Defined in `app/src/backend/PermissionService.ts:134-142`:
 
 | Action | ORG_ADMIN | PROJECT_ADMIN | COLLABORATOR |
 |--------|-----------|---------------|-------------|
-| CREATE_CITY | ✅ | ✅ | ❌ |
-| CREATE_INVENTORY | ✅ | ✅ | ❌ |
+| CREATE_CITY | ✅ | ✅ | ✅ (default org only) |
+| CREATE_INVENTORY | ✅ | ✅ | ✅ (default org only) |
 | EDIT_INVENTORY | ✅ | ✅ | ✅ (assigned cities only) |
 | DELETE_CITY | ✅ | ❌ | ❌ |
 | VIEW_ORGANIZATION | ✅ | ✅ (project scope) | ❌ |
@@ -232,3 +233,8 @@ Standardized permission errors in `app/src/util/permission-errors.ts:4-29`:
 4. **Multi-Organization Users**: A single user can have different roles across different organizations (e.g., ORG_ADMIN in one org, COLLABORATOR in another).
 
 5. **Project Admin Scope**: Project admins can only manage resources within their assigned projects, not organization-wide.
+
+6. **Default Organization Special Rules**: The default organization (`5a84ebff-33ee-457e-ab52-512b5731978b`) has relaxed permissions:
+   - COLLABORATORs can create cities and inventories (normally restricted to ORG_ADMIN/PROJECT_ADMIN)
+   - System ADMINs always have full access
+   - This enables easy onboarding and collaboration for general platform usage

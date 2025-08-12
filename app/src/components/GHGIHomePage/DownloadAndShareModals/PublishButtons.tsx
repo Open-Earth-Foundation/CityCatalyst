@@ -43,8 +43,6 @@ const PublishButtons = ({
         <Button
           key={title}
           my="16px"
-          pr="16px"
-          pl="35px"
           variant="ghost"
           disabled={!isAvailable}
           minHeight="100px"

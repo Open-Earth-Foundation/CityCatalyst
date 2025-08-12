@@ -32,6 +32,7 @@ import { useGetHiapQuery } from "@/services/api";
 import { logger } from "@/services/logger";
 import { HighImpactActionRankingStatus } from "@/util/types";
 import ClimateActionsEmptyState from "./ClimateActionsEmptyState";
+import ActionPlanSection from "./ActionPlanSection";
 
 export const BarVisualization = ({
   value,
@@ -224,11 +225,11 @@ export function HiapTab({
 
   // Empty state
 
-  if (!actions || actions.length === 0) {
+  if (!actions || actions.length !== 0) {
     return <ClimateActionsEmptyState t={t} />;
   }
   return (
-    <Box overflowX="auto">
+    <Box overflowX="auto" w="full" maxW="1090px" mx="auto">
       {selectedAction && (
         <ActionDrawer
           action={selectedAction}
@@ -237,6 +238,8 @@ export function HiapTab({
           t={t}
         />
       )}
+      {/* Top action widgets / mitigation */}
+      <ActionPlanSection t={t} />
       <table style={{ width: "100%" }}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (

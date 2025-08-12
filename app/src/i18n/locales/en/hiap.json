@@ -25,6 +25,10 @@
   "generate-climate-actions-description": "Check out your key actions for this category. Explore them to gain insights and create draft implementation plans for each.",
   "no-actions-found-title": "Your top climate actions are being processed",
   "no-actions-found-description": "This process can take up up to 15 mins. You'll get an email and see them here when done",
+  "generate-climate-actions-widget-description": "You can create implementation plans for each of the selected actions. Feel free to browse the complete list of actions below and choose which ones you want to display here.",
+  "download-action-plan": "download",
+  "top-pick-action-title": "top pick",
+  "integrate-renewables-into-municipal-water-systems": "integrate renewables into municipal water systems",
   "hazard": {
     "droughts": "Droughts",
     "heatwaves": "Heatwaves",

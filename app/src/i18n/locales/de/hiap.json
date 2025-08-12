@@ -22,6 +22,10 @@
   "generate-climate-actions-description": "Schauen Sie sich Ihre wichtigsten Maßnahmen für diese Kategorie an. Erkunden Sie sie, um Einblicke zu gewinnen und Entwürfe für Umsetzungspläne für jede einzelne zu erstellen.",
   "no-actions-found-title": "Ihre wichtigsten Klimamaßnahmen werden verarbeitet",
   "no-actions-found-description": "Dieser Prozess kann bis zu 15 Minuten dauern. Sie erhalten eine E-Mail und sehen sie hier, wenn er abgeschlossen ist",
+  "generate-climate-actions-widget-description": "Sie können Umsetzungspläne für jede der ausgewählten Maßnahmen erstellen. Durchsuchen Sie gerne die vollständige Liste der Maßnahmen unten und wählen Sie aus, welche Sie hier anzeigen möchten.",
+  "download-action-plan": "herunterladen",
+  "top-pick-action-title": "top-auswahl",
+  "integrate-renewables-into-municipal-water-systems": "erneuerbare Energien in kommunale Wassersysteme integrieren",
   "hazard": {
     "droughts": "Dürren",
     "heatwaves": "Hitzewellen",

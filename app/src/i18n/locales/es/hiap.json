@@ -24,6 +24,10 @@
   "generate-climate-actions-description": "Revisa tus acciones clave para esta categoría. Explóralas para obtener conocimientos y crear borradores de planes de implementación para cada una.",
   "no-actions-found-title": "Tus principales acciones climáticas están siendo procesadas",
   "no-actions-found-description": "Este proceso puede tomar hasta 15 minutos. Recibirás un email y las verás aquí cuando esté listo",
+  "generate-climate-actions-widget-description": "Puedes crear planes de implementación para cada una de las acciones seleccionadas. Siéntete libre de explorar la lista completa de acciones a continuación y elegir cuáles quieres mostrar aquí.",
+  "download-action-plan": "descargar",
+  "top-pick-action-title": "mejor opción",
+  "integrate-renewables-into-municipal-water-systems": "integrar energías renovables en los sistemas de agua municipales",
   "hazard": {
     "droughts": "Sequías",
     "heatwaves": "Olas de calor",

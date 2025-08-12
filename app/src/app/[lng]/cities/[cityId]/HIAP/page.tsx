@@ -52,6 +52,8 @@ export default function HIAPPage(props: {
             t={t}
             population={population}
           />
+
+          <Box></Box>
           <Box display="flex" mx="auto" mt="80px" w="full" maxW="1090px">
             <Tabs.Root
               variant="line"
@@ -84,7 +86,12 @@ export default function HIAPPage(props: {
                 ))}
               </Tabs.List>
               {Object.values(ACTION_TYPES).map((actionType) => (
-                <Tabs.Content key={actionType} value={actionType} p="0">
+                <Tabs.Content
+                  key={actionType}
+                  value={actionType}
+                  p="0"
+                  w="full"
+                >
                   <HiapTab type={actionType} inventory={inventory} />
                 </Tabs.Content>
               ))}

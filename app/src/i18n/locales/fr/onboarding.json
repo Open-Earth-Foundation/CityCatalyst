@@ -71,5 +71,10 @@
   "recent-searches-no-results": "Vous n'avez aucune recherche récente",
   "failed-to-add-city": "Échec de l'ajout de la ville",
   "failed-to-create-inventory": "Échec de la création de l'inventaire",
-  "select-project": "Sélectionner le projet"
+  "select-project": "Sélectionner le projet",
+  "city-count-limit-reached": "Limite du nombre de villes atteinte",
+  "welcome-top": "Bienvenue à CityCatalyst",
+  "welcome-title": "Commençons par des informations sur votre ville",
+  "welcome-description": "Dans cette étape, choisissez une ville à inclure dans votre projet et fournissez des détails pertinents qui seront utilisés ultérieurement.",
+  "welcome-CTA": "Commencez"
 }

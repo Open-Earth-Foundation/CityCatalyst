@@ -39,12 +39,13 @@ import { Avatar } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
 import { Roles } from "@/util/types";
-import ProjectDrawer from "@/components/HomePage/ProjectDrawer";
+import ProjectDrawer from "@/components/GHGIHomePage/ProjectDrawer";
 import { TbSettingsCog } from "react-icons/tb";
 import { useTheme } from "next-themes";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Trans } from "react-i18next";
+import JNDrawer from "./HomePage/JNDrawer";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -100,6 +101,10 @@ export function NavigationBar({
     history.replaceState(null, "", newPath);
   };
 
+  // get pathname
+  const pathname = usePathname();
+  const fullPath = pathname.replace(/^\/[A-Za-z]+/, "");
+
   // Checks if language is set in cookie and updates URL if not
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -128,7 +133,6 @@ export function NavigationBar({
   const currentInventoryId =
     inventoryIdFromParam ?? userInfo?.defaultInventoryId;
   const router = useRouter();
-  const pathname = usePathname();
   const inventoryStub = inventoryIdFromParam ?? currentInventoryId;
   const dashboardPath = `/${lng}/${inventoryStub === null ? "" : inventoryStub}`;
   const { setTheme } = useTheme();
@@ -492,13 +496,28 @@ export function NavigationBar({
             )}
           </Box>
         </Box>
-        <ProjectDrawer
-          lng={lng}
-          currentInventoryId={currentInventoryId as string}
-          isOpen={isDrawerOpen}
-          onClose={() => setIsDrawerOpen(false)}
-          onOpenChange={({ open }) => setIsDrawerOpen(open)}
-        />
+        {/* JN Drawer */}
+        {/* Should be shown if JN is enabled and url has /cities*/}
+        {fullPath.includes("/cities") && (
+          <JNDrawer
+            lng={lng}
+            currentInventoryId={currentInventoryId as string}
+            isOpen={isDrawerOpen}
+            onClose={() => setIsDrawerOpen(false)}
+            onOpenChange={({ open }) => setIsDrawerOpen(open)}
+          />
+        )}
+        {/* TODO: Remove project drawer and replace with JN drawer after JN is live */}
+        {/* Project Drawer */}
+        {!fullPath.includes("/cities") && (
+          <ProjectDrawer
+            lng={lng}
+            currentInventoryId={currentInventoryId as string}
+            isOpen={isDrawerOpen}
+            onClose={() => setIsDrawerOpen(false)}
+            onOpenChange={({ open }) => setIsDrawerOpen(open)}
+          />
+        )}
       </Box>
       {isFrozen && !isPublic && !isAuth && (
         <Box py={2} px={16} bg="sentiment.warningDefault" w="full" zIndex={50}>

@@ -1,7 +1,7 @@
 "use client";
 import { use } from "react";
 
-import HomePage from "@/components/HomePage/HomePage";
+import HomePage from "@/components/GHGIHomePage/HomePage";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Box } from "@chakra-ui/react";
 

@@ -47,7 +47,7 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
 
   return (
     <Box w={width} h={height} position="relative">
-      {isLoading && (
+      {isLoading ? (
         <Box
           w={width}
           h={height}
@@ -63,28 +63,29 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
             <Spinner size="lg" />
           </Center>
         </Box>
-      )}
-      <Map
-        height={height}
-        center={center}
-        zoom={zoom}
-        onBoundsChanged={onBoundsChanged}
-        attributionPrefix={false}
-      >
-        <GeoJson
-          svgAttributes={{
-            fill: "#648bff99",
-            strokeWidth: "3",
-            stroke: "#648bff",
-          }}
+      ) : (
+        <Map
+          height={height}
+          center={center}
+          zoom={zoom}
+          onBoundsChanged={onBoundsChanged}
+          attributionPrefix={false}
         >
-          {data?.data && (
-            <GeoJsonFeature
-              feature={{ type: "Feature", geometry: data.data }}
-            />
-          )}
-        </GeoJson>
-      </Map>
+          <GeoJson
+            svgAttributes={{
+              fill: "#648bff99",
+              strokeWidth: "3",
+              stroke: "#648bff",
+            }}
+          >
+            {data?.data && (
+              <GeoJsonFeature
+                feature={{ type: "Feature", geometry: data.data }}
+              />
+            )}
+          </GeoJson>
+        </Map>
+      )}
     </Box>
   );
 };

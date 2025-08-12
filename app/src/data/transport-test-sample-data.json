@@ -1,0 +1,38 @@
+[
+  {
+    "subsector": "II.1.1",
+    "methodology_id": "fuel-sales-on-road-transport-methodology",
+    "methodology_name": "fuel-sales",
+    "methodology_status": "Active",
+    "fuel_type": "fuel-type-gasoline",
+    "vehicle_type": "vehicle-type-passenger-vehicles",
+    "co2_global_api": 2.31,
+    "ch4_global_api": 0.0002,
+    "n2o_global_api": 0.000004,
+    "units_in_global_api": "kg/l",
+    "co2_gwp": 1,
+    "ch4_gwp": 28,
+    "n2o_gwp": 265,
+    "total_fuel_value": 100,
+    "total_fuel_units": "l",
+    "expected_co2e_tonnes": 0.231
+  },
+  {
+    "subsector": "II.1.1",
+    "methodology_id": "fuel-sales-on-road-transport-methodology",
+    "methodology_name": "fuel-sales",
+    "methodology_status": "Active",
+    "fuel_type": "fuel-type-diesel",
+    "vehicle_type": "vehicle-type-commercial-vehicles",
+    "co2_global_api": 2.68,
+    "ch4_global_api": 0.0003,
+    "n2o_global_api": 0.000006,
+    "units_in_global_api": "kg/l",
+    "co2_gwp": 1,
+    "ch4_gwp": 28,
+    "n2o_gwp": 265,
+    "total_fuel_value": 150,
+    "total_fuel_units": "l",
+    "expected_co2e_tonnes": 0.402
+  }
+]

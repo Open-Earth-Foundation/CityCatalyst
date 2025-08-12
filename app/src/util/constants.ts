@@ -207,3 +207,8 @@ export enum StageNames {
   "Implement" = "implement",
   "Monitor, Evaluate & Report" = "monitor-evaluate-&-report",
 }
+
+export const Modules = {
+  GHGI: { id: "077690c6-6fa3-44e1-84b7-6d758a6a4d88" },
+  HIAP: { id: "9ee0e1ea-94ea-4329-b156-28d10ecd0ff8" },
+};

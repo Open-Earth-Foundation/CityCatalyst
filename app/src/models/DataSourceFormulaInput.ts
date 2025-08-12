@@ -83,9 +83,7 @@ export class DataSourceFormulaInput
         sequelize,
         tableName: "DataSourceFormulaInput",
         schema: "public",
-        timestamps: true,
-        createdAt: "created",
-        updatedAt: "last_updated",
+        timestamps: false,
         indexes: [
           {
             name: "DataSourceFormulaInput_pkey",

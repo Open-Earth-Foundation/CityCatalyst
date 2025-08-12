@@ -138,5 +138,6 @@
   "change-to-admin": "Change to admin",
   "user-removed": "User removed successfully",
   "role-update-success-toast-title": "Role updated successfully",
-  "frozen": "Frozen"
+  "frozen": "Frozen",
+  "already-registered-admin": "{{email}} is already a registered admin"
 }

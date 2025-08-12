@@ -4,7 +4,7 @@ import {
   CountryEmissionsEntry,
   Inputs,
   OnboardingData,
-} from "../../app/[lng]/onboarding/setup/page";
+} from "@/app/[lng]/onboarding/setup/page";
 import { OCCityAttributes } from "@/util/types";
 import { useGetOCCityDataQuery } from "@/services/api";
 import { useEffect, useState } from "react";
@@ -51,7 +51,6 @@ export default function SetPopulationDataStep({
   years: number[];
   watch: Function;
   ocCityData?: OCCityAttributes;
-  setOcCityData: (cityData: OCCityAttributes) => void;
   setData: (data: OnboardingData) => void;
   setValue: any;
   numberOfYearsDisplayed: number;

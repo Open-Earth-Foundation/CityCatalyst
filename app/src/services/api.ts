@@ -52,8 +52,11 @@ import {
   UpdateUserPayload,
   FormulaInputValuesResponse,
   DataSourceResponse,
+  Client,
+  LangMap,
+  PermissionCheckResponse
 } from "@/util/types";
-import type { HIAPResponse } from "@/util/types";
+import type { CityLocationResponse, HIAPResponse } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -61,6 +64,7 @@ export const api = createApi({
   reducerPath: "api",
   tagTypes: [
     "UserInfo",
+    "UserPermissions",
     "InventoryProgress",
     "UserInventories",
     "SubSectorValue",
@@ -134,6 +138,12 @@ export const api = createApi({
         query: (inventoryId: string) => `inventory/${inventoryId}/populations`,
         transformResponse: (response: { data: InventoryPopulationsResponse }) =>
           response.data,
+      }),
+      getInventoryByCityId: builder.query<InventoryResponse, string>({
+        query: (cityId: string) => `city/${cityId}/ghgi`,
+        transformResponse: (response: { data: InventoryResponse }) =>
+          response.data,
+        providesTags: ["Inventory"],
       }),
       getRequiredScopes: builder.query<RequiredScopesResponse, string>({
         query: (sectorId) => `sector/${sectorId}/required-scopes`,
@@ -252,6 +262,27 @@ export const api = createApi({
         transformResponse: (response: { data: UserInfoResponse }) =>
           response.data,
         providesTags: ["UserInfo"],
+      }),
+      getUserPermissions: builder.query<
+        PermissionCheckResponse,
+        {
+          organizationId?: string;
+          projectId?: string;
+          cityId?: string;
+          inventoryId?: string;
+        }
+      >({
+        query: (params) => {
+          const searchParams = new URLSearchParams();
+          if (params.organizationId) searchParams.set('organizationId', params.organizationId);
+          if (params.projectId) searchParams.set('projectId', params.projectId);
+          if (params.cityId) searchParams.set('cityId', params.cityId);
+          if (params.inventoryId) searchParams.set('inventoryId', params.inventoryId);
+          return `/user/permissions?${searchParams.toString()}`;
+        },
+        transformResponse: (response: { data: PermissionCheckResponse }) =>
+          response.data,
+        providesTags: ["UserPermissions"],
       }),
       getAllDataSources: builder.query<
         GetDataSourcesResult,
@@ -409,7 +440,6 @@ export const api = createApi({
         PopulationAttributes,
         {
           cityId: string;
-          locode: string;
           cityPopulation: number;
           regionPopulation: number;
           countryPopulation: number;
@@ -1290,6 +1320,66 @@ export const api = createApi({
         transformResponse: (response: { data: ModuleAttributes[] }) =>
           response.data,
       }),
+      getCityModuleAccess: builder.query<
+        { hasAccess: boolean },
+        { cityId: string; moduleId: string }
+      >({
+        query: ({ cityId, moduleId }) =>
+          `city/${cityId}/modules/${moduleId}/access`,
+        transformResponse: (response: { data: { hasAccess: boolean } }) =>
+          response.data,
+      }),
+      getClient: builder.query<Client, string>({
+        query: (clientId: string) => `client/${clientId}/`,
+        transformResponse: (response: { data: Client }) => response.data,
+      }),
+      generateCode: builder.mutation({
+        query: ({
+          clientId,
+          redirectUri,
+          codeChallenge,
+          scope,
+          csrfToken,
+        }: {
+          clientId: string;
+          redirectUri: string;
+          codeChallenge: string;
+          scope: string;
+          csrfToken: string;
+        }) => ({
+          method: "POST",
+          url: `/auth/code/`,
+          body: {
+            clientId,
+            redirectUri,
+            codeChallenge,
+            scope,
+            csrfToken,
+          },
+        }),
+        transformResponse: (response: { data: any }) => response.data.code,
+      }),
+      getBulkCityLocations: builder.query<
+        CityLocationResponse[],
+        { projectId?: string; organizationId?: string }
+      >({
+        query: ({ projectId, organizationId }) => {
+          let params: URLSearchParams | string = "";
+          if (projectId) {
+            params = new URLSearchParams({ projectId });
+          } else if (organizationId) {
+            params = new URLSearchParams({ organizationId });
+          } else {
+            throw new Error(
+              "Need to either provide projectId or organizationId when requesting bulk city locations!",
+            );
+          }
+
+          return `city/bulk-locations?${params})}`;
+        },
+        transformResponse: (response: { data: CityLocationResponse[] }) =>
+          response.data,
+      }),
     };
   },
 });
@@ -1344,6 +1434,7 @@ export const {
   useGetVerificationTokenQuery,
   useGetCitiesQuery,
   useGetInventoriesQuery,
+  useGetInventoryByCityIdQuery,
   useAddUserFileMutation,
   useGetUserFilesQuery,
   useDeleteUserFileMutation,
@@ -1398,5 +1489,9 @@ export const {
   useUpdateUserRoleInOrganizationMutation,
   useGetModulesQuery,
   useGetProjectModulesQuery,
+  useGetCityModuleAccessQuery,
+  useGetClientQuery,
+  useGenerateCodeMutation,
+  useGetUserPermissionsQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

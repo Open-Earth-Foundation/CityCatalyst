@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "0.53.0-rc.1",
+  "version": "0.54.0-rc.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -27,6 +27,8 @@
     "db:gen-migration": "sequelize-cli migration:generate --name",
     "db:gen-seed": "sequelize-cli seed:generate --name",
     "sync-catalogue": "tsx scripts/catalogue-sync.ts",
+    "sync-emissions-factors": "tsx scripts/emissions-factors-sync.ts",
+    "sync-formula-values": "tsx scripts/formula-values-sync.ts",
     "ci:test": "npx jest --coverage",
     "prettier": "npx prettier . --write",
     "email": "email dev --dir src/lib/emails",
@@ -42,6 +44,7 @@
     "@emotion/react": "^11.14.0",
     "@hookform/resolvers": "^5.1.1",
     "@huggingface/inference": "^3.9.2",
+    "@isaacs/ttlcache": "^1.4.1",
     "@next/env": "^14.2.5",
     "@nivo/bar": "^0.88.0",
     "@nivo/line": "^0.88.0",

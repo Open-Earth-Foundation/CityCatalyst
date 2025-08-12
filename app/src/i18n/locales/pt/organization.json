@@ -17,5 +17,8 @@
   "pro": "Pró",
   "active-plan-tooltip": "A organização está atualmente inscrita neste plano.",
   "active-plan": "Plano Ativo",
-  "organization-load-failed": "Não foi possível carregar a organização"
+  "organization-load-failed": "Não foi possível carregar a organização",
+  "discover-cities-description": "Descubra as cidades destacadas neste projeto. Clique em cada cidade para visualizar o seu painel e os módulos disponíveis.",
+  "country-name": "Nome do país",
+  "city-name": "Nome da cidade"
 }

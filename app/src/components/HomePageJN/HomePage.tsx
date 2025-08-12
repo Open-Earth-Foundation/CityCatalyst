@@ -40,6 +40,7 @@ import { TitleLarge } from "@/components/Texts/Title";
 import { LuChevronDown } from "react-icons/lu";
 import { NoModulesCard } from "./NoModulesCard";
 import { StageNames } from "@/util/constants";
+import { stageOrder } from "@/config/stages";
 
 export default function HomePage({
   lng,
@@ -148,13 +149,12 @@ export default function HomePage({
             h="full"
             w="full"
             maxW="1090px"
-            pt="48px"
             pb="100px"
             bg="background.backgroundLight"
             px={8}
             mx="auto"
           >
-            <HStack mb={8}>
+            <HStack my={8}>
               <Image src="/assets/automation.svg" alt="" />
               <HeadlineMedium>{t("tools-title")}</HeadlineMedium>
             </HStack>
@@ -162,12 +162,7 @@ export default function HomePage({
             {/* Accordions for stages */}
             {modulesByStage && projectModules && (
               <AccordionRoot multiple>
-                {[
-                  StageNames["Assess And Analyze"],
-                  StageNames.Plan,
-                  StageNames.Implement,
-                  StageNames["Monitor, Evaluate & Report"],
-                ].map((stage) => {
+                {stageOrder.map((stage) => {
                   const modules = projectModules.filter((mod) => {
                     return mod.stage === stage;
                   });

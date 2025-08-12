@@ -358,6 +358,28 @@ export default class UserService {
     return user.defaultInventoryId!;
   }
 
+  public static async findUserDefaultCity(
+    session: AppSession | null,
+  ): Promise<string> {
+    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+    const userId = session.user.id;
+    const user = await db.models.User.findOne({
+      attributes: ["defaultCityId", "userId"],
+      where: {
+        userId,
+      },
+    });
+    if (!user) {
+      throw new createHttpError.NotFound("User not found");
+    }
+
+    if (!user.defaultCityId) {
+      await UserService.updateDefaults(user.userId);
+    }
+
+    return user.defaultCityId!;
+  }
+
   /**
    * Load inventory information and perform access control
    */
@@ -464,7 +486,7 @@ export default class UserService {
         {
           model: db.models.City,
           as: "cities",
-          attributes: ["cityId", "name", "countryLocode"],
+          attributes: ["cityId", "name", "countryLocode", "country"],
           include: [
             {
               model: db.models.Inventory,
@@ -491,7 +513,7 @@ export default class UserService {
           {
             model: db.models.City,
             as: "cities",
-            attributes: ["cityId", "name", "countryLocode"],
+            attributes: ["cityId", "name", "countryLocode", "country"],
             include: [
               {
                 model: db.models.Inventory,
@@ -512,7 +534,7 @@ export default class UserService {
       include: {
         model: db.models.City,
         as: "city",
-        attributes: ["cityId", "name", "countryLocode"],
+        attributes: ["cityId", "name", "countryLocode", "country"],
         include: [
           {
             model: db.models.Project,
@@ -574,6 +596,7 @@ export default class UserService {
         name: city.name as string,
         cityId: city.cityId as string,
         inventories: city.inventories as any,
+        country: city.country as string,
         countryLocode: city.countryLocode as string,
         locode: city.locode as string,
       });

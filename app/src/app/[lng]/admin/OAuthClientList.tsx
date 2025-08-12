@@ -9,7 +9,8 @@ import React, { use } from "react";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import OAuthClientCard from "@/app/[lng]/admin/OAuthClientCard";
-
+import { TitleLarge } from "@/components/Texts/Title";
+import { ButtonMedium } from "@/components/Texts/Button";
 
 const OAuthClientList = (props: { lng: string }) => {
   const { lng } = props;
@@ -19,7 +20,7 @@ const OAuthClientList = (props: { lng: string }) => {
     api.useGetClientsQuery();
 
   return <Box>
-      <Heading>{t("oauth-clients-heading")}</Heading>
+      <TitleLarge>{t("oauth-clients-heading")}</TitleLarge>
       <Box>
         {(isClientsDataLoading)
          ? <ProgressLoader />

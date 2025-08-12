@@ -3,9 +3,10 @@
 import { api } from "@/services/api";
 import { getBoundingBox, getBoundsZoomLevel } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, memo, useEffect, useMemo, useState } from "react";
 import { Map, Marker } from "pigeon-maps";
 import { logger } from "@/services/logger";
+import type { CityLocationResponse } from "@/util/types";
 
 const MARKER_COLOR = "#009a2f"; // Primary brand green for location markers
 
@@ -19,6 +20,18 @@ export interface ProjectMapProps {
   width: number;
   height: number;
 }
+
+const MapMarker: FC<{ location: CityLocationResponse }> = memo(
+  ({ location }) => (
+    <Marker
+      key={location.locode}
+      width={50}
+      anchor={[location.latitude, location.longitude]}
+      color={MARKER_COLOR}
+    />
+  ),
+);
+MapMarker.displayName = "MapMarker"; // For better debugging in React DevTools
 
 export const ProjectMap: FC<ProjectMapProps> = ({
   projectId,
@@ -102,12 +115,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
           attributionPrefix={false}
         >
           {cityLocations?.map((location) => (
-            <Marker
-              key={location.locode}
-              width={50}
-              anchor={[location.latitude, location.longitude]}
-              color={MARKER_COLOR}
-            />
+            <MapMarker key={location.locode} location={location} />
           ))}
         </Map>
       )}

@@ -79,16 +79,19 @@ async function fetchFormulaData(baseUrl: string) {
 
   const results: Record<string, any> = {};
 
-  for (const endpoint of endpoints) {
+  const responsePairs = await Promise.all(endpoints.map(async (endpoint) => {
     const url = `${baseUrl}${endpoint.path}`;
-    logger.debug(`Fetching ${url}`);
-    
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error(
+      throw new createHttpError.InternalServerError(
         `Failed to fetch ${endpoint.path} with error ${response.status} ${response.statusText}`
       );
     }
+    const data = await response.json();
+    return [endpoint.key, data];
+  });
+  
+  const results = _.zipObject(responsePairs);
     
     const data = await response.json();
     // Special case handling for the formulainput_datasource endpoint

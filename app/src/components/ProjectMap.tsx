@@ -6,6 +6,8 @@ import { Box, Center, Spinner } from "@chakra-ui/react";
 import { FC, useEffect, useMemo, useState } from "react";
 import { Map, Marker } from "pigeon-maps";
 
+const MARKER_COLOR = "#009a2f"; // Primary brand green for location markers
+
 /**
  * Props for the ProjectMap component.
  * Note: Either projectId OR organizationId should be provided, but not both.
@@ -44,7 +46,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
   };
 
   // calculate compound bounding box from all lat/lngs
-  const { boundingBox, newCenter, newZoom } = useMemo(() => {
+  const { newCenter, newZoom } = useMemo(() => {
     if (!cityLocations?.length) return {};
     const boundingBox = getBoundingBox(cityLocations);
     if (!boundingBox || boundingBox.some(isNaN)) return {};
@@ -97,7 +99,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
               key={location.locode}
               width={50}
               anchor={[location.latitude, location.longitude]}
-              color="#009a2f"
+              color={MARKER_COLOR}
             />
           ))}
         </Map>

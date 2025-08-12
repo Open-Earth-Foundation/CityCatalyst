@@ -11,49 +11,12 @@ import {
 import { randomUUID } from "crypto";
 import { Decimal } from "decimal.js";
 import * as dotenv from "dotenv";
+import { TransportTestData, TestResult } from "@/data/transport-test-types";
+import transportSampleData from "@/data/transport-test-sample-data.json";
 
 // Test configuration constants
 const SAMPLE_SIZE = 29; // Test 20 random samples (adjust based on available data)
 const TOLERANCE = 0.01; // ±0.01 tonnes CO2e tolerance
-
-interface TransportTestData {
-  subsector: string;
-  methodology_id: string;
-  methodology_name: string;
-  methodology_status: string;
-  fuel_type: string;
-  vehicle_type: string;
-  co2_global_api: number;
-  ch4_global_api: number;
-  n2o_global_api: number;
-  units_in_global_api: string;
-  co2_gwp: number;
-  ch4_gwp: number;
-  n2o_gwp: number;
-  total_fuel_value: number;
-  total_fuel_units: string;
-  expected_co2e_tonnes: number;
-}
-
-interface TestResult {
-  success: boolean;
-  testData: {
-    subsector: string;
-    methodology: string;
-    fuelType: string;
-    vehicleType: string;
-    fuelValue: number;
-    fuelUnits: string;
-  };
-  expected: number;
-  calculated?: number;
-  difference?: number;
-  tolerance: number;
-  availableFactors: string[];
-  emissionFactorValues?: Record<string, number>;
-  calculations?: Record<string, number>;
-  error?: string;
-}
 
 describe("Transport Emission Factor Validation Tests", () => {
   let testData: TransportTestData[] = [];
@@ -223,47 +186,8 @@ async function loadTransportTestData(): Promise<TransportTestData[]> {
       console.log(`⚠️  CSV file not found at ${csvPath}`);
       console.log(`📝 Creating sample transport test data structure...`);
 
-      // Create sample data for demonstration
-      const sampleData: TransportTestData[] = [
-        {
-          subsector: "II.1.1",
-          methodology_id: "fuel-sales-on-road-transport-methodology",
-          methodology_name: "fuel-sales",
-          methodology_status: "Active",
-          fuel_type: "fuel-type-gasoline",
-          vehicle_type: "vehicle-type-passenger-vehicles",
-          co2_global_api: 2.31,
-          ch4_global_api: 0.0002,
-          n2o_global_api: 0.000004,
-          units_in_global_api: "kg/l",
-          co2_gwp: 1,
-          ch4_gwp: 28,
-          n2o_gwp: 265,
-          total_fuel_value: 100,
-          total_fuel_units: "l",
-          expected_co2e_tonnes: 0.231,
-        },
-        {
-          subsector: "II.1.1",
-          methodology_id: "fuel-sales-on-road-transport-methodology",
-          methodology_name: "fuel-sales",
-          methodology_status: "Active",
-          fuel_type: "fuel-type-diesel",
-          vehicle_type: "vehicle-type-commercial-vehicles",
-          co2_global_api: 2.68,
-          ch4_global_api: 0.0003,
-          n2o_global_api: 0.000006,
-          units_in_global_api: "kg/l",
-          co2_gwp: 1,
-          ch4_gwp: 28,
-          n2o_gwp: 265,
-          total_fuel_value: 150,
-          total_fuel_units: "l",
-          expected_co2e_tonnes: 0.402,
-        },
-      ];
-
-      resolve(sampleData);
+      // Use sample data from external file for demonstration
+      resolve(transportSampleData as TransportTestData[]);
       return;
     }
 

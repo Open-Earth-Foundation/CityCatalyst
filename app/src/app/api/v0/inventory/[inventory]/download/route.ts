@@ -1,16 +1,17 @@
 import { apiHandler } from "@/util/api";
-import { NextResponse } from "next/server";
 import Excel from "exceljs";
 import createHttpError from "http-errors";
+import { NextResponse } from "next/server";
 
-import type { Inventory } from "@/models/Inventory";
-import type { InventoryWithInventoryValuesAndActivityValues } from "@/util/types";
-import { db } from "@/models";
-import { getTranslationFromDictionary, keyBy } from "@/util/helpers";
-import ECRFDownloadService from "@/backend/ECRFDownloadService";
 import CSVDownloadService from "@/backend/CSVDownloadService";
-import InventoryDownloadService from "@/backend/InventoryDownloadService";
+import ECRFDownloadService from "@/backend/ECRFDownloadService";
+import InventoryDownloadService, {
+  InventoryDownloadResponse,
+} from "@/backend/InventoryDownloadService";
+import { db } from "@/models";
 import { logger } from "@/services/logger";
+import { getTranslationFromDictionary, keyBy } from "@/util/helpers";
+import type { InventoryWithInventoryValuesAndActivityValues } from "@/util/types";
 
 const CIRIS_TEMPLATE_PATH = "./templates/CIRIS_template.xlsm";
 
@@ -92,7 +93,9 @@ function converKgToTons(amount: bigint | null | undefined): string {
   return (BigInt(amount) / 1000n).toString(); // TODO do we need floating point values?
 }
 
-async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
+async function inventoryXLS(
+  inventory: InventoryDownloadResponse,
+): Promise<Buffer> {
   const sectors = await db.models.Sector.findAll();
   const inventorySectors = sectors
     .map((sector) => {

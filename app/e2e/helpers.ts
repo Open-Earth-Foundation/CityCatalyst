@@ -57,7 +57,14 @@ export async function createInventoryThroughOnboarding(
   // Handle cookie consent banner if it appears
   const cookieDeclineButton = page.getByRole("button", { name: /decline/i });
   if (await cookieDeclineButton.isVisible().catch(() => false)) {
-    await cookieDeclineButton.click();
+    try {
+      await cookieDeclineButton.click();
+    } catch (error) {
+      // If regular click fails on cookie button, try force click
+      await cookieDeclineButton.click({ force: true });
+    }
+    // Wait for cookie banner to disappear
+    await cookieDeclineButton.waitFor({ state: 'hidden' }).catch(() => {});
   }
 
   // Wait a moment for any animations to settle

@@ -44,7 +44,7 @@ export function getBoundingBox(
   const { longitude, latitude } = points[0];
   const result = [longitude, latitude, longitude, latitude] as BoundingBox;
   for (let i = 1; i < points.length; i++) {
-    let point = points[i];
+    const point = points[i];
     result[0] = Math.min(result[0], point.longitude);
     result[1] = Math.max(result[1], point.latitude);
     result[2] = Math.max(result[2], point.longitude);

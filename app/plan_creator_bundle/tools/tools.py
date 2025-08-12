@@ -80,19 +80,22 @@ def retriever_main_action_tool(
 
 @tool
 def retriever_vectorstore_national_strategy_tool(
+    action_type: str,
     search_query: str,
     country_code: str = "BR",
 ) -> Union[list[Tuple[Document, float]], str]:
     """
     Use this tool to retrieve chunks of text from a collection within a Chroma vector store.
-    The vector store contains a collections with documents related to the country's overall climate strategy.
+    The vector store contains a collections with documents related to the country's national climate strategy and split into mitigation and adaptation.
+    Use this tool to find the closest match between the climate action and the national strategies.
 
     **Input**:
     - search_query (str) - A concise search query.
-        * Example: "What is Brazil's national climate strategy?"
-        * Example: "What is the national climate strategy of Mexico?"
-        * Example: "What are [climate action] implementation strategies?"
+        * Example: "[Climate Action Name]"
+        * Example: "What is the national climate strategy for [Cliamte Action Name]?"
+        * Example: "What is the national climate strategy for [Climate Action Description]?"
     - country_code (str) - ISO country code (e.g., "BR" for Brazil, "US" for United States)
+    - action_type ("mitigation" | "adaptation") - The type of action (mitigation or adaptation)
 
     **Output**: A list of tuples in the form `[(document, relevance_score)]`.
     - Relevance scores range from `0` (lowest) to `1` (highest).
@@ -101,16 +104,24 @@ def retriever_vectorstore_national_strategy_tool(
     - Start with broad queries and progressively narrow down the search query.
 
     **Error Handling**:
-    - If the vector store is not found, it means it does not exist. Proceed with the next tool or continue with the task.
+    - If the vector store is not found, it means it does not exist. Continue with the task.
     """
 
     logger.info(f"Using retriever_vectorstore_national_strategy_tool")
     logger.info(f"Search query: {search_query}")
     logger.info(f"Country code: {country_code}")
+    logger.info(f"Action type: {action_type}")
+
+    # Ensure the LLM only uses the correct action type
+    if action_type not in ["mitigation", "adaptation"]:
+        logger.error(f"Invalid action type: {action_type}")
+        return (
+            f"Invalid action type: {action_type}. Check the action type and try again."
+        )
 
     # Load vector store based on country code
     vector_store = get_vectorstore(
-        collection_name=f"{country_code.lower()}_national_strategy"
+        collection_name=f"{country_code.lower()}_national_strategy_{action_type}"
     )
 
     if not vector_store:
@@ -144,7 +155,7 @@ def retriever_vectorstore_national_strategy_tool(
     docs_and_scores = vector_store.similarity_search_with_relevance_scores(
         query=search_query,
         k=5,
-        score_threshold=0.40,
+        score_threshold=0.33,
         # filter=metadata_filter,  # Dynamically apply metadata filter
     )
 

@@ -57,30 +57,31 @@ interface APIResponse<T> {
   [key: string]: T[];
 }
 
-function snakeToCamel(str: string): string {
-  return str
-    .toLowerCase()
-    .replace(/([-_][a-z])/g, (group) =>
-      group.toUpperCase().replace("-", "").replace("_", ""),
-    );
-}
+// Utility function for snake_case to camelCase conversion (unused but kept for potential future use)
+// function snakeToCamel(str: string): string {
+//   return str
+//     .toLowerCase()
+//     .replace(/([-_][a-z])/g, (group) =>
+//       group.toUpperCase().replace("-", "").replace("_", ""),
+//     );
+// }
 
 async function fetchFormulaData(baseUrl: string) {
-  console.log("Fetching formula input data from global API...");
+  logger.info("Fetching formula input data from global API...");
   
   const endpoints = [
     { path: "/formula_input/publisher", key: "formula_input_publisher" },
     { path: "/formula_input/datasource", key: "formula_input_datasource" },
     { path: "/formula_input/methodology", key: "formula_input_methodology" },
     { path: "/formula_input/formula_input", key: "formula_input" },
-    { path: "/formula_input/formulainput_datasource", key: "formula_input_datasource" }
+    { path: "/formula_input/formulainput_datasource", key: "formula_input_datasource_mapping" }
   ];
 
   const results: Record<string, any> = {};
 
   for (const endpoint of endpoints) {
     const url = `${baseUrl}${endpoint.path}`;
-    console.log(`Fetching ${url}`);
+    logger.debug(`Fetching ${url}`);
     
     const response = await fetch(url);
     if (!response.ok) {
@@ -90,7 +91,15 @@ async function fetchFormulaData(baseUrl: string) {
     }
     
     const data = await response.json();
-    results[endpoint.key] = data[endpoint.key] || [];
+    // Special case handling for the formulainput_datasource endpoint
+    // The API returns data with key "formula_input_datasource" but we already use that key
+    // for the /formula_input/datasource endpoint. To avoid collision in our results object,
+    // we store this endpoint's data under "formula_input_datasource_mapping" instead.
+    if (endpoint.path === "/formula_input/formulainput_datasource") {
+      results[endpoint.key] = data["formula_input_datasource"] || [];
+    } else {
+      results[endpoint.key] = data[endpoint.key] || [];
+    }
   }
 
   return results;
@@ -106,6 +115,8 @@ function transformFormulaData(apiData: Record<string, any>) {
   const dataSources: DataSourceI18nCreationAttributes[] = apiData.formula_input_datasource.map((ds: FormulaInputDataSource) => ({
     datasourceId: ds.datasource_id,
     datasourceName: ds.datasource_name,
+    // TODO: Consider changing from { user: ... } to { en: ... } for clarity
+    // Currently matches the pattern used in the original seeder
     datasetName: ds.dataset_name ? JSON.stringify({ user: ds.dataset_name }) : null,
     sourceType: "formula_input", // Default value
     datasetUrl: ds.URL,
@@ -159,7 +170,7 @@ function transformFormulaData(apiData: Record<string, any>) {
     methodologyId: fi.methodology_id,
   }));
 
-  const dataSourceFormulaInputs: DataSourceFormulaInputCreationAttributes[] = apiData.formula_input_datasource.map((mapping: FormulaInputDataSourceMapping) => ({
+  const dataSourceFormulaInputs: DataSourceFormulaInputCreationAttributes[] = apiData.formula_input_datasource_mapping.map((mapping: FormulaInputDataSourceMapping) => ({
     datasourceId: mapping.datasource_id,
     formulaInputId: mapping.formula_input_id,
   }));
@@ -173,6 +184,65 @@ function transformFormulaData(apiData: Record<string, any>) {
   };
 }
 
+async function initializeDatabase() {
+  if (!db.initialized) {
+    await db.initialize();
+  }
+}
+
+async function findOrCreateCatalogue() {
+  let catalogue = await db.models.Catalogue.findOne({
+    where: { type: "formula_values" },
+  });
+  if (!catalogue) {
+    catalogue = await db.models.Catalogue.create({
+      type: "formula_values",
+      lastUpdate: new Date(0),
+    });
+  }
+  return catalogue;
+}
+
+async function syncPublishers(publishers: PublisherCreationAttributes[]) {
+  logger.debug("Syncing publishers...");
+  await Promise.all(
+    publishers.map((publisher) => db.models.Publisher.upsert(publisher))
+  );
+  logger.info(`Synced ${publishers.length} publishers`);
+}
+
+async function syncDataSources(dataSources: DataSourceI18nCreationAttributes[]) {
+  logger.debug("Syncing data sources...");
+  await Promise.all(
+    dataSources.map((dataSource) => db.models.DataSource.upsert(dataSource))
+  );
+  logger.info(`Synced ${dataSources.length} data sources`);
+}
+
+async function syncMethodologies(methodologies: MethodologyCreationAttributes[]) {
+  logger.debug("Syncing methodologies...");
+  await Promise.all(
+    methodologies.map((methodology) => db.models.Methodology.upsert(methodology))
+  );
+  logger.info(`Synced ${methodologies.length} methodologies`);
+}
+
+async function syncFormulaInputs(formulaInputs: FormulaInputCreationAttributes[]) {
+  logger.debug("Syncing formula inputs...");
+  await Promise.all(
+    formulaInputs.map((formulaInput) => db.models.FormulaInput.upsert(formulaInput))
+  );
+  logger.info(`Synced ${formulaInputs.length} formula inputs`);
+}
+
+async function syncFormulaInputRelationships(relationships: DataSourceFormulaInputCreationAttributes[]) {
+  logger.debug("Syncing datasource-formulainput relationships...");
+  await db.models.DataSourceFormulaInput.bulkCreate(relationships, {
+    ignoreDuplicates: true
+  });
+  logger.info(`Synced ${relationships.length} datasource-formulainput relationships`);
+}
+
 async function syncFormulaValues() {
   const projectDir = process.cwd();
   env.loadEnvConfig(projectDir);
@@ -180,76 +250,34 @@ async function syncFormulaValues() {
 
   const GLOBAL_API_URL =
     process.env.GLOBAL_API_URL || "http://api.citycatalyst.io";
-  console.log("Using global API at", GLOBAL_API_URL);
-
-  if (!db.initialized) {
-    await db.initialize();
-  }
-
-  let catalogue = await db.models.Catalogue.findOne({
-    where: { type: "formula_values" },
-  });
-  if (!catalogue) {
-    catalogue = await db.models.Catalogue.create({
-      type: "formula_values",
-      lastUpdate: new Date(0), // UNIX epoch as default value
-    });
-  }
-
-  const catalogueUrl = `${GLOBAL_API_URL}/api/v0`;
-  let lastUpdate = 0;
-
-  // For now, we'll skip timestamp checking since the formula endpoints don't have a last-update endpoint
-  if (!SKIP_TIMESTAMP_CHECK) {
-    console.warn("Timestamp checking not implemented for formula values yet, proceeding with sync");
-  }
+  logger.info(`Using global API at ${GLOBAL_API_URL}`);
 
   try {
+    await initializeDatabase();
+    const catalogue = await findOrCreateCatalogue();
+    const catalogueUrl = `${GLOBAL_API_URL}/api/v0`;
+
+    if (!SKIP_TIMESTAMP_CHECK) {
+      logger.warn("Timestamp checking not implemented for formula values yet, proceeding with sync");
+    }
+
     // Fetch all formula data from the global API
     const apiData = await fetchFormulaData(catalogueUrl);
     
     // Transform the data to match local model expectations
     const transformedData = transformFormulaData(apiData);
 
-    logger.debug("Starting formula values sync...");
+    logger.info("Starting formula values sync...");
 
-    // Sync Publishers
-    logger.debug("Syncing publishers...");
-    for (const publisher of transformedData.publishers) {
-      await db.models.Publisher.upsert(publisher);
-    }
-    console.log(`Synced ${transformedData.publishers.length} publishers`);
-
-    // Sync DataSources
-    logger.debug("Syncing data sources...");
-    for (const dataSource of transformedData.dataSources) {
-      await db.models.DataSource.upsert(dataSource);
-    }
-    console.log(`Synced ${transformedData.dataSources.length} data sources`);
-
-    // Sync Methodologies
-    logger.debug("Syncing methodologies...");
-    for (const methodology of transformedData.methodologies) {
-      await db.models.Methodology.upsert(methodology);
-    }
-    console.log(`Synced ${transformedData.methodologies.length} methodologies`);
-
-    // Sync Formula Inputs
-    logger.debug("Syncing formula inputs...");
-    for (const formulaInput of transformedData.formulaInputs) {
-      await db.models.FormulaInput.upsert(formulaInput);
-    }
-    console.log(`Synced ${transformedData.formulaInputs.length} formula inputs`);
-
-    // Sync DataSource-FormulaInput relationships
-    logger.debug("Syncing datasource-formulainput relationships...");
-    await db.models.DataSourceFormulaInput.bulkCreate(transformedData.dataSourceFormulaInputs, {
-      ignoreDuplicates: true
-    });
-    console.log(`Synced ${transformedData.dataSourceFormulaInputs.length} datasource-formulainput relationships`);
+    // Sync all components in sequence to avoid database conflicts
+    await syncPublishers(transformedData.publishers);
+    await syncDataSources(transformedData.dataSources);
+    await syncMethodologies(transformedData.methodologies);
+    await syncFormulaInputs(transformedData.formulaInputs);
+    await syncFormulaInputRelationships(transformedData.dataSourceFormulaInputs);
 
     await catalogue.update({ lastUpdate: new Date() });
-    logger.debug("Updated Catalogue, formula values sync complete!");
+    logger.info("Formula values sync completed successfully!");
 
   } catch (error) {
     console.error("Error syncing formula values:", error);

@@ -149,5 +149,7 @@
   "oauth-no-clients": "No clients.",
   "oauth-no-name": "(No name)",
   "oauth-no-description": "(No description)",
-  "oauth-redirect-uri": "Redirect URL"
+  "oauth-redirect-uri": "Redirect URL",
+  "oauth-clients-add-button": "Add OAuth 2.0 Client",
+  "oauth-clients-subtitle": "Manage external apps that access city data"
 }

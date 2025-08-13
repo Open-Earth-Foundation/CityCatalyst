@@ -3,7 +3,8 @@
 import {
   Box,
   Button,
-  Icon
+  Icon,
+  Flex
 } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import React, { use } from "react";
@@ -21,20 +22,25 @@ const OAuthClientList = (props: { lng: string }) => {
   const { data: clientsData, isLoading: isClientsDataLoading } =
     api.useGetClientsQuery();
 
+  const handleAddClient = () => alert('Adding client');
+
   return <Box>
-      <TitleLarge>{t("oauth-clients-heading")}</TitleLarge>
-      <Box>{t("oauth-clients-subtitle")}</Box>
-      <Button
-        onClick={() => alert('Adding client')}
-        variant="ghost"
-        h="48px"
-        bg="interactive.secondary"
-        color="base.light"
-        mt="auto"
-      >
-        <Icon as={BsPlus} h={8} w={8} />
-        {t("oauth-clients-add-button")}
-      </Button>
+      <Flex>
+        <Box>
+          <TitleLarge>{t("oauth-clients-heading")}</TitleLarge>
+          <Box>{t("oauth-clients-subtitle")}</Box>
+        </Box>
+        <Button
+          onClick={handleAddClient}
+          variant="ghost"
+          h="48px"
+          bg="interactive.secondary"
+          color="base.light"
+          ml="auto">
+          <Icon as={BsPlus} h={8} w={8} />
+          {t("oauth-clients-add-button")}
+        </Button>
+      </Flex>
       <Box>
         {(isClientsDataLoading)
          ? <ProgressLoader />

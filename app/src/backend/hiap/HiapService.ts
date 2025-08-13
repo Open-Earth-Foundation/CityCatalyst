@@ -262,7 +262,7 @@ async function createRankedActionRecord(
     return true;
   } catch (err) {
     logger.error("Failed to save ranked action", { rankedAction, err });
-    return false;
+    throw err;
   }
 }
 
@@ -457,7 +457,6 @@ async function getRankedActionsForLang(
 async function copyRankedActionsToLang(ranking: any, lang: LANGUAGES) {
   const allLangRanked = await db.models.HighImpactActionRanked.findAll({
     where: { hiaRankingId: ranking.id },
-    order: [["created", "ASC"]], // Order by creation time for consistent results
   });
 
   if (
@@ -468,7 +467,9 @@ async function copyRankedActionsToLang(ranking: any, lang: LANGUAGES) {
   }
 
   // Use lodash.uniqBy to get unique actions by actionId, then get the first occurrence of each
-  const uniqueActions = uniqBy(allLangRanked, "actionId");
+  const uniqueActions = uniqBy(allLangRanked, "actionId").sort(
+    (a, b) => a.rank - b.rank,
+  );
 
   logger.info(
     `Copying ${uniqueActions.length} unique actions to language ${lang}`,

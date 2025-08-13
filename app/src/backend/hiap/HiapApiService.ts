@@ -39,7 +39,7 @@ export async function startPrioritization(
     );
   }
   const json = await response.json();
-  logger.info({ json }, "startPrioritization response JSON");
+  logger.info("startPrioritization response received successfully");
   const { taskId } = json;
   if (!taskId) throw new Error("No taskId returned from HIAP API");
   return { taskId };
@@ -64,7 +64,7 @@ export async function checkPrioritizationProgress(
     throw new Error("Failed to check job status");
   }
   const json = await response.json();
-  logger.info({ json }, "checkPrioritizationProgress response JSON");
+  logger.info("checkPrioritizationProgress response received successfully");
   return json;
 }
 
@@ -80,6 +80,6 @@ export async function getPrioritizationResult(
   );
   if (!response.ok) throw new Error("Failed to fetch job result");
   const json = await response.json();
-  logger.info({ json }, "getPrioritizationResult response JSON");
+  logger.info("getPrioritizationResult response received successfully");
   return json;
 }

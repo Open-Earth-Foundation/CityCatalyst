@@ -148,7 +148,7 @@ const startActionRankingJob = async (
     jobId: taskId,
     status: HighImpactActionRankingStatus.PENDING,
   });
-  logger.info({ ranking }, "Ranking created in DB");
+  logger.info(`Ranking created in DB with ID: ${ranking.id}`);
 
   // Do not await here, it will make the request time out. Poll job in the background.
   checkActionRankingJob(ranking, lang, type);

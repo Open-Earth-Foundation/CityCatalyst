@@ -130,11 +130,13 @@ const startActionRankingJob = async (
   type: ACTION_TYPES,
 ) => {
   const contextData = await getCityContextAndEmissionsData(inventoryId);
-  logger.info({ contextData }, 'City context and emissions data fetched');
-  if (!contextData) throw new Error('No city context/emissions data found');
+  logger.info({ contextData }, "City context and emissions data fetched");
+  if (!contextData) throw new Error("No city context/emissions data found");
+
   const { taskId } = await startPrioritization(contextData, type);
-  logger.info({ taskId }, 'Task ID received from HIAP API');
-  if (!taskId) throw new Error('No taskId returned from HIAP API');
+  logger.info({ taskId }, "Task ID received from HIAP API");
+  if (!taskId) throw new Error("No taskId returned from HIAP API");
+
   const ranking = await db.models.HighImpactActionRanking.create({
     locode,
     inventoryId,
@@ -143,7 +145,7 @@ const startActionRankingJob = async (
     jobId: taskId,
     status: HighImpactActionRankingStatus.PENDING,
   });
-  logger.info({ ranking }, 'Ranking created in DB');
+  logger.info({ ranking }, "Ranking created in DB");
 
   // Do not await here, it will make the request time out. Poll job in the background.
   checkActionRankingJob(ranking, lang, type);
@@ -152,17 +154,27 @@ const startActionRankingJob = async (
 
 async function fetchAndMergeRankedActions(
   lang: LANGUAGES,
-  rankedActions: { actionId: string; rank: number; explanation: any; type: ACTION_TYPES }[],
+  rankedActions: {
+    actionId: string;
+    rank: number;
+    explanation: any;
+    type: ACTION_TYPES;
+  }[],
 ) {
   const allActions = await GlobalAPIService.fetchAllClimateActions(lang);
-  
-  return rankedActions.map((rankedAction) => {
-    const details = allActions.find((a: any) => a.ActionID === rankedAction.actionId);
-    if (!details) {
-      logger.error(`No action details found for ActionID: ${rankedAction.actionId}`);
-      return null;
-    }
-    
+
+  return rankedActions
+    .map((rankedAction) => {
+      const details = allActions.find(
+        (a: any) => a.ActionID === rankedAction.actionId,
+      );
+      if (!details) {
+        logger.error(
+          `No action details found for ActionID: ${rankedAction.actionId}`,
+        );
+        return null;
+      }
+
     return {
       ...rankedAction,
       explanation: rankedAction.explanation,
@@ -170,53 +182,69 @@ async function fetchAndMergeRankedActions(
       hazard: details.Hazard,
       sector: details.Sector,
       subsector: details.Subsector,
-      primaryPurpose: details.PrimaryPurpose,
-      description: details.Description,
-      cobenefits: details.CoBenefits,
-      equityAndInclusionConsiderations: details.EquityAndInclusionConsiderations,
-      GHGReductionPotential: details.GHGReductionPotential,
-      adaptationEffectiveness: details.AdaptationEffectiveness,
-      costInvestmentNeeded: details.CostInvestmentNeeded,
-      timelineForImplementation: details.TimelineForImplementation,
-      dependencies: details.Dependencies,
-      keyPerformanceIndicators: (details.KeyPerformanceIndicators),
-      powersAndMandates: (details.PowersAndMandates),
-      adaptationEffectivenessPerHazard: details.AdaptationEffectivenessPerHazard,
-      biome: details.biome,
-    };
-  }).filter((r) => r !== null);
+        primaryPurpose: details.PrimaryPurpose,
+        description: details.Description,
+        cobenefits: details.CoBenefits,
+        equityAndInclusionConsiderations:
+          details.EquityAndInclusionConsiderations,
+        GHGReductionPotential: details.GHGReductionPotential,
+        adaptationEffectiveness: details.AdaptationEffectiveness,
+        costInvestmentNeeded: details.CostInvestmentNeeded,
+        timelineForImplementation: details.TimelineForImplementation,
+        dependencies: details.Dependencies,
+        keyPerformanceIndicators: details.KeyPerformanceIndicators,
+        powersAndMandates: details.PowersAndMandates,
+        adaptationEffectivenessPerHazard:
+          details.AdaptationEffectivenessPerHazard,
+        biome: details.biome,
+      };
+    })
+    .filter((r) => r !== null);
 }
 
-// Helper: Save ranked actions for a language
-async function saveRankedActionsForLanguage(
-  ranking: HighImpactActionRanking,
-  rankedActions: any[],
+// Helper: Check if actions already exist for a language
+async function checkExistingActions(
+  rankingId: string,
   lang: LANGUAGES,
-) {
-  const updatedRanking = await db.models.HighImpactActionRanking.findByPk(ranking.id);
-  if (updatedRanking?.status !== HighImpactActionRankingStatus.PENDING) {
-    return;// trying to avoid race condition, if another thread already processed the ranking, don't store the actions again.
+): Promise<boolean> {
+  const existingActions = await db.models.HighImpactActionRanked.findAll({
+    where: { hiaRankingId: rankingId, lang },
+  });
+
+  if (existingActions.length > 0) {
+    logger.info(
+      `[saveRankedActionsForLanguage] Actions for lang ${lang} already exist, skipping save`,
+    );
+    return true;
   }
-  // Always fetch and merge details in the requested language
-  const mergedRanked = await fetchAndMergeRankedActions(lang, rankedActions);
-  const createRankedAction = async (rankedAction: any) => {
-    if (!rankedAction) return;
-    try {
-      await db.models.HighImpactActionRanked.create({
-        hiaRankingId: ranking.id,
-        lang: lang,
-        actionId: rankedAction.actionId,
-        rank: rankedAction.rank,
+  return false;
+}
+
+// Helper: Create a single ranked action record
+async function createRankedActionRecord(
+  rankingId: string,
+  lang: LANGUAGES,
+  rankedAction: any,
+): Promise<boolean> {
+  if (!rankedAction) return false;
+
+  try {
+    await db.models.HighImpactActionRanked.create({
+      hiaRankingId: rankingId,
+      lang: lang,
+      actionId: rankedAction.actionId,
+      rank: rankedAction.rank,
         type: rankedAction.type,
         explanation: rankedAction.explanation,
         name: rankedAction.name,
         hazards: rankedAction.hazard,
         sectors: rankedAction.sector,
-        subsectors: rankedAction.subsector, 
+        subsectors: rankedAction.subsector,
         primaryPurposes: rankedAction.primaryPurpose,
         description: rankedAction.description,
         cobenefits: rankedAction.cobenefits,
-        equityAndInclusionConsiderations: rankedAction.equityAndInclusionConsiderations,
+        equityAndInclusionConsiderations:
+          rankedAction.equityAndInclusionConsiderations,
         GHGReductionPotential: rankedAction.GHGReductionPotential,
         adaptationEffectiveness: rankedAction.adaptationEffectiveness,
         costInvestmentNeeded: rankedAction.costInvestmentNeeded,
@@ -224,7 +252,8 @@ async function saveRankedActionsForLanguage(
         dependencies: rankedAction.dependencies,
         keyPerformanceIndicators: rankedAction.keyPerformanceIndicators,
         powersAndMandates: rankedAction.powersAndMandates,
-        adaptationEffectivenessPerHazard: rankedAction.adaptationEffectivenessPerHazard,
+        adaptationEffectivenessPerHazard:
+          rankedAction.adaptationEffectivenessPerHazard,
         biome: rankedAction.biome,
       });
       return true;
@@ -236,7 +265,9 @@ async function saveRankedActionsForLanguage(
 
   const results = await Promise.all(mergedRanked.map(createRankedAction));
   let savedCount = results.filter(Boolean).length;
-  logger.info(`[saveRankedActionsForLanguage] Saved ${savedCount} out of ${mergedRanked.length} ranked actions for lang ${lang}.`);
+  logger.info(
+    `[saveRankedActionsForLanguage] Saved ${savedCount} out of ${mergedRanked.length} ranked actions for lang ${lang}.`,
+  );
 }
 
 export const checkActionRankingJob = async (
@@ -279,10 +310,16 @@ export const checkActionRankingJob = async (
     const actionRanking: PrioritizerResponse =
       await getPrioritizationResult(jobId);
 
-      // Merge and save ranked actions with details for this language
+    // Merge and save ranked actions with details for this language
     const rankedActions = [
-      ...actionRanking.rankedActionsMitigation.map((a) => ({ ...a, type: ACTION_TYPES.Mitigation })),
-      ...actionRanking.rankedActionsAdaptation.map((a) => ({ ...a, type: ACTION_TYPES.Adaptation })),
+      ...actionRanking.rankedActionsMitigation.map((a) => ({
+        ...a,
+        type: ACTION_TYPES.Mitigation,
+      })),
+      ...actionRanking.rankedActionsAdaptation.map((a) => ({
+        ...a,
+        type: ACTION_TYPES.Adaptation,
+      })),
     ];
     const mergedRanked = await fetchAndMergeRankedActions(lang, rankedActions);
     await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
@@ -295,8 +332,13 @@ export const checkActionRankingJob = async (
 };
 
 // Helper to get emissions for a sector by name
-function getSectorEmissions(emissionsBySector: any[], sectorName: string): number | null {
-  const value = emissionsBySector.find((s) => s.sectorName === sectorName)?.co2eq;
+function getSectorEmissions(
+  emissionsBySector: any[],
+  sectorName: string,
+): number | null {
+  const value = emissionsBySector.find(
+    (s) => s.sectorName === sectorName,
+  )?.co2eq;
   const num = Number(value);
   return isNaN(num) ? null : num;
 }
@@ -325,11 +367,20 @@ async function getCityContextAndEmissionsData(
       populationSize: populationSize.population!,
     },
     cityEmissionsData: {
-      stationaryEnergyEmissions: getSectorEmissions(emissionsBySector, "Stationary Energy"),
-      transportationEmissions: getSectorEmissions(emissionsBySector, "Transportation"),
+      stationaryEnergyEmissions: getSectorEmissions(
+        emissionsBySector,
+        "Stationary Energy",
+      ),
+      transportationEmissions: getSectorEmissions(
+        emissionsBySector,
+        "Transportation",
+      ),
       wasteEmissions: getSectorEmissions(emissionsBySector, "Waste"),
       ippuEmissions: getSectorEmissions(emissionsBySector, "IPPU"),
-      afoluEmissions: getSectorEmissions(emissionsBySector, "Agriculture, Forestry, and Other Land Use (AFOLU)"),
+      afoluEmissions: getSectorEmissions(
+        emissionsBySector,
+        "Agriculture, Forestry, and Other Land Use (AFOLU)",
+      ),
     },
   };
   return cityData;
@@ -352,19 +403,23 @@ async function findOrSelectRanking(
 }
 
 // Helper: Get ranked actions for a ranking and language
-async function getRankedActionsForLang(ranking: any, lang: LANGUAGES, type?: ACTION_TYPES) {
+async function getRankedActionsForLang(
+  ranking: any,
+  lang: LANGUAGES,
+  type?: ACTION_TYPES,
+) {
   const whereClause: any = { hiaRankingId: ranking.id, lang };
-  
+
   // Add type filter only if type is provided
   if (type) {
     whereClause.type = type;
   }
-  
+
   const actions = await db.models.HighImpactActionRanked.findAll({
     where: whereClause,
-    order: [['rank', 'ASC']],
+    order: [["rank", "ASC"]],
   });
-  
+
   return actions;
 }
 
@@ -384,9 +439,12 @@ async function copyRankedActionsToLang(ranking: any, lang: LANGUAGES) {
     actionId: r.actionId,
     rank: r.rank,
     explanation: r.explanation,
-    type: r.type,
+    type: r.type as ACTION_TYPES,
   }));
-  await saveRankedActionsForLanguage(ranking, rankedActions, lang);
+
+  // Fetch and merge action details in the requested language
+  const mergedRanked = await fetchAndMergeRankedActions(lang, rankedActions);
+  await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
   return getRankedActionsForLang(ranking, lang);
 }
 

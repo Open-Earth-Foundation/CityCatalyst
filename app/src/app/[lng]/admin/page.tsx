@@ -129,7 +129,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
     } catch (error: any) {
       toaster.dismiss();
       // Check if the error is about already being an admin using error code
-      if (error?.data?.error?.code === 'USER_ALREADY_ORG_ADMIN') {
+      if (error?.data?.error?.code === "USER_ALREADY_ORG_ADMIN") {
         // Get the email from the error data or fallback to the original email
         toaster.create({
           title: t("already-registered-admin", { email }),
@@ -230,9 +230,9 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
           <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
             <TabTrigger title="organizations" />
             <TabTrigger title="bulk-actions" />
-            { hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) &&
+            {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
               <TabTrigger title="oauth-clients" />
-            }
+            )}
             <Tabs.Indicator rounded="l2" />
           </Tabs.List>
           <Tabs.Content value="organizations">
@@ -534,11 +534,11 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
               </Tabs.Content>
             </Tabs.Root>
           </Tabs.Content>
-          { hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) &&
-              <Tabs.Content value="oauth-clients">
-                <OAuthClientList lng={lng} />
-              </Tabs.Content>
-          }
+          {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
+            <Tabs.Content value="oauth-clients">
+              <OAuthClientList lng={lng} />
+            </Tabs.Content>
+          )}
         </Tabs.Root>
       </Box>
 

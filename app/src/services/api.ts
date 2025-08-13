@@ -1403,34 +1403,33 @@ export const api = createApi({
       }),
       getClients: builder.query<Client[], void>({
         query: () => `client/`,
-        transformResponse: (response: { data: Client[] }) =>
-          response.data,
+        transformResponse: (response: { data: Client[] }) => response.data,
       }),
       addClient: builder.mutation({
         query: ({
           redirectUri,
           name,
-          description
+          description,
         }: {
-         redirectUri: string,
-          name: Record<string,string>,
-          description: Record<string,string>
+          redirectUri: string;
+          name: Record<string, string>;
+          description: Record<string, string>;
         }) => ({
           method: "POST",
           url: `/client/`,
           body: {
             redirectUri,
             name,
-            description
+            description,
           },
         }),
-        transformResponse: (response: { data: Client }) => response.data
+        transformResponse: (response: { data: Client }) => response.data,
       }),
-      deleteClient: builder.mutation<void,string>({
+      deleteClient: builder.mutation<void, string>({
         query: (clientId: string) => ({
           method: "DELETE",
-          url: `/client/${clientId}`
-        })
+          url: `/client/${clientId}`,
+        }),
       }),
     };
   },

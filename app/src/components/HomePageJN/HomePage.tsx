@@ -95,13 +95,6 @@ export default function HomePage({
       skip: !cityIdFromParam,
     });
 
-  // If city query fails (e.g., non-existing city ID), redirect to cities onboarding
-  useEffect(() => {
-    if (cityError) {
-      router.push(`/${lng}/cities`);
-    }
-  }, [cityError, cityIdFromParam, lng, router]);
-
   const { organization, setOrganization } = useOrganizationContext();
   const { setTheme } = useTheme();
 

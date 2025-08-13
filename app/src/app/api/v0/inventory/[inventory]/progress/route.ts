@@ -12,7 +12,12 @@ export const GET = apiHandler(async (_req, { session, params }) => {
   }
   let inventoryId = params.inventory;
   if (inventoryId === "default") {
-    inventoryId = await UserService.updateDefaults(session.user.id);
+    const defaultInventoryId = await UserService.updateDefaults(
+      session.user.id,
+    );
+    if (defaultInventoryId) {
+      inventoryId = defaultInventoryId;
+    }
   }
   if (!inventoryId) {
     throw new createHttpError.NotFound("Inventory not found");

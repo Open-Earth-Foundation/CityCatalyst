@@ -20,23 +20,7 @@ import {
 import { InventoryService } from "../InventoryService";
 import GlobalAPIService from "../GlobalAPIService";
 import { PrioritizerResponse, PrioritizerCityData } from "./types";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import { uniqBy } from "lodash";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 logger.info("Using HIAP API at", HIAP_API_URL);
@@ -129,6 +113,25 @@ const startActionRankingJob = async (
   lang: LANGUAGES,
   type: ACTION_TYPES,
 ) => {
+  // Check if a ranking is already in progress for this inventory/locode
+  const existingRanking = await db.models.HighImpactActionRanking.findOne({
+    where: { inventoryId, locode, type },
+    order: [["created", "DESC"]],
+  });
+
+  // If there's already a ranking in progress, return it instead of starting a new one
+  if (
+    existingRanking &&
+    existingRanking.status === HighImpactActionRankingStatus.PENDING
+  ) {
+    logger.info("Ranking already in progress, returning existing ranking", {
+      rankingId: existingRanking.id,
+      inventoryId,
+      locode,
+    });
+    return existingRanking;
+  }
+
   const contextData = await getCityContextAndEmissionsData(inventoryId);
   logger.info({ contextData }, "City context and emissions data fetched");
   if (!contextData) throw new Error("No city context/emissions data found");
@@ -175,13 +178,13 @@ async function fetchAndMergeRankedActions(
         return null;
       }
 
-    return {
-      ...rankedAction,
-      explanation: rankedAction.explanation,
-      name: details.ActionName,
-      hazard: details.Hazard,
-      sector: details.Sector,
-      subsector: details.Subsector,
+      return {
+        ...rankedAction,
+        explanation: rankedAction.explanation,
+        name: details.ActionName,
+        hazard: details.Hazard,
+        sector: details.Sector,
+        subsector: details.Subsector,
         primaryPurpose: details.PrimaryPurpose,
         description: details.Description,
         cobenefits: details.CoBenefits,
@@ -202,22 +205,22 @@ async function fetchAndMergeRankedActions(
     .filter((r) => r !== null);
 }
 
-// Helper: Check if actions already exist for a language
+// Helper: Check if actions already exist for a language and return them if they do
 async function checkExistingActions(
   rankingId: string,
   lang: LANGUAGES,
-): Promise<boolean> {
+): Promise<any[] | null> {
   const existingActions = await db.models.HighImpactActionRanked.findAll({
     where: { hiaRankingId: rankingId, lang },
   });
 
   if (existingActions.length > 0) {
     logger.info(
-      `[saveRankedActionsForLanguage] Actions for lang ${lang} already exist, skipping save`,
+      `[saveRankedActionsForLanguage] Actions for lang ${lang} already exist, returning ${existingActions.length} actions`,
     );
-    return true;
+    return existingActions;
   }
-  return false;
+  return null;
 }
 
 // Helper: Create a single ranked action record
@@ -234,40 +237,67 @@ async function createRankedActionRecord(
       lang: lang,
       actionId: rankedAction.actionId,
       rank: rankedAction.rank,
-        type: rankedAction.type,
-        explanation: rankedAction.explanation,
-        name: rankedAction.name,
-        hazards: rankedAction.hazard,
-        sectors: rankedAction.sector,
-        subsectors: rankedAction.subsector,
-        primaryPurposes: rankedAction.primaryPurpose,
-        description: rankedAction.description,
-        cobenefits: rankedAction.cobenefits,
-        equityAndInclusionConsiderations:
-          rankedAction.equityAndInclusionConsiderations,
-        GHGReductionPotential: rankedAction.GHGReductionPotential,
-        adaptationEffectiveness: rankedAction.adaptationEffectiveness,
-        costInvestmentNeeded: rankedAction.costInvestmentNeeded,
-        timelineForImplementation: rankedAction.timelineForImplementation,
-        dependencies: rankedAction.dependencies,
-        keyPerformanceIndicators: rankedAction.keyPerformanceIndicators,
-        powersAndMandates: rankedAction.powersAndMandates,
-        adaptationEffectivenessPerHazard:
-          rankedAction.adaptationEffectivenessPerHazard,
-        biome: rankedAction.biome,
-      });
-      return true;
-    } catch (err) {
-      logger.error("Failed to save ranked action", { rankedAction, err });
-      return false;
-    }
-  };
+      type: rankedAction.type,
+      explanation: rankedAction.explanation,
+      name: rankedAction.name,
+      hazards: rankedAction.hazard,
+      sectors: rankedAction.sector,
+      subsectors: rankedAction.subsector,
+      primaryPurposes: rankedAction.primaryPurpose,
+      description: rankedAction.description,
+      cobenefits: rankedAction.cobenefits,
+      equityAndInclusionConsiderations:
+        rankedAction.equityAndInclusionConsiderations,
+      GHGReductionPotential: rankedAction.GHGReductionPotential,
+      adaptationEffectiveness: rankedAction.adaptationEffectiveness,
+      costInvestmentNeeded: rankedAction.costInvestmentNeeded,
+      timelineForImplementation: rankedAction.timelineForImplementation,
+      dependencies: rankedAction.dependencies,
+      keyPerformanceIndicators: rankedAction.keyPerformanceIndicators,
+      powersAndMandates: rankedAction.powersAndMandates,
+      adaptationEffectivenessPerHazard:
+        rankedAction.adaptationEffectivenessPerHazard,
+      biome: rankedAction.biome,
+    });
+    return true;
+  } catch (err) {
+    logger.error("Failed to save ranked action", { rankedAction, err });
+    return false;
+  }
+}
 
-  const results = await Promise.all(mergedRanked.map(createRankedAction));
-  let savedCount = results.filter(Boolean).length;
+// Helper: Save ranked actions for a language and return the actions
+async function saveRankedActionsForLanguage(
+  ranking: HighImpactActionRanking,
+  rankedActions: any[],
+  lang: LANGUAGES,
+): Promise<any[]> {
+  // Check if actions already exist for this language
+  const existingActions = await checkExistingActions(ranking.id, lang);
+  if (existingActions) {
+    return existingActions;
+  }
+
+  // Note: No race condition check needed here because we prevent multiple
+  // ranking requests at the source in startActionRankingJob
+
+  // Fetch and merge action details in the requested language
+  const mergedRanked = await fetchAndMergeRankedActions(lang, rankedActions);
+
+  // Save all ranked actions
+  const results = await Promise.all(
+    mergedRanked.map((action) =>
+      createRankedActionRecord(ranking.id, lang, action),
+    ),
+  );
+
+  const savedCount = results.filter(Boolean).length;
   logger.info(
     `[saveRankedActionsForLanguage] Saved ${savedCount} out of ${mergedRanked.length} ranked actions for lang ${lang}.`,
   );
+
+  // Return the newly created actions
+  return getRankedActionsForLang(ranking, lang);
 }
 
 export const checkActionRankingJob = async (
@@ -423,19 +453,28 @@ async function getRankedActionsForLang(
   return actions;
 }
 
-// Helper: Copy actions from any language to the requested language
+// Helper: Copy actions from any existing language to the requested language
 async function copyRankedActionsToLang(ranking: any, lang: LANGUAGES) {
-  const anyLangRanked = await db.models.HighImpactActionRanked.findAll({
+  const allLangRanked = await db.models.HighImpactActionRanked.findAll({
     where: { hiaRankingId: ranking.id },
-    order: [["rank", "ASC"]],
+    order: [["created", "ASC"]], // Order by creation time for consistent results
   });
+
   if (
-    anyLangRanked.length === 0 &&
+    allLangRanked.length === 0 &&
     ranking.status !== HighImpactActionRankingStatus.PENDING
   ) {
     throw new Error("No existing ranked actions found for this ranking");
   }
-  const rankedActions = anyLangRanked.map((r) => ({
+
+  // Use lodash.uniqBy to get unique actions by actionId, then get the first occurrence of each
+  const uniqueActions = uniqBy(allLangRanked, "actionId");
+
+  logger.info(
+    `Copying ${uniqueActions.length} unique actions to language ${lang}`,
+  );
+
+  const rankedActions = uniqueActions.map((r) => ({
     actionId: r.actionId,
     rank: r.rank,
     explanation: r.explanation,
@@ -444,8 +483,7 @@ async function copyRankedActionsToLang(ranking: any, lang: LANGUAGES) {
 
   // Fetch and merge action details in the requested language
   const mergedRanked = await fetchAndMergeRankedActions(lang, rankedActions);
-  await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
-  return getRankedActionsForLang(ranking, lang);
+  return await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
 }
 
 // Main orchestrator

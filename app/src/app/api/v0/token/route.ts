@@ -2,7 +2,7 @@ import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getClient } from "@/util/client";
+import { OAuthClient } from "@/models/OAuthClient";
 import jwt from "jsonwebtoken";
 import { logger } from "@/services/logger";
 import { createHash } from "node:crypto";
@@ -99,13 +99,13 @@ export const POST = apiHandler(async (_req, { params, session }) => {
     throw new createHttpError.BadRequest("code_verifier must be a string")
   }
 
-  const client = await getClient(clientId);
+  const client = await OAuthClient.findByPk(clientId);
 
   if (!client) {
     throw new createHttpError.BadRequest("Unrecognized client_id")
   }
 
-  if (client.redirectUri !== redirectUri) {
+  if (client.redirectURI !== redirectUri) {
     throw new createHttpError.BadRequest("redirect_uri mismatch")
   }
 

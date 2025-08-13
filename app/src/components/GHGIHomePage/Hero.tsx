@@ -18,6 +18,7 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
 import Link from "next/link";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { useTranslation } from "@/i18n/client";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -27,8 +28,8 @@ interface HeroProps {
   currentInventoryId: string | null;
   isInventoryLoading: boolean;
   formattedEmissions: { value: string; unit: string };
-  t: TFunction;
   population?: PopulationAttributes;
+  lng: string;
 }
 
 export function Hero({
@@ -38,8 +39,9 @@ export function Hero({
   isInventoryLoading,
   isPublic,
   population,
-  t,
+  lng,
 }: HeroProps) {
+  const { t } = useTranslation(lng, "dashboard");
   const { data: cityData } = useGetOCCityDataQuery(inventory.city?.locode!, {
     skip: !inventory.city?.locode,
   });

@@ -1,4 +1,5 @@
 import ActivityService from "@/backend/ActivityService";
+import { PermissionService } from "@/backend/permissions";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import type { InventoryValue } from "@/models/InventoryValue";
@@ -19,7 +20,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   } = body;
 
   // just for access control
-  await UserService.findUserInventory(params.inventory, session);
+  await PermissionService.canEditInventory(session, params.inventory);
 
   const result = await ActivityService.createActivity(
     data,
@@ -56,10 +57,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
     z.string().uuid().parse(methodologyId);
   }
 
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
-    session,
-  );
+  const { resource: inventory } = await PermissionService.canEditInventory(session,params.inventory);
 
   const query: WhereOptions<InventoryValue> = {
     inventoryId: inventory.inventoryId,
@@ -116,10 +114,7 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
     );
   }
 
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
-    session,
-  );
+  const { resource: inventory } = await PermissionService.canEditInventory(session,params.inventory);
 
   const count = await ActivityService.deleteAllActivitiesInSubsector({
     inventoryId: inventory.inventoryId,

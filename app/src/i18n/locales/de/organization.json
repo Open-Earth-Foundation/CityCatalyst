@@ -17,5 +17,8 @@
   "pro": "Profi",
   "active-plan-tooltip": "Die Organisation ist derzeit für diesen Plan angemeldet.",
   "active-plan": "Aktiver Plan",
-  "organization-load-failed": "Organisation konnte nicht geladen werden"
+  "organization-load-failed": "Organisation konnte nicht geladen werden",
+  "discover-cities-description": "Entdecken Sie die Städte, die in diesem Projekt vorgestellt werden. Klicken Sie auf jede Stadt, um ihr Dashboard und die verfügbaren Module anzuzeigen.",
+  "country-name": "Name des Landes",
+  "city-name": "Name der Stadt"
 }

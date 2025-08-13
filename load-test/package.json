@@ -1,0 +1,23 @@
+{
+  "name": "cc-load-test",
+  "version": "0.0.1",
+  "description": "Load tests for the CityCatalyst platform, using k6",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "load": "k6 run --vus 10 --duration 30s city_catalyst.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-earth-foundation/CityCatalyst.git"
+  },
+  "author": "Open Earth Foundation & contributors",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/open-earth-foundation/CityCatalyst/issues"
+  },
+  "homepage": "https://github.com/open-earth-foundation/CityCatalyst#readme",
+  "devDependencies": {
+    "@types/k6": "^1.1.1"
+  }
+}

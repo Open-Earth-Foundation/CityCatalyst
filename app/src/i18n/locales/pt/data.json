@@ -870,6 +870,7 @@
   "treatment-type-anaerobic-shallow-lagoon": "Lagoa anaeróbica rasa",
   "treatment-type-anaerobic-deep-lagoon": "Lagoa anaeróbica profunda",
   "treatment-type-septic-system": "Sistema séptico",
+  "treatment-type-latrine": "Latrina",
   "treatment-type-latrine-dry-climate-small-family": "Latrina: Clima seco, lençol freático abaixo da latrina, família pequena (3-5 pessoas)",
   "treatment-type-latrine-dry-climate-communal": "Latrina: Clima seco, lençol freático abaixo da latrina, comunitário (muitos usuários)",
   "treatment-type-latrine-wet-climate": "Latrina: Clima úmido/uso de água de descarga, lençol freático acima da latrina",

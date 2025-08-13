@@ -29,7 +29,10 @@ import { YearSelectorCard } from "@/components/Cards/years-selection-card";
 import { Button } from "@/components/ui/button";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
+import { UserRole } from "@/util/types";
 import { logger } from "@/services/logger";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 
 function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
   return typeof error === "object" && error != null && "status" in error;
@@ -51,6 +54,23 @@ export default function HomePage({
   isPublic || CheckUserSession();
   const language = cookieLanguage ?? lng;
   const { inventory: inventoryParam, cityId: cityIdParam } = useParams();
+
+  function redirectToOnboarding() {
+    setTimeout(() => {
+      if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
+        if (!cityIdParam || cityIdParam === "null") {
+          logger.error(
+            "Failed to redirect to onboarding because of missing city ID param",
+          );
+          return;
+        }
+
+        router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
+      } else {
+        router.push(`/${language}/onboarding`);
+      }
+    }, 0);
+  }
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -87,11 +107,7 @@ export default function HomePage({
         !isFetchBaseQueryError(inventoryError) ||
         inventoryError.status !== 401
       ) {
-        setTimeout(
-          () =>
-            router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`),
-          0,
-        );
+        redirectToOnboarding();
       }
     } else if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
@@ -109,9 +125,7 @@ export default function HomePage({
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
         // If we have a cityId, redirect to GHGI onboarding, otherwise go to general onboarding
-        setTimeout(() => {
-          router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
-        });
+        redirectToOnboarding();
       }
     }
   }, [
@@ -152,6 +166,12 @@ export default function HomePage({
     if (!cityYears) return [];
     return [...cityYears.years].sort((a, b) => b.year - a.year) || [];
   }, [cityYears]);
+
+  // Check user permissions for this city
+  const { userRole } = useUserPermissions({
+    cityId: inventory?.cityId,
+    skip: !inventory?.cityId,
+  });
 
   const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
     useGetOrganizationForInventoryQuery(inventoryIdFromParam!, {
@@ -200,7 +220,7 @@ export default function HomePage({
             currentInventoryId={inventory?.inventoryId}
             isInventoryLoading={isInventoryLoading}
             formattedEmissions={formattedEmissions}
-            t={t}
+            lng={lng}
             population={population}
           />
 
@@ -247,31 +267,28 @@ export default function HomePage({
                     >
                       {t("inventory-year")}
                     </Text>
-                    <Button
-                      data-testid="add-new-inventory-button"
-                      title={t("add-new-inventory")}
-                      h="48px"
-                      aria-label="activity-button"
-                      fontSize="button.md"
-                      gap="8px"
-                      onClick={() => {
-                        if (isFrozenCheck()) {
-                          return;
-                        }
+                    {/* Only show add inventory button for ORG_ADMIN and PROJECT_ADMIN */}
+                    {userRole !== UserRole.COLLABORATOR &&
+                      userRole !== UserRole.NO_ACCESS && (
+                        <Button
+                          data-testid="add-new-inventory-button"
+                          title={t("add-new-inventory")}
+                          h="48px"
+                          aria-label="activity-button"
+                          fontSize="button.md"
+                          gap="8px"
+                          onClick={() => {
+                            if (isFrozenCheck()) {
+                              return;
+                            }
 
-                        const cityId = inventory?.cityId || cityIdParam;
-                        if (cityId) {
-                          router.push(
-                            `/${language}/cities/${cityId}/GHGI/onboarding`,
-                          );
-                        } else {
-                          router.push(`/${language}/onboarding`);
-                        }
-                      }}
-                    >
-                      <Icon as={BsPlus} h="16px" w="16px" />
-                      {t("add-new-inventory")}
-                    </Button>
+                            redirectToOnboarding();
+                          }}
+                        >
+                          <Icon as={BsPlus} h="16px" w="16px" />
+                          {t("add-new-inventory")}
+                        </Button>
+                      )}
                   </Box>
                   <YearSelectorCard
                     cityId={inventory.cityId as string}

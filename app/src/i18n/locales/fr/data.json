@@ -876,6 +876,7 @@
   "treatment-type-anaerobic-shallow-lagoon": "Lagune peu profonde anaérobie",
   "treatment-type-anaerobic-deep-lagoon": "Lagune profonde anaérobie",
   "treatment-type-septic-system": "Système septique",
+  "treatment-type-latrine": "Latrine",
   "treatment-type-latrine-dry-climate-small-family": "Latrine : Climat sec, nappe phréatique inférieure à la latrine, petite famille (3-5 personnes)",
   "treatment-type-latrine-dry-climate-communal": "Latrine : Climat sec, nappe phréatique inférieure à la latrine, communale (nombreux utilisateurs)",
   "treatment-type-latrine-wet-climate": "Latrine : Climat humide/utilisation d'eau de chasse, nappe d'eau souterraine plus haute que la latrine",

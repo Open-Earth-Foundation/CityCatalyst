@@ -79,10 +79,3 @@ Output your response as a JSON object with the following fields:
 }}
 Only output valid JSON format without any additional text or formatting like ```json ```.
 """
-
-# - Use the retriever_json_document_national_strategy_tool to retrieve information from the JSON file.
-
-
-# - retriever_json_document_national_strategy_tool:
-#     A tool that can load relevant information from a JSON file.
-#     Use this tool to gather information about the country's national climate strategy to enrich the introduction.

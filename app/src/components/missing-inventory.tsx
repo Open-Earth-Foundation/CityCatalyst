@@ -23,34 +23,12 @@ const MissingInventory = ({
   const { t } = useTranslation(lng, "inventory-not-found");
   const router = useRouter();
 
-  console.log("🔍 MissingInventory render:", {
-    lng,
-    cityId,
-    isUserInfoLoading,
-    userInfo: userInfo ? "exists" : "null",
-    defaultInventoryId: userInfo?.defaultInventoryId,
-    currentUrl: typeof window !== "undefined" ? window.location.href : "server",
-  });
-
   useEffect(() => {
-    console.log("🚀 MissingInventory useEffect triggered:", {
-      isUserInfoLoading,
-      hasDefaultInventory: !!userInfo?.defaultInventoryId,
-      cityId,
-      willRedirect:
-        !isUserInfoLoading && !userInfo?.defaultInventoryId && !!cityId,
-    });
-
     if (isUserInfoLoading) {
-      console.log("⏳ MissingInventory: Still loading user info, waiting...");
       return;
     }
 
     if (userInfo?.defaultInventoryId) {
-      console.log(
-        "✅ MissingInventory: User has default inventory, redirecting to:",
-        userInfo.defaultInventoryId,
-      );
       // TODO send to JNHome [ON-4452]
       router.push(`/${lng}/${userInfo.defaultInventoryId}`);
       return;
@@ -59,15 +37,8 @@ const MissingInventory = ({
     // Only redirect if we have a cityId (meaning we're in a city context)
     // If no cityId, we're on the root language page and should redirect to cities onboarding
     if (cityId) {
-      console.log(
-        "🔄 MissingInventory: Redirecting to GHGI onboarding for city:",
-        cityId,
-      );
       router.push(`/${lng}/cities/${cityId}/GHGI/onboarding`);
     } else {
-      console.log(
-        "🏠 MissingInventory: No cityId - redirecting to cities onboarding",
-      );
       router.push(`/${lng}/cities/onboarding`);
     }
   }, [isUserInfoLoading, userInfo, router, lng, cityId]);
@@ -130,7 +101,7 @@ const MissingInventory = ({
           <Button
             onClick={() => {
               if (userInfo?.defaultInventoryId) {
-                router.push(`/${userInfo?.defaultInventoryId}`);
+                router.push(`/${lng}/${userInfo?.defaultInventoryId}`);
               } else if (cityId) {
                 router.push(`/${lng}/cities/${cityId}/GHGI/onboarding`);
               } else {

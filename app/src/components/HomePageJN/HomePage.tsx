@@ -69,23 +69,9 @@ export default function HomePage({
   // If no city ID and no default city, redirect to cities onboarding
   useEffect(() => {
     if (!isUserInfoLoading && !cityIdFromParam) {
-      console.log(
-        "🔄 HomePageJN: No city ID, redirecting to cities onboarding",
-      );
       router.push(`/${lng}/cities/onboarding`);
     }
   }, [isUserInfoLoading, cityIdFromParam, lng, router]);
-
-  console.log("🔍 HomePageJN render:", {
-    lng,
-    cityId,
-    year,
-    userInfoDefaultCity: userInfo?.defaultCityId,
-    cityIdFromParam,
-    parsedYear,
-    isUserInfoLoading,
-    userInfo: userInfo ? "exists" : "null",
-  });
 
   // query API data
   // TODO maybe rework this logic into one RTK query:
@@ -99,13 +85,6 @@ export default function HomePage({
     skip: !cityIdFromParam,
   });
 
-  console.log("🏙️ HomePageJN city query:", {
-    cityIdFromParam,
-    city: city ? "exists" : "null",
-    isCityLoading,
-    skip: !cityIdFromParam,
-  });
-
   const { data: population } = useGetMostRecentCityPopulationQuery(
     { cityId: cityIdFromParam! },
     { skip: !cityIdFromParam },
@@ -116,19 +95,9 @@ export default function HomePage({
       skip: !cityIdFromParam,
     });
 
-  console.log("🏢 HomePageJN org query:", {
-    cityIdFromParam,
-    orgData: orgData ? "exists" : "null",
-    isOrgDataLoading,
-    skip: !cityIdFromParam,
-  });
-
   // If city query fails (e.g., non-existing city ID), redirect to cities onboarding
   useEffect(() => {
     if (cityError) {
-      console.log(
-        "🔄 HomePageJN: City query failed, redirecting to cities onboarding",
-      );
       router.push(`/${lng}/cities`);
     }
   }, [cityError, cityIdFromParam, lng, router]);
@@ -173,13 +142,6 @@ export default function HomePage({
   ) {
     return <ProgressLoader />;
   }
-
-  console.log("🎨 HomePageJN: Render condition:", {
-    cityIdFromParam: !!cityIdFromParam,
-    city: !!city,
-    orgData: !!orgData,
-    willRender: !!(cityIdFromParam && city && orgData),
-  });
 
   return (
     <>

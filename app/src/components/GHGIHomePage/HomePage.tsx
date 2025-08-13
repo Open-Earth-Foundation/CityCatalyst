@@ -65,9 +65,6 @@ export default function HomePage({
     setTimeout(() => {
       if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
         if (!cityIdParamValue || cityIdParamValue === "null") {
-          console.log(
-            "🔄 HomePage: No city ID, redirecting to general onboarding",
-          );
           router.push(`/${language}/onboarding`);
           return;
         }
@@ -99,27 +96,14 @@ export default function HomePage({
     inventoryIdFromParam = undefined;
   }
 
-  console.log("🔍 HomePage: inventoryIdFromParam:", {
-    inventoryId,
-    inventoryParamValue,
-    userInfoDefaultInventory: userInfo?.defaultInventoryId,
-    finalInventoryId: inventoryIdFromParam,
-  });
-
   // If no inventory ID, redirect appropriately
   useEffect(() => {
     if (!isUserInfoLoading && !inventoryIdFromParam) {
       // If we're in a city context (GHGI route), redirect to city GHGI onboarding
       if (cityIdParamValue) {
-        console.log(
-          "🔄 HomePage: No inventory ID in city context, redirecting to city GHGI onboarding",
-        );
         router.push(`/${language}/cities/${cityIdParamValue}/GHGI/onboarding`);
       } else {
         // If we're not in a city context, redirect to general onboarding
-        console.log(
-          "🔄 HomePage: No inventory ID, redirecting to general onboarding",
-        );
         router.push(`/${language}/onboarding`);
       }
     }
@@ -135,14 +119,14 @@ export default function HomePage({
     data: inventory,
     isLoading: isInventoryLoading,
     error: inventoryError,
-  } = api.useGetInventoryQuery(inventoryIdFromParam ?? "default", {
+  } = api.useGetInventoryQuery(inventoryIdFromParam!, {
     skip: !inventoryIdFromParam,
   });
 
   useEffect(() => {
     if (inventoryError) {
       logger.error(
-        { inventoryError, inventoryId: inventoryIdFromParam ?? "default" },
+        { inventoryError, inventoryId: inventoryIdFromParam },
         "Failed to load inventory",
       );
 
@@ -186,7 +170,7 @@ export default function HomePage({
   // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#performing-multiple-requests-with-a-single-query
 
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
-    api.useGetInventoryProgressQuery(inventoryIdFromParam ?? "default", {
+    api.useGetInventoryProgressQuery(inventoryIdFromParam!, {
       skip: !inventoryIdFromParam,
     });
 

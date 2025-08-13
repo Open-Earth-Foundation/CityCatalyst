@@ -1,16 +1,13 @@
 "use client";
 
-import ChatPopover from "@/components/ChatBot/chat-popover";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
-import { api, useGetUserQuery } from "@/services/api";
+import { api, useGetOrganizationForCityQuery } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import { use } from "react";
 import { useTheme } from "next-themes";
-import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
 
 export default function CitiesLayout(props: {
   children: React.ReactNode;
@@ -22,15 +19,23 @@ export default function CitiesLayout(props: {
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
-  const { organization, setOrganization } = useOrganizationContext();
+  // Get organization data for the user's default city
+  const { data: cityOrgData, isLoading: isCityOrgDataLoading } =
+    useGetOrganizationForCityQuery(userInfo?.defaultCityId!, {
+      skip: !userInfo?.defaultCityId,
+    });
+
   const { setTheme } = useTheme();
 
-  // Set default theme for cities route
   useEffect(() => {
-    setTheme("blue_theme");
-  }, [setTheme]);
+    if (cityOrgData) {
+      setTheme(cityOrgData?.theme?.themeKey ?? ("blue_theme" as string));
+    } else {
+      setTheme("blue_theme");
+    }
+  }, [cityOrgData, setTheme]);
 
-  if (isUserInfoLoading) {
+  if (isUserInfoLoading || isCityOrgDataLoading) {
     return <ProgressLoader />;
   }
 

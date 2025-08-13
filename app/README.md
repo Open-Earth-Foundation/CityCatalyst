@@ -134,7 +134,7 @@ Use `johndeo@example.com` and `password` to login.
 
 #### HIAP
 To connect to the HIAP prioritizer/plan creator, run
-kubectl port-forward svc/hiap-service 8000:80
+kubectl port-forward svc/hiap-service-dev 8080:8080
 
 ### Docker
 

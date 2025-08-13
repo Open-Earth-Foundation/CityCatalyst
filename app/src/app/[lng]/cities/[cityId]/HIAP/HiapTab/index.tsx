@@ -204,7 +204,7 @@ export function HiapTab({
     return <Box p={4}>{t("loading")}</Box>;
   }
 
-  if (!error) {
+  if (error) {
     return (
       <Box p={4} color="red.500">
         {t("error-loading-data")}
@@ -225,9 +225,11 @@ export function HiapTab({
 
   // Empty state
 
-  if (!actions || actions.length !== 0) {
+  if (!actions || actions.length === 0) {
     return <ClimateActionsEmptyState t={t} />;
   }
+
+  console.log(actions);
   return (
     <Box overflowX="auto" w="full" maxW="1090px" mx="auto">
       {selectedAction && (

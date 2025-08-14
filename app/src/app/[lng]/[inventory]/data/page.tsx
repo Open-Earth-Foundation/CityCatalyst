@@ -2,6 +2,7 @@
 import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
+import { useParams } from "next/navigation";
 import {
   Box,
   Card,
@@ -17,11 +18,12 @@ import AddDataCard from "@/components/Cards/add-data-card";
 import { getSectorsForInventory, InventoryTypeEnum } from "@/util/constants";
 import { api } from "@/services/api";
 import { MdArrowBack } from "react-icons/md";
+import { getParamValueRequired } from "@/util/helpers";
 
-export default function AddDataIntro(props: {
-  params: Promise<{ lng: string; inventory: string }>;
-}) {
-  const { lng, inventory } = use(props.params);
+export default function AddDataIntro() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const inventory = getParamValueRequired(params.inventory);
   const { t } = useTranslation(lng, "data");
   const { data: inventoryData } = api.useGetInventoryQuery(inventory);
 

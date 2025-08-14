@@ -46,8 +46,8 @@ import {
   useSteps,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { useRouter } from "next/navigation";
-import { forwardRef, useEffect, useState, use } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { forwardRef, useEffect, useState } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
@@ -92,6 +92,7 @@ import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { getParamValueRequired } from "@/util/helpers";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -195,10 +196,11 @@ function NoDataSourcesMessage({
   );
 }
 
-export default function AddDataSteps(props: {
-  params: Promise<{ lng: string; step: string; inventory: string }>;
-}) {
-  const { lng, step, inventory } = use(props.params);
+export default function AddDataSteps() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const step = getParamValueRequired(params.step);
+  const inventory = getParamValueRequired(params.inventory);
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
 

@@ -223,10 +223,17 @@ export function HiapTab({
     );
   }
 
-  // Empty state
+  // Empty state - check if we have actions
+  const hasActions = actions && actions.length > 0;
 
-  if (!actions || actions.length === 0) {
-    return <ClimateActionsEmptyState t={t} />;
+  if (!hasActions) {
+    return (
+      <ClimateActionsEmptyState
+        t={t}
+        inventory={inventory}
+        hasActions={hasActions}
+      />
+    );
   }
 
   console.log(actions);

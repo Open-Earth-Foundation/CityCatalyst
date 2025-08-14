@@ -1716,3 +1716,27 @@ export const GeneratePlanIcon = () => {
     </svg>
   );
 };
+
+export const LikeIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+    >
+      <g clip-path="url(#clip0_2858_76847)">
+        <path
+          d="M18 42H36C37.66 42 39.08 41 39.68 39.56L45.72 25.46C45.9 25 46 24.52 46 24V20C46 17.8 44.2 16 42 16H29.38L31.28 6.86L31.34 6.22C31.34 5.4 31 4.64 30.46 4.1L28.34 2L15.16 15.18C14.44 15.9 14 16.9 14 18V38C14 40.2 15.8 42 18 42ZM18 18L26.68 9.32L24 20H42V24L36 38H18V18ZM2 18H10V42H2V18Z"
+          fill="#2351DC"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_2858_76847">
+          <rect width="48" height="48" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};

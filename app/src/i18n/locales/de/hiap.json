@@ -37,6 +37,11 @@
   "see-more-details": "Mehr Details anzeigen",
   "top-pick": "Top-Wahl",
   "generate-plan": "Plan erstellen",
+  "no-activity-data-title": "Keine Aktivitätsdaten gefunden",
+  "no-activity-data-description": "Laden Sie Emissionsdaten in Ihr Inventar hoch, um Klimaschutzmaßnahmen zu generieren. Aktivitätsdaten sind erforderlich, um potenzielle Klimaschutzmaßnahmen für Ihre Stadt zu analysieren und zu bewerten.",
+  "generate-climate-actions-list": "Top-Aktionsliste generieren",
+  "click-action-description": "Klicken Sie auf die Schaltfläche unten, um Ihre wichtigsten Klimaschutzmaßnahmen aufzulisten.",
+  "ready-to-generate-climate-actions-title": "Sie sind bereit, Ihre Klimaschutzmaßnahmen-Liste zu erstellen",
   "hazard": {
     "droughts": "Dürren",
     "heatwaves": "Hitzewellen",

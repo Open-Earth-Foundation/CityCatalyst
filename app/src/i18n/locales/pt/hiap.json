@@ -39,6 +39,11 @@
   "see-more-details": "Ver mais detalhes",
   "top-pick": "Melhor escolha",
   "generate-plan": "Gerar plano",
+  "no-activity-data-title": "Nenhum dado de nível de atividade encontrado",
+  "no-activity-data-description": "Carregue dados de emissões para seu inventário para gerar ações climáticas. Dados de nível de atividade são necessários para analisar e classificar ações climáticas potenciais para sua cidade.",
+  "generate-climate-actions-list": "Gerar lista de ações principais",
+  "click-action-description": "Clique no botão abaixo para começar a listar suas principais ações climáticas.",
+  "ready-to-generate-climate-actions-title": "Você está pronto para gerar sua lista de ações climáticas",
   "hazard": {
     "droughts": "Secas",
     "heatwaves": "Ondas de calor",

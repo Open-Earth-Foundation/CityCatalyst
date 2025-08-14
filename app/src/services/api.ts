@@ -54,7 +54,7 @@ import {
   DataSourceResponse,
   Client,
   LangMap,
-  PermissionCheckResponse
+  PermissionCheckResponse,
 } from "@/util/types";
 import type { CityLocationResponse, HIAPResponse } from "@/util/types";
 import type { GeoJSON } from "geojson";
@@ -274,10 +274,12 @@ export const api = createApi({
       >({
         query: (params) => {
           const searchParams = new URLSearchParams();
-          if (params.organizationId) searchParams.set('organizationId', params.organizationId);
-          if (params.projectId) searchParams.set('projectId', params.projectId);
-          if (params.cityId) searchParams.set('cityId', params.cityId);
-          if (params.inventoryId) searchParams.set('inventoryId', params.inventoryId);
+          if (params.organizationId)
+            searchParams.set("organizationId", params.organizationId);
+          if (params.projectId) searchParams.set("projectId", params.projectId);
+          if (params.cityId) searchParams.set("cityId", params.cityId);
+          if (params.inventoryId)
+            searchParams.set("inventoryId", params.inventoryId);
           return `/user/permissions?${searchParams.toString()}`;
         },
         transformResponse: (response: { data: PermissionCheckResponse }) =>
@@ -1375,7 +1377,7 @@ export const api = createApi({
             );
           }
 
-          return `city/bulk-locations?${params})}`;
+          return `bulk-locations?${params}`;
         },
         transformResponse: (response: { data: CityLocationResponse[] }) =>
           response.data,

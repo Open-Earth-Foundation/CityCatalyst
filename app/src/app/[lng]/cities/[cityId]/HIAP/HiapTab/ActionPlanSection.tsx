@@ -1,57 +1,33 @@
 import { Badge, Box, Button, Card, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { DownloadIcon } from "@/components/icons";
+import { AskAiIcon, DownloadIcon, GeneratePlanIcon } from "@/components/icons";
 import { FaCaretDown } from "react-icons/fa";
 import { TopPickIcon } from "@/components/icons";
+import { HIAction } from "@/util/types";
 
-// Climate action data type
-interface ClimateAction {
-  id: string;
-  titleKey: string;
-  descriptionKey: string;
-  reductionPotential: "high" | "medium" | "low";
-  sector: string;
-  estimatedCost: "high" | "medium" | "low";
-  implementationTime: string;
-  isTopPick?: boolean;
-}
+// Helper function to get top picks
+const getTopPickActions = (actions: HIAction[]): HIAction[] => {
+  // First, check if any actions are selected
+  const selectedActions = actions.filter((action) => action.isSelected);
 
-// Sample climate actions data
-const climateActions: ClimateAction[] = [
-  {
-    id: "1",
-    titleKey: "integrate-renewables-into-municipal-water-systems",
-    descriptionKey:
-      "integrate-renewables-into-municipal-water-systems-description",
-    reductionPotential: "high",
-    sector: "transport",
-    estimatedCost: "medium",
-    implementationTime: "less-than-5-years",
-    isTopPick: true,
-  },
-  {
-    id: "2",
-    titleKey: "implementation-of-urban-toll",
-    descriptionKey: "implementation-of-urban-toll-description",
-    reductionPotential: "low",
-    sector: "stationary-energy",
-    estimatedCost: "medium",
-    implementationTime: "less-than-5-years",
-    isTopPick: false,
-  },
-  {
-    id: "3",
-    titleKey: "encourage-renewable-energy-policies",
-    descriptionKey: "encourage-renewable-energy-policies-description",
-    reductionPotential: "medium",
-    sector: "waste",
-    estimatedCost: "medium",
-    implementationTime: "less-than-5-years",
-    isTopPick: false,
-  },
-];
+  if (selectedActions.length > 0) {
+    // If there are selected actions, show them (sorted by rank)
+    return [...selectedActions].sort((a, b) => a.rank - b.rank);
+  } else {
+    // If no actions are selected, show top 3 by rank
+    console.log("actions", actions);
+    return [...actions].sort((a, b) => a.rank - b.rank).slice(0, 3);
+  }
+};
 
-const ActionPlanSection = ({ t }: { t: TFunction }) => {
+const ActionPlanSection = ({
+  t,
+  rankedActions = [],
+}: {
+  t: TFunction;
+  rankedActions?: HIAction[];
+}) => {
+  const topPickActions = getTopPickActions(rankedActions);
   return (
     <Box w="1090px" mx="auto" py="48px" display="flex" flexDirection="column">
       {/* Heading with action button */}
@@ -91,7 +67,7 @@ const ActionPlanSection = ({ t }: { t: TFunction }) => {
         gap="24px"
         justifyItems="start"
       >
-        {climateActions.map((action) => (
+        {topPickActions.map((action) => (
           <ClimateActionCard key={action.id} action={action} t={t} />
         ))}
       </Box>
@@ -106,7 +82,7 @@ const ClimateActionCard = ({
   action,
   t,
 }: {
-  action: ClimateAction;
+  action: HIAction;
   t: TFunction;
 }) => {
   const getReductionColor = (level: string) => {
@@ -122,6 +98,32 @@ const ClimateActionCard = ({
     }
   };
 
+  // Helper function to get reduction potential level
+  const getReductionPotentialLevel = (): string => {
+    if (action.type === "mitigation" && action.GHGReductionPotential) {
+      // For mitigation actions, check GHG reduction potential
+      const ghgData = action.GHGReductionPotential;
+      const values = Object.values(ghgData).filter((v) => v !== null);
+
+      if (values.length === 0) return "medium"; // Default if no data
+
+      // Count high/medium/low values to determine overall level
+      const highCount = values.filter((v) => v === "high").length;
+      const lowCount = values.filter((v) => v === "low").length;
+
+      if (highCount > 0) return "high";
+      if (lowCount > values.length / 2) return "low";
+      return "medium";
+    } else if (action.type === "adaptation") {
+      // For adaptation actions, use adaptation effectiveness
+      return action.adaptationEffectiveness || "medium";
+    }
+
+    return "medium"; // Default fallback
+  };
+
+  const reductionLevel = getReductionPotentialLevel();
+
   return (
     <Card.Root
       p="24px"
@@ -131,7 +133,25 @@ const ClimateActionCard = ({
       gap="16px"
       position="relative"
     >
-      <Card.Description pt={action.isTopPick ? "32px" : "24px"}>
+      {/* Only show top pick badge for selected actions or top 3 ranked actions */}
+      {(action.isSelected || action.rank <= 3) && (
+        <Card.Title display="flex" alignItems="center" gap="8px">
+          <Icon as={TopPickIcon} />
+          <Text
+            fontSize="overline"
+            color="content.link"
+            fontWeight="bold"
+            textTransform="uppercase"
+            fontFamily="heading"
+            letterSpacing="wider"
+          >
+            {t("top-pick")}
+          </Text>
+        </Card.Title>
+      )}
+      <Card.Description
+        pt={action.isSelected || action.rank <= 3 ? "32px" : "24px"}
+      >
         <Text
           textOverflow="ellipsis"
           overflow="hidden"
@@ -143,18 +163,14 @@ const ClimateActionCard = ({
           color="content.secondary"
           lineHeight="28px"
         >
-          {t(action.titleKey)}
+          {action.name}
         </Text>
         <Text fontSize="body.sm" color="content.tertiary" mt="8px">
-          {t(action.descriptionKey)}
+          {action.description}
         </Text>
 
         <Box display="flex" gap="8px" py="12px" w="full">
-          <LevelBadge
-            level={action.reductionPotential}
-            type="reduction-potential"
-            t={t}
-          />
+          <LevelBadge level={reductionLevel} type="reduction-potential" t={t} />
         </Box>
 
         <Box
@@ -176,12 +192,12 @@ const ClimateActionCard = ({
           </Text>
           <Text
             fontSize="title.md"
-            color={getReductionColor(action.reductionPotential)}
+            color={getReductionColor(reductionLevel)}
             fontFamily="heading"
             fontWeight="bold"
             textTransform="capitalize"
           >
-            {t(action.reductionPotential)}
+            {t(reductionLevel)}
           </Text>
         </Box>
 
@@ -212,7 +228,7 @@ const ClimateActionCard = ({
               fontWeight="semibold"
               textTransform="capitalize"
             >
-              {t(action.sector)}
+              {action.sectors?.[0] || "N/A"}
             </Text>
           </Box>
 
@@ -235,7 +251,7 @@ const ClimateActionCard = ({
               fontWeight="semibold"
               textTransform="capitalize"
             >
-              {t(action.estimatedCost)}
+              {t(action.costInvestmentNeeded)}
             </Text>
           </Box>
 
@@ -257,7 +273,7 @@ const ClimateActionCard = ({
               color="content.tertiary"
               fontWeight="semibold"
             >
-              {t(action.implementationTime)}
+              {t(action.timelineForImplementation)}
             </Text>
           </Box>
 
@@ -273,6 +289,18 @@ const ClimateActionCard = ({
               {t("see-more-details")}
             </Button>
           </Box>
+          <Button
+            bg="transparent"
+            color="content.link"
+            w="full"
+            borderWidth="1px"
+            borderColor="content.link"
+            borderRadius="sm"
+            className="group"
+          >
+            <Icon as={GeneratePlanIcon} color="content.link" />
+            {t("generate-plan")}
+          </Button>
         </Box>
       </Card.Description>
     </Card.Root>

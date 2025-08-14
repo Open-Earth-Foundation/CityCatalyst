@@ -241,7 +241,7 @@ export function HiapTab({
         />
       )}
       {/* Top action widgets / mitigation */}
-      <ActionPlanSection t={t} />
+      <ActionPlanSection t={t} rankedActions={actions || []} />
       <table style={{ width: "100%" }}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (

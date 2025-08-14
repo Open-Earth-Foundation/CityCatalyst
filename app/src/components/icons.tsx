@@ -1685,3 +1685,34 @@ export const TopPickIcon = () => {
     </svg>
   );
 };
+
+export const GeneratePlanIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="23"
+      viewBox="0 0 20 23"
+      fill="none"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M14.334 1C14.3232 3.8272 15.702 5.44 18.834 5.5C15.9264 5.4892 14.4816 7.0492 14.334 10C14.3088 7.216 13.062 5.5 9.83398 5.5C12.7224 5.4604 14.3232 4.066 14.334 1Z"
+        stroke="#2351DC"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M7.83455 9C7.81979 13.0827 9.65187 15.3985 13.834 15.5006C9.95514 15.4846 8.03105 17.7376 7.83455 22C7.79707 17.9788 6.13763 15.4945 1.83398 15.5006C5.68443 15.4416 7.81979 13.4285 7.83455 9Z"
+        stroke="#2351DC"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+};

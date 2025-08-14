@@ -65,7 +65,9 @@ class CheckProgressResponse(BaseModel):
 
 
 class Introduction(BaseModel):
-    description: str
+    city_description: str
+    action_description: str
+    national_strategy_explanation: str
 
 
 class Subaction(BaseModel):

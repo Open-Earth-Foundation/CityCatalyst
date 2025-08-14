@@ -6,7 +6,8 @@ from langchain_openai import ChatOpenAI
 import logging
 import os
 
-from plan_creator_bundle.tools.tools import (
+from utils.vector_store_retrievers import (
+    _serialize_vector_results,
     retriever_vectorstore_national_strategy_tool,
 )
 
@@ -22,9 +23,7 @@ OPENAI_MODEL_NAME_PLAN_CREATOR = os.environ["OPENAI_MODEL_NAME_PLAN_CREATOR"]
 model = ChatOpenAI(model=OPENAI_MODEL_NAME_PLAN_CREATOR, temperature=0.0, seed=42)
 
 # Define tools for the agent
-tools = [
-    retriever_vectorstore_national_strategy_tool,
-]
+tools = []
 
 # Define prompts for each agent
 system_prompt_agent_1 = SystemMessage(agent_1_system_prompt)
@@ -45,14 +44,75 @@ def build_custom_agent_1():
         logger.info("Agent 1 start...")
         logger.info(f"Country code: {state['country_code']}")
 
+        action_type = state["climate_action_data"].get("ActionType")
+        if isinstance(action_type, list):
+            action_type = action_type[0]
+
+        action_name = state["climate_action_data"].get("ActionName")
+        action_description = state["climate_action_data"].get("Description")
+
+        # Retrieve vector-store context or fall back to an empty object if inputs are missing
+        retrieved_national_strategy = {}
+        if action_type is None or action_name is None or action_description is None:
+            logger.warning(
+                f"Action type, name, or description is None for action_id={state['climate_action_data']['ActionID']}"
+            )
+            logger.warning(
+                f"Action type: {action_type}, Action name: {action_name}, Action description: {action_description}"
+            )
+        else:
+            search_query = (
+                f"Action name: {action_name}\n Action description: {action_description}"
+            )
+
+            retrieved_national_strategy = retriever_vectorstore_national_strategy_tool(
+                action_type=action_type,
+                search_query=search_query,
+                country_code=state["country_code"],
+            )
+
+        # Convert retrieved documents to a JSON-serializable structure
+        national_strategy_for_prompt = _serialize_vector_results(
+            retrieved_national_strategy
+        )
+
+        # Remove the key 'ccra' from the city data if the action is a mitigation action
+        # Remove the keys related to emissions if the action is an adaptation action
+        if action_type == "mitigation":
+            state["city_data"].pop("ccra", None)
+            state["climate_action_data"].pop("AdaptationEffectiveness", None)
+            state["climate_action_data"].pop("AdaptationEffectivenessPerHazard", None)
+
+        elif action_type == "adaptation":
+            state["city_data"].pop("stationaryEnergyEmissions", None)
+            state["city_data"].pop("transportationEmissions", None)
+            state["city_data"].pop("wasteEmissions", None)
+            state["city_data"].pop("ippuEmissions", None)
+            state["city_data"].pop("afoluEmissions", None)
+            state["city_data"].pop("totalEmissions", None)
+            state["climate_action_data"].pop("GHGReductionPotential", None)
+
+        # Remove further keys from the city data that are not relevant
+        if action_type == "mitigation":
+            state["city_data"].pop("biome", None)
+            state["climate_action_data"].pop("Biome", None)
+            state["climate_action_data"].pop("ActionType", None)
+            state["climate_action_data"].pop("Dependencies", None)
+            state["climate_action_data"].pop("KeyPerformanceIndicators", None)
+
         result_state = react_chain.invoke(
             {
                 "messages": HumanMessage(
                     agent_1_user_prompt.format(
-                        climate_action_data=json.dumps(
-                            state["climate_action_data"], indent=2
+                        national_strategy=json.dumps(
+                            national_strategy_for_prompt, indent=2, ensure_ascii=False
                         ),
-                        city_data=json.dumps(state["city_data"], indent=2),
+                        climate_action_data=json.dumps(
+                            state["climate_action_data"], indent=2, ensure_ascii=False
+                        ),
+                        city_data=json.dumps(
+                            state["city_data"], indent=2, ensure_ascii=False
+                        ),
                         country_code=state["country_code"],
                     )
                 )

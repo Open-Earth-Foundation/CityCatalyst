@@ -15,25 +15,13 @@ Follow these guidelines carefully to complete the task:
 
 1. Understand the details of the climate action (main action) you are working on.
 2. Understand the details of the city you are working on.
-3. Use the provided tool to retrieve information about the country's national climate strategy that is relevant to the city and the climate action (main action).
-    - Use the retriever_vectorstore_national_strategy_tool to retrieve information from the vector store. When using this tool, use different queries going from broad to specific.
-4. Create a concise introduction for the climate action implementation plan incorporating the retrieved information. 
-    - If the action has a clear reference to the national strategy, include the matching details of the national strategy in the explanation like the action code (e.g. AGR.I.01, CID.I.01, ...), a short description and the target.  
-    - If the action does not have a clear reference to the national strategy, do not mention the national strategy at all.
+3. Create a concise introduction for the climate action implementation plan. 
+    - Include the action code, short description and target of the national strategy in the explanation for the strongest relevance to the national strategy.
+    - If no national strategy is relevant, do not mention the national strategy at all.
 **Important**: 
     - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 
     - Do not include any sources in the output.
 </task>
-
-<tools>
-You have access to the following tools:
-- retriever_vectorstore_national_strategy_tool:
-    A document retrieval tool that can retrieve relevant information from a vector store. 
-    Use this tool to gather information about the country's national climate strategy to enrich the introduction.
-    When using this tool, optimize the search query for retrieval from a vector database using similarity search. This means that the search query should be a concise representation of the information you are looking for.
-    Use multiple concise queries over one long query for better results.
-    Start with broad queries and progressively narrow down the search query.
-</tools>
 
 <output>
 The final output should include:
@@ -45,6 +33,7 @@ The individual parts of the introduction must be separated by a line break.
 
 <sample_output>
 [Brief overview of the city, including population and geographical location]
+
 [Summary of the main climate action and its importance to the city]
 
 [Explanation of how the climate action aligns with national climate strategy and further background information]
@@ -63,6 +52,9 @@ Be concise, realistic, and specific. Focus on measurable impact and actionable s
 """
 
 agent_1_user_prompt = """
+These are the retrieved chunks from the vector store for the national strategy:
+{national_strategy}
+
 This is the country code:
 {country_code}
 
@@ -75,7 +67,9 @@ This is the climate action (main action) data:
 # INSTRUCTIONS FOR OUTPUT FORMAT
 Output your response as a JSON object with the following fields:
 {{
-    "description": <the introduction for the climate action implementation plan, as described in the system prompt>
+    "city_description": <the description of the city, as described in the system prompt - this is a duplicate of the description field>
+    "action_description": <the description of the climate action (main action), as described in the system prompt>
+    "national_strategy_explanation": <the explanation of the national strategy, as described in the system prompt>
 }}
 Only output valid JSON format without any additional text or formatting like ```json ```.
 """

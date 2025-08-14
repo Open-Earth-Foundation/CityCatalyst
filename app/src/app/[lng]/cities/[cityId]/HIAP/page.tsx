@@ -7,11 +7,12 @@ import {
   useGetInventoryByCityIdQuery,
 } from "@/services/api";
 import { ACTION_TYPES } from "@/util/types";
-import { Box, Tabs } from "@chakra-ui/react";
+import { Box, Icon, Tabs } from "@chakra-ui/react";
 import { formatEmissions } from "@/util/helpers";
 import { Hero } from "@/components/GHGIHomePage/Hero";
 import { HiapTab } from "@/app/[lng]/cities/[cityId]/HIAP/HiapTab";
 import ProgressLoader from "@/components/ProgressLoader";
+import { AdaptationTabIcon, MitigationTabIcon } from "@/components/icons";
 
 export default function HIAPPage(props: {
   params: Promise<{ lng: string; cityId: string }>;
@@ -49,6 +50,8 @@ export default function HIAPPage(props: {
             lng={lng}
             population={population}
           />
+
+          <Box></Box>
           <Box display="flex" mx="auto" mt="80px" w="full" maxW="1090px">
             <Tabs.Root
               variant="line"
@@ -57,13 +60,36 @@ export default function HIAPPage(props: {
             >
               <Tabs.List>
                 {Object.values(ACTION_TYPES).map((actionType) => (
-                  <Tabs.Trigger key={actionType} value={actionType}>
+                  <Tabs.Trigger
+                    key={actionType}
+                    value={actionType}
+                    color="interactive.control"
+                    display="flex"
+                    gap="16px"
+                    _selected={{
+                      color: "interactive.secondary",
+                      fontFamily: "heading",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <Icon
+                      as={
+                        actionType === ACTION_TYPES.Mitigation
+                          ? MitigationTabIcon
+                          : AdaptationTabIcon
+                      }
+                    />
                     {t(`action-type-${actionType}`)}
                   </Tabs.Trigger>
                 ))}
               </Tabs.List>
               {Object.values(ACTION_TYPES).map((actionType) => (
-                <Tabs.Content key={actionType} value={actionType}>
+                <Tabs.Content
+                  key={actionType}
+                  value={actionType}
+                  p="0"
+                  w="full"
+                >
                   <HiapTab type={actionType} inventory={inventory} />
                 </Tabs.Content>
               ))}

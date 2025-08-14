@@ -12,9 +12,9 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { UseSuccessToast } from "@/hooks/Toasts";
-import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
 import { trackEvent, identifyUser } from "@/lib/analytics";
+import { getDashboardPath } from "@/util/routes";
 
 export type LoginInputs = {
   email: string;
@@ -72,11 +72,27 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
   });
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
+      // Pre-compute a safe callback target to avoid flashing to root
+      let safeCallback = `/${lng}/cities/`;
+      try {
+        if (callbackUrl) {
+          const url = new URL(callbackUrl, window.location.origin);
+          const normalizedPath = url.pathname.replace(/\/+$/, "");
+          const isRoot = normalizedPath === "" || normalizedPath === "/";
+          const isLanguageRoot = normalizedPath === `/${lng}`;
+          if (!isRoot && !isLanguageRoot) {
+            safeCallback = callbackUrl;
+          }
+        }
+      } catch (_) {
+        // ignore, will use default safeCallback
+      }
+
       const res = await signIn("credentials", {
-        redirect: false,
+        redirect: true,
         email: data.email,
         password: data.password,
-        callbackUrl,
+        callbackUrl: safeCallback,
       });
 
       if (res?.ok && !res?.error) {
@@ -89,7 +105,6 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
         identifyUser(data.email);
 
         showLoginSuccessToast();
-        router.push(callbackUrl ?? "/");
         setError("");
         return;
       } else {

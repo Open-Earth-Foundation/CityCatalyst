@@ -10,13 +10,17 @@ Follow these guidelines carefully to complete the task:
 2. Understand the city context you are given.
 3. Understand the action and its rank you are given.
 4. Create a concise explanation for the action in the requested languages. 
-- If the action has a clear reference to the national strategy, include the matching details of the national strategy in the explanation like the action code (e.g. AGR.I.01, CID.I.01, ...), a short description and the target.  
-- If the action does not have a clear reference to the national strategy, do not mention the national strategy at all.
+    - Include the action code, short description and target of the national strategy in the explanation for the strongest relevance to the national strategy.
+    - If no national strategy is relevant, do not mention the national strategy at all.
 </task>
 
 <input>
 Your input is:
 - national strategy of the country
+    - This is a JSON object containing information about the country's national climate strategy.
+    - It contains the following keys:
+        - "content": The action name and action description
+        - "metadata": It containts the action code, the target of the action and the relevance score of the retrieved national strategy to the action. The relevance score is a number between 0 and 1 with 1 being the most relevant.
 - city context
 - exactly one action
 - the rank of the action
@@ -30,7 +34,7 @@ The rank is a number between 1 and 20, where 1 is the highest priority and 20 is
 Each explanation must be 3-5 sentences describing why this action is a priority for the city, in the requested language.
 The explanation should be positive, with the tone influenced by the rank (higher rank = more positive tone).
 Do not include numeric scores or internal model references. Do not mention the rank in the explanation.
-Include national strategy details like action code, a short description and the target in the explanation if the action has a clear reference to the national strategy.
+Include the action code, short description and target of the national strategy in the explanation for the strongest relevance to the national strategy.
 Only include the requested languages as keys in the JSON object. Do not include any extra keys or text.
 </output>
 

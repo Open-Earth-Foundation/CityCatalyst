@@ -1,4 +1,5 @@
 import { fallbackLng, languages } from "@/i18n/settings";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import acceptLanguage from "accept-language";
 import { withAuth, type NextRequestWithAuth } from "next-auth/middleware";
 import type { NextMiddlewareResult } from "next/dist/server/web/types";
@@ -75,7 +76,10 @@ export async function middleware(req: NextRequestWithAuth) {
     lng = fallbackLng;
   }
 
-  if (req.nextUrl.pathname === `/${lng}`) {
+  if ([`/${lng}`, `/${lng}/`].includes(req.nextUrl.pathname)) {
+    if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
+      return NextResponse.redirect(new URL(`/${lng}/cities/`, req.url));
+    }
     return NextResponse.redirect(new URL(`/${lng}/`, req.url));
   }
 

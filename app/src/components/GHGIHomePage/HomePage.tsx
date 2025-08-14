@@ -64,6 +64,11 @@ export default function HomePage({
     setTimeout(() => {
       if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
         if (!cityIdParamValue || cityIdParamValue === "null") {
+          // Check if user has a default city
+          if (userInfo?.defaultCityId) {
+            router.push(`/${language}/cities/${userInfo.defaultCityId}`);
+            return;
+          }
           router.push(`/${language}/onboarding`);
           return;
         }
@@ -101,8 +106,11 @@ export default function HomePage({
       // If we're in a city context (GHGI route), redirect to city GHGI onboarding
       if (cityIdParamValue) {
         router.push(`/${language}/cities/${cityIdParamValue}/GHGI/onboarding`);
+      } else if (userInfo?.defaultCityId) {
+        // If we have a default city but no inventory, redirect to the city page
+        router.push(`/${language}/cities/${userInfo.defaultCityId}/GHGI/`);
       } else {
-        // If we're not in a city context, redirect to general onboarding
+        // If we're not in a city context and no default city, redirect to general onboarding
         router.push(`/${language}/onboarding`);
       }
     }
@@ -112,6 +120,7 @@ export default function HomePage({
     language,
     router,
     cityIdParamValue,
+    userInfo?.defaultCityId,
   ]);
 
   const {

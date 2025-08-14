@@ -17,14 +17,13 @@ import { MdOutlineEdit } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
 import { clear, removeSectorData } from "@/features/city/inventoryDataSlice";
 import { api } from "@/services/api";
-import { appendFileToFormData } from "@/util/helpers";
-import { useState, use } from "react";
+import { appendFileToFormData, getParamValueRequired } from "@/util/helpers";
+import { useState } from "react";
 import { logger } from "@/services/logger";
 
-export default function ReviewPage(props: {
-  params: Promise<{ lng: string }>;
-}) {
-  const { lng } = use(props.params);
+export default function ReviewPage() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
 
   const { t } = useTranslation(lng, "data");
   const { inventory: inventoryParam } = useParams();

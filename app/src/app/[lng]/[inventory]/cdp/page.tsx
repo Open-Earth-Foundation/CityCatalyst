@@ -10,12 +10,16 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React, { useState, use } from "react";
+import React, { useState } from "react";
+import { useParams } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
+import { getParamValueRequired } from "@/util/helpers";
 
-function Page(props: { params: Promise<{ lng: string; inventory: string }> }) {
-  const { lng, inventory } = use(props.params);
+function Page() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const inventory = getParamValueRequired(params.inventory);
 
   const { t } = useTranslation(lng, "cdp");
   const [statusMessage, setStatusMessage] = useState(t("submit-data-to-cdp"));

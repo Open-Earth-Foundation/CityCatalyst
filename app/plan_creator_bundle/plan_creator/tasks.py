@@ -18,7 +18,6 @@ from plan_creator_bundle.plan_creator.models import (
     PlanContent,
     PlanResponse,
 )
-from utils.logging_config import setup_logger
 from plan_creator_bundle.plan_creator.task_storage import task_storage
 
 logger = logging.getLogger(__name__)
@@ -42,7 +41,11 @@ def _execute_plan_creation(task_uuid: str, background_task_input):
             "country_code": background_task_input["countryCode"],
             "climate_action_data": background_task_input["action"],
             "city_data": background_task_input["cityData"],
-            "response_agent_1": Introduction(description=""),
+            "response_agent_1": Introduction(
+                city_description="",
+                action_description="",
+                national_strategy_explanation="",
+            ),
             "response_agent_2": SubactionList(items=[]),
             "response_agent_3": InstitutionList(items=[]),
             "response_agent_4": MilestoneList(items=[]),

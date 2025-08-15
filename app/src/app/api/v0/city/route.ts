@@ -108,6 +108,20 @@ export const POST = apiHandler(async (req, { session }) => {
       organizationName: project.organization.name as string,
       cities: [city],
     });
+
+    // Update user defaults to include the newly created city
+    try {
+      await UserService.updateDefaults(session.user.id);
+      logger.info(
+        `Updated user defaults for user ${session.user.id} after city creation`,
+      );
+    } catch (error) {
+      logger.error(
+        { error, userId: session.user.id },
+        "Failed to update user defaults after city creation",
+      );
+      // Don't fail the city creation if updating defaults fails
+    }
   }
 
   return NextResponse.json({ data: city });

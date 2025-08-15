@@ -16,7 +16,7 @@ import { Organization } from "@/models/Organization";
 import { Roles } from "@/util/types";
 import jwt from "jsonwebtoken";
 import { FeatureFlags, hasFeatureFlag } from "./feature-flags";
-import { getClient } from "@/util/client";
+import { OAuthClient } from "@/models/OAuthClient";
 
 export type ApiResponse = NextResponse | StreamingTextResponse;
 
@@ -207,7 +207,7 @@ export function apiHandler(handler: NextHandler) {
         if (token.aud !== (new URL(req.url)).origin) {
           throw new createHttpError.Unauthorized("Wrong server for token")
         }
-        const client = await getClient(token.client_id)
+        const client = await OAuthClient.findByPk(token.client_id)
         if (!client) {
           throw new createHttpError.Unauthorized("Invalid client")
         }

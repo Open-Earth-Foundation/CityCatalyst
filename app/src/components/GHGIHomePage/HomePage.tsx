@@ -32,6 +32,7 @@ import { useOrganizationContext } from "@/hooks/organization-context-provider/us
 import { useUserPermissions } from "@/hooks/useUserPermissions";
 import { UserRole } from "@/util/types";
 import { logger } from "@/services/logger";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 
 function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
   return typeof error === "object" && error != null && "status" in error;
@@ -53,6 +54,27 @@ export default function HomePage({
   isPublic || CheckUserSession();
   const language = cookieLanguage ?? lng;
   const { inventory: inventoryParam, cityId: cityIdParam } = useParams();
+  const inventoryParamValue: string | undefined = Array.isArray(inventoryParam)
+    ? inventoryParam[0]
+    : inventoryParam;
+  const cityIdParamValue: string | undefined = Array.isArray(cityIdParam)
+    ? cityIdParam[0]
+    : cityIdParam;
+
+  function redirectToOnboarding() {
+    setTimeout(() => {
+      if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
+        if (!cityIdParamValue || cityIdParamValue === "null") {
+          router.push(`/${language}/onboarding`);
+          return;
+        }
+
+        router.push(`/${language}/cities/${cityIdParamValue}/GHGI/onboarding`);
+      } else {
+        router.push(`/${language}/onboarding`);
+      }
+    }, 0);
+  }
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -61,26 +83,50 @@ export default function HomePage({
   let inventoryIdFromParam: string | undefined;
   if (inventoryId && inventoryId != "null") {
     inventoryIdFromParam = inventoryId;
-  } else if (inventoryParam && inventoryParam != "null") {
-    if (typeof inventoryParam !== "string") {
-      inventoryIdFromParam = inventoryParam[0];
-    } else {
-      inventoryIdFromParam = inventoryParam;
-    }
+  } else if (inventoryParamValue && inventoryParamValue != "null") {
+    inventoryIdFromParam = inventoryParamValue;
+  } else if (userInfo?.defaultInventoryId) {
+    // If we have a default inventory, use it
+    inventoryIdFromParam = userInfo.defaultInventoryId;
+  } else if (cityIdParamValue) {
+    // If we're in a city context but no inventory, we'll need to fetch the most recent one
+    // For now, set to undefined so we can redirect to onboarding
+    inventoryIdFromParam = undefined;
   } else {
-    inventoryIdFromParam = userInfo?.defaultInventoryId ?? undefined;
+    inventoryIdFromParam = undefined;
   }
+
+  // If no inventory ID, redirect appropriately
+  useEffect(() => {
+    if (!isUserInfoLoading && !inventoryIdFromParam) {
+      // If we're in a city context (GHGI route), redirect to city GHGI onboarding
+      if (cityIdParamValue) {
+        router.push(`/${language}/cities/${cityIdParamValue}/GHGI/onboarding`);
+      } else {
+        // If we're not in a city context, redirect to general onboarding
+        router.push(`/${language}/onboarding`);
+      }
+    }
+  }, [
+    isUserInfoLoading,
+    inventoryIdFromParam,
+    language,
+    router,
+    cityIdParamValue,
+  ]);
 
   const {
     data: inventory,
     isLoading: isInventoryLoading,
     error: inventoryError,
-  } = api.useGetInventoryQuery(inventoryIdFromParam ?? "default");
+  } = api.useGetInventoryQuery(inventoryIdFromParam!, {
+    skip: !inventoryIdFromParam,
+  });
 
   useEffect(() => {
     if (inventoryError) {
       logger.error(
-        { inventoryError, inventoryId: inventoryIdFromParam ?? "default" },
+        { inventoryError, inventoryId: inventoryIdFromParam },
         "Failed to load inventory",
       );
 
@@ -89,11 +135,7 @@ export default function HomePage({
         !isFetchBaseQueryError(inventoryError) ||
         inventoryError.status !== 401
       ) {
-        setTimeout(
-          () =>
-            router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`),
-          0,
-        );
+        redirectToOnboarding();
       }
     } else if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
@@ -111,9 +153,7 @@ export default function HomePage({
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
         // If we have a cityId, redirect to GHGI onboarding, otherwise go to general onboarding
-        setTimeout(() => {
-          router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
-        });
+        redirectToOnboarding();
       }
     }
   }, [
@@ -130,7 +170,9 @@ export default function HomePage({
   // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#performing-multiple-requests-with-a-single-query
 
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
-    api.useGetInventoryProgressQuery(inventoryIdFromParam ?? "default");
+    api.useGetInventoryProgressQuery(inventoryIdFromParam!, {
+      skip: !inventoryIdFromParam,
+    });
 
   const { data: city } = api.useGetCityQuery(inventory?.cityId!, {
     skip: !inventory?.cityId,
@@ -158,7 +200,7 @@ export default function HomePage({
   // Check user permissions for this city
   const { userRole } = useUserPermissions({
     cityId: inventory?.cityId,
-    skip: !inventory?.cityId
+    skip: !inventory?.cityId,
   });
 
   const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
@@ -184,7 +226,15 @@ export default function HomePage({
     }
   }, [isInventoryOrgDataLoading, inventoryOrgData, setTheme]);
 
-  if (isInventoryLoading || isInventoryOrgDataLoading || isUserInfoLoading) {
+  if (isUserInfoLoading) {
+    return <ProgressLoader />;
+  }
+
+  // If we have an inventory ID but it's still loading, show loader
+  if (
+    inventoryIdFromParam &&
+    (isInventoryLoading || isInventoryOrgDataLoading)
+  ) {
     return <ProgressLoader />;
   }
 
@@ -195,7 +245,7 @@ export default function HomePage({
           {isPublic ? (
             <NotAvailable lng={language} />
           ) : (
-            <MissingInventory lng={language} />
+            <MissingInventory lng={language} cityId={cityIdParamValue} />
           )}
           <Footer lng={language} />
         </>
@@ -208,7 +258,7 @@ export default function HomePage({
             currentInventoryId={inventory?.inventoryId}
             isInventoryLoading={isInventoryLoading}
             formattedEmissions={formattedEmissions}
-            t={t}
+            lng={lng}
             population={population}
           />
 
@@ -256,33 +306,27 @@ export default function HomePage({
                       {t("inventory-year")}
                     </Text>
                     {/* Only show add inventory button for ORG_ADMIN and PROJECT_ADMIN */}
-                    {userRole !== UserRole.COLLABORATOR && userRole !== UserRole.NO_ACCESS && (
-                      <Button
-                        data-testid="add-new-inventory-button"
-                        title={t("add-new-inventory")}
-                        h="48px"
-                        aria-label="activity-button"
-                        fontSize="button.md"
-                        gap="8px"
-                        onClick={() => {
-                          if (isFrozenCheck()) {
-                            return;
-                          }
+                    {userRole !== UserRole.COLLABORATOR &&
+                      userRole !== UserRole.NO_ACCESS && (
+                        <Button
+                          data-testid="add-new-inventory-button"
+                          title={t("add-new-inventory")}
+                          h="48px"
+                          aria-label="activity-button"
+                          fontSize="button.md"
+                          gap="8px"
+                          onClick={() => {
+                            if (isFrozenCheck()) {
+                              return;
+                            }
 
-                          const cityId = inventory?.cityId || cityIdParam;
-                          if (cityId) {
-                            router.push(
-                              `/${language}/cities/${cityId}/GHGI/onboarding`,
-                            );
-                          } else {
-                            router.push(`/${language}/onboarding`);
-                          }
-                        }}
-                      >
-                        <Icon as={BsPlus} h="16px" w="16px" />
-                        {t("add-new-inventory")}
-                      </Button>
-                    )}
+                            redirectToOnboarding();
+                          }}
+                        >
+                          <Icon as={BsPlus} h="16px" w="16px" />
+                          {t("add-new-inventory")}
+                        </Button>
+                      )}
                   </Box>
                   <YearSelectorCard
                     cityId={inventory.cityId as string}
@@ -348,3 +392,4 @@ export default function HomePage({
     </>
   );
 }
+

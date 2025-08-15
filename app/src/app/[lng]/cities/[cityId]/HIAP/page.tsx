@@ -11,7 +11,6 @@ import { Box, Tabs } from "@chakra-ui/react";
 import { formatEmissions } from "@/util/helpers";
 import { Hero } from "@/components/GHGIHomePage/Hero";
 import { HiapTab } from "@/app/[lng]/cities/[cityId]/HIAP/HiapTab";
-import { NavigationBar } from "@/components/navigation-bar";
 import ProgressLoader from "@/components/ProgressLoader";
 
 export default function HIAPPage(props: {
@@ -37,7 +36,6 @@ export default function HIAPPage(props: {
       flexDirection="column"
       bg="background.backgroundLight"
     >
-      <NavigationBar showMenu lng={lng} />
       {isInventoryLoading || !inventory ? (
         <ProgressLoader />
       ) : (
@@ -48,7 +46,7 @@ export default function HIAPPage(props: {
             currentInventoryId={inventory?.inventoryId}
             isInventoryLoading={isInventoryLoading}
             formattedEmissions={formattedEmissions}
-            t={t}
+            lng={lng}
             population={population}
           />
           <Box display="flex" mx="auto" mt="80px" w="full" maxW="1090px">

@@ -250,6 +250,7 @@ export default class UserService {
   }
 
   public static async updateDefaults(userId: string) {
+    // First, try to find the most recent inventory for the user
     const [inventory] = (await db.sequelize!.query(
       `
             SELECT i.inventory_id, i.city_id
@@ -266,6 +267,7 @@ export default class UserService {
     )) as { inventory_id: string; city_id: string }[];
 
     if (inventory) {
+      // User has an inventory, set both defaults
       await db.models.User.update(
         {
           defaultInventoryId: inventory?.inventory_id,
@@ -276,8 +278,34 @@ export default class UserService {
       return inventory?.inventory_id;
     }
 
-    // throw new createHttpError.NotFound("Inventory not found");
+    // No inventory found, but let's try to set a default city if possible
+    const [city] = (await db.sequelize!.query(
+      `
+            SELECT c.city_id, c.name, c.created
+            FROM "City" c
+                     JOIN "CityUser" cu ON c.city_id = cu.city_id
+            WHERE cu.user_id = :userId
+            ORDER BY c.created DESC
+        `,
+      {
+        replacements: { userId },
+        type: QueryTypes.SELECT,
+      },
+    )) as { city_id: string; name: string; created: string }[];
 
+    if (city) {
+      // User has a city but no inventory, set default city only
+      await db.models.User.update(
+        {
+          defaultCityId: city?.city_id,
+        },
+        { where: { userId } },
+      );
+
+      return null; // No inventory to return
+    }
+
+    // If user is an org admin, try to find any city/inventory from their organization
     const adminData = await db.models.OrganizationAdmin.findOne({
       where: {
         userId: userId,
@@ -307,8 +335,6 @@ export default class UserService {
       },
     });
 
-    let newDefaultInventoryId: string | null = null;
-
     if (adminData) {
       // if the user is an org owner, they can pick any of the inventories belonging to his organization
       const inventories = adminData.organization.projects.flatMap((project) =>
@@ -316,21 +342,52 @@ export default class UserService {
       );
 
       if (inventories.length > 0) {
-        newDefaultInventoryId = inventories[0].inventoryId;
+        const newDefaultInventoryId = inventories[0].inventoryId;
+        // Find the city for this inventory
+        const cityForInventory = adminData.organization.projects
+          .flatMap((project) => project.cities)
+          .find((city) =>
+            city.inventories.some(
+              (inv) => inv.inventoryId === newDefaultInventoryId,
+            ),
+          );
+
+        await db.models.User.update(
+          {
+            defaultInventoryId: newDefaultInventoryId,
+            defaultCityId: cityForInventory?.cityId || null,
+          },
+          { where: { userId } },
+        );
+        return newDefaultInventoryId;
+      } else {
+        // No inventories, but maybe there are cities
+        const cities = adminData.organization.projects.flatMap(
+          (project) => project.cities,
+        );
+        if (cities.length > 0) {
+          await db.models.User.update(
+            {
+              defaultCityId: cities[0].cityId,
+              defaultInventoryId: null,
+            },
+            { where: { userId } },
+          );
+          return null;
+        }
       }
     }
 
-    if (newDefaultInventoryId) {
-      await db.models.User.update(
-        {
-          defaultInventoryId: newDefaultInventoryId,
-        },
-        { where: { userId } },
-      );
-      return newDefaultInventoryId;
-    }
+    // No city or inventory found at all
+    await db.models.User.update(
+      {
+        defaultCityId: null,
+        defaultInventoryId: null,
+      },
+      { where: { userId } },
+    );
 
-    throw new createHttpError.NotFound("Inventory not found");
+    return null;
   }
 
   /**

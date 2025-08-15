@@ -23,33 +23,13 @@ test.describe("Onboarding Flow", () => {
       await expect(description).toHaveText(
         /In this step, configure your city's GHG emissions inventory by selecting the inventory year, setting the target, and adding contextual data such as population./i,
       );
-      // Handle cookie consent banner if it appears
-      const cookieDeclineButton = page.getByRole("button", { name: /decline/i });
-      if (await cookieDeclineButton.isVisible().catch(() => false)) {
-        try {
-          await cookieDeclineButton.click();
-        } catch (error) {
-          // If regular click fails on cookie button, try force click
-          await cookieDeclineButton.click({ force: true });
-        }
-        // Wait for cookie banner to disappear
-        await cookieDeclineButton.waitFor({ state: 'hidden' }).catch(() => {});
-      }
-
-      // Wait a moment for any animations to settle
-      await page.waitForTimeout(500);
 
       //   Verify the "Start Inventory" button is present and clickable
       const startButton = page.getByTestId("start-inventory-button");
       await expect(startButton).toBeVisible();
 
       //   Click the "Start Inventory" button
-      try {
-        await startButton.click();
-      } catch (error) {
-        // If regular click fails, try force click
-        await startButton.click({ force: true });
-      }
+      await startButton.click();
     });
   });
   test.describe("Select City Step", () => {
@@ -100,6 +80,7 @@ test.describe("Onboarding Flow", () => {
 
       // Verify that the map is displayed
       const cityMap = page.locator(".pigeon-overlays");
+      await cityMap.waitFor();
       await expect(cityMap).toBeVisible();
 
       const continueButton = page.getByRole("button", { name: /Continue/i });
@@ -504,6 +485,7 @@ test.describe("Onboarding Flow", () => {
 
         // Verify city heading
         const heading = page.getByTestId("confirm-city-data-heading");
+        await heading.waitFor({ state: 'visible', timeout: 5000 });
         await expect(heading).toBeVisible();
       });
 

@@ -15,7 +15,10 @@ const CONSENT_EXPIRY_DAYS = 365;
 export function initializeAnalytics() {
   if (
     typeof window === "undefined" ||
-    !hasServerFeatureFlag(FeatureFlags.ANALYTICS_ENABLED)
+    !hasServerFeatureFlag(FeatureFlags.ANALYTICS_ENABLED) ||
+    process.env.NODE_ENV === "test" ||
+    // Disable analytics in Playwright e2e tests
+    (typeof window !== "undefined" && window.location.hostname === "127.0.0.1")
   ) {
     return;
   }
@@ -32,9 +35,10 @@ export function initializeAnalytics() {
     posthog.init(posthogKey, {
       api_host: posthogHost || "https://eu.i.posthog.com",
       person_profiles: "identified_only",
+      autocapture: false, // Disable automatic event capture to prevent duplicates
       loaded: (posthog) => {
         if (process.env.NODE_ENV === "development") posthog.debug();
-        
+
         // Check existing consent and apply it
         const consent = getAnalyticsConsent();
         if (consent === false) {
@@ -48,7 +52,7 @@ export function initializeAnalytics() {
 
 export function getAnalyticsConsent(): boolean | null {
   if (typeof window === "undefined") return null;
-  
+
   const consent = Cookies.get(CONSENT_COOKIE_NAME);
   if (consent === undefined) return null;
   return consent === "true";
@@ -59,8 +63,6 @@ export function setAnalyticsConsent(consent: boolean) {
 
   Cookies.set(CONSENT_COOKIE_NAME, consent.toString(), {
     expires: CONSENT_EXPIRY_DAYS,
-    sameSite: "strict",
-    secure: true,
   });
 
   if (!isInitialized) return;
@@ -79,9 +81,9 @@ export function hasAnalyticsConsent(): boolean {
 
 export function clearAnalyticsConsent() {
   if (typeof window === "undefined") return;
-  
+
   Cookies.remove(CONSENT_COOKIE_NAME);
-  
+
   // Opt out of capturing when consent is cleared
   if (isInitialized) {
     posthog.opt_out_capturing();
@@ -89,9 +91,19 @@ export function clearAnalyticsConsent() {
 }
 
 function shouldTrack(): boolean {
-  return hasServerFeatureFlag(FeatureFlags.ANALYTICS_ENABLED) && 
-         isInitialized && 
-         hasAnalyticsConsent();
+  // Disable tracking in test environments
+  if (
+    process.env.NODE_ENV === "test" ||
+    (typeof window !== "undefined" && window.location.hostname === "127.0.0.1")
+  ) {
+    return false;
+  }
+
+  return (
+    hasServerFeatureFlag(FeatureFlags.ANALYTICS_ENABLED) &&
+    isInitialized &&
+    hasAnalyticsConsent()
+  );
 }
 
 export function trackEvent(
@@ -101,14 +113,15 @@ export function trackEvent(
   if (!shouldTrack()) {
     return;
   }
-  
+
   // Add environment to all events
   const enhancedProperties = {
     ...properties,
     environment: process.env.NODE_ENV,
-    deployment_env: process.env.NEXT_PUBLIC_DEPLOYMENT_ENV || process.env.NODE_ENV,
+    deployment_env:
+      process.env.NEXT_PUBLIC_DEPLOYMENT_ENV || process.env.NODE_ENV,
   };
-  
+
   posthog.capture(eventName, enhancedProperties);
 }
 
@@ -119,7 +132,8 @@ export function identifyUser(userId: string, properties?: Record<string, any>) {
   posthog.identify(userId, {
     ...properties,
     environment: process.env.NODE_ENV,
-    deployment_env: process.env.NEXT_PUBLIC_DEPLOYMENT_ENV || process.env.NODE_ENV,
+    deployment_env:
+      process.env.NEXT_PUBLIC_DEPLOYMENT_ENV || process.env.NODE_ENV,
   });
 }
 
@@ -144,7 +158,8 @@ export function trackPageView(url?: string) {
   posthog.capture("$pageview", {
     $current_url: url || window.location.href,
     environment: process.env.NODE_ENV,
-    deployment_env: process.env.NEXT_PUBLIC_DEPLOYMENT_ENV || process.env.NODE_ENV,
+    deployment_env:
+      process.env.NEXT_PUBLIC_DEPLOYMENT_ENV || process.env.NODE_ENV,
   });
 }
 

@@ -99,17 +99,22 @@ export function CookieConsent({ lng }: CookieConsentProps) {
             </Text>
           </VStack>
 
-          <HStack flexShrink={0}>
+          <HStack flexShrink={0} gap={2}>
             <Button
               size="sm"
               variant="outline"
               onClick={handleDecline}
+              data-testid="cookie-decline-button"
+              _hover={{ bg: "gray.100" }}
+              minW="80px"
             >
               {t("decline")}
             </Button>
             <Button
               size="sm"
               onClick={handleAccept}
+              data-testid="cookie-accept-button"
+              minW="80px"
             >
               {t("accept")}
             </Button>
@@ -118,6 +123,7 @@ export function CookieConsent({ lng }: CookieConsentProps) {
               variant="ghost"
               aria-label={t("close-aria-label")}
               onClick={handleClose}
+              data-testid="cookie-close-button"
             >
               <MdOutlineClose />
             </IconButton>

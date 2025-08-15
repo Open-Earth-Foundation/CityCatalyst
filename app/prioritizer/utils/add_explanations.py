@@ -100,7 +100,7 @@ def generate_multilingual_explanation(
     action_description = single_action.get("Description")
 
     # Retrieve vector-store context or fall back to an empty object if inputs are missing
-    retrieved_national_strategy = {}
+    retrieved_national_strategy = None
     if action_type is None or action_name is None or action_description is None:
         logger.warning(
             f"Action type, name, or description is None for action_id={single_action['ActionID']}"
@@ -119,10 +119,24 @@ def generate_multilingual_explanation(
             country_code=country_code,
         )
 
-    # Convert retrieved documents to a JSON-serializable structure
-    national_strategy_for_prompt = _serialize_vector_results(
-        retrieved_national_strategy
-    )
+    national_strategy_for_prompt = []
+
+    if (
+        isinstance(retrieved_national_strategy, str)
+        or retrieved_national_strategy is None
+    ):
+        # If the retrieved national strategy is a string or None, it means that the vector store is not found or the inputs are missing
+        # We will return an empty list
+        logger.warning(
+            f"Could not retrieve national strategies from vector store for action_id={single_action['ActionID']}"
+        )
+
+    if isinstance(retrieved_national_strategy, list):
+        # Retrieved national strategy is a list of tuples
+        # Convert retrieved documents to a JSON-serializable structure
+        national_strategy_for_prompt = _serialize_vector_results(
+            retrieved_national_strategy
+        )
 
     # Build shallow-copied and pruned dictionaries for the prompt
     city_data_for_prompt, single_action_for_prompt = build_prompt_inputs(

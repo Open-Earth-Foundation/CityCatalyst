@@ -6,37 +6,36 @@ from utils.get_vectorstore_local import get_vectorstore
 logger = logging.getLogger(__name__)
 
 
-def _serialize_vector_results(results: Any) -> Any:
+def _serialize_vector_results(
+    results: list[tuple[Document, float]],
+) -> list[dict[str, Any]]:
     """Convert vector-store retrieval results into a JSON-serializable structure.
+
+    Input: results (list[tuple[Document, float]])
+    Output: list[dict[str, Any]]
 
     Only include:
     - "content"
     - "metadata": { "target", "action_code", "relevance_score" }
     """
-    if isinstance(results, list):
-        # Filter for metadata keys target and action_code
-        serialized: list[dict[str, Any]] = []
+    # Filter for metadata keys target and action_code
+    serialized: list[dict[str, Any]] = []
 
-        for item in results:
-            doc, score = item  # Expect (Document, score)
-            content = getattr(doc, "page_content", None)
-            meta_raw = getattr(doc, "metadata", {}) or {}
-            if not isinstance(meta_raw, dict):
-                meta_raw = {}
-            meta_filtered: dict[str, Any] = {}
-            if "target" in meta_raw:
-                meta_filtered["target"] = meta_raw["target"]
-            if "action_code" in meta_raw:
-                meta_filtered["action_code"] = meta_raw["action_code"]
-            meta_filtered["relevance_score"] = score
-            serialized.append({"content": content, "metadata": meta_filtered})
+    for item in results:
+        doc, score = item  # Expect (Document, score)
+        content = getattr(doc, "page_content", None)
+        meta_raw = getattr(doc, "metadata", {}) or {}
+        if not isinstance(meta_raw, dict):
+            meta_raw = {}
+        meta_filtered: dict[str, Any] = {}
+        if "target" in meta_raw:
+            meta_filtered["target"] = meta_raw["target"]
+        if "action_code" in meta_raw:
+            meta_filtered["action_code"] = meta_raw["action_code"]
+        meta_filtered["relevance_score"] = score
+        serialized.append({"content": content, "metadata": meta_filtered})
 
-        return serialized
-    if isinstance(results, str):
-        return {"message": results}
-    if isinstance(results, dict):
-        return results
-    return {}
+    return serialized
 
 
 def retriever_vectorstore_national_strategy_tool(
@@ -52,12 +51,12 @@ def retriever_vectorstore_national_strategy_tool(
     **Input**:
     - search_query (str) - A concise search query.
         * Example: "[Climate Action Name]"
-        * Example: "What is the national climate strategy for [Cliamte Action Name]?"
+        * Example: "What is the national climate strategy for [Climate Action Name]?"
         * Example: "What is the national climate strategy for [Climate Action Description]?"
     - country_code (str) - ISO country code (e.g., "BR" for Brazil, "US" for United States)
     - action_type ("mitigation" | "adaptation") - The type of action (mitigation or adaptation)
 
-    **Output**: A list of tuples in the form `[(document, relevance_score)]`.
+    **Output**: A list of tuples in the form `[(document, relevance_score)] or a string if the vector store is not found`.
     - Relevance scores range from `0` (lowest) to `1` (highest).
 
     **Query Strategies**:
@@ -66,13 +65,6 @@ def retriever_vectorstore_national_strategy_tool(
     **Error Handling**:
     - If the vector store is not found, it means it does not exist. Continue with the task.
     """
-
-    # Ensure the LLM only uses the correct action type
-    if action_type not in ["mitigation", "adaptation"]:
-        logger.error(f"Invalid action type: {action_type}")
-        return (
-            f"Invalid action type: {action_type}. Check the action type and try again."
-        )
 
     # Build the collection name
     collection_name = f"{country_code.lower()}_national_strategy_{action_type}"

@@ -67,7 +67,7 @@ export default function Onboarding(props: {
           </Box>
         </Box>
       </Box>
-      <Box bg="base.light" h="145px" w="full" pos="fixed" bottom="0" left="0">
+      <Box bg="base.light" h="145px" w="full" pos="fixed" bottom="0" left="0" zIndex={999}>
         {/* Place holder steppers */}
         <HStack p="4px">
           {steps.map((step) => (
@@ -94,6 +94,7 @@ export default function Onboarding(props: {
             py="16px"
             px="24px"
             h="64px"
+            data-testid="start-inventory-button"
             onClick={() => router.push("/onboarding/setup")}
           >
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">

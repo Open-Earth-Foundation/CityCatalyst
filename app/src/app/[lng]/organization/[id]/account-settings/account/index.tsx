@@ -37,6 +37,7 @@ import OrganizationDetailsTab from "./organization-details-tab";
 import TabContent from "@/components/ui/tab-content";
 import TabTrigger from "@/components/ui/tab-trigger";
 import { logger } from "@/services/logger";
+import { trackEvent } from "@/lib/analytics";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { TitleMedium } from "@/components/Texts/Title";
 import PlanDetailsBox from "@/components/PlanDetailsBox";
@@ -121,6 +122,11 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
           clearLogoUrl: clearImage,
         },
       }).unwrap();
+
+      // Track white label customization
+      trackEvent("white_label_customized", {
+        organization_id: userAccessStatus?.organizationId,
+      });
 
       setFile(null);
       setClearImage(false);

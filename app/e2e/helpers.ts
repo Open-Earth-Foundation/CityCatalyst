@@ -54,8 +54,11 @@ export async function createInventoryThroughOnboarding(
   // Step 1: Start the onboarding process
   await page.goto("/onboarding/");
 
-  // Click "Start Inventory" button
-  const startButton = page.getByRole("button", { name: /Start inventory/i });
+  // Wait a moment for any animations to settle
+  await page.waitForTimeout(500);
+
+  // Click "Start Inventory" button using data-testid for more reliable targeting
+  const startButton = page.getByTestId("start-inventory-button");
   await expect(startButton).toBeVisible();
   await startButton.click();
 

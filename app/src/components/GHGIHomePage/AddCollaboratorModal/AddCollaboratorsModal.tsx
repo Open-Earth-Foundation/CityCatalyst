@@ -48,6 +48,7 @@ import {
 import Callout from "@/components/ui/callout";
 import { toaster } from "@/components/ui/toaster";
 import { OrganizationRole } from "@/util/types";
+import { trackEvent } from "@/lib/analytics";
 
 const AddCollaboratorsDialog = ({
   lng,
@@ -140,6 +141,20 @@ const AddCollaboratorsDialog = ({
       emails,
     });
     if (data?.success && !error) {
+      // Get city names for the selected cities
+      const selectedCityNames = cityData
+        ?.filter(city => selectedCities.includes(city.cityId))
+        ?.map(city => city.name) || [];
+      
+      // Track collaborator invitation
+      trackEvent("collaborator_invited", {
+        num_invitees: emails.length,
+        num_cities: selectedCities.length,
+        city_ids: selectedCities,
+        city_names: selectedCityNames,
+        role: "collaborator",
+      });
+      
       showSuccessToast();
       setEmails([]);
       setSelectedCities([]);
@@ -156,6 +171,13 @@ const AddCollaboratorsDialog = ({
       role: OrganizationRole.ORG_ADMIN,
     });
     if (inviteResponse.data) {
+      // Track admin invitation
+      trackEvent("admin_invited", {
+        num_invitees: emails.length,
+        organization_id: organizationId,
+        role: "admin",
+      });
+      
       showSuccessToast();
       onClose();
     } else {

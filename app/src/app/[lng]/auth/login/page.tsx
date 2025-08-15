@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
+import { trackEvent, identifyUser } from "@/lib/analytics";
 
 export type LoginInputs = {
   email: string;
@@ -79,6 +80,14 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
       });
 
       if (res?.ok && !res?.error) {
+        // Track successful login
+        trackEvent("user_logged_in", {
+          method: "credentials"
+        });
+        
+        // Identify the user for future tracking
+        identifyUser(data.email);
+
         showLoginSuccessToast();
         router.push(callbackUrl ?? "/");
         setError("");

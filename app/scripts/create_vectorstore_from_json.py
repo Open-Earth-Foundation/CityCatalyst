@@ -1,3 +1,16 @@
+"""
+This script creates a Chroma vector store from a flattened JSON file.
+Each JSON object is treated as a document.
+
+The script takes the following arguments:
+- --file_name: Name of the JSON file to use. The file must be in the app/files/json directory.
+- --collection_name: Name of the collection in the vector store.
+- --embedding_model: Name of the embedding model to use. Defaults to text-embedding-3-large.
+
+Run with:
+python create_vectorstore_from_json.py --file_name <filename> --collection_name <collection_name> --embedding_model <embedding_model>
+"""
+
 import json
 from pathlib import Path
 from langchain_chroma import Chroma

@@ -13,8 +13,7 @@ from prioritizer.prompts.add_explanations_prompt import (
     add_explanations_multilingual_system_prompt,
 )
 from utils.vector_store_retrievers import (
-    _serialize_vector_results,
-    retriever_vectorstore_national_strategy_tool,
+    get_national_strategy_for_prompt,
 )
 from utils.prompt_data_filters import build_prompt_inputs
 
@@ -99,44 +98,14 @@ def generate_multilingual_explanation(
     action_name = single_action.get("ActionName")
     action_description = single_action.get("Description")
 
-    # Retrieve vector-store context or fall back to an empty object if inputs are missing
-    retrieved_national_strategy = None
-    if action_type is None or action_name is None or action_description is None:
-        logger.warning(
-            f"Action type, name, or description is None for action_id={single_action['ActionID']}"
-        )
-        logger.warning(
-            f"Action type: {action_type}, Action name: {action_name}, Action description: {action_description}"
-        )
-    else:
-        search_query = (
-            f"Action name: {action_name}\n Action description: {action_description}"
-        )
-
-        retrieved_national_strategy = retriever_vectorstore_national_strategy_tool(
-            action_type=action_type,
-            search_query=search_query,
-            country_code=country_code,
-        )
-
-    national_strategy_for_prompt = []
-
-    if (
-        isinstance(retrieved_national_strategy, str)
-        or retrieved_national_strategy is None
-    ):
-        # If the retrieved national strategy is a string or None, it means that the vector store is not found or the inputs are missing
-        # We will return an empty list
-        logger.warning(
-            f"Could not retrieve national strategies from vector store for action_id={single_action['ActionID']}"
-        )
-
-    if isinstance(retrieved_national_strategy, list):
-        # Retrieved national strategy is a list of tuples
-        # Convert retrieved documents to a JSON-serializable structure
-        national_strategy_for_prompt = _serialize_vector_results(
-            retrieved_national_strategy
-        )
+    # Retrieve vector-store context or fall back to an empty list if inputs are missing
+    national_strategy_for_prompt = get_national_strategy_for_prompt(
+        country_code=country_code,
+        action_type=action_type,
+        action_name=action_name,
+        action_description=action_description,
+        action_id=str(single_action["ActionID"]),
+    )
 
     # Build shallow-copied and pruned dictionaries for the prompt
     city_data_for_prompt, single_action_for_prompt = build_prompt_inputs(

@@ -1,5 +1,5 @@
 import logging
-from typing import Tuple, Union, Any
+from typing import Tuple, Union, Any, Optional
 from langchain.schema import Document
 from utils.get_vectorstore_local import get_vectorstore
 
@@ -78,8 +78,10 @@ def retriever_vectorstore_national_strategy_tool(
         )
         return "Could not load vector store. Please ensure your vector DB is created."
 
-    # Log the name of the collection
-    logger.info(f"Loaded vector store collection name: {vector_store._collection.name}")
+    # Log the name of the collection (debug to avoid noise on repeated calls)
+    logger.debug(
+        f"Loaded vector store collection name: {vector_store._collection.name}"
+    )
 
     docs_and_scores = vector_store.similarity_search_with_relevance_scores(
         query=search_query,
@@ -88,3 +90,45 @@ def retriever_vectorstore_national_strategy_tool(
     )
 
     return docs_and_scores
+
+
+def get_national_strategy_for_prompt(
+    country_code: str,
+    action_type: Optional[str],
+    action_name: Optional[str],
+    action_description: Optional[str],
+    action_id: str,
+) -> list[dict[str, Any]]:
+    """
+    Helper function to retrieve and serialize national strategy context for prompts.
+
+    Retrieve and serialize national strategy context for prompts.
+
+    Returns an empty list if inputs are missing or vector store is unavailable.
+    """
+    if action_type is None or action_name is None or action_description is None:
+        logger.warning(
+            f"Action type, name, or description is None for action_id={action_id}"
+        )
+        logger.warning(
+            f"Action type: {action_type}, Action name: {action_name}, Action description: {action_description}"
+        )
+        return []
+
+    search_query = (
+        f"Action name: {action_name}\n Action description: {action_description}"
+    )
+
+    retrieved_national_strategy = retriever_vectorstore_national_strategy_tool(
+        action_type=action_type,
+        search_query=search_query,
+        country_code=country_code,
+    )
+
+    if isinstance(retrieved_national_strategy, list):
+        return _serialize_vector_results(retrieved_national_strategy)
+
+    logger.warning(
+        f"Could not retrieve national strategies from vector store for action_id={action_id}"
+    )
+    return []

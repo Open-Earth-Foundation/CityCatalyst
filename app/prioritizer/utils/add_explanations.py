@@ -12,6 +12,10 @@ from prioritizer.models import Explanation
 from prioritizer.prompts.add_explanations_prompt import (
     add_explanations_multilingual_system_prompt,
 )
+from utils.vector_store_retrievers import (
+    get_national_strategy_for_prompt,
+)
+from utils.prompt_data_filters import build_prompt_inputs
 
 load_dotenv()
 
@@ -58,7 +62,7 @@ def build_explanation_model(language_codes: list[str]) -> Type[BaseModel]:
 
 @traceable(run_type="llm", project_name=LANGCHAIN_PROJECT_NAME_PRIORITIZER)
 def generate_multilingual_explanation(
-    national_strategy: dict,
+    country_code: str,
     city_data: dict,
     single_action: dict,
     rank: int,
@@ -68,7 +72,7 @@ def generate_multilingual_explanation(
     Generate qualitative explanation for a single prioritized climate action in multiple languages.
 
     Args:
-        national_strategy (dict): Contextual data for the national strategy.
+        country_code (str): The country code of the city.
         city_data (dict): Contextual data for the city.
         single_action (dict): The action to explain.
         rank (int): The action's rank among the top prioritized actions (1 = highest priority).
@@ -81,35 +85,45 @@ def generate_multilingual_explanation(
         f"Generating explanation for action_id={single_action['ActionID']}, rank={rank}, languages={languages}."
     )
 
-    # Filter the national_strategy dictionary to only include specified keys
-    # This is a workaround to avoid the model from hallucinating and including irrelevant details from the national strategy
-    # actions here refers to the actions in the national strategy like "AGR.I.01"
-    filtered_national_strategy = {}
-    if isinstance(national_strategy, dict):
-        for category, actions in national_strategy.items():
-            if isinstance(actions, list):
-                filtered_actions = []
-                for action in actions:
-                    if isinstance(action, dict):
-                        filtered_action = {
-                            "action_code": action.get("action_code"),
-                            "action_name": action.get("action_name"),
-                            "action_description": action.get("action_description"),
-                            "target": action.get("target"),
-                        }
-                        filtered_actions.append(filtered_action)
-                filtered_national_strategy[category] = filtered_actions
-            else:
-                filtered_national_strategy[category] = actions
+    # Retrieve the national strategy from the vector store relevant to the action
+    # Action type is a list of strings, extract the first element
+    action_type = single_action.get("ActionType")
+    if action_type is None:
+        logger.error(f"Action type is None for action_id={single_action['ActionID']}")
+        return None
+    # Action type is a list of strings, extract the first element
+    # Action type always only has one value
+    action_type = action_type[0]
+
+    action_name = single_action.get("ActionName")
+    action_description = single_action.get("Description")
+
+    # Retrieve vector-store context or fall back to an empty list if inputs are missing
+    national_strategy_for_prompt = get_national_strategy_for_prompt(
+        country_code=country_code,
+        action_type=action_type,
+        action_name=action_name,
+        action_description=action_description,
+        action_id=str(single_action["ActionID"]),
+    )
+
+    # Build shallow-copied and pruned dictionaries for the prompt
+    city_data_for_prompt, single_action_for_prompt = build_prompt_inputs(
+        city_data=city_data, action_data=single_action, action_type=action_type
+    )
 
     # Build the dynamic explanation model
     ExplanationModelDynamic = build_explanation_model(languages)
 
     # Build the system prompt for multilingual
     system_prompt = add_explanations_multilingual_system_prompt.format(
-        national_strategy=json.dumps(filtered_national_strategy, indent=2),
-        city_data=json.dumps(city_data, indent=2),
-        single_action=json.dumps(single_action, indent=2),
+        national_strategy=json.dumps(
+            national_strategy_for_prompt, indent=2, ensure_ascii=False
+        ),
+        city_data=json.dumps(city_data_for_prompt, indent=2, ensure_ascii=False),
+        single_action=json.dumps(
+            single_action_for_prompt, indent=2, ensure_ascii=False
+        ),
         rank=rank,
         languages=languages,
     )

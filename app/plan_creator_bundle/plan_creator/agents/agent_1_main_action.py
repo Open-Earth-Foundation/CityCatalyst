@@ -6,10 +6,10 @@ from langchain_openai import ChatOpenAI
 import logging
 import os
 
-from plan_creator_bundle.tools.tools import (
-    retriever_vectorstore_national_strategy_tool,
-    retriever_json_document_national_strategy_tool,
+from utils.vector_store_retrievers import (
+    get_national_strategy_for_prompt,
 )
+from utils.prompt_data_filters import build_prompt_inputs
 
 from plan_creator_bundle.plan_creator.models import Introduction
 from plan_creator_bundle.plan_creator.prompts.agent_1_prompt import (
@@ -23,10 +23,7 @@ OPENAI_MODEL_NAME_PLAN_CREATOR = os.environ["OPENAI_MODEL_NAME_PLAN_CREATOR"]
 model = ChatOpenAI(model=OPENAI_MODEL_NAME_PLAN_CREATOR, temperature=0.0, seed=42)
 
 # Define tools for the agent
-tools = [
-    retriever_vectorstore_national_strategy_tool,
-    retriever_json_document_national_strategy_tool,
-]
+tools = []
 
 # Define prompts for each agent
 system_prompt_agent_1 = SystemMessage(agent_1_system_prompt)
@@ -47,14 +44,48 @@ def build_custom_agent_1():
         logger.info("Agent 1 start...")
         logger.info(f"Country code: {state['country_code']}")
 
+        action_type = state["climate_action_data"].get("ActionType")
+        if action_type is None:
+            logger.error(
+                f"Action type is None for action_id={state['climate_action_data']['ActionID']}"
+            )
+            return AgentState(**state)
+        # Action type is a list of strings, extract the first element
+        # Action type always only has one value
+        action_type = action_type[0]
+
+        action_name = state["climate_action_data"].get("ActionName")
+        action_description = state["climate_action_data"].get("Description")
+
+        # Retrieve vector-store context or fall back to an empty list if inputs are missing
+        national_strategy_for_prompt = get_national_strategy_for_prompt(
+            country_code=state["country_code"],
+            action_type=action_type,
+            action_name=action_name,
+            action_description=action_description,
+            action_id=str(state["climate_action_data"]["ActionID"]),
+        )
+
+        # Build shallow-copied and pruned dictionaries for the prompt
+        city_data_for_prompt, climate_action_data_for_prompt = build_prompt_inputs(
+            city_data=state["city_data"],
+            action_data=state["climate_action_data"],
+            action_type=action_type,
+        )
+
         result_state = react_chain.invoke(
             {
                 "messages": HumanMessage(
                     agent_1_user_prompt.format(
-                        climate_action_data=json.dumps(
-                            state["climate_action_data"], indent=2
+                        national_strategy=json.dumps(
+                            national_strategy_for_prompt, indent=2, ensure_ascii=False
                         ),
-                        city_data=json.dumps(state["city_data"], indent=2),
+                        climate_action_data=json.dumps(
+                            climate_action_data_for_prompt, indent=2, ensure_ascii=False
+                        ),
+                        city_data=json.dumps(
+                            city_data_for_prompt, indent=2, ensure_ascii=False
+                        ),
                         country_code=state["country_code"],
                     )
                 )

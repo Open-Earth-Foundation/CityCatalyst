@@ -26,14 +26,6 @@ if ! python -m scripts.download_vectorstore_from_s3_bulk; then
     DOWNLOAD_FAILED=true
 fi
 
-# Download all json files for the country strategies
-echo ""
-echo "Downloading all country strategy files..."
-if ! python -m scripts.download_json_files_from_s3_bulk; then
-    echo "ERROR: Failed to download one or more country strategy files"
-    DOWNLOAD_FAILED=true
-fi
-
 # Check if any download failed
 if [ "$DOWNLOAD_FAILED" = true ]; then
     echo "ERROR: One or more downloads failed. Exiting..."

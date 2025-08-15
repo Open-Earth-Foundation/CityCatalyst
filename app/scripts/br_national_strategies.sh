@@ -1,14 +1,19 @@
 #!/bin/bash
 
-# This script is used to create a vector store with the national strategies of Brazil.
-# The vector store is saved in the directory: app/runtime_data/vector_stores/
+# This script is used to create vector stores with the national strategies of Brazil.
+# The vector stores is saved in the directory: app/runtime_data/vector_stores/
+# One vector store is created for the mitigation strategies and one for the adaptation strategies.
+
+# Run this script from the app/scripts directory.
+# Command: bash app/scripts/br_national_strategies.sh
 
 # Exit immediately if a command exits with a non-zero status
 set -e
 set -o pipefail
 
 # Set the collection name variable
-COLLECTION_NAME="br_national_strategy"
+COLLECTION_NAME_MITIGATION="br_national_strategy_mitigation"
+COLLECTION_NAME_ADAPTATION="br_national_strategy_adaptation"
 
 # OS-specific paths
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
@@ -36,28 +41,16 @@ else
 fi
 
 # Setup vector store
-python create_vectorstore.py --collection_name "$COLLECTION_NAME"
+echo "Creating vector store for mitigation strategies "$COLLECTION_NAME_MITIGATION"..."
 
-# Add documents to the vector store
-echo "Adding national strategy documents..."
-python add_document_to_vectorstore.py \
-  --file_name Brazil_NDC_November_2024.pdf \
-  --collection_name "$COLLECTION_NAME"
+python create_vectorstore_from_json.py --file_name "br_national_strategy_mitigation_flattened.json" --collection_name "$COLLECTION_NAME_MITIGATION"
 
-python add_document_to_vectorstore.py \
-  --file_name Brazil_NAP_2016.pdf \
-  --collection_name "$COLLECTION_NAME"
+echo "Vector store setup for mitigation strategies "$COLLECTION_NAME_MITIGATION" completed successfully."
 
-python add_document_to_vectorstore.py \
-  --file_name Urban_Solid_Waste_Management_BRCXL.pdf \
-  --collection_name "$COLLECTION_NAME"
+# echo "Creating vector store for adaptation strategies "$COLLECTION_NAME_ADAPTATION"..."
 
-python add_document_to_vectorstore.py \
-  --file_name Worldbank_Green_Cities_Brazil.pdf \
-  --collection_name "$COLLECTION_NAME"
+# python create_vectorstore_from_json.py --file_name "br_national_strategy_adaptation_flattened.json" --collection_name "$COLLECTION_NAME_ADAPTATION"
 
-python add_document_to_vectorstore.py \
-  --file_name TNC_Brazil_Annual_Report_2023.pdf \
-  --collection_name "$COLLECTION_NAME"
-# Ensure clean exit
-echo "Vector store setup for "$COLLECTION_NAME" completed successfully."
+# echo "Vector store setup for adaptation strategies "$COLLECTION_NAME_ADAPTATION" completed successfully."
+
+echo "Vector store setup complete."

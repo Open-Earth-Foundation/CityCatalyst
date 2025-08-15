@@ -16,6 +16,7 @@ from utils.vector_store_retrievers import (
     _serialize_vector_results,
     retriever_vectorstore_national_strategy_tool,
 )
+from utils.prompt_data_filters import build_prompt_inputs
 
 load_dotenv()
 
@@ -88,8 +89,12 @@ def generate_multilingual_explanation(
     # Retrieve the national strategy from the vector store relevant to the action
     # Action type is a list of strings, extract the first element
     action_type = single_action.get("ActionType")
-    if isinstance(action_type, list):
-        action_type = action_type[0]
+    if action_type is None:
+        logger.error(f"Action type is None for action_id={single_action['ActionID']}")
+        return None
+    # Action type is a list of strings, extract the first element
+    # Action type always only has one value
+    action_type = action_type[0]
 
     action_name = single_action.get("ActionName")
     action_description = single_action.get("Description")
@@ -119,19 +124,10 @@ def generate_multilingual_explanation(
         retrieved_national_strategy
     )
 
-    # Filter city data to not include the key 'ccra' if the action is a mitigation action
-    # and exclude the keys 'stationaryEnergyEmissions', 'transportationEmissions', 'wasteEmissions', 'ippuEmissions', 'afoluEmissions', 'totalEmissions' if the action is an adaptation action
-    # This is to make the prompt more concise and focused
-    if action_type == "mitigation":
-        city_data.pop("ccra", None)
-
-    elif action_type == "adaptation":
-        city_data.pop("stationaryEnergyEmissions", None)
-        city_data.pop("transportationEmissions", None)
-        city_data.pop("wasteEmissions", None)
-        city_data.pop("ippuEmissions", None)
-        city_data.pop("afoluEmissions", None)
-        city_data.pop("totalEmissions", None)
+    # Build shallow-copied and pruned dictionaries for the prompt
+    city_data_for_prompt, single_action_for_prompt = build_prompt_inputs(
+        city_data=city_data, action_data=single_action, action_type=action_type
+    )
 
     # Build the dynamic explanation model
     ExplanationModelDynamic = build_explanation_model(languages)
@@ -141,8 +137,10 @@ def generate_multilingual_explanation(
         national_strategy=json.dumps(
             national_strategy_for_prompt, indent=2, ensure_ascii=False
         ),
-        city_data=json.dumps(city_data, indent=2, ensure_ascii=False),
-        single_action=json.dumps(single_action, indent=2, ensure_ascii=False),
+        city_data=json.dumps(city_data_for_prompt, indent=2, ensure_ascii=False),
+        single_action=json.dumps(
+            single_action_for_prompt, indent=2, ensure_ascii=False
+        ),
         rank=rank,
         languages=languages,
     )

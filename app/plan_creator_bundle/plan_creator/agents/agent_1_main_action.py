@@ -10,6 +10,7 @@ from utils.vector_store_retrievers import (
     _serialize_vector_results,
     retriever_vectorstore_national_strategy_tool,
 )
+from utils.prompt_data_filters import build_prompt_inputs
 
 from plan_creator_bundle.plan_creator.models import Introduction
 from plan_creator_bundle.plan_creator.prompts.agent_1_prompt import (
@@ -45,8 +46,14 @@ def build_custom_agent_1():
         logger.info(f"Country code: {state['country_code']}")
 
         action_type = state["climate_action_data"].get("ActionType")
-        if isinstance(action_type, list):
-            action_type = action_type[0]
+        if action_type is None:
+            logger.error(
+                f"Action type is None for action_id={state['climate_action_data']['ActionID']}"
+            )
+            return AgentState(**state)
+        # Action type is a list of strings, extract the first element
+        # Action type always only has one value
+        action_type = action_type[0]
 
         action_name = state["climate_action_data"].get("ActionName")
         action_description = state["climate_action_data"].get("Description")
@@ -76,29 +83,12 @@ def build_custom_agent_1():
             retrieved_national_strategy
         )
 
-        # Remove the key 'ccra' from the city data if the action is a mitigation action
-        # Remove the keys related to emissions if the action is an adaptation action
-        if action_type == "mitigation":
-            state["city_data"].pop("ccra", None)
-            state["climate_action_data"].pop("AdaptationEffectiveness", None)
-            state["climate_action_data"].pop("AdaptationEffectivenessPerHazard", None)
-
-        elif action_type == "adaptation":
-            state["city_data"].pop("stationaryEnergyEmissions", None)
-            state["city_data"].pop("transportationEmissions", None)
-            state["city_data"].pop("wasteEmissions", None)
-            state["city_data"].pop("ippuEmissions", None)
-            state["city_data"].pop("afoluEmissions", None)
-            state["city_data"].pop("totalEmissions", None)
-            state["climate_action_data"].pop("GHGReductionPotential", None)
-
-        # Remove further keys from the city data that are not relevant
-        if action_type == "mitigation":
-            state["city_data"].pop("biome", None)
-            state["climate_action_data"].pop("Biome", None)
-            state["climate_action_data"].pop("ActionType", None)
-            state["climate_action_data"].pop("Dependencies", None)
-            state["climate_action_data"].pop("KeyPerformanceIndicators", None)
+        # Build shallow-copied and pruned dictionaries for the prompt
+        city_data_for_prompt, climate_action_data_for_prompt = build_prompt_inputs(
+            city_data=state["city_data"],
+            action_data=state["climate_action_data"],
+            action_type=action_type,
+        )
 
         result_state = react_chain.invoke(
             {
@@ -108,10 +98,10 @@ def build_custom_agent_1():
                             national_strategy_for_prompt, indent=2, ensure_ascii=False
                         ),
                         climate_action_data=json.dumps(
-                            state["climate_action_data"], indent=2, ensure_ascii=False
+                            climate_action_data_for_prompt, indent=2, ensure_ascii=False
                         ),
                         city_data=json.dumps(
-                            state["city_data"], indent=2, ensure_ascii=False
+                            city_data_for_prompt, indent=2, ensure_ascii=False
                         ),
                         country_code=state["country_code"],
                     )

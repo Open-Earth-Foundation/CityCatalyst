@@ -74,14 +74,15 @@ def retriever_vectorstore_national_strategy_tool(
             f"Invalid action type: {action_type}. Check the action type and try again."
         )
 
+    # Build the collection name
+    collection_name = f"{country_code.lower()}_national_strategy_{action_type}"
+
     # Load vector store based on country code
-    vector_store = get_vectorstore(
-        collection_name=f"{country_code.lower()}_national_strategy_{action_type}"
-    )
+    vector_store = get_vectorstore(collection_name=collection_name)
 
     if not vector_store:
         logger.error(
-            f"Could not load vector store for country {country_code}. Please ensure your vector DB is created."
+            f"Could not load vector store {collection_name} for country {country_code}. Please ensure your vector DB is created."
         )
         return "Could not load vector store. Please ensure your vector DB is created."
 

@@ -213,17 +213,6 @@ export function HiapTab({
     );
   }
 
-  // Show pending message when ranking is in progress
-  if (isPending) {
-    return (
-      <Box p={4} textAlign="center">
-        <Text fontSize="lg" mb={2}>
-          {t("prioritizing-actions")}
-        </Text>
-      </Box>
-    );
-  }
-
   // Empty state - check if we have actions
   const hasActions = actions && actions.length > 0;
 
@@ -234,6 +223,7 @@ export function HiapTab({
         inventory={inventory}
         hasActions={hasActions}
         actionType={type}
+        isActionsPending={isPending}
         onRefetch={() => {
           // TODO: Implement refetch logic
           refetch();
@@ -241,8 +231,6 @@ export function HiapTab({
       />
     );
   }
-
-  console.log(actions);
   return (
     <Box overflowX="auto" w="full" maxW="1090px" mx="auto">
       {selectedAction && (

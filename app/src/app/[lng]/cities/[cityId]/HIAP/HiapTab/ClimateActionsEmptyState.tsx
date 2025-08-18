@@ -22,12 +22,14 @@ const TopActionsDataState = ({
   hasActions = false,
   actionType,
   onRefetch,
+  isActionsPending,
 }: {
   t: TFunction;
   inventory: InventoryResponse;
   hasActions?: boolean;
   actionType: ACTION_TYPES;
   onRefetch: () => void;
+  isActionsPending: boolean;
 }) => {
   const { data: inventoryProgress, isLoading } =
     api.useGetInventoryProgressQuery(inventory.inventoryId);
@@ -78,9 +80,14 @@ const TopActionsDataState = ({
           </Text>
         </Box>
       )}
+
       {!hasActivityLevelData && !isLoading && <NoActivityLevelData t={t} />}
 
-      {hasActivityLevelData && !hasActions && (
+      {isActionsPending && !isLoading && hasActivityLevelData && (
+        <GeneratingClimateActions t={t} isActionsPending={isActionsPending} />
+      )}
+
+      {hasActivityLevelData && !hasActions && !isActionsPending && (
         <GenerateActionsPrompt
           t={t}
           isLoading={isLoading}
@@ -254,6 +261,45 @@ const GeneratedActions = ({ t }: { t: TFunction }) => {
         textAlign="center"
       >
         {t("no-actions-found-description")}
+      </Text>
+    </Box>
+  );
+};
+
+const GeneratingClimateActions = ({
+  t,
+  isActionsPending,
+}: {
+  t: TFunction;
+  isActionsPending: boolean;
+}) => {
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      py="48px"
+      h="400px"
+    >
+      <Icon as={EmptyStateIcon} />
+      <Text
+        fontSize="body.lg"
+        color="content.secondary"
+        mt={"24px"}
+        fontFamily="heading"
+        fontWeight="semibold"
+      >
+        {t("generating-climate-actions")}
+      </Text>
+      <Text
+        w="348px"
+        fontSize="body.lg"
+        color="interactive.control"
+        fontWeight="normal"
+        mt={"8px"}
+        textAlign="center"
+      >
+        {t("generating-climate-actions-description")}
       </Text>
     </Box>
   );

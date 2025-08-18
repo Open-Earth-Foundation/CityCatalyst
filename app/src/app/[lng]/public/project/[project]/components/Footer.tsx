@@ -47,7 +47,7 @@ const Footer = ({ copyright, links }: FooterProps) => {
               rel="noopener noreferrer"
               display="inline-block"
             >
-              {organization.logoUrl ? (
+              {organization?.logoUrl ? (
                 <img
                   src={organization.logoUrl}
                   height={40}

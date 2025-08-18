@@ -68,7 +68,7 @@ function SubSectorPage(props: {
   const { t } = useTranslation(lng, "data");
   const { scrollY } = useScroll();
   const { organization } = useOrganizationContext();
-  const paddingTopMax = organization.active ? "100px" : "150px";
+  const paddingTopMax = organization?.active ? "100px" : "150px";
   const paddingTop = useTransform(scrollY, [0, 100], [paddingTopMax, "50px"], {
     ease: easeInOut,
   });

@@ -118,7 +118,7 @@ export default function HomePage({
       const logoUrl = orgData?.logoUrl ?? null;
       const active = orgData?.active ?? true;
 
-      if (organization.logoUrl !== logoUrl || organization.active !== active) {
+      if (organization?.logoUrl !== logoUrl || organization?.active !== active) {
         setOrganization({ logoUrl, active });
       }
       setTheme(orgData?.theme?.themeKey ?? "blue_theme");

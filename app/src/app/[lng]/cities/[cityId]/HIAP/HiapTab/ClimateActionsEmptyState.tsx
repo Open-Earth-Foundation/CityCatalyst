@@ -1,8 +1,15 @@
-import { EmptyStateIcon, LikeIcon } from "@/components/icons";
+import {
+  EmptyActivityDataIcon,
+  EmptyStateIcon,
+  LikeIcon,
+} from "@/components/icons";
+import ProgressLoader from "@/components/ProgressLoader";
 import { api } from "@/services/api";
-import { InventoryResponse } from "@/util/types";
+import { InventoryResponse, ACTION_TYPES, LANGUAGES } from "@/util/types";
 import { Box, Icon, Text, Button } from "@chakra-ui/react";
 import { TFunction } from "i18next";
+import i18next from "i18next";
+import { useState } from "react";
 
 // Renders different screens for data states:
 // 1. No activity level data found to generate actions (disable generate actions button)
@@ -13,10 +20,14 @@ const TopActionsDataState = ({
   t,
   inventory,
   hasActions = false,
+  actionType,
+  onRefetch,
 }: {
   t: TFunction;
   inventory: InventoryResponse;
   hasActions?: boolean;
+  actionType: ACTION_TYPES;
+  onRefetch: () => void;
 }) => {
   const { data: inventoryProgress, isLoading } =
     api.useGetInventoryProgressQuery(inventory.inventoryId);
@@ -48,18 +59,39 @@ const TopActionsDataState = ({
       </Box>
 
       {/* Render states conditionally */}
-      {!hasActivityLevelData && <NoActivityLevelData t={t} />}
+      {isLoading && (
+        <Box
+          h="200px"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <ProgressLoader />
+          <Text
+            fontSize="body.lg"
+            color="content.secondary"
+            fontWeight="normal"
+            mt="24px"
+          >
+            {t("checking-activity-data")}
+          </Text>
+        </Box>
+      )}
+      {!hasActivityLevelData && !isLoading && <NoActivityLevelData t={t} />}
 
       {hasActivityLevelData && !hasActions && (
-        <GenerateActionsPrompt t={t} isLoading={isLoading} />
+        <GenerateActionsPrompt
+          t={t}
+          isLoading={isLoading}
+          onRefetch={onRefetch}
+        />
       )}
 
       {hasActivityLevelData && hasActions && <GeneratedActions t={t} />}
     </Box>
   );
 };
-
-export default TopActionsDataState;
 
 const NoActivityLevelData = ({ t }: { t: TFunction }) => {
   return (
@@ -70,7 +102,11 @@ const NoActivityLevelData = ({ t }: { t: TFunction }) => {
       py="48px"
       h="400px"
     >
-      <Icon as={EmptyStateIcon} boxSize="64px" color="content.tertiary" />
+      <Icon
+        as={EmptyActivityDataIcon}
+        boxSize="64px"
+        color="content.tertiary"
+      />
       <Text
         fontSize="title.md"
         color="content.primary"
@@ -93,14 +129,16 @@ const NoActivityLevelData = ({ t }: { t: TFunction }) => {
       </Text>
       <Button
         mt="24px"
-        variant="outline"
+        colorScheme="content.link"
         disabled
+        py="32px"
+        w="400px"
         _disabled={{
           opacity: 0.4,
           cursor: "not-allowed",
         }}
       >
-        {t("generate-climate-actions-title")}
+        {t("generate-climate-actions-list")}
       </Button>
     </Box>
   );
@@ -109,13 +147,35 @@ const NoActivityLevelData = ({ t }: { t: TFunction }) => {
 const GenerateActionsPrompt = ({
   t,
   isLoading,
+  onRefetch,
 }: {
   t: TFunction;
   isLoading: boolean;
+  onRefetch: () => void;
 }) => {
-  const handleGenerateActions = () => {
-    // TODO: Implement action generation logic
-    console.log("Generate actions clicked");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isCheckingData, setIsCheckingData] = useState(false);
+
+  const handleGenerateActions = async () => {
+    try {
+      // First, show checking activity data
+      setIsCheckingData(true);
+
+      // Small delay to show the checking message
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Then switch to generating
+      setIsCheckingData(false);
+      setIsGenerating(true);
+
+      // Trigger a refetch of the HIAP data, which will start action generation if needed
+      await onRefetch();
+    } catch (error) {
+      console.error("Error generating actions:", error);
+    } finally {
+      setIsCheckingData(false);
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -152,11 +212,15 @@ const GenerateActionsPrompt = ({
         mt="24px"
         colorScheme="content.link"
         onClick={handleGenerateActions}
-        loading={isLoading}
+        loading={isCheckingData || isGenerating || isLoading}
         py="32px"
         w="400px"
       >
-        {t("generate-climate-actions-list")}
+        {isCheckingData
+          ? t("checking-activity-data")
+          : isGenerating
+            ? t("generating-actions")
+            : t("generate-climate-actions-list")}
       </Button>
     </Box>
   );
@@ -194,3 +258,5 @@ const GeneratedActions = ({ t }: { t: TFunction }) => {
     </Box>
   );
 };
+
+export default TopActionsDataState;

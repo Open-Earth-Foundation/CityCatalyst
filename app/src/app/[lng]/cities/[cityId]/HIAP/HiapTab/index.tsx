@@ -73,6 +73,7 @@ export function HiapTab({
     data: hiapData,
     isLoading,
     error,
+    refetch,
   } = useGetHiapQuery({
     inventoryId: inventory.inventoryId,
     lng: lng,
@@ -232,6 +233,11 @@ export function HiapTab({
         t={t}
         inventory={inventory}
         hasActions={hasActions}
+        actionType={type}
+        onRefetch={() => {
+          // TODO: Implement refetch logic
+          refetch();
+        }}
       />
     );
   }

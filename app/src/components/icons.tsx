@@ -1740,3 +1740,32 @@ export const LikeIcon = () => {
     </svg>
   );
 };
+
+export const EmptyActivityDataIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="100"
+      height="100"
+      viewBox="0 0 100 100"
+      fill="none"
+    >
+      <mask
+        id="mask0_2858_76992"
+        maskUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="100"
+        height="100"
+      >
+        <rect width="100" height="100" fill="#D9D9D9" />
+      </mask>
+      <g mask="url(#mask0_2858_76992)">
+        <path
+          d="M70 90V55H90V90H70ZM40 90V10H60V90H40ZM10 90V35H30V90H10Z"
+          fill="#E8EAFB"
+        />
+      </g>
+    </svg>
+  );
+};

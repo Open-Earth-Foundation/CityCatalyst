@@ -15,7 +15,6 @@ const getTopPickActions = (actions: HIAction[]): HIAction[] => {
     return [...selectedActions].sort((a, b) => a.rank - b.rank);
   } else {
     // If no actions are selected, show top 3 by rank
-    console.log("actions", actions);
     return [...actions].sort((a, b) => a.rank - b.rank).slice(0, 3);
   }
 };

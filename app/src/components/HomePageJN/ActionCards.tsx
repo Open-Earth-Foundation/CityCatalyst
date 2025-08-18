@@ -1,11 +1,13 @@
 import type { TFunction } from "i18next";
 import { Box, Text, Grid, GridItem, Icon, Link } from "@chakra-ui/react";
-import { AddCollaboratorButton } from "@/components/GHGIHomePage/AddCollaboratorButton";
+import { AddCollaboratorButton } from "./AddCollaboratorButton";
 import { MdBarChart } from "react-icons/md";
-import ActionCardSmall from "../GHGIHomePage/ActionCardSmall";
+
 import { useRouter } from "next/navigation";
 import { OrganizationWithThemeResponse } from "@/util/types";
 import { MdArrowForward } from "react-icons/md";
+import { AllProjectsIcon } from "../icons";
+import ActionCardSmall from "./ActionCardSmall";
 
 export function ActionCards({
   organization,
@@ -78,8 +80,9 @@ export function ActionCards({
                   `/${lng}/organization/${organization.organizationId}/projects`,
                 );
               }}
-              icon={<MdBarChart className="text-white" size={24} />}
+              icon={<AllProjectsIcon />}
               title={t("all-projects")}
+              color="content.link"
             />
           </GridItem>
         </Grid>

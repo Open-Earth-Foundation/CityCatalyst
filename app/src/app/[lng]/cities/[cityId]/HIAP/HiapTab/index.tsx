@@ -1,9 +1,23 @@
 import { InventoryResponse } from "@/util/types";
-import { LANGUAGES, ACTION_TYPES, HIAction, MitigationAction, AdaptationAction } from "@/util/types";
+import {
+  LANGUAGES,
+  ACTION_TYPES,
+  HIAction,
+  MitigationAction,
+  AdaptationAction,
+} from "@/util/types";
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import i18next from "i18next";
-import { Box, Text, Badge, VStack, HStack, Button, IconButton } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Badge,
+  VStack,
+  HStack,
+  Button,
+  IconButton,
+} from "@chakra-ui/react";
 import { Tooltip } from "@/components/ui/tooltip";
 import { RiExpandDiagonalFill } from "react-icons/ri";
 import {
@@ -17,8 +31,18 @@ import { ActionDrawer } from "./ActionDrawer";
 import { useGetHiapQuery } from "@/services/api";
 import { logger } from "@/services/logger";
 import { HighImpactActionRankingStatus } from "@/util/types";
+import ClimateActionsEmptyState from "./ClimateActionsEmptyState";
+import ActionPlanSection from "./ActionPlanSection";
 
-export const BarVisualization = ({ value, total, width  = "16px"}: { value: number; total: number, width?: string }) => {
+export const BarVisualization = ({
+  value,
+  total,
+  width = "16px",
+}: {
+  value: number;
+  total: number;
+  width?: string;
+}) => {
   return (
     <HStack gap={1}>
       {Array.from({ length: total }).map((_, index) => (
@@ -45,17 +69,22 @@ export function HiapTab({
   const { t } = useTranslation(lng, "hiap");
   const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
 
-  const { data: hiapData, isLoading, error } = useGetHiapQuery({
+  const {
+    data: hiapData,
+    isLoading,
+    error,
+    refetch,
+  } = useGetHiapQuery({
     inventoryId: inventory.inventoryId,
     lng: lng,
-    actionType: type
+    actionType: type,
   });
 
   const actions = hiapData?.rankedActions || [];
   const isAdaptation = type === ACTION_TYPES.Adaptation;
-  
+
   const isPending = hiapData?.status === HighImpactActionRankingStatus.PENDING;
-  
+
   const columns: ColumnDef<HIAction>[] = [
     {
       accessorKey: "rank",
@@ -101,7 +130,8 @@ export function HiapTab({
                 medium: 2,
                 high: 3,
               };
-              const blueBars = effectivenessMap[action.adaptationEffectiveness] || 0;
+              const blueBars =
+                effectivenessMap[action.adaptationEffectiveness] || 0;
               return <BarVisualization value={blueBars} total={3} />;
             },
           },
@@ -130,10 +160,12 @@ export function HiapTab({
               const action = row.original as MitigationAction;
               const totalReduction = Object.values(action.GHGReductionPotential)
                 .filter((value): value is string => value !== null)
-                .map(value => {
+                .map((value) => {
                   // Parse range like "80-100" and take the average
                   if (value.includes("-")) {
-                    const [min, max] = value.split("-").map(v => parseFloat(v));
+                    const [min, max] = value
+                      .split("-")
+                      .map((v) => parseFloat(v));
                     return (min + max) / 2;
                   }
                   return parseFloat(value);
@@ -153,7 +185,7 @@ export function HiapTab({
           variant="ghost"
           size="sm"
           onClick={() => {
-            setSelectedAction(row.original)
+            setSelectedAction(row.original);
             logger.info("Open drawer for action:", row.original);
           }}
         >
@@ -168,7 +200,7 @@ export function HiapTab({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-  
+
   if (isLoading) {
     return <Box p={4}>{t("loading")}</Box>;
   }
@@ -181,22 +213,26 @@ export function HiapTab({
     );
   }
 
-  // Show pending message when ranking is in progress
-  if (isPending) {
+  // Empty state - check if we have actions
+  const hasActions = actions && actions.length > 0;
+
+  if (!hasActions) {
     return (
-      <Box p={4} textAlign="center">
-        <Text fontSize="lg" mb={2}>
-          {t("prioritizing-actions")}
-        </Text>
-      </Box>
+      <ClimateActionsEmptyState
+        t={t}
+        inventory={inventory}
+        hasActions={hasActions}
+        actionType={type}
+        isActionsPending={isPending}
+        onRefetch={() => {
+          // TODO: Implement refetch logic
+          refetch();
+        }}
+      />
     );
   }
-
-  if (!actions || actions.length === 0) {
-    return <Box p={4}>{t("no-actions-found")}</Box>;
-  }
   return (
-    <Box overflowX="auto">
+    <Box overflowX="auto" w="full" maxW="1090px" mx="auto">
       {selectedAction && (
         <ActionDrawer
           action={selectedAction}
@@ -205,6 +241,8 @@ export function HiapTab({
           t={t}
         />
       )}
+      {/* Top action widgets / mitigation */}
+      <ActionPlanSection t={t} rankedActions={actions || []} />
       <table style={{ width: "100%" }}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -218,7 +256,10 @@ export function HiapTab({
                     borderBottom: "1px solid #e2e8f0",
                   }}
                 >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext(),
+                  )}
                 </th>
               ))}
             </tr>

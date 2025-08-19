@@ -1,6 +1,6 @@
 """
 Use this script to CCRA values retrieved by
-the ccra API and add them to the city data stored inside 'data/cities'.
+the ccra API and add them to the city data stored inside 'data/city_data'.
 
 Inputs: locode of the city to add the emissions data to
 
@@ -12,11 +12,11 @@ from pathlib import Path
 import argparse
 import json
 from typing import List, Dict, Any
-from get_ccra import get_ccra
+from app.services.get_ccra import get_ccra
 
-# Define the base path to the project root
+# Define the base path to the off_app_cap directory
 BASE_DIR = Path(__file__).parent.parent.parent
-BASE_PATH_CITIES = BASE_DIR / "data" / "cities"
+BASE_PATH_CITIES = BASE_DIR / "data" / "city_data"
 
 
 def extract_ccras(ccra_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:

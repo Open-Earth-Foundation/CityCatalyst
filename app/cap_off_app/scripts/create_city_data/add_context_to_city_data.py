@@ -1,5 +1,5 @@
 """
-Use this script to add or update city context data in the city data stored inside 'data/cities'.
+Use this script to add or update city context data in the city data stored inside 'data/city_data'.
 
 The city context data includes information such as:
 - Basic city information (name, region, population)
@@ -17,11 +17,11 @@ from pathlib import Path
 import argparse
 import json
 from typing import Dict, Any
-from get_context import get_context
+from app.services.get_context import get_context
 
-# Define the base path to the project root
+# Define the base path to the off_app_cap directory
 BASE_DIR = Path(__file__).parent.parent.parent
-BASE_PATH_CITIES = BASE_DIR / "data" / "cities"
+BASE_PATH_CITIES = BASE_DIR / "data" / "city_data"
 
 
 def add_context_to_city_data(locode: str, context_data: Dict[str, Any]) -> None:

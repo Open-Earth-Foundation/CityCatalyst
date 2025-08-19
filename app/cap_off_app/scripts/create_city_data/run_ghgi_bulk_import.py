@@ -10,13 +10,16 @@ For each city, it will:
 3. Add the emissions data to the city_data.json file
 
 Usage:
-    python scripts/create_city_data/run_ghgi_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json
+    python off_app_cap/scripts/create_city_data/run_ghgi_bulk_import.py --bulk_file data/brazil_locodes/brazil_city_locodes.json
 """
 
 import argparse
 import json
 from pathlib import Path
-from add_ghgis_to_city_data import extract_data, add_emissions_to_city_data
+from app.cap_off_app.scripts.create_city_data.add_ghgis_to_city_data import (
+    extract_data,
+    add_emissions_to_city_data,
+)
 
 # Base directory for the project
 BASE_DIR = Path(__file__).parent.parent.parent

@@ -1,9 +1,9 @@
 """
 This script is used to add GHGI emissions data to the city data.
 
-The GHGI emissions data is provided via csv export and stored in the data/ghgi folder.
+The GHGI emissions data is provided via csv export and stored in the data/ghgi_exports folder.
 
-The city data is stored in the data/cities folder.
+The city data is stored in the data/city_data folder.
 
 Run it from the root of the project with the following command:
 python scripts/create_city_data/add_ghgis_to_city_data.py --file_name "inventory-BR CCI-2022.csv" --locode "BR CCI"
@@ -17,8 +17,8 @@ import json
 
 # Load the city data from the CSV file
 BASE_DIR = Path(__file__).parent.parent.parent
-BASE_PATH_GHGIS = BASE_DIR / "data" / "ghgi"
-BASE_PATH_CITIES = BASE_DIR / "data" / "cities"
+BASE_PATH_GHGIS = BASE_DIR / "data" / "ghgi_exports"
+BASE_PATH_CITIES = BASE_DIR / "data" / "city_data"
 
 
 # Initialize emissions values to extract

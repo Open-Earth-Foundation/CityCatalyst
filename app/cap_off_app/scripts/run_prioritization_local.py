@@ -17,6 +17,8 @@ import uuid
 import json
 from datetime import datetime
 from pathlib import Path
+import threading
+import time
 
 from prioritizer.models import (
     PrioritizationType,
@@ -82,7 +84,9 @@ task_storage[main_task_id] = {
 }
 
 
-# Run subtasks synchronously (copy the API threading pattern if you want parallelism)
+# Run subtasks in parallel using a similar pattern as the API
+start_time = time.time()
+threads = []
 for idx, city_data in enumerate(city_data_list):
     background_task_input = {
         "cityData": city_data,
@@ -90,7 +94,23 @@ for idx, city_data in enumerate(city_data_list):
         "language": languages,
         "countryCode": country_code,
     }
-    _execute_prioritization_bulk_subtask(main_task_id, idx, background_task_input)
+    print(
+        f"Starting prioritization for {city_data.cityContextData.locode} ({idx+1}/{len(city_data_list)})"
+    )
+    thread = threading.Thread(
+        target=_execute_prioritization_bulk_subtask,
+        args=(main_task_id, idx, background_task_input),
+    )
+    threads.append(thread)
+    thread.start()
+
+# Wait for all threads to complete
+for thread in threads:
+    thread.join()
+
+end_time = time.time()
+print("All prioritizations completed.")
+print(f"Total execution time: {end_time - start_time:.2f} seconds")
 
 
 # Read the aggregated result (PrioritizerResponseBulk)

@@ -1,9 +1,9 @@
 import React from "react";
-import { MdPersonAdd } from "react-icons/md";
 import AddCollaboratorsModal from "../GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { useDisclosure } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import ActionCardSmall from "./ActionCardSmall";
+import { AddCollaboratorIcon } from "../icons";
 
 export function AddCollaboratorButton({ lng }: { lng: string }) {
   const {
@@ -23,8 +23,9 @@ export function AddCollaboratorButton({ lng }: { lng: string }) {
       />
       <ActionCardSmall
         onClick={onModalOpen}
-        icon={<MdPersonAdd color="white" size={24} />}
+        icon={<AddCollaboratorIcon />}
         title={t("invite-collaborators")}
+        color="interactive.primary"
       />
     </>
   );

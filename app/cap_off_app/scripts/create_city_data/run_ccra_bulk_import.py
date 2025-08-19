@@ -10,7 +10,7 @@ For each city, it will:
 3. Add the CCRA data to the city_data.json file
 
 Usage:
-    python off_app_cap/scripts/create_city_data/run_ccra_bulk_import.py --bulk_file data/brazil_locodes/brazil_city_locodes.json
+    python -m app.cap_off_app.scripts.create_city_data.run_ccra_bulk_import --bulk_file data/brazil_locodes/brazil_city_locodes.json
 """
 
 import argparse

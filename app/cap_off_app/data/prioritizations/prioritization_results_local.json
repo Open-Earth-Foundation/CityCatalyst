@@ -1,0 +1,193 @@
+{
+  "prioritizerResponseList": [
+    {
+      "metadata": {
+        "locode": "BR ACZ",
+        "rankedDate": "2025-08-19T08:30:10.321255"
+      },
+      "rankedActionsMitigation": [
+        {
+          "actionId": "icare_0050",
+          "rank": 1,
+          "explanation": {
+            "explanations": {
+              "en": "Implementing agroforestry systems in Aracruz is a highly impactful action, as it directly supports the national strategy AGR.I.12, which aims to promote the transition from traditional productive systems to sustainable, low-carbon models by establishing and reinforcing agroforestry systems (SAFs) and productive forests. By integrating trees into food cultivation and pasture, this action increases biodiversity, enhances carbon sequestration, and strengthens local value chains. The national target includes establishing SAFs and productive forests on thousands of hectares and providing technical assistance and training to family farmers, which aligns perfectly with Aracruz’s agricultural landscape. This approach not only mitigates greenhouse gas emissions but also contributes to socio-environmental development and food security for the community."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0133",
+          "rank": 2,
+          "explanation": {
+            "explanations": {
+              "en": "Promoting urban reforestation and green corridors is a key priority for Aracruz, as it directly addresses the need to increase urban tree coverage, which helps mitigate the urban heat island effect and supports local biodiversity. This action aligns closely with the national strategy action code CID.I.07, which focuses on expanding, conserving, and recovering urban vegetation cover. By restoring vegetation in degraded areas and increasing urban forests, Aracruz contributes to the national target of expanding urban vegetation cover by 50,000 hectares by 2030. These efforts not only improve the city's resilience to climate change but also enhance the quality of life for residents by providing cleaner air and more green spaces."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0134",
+          "rank": 3,
+          "explanation": {
+            "explanations": {
+              "en": "Strengthening mechanisms for deforestation control is a crucial priority for Aracruz, given its significant AFOLU emissions and the need to protect local ecosystems. This action directly supports the national strategy (action code CSN.I.1) to eliminate illegal deforestation in public areas of all Brazilian biomes. By enhancing monitoring and enforcement, Aracruz aligns with the national goal to achieve zero deforestation by 2030, ensuring greater accountability and comprehensive oversight of land use. This approach not only helps reduce greenhouse gas emissions but also preserves biodiversity and supports sustainable development in the region."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0128",
+          "rank": 4,
+          "explanation": {
+            "explanations": {
+              "en": "Establishing Municipal Programs for Payment for Environmental Services (PES) is a strategic action for Aracruz, as it incentivizes landowners to maintain and enhance environmental conditions on their properties. This aligns with the national strategy action code AGR.I.24, which focuses on recovering native vegetation on rural properties, agrarian reform settlements, and quilombola territories. By supporting landowners through PES, the city contributes to the restoration of native vegetation, helping to achieve the national target of restoring millions of hectares by 2030 and 2035. This approach not only supports biodiversity and ecosystem services but also strengthens the city's role in climate mitigation and sustainable development."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0129",
+          "rank": 5,
+          "explanation": {
+            "explanations": {
+              "en": "Facilitating technology transfer for conservation practices is a key priority for Aracruz, as it supports the city's efforts to reduce greenhouse gas emissions from agriculture, forestry, and land use. This action aligns with the national strategy (action code AGR.I.13), which promotes the adoption of social technologies in family farming for GHG mitigation, sustainable waste management, and clean energy generation. By providing training, pilot projects, and technology demonstrations, Aracruz can empower family farmers to implement innovative solutions like biodigesters and agroecological stoves. These efforts contribute to the national target of installing 15,000 biodigesters by 2035 and benefit thousands of family farmers, fostering productive inclusion, public health, and a just energy transition in rural areas."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0130",
+          "rank": 6,
+          "explanation": {
+            "explanations": {
+              "en": "Conducting Technical Assistance and Rural Extension (ATER) actions is a key priority for Aracruz, as it empowers rural producers with the knowledge and skills needed for sustainable agricultural production. This aligns closely with the national strategy action AGR.I.16, which focuses on expanding productive restoration and sustainable management of agrarian reform settlements. By providing technical support and training, the city can help implement agroforestry systems, restore degraded areas, and adopt integrated fire management practices, directly contributing to environmental regeneration and food security. These efforts support the national target of serving families with ATER services and training, fostering both climate resilience and sustainable livelihoods in the region."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0102",
+          "rank": 7,
+          "explanation": {
+            "explanations": {
+              "en": "Promoting sustainable agricultural practices in Aracruz is essential for reducing greenhouse gas emissions from the AFOLU sector, which is a significant contributor to the city's total emissions. This action aligns with the national strategy under action code AGR.I.14, which focuses on expanding the production and use of bio-inputs in family farming to foster low-emission production systems. By encouraging reduced use of fertilizers and agrochemicals, Aracruz supports the national target to install 270 bio-input production units and train thousands of farmers and agents in sustainable practices by 2035. These efforts not only help mitigate climate change but also improve soil health, lower production costs, and strengthen the autonomy and resilience of local family farmers."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0100",
+          "rank": 8,
+          "explanation": {
+            "explanations": {
+              "en": "Supporting regenerative agriculture practices in Aracruz is a key step toward restoring soil health and reducing carbon emissions from the AFOLU sector, which is a significant source of the city's emissions. This action aligns with the national strategy (action code AGR.I.11) to expand low-carbon agroecological and traditional productive systems in family farming, aiming to implement projects for native vegetation recovery and support agroecological production. By focusing on these practices, Aracruz can enhance agrobiodiversity, strengthen food security, and promote climate justice, while also empowering local family farmers. This approach not only mitigates greenhouse gas emissions but also contributes to the long-term sustainability and resilience of the city's agricultural sector."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0096",
+          "rank": 9,
+          "explanation": {
+            "explanations": {
+              "en": "Promoting organic farming in Aracruz is a key step toward reducing greenhouse gas emissions from agriculture, improving soil health, and supporting sustainable livelihoods. This action aligns with the national strategy (AGR.I.18), which focuses on fostering agroecological and low-carbon rice production in family farming by encouraging organic/ecological cultivation and practices that reduce methane emissions. By adopting these methods, Aracruz can contribute to the national target of expanding certified agroecological rice cultivation, while also enhancing food security and productive sustainability for local farmers. This approach not only benefits the environment but also strengthens the resilience and income of family farming communities in the city."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0042",
+          "rank": 10,
+          "explanation": {
+            "explanations": {
+              "en": "Encouraging renewable energy policies at the municipal level is a key step for Aracruz to reduce emissions from stationary energy sources and promote sustainable development. This action aligns with the national strategy (action code ENR.I.01), which aims to meet growing electricity demand by maintaining or increasing the share of renewables in the power matrix, targeting an 82.7% renewable share by 2030 and 86.1% by 2035. By prioritizing the integration of renewable energy systems in local government operations and planning, Aracruz supports national efforts to expand solar and wind generation. This approach not only helps the city lower its carbon footprint but also enhances energy security and positions Aracruz as a leader in clean energy adoption."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0094",
+          "rank": 11,
+          "explanation": {
+            "explanations": {
+              "en": "The adoption of biomethane in public fleets is a valuable step for Aracruz, as it leverages locally produced biomethane from urban and agro-industrial waste to fuel municipal buses and trucks. This action aligns with the national strategy (action code ENR.I.04) to expand the production and use of biomethane, aiming to substitute fossil fuels and strengthen energy security. By following this approach, Aracruz contributes to the national target of reducing greenhouse gas emissions by up to 5% by 2030 and up to 10% by 2035, relative to the average natural gas supply. This initiative not only supports climate goals but also promotes cleaner air and a more sustainable urban environment for residents."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0121",
+          "rank": 12,
+          "explanation": {
+            "explanations": {
+              "en": "Promoting bike-sharing programs with a focus on electric bikes is a valuable step for Aracruz to reduce transportation emissions and improve urban mobility. This action aligns with the national strategy (action code CID.I.02) to increase the share of active modes in the modal split of large Brazilian cities. By encouraging residents to use electric bikes for short trips, the city supports the national target of achieving at least 37% share of active modes by 2035. This initiative not only helps lower greenhouse gas emissions but also makes sustainable transportation more accessible and equitable for all residents."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0131",
+          "rank": 13,
+          "explanation": {
+            "explanations": {
+              "en": "Prioritizing the procurement of locally produced agroecological products in public purchases is a valuable step for Aracruz, supporting both climate action and community well-being. This action aligns with the national strategy (action code AGR.I.17), which focuses on implementing agroecological corridors in metropolitan regions based on family farming. By emphasizing sustainable, local food sourcing for public institutions, Aracruz helps strengthen local food systems, reduce emissions from food transport, and promote food security. This approach also values traditional knowledge and supports sustainable land-use practices, directly contributing to the national target of establishing productive agroecological corridors by 2035."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0136",
+          "rank": 14,
+          "explanation": {
+            "explanations": {
+              "en": "Supporting the implementation of ecological fiscal incentives is an important step for Aracruz to promote environmental conservation and sustainable land management. This action aligns with the national strategy AGR.I.16, which focuses on expanding productive restoration and sustainable management of agrarian reform settlements. By encouraging ecological taxes and incentives, the city can stimulate agroforestry systems, ecological recovery of degraded areas, and integrated fire management, directly contributing to the target of serving families with technical assistance and restoring key areas by 2030. These measures will help reduce greenhouse gas emissions from land use, protect local ecosystems, and strengthen the environmental and productive sustainability of the region."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0099",
+          "rank": 15,
+          "explanation": {
+            "explanations": {
+              "en": "Supporting agroecological certification programs in Aracruz is an important step toward promoting sustainable agriculture and reducing greenhouse gas emissions in the AFOLU sector. This action aligns with the national strategy (action code AGR.I.11), which focuses on expanding low-carbon agroecological and traditional productive systems in family farming. By encouraging certification, the city helps ensure that agricultural products meet sustainability criteria, enhancing agrobiodiversity and supporting food security. The national strategy targets the implementation of projects for native vegetation recovery and the establishment of demonstration units for soil management, which further strengthens the impact of local certification efforts. This approach also values traditional agricultural knowledge and supports the productive autonomy of local communities."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0084",
+          "rank": 16,
+          "explanation": {
+            "explanations": {
+              "en": "Promoting incentives for agroforestry practices in livestock systems is an important step for Aracruz to enhance carbon capture, protect soils, and boost biodiversity. This action aligns with the national strategy AGR.I.12, which focuses on implementing and strengthening agroforestry systems in family farming under the Productive Forests Program. By supporting the transition to sustainable, low-carbon models, Aracruz can contribute to ecological restoration and the strengthening of local value chains, directly benefiting family farmers and traditional communities. The national target includes establishing agroforestry systems and providing technical assistance to thousands of families, which can inspire and guide local efforts. This approach not only mitigates greenhouse gas emissions but also supports food security and socio-environmental development in the region."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0085",
+          "rank": 17,
+          "explanation": {
+            "explanations": {
+              "en": "Promoting the adoption of agroecological pest control in Aracruz is an important step toward sustainable agriculture and environmental protection. This action aligns with the national strategy (action code AGR.I.11), which focuses on expanding low-carbon agroecological and traditional productive systems in family farming. By encouraging natural pest control methods, the city supports the agroecological transition, reduces greenhouse gas emissions, and enhances agrobiodiversity. This approach also strengthens food security and the productive autonomy of local farmers, contributing to a more resilient and climate-just community."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0132",
+          "rank": 18,
+          "explanation": {
+            "explanations": {
+              "en": "Encouraging local agroecological production and short supply chains is an important step for Aracruz to reduce emissions from food transport and support sustainable agriculture. This aligns with the national strategy action code AGR.I.17, which focuses on implementing agroecological corridors in metropolitan regions based on family farming. By supporting local, sustainable agricultural practices, Aracruz can help achieve the target of establishing productive agroecological corridors, promoting food security, and fostering climate mitigation. This action also strengthens local food systems and values traditional knowledge, contributing to a more resilient and sustainable community."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0139",
+          "rank": 19,
+          "explanation": {
+            "explanations": {
+              "en": "Implementing an urban toll in Aracruz is an important step to manage traffic congestion and reduce emissions from individual motorized vehicles. This action aligns with the national strategy (action code CID.I.01), which focuses on adopting urban planning principles to optimize mandatory urban travel and reduce reliance on individual motorized modes. By discouraging unnecessary car trips in saturated areas and times, the city can help achieve the national target of reducing individual motorized mode share and cutting average travel times. This measure will also contribute to improved air quality and more efficient urban mobility for residents."
+            }
+          }
+        },
+        {
+          "actionId": "icare_0024",
+          "rank": 20,
+          "explanation": {
+            "explanations": {
+              "en": "Integrating renewables into municipal water systems is an important step for Aracruz to reduce energy costs and lower emissions from stationary energy sources. This action aligns with the national strategy (action code IND.I.01) to expand cogeneration and the use of renewable electric energy in industrial facilities, aiming to increase renewable energy consumption and maintain a highly renewable power matrix in Brazil. By powering water treatment, pumping, and distribution with solar or wind energy, the city supports the national target of increasing renewables in the energy mix and contributes to a cleaner, more resilient local infrastructure. This approach also brings co-benefits such as improved air and water quality, supporting sustainable development for the community."
+            }
+          }
+        }
+      ],
+      "rankedActionsAdaptation": []
+    }
+  ]
+}

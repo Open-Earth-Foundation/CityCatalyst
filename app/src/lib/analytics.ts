@@ -15,7 +15,7 @@ const CONSENT_EXPIRY_DAYS = 365;
 export function initializeAnalytics() {
   if (
     typeof window === "undefined" ||
-    !hasServerFeatureFlag(FeatureFlags.ANALYTICS_ENABLED) ||
+    !hasFeatureFlag(FeatureFlags.ANALYTICS_ENABLED) ||
     process.env.NODE_ENV === "test" ||
     // Disable analytics in Playwright e2e tests
     (typeof window !== "undefined" && window.location.hostname === "127.0.0.1")
@@ -23,8 +23,8 @@ export function initializeAnalytics() {
     return;
   }
 
-  const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-  const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST;
+  const posthogKey = env("NEXT_PUBLIC_POSTHOG_KEY");
+  const posthogHost = env("NEXT_PUBLIC_POSTHOG_HOST");
 
   if (!posthogKey) {
     console.warn("PostHog key not provided. Analytics disabled.");
@@ -100,7 +100,7 @@ function shouldTrack(): boolean {
   }
 
   return (
-    hasServerFeatureFlag(FeatureFlags.ANALYTICS_ENABLED) &&
+    hasFeatureFlag(FeatureFlags.ANALYTICS_ENABLED) &&
     isInitialized &&
     hasAnalyticsConsent()
   );
@@ -119,7 +119,7 @@ export function trackEvent(
     ...properties,
     environment: process.env.NODE_ENV,
     deployment_env:
-      process.env.NEXT_PUBLIC_DEPLOYMENT_ENV || process.env.NODE_ENV,
+       env('NEXT_PUBLIC_DEPLOYMENT_ENV') || process.env.NODE_ENV,
   };
 
   posthog.capture(eventName, enhancedProperties);
@@ -132,8 +132,7 @@ export function identifyUser(userId: string, properties?: Record<string, any>) {
   posthog.identify(userId, {
     ...properties,
     environment: process.env.NODE_ENV,
-    deployment_env:
-      process.env.NEXT_PUBLIC_DEPLOYMENT_ENV || process.env.NODE_ENV,
+      deployment_env: env('NEXT_PUBLIC_DEPLOYMENT_ENV') || process.env.NODE_ENV,
   });
 }
 
@@ -148,7 +147,7 @@ export function setUserProperties(properties: Record<string, any>) {
   if (!shouldTrack()) {
     return;
   }
-  posthog.people.set(properties);
+  posthog.identify(undefined, properties);
 }
 
 export function trackPageView(url?: string) {
@@ -159,7 +158,7 @@ export function trackPageView(url?: string) {
     $current_url: url || window.location.href,
     environment: process.env.NODE_ENV,
     deployment_env:
-      process.env.NEXT_PUBLIC_DEPLOYMENT_ENV || process.env.NODE_ENV,
+      env("NEXT_PUBLIC_DEPLOYMENT_ENV") || process.env.NODE_ENV,
   });
 }
 

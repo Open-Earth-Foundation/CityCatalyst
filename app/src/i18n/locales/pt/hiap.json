@@ -31,7 +31,7 @@
   "reduction-potential": "Potencial de redução",
   "high": "Alto",
   "sector-name": "Setor",
-  "citycatalyst-actions-title": "Título das ações CityCatalyst",
+  "citycatalyst-actions-title": "citycatalyst actions",
   "top-actions-for-your-city": "Principais ações para sua cidade",
   "top-actions-for-your-city-description": "Estas são as 40 principais ações que recomendamos com base no seu inventário de GEE e dados de contexto da cidade. Você encontrará 20 ações para Mitigação e 20 para Adaptação em suas respectivas abas. É recomendado executar novamente o priorizador após qualquer atualização ou mudança relevante nos dados.",
   "re-prioritize-actions": "Repriorizar ações",

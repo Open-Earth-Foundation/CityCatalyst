@@ -1,3 +1,74 @@
 {
-  "extends": ["next/core-web-vitals", "plugin:i18next/recommended"]
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:i18next/recommended",
+    "eslint:recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    // Function length and complexity
+    "max-lines-per-function": ["warn", {
+      "max": 50,
+      "skipBlankLines": true,
+      "skipComments": true
+    }],
+    "complexity": ["warn", { "max": 10 }],
+    "max-depth": ["warn", { "max": 4 }],
+    "max-nested-callbacks": ["warn", { "max": 3 }],
+    "max-params": ["warn", { "max": 4 }],
+
+    // File and line limits
+    "max-lines": ["warn", {
+      "max": 300,
+      "skipBlankLines": true,
+      "skipComments": true
+    }],
+    "max-len": ["warn", {
+      "code": 100,
+      "tabWidth": 2,
+      "ignoreUrls": true,
+      "ignoreStrings": true,
+      "ignoreTemplateLiterals": true
+    }],
+
+    // Code organization
+    "max-classes-per-file": ["warn", 1],
+    "max-statements": ["warn", { "max": 20 }],
+    "max-statements-per-line": ["error", { "max": 1 }],
+
+    // Import/dependency related
+    "no-duplicate-imports": "error",
+    "sort-imports": ["warn", {
+      "ignoreCase": true,
+      "ignoreDeclarationSort": true
+    }],
+
+    // Code quality indicators
+    "no-magic-numbers": ["warn", {
+      "ignore": [-1, 0, 1, 2],
+      "ignoreArrayIndexes": true,
+      "detectObjects": false
+    }],
+    "prefer-const": "warn",
+    "no-var": "error",
+    "no-unused-vars": ["warn", {
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_"
+    }],
+
+    // Maintainability
+    "no-console": "warn",
+    "no-debugger": "error",
+    "no-alert": "error",
+    "no-empty-function": "warn",
+    "no-duplicate-case": "error",
+    "no-unreachable": "error"
+  }
 }

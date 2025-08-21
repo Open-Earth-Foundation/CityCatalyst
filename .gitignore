@@ -18,3 +18,6 @@ app/plan_creator_legacy/data/output/
 
 # Prioritizer
 app/prioritizer/data/prioritized_local_testing/
+
+# Cap off app
+app/cap_off_app/data/frontend/

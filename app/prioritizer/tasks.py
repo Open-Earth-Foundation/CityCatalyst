@@ -234,7 +234,7 @@ def _execute_prioritization_bulk_subtask(
 
         start_time = time.time()
         try:
-
+            # API call to get city context data from global API
             cityContext = get_context(requestData["locode"])
             if not cityContext:
                 task_storage[main_task_id]["subtasks"][subtask_idx]["status"] = "failed"
@@ -243,7 +243,18 @@ def _execute_prioritization_bulk_subtask(
                 ] = "No city context data found from global API."
                 _update_bulk_task_status(main_task_id)
                 return
-            cityData_dict = build_city_data(cityContext, requestData)
+
+            # API call to get CCRA data from global API
+            cityCCRA = get_ccra(requestData["locode"], "current")
+            if not cityCCRA:
+                task_storage[main_task_id]["subtasks"][subtask_idx]["status"] = "failed"
+                task_storage[main_task_id]["subtasks"][subtask_idx][
+                    "error"
+                ] = "No CCRA data found from CCRA API."
+                _update_bulk_task_status(main_task_id)
+                return
+
+            cityData_dict = build_city_data(cityContext, requestData, cityCCRA)
             actions = get_actions()
             if not actions:
                 task_storage[main_task_id]["subtasks"][subtask_idx]["status"] = "failed"

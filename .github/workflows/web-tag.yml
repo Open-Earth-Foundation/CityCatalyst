@@ -58,7 +58,6 @@ jobs:
           npm run db:seed
           npm run sync-catalogue
           npm run sync-emissions-factors
-          npm run sync-formula-values
 
       - name: Run NextJS build
         run: npm run build

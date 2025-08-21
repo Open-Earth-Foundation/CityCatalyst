@@ -51,6 +51,9 @@ jobs:
           cp env.example .env
           npm run db:migrate
           npm run db:seed
+          npm run sync-catalogue
+          npm run sync-emissions-factors
+          npm run sync-formula-values
 
       - uses: actions/cache@v4
         with:

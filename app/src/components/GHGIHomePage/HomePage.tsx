@@ -54,18 +54,22 @@ export default function HomePage({
   isPublic || CheckUserSession();
   const language = cookieLanguage ?? lng;
   const { inventory: inventoryParam, cityId: cityIdParam } = useParams();
+  const inventoryParamValue: string | undefined = Array.isArray(inventoryParam)
+    ? inventoryParam[0]
+    : inventoryParam;
+  const cityIdParamValue: string | undefined = Array.isArray(cityIdParam)
+    ? cityIdParam[0]
+    : cityIdParam;
 
   function redirectToOnboarding() {
     setTimeout(() => {
       if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
-        if (!cityIdParam || cityIdParam === "null") {
-          logger.error(
-            "Failed to redirect to onboarding because of missing city ID param",
-          );
+        if (!cityIdParamValue || cityIdParamValue === "null") {
+          router.push(`/${language}/onboarding`);
           return;
         }
 
-        router.push(`/${language}/cities/${cityIdParam}/GHGI/onboarding`);
+        router.push(`/${language}/cities/${cityIdParamValue}/GHGI/onboarding`);
       } else {
         router.push(`/${language}/onboarding`);
       }
@@ -79,26 +83,50 @@ export default function HomePage({
   let inventoryIdFromParam: string | undefined;
   if (inventoryId && inventoryId != "null") {
     inventoryIdFromParam = inventoryId;
-  } else if (inventoryParam && inventoryParam != "null") {
-    if (typeof inventoryParam !== "string") {
-      inventoryIdFromParam = inventoryParam[0];
-    } else {
-      inventoryIdFromParam = inventoryParam;
-    }
+  } else if (inventoryParamValue && inventoryParamValue != "null") {
+    inventoryIdFromParam = inventoryParamValue;
+  } else if (userInfo?.defaultInventoryId) {
+    // If we have a default inventory, use it
+    inventoryIdFromParam = userInfo.defaultInventoryId;
+  } else if (cityIdParamValue) {
+    // If we're in a city context but no inventory, we'll need to fetch the most recent one
+    // For now, set to undefined so we can redirect to onboarding
+    inventoryIdFromParam = undefined;
   } else {
-    inventoryIdFromParam = userInfo?.defaultInventoryId ?? undefined;
+    inventoryIdFromParam = undefined;
   }
+
+  // If no inventory ID, redirect appropriately
+  useEffect(() => {
+    if (!isUserInfoLoading && !inventoryIdFromParam) {
+      // If we're in a city context (GHGI route), redirect to city GHGI onboarding
+      if (cityIdParamValue) {
+        router.push(`/${language}/cities/${cityIdParamValue}/GHGI/onboarding`);
+      } else {
+        // If we're not in a city context, redirect to general onboarding
+        router.push(`/${language}/onboarding`);
+      }
+    }
+  }, [
+    isUserInfoLoading,
+    inventoryIdFromParam,
+    language,
+    router,
+    cityIdParamValue,
+  ]);
 
   const {
     data: inventory,
     isLoading: isInventoryLoading,
     error: inventoryError,
-  } = api.useGetInventoryQuery(inventoryIdFromParam ?? "default");
+  } = api.useGetInventoryQuery(inventoryIdFromParam!, {
+    skip: !inventoryIdFromParam,
+  });
 
   useEffect(() => {
     if (inventoryError) {
       logger.error(
-        { inventoryError, inventoryId: inventoryIdFromParam ?? "default" },
+        { inventoryError, inventoryId: inventoryIdFromParam },
         "Failed to load inventory",
       );
 
@@ -142,7 +170,9 @@ export default function HomePage({
   // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#performing-multiple-requests-with-a-single-query
 
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
-    api.useGetInventoryProgressQuery(inventoryIdFromParam ?? "default");
+    api.useGetInventoryProgressQuery(inventoryIdFromParam!, {
+      skip: !inventoryIdFromParam,
+    });
 
   const { data: city } = api.useGetCityQuery(inventory?.cityId!, {
     skip: !inventory?.cityId,
@@ -187,7 +217,7 @@ export default function HomePage({
       const logoUrl = inventoryOrgData?.logoUrl ?? null;
       const active = inventoryOrgData?.active ?? true;
 
-      if (organization.logoUrl !== logoUrl || organization.active !== active) {
+      if (organization?.logoUrl !== logoUrl || organization?.active !== active) {
         setOrganization({ logoUrl, active });
       }
       setTheme(inventoryOrgData?.theme?.themeKey ?? "blue_theme");
@@ -196,7 +226,15 @@ export default function HomePage({
     }
   }, [isInventoryOrgDataLoading, inventoryOrgData, setTheme]);
 
-  if (isInventoryLoading || isInventoryOrgDataLoading || isUserInfoLoading) {
+  if (isUserInfoLoading) {
+    return <ProgressLoader />;
+  }
+
+  // If we have an inventory ID but it's still loading, show loader
+  if (
+    inventoryIdFromParam &&
+    (isInventoryLoading || isInventoryOrgDataLoading)
+  ) {
     return <ProgressLoader />;
   }
 
@@ -207,7 +245,7 @@ export default function HomePage({
           {isPublic ? (
             <NotAvailable lng={language} />
           ) : (
-            <MissingInventory lng={language} />
+            <MissingInventory lng={language} cityId={cityIdParamValue} />
           )}
           <Footer lng={language} />
         </>
@@ -220,7 +258,7 @@ export default function HomePage({
             currentInventoryId={inventory?.inventoryId}
             isInventoryLoading={isInventoryLoading}
             formattedEmissions={formattedEmissions}
-            t={t}
+            lng={lng}
             population={population}
           />
 
@@ -354,3 +392,4 @@ export default function HomePage({
     </>
   );
 }
+

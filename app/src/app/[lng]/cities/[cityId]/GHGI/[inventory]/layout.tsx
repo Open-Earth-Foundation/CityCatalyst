@@ -1,13 +1,9 @@
 "use client";
 
 import ChatPopover from "@/components/ChatBot/chat-popover";
-import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
-import {
-  api,
-  useGetOrganizationForInventoryQuery,
-} from "@/services/api";
+import { api, useGetOrganizationForInventoryQuery } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useEffect, use } from "react";
 import { useTheme } from "next-themes";
@@ -43,7 +39,7 @@ export default function InventoryLayout(props: {
       const logoUrl = inventoryOrgData?.logoUrl ?? null;
       const active = inventoryOrgData?.active ?? true;
 
-      if (organization.logoUrl !== logoUrl || organization.active !== active) {
+      if (organization?.logoUrl !== logoUrl || organization?.active !== active) {
         setOrganization({ logoUrl, active });
       }
       setTheme(inventoryOrgData?.theme?.themeKey ?? ("blue_theme" as string));
@@ -63,7 +59,6 @@ export default function InventoryLayout(props: {
       flexDirection="column"
       bg="background.backgroundLight"
     >
-      <NavigationBar showMenu lng={lng} />
       <Toaster />
       <Box w="full" h="full">
         {children}

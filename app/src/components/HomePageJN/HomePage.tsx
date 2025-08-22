@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import Cookies from "js-cookie";
 
@@ -52,6 +52,7 @@ export default function HomePage({
 }) {
   const { t } = useTranslation(lng, "dashboard");
   const cookieLanguage = Cookies.get("i18next");
+  const router = useRouter();
 
   // Check if user is authenticated otherwise route to login page
   isPublic || CheckUserSession();
@@ -65,16 +66,24 @@ export default function HomePage({
   let cityIdFromParam = (cityId as string) ?? userInfo?.defaultCityId;
   const parsedYear = parseInt(year as string);
 
+  // If no city ID and no default city, redirect to cities onboarding
+  useEffect(() => {
+    if (!isUserInfoLoading && !cityIdFromParam) {
+      router.push(`/${lng}/cities/onboarding`);
+    }
+  }, [isUserInfoLoading, cityIdFromParam, lng, router]);
+
   // query API data
   // TODO maybe rework this logic into one RTK query:
   // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#performing-multiple-requests-with-a-single-query
 
-  const { data: city, isLoading: isCityLoading } = api.useGetCityQuery(
-    cityIdFromParam!,
-    {
-      skip: !cityIdFromParam,
-    },
-  );
+  const {
+    data: city,
+    isLoading: isCityLoading,
+    error: cityError,
+  } = api.useGetCityQuery(cityIdFromParam!, {
+    skip: !cityIdFromParam,
+  });
 
   const { data: population } = useGetMostRecentCityPopulationQuery(
     { cityId: cityIdFromParam! },
@@ -109,7 +118,7 @@ export default function HomePage({
       const logoUrl = orgData?.logoUrl ?? null;
       const active = orgData?.active ?? true;
 
-      if (organization.logoUrl !== logoUrl || organization.active !== active) {
+      if (organization?.logoUrl !== logoUrl || organization?.active !== active) {
         setOrganization({ logoUrl, active });
       }
       setTheme(orgData?.theme?.themeKey ?? "blue_theme");
@@ -208,7 +217,7 @@ export default function HomePage({
                                 enabled={projectModules.some(
                                   (m) => m.id === mod.id,
                                 )}
-                                baseUrl={`/${lng}/cities/${cityId}`}
+                                baseUrl={`/${lng}/cities/${cityIdFromParam}`}
                                 language={language}
                               />
                             ))

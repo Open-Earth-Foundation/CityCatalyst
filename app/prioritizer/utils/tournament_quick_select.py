@@ -5,7 +5,6 @@ from typing import List, Dict, Callable, Tuple
 def quickselect_top_k(
     city: Dict,
     actions: List[Dict],
-    k: int,
     comparator: Callable[[Dict, Dict, Dict], int],  # +1 if 1st wins, else –1
 ) -> List[Tuple[Dict, int]]:
     """
@@ -18,8 +17,6 @@ def quickselect_top_k(
     actions : list[dict]
         Candidate actions.  The list is modified in-place for speed; pass
         `actions[:]` if you need to keep an untouched copy.
-    k : int
-        Number of top actions to return (1 ≤ k ≤ len(actions)).
     comparator : Callable[[dict, dict, dict], int]
         Deterministic, transitive preference:
             +1  → first action better than second
@@ -42,6 +39,8 @@ def quickselect_top_k(
     • Any exception raised inside `comparator` is propagated.
     • Input list order on return is undefined; rely only on the return value.
     """
+
+    k = 20
 
     n = len(actions)
     if k >= n:

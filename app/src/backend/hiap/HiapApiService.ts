@@ -83,3 +83,82 @@ export async function getPrioritizationResult(
   logger.info("getPrioritizationResult response received successfully");
   return json;
 }
+
+export async function startActionPlanGeneration(
+  contextData: any,
+  type: ACTION_TYPES,
+): Promise<{ taskId: string }> {
+  logger.info("Sending request to planner", JSON.stringify(contextData));
+
+  const body = {
+    cityData: contextData,
+    prioritizationType: type,
+    language: Object.values(LANGUAGES),
+  };
+  const response = await fetch(
+    `${HIAP_API_URL}/prioritizer/v1/start_action_plan`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    },
+  );
+  logger.info(
+    { status: response.status, statusText: response.statusText },
+    "startPrioritization response status",
+  );
+  if (!response.ok) {
+    const errorText = await response.text();
+    logger.error(
+      { status: response.status, error: errorText },
+      "Failed to start prioritization job",
+    );
+    throw new Error(
+      `Failed to start prioritization job: ${response.status} ${response.statusText}`,
+    );
+  }
+  const json = await response.json();
+  logger.info("startPrioritization response received successfully");
+  const { taskId } = json;
+  if (!taskId) throw new Error("No taskId returned from HIAP API");
+  return { taskId };
+}
+
+export async function checkPlanningProgress(
+  taskId: string,
+): Promise<{ status: string; error?: string }> {
+  const url = `${HIAP_API_URL}/prioritizer/v1/check_plan_progress/${taskId}`;
+  logger.info({ url }, "checkPrioritizationProgress called");
+  const response = await fetch(url);
+  logger.info(
+    { status: response.status, statusText: response.statusText },
+    "checkPrioritizationProgress response status",
+  );
+  if (!response.ok) {
+    const errorText = await response.text();
+    logger.error(
+      { status: response.status, error: errorText, taskId },
+      "Failed to check job status",
+    );
+    throw new Error("Failed to check job status");
+  }
+  const json = await response.json();
+  logger.info("checkPrioritizationProgress response received successfully");
+  return json;
+}
+
+export async function getPlanningResult(
+  taskId: string,
+): Promise<PrioritizerResponse> {
+  const url = `${HIAP_API_URL}/prioritizer/v1/get_prioritization/${taskId}`;
+  logger.info({ url }, "getPrioritizationResult called");
+  const response = await fetch(url);
+  logger.info(
+    { status: response.status, statusText: response.statusText },
+    "getPrioritizationResult response status",
+  );
+  if (!response.ok) throw new Error("Failed to fetch job result");
+  const json = await response.json();
+  logger.info("getPrioritizationResult response received successfully");
+  return json;
+}

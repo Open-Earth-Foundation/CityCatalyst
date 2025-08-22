@@ -1,5 +1,5 @@
 import { LANGUAGES, ACTION_TYPES } from "@/util/types";
-import { S3Client } from "@aws-sdk/client-s3";
+import {S3Client } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
@@ -8,13 +8,14 @@ import {
   getTotalEmissionsBySector,
   EmissionsBySector,
 } from "../ResultsService";
-import { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
+import {
+  HighImpactActionRanking,
+} from "@/models/HighImpactActionRanking";
 import { HighImpactActionRankingStatus } from "@/util/types";
 import {
   startPrioritization,
   checkPrioritizationProgress,
   getPrioritizationResult,
-  startActionPlanGeneration,
 } from "./HiapApiService";
 import { InventoryService } from "../InventoryService";
 import GlobalAPIService from "../GlobalAPIService";
@@ -155,104 +156,6 @@ const startActionRankingJob = async (
 };
 
 async function fetchAndMergeRankedActions(
-  lang: LANGUAGES,
-  rankedActions: {
-    actionId: string;
-    rank: number;
-    explanation: any;
-    type: ACTION_TYPES;
-  }[],
-) {
-  const allActions = await GlobalAPIService.fetchAllClimateActions(lang);
-
-  return rankedActions
-    .map((rankedAction) => {
-      const details = allActions.find(
-        (a: any) => a.ActionID === rankedAction.actionId,
-      );
-      if (!details) {
-        logger.error(
-          `No action details found for ActionID: ${rankedAction.actionId}`,
-        );
-        return null;
-      }
-
-      return {
-        ...rankedAction,
-        explanation: rankedAction.explanation,
-        name: details.ActionName,
-        hazard: details.Hazard,
-        sector: details.Sector,
-        subsector: details.Subsector,
-        primaryPurpose: details.PrimaryPurpose,
-        description: details.Description,
-        cobenefits: details.CoBenefits,
-        equityAndInclusionConsiderations:
-          details.EquityAndInclusionConsiderations,
-        GHGReductionPotential: details.GHGReductionPotential,
-        adaptationEffectiveness: details.AdaptationEffectiveness,
-        costInvestmentNeeded: details.CostInvestmentNeeded,
-        timelineForImplementation: details.TimelineForImplementation,
-        dependencies: details.Dependencies,
-        keyPerformanceIndicators: details.KeyPerformanceIndicators,
-        powersAndMandates: details.PowersAndMandates,
-        adaptationEffectivenessPerHazard:
-          details.AdaptationEffectivenessPerHazard,
-        biome: details.biome,
-      };
-    })
-    .filter((r) => r !== null);
-}
-
-export const startActionPlanJob = async (
-  inventoryId: string,
-  locode: string,
-  lang: LANGUAGES,
-  type: ACTION_TYPES,
-) => {
-  // Check if a ranking is already in progress for this inventory/locode
-  const existingRanking = await db.models.HighImpactActionRanking.findOne({
-    where: { inventoryId, locode, type },
-    order: [["created", "DESC"]],
-  });
-
-  // If there's already a ranking in progress, return it instead of starting a new one
-  if (
-    existingRanking &&
-    existingRanking.status === HighImpactActionRankingStatus.PENDING
-  ) {
-    logger.info("Ranking already in progress, returning existing ranking", {
-      rankingId: existingRanking.id,
-      inventoryId,
-      locode,
-    });
-    return existingRanking;
-  }
-
-  const contextData = await getCityContextAndEmissionsData(inventoryId);
-  logger.info({ contextData }, "City context and emissions data fetched");
-  if (!contextData) throw new Error("No city context/emissions data found");
-
-  const { taskId } = await startActionPlanGeneration(contextData, type);
-  logger.info({ taskId }, "Task ID received from HIAP API");
-  if (!taskId) throw new Error("No taskId returned from HIAP API");
-
-  const ranking = await db.models.HighImpactActionRanking.create({
-    locode,
-    inventoryId,
-    langs: Object.values(LANGUAGES),
-    type,
-    jobId: taskId,
-    status: HighImpactActionRankingStatus.PENDING,
-  });
-  logger.info(`Ranking created in DB with ID: ${ranking.id}`);
-
-  // Do not await here, it will make the request time out. Poll job in the background.
-  checkActionRankingJob(ranking, lang, type);
-  return ranking;
-};
-
-async function fetchActionPlans(
   lang: LANGUAGES,
   rankedActions: {
     actionId: string;
@@ -601,27 +504,25 @@ export const fetchRanking = async (
       }
       // If ranking is pending, trigger job in background and return empty actions
       if (ranking.status === HighImpactActionRankingStatus.PENDING) {
-        logger.info("Ranking is pending, triggering background job");
+        logger.info('Ranking is pending, triggering background job');
         checkActionRankingJob(ranking, lang, type);
         return { ...ranking.toJSON(), rankedActions: [] };
       } else if (ranking.status === HighImpactActionRankingStatus.SUCCESS) {
-        logger.info(
-          "Ranking is success, copying actions to requested language",
-        );
+        logger.info('Ranking is success, copying actions to requested language');
         const newRanked = await copyRankedActionsToLang(ranking, lang);
         return { ...ranking.toJSON(), rankedActions: newRanked };
       } else if (ranking.status === HighImpactActionRankingStatus.FAILURE) {
-        logger.info("Ranking is failure, starting new job");
+        logger.info('Ranking is failure, starting new job');
         return await startActionRankingJob(inventoryId, locode, lang, type);
       }
-      logger.info("No ranking found, starting new job");
+      logger.info('No ranking found, starting new job');
       return await startActionRankingJob(inventoryId, locode, lang, type);
     } else {
-      logger.info("No ranking found at all, starting new job");
+      logger.info('No ranking found at all, starting new job');
       return await startActionRankingJob(inventoryId, locode, lang, type);
     }
   } catch (err) {
-    logger.error({ err: err }, "Error fetching prioritized climate actions:");
+    logger.error({ err: err }, 'Error fetching prioritized climate actions:');
     throw err;
   }
 };

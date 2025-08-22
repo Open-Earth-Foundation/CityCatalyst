@@ -15,7 +15,7 @@ import {
 import { MdOutlineClose  } from "react-icons/md";
 import { useTranslation } from "@/i18n/client";
 import { getAnalyticsConsent, setAnalyticsConsent } from "@/lib/analytics";
-import { hasServerFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 interface CookieConsentProps {
   lng: string;
@@ -27,7 +27,7 @@ export function CookieConsent({ lng }: CookieConsentProps) {
   const { t } = useTranslation(lng, "cookie-consent");
   
   // Use hasServerFeatureFlag which uses process.env directly (no caching issues)
-  const analyticsEnabled = hasServerFeatureFlag(FeatureFlags.ANALYTICS_ENABLED);
+  const analyticsEnabled = hasFeatureFlag(FeatureFlags.ANALYTICS_ENABLED);
 
   // Check consent when component mounts
   useEffect(() => {

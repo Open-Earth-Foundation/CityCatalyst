@@ -44,7 +44,7 @@ export default function DataLayout(props: {
       const logoUrl = inventoryOrgData?.logoUrl ?? null;
       const active = inventoryOrgData?.active ?? true;
 
-      if (organization.logoUrl !== logoUrl || organization.active !== active) {
+      if (organization?.logoUrl !== logoUrl || organization?.active !== active) {
         setOrganization({ logoUrl, active });
       }
       setTheme(inventoryOrgData?.theme?.themeKey ?? ("blue_theme" as string));

@@ -120,7 +120,7 @@ function transformEmissionsFactorData(apiData: Record<string, any>) {
         // TODO: Consider changing from { user: ... } to { en: ... } for clarity
         // Currently matches the pattern used in the original seeder (20231114094254-emissions-factors.cjs)
         datasetName: ds.dataset_name
-          ? JSON.stringify({ user: ds.dataset_name })
+          ? { user: ds.dataset_name }
           : null,
         sourceType: "emissions_factor",
         datasetUrl: ds.URL,

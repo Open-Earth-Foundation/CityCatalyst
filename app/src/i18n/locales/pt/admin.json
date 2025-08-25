@@ -15,6 +15,7 @@
   "email": "Email",
   "organization": "Organização",
   "status": "Status",
+  "role": "Função",
   "required": "Este campo é obrigatório",
   "invalid-email": "Endereço de email inválido",
   "next": "Próximo",

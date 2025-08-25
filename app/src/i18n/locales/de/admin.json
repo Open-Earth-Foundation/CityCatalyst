@@ -15,6 +15,7 @@
   "email": "E-Mail",
   "organization": "Organisation",
   "status": "Status",
+  "role": "Rolle",
   "required": "Dieses Feld ist erforderlich",
   "invalid-email": "Ungültige E-Mail-Adresse",
   "next": "Nächster",

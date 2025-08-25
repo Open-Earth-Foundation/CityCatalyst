@@ -139,5 +139,6 @@
   "user-removed": "Utilisateur supprimé avec succès",
   "role-update-success-toast-title": "Rôle mis à jour avec succès",
   "frozen": "Gelé",
-  "already-registered-admin": "{{email}} est déjà un administrateur enregistré"
+  "already-registered-admin": "{{email}} est déjà un administrateur enregistré",
+  "modules": "Modules"
 }

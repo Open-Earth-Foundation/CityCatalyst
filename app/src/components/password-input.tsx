@@ -12,7 +12,7 @@ export default function PasswordInput({
   error,
   register,
   t,
-  name = "Password",
+  name,
   id = "password",
   w,
   shouldValidate = false,
@@ -30,6 +30,7 @@ export default function PasswordInput({
 }) {
   // Password checks
   const password = watchPassword || "";
+  const labelName = name || t("password");
   const hasLowercase = /[a-z]/.test(password);
   const hasMinLength = password.length >= 8;
   const hasUppercase = /[A-Z]/.test(password);
@@ -38,7 +39,7 @@ export default function PasswordInput({
   return (
     <Field
       invalid={!!error}
-      label={<LabelLarge>{name}</LabelLarge>}
+      label={<LabelLarge>{labelName}</LabelLarge>}
       errorText={error?.message}
       w={w}
     >

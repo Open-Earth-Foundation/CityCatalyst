@@ -106,6 +106,7 @@
   "bulk-inventory-creation-success": "Inventories created successfully",
   "invite-collaborator": "Invite collaborator",
   "project-team-heading": "{{proj_name}} Team",
+  "role": "Role",
   "owner": "Owner",
   "admin": "Admin",
   "collaborator": "Collaborator",

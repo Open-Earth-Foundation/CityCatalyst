@@ -13,6 +13,7 @@
   "project-name": "Nome do projeto",
   "city-limit": "Limite da cidade",
   "email": "Email",
+  "role": "Função",
   "required": "Este campo é obrigatório",
   "invalid-email": "Endereço de email inválido",
   "next": "Próximo",

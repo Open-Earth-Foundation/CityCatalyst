@@ -1,22 +1,6 @@
 "use client";
-import {
-  Box,
-  Button,
-  Heading,
-  Icon,
-  IconButton,
-  Switch,
-  Table,
-  Tabs,
-  TabsList,
-  Text,
-} from "@chakra-ui/react";
-import {
-  MdAdd,
-  MdChevronLeft,
-  MdChevronRight,
-  MdMoreVert,
-} from "react-icons/md";
+import { Box, Heading, Switch, Table, Tabs, Text } from "@chakra-ui/react";
+
 import React, { useMemo, useState, use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { useGetOrganizationQuery, useGetProjectsQuery } from "@/services/api";
@@ -24,19 +8,10 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
-import DataTable from "@/components/ui/data-table";
-import {
-  MenuContent,
-  MenuItem,
-  MenuRoot,
-  MenuTrigger,
-} from "@/components/ui/menu";
-import CreateEditProjectModal from "@/app/[lng]/admin/organization/[id]/projects/CreateEditProjectModal";
-import { RiDeleteBin6Line, RiEditLine } from "react-icons/ri";
-import DeleteProjectModal from "@/app/[lng]/admin/organization/[id]/projects/DeleteProjectModal";
+
 import ProgressLoader from "@/components/ProgressLoader";
 
-const AdminOrganizationProjectsPage = (props: {
+const AdminOrganizationModulesPage = (props: {
   params: Promise<{ lng: string; id: string }>;
 }) => {
   const { lng, id } = use(props.params);
@@ -78,9 +53,7 @@ const AdminOrganizationProjectsPage = (props: {
     return <ProgressLoader />;
   }
 
-  console.log(organization);
-  // all projects mock data
-  console.log(projects);
+  //  TODO: get modules from backend
 
   const modules = [
     {
@@ -263,7 +236,6 @@ const AdminOrganizationProjectsPage = (props: {
                         </Table.Header>
 
                         <Table.Body>
-                          {/* return modules */}
                           {modules.map((item) => (
                             <Table.Row key={item.name} fontSize="body.md">
                               <Table.Cell>{item.name}</Table.Cell>
@@ -272,7 +244,7 @@ const AdminOrganizationProjectsPage = (props: {
                                 <Switch.Root
                                   checked={item.hasAccess}
                                   onCheckedChange={() => {
-                                    console.log("checked");
+                                    // TODO: update module access logic
                                   }}
                                 >
                                   <Switch.HiddenInput />
@@ -292,30 +264,8 @@ const AdminOrganizationProjectsPage = (props: {
           </Tabs.Root>
         </Box>
       )}
-      <CreateEditProjectModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setProjectToEdit(null);
-        }}
-        t={t}
-        onOpenChange={setIsModalOpen}
-        organizationId={id}
-        projectData={projectToEdit}
-      />
-      <DeleteProjectModal
-        projectId={projectToEdit?.projectId as string}
-        projectName={projectToEdit?.projectName as string}
-        isOpen={isDeleteModalOpen}
-        onClose={() => {
-          setIsDeleteModalOpen(false);
-          setProjectToEdit(null);
-        }}
-        t={t}
-        onOpenChange={setIsDeleteModalOpen}
-      />
     </Box>
   );
 };
 
-export default AdminOrganizationProjectsPage;
+export default AdminOrganizationModulesPage;

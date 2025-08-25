@@ -88,7 +88,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
           {t(prefillValue)}
         </Text>
       </Box>
-      <Box display="flex" alignItems="center" w="full" justifyContent="end">
+      <Box display="flex" alignItems="center" w="full" justifyContent="end" data-testid="add-emission-data-button">
         <Button
           title="Add Activity"
           h="48px"

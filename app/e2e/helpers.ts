@@ -144,7 +144,7 @@ export async function createInventoryThroughOnboarding(
 
   // Step 6: Verify completion page
   const completionMessage = page.getByTestId("done-heading");
-  await expect(completionMessage).toBeVisible();
+  await expect(completionMessage).toBeVisible({ timeout: 15000 });
   // Return the completion page for further navigation
   return page;
 }

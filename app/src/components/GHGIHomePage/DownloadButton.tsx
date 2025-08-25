@@ -58,13 +58,15 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         inventory={inventory}
       />
       {children ? (
-        <button onClick={onDownloadShareOpen}>{children}</button>
+        <button onClick={onDownloadShareOpen} data-testid="download-button">{children}</button>
       ) : (
-        <ActionCardSmall
-          onClick={onDownloadShareOpen}
-          icon={<FiDownload color="white" size={24} />}
-          title={t("download-and-report")}
-        />
+        <div data-testid="download-action-card">
+          <ActionCardSmall
+            onClick={onDownloadShareOpen}
+            icon={<FiDownload color="white" size={24} />}
+            title={t("download-and-report")}
+          />
+        </div>
       )}
     </>
   );

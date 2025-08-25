@@ -15,6 +15,8 @@
   "project-name": "Nom du projet",
   "city-limit": "Limite de la ville",
   "email": "Courriel",
+  "organization": "Organisation",
+  "status": "Statut",
   "role": "Rôle",
   "required": "Ce champ est obligatoire",
   "invalid-email": "Adresse e-mail invalide",

@@ -5,7 +5,6 @@ import {
   Icon,
   IconButton,
   List,
-  PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
@@ -147,10 +146,9 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                       borderColor="border.neutral"
                       padding="10px"
                       px="0"
-                      pos="absolute"
+                    pos="absolute"
                       right="0"
                     >
-                      <PopoverArrow />
                       <PopoverBody padding="0">
                         <List.Root padding="0">
                           <List.Item

@@ -139,5 +139,16 @@
   "role-update-success-toast-title": "Rol actualizado con éxito",
   "user-removed": "Usuario eliminado con éxito",
   "frozen": "Congelado",
-  "already-registered-admin": "{{email}} ya está registrado como administrador"
+  "already-registered-admin": "{{email}} ya está registrado como administrador",
+  "modules": "Módulos",
+  "ghg-inventories": "Inventarios GEI",
+  "module": "módulo",
+  "module-name": "nombre del módulo",
+  "active-modules": "Módulos Activos",
+  "provider": "proveedor",
+  "climate-risks": "Riesgos Climáticos",
+  "actions-and-plans": "Acciones y Planes",
+  "finance-readiness": "Preparación Financiera",
+  "org-modules-heading": "módulos de {{name}}",
+  "control-panel-for-organization": "Panel de control para {{name}}"
 }

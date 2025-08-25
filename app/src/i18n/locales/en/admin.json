@@ -140,5 +140,15 @@
   "role-update-success-toast-title": "Role updated successfully",
   "frozen": "Frozen",
   "already-registered-admin": "{{email}} is already a registered admin",
-  "modules": "Modules"
+  "modules": "Modules",
+  "ghg-inventories": "GHG Inventories",
+  "module": "module",
+  "module-name": "module name",
+  "active-modules": "Active Modules",
+  "provider": "provider",
+  "climate-risks": "Climate Risks",
+  "actions-and-plans": "Actions and Plans",
+  "finance-readiness": "Finance Readiness",
+  "org-modules-heading": "{{name}} modules",
+  "control-panel-for-organization": "Control panel for {{name}}"
 }

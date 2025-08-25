@@ -5,12 +5,18 @@ import {
   Heading,
   Icon,
   IconButton,
+  Switch,
   Table,
   Tabs,
   TabsList,
   Text,
 } from "@chakra-ui/react";
-import { MdAdd, MdMoreVert } from "react-icons/md";
+import {
+  MdAdd,
+  MdChevronLeft,
+  MdChevronRight,
+  MdMoreVert,
+} from "react-icons/md";
 import React, { useMemo, useState, use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { useGetOrganizationQuery, useGetProjectsQuery } from "@/services/api";
@@ -75,6 +81,29 @@ const AdminOrganizationProjectsPage = (props: {
   console.log(organization);
   // all projects mock data
   console.log(projects);
+
+  const modules = [
+    {
+      name: t("ghg-inventories"),
+      provider: "Open Earth Foundation",
+      hasAccess: true,
+    },
+    {
+      name: t("climate-risks"),
+      provider: "Open Earth Foundation",
+      hasAccess: true,
+    },
+    {
+      name: t("actions-and-plans"),
+      provider: "Open Earth Foundation",
+      hasAccess: false,
+    },
+    {
+      name: t("finance-readiness"),
+      provider: "Open Earth Foundation",
+      hasAccess: false,
+    },
+  ];
   return (
     <Box>
       <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -125,24 +154,141 @@ const AdminOrganizationProjectsPage = (props: {
       {!isProjectDataLoading && projects && projects.length > 0 && (
         // vertical tabs
         <Box py="48px">
-          <Text
-            fontFamily="heading"
-            fontSize="title.md"
-            fontWeight="semibold"
-            color="content.secondary"
-            mb="12px"
+          <Tabs.Root
+            defaultValue={projects[0].projectId}
+            orientation="vertical"
+            variant="plain"
           >
-            {t("projects")}
-          </Text>
-          <Tabs.Root defaultValue="projects" orientation="vertical">
-            <Tabs.List>
-              <Tabs.Trigger value="projects">tab</Tabs.Trigger>
-            </Tabs.List>
-            <Tabs.Content value="projects">
-              <Box>
-                <Text>{t("projects")}</Text>
-              </Box>
-            </Tabs.Content>
+            <Box display="flex" flexDirection="column" gap="12px">
+              <Text
+                fontFamily="heading"
+                fontSize="title.md"
+                fontWeight="semibold"
+                color="content.secondary"
+              >
+                {t("projects")}
+              </Text>
+              {/* Render project tabs */}
+              <Tabs.List gap="12px" border="none">
+                {projects.map(({ projectId, name }) => {
+                  return (
+                    <Tabs.Trigger
+                      value={projectId}
+                      key={projectId}
+                      w="223px"
+                      fontFamily="heading"
+                      fontSize="label.lg"
+                      fontWeight="bold"
+                      p="16px"
+                      _selected={{
+                        color: "content.link",
+                        borderRadius: "8px",
+                      }}
+                    >
+                      {name}
+                    </Tabs.Trigger>
+                  );
+                })}
+              </Tabs.List>
+            </Box>
+            {/* Render project content */}
+            {projects.map(({ projectId, name }) => {
+              return (
+                <Tabs.Content
+                  value={projectId}
+                  key={projectId}
+                  ml="36px"
+                  p="24px"
+                  gap="24px"
+                  display="flex"
+                  flexDirection="column"
+                  w="full"
+                >
+                  <Box display="flex" alignItems="center" gap="8px">
+                    <Text
+                      fontFamily="heading"
+                      color="content.secondary"
+                      fontSize="title.md"
+                      fontWeight="semibold"
+                    >
+                      {name}
+                    </Text>
+                    <Text
+                      fontFamily="heading"
+                      color="content.secondary"
+                      fontSize="title.md"
+                      fontWeight="semibold"
+                    >
+                      |
+                    </Text>
+                    <Text
+                      fontFamily="heading"
+                      color="content.secondary"
+                      fontSize="title.md"
+                      fontWeight="semibold"
+                    >
+                      {t("active-modules")}
+                    </Text>
+                  </Box>
+
+                  <Box w="full">
+                    {/* Access table */}
+                    <Table.ScrollArea
+                      w="full"
+                      borderWidth="1px"
+                      borderColor="border.overlay"
+                      rounded="lg"
+                    >
+                      <Table.Root size="lg">
+                        <Table.Header>
+                          <Table.Row
+                            bg="bg.subtle"
+                            textTransform="uppercase"
+                            fontFamily="heading"
+                            color="content.secondary"
+                            fontSize="button.sm"
+                            fontWeight="bold"
+                            letterSpacing="widest"
+                          >
+                            <Table.ColumnHeader>
+                              {t("module-name")}
+                            </Table.ColumnHeader>
+                            <Table.ColumnHeader>
+                              {t("provider")}
+                            </Table.ColumnHeader>
+                            <Table.ColumnHeader textAlign="end">
+                              {""}
+                            </Table.ColumnHeader>
+                          </Table.Row>
+                        </Table.Header>
+
+                        <Table.Body>
+                          {/* return modules */}
+                          {modules.map((item) => (
+                            <Table.Row key={item.name} fontSize="body.md">
+                              <Table.Cell>{item.name}</Table.Cell>
+                              <Table.Cell>{item.provider}</Table.Cell>
+                              <Table.Cell textAlign="end">
+                                <Switch.Root
+                                  checked={item.hasAccess}
+                                  onCheckedChange={() => {
+                                    console.log("checked");
+                                  }}
+                                >
+                                  <Switch.HiddenInput />
+                                  <Switch.Control borderRadius="16px" />
+                                  <Switch.Label />
+                                </Switch.Root>
+                              </Table.Cell>
+                            </Table.Row>
+                          ))}
+                        </Table.Body>
+                      </Table.Root>
+                    </Table.ScrollArea>
+                  </Box>
+                </Tabs.Content>
+              );
+            })}
           </Tabs.Root>
         </Box>
       )}

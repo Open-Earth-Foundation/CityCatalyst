@@ -1329,6 +1329,16 @@ export const api = createApi({
         transformResponse: (response: { data: { hasAccess: boolean } }) =>
           response.data,
       }),
+      getCityDashboard: builder.query<
+        Record<string, any>,
+        { cityId: string; lng?: string }
+      >({
+        query: ({ cityId, lng = "en" }) => 
+          `city/${cityId}/dashboard?lng=${lng}`,
+        transformResponse: (response: { data: Record<string, any> }) =>
+          response.data,
+        providesTags: ["Dashboard", "Modules"],
+      }),
       getClient: builder.query<Client, string>({
         query: (clientId: string) => `client/${clientId}/`,
         transformResponse: (response: { data: Client }) => response.data,
@@ -1490,6 +1500,7 @@ export const {
   useGetModulesQuery,
   useGetProjectModulesQuery,
   useGetCityModuleAccessQuery,
+  useGetCityDashboardQuery,
   useGetClientQuery,
   useGenerateCodeMutation,
   useGetUserPermissionsQuery,

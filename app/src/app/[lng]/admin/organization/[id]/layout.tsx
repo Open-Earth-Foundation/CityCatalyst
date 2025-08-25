@@ -40,7 +40,7 @@ export default function AdminOrganizationLayout(props: {
   const step = useMemo(() => {
     const pathArray = pathName.replace(/\/$/, "").split("/");
     const path = pathArray[pathArray.length - 1];
-    if (["profile", "team", "projects"].includes(path)) {
+    if (["profile", "team", "projects", "modules"].includes(path)) {
       return path;
     }
     return "profile";
@@ -106,7 +106,7 @@ export default function AdminOrganizationLayout(props: {
       <Box mt={8}>
         <Tabs.Root variant="line" lazyMount defaultValue="profile" value={step}>
           <Tabs.List borderStyle="hidden">
-            {["profile", "team", "projects"].map((tab, index) => (
+            {["profile", "team", "projects", "modules"].map((tab, index) => (
               <Link key={tab} href={`/${lng}/admin/organization/${id}/${tab}`}>
                 <Tabs.Trigger key={index} value={tab}>
                   <Text

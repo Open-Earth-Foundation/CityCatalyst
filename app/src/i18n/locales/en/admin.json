@@ -15,6 +15,8 @@
   "project-name": "Project name",
   "city-limit": "City limit",
   "email": "Email",
+  "organization": "Organization",
+  "status": "Status",
   "required": "This field is required",
   "invalid-email": "Invalid email address",
   "next": "Next",

@@ -77,5 +77,14 @@
     ">10 years": "Mais de 10 anos"
   },
   "adaptation-effectiveness": "Eficácia da Adaptação",
-  "primary-purpose": "[object Object]"
+  "primary-purpose": "[object Object]",
+  "generating-actions": "Gerando ações...",
+  "checking-activity-data": "Verificando dados de atividade",
+  "generating-climate-actions": "As suas principais ações climáticas estão sendo processadas",
+  "generating-climate-actions-description": "Este processo pode levar até 15 minutos. Você receberá um email e os verá aqui quando estiver pronto",
+  "implementation-of-urban-toll": "Implementação de pedágio urbano",
+  "encourage-renewable-energy-policies": "Incentive políticas de energia renovável no nível municipal",
+  "stationary-energy": "Energia estacionária",
+  "waste": "Resíduos",
+  "low": "Baixo"
 }

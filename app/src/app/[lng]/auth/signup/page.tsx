@@ -19,7 +19,7 @@ import { signIn } from "next-auth/react";
 import { LANGUAGES } from "@/util/types";
 import { LanguageSelector } from "./LanguageSelector";
 import i18next from "i18next";
-import { trackEvent } from "@/lib/analytics";
+import { trackEvent, identifyUser } from "@/lib/analytics";
 
 type Inputs = {
   inventory?: string;
@@ -112,6 +112,12 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
       });
 
       if (!loginResponse?.error) {
+        // Identify the user for future tracking with additional properties
+        identifyUser(userData.user.email, {
+          name: userData.user.name,
+          preferredLanguage: userData.user.preferredLanguage,
+          role: userData.user.role,
+        });
         router.push(callbackUrl ?? "/");
       } else {
         logger.error("Failed to login", loginResponse);

@@ -8,6 +8,7 @@ import { Op } from "sequelize";
 import { logger } from "@/services/logger";
 import { InviteStatus } from "@/util/types";
 import { NextResponse } from "next/server";
+import EmailService from "@/backend/EmailService";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
   logger.info("[OrgInviteAccept] PATCH start", {
@@ -105,6 +106,27 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
       userId: session.user.id,
     });
     throw new createHttpError.InternalServerError("No user found");
+  }
+
+  // Send welcome email to the user who accepted the admin invite
+  try {
+    await EmailService.sendAdminInviteAccepted({
+      user,
+    });
+    logger.info("[OrgInviteAccept] Admin invite accepted email sent", {
+      userId: user.userId,
+      email: user.email,
+    });
+  } catch (error) {
+    logger.error(
+      {
+        err: error,
+        userId: user.userId,
+        email: user.email,
+      },
+      "Failed to send admin invite accepted email",
+    );
+    // Don't throw here - we don't want to fail the invite acceptance if email fails
   }
 
   logger.info("[OrgInviteAccept] PATCH complete");

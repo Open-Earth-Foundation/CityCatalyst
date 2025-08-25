@@ -9,6 +9,7 @@ import {
   Img,
   Link,
   Preview,
+  Section,
   Text,
 } from "@react-email/components";
 import { User } from "@/models/User";
@@ -49,22 +50,78 @@ export default function AccountFrozenNotificationTemplate({
           <Text style={greeting}>
             {t("account-frozen.greeting", { name: user?.name })}
           </Text>
-          <Text style={paragraph}>{t("account-frozen.message")}</Text>
           <Text style={paragraph}>
-            {t("account-frozen.contact", { email: "info@openearth.com" })}
+            {t("account-frozen.message").replace("**", "")}
           </Text>
-          <div
-            style={{
-              marginTop: "36px",
-              marginBottom: "36px",
-            }}
-          >
-            <Link href={url} style={urlLink}>
-              {t("account-frozen.cta")}
-            </Link>
-          </div>
 
-          <Hr style={{ height: "2px", background: "#EBEBEC" }} />
+          <Section style={{ marginTop: "32px" }}>
+            <Text style={sectionHeading}>
+              {t("account-frozen.ready-to-upgrade-heading")}
+            </Text>
+            <Text style={paragraph}>
+              {t("account-frozen.ready-to-upgrade-message")}
+            </Text>
+            <Section style={{ marginTop: "16px", marginBottom: "24px" }}>
+              <Link href={url} style={urlLink}>
+                {t("account-frozen.ready-to-upgrade-cta")}
+              </Link>
+            </Section>
+          </Section>
+
+          <Text style={paragraph}>{t("account-frozen.ready-to-talk")}</Text>
+          <Section style={{ marginTop: "16px", marginBottom: "24px" }}>
+            <Link
+              href="https://meetings-eu1.hubspot.com/cviaene"
+              style={secondaryLink}
+            >
+              {t("account-frozen.ready-to-talk-cta", {
+                defaultValue: "Schedule a Call",
+              })}
+            </Link>
+          </Section>
+
+          <Section style={{ marginTop: "32px" }}>
+            <Text style={sectionHeading}>
+              {t("account-frozen.Survey-heading")}
+            </Text>
+            <Text style={paragraph}>{t("account-frozen.survery-text")}</Text>
+            <Section style={{ marginTop: "16px", marginBottom: "16px" }}>
+              <Link
+                href="https://form.typeform.com/to/AE7lzwlW"
+                style={secondaryLink}
+              >
+                {t("account-frozen.survey-cta")}
+              </Link>
+            </Section>
+            <Text style={paragraph}>
+              {t("account-frozen.survery-raffle-draw")}
+            </Text>
+          </Section>
+
+          <Hr
+            style={{
+              height: "2px",
+              background: "#EBEBEC",
+              marginTop: "36px",
+              marginBottom: "24px",
+            }}
+          />
+
+          <Text style={paragraph}>{t("account-frozen.footer-1")}</Text>
+          <Text style={paragraph}>{t("account-frozen.footer-2")}</Text>
+          <Text style={paragraph}>{t("account-frozen.footer-3")}</Text>
+          <Text style={paragraph}>
+            <strong>{t("account-frozen.footer-4")}</strong>
+          </Text>
+
+          <Hr
+            style={{
+              height: "2px",
+              background: "#EBEBEC",
+              marginTop: "24px",
+              marginBottom: "24px",
+            }}
+          />
           <Text style={footerText}>{t("account-frozen.footer")}</Text>
         </Container>
       </Body>
@@ -121,6 +178,15 @@ const paragraph = {
   color: "#4B4C63",
 };
 
+const sectionHeading = {
+  fontSize: "16px",
+  lineHeight: "1.4",
+  fontWeight: "700",
+  color: "#484848",
+  marginTop: "16px",
+  marginBottom: "8px",
+};
+
 const urlLink = {
   fontSize: "14px",
   padding: "16px",
@@ -131,6 +197,20 @@ const urlLink = {
   display: "inline-block",
   paddingLeft: "36px",
   paddingRight: "36px",
+};
+
+const secondaryLink = {
+  fontSize: "14px",
+  padding: "12px",
+  backgroundColor: "#FFFFFF",
+  border: "2px solid #2351DC",
+  borderRadius: "100px",
+  lineHeight: 1.5,
+  color: "#2351DC",
+  display: "inline-block",
+  paddingLeft: "28px",
+  paddingRight: "28px",
+  fontWeight: "600",
 };
 
 const footerText = {

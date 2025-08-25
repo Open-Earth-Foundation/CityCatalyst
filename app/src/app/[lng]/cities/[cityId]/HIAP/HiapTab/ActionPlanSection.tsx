@@ -1,9 +1,24 @@
-import { Badge, Box, Button, Card, Icon, Text } from "@chakra-ui/react";
-import { TFunction } from "i18next";
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  Dialog,
+  Icon,
+  Portal,
+  Text,
+  CloseButton,
+  HStack,
+  VStack,
+} from "@chakra-ui/react";
+import { t, TFunction } from "i18next";
 import { AskAiIcon, DownloadIcon, GeneratePlanIcon } from "@/components/icons";
 import { FaCaretDown } from "react-icons/fa";
 import { TopPickIcon } from "@/components/icons";
 import { HIAction } from "@/util/types";
+import { MdLocationPin } from "react-icons/md";
+import { RiFile3Line } from "react-icons/ri";
+import { GoLocation } from "react-icons/go";
 
 // Helper function to get top picks
 const getTopPickActions = (actions: HIAction[]): HIAction[] => {
@@ -288,21 +303,164 @@ const ClimateActionCard = ({
               {t("see-more-details")}
             </Button>
           </Box>
-          <Button
-            bg="transparent"
-            color="content.link"
-            w="full"
-            borderWidth="1px"
-            borderColor="content.link"
-            borderRadius="sm"
-            className="group"
-          >
-            <Icon as={GeneratePlanIcon} color="content.link" />
-            {t("generate-plan")}
-          </Button>
+          <GeneratePlanDialog t={t} />
         </Box>
       </Card.Description>
     </Card.Root>
+  );
+};
+
+// Generate Plan Dialog
+const GeneratePlanDialog = ({ t }: { t: TFunction }) => {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger asChild>
+        <Button
+          color="content.link"
+          w="full"
+          borderWidth="1px"
+          borderColor="content.link"
+          borderRadius="sm"
+          className="group"
+          bg="transparent"
+        >
+          <Icon as={GeneratePlanIcon} color="content.link" />
+          {t("generate-plan")}
+        </Button>
+      </Dialog.Trigger>
+      <Portal>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content minW="768px" maxH="618px" p="24px">
+            <Dialog.Header>
+              <HStack
+                justifyContent="space-between"
+                w="full"
+                alignItems="baseline"
+                h="48px"
+              >
+                <Text
+                  fontFamily="heading"
+                  fontWeight="bold"
+                  fontSize="overline"
+                  color="content.link"
+                  textTransform="uppercase"
+                >
+                  {t("generated-action-plan")}
+                </Text>
+                <Button
+                  variant="ghost"
+                  color="content.tertiary"
+                  px="4px"
+                  h="48px"
+                >
+                  <Icon as={RiFile3Line} boxSize="24px" />
+                  {t("export-as-pdf")}
+                </Button>
+              </HStack>
+            </Dialog.Header>
+            <Dialog.Body>
+              <VStack alignItems="flex-start" gap="24px" w="full">
+                <Text
+                  fontFamily="heading"
+                  fontWeight="bold"
+                  fontSize="headline.md"
+                  color="content.primary"
+                >
+                  {t("generated-action-plan-title")}
+                </Text>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap="8px"
+                  py="24px"
+                  borderBottom="1px solid"
+                  borderColor="border.overlay"
+                  w="full"
+                >
+                  <Icon as={GoLocation} boxSize="24px" color="content.link" />
+                  <Text
+                    fontFamily="heading"
+                    fontWeight="bold"
+                    fontSize="title.lg"
+                    color="content.primary"
+                  >
+                    {t("generated-action-plan-location")}
+                  </Text>
+                </Box>
+                <Box display="flex" alignItems="center" w="full">
+                  <Text
+                    fontFamily="body"
+                    fontWeight="normal"
+                    fontSize="body.lg"
+                    color="content.tertiary"
+                  >
+                    {t("generated-action-plan-location-description")}
+                  </Text>
+                </Box>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap="8px"
+                  py="24px"
+                  borderBottom="1px solid"
+                  borderColor="border.overlay"
+                  w="full"
+                >
+                  <Text
+                    fontFamily="heading"
+                    fontWeight="bold"
+                    fontSize="title.lg"
+                    color="content.link"
+                  >
+                    {t("subactions")}
+                  </Text>
+                </Box>
+                <Box display="flex" alignItems="center" w="full">
+                  <Text
+                    fontFamily="body"
+                    fontWeight="normal"
+                    fontSize="body.lg"
+                    color="content.tertiary"
+                  >
+                    {t("subactions-description")}
+                  </Text>
+                </Box>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap="8px"
+                  py="24px"
+                  borderBottom="1px solid"
+                  borderColor="border.overlay"
+                  w="full"
+                >
+                  <Text
+                    fontFamily="heading"
+                    fontWeight="bold"
+                    fontSize="title.lg"
+                    color="content.link"
+                    textTransform="capitalize"
+                  >
+                    {t("municipal-institutions-involved")}
+                  </Text>
+                </Box>
+                <Box display="flex" alignItems="center" w="full">
+                  <Text
+                    fontFamily="body"
+                    fontWeight="normal"
+                    fontSize="body.lg"
+                    color="content.tertiary"
+                  >
+                    {t("municipal-institutions-involved-description")}
+                  </Text>
+                </Box>
+              </VStack>
+            </Dialog.Body>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
   );
 };
 

@@ -60,29 +60,55 @@ export default function InviteToOrganizationTemplate({
             </Text>
           )}
           <Text style={paragraph}>{t("invite-organization.message")}</Text>
-          
+
           <Section style={{ marginTop: "32px" }}>
-            <Text style={sectionHeading}>{t("invite-organization.steps-heading")}</Text>
+            <Text style={sectionHeading}>
+              {t("invite-organization.steps-heading")}
+            </Text>
             <Section style={listContainer}>
               <Text style={listItem}>
                 <span style={listNumber}>1.</span>
-                <span dangerouslySetInnerHTML={{ __html: t("invite-organization.step1").replace(/<1>/g, '<strong>').replace(/<\/1>/g, '</strong>') }} />
+                <span>
+                  {t("invite-organization.step1")
+                    .split(/<\/?1>/g)
+                    .map((text, i) =>
+                      i % 2 === 0 ? text : <strong key={i}>{text}</strong>,
+                    )}
+                </span>
               </Text>
               <Text style={listItem}>
                 <span style={listNumber}>2.</span>
-                <span dangerouslySetInnerHTML={{ __html: t("invite-organization.step2").replace(/<1>/g, '<strong>').replace(/<\/1>/g, '</strong>') }} />
+                <span>
+                  {t("invite-organization.step2")
+                    .split(/<\/?1>/g)
+                    .map((text, i) =>
+                      i % 2 === 0 ? text : <strong key={i}>{text}</strong>,
+                    )}
+                </span>
               </Text>
               <Text style={listItem}>
                 <span style={listNumber}>3.</span>
-                <span dangerouslySetInnerHTML={{ __html: t("invite-organization.step3").replace(/<1>/g, '<strong>').replace(/<\/1>/g, '</strong>') }} />
+                <span>
+                  {t("invite-organization.step3")
+                    .split(/<\/?1>/g)
+                    .map((text, i) =>
+                      i % 2 === 0 ? text : <strong key={i}>{text}</strong>,
+                    )}
+                </span>
               </Text>
               <Text style={listItem}>
                 <span style={listNumber}>4.</span>
-                <span dangerouslySetInnerHTML={{ __html: t("invite-organization.step4").replace(/<1>/g, '<strong>').replace(/<\/1>/g, '</strong>') }} />
+                <span>
+                  {t("invite-organization.step4")
+                    .split(/<\/?1>/g)
+                    .map((text, i) =>
+                      i % 2 === 0 ? text : <strong key={i}>{text}</strong>,
+                    )}
+                </span>
               </Text>
             </Section>
           </Section>
-          
+
           <Section
             style={{
               marginTop: "36px",

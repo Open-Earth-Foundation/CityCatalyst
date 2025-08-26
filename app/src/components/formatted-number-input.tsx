@@ -74,6 +74,7 @@ function FormattedNumberInput({
     // Format the number part
     const formattedNumber = new Intl.NumberFormat(locale, {
       maximumFractionDigits: 20,
+      notation: "standard",
     }).format(numericValue);
 
     // If the input ends with a separator, add it back to the formatted string

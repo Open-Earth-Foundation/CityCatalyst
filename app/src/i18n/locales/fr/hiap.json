@@ -58,5 +58,14 @@
   "effectiveness-level": "",
   "cost-level": "",
   "timeline": "[object Object]",
-  "primary-purpose": ""
+  "primary-purpose": "",
+  "generating-actions": "Génération d'actions...",
+  "checking-activity-data": "Vérification des données d'activité",
+  "generating-climate-actions": "Vos principales actions climatiques sont en cours de traitement",
+  "generating-climate-actions-description": "Ce processus peut prendre jusqu'à 15 minutes. Vous recevrez un email et les verrez ici une fois terminé",
+  "implementation-of-urban-toll": "Mise en œuvre du péage urbain",
+  "encourage-renewable-energy-policies": "Encouragez les politiques d'énergie renouvelable au niveau municipal",
+  "stationary-energy": "Énergie stationnaire",
+  "waste": "Déchets",
+  "low": "Faible"
 }

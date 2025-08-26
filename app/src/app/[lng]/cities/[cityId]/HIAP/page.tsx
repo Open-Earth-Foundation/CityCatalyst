@@ -13,8 +13,6 @@ import { Hero } from "@/components/GHGIHomePage/Hero";
 import { HiapTab } from "@/app/[lng]/cities/[cityId]/HIAP/HiapTab";
 import ProgressLoader from "@/components/ProgressLoader";
 import { AdaptationTabIcon, MitigationTabIcon } from "@/components/icons";
-import { MdRefresh } from "react-icons/md";
-import { BiRefresh } from "react-icons/bi";
 import { LuRefreshCw } from "react-icons/lu";
 
 export default function HIAPPage(props: {
@@ -69,7 +67,7 @@ export default function HIAPPage(props: {
                 <Text
                   color="content.link"
                   fontFamily="heading"
-                  fontSize="px"
+                  fontSize="title.sm"
                   fontWeight="bold"
                   textTransform="uppercase"
                 >

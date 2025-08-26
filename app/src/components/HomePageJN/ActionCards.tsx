@@ -1,20 +1,27 @@
 import type { TFunction } from "i18next";
 import { Box, Text, Grid, GridItem, Icon, Link } from "@chakra-ui/react";
-import { AddCollaboratorButton } from "@/components/GHGIHomePage/AddCollaboratorButton";
+import { AddCollaboratorButton } from "./AddCollaboratorButton";
 import { MdBarChart } from "react-icons/md";
-import ActionCardSmall from "../GHGIHomePage/ActionCardSmall";
+
 import { useRouter } from "next/navigation";
-import { OrganizationWithThemeResponse } from "@/util/types";
+import {
+  CityWithProjectDataResponse,
+  OrganizationWithThemeResponse,
+} from "@/util/types";
 import { MdArrowForward } from "react-icons/md";
+import { AllProjectsIcon } from "../icons";
+import ActionCardSmall from "./ActionCardSmall";
 
 export function ActionCards({
   organization,
   lng,
   t,
+  city,
 }: {
   t: TFunction;
   organization: OrganizationWithThemeResponse;
   lng: string;
+  city?: CityWithProjectDataResponse;
 }) {
   const router = useRouter();
   return (
@@ -54,7 +61,11 @@ export function ActionCards({
               mt={4}
             >
               <Link
-                href={`/${lng}/organization/${organization.organizationId}/dashboard`}
+                href={
+                  city
+                    ? `/${lng}/cities/${city.cityId}/dashboard`
+                    : `/${lng}/organization/${organization.organizationId}/dashboard`
+                }
                 color="white"
                 fontWeight="bold"
                 _hover={{ textDecoration: "underline" }}
@@ -75,11 +86,12 @@ export function ActionCards({
             <ActionCardSmall
               onClick={() => {
                 router.push(
-                  `/${lng}/organization/${organization.organizationId}/projects`,
+                  `/${lng}/organization/${organization.organizationId}/project`,
                 );
               }}
-              icon={<MdBarChart className="text-white" size={24} />}
+              icon={<AllProjectsIcon />}
               title={t("all-projects")}
+              color="content.link"
             />
           </GridItem>
         </Grid>

@@ -39,7 +39,7 @@ test.describe("Login page", () => {
     await page.locator('button[type="submit"]').click();
 
     // await expect(page).toHaveURL("/en/auth/login/");
-    await expectText(page, "valid email address");
+    await expectText(page, "Please enter a valid email address");
     await expectText(page, "Minimum length");
   });
 });

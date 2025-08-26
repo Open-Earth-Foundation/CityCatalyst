@@ -5,28 +5,31 @@ interface ActionCardSmallProps {
   onClick: () => void;
   icon: React.ReactNode;
   title: string;
+  color: string;
 }
 
 const ActionCardSmall: React.FC<ActionCardSmallProps> = ({
   onClick,
   icon,
   title,
+  color,
 }) => {
   return (
     <Card.Root
       onClick={onClick}
-      shadow="2dp"
+      shadow="none"
       backgroundColor="base.light"
       py={0}
       px={6}
       cursor="pointer"
       h="100px"
+      w="full"
+      borderRadius="16px"
       transition="box-shadow 0.2s ease-in-out"
-      _hover={{ boxShadow: "xl" }}
+      _hover={{ boxShadow: "md" }}
     >
-      <Box display="flex" alignItems="center" h="full">
+      <Box display="flex" alignItems="center" h="full" gap="12px">
         <Box
-          bg="content.link"
           display="flex"
           alignItems="center"
           justifyContent="center"
@@ -37,11 +40,11 @@ const ActionCardSmall: React.FC<ActionCardSmallProps> = ({
           {icon}
         </Box>
         <Box>
-          <CardHeader pt={0}>
+          <CardHeader p={0}>
             <Text
               fontFamily="heading"
               fontSize="title.lg"
-              color="interactive.secondary"
+              color={color}
               fontWeight="semibold"
             >
               {title}

@@ -37,6 +37,7 @@ interface Message {
   text: string;
 }
 import { logger } from "@/services/logger";
+import { trackEvent } from "@/lib/analytics";
 
 const SUGGESTION_KEYS = ["gpc", "collect-data", "ipcc"];
 
@@ -144,6 +145,11 @@ export default function ChatBot({
 
   // TODO: Convert to Redux #ON-2137
   const sendMessage = async (text: string) => {
+    // Track chat interaction
+    trackEvent("chat_message_sent", {
+      inventory_id: inventoryId,
+    });
+    
     // If no thread Id is set, create a thread.
     if (!threadIdRef.current) {
       await initializeThread();

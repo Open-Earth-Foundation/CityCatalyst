@@ -13,7 +13,7 @@ type OrganizationState = {
 };
 
 type OrganizationContextType = {
-  organization: OrganizationState;
+  organization: OrganizationState | null;
   setOrganization: (org: Partial<OrganizationState>) => void;
   isFrozenCheck: () => boolean;
   clearOrganization: () => void;
@@ -28,19 +28,19 @@ export const OrganizationContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [organization, setOrganizationState] = useState<OrganizationState>({
+  const [organization, setOrganizationState] = useState<OrganizationState | null>({
     logoUrl: null,
     active: true,
   });
 
   const [showFrozenModal, setShowFrozenModal] = useState(false);
-  const [showFrozenBanner, setShowFrozenBanner] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("organization");
     if (stored) {
       const parsed = JSON.parse(stored) as OrganizationState;
       setOrganizationState((prev) => {
+        if (!prev) return parsed;
         const hasChanged =
           prev.logoUrl !== parsed.logoUrl || prev.active !== parsed.active;
         return hasChanged ? parsed : prev;
@@ -50,16 +50,16 @@ export const OrganizationContextProvider = ({
 
   const setOrganization = (updates: Partial<OrganizationState>) => {
     setOrganizationState((prev) => {
-      const next = { ...prev, ...updates };
+      const baseState = prev || { logoUrl: null, active: true };
+      const next = { ...baseState, ...updates };
       localStorage.setItem("organization", JSON.stringify(next));
       return next;
     });
   };
 
   const clearOrganization = () => {
-    setOrganizationState({ logoUrl: null, active: true });
+    setOrganizationState(null);
     localStorage.removeItem("organization");
-    setShowFrozenBanner(false);
   };
 
   const isFrozenCheck = (): boolean => {

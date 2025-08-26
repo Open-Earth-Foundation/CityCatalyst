@@ -387,7 +387,7 @@ export function NavigationBar({
                         paddingTop="12px"
                         paddingBottom="12px"
                         px="16px"
-                        onClick={() => router.push(`/cities`)}
+                        onClick={() => router.push(`/admin/cities`)}
                       >
                         <Box display="flex" alignItems="center">
                           <Icon

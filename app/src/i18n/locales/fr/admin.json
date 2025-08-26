@@ -15,6 +15,9 @@
   "project-name": "Nom du projet",
   "city-limit": "Limite de la ville",
   "email": "Courriel",
+  "organization": "Organisation",
+  "status": "Statut",
+  "role": "Rôle",
   "required": "Ce champ est obligatoire",
   "invalid-email": "Adresse e-mail invalide",
   "next": "Suivant",
@@ -139,5 +142,16 @@
   "user-removed": "Utilisateur supprimé avec succès",
   "role-update-success-toast-title": "Rôle mis à jour avec succès",
   "frozen": "Gelé",
-  "already-registered-admin": "{{email}} est déjà un administrateur enregistré"
+  "already-registered-admin": "{{email}} est déjà un administrateur enregistré",
+  "modules": "Modules",
+  "ghg-inventories": "Inventaires GES",
+  "module": "module",
+  "module-name": "nom du module",
+  "active-modules": "Modules Actifs",
+  "provider": "fournisseur",
+  "climate-risks": "Risques Climatiques",
+  "actions-and-plans": "Actions et Plans",
+  "finance-readiness": "Préparation Financière",
+  "org-modules-heading": "modules {{name}}",
+  "control-panel-for-organization": "Panneau de contrôle pour {{name}}"
 }

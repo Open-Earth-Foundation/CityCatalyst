@@ -216,16 +216,7 @@ export default function SetPopulationDataStep({
               fontWeight="bold"
               lineHeight="24px"
             >
-              {t("city-population")}
-            </Text>
-            <Text
-              fontSize="title.md"
-              fontStyle="normal"
-              lineHeight="24px"
-              letterSpacing="wide"
-              color="content.tertiary"
-            >
-              {t("city-population-description")}
+              {t("city-population-title")}
             </Text>
           </Box>
           <Box>
@@ -294,16 +285,7 @@ export default function SetPopulationDataStep({
               fontWeight="bold"
               lineHeight="24px"
             >
-              {t("region-population")}
-            </Text>
-            <Text
-              fontSize="title.md"
-              fontStyle="normal"
-              lineHeight="24px"
-              letterSpacing="wide"
-              color="content.tertiary"
-            >
-              {t("region-population-description")}
+              {t("region-population-title")}
             </Text>
           </Box>
           <Box>
@@ -372,16 +354,7 @@ export default function SetPopulationDataStep({
               fontWeight="bold"
               lineHeight="24px"
             >
-              {t("country-population")}
-            </Text>
-            <Text
-              fontSize="title.md"
-              fontStyle="normal"
-              lineHeight="24px"
-              letterSpacing="wide"
-              color="content.tertiary"
-            >
-              {t("country-population-description")}
+              {t("country-population-title")}
             </Text>
           </Box>
           <Box>

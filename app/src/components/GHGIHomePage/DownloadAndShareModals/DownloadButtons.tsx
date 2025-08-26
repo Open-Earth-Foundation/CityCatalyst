@@ -6,6 +6,7 @@ import { FiDownload } from "react-icons/fi";
 
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { logger } from "@/services/logger";
+import { trackEvent } from "@/lib/analytics";
 
 const DownloadButtons = ({
   t,
@@ -129,6 +130,15 @@ const DownloadButtons = ({
             downloadLink.download = filename;
 
             downloadLink.click();
+            
+            // Track successful download
+            trackEvent("report_downloaded", {
+              format,
+              inventory_id: inventoryId,
+              city_locode: cityLocode,
+              inventory_year: inventoryYear,
+            });
+            
             showToast(
               "download-complete",
               "downloading-data",
@@ -171,6 +181,7 @@ const DownloadButtons = ({
           mx="24px"
           variant="ghost"
           disabled={!isAvailable}
+          data-testid={`download-${format}-button`}
           style={{
             backgroundColor: "white",
             color: "black",

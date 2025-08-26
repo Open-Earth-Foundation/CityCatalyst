@@ -54,11 +54,19 @@ import {
   DataSourceResponse,
   Client,
   LangMap,
-  PermissionCheckResponse
+  PermissionCheckResponse,
 } from "@/util/types";
-import type { CityLocationResponse, HIAPResponse } from "@/util/types";
+import type {
+  CityLocationResponse,
+  DashboardResponseType,
+  HIAPResponse,
+  ModuleDataSummaryResponse,
+} from "@/util/types";
 import type { GeoJSON } from "geojson";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  createApi,
+  fetchBaseQuery,
+} from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: "api",
@@ -90,6 +98,8 @@ export const api = createApi({
     "Cities",
     "Hiap",
     "Themes",
+    "CityDashboard",
+    "Modules",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -274,10 +284,12 @@ export const api = createApi({
       >({
         query: (params) => {
           const searchParams = new URLSearchParams();
-          if (params.organizationId) searchParams.set('organizationId', params.organizationId);
-          if (params.projectId) searchParams.set('projectId', params.projectId);
-          if (params.cityId) searchParams.set('cityId', params.cityId);
-          if (params.inventoryId) searchParams.set('inventoryId', params.inventoryId);
+          if (params.organizationId)
+            searchParams.set("organizationId", params.organizationId);
+          if (params.projectId) searchParams.set("projectId", params.projectId);
+          if (params.cityId) searchParams.set("cityId", params.cityId);
+          if (params.inventoryId)
+            searchParams.set("inventoryId", params.inventoryId);
           return `/user/permissions?${searchParams.toString()}`;
         },
         transformResponse: (response: { data: PermissionCheckResponse }) =>
@@ -1329,6 +1341,15 @@ export const api = createApi({
         transformResponse: (response: { data: { hasAccess: boolean } }) =>
           response.data,
       }),
+      getCityDashboard: builder.query<
+        ModuleDataSummaryResponse,
+        { cityId: string; lng?: string }
+      >({
+        query: ({ cityId, lng = "en" }) =>
+          `city/${cityId}/dashboard?lng=${lng}`,
+        transformResponse: (response: DashboardResponseType) => response.data,
+        providesTags: ["CityDashboard", "Modules"],
+      }),
       getClient: builder.query<Client, string>({
         query: (clientId: string) => `client/${clientId}/`,
         transformResponse: (response: { data: Client }) => response.data,
@@ -1375,7 +1396,7 @@ export const api = createApi({
             );
           }
 
-          return `city/bulk-locations?${params})}`;
+          return `bulk-locations?${params}`;
         },
         transformResponse: (response: { data: CityLocationResponse[] }) =>
           response.data,
@@ -1490,6 +1511,7 @@ export const {
   useGetModulesQuery,
   useGetProjectModulesQuery,
   useGetCityModuleAccessQuery,
+  useGetCityDashboardQuery,
   useGetClientQuery,
   useGenerateCodeMutation,
   useGetUserPermissionsQuery,

@@ -13,6 +13,9 @@
   "project-name": "Nome do projeto",
   "city-limit": "Limite da cidade",
   "email": "Email",
+  "organization": "Organização",
+  "status": "Status",
+  "role": "Função",
   "required": "Este campo é obrigatório",
   "invalid-email": "Endereço de email inválido",
   "next": "Próximo",
@@ -139,5 +142,16 @@
   "user-removed": "Usuário removido com sucesso",
   "frozen": "Congelado",
   "role-update-success-toast-title": "Função atualizada com sucesso",
-  "already-registered-admin": "{{email}} já está registrado como administrador"
+  "already-registered-admin": "{{email}} já está registrado como administrador",
+  "modules": "Módulos",
+  "ghg-inventories": "Inventários GEE",
+  "module": "módulo",
+  "module-name": "nome do módulo",
+  "active-modules": "Módulos Ativos",
+  "provider": "provedor",
+  "climate-risks": "Riscos Climáticos",
+  "actions-and-plans": "Ações e Planos",
+  "finance-readiness": "Prontidão Financeira",
+  "org-modules-heading": "módulos {{name}}",
+  "control-panel-for-organization": "Painel de controle para {{name}}"
 }

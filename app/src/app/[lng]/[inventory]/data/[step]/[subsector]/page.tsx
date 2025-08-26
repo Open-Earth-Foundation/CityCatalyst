@@ -68,7 +68,7 @@ function SubSectorPage(props: {
   const { t } = useTranslation(lng, "data");
   const { scrollY } = useScroll();
   const { organization } = useOrganizationContext();
-  const paddingTopMax = organization.active ? "100px" : "150px";
+  const paddingTopMax = organization?.active ? "100px" : "150px";
   const paddingTop = useTransform(scrollY, [0, 100], [paddingTopMax, "50px"], {
     ease: easeInOut,
   });
@@ -254,24 +254,20 @@ function SubSectorPage(props: {
                       <Icon as={MdChevronRight} color="gray.500" h="24px" />
                     }
                   >
-                    <BreadcrumbItem>
-                      <BreadcrumbLink
-                        href={`/${inventoryId}/data`}
-                        color="content.tertiary"
-                        truncate
-                      >
-                        {t("all-sectors")}
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbItem>
-                      <BreadcrumbLink
-                        href={`/${inventoryId}/data/${step}`}
-                        color="content.tertiary"
-                        truncate
-                      >
-                        {t(getSectorName(step))}
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
+                    <BreadcrumbLink
+                      href={`/${inventoryId}/data`}
+                      color="content.tertiary"
+                      truncate
+                    >
+                      {t("all-sectors")}
+                    </BreadcrumbLink>
+                    <BreadcrumbLink
+                      href={`/${inventoryId}/data/${step}`}
+                      color="content.tertiary"
+                      truncate
+                    >
+                      {t(getSectorName(step))}
+                    </BreadcrumbLink>
                     <BreadcrumbCurrentLink
                       color="content.link"
                       textDecoration="underline"

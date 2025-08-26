@@ -123,7 +123,19 @@ describe("City API", () => {
   });
 
   beforeEach(async () => {
-    await db.models.City.destroy({ where: { locode: cityData.locode } });
+    // Clean up any existing test city from previous test runs
+    if (city) {
+      try {
+        // Clear any users that have this city as their default before deleting
+        await db.models.User.update(
+          { defaultCityId: null },
+          { where: { defaultCityId: city.cityId } },
+        );
+        await city.destroy();
+      } catch (error) {
+        // Ignore errors if city was already deleted
+      }
+    }
 
     city = await db.models.City.create({
       ...cityData,
@@ -140,8 +152,6 @@ describe("City API", () => {
 
   it("should create a city as org admin", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
-    
-    await db.models.City.destroy({ where: { locode: cityData.locode } });
 
     const req = mockRequest({ ...cityData, projectId: project?.projectId });
     const res = await createCity(req, emptyParams);

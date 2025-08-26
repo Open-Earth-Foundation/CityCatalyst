@@ -45,15 +45,17 @@ const EmissionsTable = ({
         textTransform="uppercase"
         backgroundColor="background.backgroundLight"
       >
-        <Table.ColumnHeader>
-          <ButtonSmall>{t("subsector")}</ButtonSmall>
-        </Table.ColumnHeader>
-        <Table.ColumnHeader>
-          <ButtonSmall>{t("total-emissions-CO2eq")}</ButtonSmall>
-        </Table.ColumnHeader>
-        <Table.ColumnHeader>
-          <ButtonSmall>{t("%-of-emissions")}</ButtonSmall>
-        </Table.ColumnHeader>
+        <Table.Row>
+          <Table.ColumnHeader>
+            <ButtonSmall>{t("subsector")}</ButtonSmall>
+          </Table.ColumnHeader>
+          <Table.ColumnHeader>
+            <ButtonSmall>{t("total-emissions-CO2eq")}</ButtonSmall>
+          </Table.ColumnHeader>
+          <Table.ColumnHeader>
+            <ButtonSmall>{t("%-of-emissions")}</ButtonSmall>
+          </Table.ColumnHeader>
+        </Table.Row>
       </Table.Header>
       <Table.Body>
         {(topEmissions || []).map((emission, index) => (

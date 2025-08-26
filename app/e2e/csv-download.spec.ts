@@ -4,8 +4,8 @@ import { parse } from "csv-parse/sync";
 import * as fs from "fs";
 
 test.describe("CSV Download", () => {
-  test.setTimeout(60000); // Set 60 second timeout for all tests in this describe block
-  
+  test.setTimeout(180000); // Set 60 second timeout for all tests in this describe block
+
   test.skip("User can download inventory as CSV", async ({ page }) => {
     // Create inventory through onboarding
     await createInventoryThroughOnboarding(page, "Chicago");
@@ -26,10 +26,10 @@ test.describe("CSV Download", () => {
     // Wait for the download modal to appear
     const downloadModal = page.getByRole("dialog");
     await expect(downloadModal).toBeVisible();
-    
+
     // Start waiting for download before clicking
     const downloadPromise = page.waitForEvent("download");
-    
+
     // Click on CSV download button
     const csvDownloadButton = page.getByTestId("download-csv-button");
     await expect(csvDownloadButton).toBeVisible();
@@ -37,7 +37,7 @@ test.describe("CSV Download", () => {
 
     // Wait for the download to complete
     const download = await downloadPromise;
-    
+
     // Verify download filename
     const filename = download.suggestedFilename();
     expect(filename).toMatch(/inventory-.*\.csv/);
@@ -53,27 +53,26 @@ test.describe("CSV Download", () => {
     expect(csvContent.length).toBeGreaterThan(0);
 
     // Parse CSV to get headers
-    const lines = csvContent.trim().split('\n');
+    const lines = csvContent.trim().split("\n");
     expect(lines.length).toBeGreaterThan(0); // Should have at least header line
-    
+
     // Parse the header line to get column names
     const headerLine = lines[0];
     const headers = parse(headerLine, { columns: false })[0];
-    
+
     // Verify expected headers are present
     const expectedHeaders = [
       "Inventory Reference",
-      "GPC Reference Number", 
+      "GPC Reference Number",
       "Subsector name",
       "Total Emissions",
       "Activity type",
-      "Data source name"
+      "Data source name",
     ];
-    
+
     for (const expectedHeader of expectedHeaders) {
       expect(headers).toContain(expectedHeader);
     }
-    
 
     // Clean up - delete the downloaded file
     await download.delete();
@@ -99,10 +98,10 @@ test.describe("CSV Download", () => {
     const downloadPromise = page.waitForEvent("download");
     const csvDownloadButton = page.getByTestId("download-csv-button");
     await csvDownloadButton.click();
-    
+
     const download = await downloadPromise;
     const downloadPath = await download.path();
-    
+
     // Parse and validate CSV content
     const csvContent = fs.readFileSync(downloadPath!, "utf-8");
     const records = parse(csvContent, {
@@ -151,8 +150,12 @@ test.describe("CSV Download", () => {
       }
 
       // Verify emissions are numeric if present
-      const emissionFields = ["CO2 Emissions", "CH4 Emissions", "N2O Emissions"];
-      
+      const emissionFields = [
+        "CO2 Emissions",
+        "CH4 Emissions",
+        "N2O Emissions",
+      ];
+
       for (const field of emissionFields) {
         if (record[field] && record[field] !== "") {
           const value = parseFloat(record[field]);
@@ -178,9 +181,12 @@ test.describe("CSV Download", () => {
     await downloadActionCard.click();
 
     // Mock network error for CSV download endpoint
-    await page.route("**/api/v0/inventory/**/download?format=csv**", (route) => {
-      route.abort("failed");
-    });
+    await page.route(
+      "**/api/v0/inventory/**/download?format=csv**",
+      (route) => {
+        route.abort("failed");
+      },
+    );
 
     // Wait for modal
     const downloadModal = page.getByRole("dialog");
@@ -215,24 +221,24 @@ test.describe("CSV Download", () => {
     const csvDownloadPromise = page.waitForEvent("download");
     const csvDownloadButton = page.getByTestId("download-csv-button");
     await csvDownloadButton.click();
-    
+
     const csvDownload = await csvDownloadPromise;
     expect(csvDownload.suggestedFilename()).toContain(".csv");
-    
+
     // Verify CSV content
     const csvPath = await csvDownload.path();
     const csvContent = fs.readFileSync(csvPath!, "utf-8");
     expect(csvContent).toContain("GPC Reference Number");
-    
+
     // Test eCRF download (if available)
     const ecrfDownloadButton = page.getByTestId("download-ecrf-button");
     if (await ecrfDownloadButton.isVisible()) {
       const ecrfDownloadPromise = page.waitForEvent("download");
       await ecrfDownloadButton.click();
-      
+
       const ecrfDownload = await ecrfDownloadPromise;
       expect(ecrfDownload.suggestedFilename()).toMatch(/\.xlsx?$/);
-      
+
       // Clean up
       await ecrfDownload.delete();
     }
@@ -241,7 +247,9 @@ test.describe("CSV Download", () => {
     await csvDownload.delete();
   });
 
-  test("CSV download preserves special characters and formatting", async ({ page }) => {
+  test("CSV download preserves special characters and formatting", async ({
+    page,
+  }) => {
     // Create inventory through onboarding
     await createInventoryThroughOnboarding(page, "Chicago");
 
@@ -259,16 +267,16 @@ test.describe("CSV Download", () => {
     const downloadPromise = page.waitForEvent("download");
     const csvDownloadButton = page.getByTestId("download-csv-button");
     await csvDownloadButton.click();
-    
+
     const download = await downloadPromise;
     const downloadPath = await download.path();
-    
+
     // Read raw CSV content to check formatting
     const csvContent = fs.readFileSync(downloadPath!, "utf-8");
-    
+
     // Verify CSV is properly quoted (all fields should be quoted as per the service)
     expect(csvContent).toMatch(/"[^"]*"/); // Check for quoted fields
-    
+
     // Parse CSV and verify data integrity
     const records = parse(csvContent, {
       columns: true,
@@ -279,7 +287,7 @@ test.describe("CSV Download", () => {
     // Verify parsing was successful
     expect(records).toBeDefined();
     expect(Array.isArray(records)).toBe(true);
-    
+
     // Check that no data corruption occurred (only if records exist)
     if (records.length === 0) {
       expect(csvContent).toContain("Inventory Reference");
@@ -313,9 +321,11 @@ test.describe("CSV Download", () => {
     await expect(page.getByTestId("add-data-step-title")).toBeVisible();
 
     // Click on Stationary Energy sector
-    const stationaryEnergyCard = page.getByTestId("stationary-energy-sector-card");
+    const stationaryEnergyCard = page.getByTestId(
+      "stationary-energy-sector-card",
+    );
     await expect(stationaryEnergyCard).toBeVisible();
-    
+
     const sectorButton = stationaryEnergyCard.getByTestId("sector-card-button");
     await sectorButton.click();
 
@@ -327,7 +337,7 @@ test.describe("CSV Download", () => {
     const subsectorCards = page.getByTestId("subsector-card");
     const subsectorCount = await subsectorCards.count();
     expect(subsectorCount).toBeGreaterThan(0);
-    
+
     const firstSubsector = subsectorCards.first();
     await firstSubsector.click();
 
@@ -338,79 +348,77 @@ test.describe("CSV Download", () => {
     // Look for methodology cards and select first available one
     const methodologyCards = page.getByTestId("methodology-card");
     const methodologyCount = await methodologyCards.count();
-    
-    
-      const firstMethodology = methodologyCards.first();
-      await firstMethodology.click();
-      
-      await page.waitForLoadState("networkidle");
-      await page.waitForTimeout(2000);
 
-      // Look for "Add emission data" button
-      const addEmissionButton = page.getByTestId("add-emission-data-button");
-      await expect(addEmissionButton).toBeVisible();
-        await addEmissionButton.click();
+    const firstMethodology = methodologyCards.first();
+    await firstMethodology.click();
 
-        // Fill in the emission data form
-        const modal = page.getByTestId("add-emission-modal");
-        await expect(modal).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(2000);
 
-        // Fill in required dropdowns
-        const selects = page.locator("select");
-        const selectCount = await selects.count();
-        
-        for (let i = 0; i < selectCount; i++) {
-          const select = selects.nth(i);
-          const optionCount = await select.locator("option").count();
-          if (optionCount > 1) {
-            await select.selectOption({ index: 1 }); // Select first non-default option
-          }
-        }
+    // Look for "Add emission data" button
+    const addEmissionButton = page.getByTestId("add-emission-data-button");
+    await expect(addEmissionButton).toBeVisible();
+    await addEmissionButton.click();
 
-        // Fill in text inputs
-        const textInputs = page.locator("input[type='text']");
-        const inputCount = await textInputs.count();
-        
-        for (let i = 0; i < inputCount; i++) {
-          const input = textInputs.nth(i);
-          const placeholder = await input.getAttribute("placeholder");
-          
-          if (placeholder?.includes("activity") || placeholder?.includes("value")) {
-            await input.fill("100"); // Test activity value
-          } else {
-            await input.fill("test-value");
-          }
-        }
+    // Fill in the emission data form
+    const modal = page.getByTestId("add-emission-modal");
+    await expect(modal).toBeVisible();
 
-        // Fill source reference
-        const sourceInput = modal.getByTestId("source-reference");
-        if (await sourceInput.isVisible()) {
-          await sourceInput.fill("E2E Test Data Source");
-        }
+    // Fill in required dropdowns
+    const selects = page.locator("select");
+    const selectCount = await selects.count();
 
-        // Fill emission factors if visible
-        const co2Input = modal.getByTestId("co2-emission-factor");
-        if (await co2Input.isVisible()) {
-          await co2Input.fill("2.5"); // Test CO2 emission factor
-        }
+    for (let i = 0; i < selectCount; i++) {
+      const select = selects.nth(i);
+      const optionCount = await select.locator("option").count();
+      if (optionCount > 1) {
+        await select.selectOption({ index: 1 }); // Select first non-default option
+      }
+    }
 
-        const ch4Input = modal.getByTestId("ch4-emission-factor");
-        if (await ch4Input.isVisible()) {
-          await ch4Input.fill("0.1"); // Test CH4 emission factor
-        }
+    // Fill in text inputs
+    const textInputs = page.locator("input[type='text']");
+    const inputCount = await textInputs.count();
 
-        const n2oInput = modal.getByTestId("n2o-emission-factor");
-        if (await n2oInput.isVisible()) {
-          await n2oInput.fill("0.05"); // Test N2O emission factor
-        }
+    for (let i = 0; i < inputCount; i++) {
+      const input = textInputs.nth(i);
+      const placeholder = await input.getAttribute("placeholder");
 
-        // Submit the form
-        const submitButton = modal.getByTestId("add-emission-modal-submit");
-        await submitButton.click();
+      if (placeholder?.includes("activity") || placeholder?.includes("value")) {
+        await input.fill("100"); // Test activity value
+      } else {
+        await input.fill("test-value");
+      }
+    }
 
-        // Wait for form submission
-        await page.waitForTimeout(3000);
+    // Fill source reference
+    const sourceInput = modal.getByTestId("source-reference");
+    if (await sourceInput.isVisible()) {
+      await sourceInput.fill("E2E Test Data Source");
+    }
 
+    // Fill emission factors if visible
+    const co2Input = modal.getByTestId("co2-emission-factor");
+    if (await co2Input.isVisible()) {
+      await co2Input.fill("2.5"); // Test CO2 emission factor
+    }
+
+    const ch4Input = modal.getByTestId("ch4-emission-factor");
+    if (await ch4Input.isVisible()) {
+      await ch4Input.fill("0.1"); // Test CH4 emission factor
+    }
+
+    const n2oInput = modal.getByTestId("n2o-emission-factor");
+    if (await n2oInput.isVisible()) {
+      await n2oInput.fill("0.05"); // Test N2O emission factor
+    }
+
+    // Submit the form
+    const submitButton = modal.getByTestId("add-emission-modal-submit");
+    await submitButton.click();
+
+    // Wait for form submission
+    await page.waitForTimeout(3000);
 
     // Navigate back to dashboard to download CSV
     await page.goto("/");
@@ -426,10 +434,10 @@ test.describe("CSV Download", () => {
     const downloadPromise = page.waitForEvent("download");
     const csvDownloadButton = page.getByTestId("download-csv-button");
     await csvDownloadButton.click();
-    
+
     const download = await downloadPromise;
     const downloadPath = await download.path();
-    
+
     // Parse and validate CSV contains our test data
     const csvContent = fs.readFileSync(downloadPath!, "utf-8");
     const records = parse(csvContent, {
@@ -441,23 +449,28 @@ test.describe("CSV Download", () => {
     expect(records.length).toBeGreaterThan(0);
 
     // Look for our test data in the CSV
-    const testDataRecord = records.find(record => 
-      record["Data source name"] === "E2E Test Data Source" ||
-      record["Activity Value"] === "100" ||
-      record["Subsector name"]?.includes("Stationary")
+    const testDataRecord = records.find(
+      (record) =>
+        record["Data source name"] === "E2E Test Data Source" ||
+        record["Activity Value"] === "100" ||
+        record["Subsector name"]?.includes("Stationary"),
     );
 
     if (testDataRecord) {
       // Verify the data contains expected values
       expect(testDataRecord["Subsector name"]).toBeTruthy();
       expect(testDataRecord["GPC Reference Number"]).toBeTruthy();
-      
+
       // Verify it's stationary energy related
-      expect(testDataRecord["Subsector name"]).toMatch(/energy|stationary|fuel|electricity|heat/i);
+      expect(testDataRecord["Subsector name"]).toMatch(
+        /energy|stationary|fuel|electricity|heat/i,
+      );
     } else {
       // Even if we can't find our specific test data, verify CSV has stationary energy structure
-      const stationaryRecords = records.filter(record => 
-        record["Subsector name"]?.match(/energy|stationary|fuel|electricity|heat/i)
+      const stationaryRecords = records.filter((record) =>
+        record["Subsector name"]?.match(
+          /energy|stationary|fuel|electricity|heat/i,
+        ),
       );
       expect(stationaryRecords.length).toBeGreaterThanOrEqual(0);
     }

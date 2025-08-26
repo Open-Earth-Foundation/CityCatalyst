@@ -102,7 +102,7 @@ const ModalPublish = ({
               mr={3}
               onClick={handlePublishChange}
             >
-              {inventory.isPublic ? t("unpublish") : t("publish-to-web")}
+              {inventory?.isPublic ? t("unpublish") : t("publish-to-web")}
             </Button>
           </Box>
         </DialogFooter>

@@ -236,6 +236,12 @@
     "monitor-evaluate-&-report": "Monitor, Evaluate & Report",
     "monitor-evaluate-&-report-description": "Support cities in moving from plans to funding and execution. This phase ensures ideas turn into funded projects aligned with city goals and financing mechanisms.",
     "GHGI": "GHG Inventories",
-    "HIAP": "Actions & Plans"
+    "HIAP": "Actions & Plans",
+    "your-city-dashboard": "Your city's dashboard"
+  },
+  "empty": {
+    "title": "Nothing to show here, yet",
+    "description": "Once your modules have data to show, you'll find it summarized here.",
+    "goHome": "Go to home page"
   }
 }

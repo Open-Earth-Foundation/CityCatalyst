@@ -3,6 +3,7 @@ name: Push Global API to latest and deploy to EKS
 permissions:
   contents: read
   packages: write
+  checks: write
 
 on:
   workflow_dispatch:

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, IconButton, Icon } from "@chakra-ui/react";
+import { Box, IconButton, Icon, Spinner } from "@chakra-ui/react";
 import { Card, CardHeader, CardBody, CardFooter } from "@chakra-ui/card";
 import { MdDelete } from "react-icons/md";
 import { useTranslation } from "@/i18n/client";
@@ -8,13 +8,20 @@ import React, { use } from "react";
 import { Client } from "@/util/types";
 import { TitleMedium } from "@/components/Texts/Title";
 import { ButtonMedium } from "@/components/Texts/Button";
+import { api } from "@/services/api";
 
-const OAuthClientCard = (props: { lng: string; client: Client }) => {
-  const { lng, client } = props;
+const OAuthClientCard = (props: { lng: string; client: Client; onDelete?: (client: Client) => void }) => {
+  const { lng, client, onDelete } = props;
   const { t } = useTranslation(lng, "admin");
+  const [deleteClient, { isLoading }] = api.useDeleteClientMutation();
 
-  const handleDelete = () => {
-    alert("Deleting client");
+  const handleDelete = async () => {
+    if (window.confirm(t("oauth-clients-delete"))) {
+      await deleteClient(client.clientId);
+      if (props.onDelete) {
+        props.onDelete(client);
+      }
+    }
   };
 
   return (
@@ -25,19 +32,24 @@ const OAuthClientCard = (props: { lng: string; client: Client }) => {
         </TitleMedium>
       </CardHeader>
       <CardBody>
-        <Box color="gray.600" mb={4}>
-          {client.description?.[lng] ||
-            client.description?.["en"] ||
-            t("oauth-no-description")}
-        </Box>
-        <Box>
-          <Box as="span" fontWeight="semibold">
-            {t("oauth-redirect-uri")}:{" "}
-          </Box>
-          <Box as="span" color="blue.500">
-            {client.redirectUri}
-          </Box>
-        </Box>
+        {(isLoading)
+          ? <Spinner />
+          : <Box>
+              <Box color="gray.600" mb={4}>
+              {client.description?.[lng] ||
+                client.description?.["en"] ||
+                t("oauth-no-description")}
+              </Box>
+              <Box>
+                <Box as="span" fontWeight="semibold">
+                  {t("oauth-redirect-uri")}:{" "}
+                </Box>
+                <Box as="span" color="blue.500">
+                  {client.redirectUri}
+                </Box>
+              </Box>
+            </Box>
+        }
       </CardBody>
       <CardFooter>
         <IconButton aria-label="Delete" onClick={handleDelete}>

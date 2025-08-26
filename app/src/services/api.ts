@@ -98,8 +98,7 @@ export const api = createApi({
     "Cities",
     "Hiap",
     "Themes",
-    "CityDashboard",
-    "Modules",
+    "Client"
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1353,6 +1352,7 @@ export const api = createApi({
       getClient: builder.query<Client, string>({
         query: (clientId: string) => `client/${clientId}/`,
         transformResponse: (response: { data: Client }) => response.data,
+        providesTags: (result, error, clientId) => [{ type: 'Client', id: clientId }],
       }),
       generateCode: builder.mutation({
         query: ({
@@ -1404,6 +1404,7 @@ export const api = createApi({
       getClients: builder.query<Client[], void>({
         query: () => `client/`,
         transformResponse: (response: { data: Client[] }) => response.data,
+        providesTags: ['Client'],
       }),
       addClient: builder.mutation({
         query: ({
@@ -1424,12 +1425,14 @@ export const api = createApi({
           },
         }),
         transformResponse: (response: { data: Client }) => response.data,
+        invalidatesTags: ['Client'],
       }),
       deleteClient: builder.mutation<void, string>({
         query: (clientId: string) => ({
           method: "DELETE",
           url: `/client/${clientId}`,
         }),
+        invalidatesTags: ['Client'],
       }),
     };
   },

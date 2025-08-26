@@ -231,5 +231,8 @@
     "implement": "Umsetzen",
     "monitor-evaluate-&-report": "Überwachen, Bewerten und Berichten"
   },
-  "home": "Startseite"
+  "home": "Startseite",
+  "empty": "[object Object]",
+  "open-cc-inventories": "Offene CC-Inventare",
+  "inventories": "Inventar"
 }

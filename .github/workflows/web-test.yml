@@ -3,6 +3,7 @@ name: Push Web app to GHCR and deploy to EKS
 permissions:
   contents: read
   packages: write
+  checks: write
 
 on:
   workflow_dispatch:

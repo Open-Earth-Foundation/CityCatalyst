@@ -11,7 +11,6 @@ test.describe("CSV Download", () => {
     await createInventoryThroughOnboarding(page, "Chicago");
 
     // Navigate to Dashboard
-    await page.goto("/");
     await page.waitForLoadState("networkidle");
 
     // Verify we're on the dashboard
@@ -83,7 +82,6 @@ test.describe("CSV Download", () => {
     await createInventoryThroughOnboarding(page, "Chicago");
 
     // Navigate to Dashboard
-    await page.goto("/");
     await page.waitForLoadState("networkidle");
 
     // Open download modal
@@ -173,7 +171,6 @@ test.describe("CSV Download", () => {
     await createInventoryThroughOnboarding(page, "Chicago");
 
     // Navigate to Dashboard
-    await page.goto("/");
     await page.waitForLoadState("networkidle");
 
     // Open download modal
@@ -207,7 +204,6 @@ test.describe("CSV Download", () => {
     await createInventoryThroughOnboarding(page, "Chicago");
 
     // Navigate to Dashboard
-    await page.goto("/");
     await page.waitForLoadState("networkidle");
 
     // Open download modal
@@ -254,7 +250,6 @@ test.describe("CSV Download", () => {
     await createInventoryThroughOnboarding(page, "Chicago");
 
     // Navigate to Dashboard
-    await page.goto("/");
     await page.waitForLoadState("networkidle");
 
     // Open download modal and download CSV
@@ -309,7 +304,6 @@ test.describe("CSV Download", () => {
     await createInventoryThroughOnboarding(page, "Chicago");
 
     // Navigate to Dashboard
-    await page.goto("/");
     await page.waitForLoadState("networkidle");
 
     // Navigate to Add Data section

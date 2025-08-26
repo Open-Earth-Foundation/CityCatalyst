@@ -59,7 +59,7 @@ export function Hero({
   );
 
   return (
-    <Box bg="base.lig" py={12} w="full">
+    <Box bg="base.light" py={12} w="full">
       <Box maxW="1090px" mx="auto">
         <HStack align="center" gap={8}>
           {/* Left Panel - Text Information */}

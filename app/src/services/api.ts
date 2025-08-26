@@ -66,7 +66,6 @@ import type { GeoJSON } from "geojson";
 import {
   createApi,
   fetchBaseQuery,
-  Module,
 } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({

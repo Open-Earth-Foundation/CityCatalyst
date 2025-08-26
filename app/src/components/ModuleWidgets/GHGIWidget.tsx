@@ -7,7 +7,6 @@ import TopEmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/TopEm
 import { BlueSubtitle } from "../Texts/BlueSubtitle";
 import { Trans } from "react-i18next";
 import { useGetCityPopulationQuery } from "@/services/api";
-import { da } from "date-fns/locale";
 import { MdOpenInNew } from "react-icons/md";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";

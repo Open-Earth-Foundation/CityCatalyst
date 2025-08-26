@@ -48,6 +48,14 @@ const OAuthClientCard = (props: { lng: string; client: Client; onDelete?: (clien
                   {client.redirectUri}
                 </Box>
               </Box>
+              <Box>
+                <Box as="span" fontWeight="semibold">
+                  {t("oauth-client-id")}:{" "}
+                </Box>
+                <Box as="span" color="blue.500">
+                  {client.clientId}
+                </Box>
+              </Box>
             </Box>
         }
       </CardBody>

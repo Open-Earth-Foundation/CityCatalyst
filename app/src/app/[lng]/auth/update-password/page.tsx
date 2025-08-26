@@ -86,7 +86,6 @@ export default function UpdatePassword(props: {
                 {t("password-hint")}
               </>
             }
-            label={t("new-password")}
           >
             <PasswordInput
               register={register}

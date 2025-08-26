@@ -145,7 +145,7 @@ function FormattedNumberInput({
             {...rest}
           >
             <NumberInputField
-              value={format(field.value)}
+              defaultValue={format(field.value)}
               data-testid={testId}
               onChange={(e: any) => {
                 const parsedValue = parse(e.target.value);
@@ -157,7 +157,6 @@ function FormattedNumberInput({
                 field.onChange(parseFloat(parsedValue));
               }}
               placeholder={placeholder}
-              // Use text type to allow formatted input
             />
           </NumberInputRoot>
           {children && (

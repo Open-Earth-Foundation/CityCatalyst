@@ -50,23 +50,34 @@ function FormattedNumberInput({
     nval = nval.toString();
     const locale = REGIONALLOCALES[lng as string] || "en-US"; // Get the user's locale
     const decimalSeparator = (1.1).toLocaleString(locale).substring(1, 2); // Detect the decimal separator
+    const thousandsSeparator = (1000.1).toLocaleString(locale).substring(4, 4); // Detect the thousands separator
+
+    // Remove all characters except digits, decimal separator, and minus sign
+    nval = nval.replace(new RegExp(`[^0-9${decimalSeparator}-]`, "g"), "");
 
     // Check if the input ends with a decimal separator
 
     const endsWithSeparator = nval.toString().slice(-1) === decimalSeparator;
 
     // Replace the locale-specific separator with a dot for parsing
-    const normalizedValue = nval.replace(decimalSeparator, ".");
+    const normalizedValue = nval
+      .replace(decimalSeparator, ".")
+      .replace(thousandsSeparator, "");
 
     // If the input is not a valid number, return it as is
     if (Number.isNaN(normalizedValue)) return nval;
 
     // Parse the number
-    let numericValue: bigint | null = null;
-    try {
-      numericValue = BigInt(normalizedValue);
-    } catch (err) {
-      return nval;
+    let numericValue: bigint | number | null = null;
+    if (normalizedValue.indexOf(".") === -1) {
+      try {
+        numericValue = BigInt(normalizedValue);
+      } catch (err) {
+        return nval;
+      }
+    } else {
+      numericValue = parseFloat(normalizedValue);
+      if (isNaN(numericValue)) return nval;
     }
 
     if (numericValue === null) return nval;

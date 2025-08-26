@@ -6,7 +6,7 @@ import * as fs from "fs";
 test.describe("CSV Download", () => {
   test.setTimeout(180000); // Set 60 second timeout for all tests in this describe block
 
-  test.skip("User can download inventory as CSV", async ({ page }) => {
+  test("User can download inventory as CSV", async ({ page }) => {
     // Create inventory through onboarding
     await createInventoryThroughOnboarding(page, "Chicago");
 
@@ -78,7 +78,7 @@ test.describe("CSV Download", () => {
     await download.delete();
   });
 
-  test.skip("CSV download contains valid data structure", async ({ page }) => {
+  test("CSV download contains valid data structure", async ({ page }) => {
     // Create inventory through onboarding
     await createInventoryThroughOnboarding(page, "Chicago");
 
@@ -168,7 +168,7 @@ test.describe("CSV Download", () => {
     await download.delete();
   });
 
-  test.skip("CSV download handles errors gracefully", async ({ page }) => {
+  test("CSV download handles errors gracefully", async ({ page }) => {
     // Create inventory through onboarding
     await createInventoryThroughOnboarding(page, "Chicago");
 
@@ -202,7 +202,7 @@ test.describe("CSV Download", () => {
     await expect(errorToast).toBeVisible({ timeout: 5000 });
   });
 
-  test.skip("Multiple format downloads work correctly", async ({ page }) => {
+  test("Multiple format downloads work correctly", async ({ page }) => {
     // Create inventory through onboarding
     await createInventoryThroughOnboarding(page, "Chicago");
 
@@ -292,7 +292,7 @@ test.describe("CSV Download", () => {
     if (records.length === 0) {
       expect(csvContent).toContain("Inventory Reference");
     } else {
-      for (const record of records) {
+      for (const record of records as any[]) {
         // Verify no undefined or null values in unexpected places
         for (const [key, value] of Object.entries(record)) {
           expect(typeof value).toBe("string"); // CSV values are strings
@@ -305,8 +305,8 @@ test.describe("CSV Download", () => {
   });
 
   test("CSV download contains actual inventory data", async ({ page }) => {
-    // // Create inventory through onboarding
-    // await createInventoryThroughOnboarding(page, "Chicago");
+    // Create inventory through onboarding
+    await createInventoryThroughOnboarding(page, "Chicago");
 
     // Navigate to Dashboard
     await page.goto("/");
@@ -345,20 +345,42 @@ test.describe("CSV Download", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(3000);
 
-    // Look for methodology cards and select first available one
+    // Look for methodology cards first, preferring "Direct Measure"
     const methodologyCards = page.getByTestId("methodology-card");
     const methodologyCount = await methodologyCards.count();
 
-    const firstMethodology = methodologyCards.first();
-    await firstMethodology.click();
+    // Try to find a methodology card with "Direct Measure" text
+    let selectedMethodology;
+    for (let i = 0; i < methodologyCount; i++) {
+      const card = methodologyCards.nth(i);
+      const cardText = await card.textContent();
+      if (cardText && cardText.toLowerCase().includes("direct measure")) {
+        selectedMethodology = card;
+        break;
+      }
+    }
 
-    await page.waitForLoadState("networkidle");
-    await page.waitForTimeout(2000);
+    // If no direct measure found, use first available
+    if (!selectedMethodology && methodologyCount > 0) {
+      selectedMethodology = methodologyCards.first();
+    }
 
-    // Look for "Add emission data" button
-    const addEmissionButton = page.getByTestId("add-emission-data-button");
-    await expect(addEmissionButton).toBeVisible();
-    await addEmissionButton.click();
+    if (selectedMethodology && (await selectedMethodology.isVisible())) {
+      // Click the selected methodology card
+      await selectedMethodology.click();
+
+      await page.waitForLoadState("networkidle");
+      await page.waitForTimeout(2000);
+
+      // Then look for "Add emission data" button
+      const addEmissionButton = page.getByTestId("add-emission-data-button");
+      await expect(addEmissionButton).toBeVisible();
+      await addEmissionButton.click();
+    } else {
+      // If no methodology cards, click emissions button directly
+      const addEmissionButton = page.getByTestId("add-emission-data-button");
+      await addEmissionButton.click();
+    }
 
     // Fill in the emission data form
     const modal = page.getByTestId("add-emission-modal");
@@ -445,35 +467,22 @@ test.describe("CSV Download", () => {
       skip_empty_lines: true,
     });
 
+    console.log(records);
+
     // Verify we have data records (not just headers)
     expect(records.length).toBeGreaterThan(0);
 
-    // Look for our test data in the CSV
+    // Look for our test data in the CSV - must find exact match
     const testDataRecord = records.find(
-      (record) =>
-        record["Data source name"] === "E2E Test Data Source" ||
-        record["Activity Value"] === "100" ||
-        record["Subsector name"]?.includes("Stationary"),
+      (record: any) => record["Data source name"] === "test-value",
     );
 
-    if (testDataRecord) {
-      // Verify the data contains expected values
-      expect(testDataRecord["Subsector name"]).toBeTruthy();
-      expect(testDataRecord["GPC Reference Number"]).toBeTruthy();
-
-      // Verify it's stationary energy related
-      expect(testDataRecord["Subsector name"]).toMatch(
-        /energy|stationary|fuel|electricity|heat/i,
-      );
-    } else {
-      // Even if we can't find our specific test data, verify CSV has stationary energy structure
-      const stationaryRecords = records.filter((record) =>
-        record["Subsector name"]?.match(
-          /energy|stationary|fuel|electricity|heat/i,
-        ),
-      );
-      expect(stationaryRecords.length).toBeGreaterThanOrEqual(0);
-    }
+    // Verify our test data is actually in the CSV
+    expect(testDataRecord).toBeTruthy();
+    expect(testDataRecord["Subsector name"]).toBe("Residential buildings");
+    expect(testDataRecord["GPC Reference Number"]).toBe("I.1.1");
+    expect(testDataRecord["Total Emissions"]).toBe("18.55");
+    expect(testDataRecord["Data source name"]).toBe("test-value");
 
     // Clean up
     await download.delete();

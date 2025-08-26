@@ -1,5 +1,9 @@
 name: Push Global API to GHCR and deploy to EKS
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   workflow_dispatch:
 

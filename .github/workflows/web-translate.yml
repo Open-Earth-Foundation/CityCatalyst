@@ -1,5 +1,9 @@
 name: Translate Web interface
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   workflow_dispatch:
   push:

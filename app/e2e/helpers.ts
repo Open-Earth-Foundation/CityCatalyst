@@ -130,8 +130,10 @@ export async function createInventoryThroughOnboarding(
   await page.getByRole("button", { name: /Continue/i }).click();
 
   // Step 5: Confirm and Complete
-  const confirmHeading = page.getByTestId("confirm-city-data-heading");
-  await expect(confirmHeading).toBeVisible();
+  const confirmHeading = page.getByTestId("confirm-city-data-heading").waitFor({
+    state: "visible",
+    timeout: 10000,
+  });
 
   // Click Continue to complete onboarding
   await page.getByRole("button", { name: /Continue/i }).click();

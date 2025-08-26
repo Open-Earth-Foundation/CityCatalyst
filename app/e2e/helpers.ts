@@ -1,6 +1,7 @@
 import { APIRequestContext, expect, type Page } from "@playwright/test";
 
 export async function expectText(page: Page, text: string) {
+  await page.waitForTimeout(500);
   await expect(page.getByText(text).first()).toBeVisible();
 }
 
@@ -100,6 +101,8 @@ export async function createInventoryThroughOnboarding(
   // Click Continue
   await page.getByRole("button", { name: /Continue/i }).click();
 
+  await page.waitForTimeout(5000);
+
   // Step 4: Set Population Data
   const populationHeading = page.getByTestId("add-population-data-heading");
   await expect(populationHeading).toBeVisible();
@@ -141,11 +144,10 @@ export async function createInventoryThroughOnboarding(
   // wait until data is submitting after clicking continue
   await page.waitForLoadState("networkidle");
 
-  // Step 6: Verify completion page
-  const completionMessage = page.getByTestId("done-heading").waitFor({
-    state: "visible",
-    timeout: 10000,
-  });
+  const dashboardButton = page.getByTestId("check-dashboard");
+  await expect(dashboardButton).toBeVisible();
+  await dashboardButton.click();
+
   // Return the completion page for further navigation
   return page;
 }

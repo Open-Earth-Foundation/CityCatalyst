@@ -24,11 +24,9 @@ const testIds = {
 test.describe("Third Party Datasets", () => {
   test("should complete third-party datasets workflow", async ({ page }) => {
     test.setTimeout(120000);
-    
+
     // Step 1: Create inventory through onboarding flow
     await createInventoryThroughOnboarding(page);
-    // Navigate to Dashboard
-    await page.goto("/");
 
     // Verify Dashboard
     await page.waitForLoadState("networkidle");
@@ -113,7 +111,9 @@ test.describe("Third Party Datasets", () => {
         await page.waitForTimeout(1000);
 
         // Check if drawer opened (should have a back button)
-        const backButton = page.getByRole("button").filter({ hasText: /back/i });
+        const backButton = page
+          .getByRole("button")
+          .filter({ hasText: /back/i });
         await expect(backButton).toBeVisible();
 
         // Check for connect data button in drawer
@@ -146,10 +146,13 @@ test.describe("Third Party Datasets", () => {
           }
 
           // Verify the source now shows as connected
-          const connectedIndicator = firstDataSource.getByText(/connected|disconnect/i);
-          const checkIcon = firstDataSource.locator('svg[data-testid*="check"]');
+          const connectedIndicator =
+            firstDataSource.getByText(/connected|disconnect/i);
+          const checkIcon = firstDataSource.locator(
+            'svg[data-testid*="check"]',
+          );
 
-          const isConnected = 
+          const isConnected =
             (await connectedIndicator.isVisible().catch(() => false)) ||
             (await checkIcon.isVisible().catch(() => false));
 
@@ -159,9 +162,11 @@ test.describe("Third Party Datasets", () => {
             await page.waitForTimeout(500);
 
             // Look for disconnect button
-            const disconnectButton = firstDataSource.getByRole("button").filter({
-              hasText: /disconnect/i,
-            });
+            const disconnectButton = firstDataSource
+              .getByRole("button")
+              .filter({
+                hasText: /disconnect/i,
+              });
 
             if (await disconnectButton.isVisible()) {
               await disconnectButton.click();
@@ -182,13 +187,15 @@ test.describe("Third Party Datasets", () => {
       } else if (hasNoDataMessage) {
         // Step 6: Test graceful handling of no data sources
         await expect(noDataMessage).toBeVisible();
-        
+
         // Navigate to another sector that might not have data sources (Waste)
         await page.goto("./data/");
         await page.waitForURL(regexForPath("/data/"));
 
         const wasteCard = page.getByTestId(testIds.wasteSectorCard);
-        const wasteSectorButton = wasteCard.getByTestId(testIds.sectorCardButton);
+        const wasteSectorButton = wasteCard.getByTestId(
+          testIds.sectorCardButton,
+        );
         await wasteSectorButton.click();
         await page.waitForURL(regexForPath("/data/3/"));
 
@@ -214,7 +221,9 @@ test.describe("Third Party Datasets", () => {
             const wasteNoDataMessage = page.getByText(
               /no.*data.*available|no.*third.*party|missing.*third.*party/i,
             );
-            const wasteDataSourceCards = page.locator('[data-testid*="source-card"]');
+            const wasteDataSourceCards = page.locator(
+              '[data-testid*="source-card"]',
+            );
 
             // Either we have data sources or a message saying there are none
             const hasContent =

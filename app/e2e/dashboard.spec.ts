@@ -10,9 +10,6 @@ test.describe("Dashboard", () => {
       // Create inventory through onboarding
       await createInventoryThroughOnboarding(page, "Chicago");
 
-      // Navigate to Dashboard
-      await page.goto("/");
-
       // Verify Dashboard
       await page.waitForLoadState("networkidle");
       // Verify page title

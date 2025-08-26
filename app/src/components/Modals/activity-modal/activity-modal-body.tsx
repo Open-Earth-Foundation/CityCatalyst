@@ -464,6 +464,7 @@ const ActivityModalBody = ({
               <Field
                 invalid={!!resolve(prefix + "activityDataAmount", errors)}
                 label={<Text truncate>{t(title)}</Text>}
+                flex="2"
               >
                 <HStack>
                   <FormattedNumberInput
@@ -472,6 +473,8 @@ const ActivityModalBody = ({
                     defaultValue="0"
                     t={t}
                     miniAddon
+                    minWidth="300px"
+                    flex={2}
                   />
                   {(units?.length as number) > 0 && (
                     <Controller
@@ -556,6 +559,8 @@ const ActivityModalBody = ({
                 <Field
                   label={t("emission-factor-type")}
                   invalid={!!resolve(prefix + "emissionFactorType", errors)}
+                  maxWidth="250px"
+                  flex="1"
                 >
                   <Controller
                     name="activity.emissionFactorType"

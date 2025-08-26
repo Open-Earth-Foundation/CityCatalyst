@@ -20,6 +20,7 @@ import CitiesAddedToProjectNotificationTemplate from "@/lib/emails/CitiesAddedTo
 import i18next from "@/i18n/server";
 import InviteUserToMultipleCitiesTemplate from "@/lib/emails/InviteUserToMultipleCitiesTemplate";
 import AdminNotificationTemplate from "@/lib/emails/AdminNotificationTemplate";
+import AdminInviteAcceptedTemplate from "@/lib/emails/AdminInviteAcceptedTemplate";
 import ForgotPasswordTemplate from "@/lib/emails/ForgotPasswordTemplate";
 import InviteUserTemplate from "@/lib/emails/InviteUserTemplate";
 import confirmRegistrationTemplate from "@/lib/emails/confirmRegistrationTemplate";
@@ -754,6 +755,42 @@ export default class EmailService {
       });
     } catch (err) {
       logger.error({ email }, "Failed to send confirm registration email");
+    }
+  }
+
+  public static async sendAdminInviteAccepted({
+    user,
+  }: {
+    user: User;
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+    const url = `${host}/login`;
+
+    try {
+      const html = await render(
+        AdminInviteAcceptedTemplate({
+          url,
+          user,
+          language: user.preferredLanguage,
+        }),
+      );
+
+      const translatedSubject = this.getTranslation(
+        user,
+        "admin-invite-accepted.subject",
+      ).subject;
+
+      await sendEmail({
+        to: user.email as string,
+        subject: translatedSubject,
+        html,
+      });
+    } catch (err) {
+      logger.error(
+        { email: user.email, error: err instanceof Error ? err.message : err },
+        "Failed to send admin invite accepted email",
+      );
+      throw err;
     }
   }
 }

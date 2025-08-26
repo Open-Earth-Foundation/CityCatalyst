@@ -65,8 +65,8 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
     } else {
       try {
         const url = new URL(formData.redirectUri);
-        if (!['http:', 'https:'].includes(url.protocol)) {
-          throw new Error('Invalid protocol');
+        if (!["http:", "https:"].includes(url.protocol)) {
+          throw new Error("Invalid protocol");
         }
       } catch {
         newErrors.redirectUri =

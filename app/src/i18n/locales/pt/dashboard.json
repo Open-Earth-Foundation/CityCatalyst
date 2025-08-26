@@ -232,5 +232,8 @@
     "implement": "Implementar",
     "monitor-evaluate-&-report": "Monitorar, Avaliar e Relatar"
   },
-  "home": "Página inicial"
+  "home": "Página inicial",
+  "empty": "[object Object]",
+  "open-cc-inventories": "Inventários Abertos de CC",
+  "inventories": "Inventários"
 }

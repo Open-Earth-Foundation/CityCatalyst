@@ -243,5 +243,7 @@
     "title": "Nothing to show here, yet",
     "description": "Once your modules have data to show, you'll find it summarized here.",
     "goHome": "Go to home page"
-  }
+  },
+  "open-cc-inventories": "Open CC Inventories",
+  "inventories": "Inventories"
 }

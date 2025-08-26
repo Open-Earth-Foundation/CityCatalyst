@@ -19,33 +19,37 @@ export class ModuleDashboardService {
       });
 
       if (!inventory) {
+        logger.info(`No inventory found for city ${cityId}`);
         return { error: "No inventory found" };
       }
 
-      // Get emissions results
-      const {
-        totalEmissionsBySector,
-        topEmissionsBySubSector,
-        totalEmissions,
-      } = await getEmissionResults(inventory.inventoryId);
+      logger.info(
+        `Found inventory ${inventory.inventoryId} for city ${cityId}, year ${inventory.year}`,
+      );
 
-      // Get inventory progress
-      const progressData =
-        await InventoryProgressService.getInventoryProgress(inventory);
+      // Get emissions results
+      const emissionResults = await getEmissionResults(inventory?.inventoryId);
+      
+      const {
+        totalEmissionsBySector = [],
+        topEmissionsBySubSector = [],
+        totalEmissions = 0,
+      } = emissionResults || {};
 
       return {
         totalEmissions: {
-          bySector: totalEmissionsBySector || [],
-          total: totalEmissions || 0,
+          bySector: totalEmissionsBySector,
+          total: totalEmissions,
         },
-        topEmissions: { bySubSector: topEmissionsBySubSector || [] },
-        progress: progressData,
-        inventoryId: inventory.inventoryId,
+        topEmissions: { bySubSector: topEmissionsBySubSector },
+        inventory,
         year: inventory.year,
       };
     } catch (error) {
       logger.error("Error fetching GHGI dashboard data:", { error, cityId });
-      return { error: "Failed to fetch GHGI data" };
+      return {
+        error: `Failed to fetch GHGI data: ${(error as Error).message}`,
+      };
     }
   }
 
@@ -88,7 +92,9 @@ export class ModuleDashboardService {
       };
     } catch (error) {
       logger.error("Error fetching HIAP dashboard data:", { error, cityId });
-      return { error: "Failed to fetch HIAP data" };
+      return {
+        error: `Failed to fetch HIAP data: ${(error as Error).message}`,
+      };
     }
   }
 
@@ -102,7 +108,8 @@ export class ModuleDashboardService {
   ): Promise<Record<string, any>> {
     // Use ModuleService to get enabled modules for this project
     const { ModuleService } = await import("./ModuleService");
-    const enabledModules = await ModuleService.getEnabledProjectModules(projectId);
+    const enabledModules =
+      await ModuleService.getEnabledProjectModules(projectId);
 
     const dashboardData: Record<string, any> = {};
 

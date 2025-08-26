@@ -19,6 +19,7 @@ import ModalPublish from "../GHGIHomePage/DownloadAndShareModals/ModalPublish";
 import { InventoryResponse } from "@/util/types";
 import { Button } from "../ui/button";
 import { EmptyDashboard } from "./EmptyDashboard";
+import { ModuleDashboardWidgets } from "../ModuleWidgets";
 
 export default function CitiesDashboardPage({
   params,
@@ -59,27 +60,21 @@ export default function CitiesDashboardPage({
     { skip: !cityIdFromParam },
   );
 
-  // Fetch inventories for the city - they come sorted by year DESC
   const { data: inventories, isLoading: isInventoriesLoading } =
     useGetInventoriesQuery(
       { cityId: cityIdFromParam! },
       { skip: !cityIdFromParam },
     );
 
-  // Latest inventory is the first one (already sorted)
   const latestInventory = inventories?.[0];
-  const inventoryId = latestInventory?.inventoryId;
-  const inventory = latestInventory;
 
-  // Fetch dashboard data for the city
-  const { data: dashboardData, isLoading: isDashboardLoading } = 
+
+  const { data: dashboardData, isLoading: isDashboardLoading } =
     useGetCityDashboardQuery(
       { cityId: cityIdFromParam!, lng },
-      { skip: !cityIdFromParam }
+      { skip: !cityIdFromParam },
     );
 
-  // Log dashboard data for debugging
-  console.log("Dashboard data:", dashboardData);
 
   const { data: orgData, isLoading: isOrgDataLoading } =
     api.useGetOrganizationForCityQuery(cityIdFromParam!, {
@@ -148,7 +143,17 @@ export default function CitiesDashboardPage({
               </Button>
             </HStack>
             <Box h="1px" mt="6" bg="border.neutral" />
-            <EmptyDashboard t={t} />
+            {dashboardData && Object.keys(dashboardData).length > 0 ? (
+              <ModuleDashboardWidgets
+                cityId={cityIdFromParam!}
+                lng={lng}
+                t={t}
+              />
+            ) : (
+              <>
+                <EmptyDashboard t={t} />
+              </>
+            )}
           </Box>
         </>
       )}

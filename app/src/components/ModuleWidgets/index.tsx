@@ -1,89 +1,100 @@
 "use client";
 
 import React from "react";
-import { VStack, Spinner, Box, Text } from "@chakra-ui/react";
+import { VStack, Spinner, Box, Text, Progress } from "@chakra-ui/react";
 import { useGetCityDashboardQuery } from "@/services/api";
 import { Modules } from "@/util/constants";
 import { GHGIWidget } from "./GHGIWidget";
 import { HIAPWidget } from "./HIAPWidget";
+import ProgressLoader from "../ProgressLoader";
+import { EmptyDashboard } from "../CityDashboard/EmptyDashboard";
+import { TFunction } from "i18next";
 
 interface ModuleDashboardWidgetsProps {
   cityId: string;
   lng?: string;
+  t: TFunction;
 }
 
 // Simple widget registry - map module IDs to their widget components
 const WIDGET_REGISTRY: Record<string, React.FC<any>> = {
   [Modules.GHGI.id]: GHGIWidget,
-  [Modules.HIAP.id]: HIAPWidget,
+  // [Modules.HIAP.id]: HIAPWidget,
 };
 
 export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
   cityId,
   lng = "en",
+  t,
 }) => {
   // Fetch all dashboard data with one query
-  const { data: dashboardData, isLoading, error } = useGetCityDashboardQuery({
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+  } = useGetCityDashboardQuery({
     cityId,
     lng,
   });
 
   if (isLoading) {
-    return (
-      <Box display="flex" justifyContent="center" p={8}>
-        <Spinner size="lg" />
-      </Box>
-    );
+    return <ProgressLoader />;
   }
 
-  if (error) {
-    return (
-      <Box p={8}>
-        <Text color="red.500">Failed to load dashboard data</Text>
-      </Box>
-    );
-  }
-
-  if (!dashboardData || Object.keys(dashboardData).length === 0) {
-    return (
-      <Box p={8}>
-        <Text color="gray.500">No modules available</Text>
-      </Box>
-    );
-  }
+  // Check if all modules have empty data
+  const hasValidData =
+    dashboardData &&
+    Object.entries(dashboardData).some(([moduleId, moduleData]) => {
+      // Check if module has actual inventory data
+      if (moduleId === Modules.GHGI.id) {
+        return (
+          moduleData && !moduleData.error && moduleData.totalEmissions.total > 0
+        );
+      }
+      if (moduleId === Modules.HIAP.id) {
+        return (
+          moduleData &&
+          !moduleData.error &&
+          (moduleData.mitigation || moduleData.adaptation)
+        );
+      }
+      return false;
+    });
 
   return (
-    <VStack w="full" gap={4}>
-      {Object.entries(dashboardData).map(([moduleId, moduleData]) => {
-        const WidgetComponent = WIDGET_REGISTRY[moduleId];
-        
-        // If no widget registered for this module, show default
-        if (!WidgetComponent) {
-          return (
-            <Box key={moduleId} p={4} borderWidth="1px" borderRadius="md" w="full">
-              <Text>No widget for module: {moduleId}</Text>
-            </Box>
-          );
-        }
-
-        // Render the widget with its data
-        return (
-          <WidgetComponent
-            key={moduleId}
-            moduleId={moduleId}
-            data={moduleData.error ? null : moduleData}
-            error={moduleData.error}
-          />
-        );
-      })}
-    </VStack>
+    <>
+      {dashboardData &&
+      Object.keys(dashboardData).length > 0 &&
+      hasValidData ? (
+        <VStack gap={8} align="stretch" mt={4}>
+          {Object.entries(dashboardData)
+            .sort(([moduleIdA], [moduleIdB]) => {
+              // Sort so GHGI appears first
+              if (moduleIdA === Modules.GHGI.id) return -1;
+              if (moduleIdB === Modules.GHGI.id) return 1;
+              return 0;
+            })
+            .map(([moduleId, moduleData]) => {
+              const WidgetComponent = WIDGET_REGISTRY[moduleId];
+              if (!WidgetComponent) {
+                // No widget registered for this module
+                return null;
+              }
+              return (
+                <Box key={moduleId} mb={4}>
+                  <WidgetComponent
+                    cityId={cityId}
+                    moduleId={moduleId}
+                    data={moduleData || null}
+                    isLoading={false}
+                  />
+                </Box>
+              );
+            })}
+        </VStack>
+      ) : (
+        <EmptyDashboard t={t} />
+      )}
+    </>
   );
 };
-
-/**
- * Usage in any component:
- * 
- * import { ModuleDashboardWidgets } from "@/components/ModuleWidgets";
- * 
- * <ModuleDashboardWidgets cityId={cityId} lng="en" />
- */

@@ -35,25 +35,30 @@ const ModalPublish = ({
   const [changePublishStatus, { isLoading: updateLoading }] =
     api.useUpdateInventoryMutation();
   const handlePublishChange = async () => {
-    const isPublishing = !inventory.isPublic;
-    
+    const isPublishing = !inventory?.isPublic;
+
     const result = await changePublishStatus({
       inventoryId: inventoryId!,
       data: { isPublic: isPublishing },
     });
-    
+
     // Track publish/unpublish action
     if (result.data) {
-      trackEvent(isPublishing ? "inventory_published" : "inventory_unpublished", {
-        inventory_id: inventoryId,
-        inventory_year: inventory.year,
-        city_name: inventory.city?.name,
-        city_locode: inventory.city?.locode,
-      });
+      trackEvent(
+        isPublishing ? "inventory_published" : "inventory_unpublished",
+        {
+          inventory_id: inventoryId,
+          inventory_year: inventory.year,
+          city_name: inventory.city?.name,
+          city_locode: inventory.city?.locode,
+        },
+      );
     }
-    
+
     return result;
   };
+
+  
 
   return (
     <DialogRoot
@@ -78,7 +83,7 @@ const ModalPublish = ({
 
         <DialogBody>
           <Box my="24px" divideX="2px" />
-          {!inventory.isPublic ? (
+          {!inventory?.isPublic ? (
             <UnpublishedView
               t={t}
               checked={isAuthorized}
@@ -97,7 +102,7 @@ const ModalPublish = ({
         <DialogFooter>
           <Box>
             <Button
-              disabled={!inventory.isPublic && !isAuthorized}
+              disabled={!inventory?.isPublic && !isAuthorized}
               colorScheme="blue"
               mr={3}
               onClick={handlePublishChange}

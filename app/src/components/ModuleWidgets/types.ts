@@ -1,7 +1,9 @@
-// Simple types for module widgets
+import { DashboardResponseType, GHGInventorySummary } from "@/util/types";
+
 export interface DashboardWidgetProps {
   moduleId: string;
-  data: any; // Data from dashboard endpoint for this module
+  cityId?: string;
+  data: GHGInventorySummary | null;
   isLoading?: boolean;
   error?: string;
 }

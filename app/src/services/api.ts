@@ -98,7 +98,9 @@ export const api = createApi({
     "Cities",
     "Hiap",
     "Themes",
-    "Client"
+    "Client",
+    "CityDashboard",
+    "Modules"
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {

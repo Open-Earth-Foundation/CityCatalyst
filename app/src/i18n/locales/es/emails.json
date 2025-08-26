@@ -152,5 +152,6 @@
     "cta": "Ver Proyecto",
     "footer": "Este es un mensaje automatizado, por favor no respondas.",
     "brand": "CityCatalyst"
-  }
+  },
+  "admin-invite-accepted": "[object Object]"
 }

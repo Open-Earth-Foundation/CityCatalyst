@@ -3,11 +3,11 @@
 import { Card, Box, IconButton, Icon, Spinner } from "@chakra-ui/react";
 import { MdDelete } from "react-icons/md";
 import { useTranslation } from "@/i18n/client";
-import React, { use } from "react";
+import React from "react";
 import { Client } from "@/util/types";
 import { TitleMedium } from "@/components/Texts/Title";
-import { ButtonMedium } from "@/components/Texts/Button";
 import { api } from "@/services/api";
+import { toaster } from "@/components/ui/toaster";
 
 const OAuthClientCard = (props: { lng: string; client: Client; onDelete?: (client: Client) => void }) => {
   const { lng, client, onDelete } = props;
@@ -16,9 +16,21 @@ const OAuthClientCard = (props: { lng: string; client: Client; onDelete?: (clien
 
   const handleDelete = async () => {
     if (window.confirm(t("oauth-clients-delete"))) {
-      await deleteClient(client.clientId);
-      if (props.onDelete) {
-        props.onDelete(client);
+      try {
+        await deleteClient(client.clientId);
+        if (props.onDelete) {
+          props.onDelete(client);
+        }
+        toaster.success({
+          title: t("success"),
+          description: t("oauth-clients-success-deleting-client"),
+          duration: 5000,
+        });
+      } catch (error) {
+        toaster.error({
+          title: t("error"),
+          description: t("oauth-clients-error-deleting-client"),
+        });
       }
     }
   };

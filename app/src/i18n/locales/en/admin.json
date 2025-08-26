@@ -177,5 +177,7 @@
   "oauth-add-client": "Add",
   "creating": "Creating",
   "oauth-clients-delete": "Delete this OAuth client?",
-  "oauth-client-id": "Client ID"
+  "oauth-client-id": "Client ID",
+  "oauth-clients-error-deleting-client": "Error deleting client app",
+  "oauth-clients-success-deleting-client": "Client app deleted"
 }

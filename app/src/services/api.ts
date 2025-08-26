@@ -56,9 +56,17 @@ import {
   LangMap,
   PermissionCheckResponse,
 } from "@/util/types";
-import type { CityLocationResponse, HIAPResponse } from "@/util/types";
+import type {
+  CityLocationResponse,
+  DashboardResponseType,
+  HIAPResponse,
+  ModuleDataSummaryResponse,
+} from "@/util/types";
 import type { GeoJSON } from "geojson";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  createApi,
+  fetchBaseQuery,
+} from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: "api",
@@ -90,6 +98,8 @@ export const api = createApi({
     "Cities",
     "Hiap",
     "Themes",
+    "CityDashboard",
+    "Modules",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1331,6 +1341,15 @@ export const api = createApi({
         transformResponse: (response: { data: { hasAccess: boolean } }) =>
           response.data,
       }),
+      getCityDashboard: builder.query<
+        ModuleDataSummaryResponse,
+        { cityId: string; lng?: string }
+      >({
+        query: ({ cityId, lng = "en" }) =>
+          `city/${cityId}/dashboard?lng=${lng}`,
+        transformResponse: (response: DashboardResponseType) => response.data,
+        providesTags: ["CityDashboard", "Modules"],
+      }),
       getClient: builder.query<Client, string>({
         query: (clientId: string) => `client/${clientId}/`,
         transformResponse: (response: { data: Client }) => response.data,
@@ -1492,6 +1511,7 @@ export const {
   useGetModulesQuery,
   useGetProjectModulesQuery,
   useGetCityModuleAccessQuery,
+  useGetCityDashboardQuery,
   useGetClientQuery,
   useGenerateCodeMutation,
   useGetUserPermissionsQuery,

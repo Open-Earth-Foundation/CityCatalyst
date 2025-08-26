@@ -4,7 +4,10 @@ import { AddCollaboratorButton } from "./AddCollaboratorButton";
 import { MdBarChart } from "react-icons/md";
 
 import { useRouter } from "next/navigation";
-import { OrganizationWithThemeResponse } from "@/util/types";
+import {
+  CityWithProjectDataResponse,
+  OrganizationWithThemeResponse,
+} from "@/util/types";
 import { MdArrowForward } from "react-icons/md";
 import { AllProjectsIcon } from "../icons";
 import ActionCardSmall from "./ActionCardSmall";
@@ -13,10 +16,12 @@ export function ActionCards({
   organization,
   lng,
   t,
+  city,
 }: {
   t: TFunction;
   organization: OrganizationWithThemeResponse;
   lng: string;
+  city?: CityWithProjectDataResponse;
 }) {
   const router = useRouter();
   return (
@@ -56,7 +61,11 @@ export function ActionCards({
               mt={4}
             >
               <Link
-                href={`/${lng}/organization/${organization.organizationId}/dashboard`}
+                href={
+                  city
+                    ? `/${lng}/cities/${city.cityId}/dashboard`
+                    : `/${lng}/organization/${organization.organizationId}/dashboard`
+                }
                 color="white"
                 fontWeight="bold"
                 _hover={{ textDecoration: "underline" }}

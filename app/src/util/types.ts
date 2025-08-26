@@ -679,3 +679,26 @@ export interface PermissionCheckResponse {
     inventoryId?: string;
   };
 }
+
+export interface GHGInventorySummary {
+  inventory: InventoryResponse;
+  totalEmissions: {
+    bySector: SectorEmission[];
+    total: bigint;
+  };
+  topEmissions: { bySubSector: TopEmission[] };
+  year: number;
+}
+
+export interface ModuleDataSummaryResponse {
+  [key: string]: GHGInventorySummary | any;
+}
+
+export interface DashboardResponseType {
+  data: ModuleDataSummaryResponse;
+  metadata: {
+    cityId: string;
+    cityName: string;
+    projectId: string;
+  };
+}

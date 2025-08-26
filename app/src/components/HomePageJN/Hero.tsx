@@ -59,9 +59,9 @@ export function Hero({
   );
 
   return (
-    <Box bg="white" py={12} w="full">
+    <Box bg="base.light" py={12} w="full">
       <Box maxW="1090px" mx="auto">
-        <HStack align="start" gap={8}>
+        <HStack align="center" gap={8}>
           {/* Left Panel - Text Information */}
           <VStack align="start" flex={1} gap={6}>
             {/* Project Title */}

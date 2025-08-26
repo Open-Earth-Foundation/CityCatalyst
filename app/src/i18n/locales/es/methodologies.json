@@ -15,5 +15,16 @@
   "parameter-code": "Código de Parámetro",
   "parameter-description": "Descripción del Parámetro",
   "units": "Unidades",
-  "methodologies-introduction": ""
+  "methodologies-introduction": {
+    "title": "Metodologías",
+    "introduction": "Introducción",
+    "about": "Acerca de las Metodologías",
+    "p1": "Esta plataforma sigue estándares internacionalmente reconocidos para la contabilidad de gases de efecto invernadero (GEI), basados principalmente en el Protocolo Global para Inventarios de Emisiones de Gases de Efecto Invernadero a Escala Comunitaria (GPC) y las Directrices del IPCC para Inventarios Nacionales de Gases de Efecto Invernadero (Refinamiento de 2006 y 2019). Estas metodologías proporcionan un marco transparente y consistente para que las ciudades estimen, informen y gestionen las emisiones en todos los sectores principales. Cada metodología aplicada aquí se selecciona para coincidir con el nivel de disponibilidad de datos, capacidad técnica y necesidades de informes de las ciudades. Siempre que sea posible, priorizamos los métodos del IPCC de Nivel 1 y los enfoques compatibles con el GPC, que se basan en factores de emisión predeterminados y datos de actividad general. En casos donde se disponga de datos de mayor resolución o entradas alternativas, permitimos ajustes menores o modelos simplificados, asegurando la flexibilidad metodológica mientras se mantiene la alineación con los principios de informes fundamentales.",
+    "p2": "Las metodologías están organizadas por sector (por ejemplo, Energía Estacionaria, Transporte, Residuos) y están acompañadas de descripciones claras, suposiciones clave, ventajas y limitaciones. Esto ayuda a los usuarios a entender cómo se genera cada valor de emisión y garantiza la transparencia en el proceso de construcción del inventario.",
+    "p3": "Cada método tiene como objetivo apoyar a las ciudades en el desarrollo de inventarios que sean:",
+    "complete": "Completo, cubriendo todas las fuentes principales;",
+    "consistent": "Consistente, año tras año;",
+    "comparable": "Comparable, a través de ciudades y regiones;",
+    "transparent": "Transparente, con documentación clara de entradas y suposiciones."
+  }
 }

@@ -15,5 +15,16 @@
   "parameter-code": "Code de Paramètre",
   "parameter-description": "Description du Paramètre",
   "units": "Unités",
-  "methodologies-introduction": ""
+  "methodologies-introduction": {
+    "title": "Méthodologies",
+    "introduction": "Introduction",
+    "about": "À propos des méthodologies",
+    "p1": "Cette plateforme suit les normes internationalement reconnues pour la comptabilité des gaz à effet de serre (GES), principalement basées sur le Protocole mondial pour les inventaires d'émissions de gaz à effet de serre à l'échelle communautaire (GPC) et les Directives du GIEC pour les inventaires nationaux de gaz à effet de serre (2006 et 2019 Refinement). Ces méthodologies fournissent un cadre transparent et cohérent pour les villes pour estimer, rapporter et gérer les émissions dans tous les principaux secteurs. Chaque méthodologie appliquée ici est sélectionnée pour correspondre au niveau de disponibilité des données, à la capacité technique et aux besoins de rapport des villes. Dans la mesure du possible, nous privilégions les méthodes du GIEC de niveau 1 et les approches conformes au GPC, qui reposent sur des facteurs d'émission par défaut et des données d'activité générales. Dans les cas où des données de résolution supérieure ou des entrées alternatives sont disponibles, nous autorisons des ajustements mineurs ou des modèles simplifiés, garantissant une flexibilité méthodologique tout en maintenant l'alignement avec les principes de rapport de base.",
+    "p2": "Les méthodologies sont organisées par secteur (par exemple, Énergie Stationnaire, Transport, Déchets) et sont accompagnées de descriptions claires, d'hypothèses clés, d'avantages et de limitations. Cela aide les utilisateurs à comprendre comment chaque valeur d'émission est générée et assure la transparence dans le processus de construction de l'inventaire.",
+    "p3": "Chaque méthode vise à aider les villes à développer des inventaires qui sont :",
+    "complete": "Complet, couvrant toutes les principales sources ;",
+    "consistent": "Cohérent, année après année;",
+    "comparable": "Comparable, à travers les villes et les régions;",
+    "transparent": "Transparent, avec une documentation claire des entrées et des hypothèses."
+  }
 }

@@ -229,7 +229,21 @@
     "assess-&-analyze": "Évaluer et Analyser",
     "plan": "Planifier",
     "implement": "Mettre en Œuvre",
-    "monitor-evaluate-&-report": "Surveiller, Évaluer et Rapporter"
+    "monitor-evaluate-&-report": "Surveiller, Évaluer et Rapporter",
+    "assess-&-analyze-description": "Soutenir les villes dans la création d'une base de preuves solide pour comprendre leur impact climatique et leurs vulnérabilités. Cette phase se concentre sur l'évaluation des émissions et des risques climatiques pour établir les fondations d'une planification efficace.",
+    "plan-description": "Permettre aux villes de passer de la compréhension à la stratégie. Cette phase soutient la planification des actions et l'alignement des efforts avec les opportunités de financement disponibles.",
+    "implement-description": "Soutenir les villes dans leur transition des plans au financement et à l'exécution. Cette phase garantit que les idées se transforment en projets financés alignés sur les objectifs de la ville et les mécanismes de financement.",
+    "monitor-evaluate-&-report-description": "Soutenir les villes dans leur transition des plans au financement et à l'exécution. Cette phase garantit que les idées se transforment en projets financés alignés sur les objectifs de la ville et les mécanismes de financement.",
+    "GHGI": "Inventaires de GES",
+    "HIAP": "Actions & Plans",
+    "your-city-dashboard": "Le tableau de bord de votre ville"
   },
-  "home": "Maison"
+  "home": "Maison",
+  "empty": {
+    "title": "Rien à montrer ici, pour l'instant",
+    "description": "Une fois que vos modules ont des données à afficher, vous les trouverez résumées ici.",
+    "goHome": "Allez à la page d'accueil"
+  },
+  "open-cc-inventories": "Inventaires CC Ouverts",
+  "inventories": "Inventaires"
 }

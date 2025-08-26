@@ -82,5 +82,14 @@
   "error-loading-data": "Fehler beim Laden der Daten",
   "no-actions-found": "Keine Aktionen gefunden",
   "adaptation-effectiveness": "Anpassungseffektivität",
-  "primary-purpose": "[object Object]"
+  "primary-purpose": "[object Object]",
+  "generating-actions": "Aktionen generieren...",
+  "checking-activity-data": "Überprüfung der Aktivitätsdaten",
+  "generating-climate-actions": "Ihre wichtigsten Klimaschutzmaßnahmen werden verarbeitet",
+  "generating-climate-actions-description": "Dieser Prozess kann bis zu 15 Minuten dauern. Sie erhalten eine E-Mail und sehen sie hier, wenn sie fertig sind",
+  "implementation-of-urban-toll": "Umsetzung von städtischen Mautgebühren",
+  "encourage-renewable-energy-policies": "Fördern Sie erneuerbare Energiepolitiken auf kommunaler Ebene",
+  "stationary-energy": "Stationäre Energie",
+  "waste": "Abfall",
+  "low": "Niedrig"
 }

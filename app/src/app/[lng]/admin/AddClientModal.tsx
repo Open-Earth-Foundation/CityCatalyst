@@ -11,9 +11,8 @@ import {
   DialogCloseTrigger,
 } from "@/components/ui/dialog";
 import { useTranslation } from "@/i18n/client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { api } from "@/services/api";
-
 interface AddClientModalProps {
   lng: string;
   isOpen: boolean;
@@ -82,14 +81,20 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
   const showSuccess = (message: string) => {
     setSuccessMessage(message);
     setErrorMessage("");
-    setTimeout(() => setSuccessMessage(""), 3000);
   };
 
   const showError = (message: string) => {
     setErrorMessage(message);
     setSuccessMessage("");
-    setTimeout(() => setErrorMessage(""), 5000);
   };
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (successMessage) {
+      timeoutId = setTimeout(() => setSuccessMessage(""), 3000);
+    }
+    return () => clearTimeout(timeoutId);
+  }, [successMessage]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

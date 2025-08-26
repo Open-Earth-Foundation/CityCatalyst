@@ -234,5 +234,8 @@
     "implement": "Implementar",
     "monitor-evaluate-&-report": "Monitorear, Evaluar e Informar"
   },
-  "home": "Hogar"
+  "home": "Hogar",
+  "empty": "[object Object]",
+  "open-cc-inventories": "Inventarios Abiertos de CC",
+  "inventories": "Inventarios"
 }

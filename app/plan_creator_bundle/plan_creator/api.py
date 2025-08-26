@@ -14,6 +14,8 @@ from plan_creator_bundle.plan_creator.models import (
     StartPlanCreationResponse,
     CheckProgressResponse,
     PlanResponse,
+    TranslatePlanRequest,
+    StartPlanTranslationResponse,
 )
 
 from limiter import limiter
@@ -126,14 +128,17 @@ async def start_plan_creation(request: Request, req: PlanRequest):
         task_storage[task_uuid]["status"] = "failed"
         task_storage[task_uuid][
             "error"
-        ] = f"Failed to start background thread: {str(e)}"
+        ] = f"Failed to start background thread for plan creation: {str(e)}"
 
         raise HTTPException(
-            status_code=500, detail="Failed to start background thread."
+            status_code=500,
+            detail="Failed to start background thread for plan creation.",
         )
 
     # Return the task ID immediately
-    return StartPlanCreationResponse(taskId=task_uuid, status="pending")
+    return StartPlanCreationResponse(
+        taskId=task_uuid, status=task_storage[task_uuid]["status"]
+    )
 
 
 @router.get("/v1/check_progress/{task_uuid}", response_model=CheckProgressResponse)
@@ -190,3 +195,111 @@ async def get_plan(request: Request, task_uuid: str):
             f"Task {task_uuid}: Error returning plan response: {str(e)}", exc_info=True
         )
         raise HTTPException(status_code=500, detail="Error returning plan response.")
+
+
+@router.post("/v1/translate_plan", response_model=StartPlanTranslationResponse)
+@limiter.limit("10/minute")
+async def translate_plan(
+    request: Request,
+    req: TranslatePlanRequest,
+):
+    """Translate a plan from one language into another language.
+
+    Args:
+        inputPlan: The plan to translate. It is a PlanResponse object like the one returned by the get_plan endpoint.
+        inputLanguage: The input language of the plan response.
+        outputLanguage: The output language to translate the plan into.
+
+    The input language and output language are ISO 639-1 codes.
+    """
+    task_uuid = str(uuid.uuid4())
+
+    # Log the plan translation request
+    logger.info(f"Task {task_uuid}: Received plan translation request")
+    logger.info(
+        f"Task {task_uuid}: Translating plan from {req.inputLanguage} to {req.outputLanguage}"
+    )
+    logger.info(f"Task {task_uuid}: Input plan: {req.inputPlan}")
+
+    # Initialize task status
+    task_storage[task_uuid] = {
+        "status": "pending",
+        "created_at": datetime.now().isoformat(),
+        # "inputLanguage": req.inputLanguage,
+        # "outputLanguage": req.outputLanguage,
+        # "inputPlan": req.inputPlan,
+    }
+
+    # Create background task input
+    background_task_input = {
+        "plan": req.inputPlan,
+        "inputLanguage": req.inputLanguage,
+        "outputLanguage": req.outputLanguage,
+    }
+
+    try:
+        # Update task status to running
+        task_storage[task_uuid]["status"] = "running"
+        thread = threading.Thread(
+            target=_execute_plan_translation,
+            args=(task_uuid, background_task_input),
+        )
+        thread.daemon = True
+        thread.start()
+        logger.info(f"Task {task_uuid}: Started background processing for task")
+    except Exception as e:
+        logger.error(
+            f"Task {task_uuid}: Failed to start background thread: {str(e)}",
+            exc_info=True,
+        )
+        task_storage[task_uuid]["status"] = "failed"
+        task_storage[task_uuid][
+            "error"
+        ] = f"Failed to start background thread: {str(e)}"
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to start background thread for plan translation.",
+        )
+
+    # TODO: Return the acctual translated plan response here and not the original plan response
+    return StartPlanTranslationResponse(
+        taskId=task_uuid, status=task_storage[task_uuid]["status"]
+    )
+
+
+@router.get("/v1/get_translated_plan/{task_uuid}", response_model=PlanResponse)
+@limiter.limit("10/minute")
+async def get_translated_plan(request: Request, task_uuid: str):
+    """Get the completed translated plan for a task. Returns error details if failed or not ready."""
+    logger.info(f"Task {task_uuid}: Retrieving translated plan")
+    if task_uuid not in task_storage:
+        logger.warning(f"Task {task_uuid}: Task not found")
+        raise HTTPException(status_code=404, detail=f"Task {task_uuid} not found")
+
+    task_info = task_storage[task_uuid]
+    if task_info["status"] == "failed":
+        logger.error(
+            f"Task {task_uuid}: Task failed: {task_info.get('error')}", exc_info=True
+        )
+        raise HTTPException(
+            status_code=500,
+            detail=f"Task {task_uuid} failed: {task_info.get('error', 'Unknown error')}",
+        )
+    if task_info["status"] != "completed":
+        logger.info(f"Task {task_uuid}: Task not completed yet: {task_info['status']}")
+        raise HTTPException(
+            status_code=409,
+            detail=f"Plan for task {task_uuid} is not ready yet. Current status: {task_info['status']}",
+        )
+
+    try:
+        # Return the translated plan response
+        pass
+    except Exception as e:
+        logger.error(
+            f"Task {task_uuid}: Error returning translated plan response: {str(e)}",
+            exc_info=True,
+        )
+        raise HTTPException(
+            status_code=500, detail="Error returning translated plan response."
+        )

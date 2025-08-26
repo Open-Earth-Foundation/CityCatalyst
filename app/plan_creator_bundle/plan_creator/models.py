@@ -193,7 +193,7 @@ class PlanCreatorMetadata(BaseModel):
     createdAt: datetime
 
 
-LanguageCode = str  # should be ISO 639-1 codes like 'en', 'es', 'pt'
+# LanguageCode = str  # should be ISO 639-1 codes like 'en', 'es', 'pt'
 
 
 class PlanResponse(BaseModel):
@@ -201,3 +201,29 @@ class PlanResponse(BaseModel):
     content: PlanContent = Field(
         description="The plan content in the requested language"
     )
+
+
+# --- Translate plan request model ---
+
+
+class TranslatePlanRequest(BaseModel):
+    inputPlan: PlanResponse = Field(
+        description="The plan to translate. It is a PlanResponse object like the one returned by the get_plan endpoint."
+    )
+    inputLanguage: str = Field(
+        ..., min_length=2, max_length=2, description="ISO Language code"
+    )
+    outputLanguage: str = Field(
+        ..., min_length=2, max_length=2, description="ISO Language code"
+    )
+
+
+# --- Translate plan response models ---
+
+
+class StartPlanTranslationResponse(BaseModel):
+    taskId: str
+    status: str
+
+
+class PlanResponseTranslation(BaseModel):

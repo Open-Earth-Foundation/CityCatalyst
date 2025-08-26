@@ -2,10 +2,11 @@
 
 import { Box, Button, Icon, Flex } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
-import React, { use } from "react";
+import React, { useState } from "react";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import OAuthClientCard from "@/app/[lng]/admin/OAuthClientCard";
+import AddClientModal from "@/app/[lng]/admin/AddClientModal";
 import { TitleLarge } from "@/components/Texts/Title";
 import { ButtonMedium } from "@/components/Texts/Button";
 import { BsPlus } from "react-icons/bs";
@@ -14,10 +15,12 @@ const OAuthClientList = (props: { lng: string }) => {
   const { lng } = props;
   const { t } = useTranslation(lng, "admin");
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const { data: clientsData, isLoading: isClientsDataLoading } =
     api.useGetClientsQuery();
 
-  const handleAddClient = () => alert("Adding client");
+  const handleAddClient = () => setIsModalOpen(true);
 
   return (
     <Box>
@@ -49,6 +52,12 @@ const OAuthClientList = (props: { lng: string }) => {
           ))
         )}
       </Box>
+
+      <AddClientModal
+        lng={lng}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </Box>
   );
 };

@@ -114,8 +114,8 @@ export const ProjectMap: FC<ProjectMapProps> = ({
           onBoundsChanged={onBoundsChanged}
           attributionPrefix={false}
         >
-          {cityLocations?.map((location) => (
-            <MapMarker key={location.locode} location={location} />
+          {cityLocations?.map((location, i) => (
+            <MapMarker key={`${location.locode}-${i}`} location={location} />
           ))}
         </Map>
       )}

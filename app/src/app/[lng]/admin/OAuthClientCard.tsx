@@ -1,7 +1,6 @@
 "use client";
 
-import { Box, IconButton, Icon, Spinner } from "@chakra-ui/react";
-import { Card, CardHeader, CardBody, CardFooter } from "@chakra-ui/card";
+import { Card, Box, IconButton, Icon, Spinner } from "@chakra-ui/react";
 import { MdDelete } from "react-icons/md";
 import { useTranslation } from "@/i18n/client";
 import React, { use } from "react";
@@ -25,13 +24,13 @@ const OAuthClientCard = (props: { lng: string; client: Client; onDelete?: (clien
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <Card.Root>
+      <Card.Header>
         <TitleMedium>
           {client.name?.[lng] || client.name?.["en"] || t("oauth-no-name")}
         </TitleMedium>
-      </CardHeader>
-      <CardBody>
+      </Card.Header>
+      <Card.Body>
         {(isLoading)
           ? <Spinner />
           : <Box>
@@ -58,13 +57,13 @@ const OAuthClientCard = (props: { lng: string; client: Client; onDelete?: (clien
               </Box>
             </Box>
         }
-      </CardBody>
-      <CardFooter>
+      </Card.Body>
+      <Card.Footer>
         <IconButton aria-label="Delete" onClick={handleDelete}>
           <Icon as={MdDelete} size="lg" />
         </IconButton>
-      </CardFooter>
-    </Card>
+      </Card.Footer>
+    </Card.Root>
   );
 };
 

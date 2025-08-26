@@ -10,6 +10,7 @@ on:
     branches: [ "develop" ]
     paths:
       - app/src/i18n/locales/en/**
+      - app/src/scripts/update-translation.js
       - .github/workflows/web-translate.yml
 
 jobs:

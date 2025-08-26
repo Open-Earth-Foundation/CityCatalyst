@@ -151,5 +151,20 @@
   "oauth-no-description": "(No description)",
   "oauth-redirect-uri": "Redirect URL",
   "oauth-clients-add-button": "Add OAuth 2.0 Client",
-  "oauth-clients-subtitle": "Manage external apps that access city data"
+  "oauth-clients-subtitle": "Manage external apps that access city data",
+  "oauth-client-name-required": "Name is required",
+  "oauth-client-description-required": "Description is required",
+  "oauth-client-redirect-uri-required": "Redirect URI is required",
+  "oauth-client-invalid-uri": "Invalid URI",
+  "oauth-client-created": "OAuth client created",
+  "oauth-client-creation-failed": "OAuth client creation failed",
+  "oauth-add-client-title": "Add OAuth Client",
+  "oauth-client-name": "Name",
+  "oauth-client-name-placeholder": "App name",
+  "oauth-client-description": "Description",
+  "oauth-client-description-placeholder": "Enter description of the app",
+  "oauth-add-client": "Add",
+  "creating": "Creating",
+  "oauth-clients-delete": "Delete this OAuth client?",
+  "oauth-client-id": "Client ID"
 }

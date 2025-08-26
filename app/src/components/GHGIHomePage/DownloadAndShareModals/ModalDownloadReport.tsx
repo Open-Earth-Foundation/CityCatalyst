@@ -41,7 +41,7 @@ const ModalDownloadReport = ({
       <DialogContent minW="544px">
         <DialogHeader>
           <Center>
-            <Text fontSize="headline.sm" mx="8px">
+            <Text fontSize="headline.sm" mx="8px" data-testid="download-modal-title">
               {t("download-and-share")}
             </Text>
           </Center>

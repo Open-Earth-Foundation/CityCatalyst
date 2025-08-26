@@ -74,6 +74,7 @@
   "recent-searches-no-results": "No tienes búsquedas recientes",
   "failed-to-add-city": "Fallo al agregar la ciudad",
   "failed-to-create-inventory": "Fallo al crear inventario",
+  "project": "Proyecto",
   "select-project": "Seleccionar Proyecto",
   "city-count-limit-reached": "Límite de ciudades alcanzado",
   "welcome-top": "Bienvenido a CityCatalyst",

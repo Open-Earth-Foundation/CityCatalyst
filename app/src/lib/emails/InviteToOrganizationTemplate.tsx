@@ -9,6 +9,7 @@ import {
   Img,
   Link,
   Preview,
+  Section,
   Text,
 } from "@react-email/components";
 import { Organization } from "@/models/Organization";
@@ -59,22 +60,56 @@ export default function InviteToOrganizationTemplate({
             </Text>
           )}
           <Text style={paragraph}>{t("invite-organization.message")}</Text>
-          <div style={organizationBox}>
-            <div>
-              <Text
-                style={{
-                  fontSize: "14px",
-                  fontStyle: "normal",
-                  fontWeight: "500",
-                  lineHeight: "20px",
-                  letterSpacing: "0.5px",
-                }}
-              >
-                {organization?.name}
+
+          <Section style={{ marginTop: "32px" }}>
+            <Text style={sectionHeading}>
+              {t("invite-organization.steps-heading")}
+            </Text>
+            <Section style={listContainer}>
+              <Text style={listItem}>
+                <span style={listNumber}>1.</span>
+                <span>
+                  {t("invite-organization.step1")
+                    .split(/<\/?1>/g)
+                    .map((text, i) =>
+                      i % 2 === 0 ? text : <strong key={i}>{text}</strong>,
+                    )}
+                </span>
               </Text>
-            </div>
-          </div>
-          <div
+              <Text style={listItem}>
+                <span style={listNumber}>2.</span>
+                <span>
+                  {t("invite-organization.step2")
+                    .split(/<\/?1>/g)
+                    .map((text, i) =>
+                      i % 2 === 0 ? text : <strong key={i}>{text}</strong>,
+                    )}
+                </span>
+              </Text>
+              <Text style={listItem}>
+                <span style={listNumber}>3.</span>
+                <span>
+                  {t("invite-organization.step3")
+                    .split(/<\/?1>/g)
+                    .map((text, i) =>
+                      i % 2 === 0 ? text : <strong key={i}>{text}</strong>,
+                    )}
+                </span>
+              </Text>
+              <Text style={listItem}>
+                <span style={listNumber}>4.</span>
+                <span>
+                  {t("invite-organization.step4")
+                    .split(/<\/?1>/g)
+                    .map((text, i) =>
+                      i % 2 === 0 ? text : <strong key={i}>{text}</strong>,
+                    )}
+                </span>
+              </Text>
+            </Section>
+          </Section>
+
+          <Section
             style={{
               marginTop: "36px",
               marginBottom: "36px",
@@ -83,7 +118,7 @@ export default function InviteToOrganizationTemplate({
             <Link href={url} style={urlLink}>
               {t("invite-organization.cta")}
             </Link>
-          </div>
+          </Section>
 
           <Hr style={{ height: "2px", background: "#EBEBEC" }} />
           <Text style={footerText}>{t("invite-organization.footer")}</Text>
@@ -161,4 +196,32 @@ const organizationBox = {
   borderRadius: "8px",
   border: "1px solid #E6E7FF",
   margin: "32px",
+};
+
+const sectionHeading = {
+  fontSize: "16px",
+  lineHeight: "1.4",
+  fontWeight: "700",
+  color: "#484848",
+  marginBottom: "16px",
+};
+
+const listContainer = {
+  marginLeft: "0px",
+  marginTop: "16px",
+};
+
+const listItem = {
+  fontSize: "14px",
+  lineHeight: "1.6",
+  color: "#484848",
+  marginBottom: "12px",
+  display: "flex",
+  alignItems: "flex-start",
+};
+
+const listNumber = {
+  fontWeight: "700",
+  marginRight: "8px",
+  minWidth: "20px",
 };

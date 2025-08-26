@@ -64,9 +64,20 @@
     "brand": "CityCatalyst",
     "title": "Your Account Has Been Frozen",
     "greeting": "Hi {{name}},",
-    "message": "Your account has been frozen. This means you and every other admin and collaborator won't be able to edit any projects or inventories in your account.",
-    "contact": "To activate your account, please reach out to {{email}}",
-    "cta": "Sign In",
+    "message": "Your CityCatalyst trial has officially ended**, and your account is now frozen. But this doesn’t have to be goodbye. Here are your next steps:",
+    "ready-to-upgrade-heading": "Ready to keep going",
+    "ready-to-upgrade-message": "Unlock full access to all your projects and features",
+    "ready-to-upgrade-cta": "Upgrade Now",
+    "ready-to-talk": "Prefer to talk it through?",
+    "ready-to-talk-cta": "Schedule a quick call with our team",
+    "Survey-heading": "Got a minute ?",
+    "survery-text": "We’d love to hear about your experience.",
+    "survey-cta": "Answer 3 quick questions",
+    "survery-raffle-draw": "By participating, three fortunate consultants will be selected to each receive a complimentary one-year license for CityCatalyst. ",
+    "footer-1": "CityCatalyst is designed to help cities and consultants move faster, smarter, and together, and we’d love to support your work for the long haul.",
+    "footer-2": "If you have any questions or need help choosing the best plan, just reply to this email.",
+    "footer-3": "Thanks for trying CityCatalyst",
+    "footer-4": "The CityCatalyst Team",
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "account-unfrozen": {
@@ -123,14 +134,19 @@
     "footer2": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "invite-organization": {
-    "subject": "City Catalyst - Organization Invitation",
-    "preview": "CityCatalyst: Organization Invitation",
+    "subject": "You’re in! Set up your first city in CityCatalyst",
+    "preview": "Set up your first city in CityCatalyst",
     "brand": "CityCatalyst",
     "title": "Join Your Team In CityCatalyst",
     "greeting": "Hi {{name}},",
     "greeting-no-name": "Hi,",
-    "message": "You are invited to join CityCatalyst and contribute to the emission inventory for the organization:",
-    "cta": "JOIN NOW",
+    "message": "Welcome to CityCatalyst! Your free trial is now live -  and we’re excited to have you onboard.",
+    "steps-heading": "Here's what you can do right now",
+    "step1": "<1>Set up your first inventory</1> - You can start with one city during this trial.",
+    "step2": "<1>Invite collaborators</1> - Work as a team to build and review your data.",
+    "step3": "<1>Explore key features</1> - From building your GHG inventory to customize your logo and colors.",
+    "step4": "<1>Ask AI</1> - Our Climate Assistant is ready to answer your questions and support you in the process. reviewing suggested impact actions.",
+    "cta": "Log in to get started",
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "role-update": {
@@ -153,5 +169,21 @@
     "cta": "View Project",
     "footer": "This is an automated message, please do not reply.",
     "brand": "CityCatalyst"
+  },
+  "admin-invite-accepted": {
+    "subject": "Welcome to CityCatalyst! 🎉 let’s get started. ",
+    "preview": "Welcome to CityCatalyst! 🎉 let’s get started. ",
+    "brand": "CityCatalyst",
+    "title": "Welcome to CityCatalyst!",
+    "greeting": "Hi {{name}},",
+    "message": "We’re excited to have you onboard. Here’s how to make the most of your 1 month Free Trial: ",
+    "step1": "Create your first city project (trial includes 1 city)",
+    "step2": "Invite collaborators from your team or partners",
+    "step3": "Customize your workspace with your logo and colors",
+    "step4": "Customize your workspace with your logo and colors",
+    "footer-1": "Need a hand? We’re here to help, please reach out to citycatalyst@openearth.org with questions!",
+    "footer-2": "Let’s make local climate data work harder, together.",
+    "footer-3": "The CityCatalyst Team",
+    "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   }
 }

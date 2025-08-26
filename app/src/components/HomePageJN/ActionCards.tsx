@@ -77,7 +77,7 @@ export function ActionCards({
             <ActionCardSmall
               onClick={() => {
                 router.push(
-                  `/${lng}/organization/${organization.organizationId}/projects`,
+                  `/${lng}/organization/${organization.organizationId}/project`,
                 );
               }}
               icon={<AllProjectsIcon />}

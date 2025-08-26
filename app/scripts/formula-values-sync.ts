@@ -120,7 +120,7 @@ function transformFormulaData(apiData: Record<string, any>) {
     datasourceName: ds.datasource_name,
     // TODO: Consider changing from { user: ... } to { en: ... } for clarity
     // Currently matches the pattern used in the original seeder
-    datasetName: ds.dataset_name ? JSON.stringify({ user: ds.dataset_name }) : null,
+    datasetName: ds.dataset_name ? { user: ds.dataset_name } : null,
     sourceType: "formula_input", // Default value
     datasetUrl: ds.URL,
     datasetDescription: null,

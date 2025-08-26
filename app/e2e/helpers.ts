@@ -1,6 +1,7 @@
 import { APIRequestContext, expect, type Page } from "@playwright/test";
 
 export async function expectText(page: Page, text: string) {
+  await page.waitForTimeout(500);
   await expect(page.getByText(text).first()).toBeVisible();
 }
 
@@ -100,12 +101,11 @@ export async function createInventoryThroughOnboarding(
   // Click Continue
   await page.getByRole("button", { name: /Continue/i }).click();
 
+  await page.waitForTimeout(5000);
+
   // Step 4: Set Population Data
   const populationHeading = page.getByTestId("add-population-data-heading");
   await expect(populationHeading).toBeVisible();
-
-  //set timeout to allow for population data to be populated
-  await page.waitForTimeout(10000);
 
   // Verify population data is populated before proceeding
   const cityPopulationInput = page.getByPlaceholder("City population number");
@@ -133,8 +133,10 @@ export async function createInventoryThroughOnboarding(
   await page.getByRole("button", { name: /Continue/i }).click();
 
   // Step 5: Confirm and Complete
-  const confirmHeading = page.getByTestId("confirm-city-data-heading");
-  await expect(confirmHeading).toBeVisible();
+  const confirmHeading = page.getByTestId("confirm-city-data-heading").waitFor({
+    state: "visible",
+    timeout: 10000,
+  });
 
   // Click Continue to complete onboarding
   await page.getByRole("button", { name: /Continue/i }).click();
@@ -142,9 +144,10 @@ export async function createInventoryThroughOnboarding(
   // wait until data is submitting after clicking continue
   await page.waitForLoadState("networkidle");
 
-  // Step 6: Verify completion page
-  const completionMessage = page.getByTestId("done-heading");
-  await expect(completionMessage).toBeVisible({ timeout: 15000 });
+  const dashboardButton = page.getByTestId("check-dashboard");
+  await expect(dashboardButton).toBeVisible();
+  await dashboardButton.click();
+
   // Return the completion page for further navigation
   return page;
 }

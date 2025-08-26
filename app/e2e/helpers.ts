@@ -104,9 +104,6 @@ export async function createInventoryThroughOnboarding(
   const populationHeading = page.getByTestId("add-population-data-heading");
   await expect(populationHeading).toBeVisible();
 
-  //set timeout to allow for population data to be populated
-  await page.waitForTimeout(10000);
-
   // Verify population data is populated before proceeding
   const cityPopulationInput = page.getByPlaceholder("City population number");
   await expect(cityPopulationInput).toHaveValue(/^\d{1,3}(,\d{3})*$/, {

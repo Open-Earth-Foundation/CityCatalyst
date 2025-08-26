@@ -161,7 +161,7 @@ function NoDataSourcesMessage({
   year?: number;
 }) {
   return (
-    <Flex align="center" direction="column">
+    <Flex align="center" direction="column" data-testid="no-data-sources-message">
       <Box borderRadius="full" p={4} bgColor="background.neutral" mb={6}>
         <Icon
           as={NoDatasourcesIcon}
@@ -946,6 +946,7 @@ export default function AddDataSteps(props: {
                     return (
                       <Card.Root
                         key={source.datasourceId}
+                        data-testid="source-card"
                         variant="outline"
                         borderColor={
                           isSourceConnected(source) &&

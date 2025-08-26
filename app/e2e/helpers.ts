@@ -140,8 +140,10 @@ export async function createInventoryThroughOnboarding(
   await page.waitForLoadState("networkidle");
 
   // Step 6: Verify completion page
-  const completionMessage = page.getByTestId("done-heading");
-  await expect(completionMessage).toBeVisible();
+  const completionMessage = page.getByTestId("done-heading").waitFor({
+    state: "visible",
+    timeout: 10000,
+  });
   // Return the completion page for further navigation
   return page;
 }

@@ -181,6 +181,7 @@ const DownloadButtons = ({
           mx="24px"
           variant="ghost"
           disabled={!isAvailable}
+          data-testid={`download-${format}-button`}
           style={{
             backgroundColor: "white",
             color: "black",

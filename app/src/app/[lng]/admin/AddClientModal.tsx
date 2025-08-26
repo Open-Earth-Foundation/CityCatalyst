@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Button,
-  Input,
-  Textarea,
-  VStack,
-  Box,
-  Text,
-} from "@chakra-ui/react";
+import { Button, Input, Textarea, VStack, Box, Text } from "@chakra-ui/react";
 import {
   DialogRoot,
   DialogContent,
@@ -27,7 +20,11 @@ interface AddClientModalProps {
   onClose: () => void;
 }
 
-const AddClientModal: React.FC<AddClientModalProps> = ({ lng, isOpen, onClose }) => {
+const AddClientModal: React.FC<AddClientModalProps> = ({
+  lng,
+  isOpen,
+  onClose,
+}) => {
   const { t } = useTranslation(lng, "admin");
 
   const [addClient, { isLoading }] = api.useAddClientMutation();
@@ -59,22 +56,25 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ lng, isOpen, onClose })
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = t("oauth-client-description-required") || "Description is required";
+      newErrors.description =
+        t("oauth-client-description-required") || "Description is required";
     }
 
     if (!formData.redirectUri.trim()) {
-      newErrors.redirectUri = t("oauth-client-redirect-uri-required") || "Redirect URI is required";
+      newErrors.redirectUri =
+        t("oauth-client-redirect-uri-required") || "Redirect URI is required";
     } else {
       // Basic URL validation
       try {
         new URL(formData.redirectUri);
       } catch {
-        newErrors.redirectUri = t("oauth-client-invalid-uri") || "Please enter a valid URL";
+        newErrors.redirectUri =
+          t("oauth-client-invalid-uri") || "Please enter a valid URL";
       }
     }
 
     setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error !== "");
+    return !Object.values(newErrors).some((error) => error !== "");
   };
 
   const showSuccess = (message: string) => {
@@ -114,8 +114,8 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ lng, isOpen, onClose })
     } catch (error: any) {
       showError(
         error?.data?.message ||
-        t("oauth-client-creation-failed") ||
-        "Failed to create client"
+          t("oauth-client-creation-failed") ||
+          "Failed to create client",
       );
     }
   };
@@ -129,32 +129,55 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ lng, isOpen, onClose })
   };
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
   return (
-    <DialogRoot open={isOpen} onOpenChange={(details) => !details.open && handleClose()}>
+    <DialogRoot
+      open={isOpen}
+      onOpenChange={(details) => !details.open && handleClose()}
+    >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("oauth-add-client-title") || "Add OAuth Client"}</DialogTitle>
+          <DialogTitle>
+            {t("oauth-add-client-title") || "Add OAuth Client"}
+          </DialogTitle>
           <DialogCloseTrigger />
         </DialogHeader>
 
         <form onSubmit={handleSubmit}>
           <DialogBody>
             {successMessage && (
-              <Box bg="green.50" border="1px" borderColor="green.200" p={3} borderRadius="md" mb={4}>
-                <Text color="green.800" fontSize="sm">{successMessage}</Text>
+              <Box
+                bg="green.50"
+                border="1px"
+                borderColor="green.200"
+                p={3}
+                borderRadius="md"
+                mb={4}
+              >
+                <Text color="green.800" fontSize="sm">
+                  {successMessage}
+                </Text>
               </Box>
             )}
 
             {errorMessage && (
-              <Box bg="red.50" border="1px" borderColor="red.200" p={3} borderRadius="md" mb={4}>
-                <Text color="red.800" fontSize="sm">{errorMessage}</Text>
+              <Box
+                bg="red.50"
+                border="1px"
+                borderColor="red.200"
+                p={3}
+                borderRadius="md"
+                mb={4}
+              >
+                <Text color="red.800" fontSize="sm">
+                  {errorMessage}
+                </Text>
               </Box>
             )}
 
@@ -166,7 +189,9 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ lng, isOpen, onClose })
                 <Input
                   value={formData.name}
                   onChange={(e) => handleInputChange("name", e.target.value)}
-                  placeholder={t("oauth-client-name-placeholder") || "Enter client name"}
+                  placeholder={
+                    t("oauth-client-name-placeholder") || "Enter client name"
+                  }
                   borderColor={errors.name ? "red.500" : undefined}
                 />
                 {errors.name && (
@@ -182,8 +207,13 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ lng, isOpen, onClose })
                 </Text>
                 <Textarea
                   value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
-                  placeholder={t("oauth-client-description-placeholder") || "Enter client description"}
+                  onChange={(e) =>
+                    handleInputChange("description", e.target.value)
+                  }
+                  placeholder={
+                    t("oauth-client-description-placeholder") ||
+                    "Enter client description"
+                  }
                   rows={3}
                   borderColor={errors.description ? "red.500" : undefined}
                 />
@@ -200,7 +230,9 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ lng, isOpen, onClose })
                 </Text>
                 <Input
                   value={formData.redirectUri}
-                  onChange={(e) => handleInputChange("redirectUri", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("redirectUri", e.target.value)
+                  }
                   placeholder="https://example.com/callback"
                   type="url"
                   borderColor={errors.redirectUri ? "red.500" : undefined}
@@ -225,7 +257,9 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ lng, isOpen, onClose })
               loading={isLoading}
               disabled={isLoading}
             >
-              {isLoading ? (t("creating") || "Creating...") : (t("oauth-add-client") || "Add Client")}
+              {isLoading
+                ? t("creating") || "Creating..."
+                : t("oauth-add-client") || "Add Client"}
             </Button>
           </DialogFooter>
         </form>

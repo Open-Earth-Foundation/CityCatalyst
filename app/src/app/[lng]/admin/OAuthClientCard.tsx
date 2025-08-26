@@ -9,7 +9,11 @@ import { TitleMedium } from "@/components/Texts/Title";
 import { api } from "@/services/api";
 import { toaster } from "@/components/ui/toaster";
 
-const OAuthClientCard = (props: { lng: string; client: Client; onDelete?: (client: Client) => void }) => {
+const OAuthClientCard = (props: {
+  lng: string;
+  client: Client;
+  onDelete?: (client: Client) => void;
+}) => {
   const { lng, client, onDelete } = props;
   const { t } = useTranslation(lng, "admin");
   const [deleteClient, { isLoading }] = api.useDeleteClientMutation();
@@ -43,32 +47,33 @@ const OAuthClientCard = (props: { lng: string; client: Client; onDelete?: (clien
         </TitleMedium>
       </Card.Header>
       <Card.Body>
-        {(isLoading)
-          ? <Spinner />
-          : <Box>
-              <Box color="gray.600" mb={4}>
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <Box>
+            <Box color="gray.600" mb={4}>
               {client.description?.[lng] ||
                 client.description?.["en"] ||
                 t("oauth-no-description")}
+            </Box>
+            <Box>
+              <Box as="span" fontWeight="semibold">
+                {t("oauth-redirect-uri")}:{" "}
               </Box>
-              <Box>
-                <Box as="span" fontWeight="semibold">
-                  {t("oauth-redirect-uri")}:{" "}
-                </Box>
-                <Box as="span" color="blue.500">
-                  {client.redirectUri}
-                </Box>
-              </Box>
-              <Box>
-                <Box as="span" fontWeight="semibold">
-                  {t("oauth-client-id")}:{" "}
-                </Box>
-                <Box as="span" color="blue.500">
-                  {client.clientId}
-                </Box>
+              <Box as="span" color="blue.500">
+                {client.redirectUri}
               </Box>
             </Box>
-        }
+            <Box>
+              <Box as="span" fontWeight="semibold">
+                {t("oauth-client-id")}:{" "}
+              </Box>
+              <Box as="span" color="blue.500">
+                {client.clientId}
+              </Box>
+            </Box>
+          </Box>
+        )}
       </Card.Body>
       <Card.Footer>
         <IconButton aria-label="Delete" onClick={handleDelete}>

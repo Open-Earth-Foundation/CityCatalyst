@@ -63,10 +63,7 @@ import type {
   ModuleDataSummaryResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
-import {
-  createApi,
-  fetchBaseQuery,
-} from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: "api",
@@ -100,7 +97,7 @@ export const api = createApi({
     "Themes",
     "Client",
     "CityDashboard",
-    "Modules"
+    "Modules",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1354,7 +1351,9 @@ export const api = createApi({
       getClient: builder.query<Client, string>({
         query: (clientId: string) => `client/${clientId}/`,
         transformResponse: (response: { data: Client }) => response.data,
-        providesTags: (result, error, clientId) => [{ type: 'Client', id: clientId }],
+        providesTags: (result, error, clientId) => [
+          { type: "Client", id: clientId },
+        ],
       }),
       generateCode: builder.mutation({
         query: ({
@@ -1406,7 +1405,7 @@ export const api = createApi({
       getClients: builder.query<Client[], void>({
         query: () => `client/`,
         transformResponse: (response: { data: Client[] }) => response.data,
-        providesTags: ['Client'],
+        providesTags: ["Client"],
       }),
       addClient: builder.mutation({
         query: ({
@@ -1427,14 +1426,14 @@ export const api = createApi({
           },
         }),
         transformResponse: (response: { data: Client }) => response.data,
-        invalidatesTags: ['Client'],
+        invalidatesTags: ["Client"],
       }),
       deleteClient: builder.mutation<void, string>({
         query: (clientId: string) => ({
           method: "DELETE",
           url: `/client/${clientId}`,
         }),
-        invalidatesTags: ['Client'],
+        invalidatesTags: ["Client"],
       }),
     };
   },

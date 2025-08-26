@@ -140,9 +140,8 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     const isExpanded = expandedSubsectors.has(subsector);
 
     return (
-      <>
+      <Box key={subsector}>
         <Table.Row
-          key={subsector}
           cursor="pointer"
           onClick={() => toggleSubsector(subsector)}
           _hover={{ bg: "gray.50" }}
@@ -189,7 +188,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           activities.map((item, index) =>
             renderActivityRow(item, `${item.activityTitle}-${index}`),
           )}
-      </>
+      </Box>
     );
   };
 

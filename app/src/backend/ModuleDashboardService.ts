@@ -114,9 +114,9 @@ export class ModuleDashboardService {
     const dashboardData: Record<string, any> = {};
 
     // For each enabled module, get its dashboard data
-    for (const module of enabledModules) {
-      const moduleId = module.id;
-      const moduleUrl = module.url;
+    for (const enabledModule of enabledModules) {
+      const moduleId = enabledModule.id;
+      const moduleUrl = enabledModule.url;
 
       logger.info(
         `Fetching dashboard data for module ${moduleId} (${moduleUrl})`,
@@ -137,7 +137,7 @@ export class ModuleDashboardService {
             // For unknown modules, return basic info
             dashboardData[moduleId] = {
               moduleId,
-              moduleName: module.name,
+              moduleName: enabledModule.name,
               moduleUrl,
               available: true,
             };
@@ -151,7 +151,7 @@ export class ModuleDashboardService {
         dashboardData[moduleId] = {
           error: (error as Error).message || "Failed to load module data",
           moduleId,
-          moduleName: module.name,
+          moduleName: enabledModule.name,
         };
       }
     }

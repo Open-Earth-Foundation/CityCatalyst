@@ -7,6 +7,7 @@ import { upsertInventoryRequest } from "@/util/validation";
 import { validate } from "uuid";
 import { InventoryService } from "@/backend/InventoryService";
 import { PermissionService } from "@/backend/permissions/PermissionService";
+import { Inventory } from "@/models/Inventory";
 
 function hasIsPublicProperty(
   inventory:
@@ -54,10 +55,14 @@ export const GET = apiHandler(async (req, { session, params }) => {
 
 export const DELETE = apiHandler(async (_req, { params, session }) => {
   // Use PermissionService for delete permission (ORG_ADMIN only)
-  const { resource: inventory } = await PermissionService.canDeleteInventory(
+  const { resource } = await PermissionService.canDeleteInventory(
     session,
     params.inventory
   );
+
+
+  const inventory = resource as Inventory;
+
   await inventory.destroy();
   return NextResponse.json({ data: inventory, deleted: true });
 });
@@ -66,10 +71,12 @@ export const PATCH = apiHandler(async (req, context) => {
   const { params, session } = context;
   const body = upsertInventoryRequest.parse(await req.json());
   // Use PermissionService for edit permission
-  const { resource: inventory } = await PermissionService.canEditInventory(
+  const { resource} = await PermissionService.canEditInventory(
     session,
     params.inventory
   );
+
+  const inventory = resource as Inventory;
 
   let updatedInventory = inventory;
   

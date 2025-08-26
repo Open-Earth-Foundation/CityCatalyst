@@ -139,7 +139,7 @@ export default function CitiesDashboardPage({
                   width="24px"
                   height="24px"
                 />
-                Publish
+                {t("publish")}
               </Button>
             </HStack>
             <Box h="1px" mt="6" bg="border.neutral" />

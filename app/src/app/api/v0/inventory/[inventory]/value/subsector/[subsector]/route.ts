@@ -5,12 +5,16 @@ import { NextResponse } from "next/server";
 import { patchInventoryValue } from "@/util/validation";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
+import { Inventory } from "@/models/Inventory";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
-  const { resource: inventory } = await PermissionService.canEditInventory(
+  const { resource} = await PermissionService.canEditInventory(
     session,
     params.inventory
   );
+
+  const inventory = resource as Inventory;
+
   const inventoryValues = await db.models.InventoryValue.findAll({
     where: {
       subSectorId: params.subsector,
@@ -34,10 +38,12 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const body = patchInventoryValue.parse(await req.json());
 
-  const { resource: inventory } = await PermissionService.canEditInventory(
+  const { resource } = await PermissionService.canEditInventory(
     session,
     params.inventory
   );
+
+  const inventory = resource as Inventory;
 
   if (!inventory) {
     throw new createHttpError.NotFound("Inventory not found");
@@ -102,10 +108,12 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 });
 
 export const DELETE = apiHandler(async (_req, { params, session }) => {
-  const { resource: inventory } = await PermissionService.canEditInventory(
+  const { resource } = await PermissionService.canEditInventory(
     session,
     params.inventory
   );
+
+  const inventory = resource as Inventory;
 
   const inventoryValue = await db.models.InventoryValue.findOne({
     where: {

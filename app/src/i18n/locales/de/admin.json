@@ -142,5 +142,16 @@
   "user-removed": "Benutzer erfolgreich entfernt",
   "role-update-success-toast-title": "Rolle erfolgreich aktualisiert",
   "frozen": "Eingefroren",
-  "already-registered-admin": "{{email}} ist bereits ein registrierter Administrator"
+  "already-registered-admin": "{{email}} ist bereits ein registrierter Administrator",
+  "modules": "Module",
+  "ghg-inventories": "THG-Inventare",
+  "module": "modul",
+  "module-name": "modulname",
+  "active-modules": "Aktive Module",
+  "provider": "anbieter",
+  "climate-risks": "Klimarisiken",
+  "actions-and-plans": "Aktionen und Pläne",
+  "finance-readiness": "Finanzbereitschaft",
+  "org-modules-heading": "{{name}} Module",
+  "control-panel-for-organization": "Kontrollpanel für {{name}}"
 }

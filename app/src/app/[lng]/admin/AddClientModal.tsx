@@ -65,7 +65,10 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
         t("oauth-client-redirect-uri-required") || "Redirect URI is required";
     } else {
       try {
-        new URL(formData.redirectUri);
+        const url = new URL(formData.redirectUri);
+        if (!['http:', 'https:'].includes(url.protocol)) {
+          throw new Error('Invalid protocol');
+        }
       } catch {
         newErrors.redirectUri =
           t("oauth-client-invalid-uri") || "Please enter a valid URL";

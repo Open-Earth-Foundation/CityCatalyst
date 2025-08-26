@@ -58,18 +58,11 @@ function FormattedNumberInput({
     // Replace the locale-specific separator with a dot for parsing
     const normalizedValue = nval.replace(decimalSeparator, ".");
 
-    // If the input is not a valid number, return it as is
-    if (Number.isNaN(normalizedValue)) return nval;
-
     // Parse the number
-    let numericValue: bigint | null = null;
-    try {
-      numericValue = BigInt(normalizedValue);
-    } catch (err) {
-      return nval;
-    }
+    const numericValue = parseFloat(normalizedValue);
 
-    if (numericValue === null) return nval;
+    // If the input is not a valid number, return it as is
+    if (isNaN(numericValue)) return nval;
 
     // Format the number part
     const formattedNumber = new Intl.NumberFormat(locale, {

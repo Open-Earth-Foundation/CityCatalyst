@@ -67,7 +67,20 @@
     "message": "Sua conta foi congelada. Isso significa que você e todos os outros administradores e colaboradores não poderão editar nenhum projeto ou inventário em sua conta.",
     "contact": "Para ativar sua conta, entre em contato com {{email}}",
     "cta": "Entrar",
-    "footer": "Open Earth Foundation é uma corporação de benefício público sem fins lucrativos da Califórnia, EUA. EIN: 85-3261449"
+    "footer": "Open Earth Foundation é uma corporação de benefício público sem fins lucrativos da Califórnia, EUA. EIN: 85-3261449",
+    "ready-to-upgrade-heading": "Pronto para continuar",
+    "ready-to-upgrade-message": "Desbloqueie o acesso total a todos os seus projetos e recursos",
+    "ready-to-upgrade-cta": "Atualize Agora",
+    "ready-to-talk": "Prefere conversar sobre isso?",
+    "ready-to-talk-cta": "Agende uma chamada rápida com a nossa equipe",
+    "Survey-heading": "Tem um minuto?",
+    "survery-text": "Gostaríamos de ouvir sobre a sua experiência.",
+    "survey-cta": "Responda 3 perguntas rápidas",
+    "survery-raffle-draw": "Ao participar, três consultores sortudos serão selecionados para receber cada um uma licença gratuita de um ano para o CityCatalyst.",
+    "footer-1": "CityCatalyst foi projetado para ajudar cidades e consultores a se moverem de maneira mais rápida, inteligente e unida, e adoraríamos apoiar seu trabalho a longo prazo.",
+    "footer-2": "Se tiver alguma dúvida ou precisar de ajuda para escolher o melhor plano, basta responder a este email.",
+    "footer-3": "Obrigado por experimentar o CityCatalyst",
+    "footer-4": "A Equipe CityCatalyst"
   },
   "account-unfrozen": {
     "subject": "City Catalyst - Conta Ativada",
@@ -130,7 +143,13 @@
     "greeting": "Olá {{name}},",
     "message": "Você está convidado para se juntar ao CityCatalyst e contribuir para o inventário de emissões da organização:",
     "cta": "JUNTAR-SE AGORA",
-    "footer": "Open Earth Foundation é uma corporação de benefício público sem fins lucrativos da Califórnia, EUA. EIN: 85-3261449"
+    "footer": "Open Earth Foundation é uma corporação de benefício público sem fins lucrativos da Califórnia, EUA. EIN: 85-3261449",
+    "greeting-no-name": "Oi,",
+    "steps-heading": "Aqui está o que você pode fazer agora mesmo",
+    "step1": "<1>Configure o seu primeiro inventário</1> - Você pode começar com uma cidade durante este teste.",
+    "step2": "<1>Convide colaboradores</1> - Trabalhe em equipe para construir e revisar seus dados.",
+    "step3": "<1>Explore as principais funcionalidades</1> - Desde a construção do seu inventário de GEE até a personalização do seu logotipo e cores.",
+    "step4": "<1>Pergunte à IA</1> - O nosso Assistente Climático está pronto para responder às suas perguntas e apoiá-lo no processo. revisando as ações de impacto sugeridas."
   },
   "role-update": {
     "subject": "City Catalyst - Função Atualizada",
@@ -152,5 +171,21 @@
     "cta": "Ver Projeto",
     "footer": "Esta é uma mensagem automatizada, por favor não responda.",
     "brand": "CityCatalyst"
+  },
+  "admin-invite-accepted": {
+    "subject": "Bem-vindo ao CityCatalyst! 🎉 vamos começar. ",
+    "preview": "Bem-vindo ao CityCatalyst! 🎉 vamos começar. ",
+    "brand": "CityCatalyst",
+    "title": "Bem-vindo ao CityCatalyst!",
+    "greeting": "Olá {{name}},",
+    "message": "Estamos animados por tê-lo a bordo. Aqui está como aproveitar ao máximo o seu Teste Gratuito de 1 mês: ",
+    "step1": "Crie o seu primeiro projeto de cidade (o teste inclui 1 cidade)",
+    "step2": "Convide colaboradores da sua equipe ou parceiros",
+    "step3": "Personalize o seu espaço de trabalho com o seu logotipo e cores",
+    "step4": "Personalize o seu espaço de trabalho com o seu logotipo e cores",
+    "footer-1": "Precisa de uma mão? Estamos aqui para ajudar, por favor, entre em contato com citycatalyst@openearth.org se tiver perguntas!",
+    "footer-2": "Vamos fazer os dados climáticos locais trabalharem mais, juntos.",
+    "footer-3": "A Equipe CityCatalyst",
+    "footer": "A Open Earth Foundation é uma corporação sem fins lucrativos de benefício público da Califórnia, EUA. EIN: 85-3261449"
   }
 }

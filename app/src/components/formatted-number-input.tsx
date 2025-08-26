@@ -46,11 +46,6 @@ function FormattedNumberInput({
 }: FormattedNumberInputProps) {
   const { lng } = useParams();
 
-  const value = useWatch({
-    control,
-    name,
-  });
-
   const format = (nval: number | string) => {
     nval = nval.toString();
     const locale = REGIONALLOCALES[lng as string] || "en-US"; // Get the user's locale

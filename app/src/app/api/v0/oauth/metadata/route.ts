@@ -3,6 +3,7 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { languages } from "@/i18n/settings";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { logger } from "@/services/logger";
 
 const DOCUMENTATION_URL = 'https://github.com/Open-Earth-Foundation/CityCatalyst/wiki/CityCatalyst-Backend-API'
 
@@ -33,7 +34,13 @@ interface OAuthMetadata {
 
 export const GET = apiHandler(async (_req, { session }) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
-    throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
+    logger.warn(
+      `OAuth Metadata endpoint hit but OAuth 2.0 is not enabled.
+       Check the OAUTH_ENABLED feature flag.`
+    );
+    throw createHttpError.InternalServerError(
+      "OAuth 2.0 not enabled on this server"
+    );
   }
 
   const origin = _req.nextUrl.origin;

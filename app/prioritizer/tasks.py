@@ -224,10 +224,16 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
 
 
 def compute_prioritization_bulk_subtask(
-    background_task_input: Dict,
+    background_task_input: Dict, mode: str = "quickselect_top_k"
 ) -> Dict[str, Union[str, Dict]]:
     """
     Compute-only version of the bulk subtask suitable for execution in a separate process.
+    Mode can be either "quickselect_top_k" or "tournament_ranking".
+    The default mode is "quickselect_top_k".
+
+    Inputs:
+    - background_task_input: Dict
+    - mode: str, either "quickselect_top_k" or "tournament_ranking"
 
     Expects background_task_input with keys:
       - requestData: dict with locode, populationSize, emission fields
@@ -240,6 +246,13 @@ def compute_prioritization_bulk_subtask(
       or
       {"status": "failed", "error": str}
     """
+
+    if mode == "quickselect_top_k":
+        ranking_function = quickselect_top_k
+    elif mode == "tournament_ranking":
+        ranking_function = tournament_ranking
+    else:
+        raise ValueError(f"Invalid mode: {mode}")
 
     try:
         start_time = time.time()
@@ -282,7 +295,7 @@ def compute_prioritization_bulk_subtask(
             prioritizationType=prioritizationType,
             country_code=country_code,
             languages=languages,
-            ranking_function=quickselect_top_k,
+            ranking_function=ranking_function,
         )
 
         prioritizer_response = PrioritizerResponse(
@@ -320,7 +333,8 @@ def _execute_prioritization_bulk_subtask(
     It extracts the necessary data from the city data, calls the prioritization logic,
     and stores the result in the subtask.
 
-    It uses the faster quickselect_top_k function instead of the slower tournament_ranking function.
+    It uses tournament_ranking function instead of the faster quickselect_top_k function.
+    It is aimed to to be used for the cap_off_app implementation for 50 cities.
     """
 
     try:
@@ -348,7 +362,7 @@ def _execute_prioritization_bulk_subtask(
         logger.info(
             f"Task {main_task_id}: Starting prioritization for locode={city_data.cityContextData.locode}"
         )
-        logger.info("API endpoint uses quickselect_top_k function")
+        logger.info("API endpoint uses tournament_ranking function")
 
         start_time = time.time()
         try:
@@ -391,7 +405,7 @@ def _execute_prioritization_bulk_subtask(
                 prioritizationType=prioritizationType,
                 country_code=country_code,
                 languages=languages,
-                ranking_function=quickselect_top_k,
+                ranking_function=tournament_ranking,
             )
 
             prioritizer_response = PrioritizerResponse(

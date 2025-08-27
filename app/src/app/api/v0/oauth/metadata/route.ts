@@ -32,7 +32,7 @@ interface OAuthMetadata {
   code_challenge_methods_supported?: string[];
 }
 
-export const GET = apiHandler(async (_req, { session }) => {
+export const GET = apiHandler(async (_req) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     logger.warn(
       `OAuth Metadata endpoint hit but OAuth 2.0 is not enabled.

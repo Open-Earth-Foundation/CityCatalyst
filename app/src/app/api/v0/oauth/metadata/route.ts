@@ -12,6 +12,11 @@ export const GET = apiHandler(async (_req, { session }) => {
   }
 
   const origin = _req.nextUrl.origin;
+
+  if (!origin) {
+    throw createHttpError.InternalServerError('Unable to determine server origin URL');
+  }
+
   return NextResponse.json({
     issuer: `${origin}/`,
     authorization_endpoint: `${origin}/authorize/`,

@@ -7,6 +7,9 @@ import { logger } from "@/services/logger";
 
 const DOCUMENTATION_URL = 'https://github.com/Open-Earth-Foundation/CityCatalyst/wiki/CityCatalyst-Backend-API'
 
+// Definition of Authorization Server Metadata from
+// https://datatracker.ietf.org/doc/html/rfc8414#section-2
+
 interface OAuthMetadata {
   issuer: string;
   authorization_endpoint: string;

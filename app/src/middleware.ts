@@ -30,7 +30,9 @@ const excludedApi = [
 
 export async function middleware(req: NextRequestWithAuth) {
 
-  if (req.nextUrl.pathname.startsWith('/api')) {
+  if (req.nextUrl.pathname.startsWith('/api') ||
+     req.nextUrl.pathname.startsWith('/.well-known'))
+  {
     if (excludedApi.some(ptrn => req.nextUrl.pathname.match(ptrn))) {
       return NextResponse.next();
     }

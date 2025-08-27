@@ -1,0 +1,26 @@
+import { apiHandler } from "@/util/api";
+import createHttpError from "http-errors";
+import { NextResponse } from "next/server";
+import { languages } from "@/i18n/settings";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+
+const DOCUMENTATION_URL = 'https://github.com/Open-Earth-Foundation/CityCatalyst/wiki/CityCatalyst-Backend-API'
+
+export const GET = apiHandler(async (_req, { session }) => {
+  if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
+    throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
+  }
+
+  const origin = _req.nextUrl.origin;
+  return NextResponse.json({
+    issuer: `${origin}/`,
+    authorization_endpoint: `${origin}/authorize/`,
+    token_endpoint: `${origin}/api/v0/token/`,
+    scopes_supported: ['read', 'write'],
+    response_types_supported: ['code'],
+    grant_types_supported: ['authorization_code', 'refresh_token'],
+    service_documentation: DOCUMENTATION_URL,
+    ui_locales_supported: languages,
+    code_challenge_methods_supported: ['S256']
+  })
+})

@@ -22,10 +22,10 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/.well-known/oauth-authorization-server',
-        destination: '/api/v0/oauth/metadata/',
+        source: "/.well-known/oauth-authorization-server",
+        destination: "/api/v0/oauth/metadata/",
       },
-    ]
+    ];
   },
 };
 

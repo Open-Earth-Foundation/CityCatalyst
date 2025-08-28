@@ -5,7 +5,8 @@ import { languages } from "@/i18n/settings";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 
-const DOCUMENTATION_URL = 'https://github.com/Open-Earth-Foundation/CityCatalyst/wiki/CityCatalyst-Backend-API'
+const DOCUMENTATION_URL =
+  "https://github.com/Open-Earth-Foundation/CityCatalyst/wiki/CityCatalyst-Backend-API";
 
 // Definition of Authorization Server Metadata from
 // https://datatracker.ietf.org/doc/html/rfc8414#section-2
@@ -39,28 +40,30 @@ export const GET = apiHandler(async (_req) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     logger.warn(
       `OAuth Metadata endpoint hit but OAuth 2.0 is not enabled.
-       Check the OAUTH_ENABLED feature flag.`
+       Check the OAUTH_ENABLED feature flag.`,
     );
     throw createHttpError.InternalServerError(
-      "OAuth 2.0 not enabled on this server"
+      "OAuth 2.0 not enabled on this server",
     );
   }
 
   const origin = _req.nextUrl.origin;
 
   if (!origin) {
-    throw createHttpError.InternalServerError('Unable to determine server origin URL');
+    throw createHttpError.InternalServerError(
+      "Unable to determine server origin URL",
+    );
   }
 
   return NextResponse.json<OAuthMetadata>({
     issuer: `${origin}/`,
     authorization_endpoint: `${origin}/authorize/`,
     token_endpoint: `${origin}/api/v0/token/`,
-    scopes_supported: ['read', 'write'],
-    response_types_supported: ['code'],
-    grant_types_supported: ['authorization_code', 'refresh_token'],
+    scopes_supported: ["read", "write"],
+    response_types_supported: ["code"],
+    grant_types_supported: ["authorization_code", "refresh_token"],
     service_documentation: DOCUMENTATION_URL,
     ui_locales_supported: languages,
-    code_challenge_methods_supported: ['S256']
-  })
-})
+    code_challenge_methods_supported: ["S256"],
+  });
+});

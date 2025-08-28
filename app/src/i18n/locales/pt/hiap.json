@@ -34,6 +34,7 @@
   "citycatalyst-actions-title": "citycatalyst actions",
   "top-actions-for-your-city": "Principais ações para sua cidade",
   "top-actions-for-your-city-description": "Estas são as 40 principais ações que recomendamos com base no seu inventário de GEE e dados de contexto da cidade. Você encontrará 20 ações para Mitigação e 20 para Adaptação em suas respectivas abas. É recomendado executar novamente o priorizador após qualquer atualização ou mudança relevante nos dados.",
+  "actions-for-your-city-description": "Estas são as 40 principais ações que recomendamos com base no seu inventário de GEE, Avaliação de Riscos Climáticos e dados de contexto da cidade. Você encontrará 20 ações para Mitigação e 20 para Adaptação em suas respectivas abas.",
   "re-prioritize-actions": "Repriorizar ações",
   "generated-action-plan": "gerar plano de ação",
   "export-as-pdf": "exportar como PDF",
@@ -97,5 +98,7 @@
   "encourage-renewable-energy-policies": "Incentive políticas de energia renovável no nível municipal",
   "stationary-energy": "Energia estacionária",
   "waste": "Resíduos",
-  "low": "Baixo"
+  "low": "Baixo",
+  "top-actions-tip": "Sua lista de principais ações é baseada no progresso atual do seu inventário. Recomendamos completá-lo antes de usar este módulo.",
+  "climate-actions-title": "Ações climáticas"
 }

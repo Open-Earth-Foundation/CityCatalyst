@@ -161,7 +161,11 @@ function NoDataSourcesMessage({
   year?: number;
 }) {
   return (
-    <Flex align="center" direction="column" data-testid="no-data-sources-message">
+    <Flex
+      align="center"
+      direction="column"
+      data-testid="no-data-sources-message"
+    >
       <Box borderRadius="full" p={4} bgColor="background.neutral" mb={6}>
         <Icon
           as={NoDatasourcesIcon}
@@ -525,6 +529,11 @@ export default function AddDataSteps(props: {
       );
       // TODO show alert
       setDisconnectingDataSourceId(null);
+      setNewlyConnectedDataSourceIds(
+        newlyConnectedDataSourceIds.filter(
+          (connectedSource) => connectedSource !== source.datasourceId,
+        ),
+      );
       onSearchDataSourcesClicked();
     } else {
       logger.error("Something went wrong when disconnecting data source");

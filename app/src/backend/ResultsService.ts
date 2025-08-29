@@ -407,21 +407,19 @@ export const getEmissionsBreakdownBatch = async (
       (e) => `${e.subsector_name}-${e.datasource_id}`,
     );
 
-    const totalEmissions = bigIntToDecimal(
-      emissionsForSector.reduce((sum, item) => {
-        // Sum the co2eq from all activities for this inventory value
-        if (item.activities.length > 0) {
-          const activitySum = item.activities.reduce(
-            (activitySum, activity) =>
-              activitySum + BigInt(activity.co2eq || 0n),
-            0n,
-          );
-          return sum + activitySum;
-        } else {
-          return sum + (item.co2eq || 0n);
-        }
-      }, 0n),
-    );
+    const totalEmissions = emissionsForSector.reduce((sum, item) => {
+      // Sum the co2eq from all activities for this inventory value
+      if (item.activities.length > 0) {
+        const activitySum = item.activities.reduce(
+          (activitySum, activity) =>
+            activitySum.plus(bigIntToDecimal(activity.co2eq ?? 0n)),
+          new Decimal(0),
+        );
+        return sum.plus(activitySum);
+      } else {
+        return sum.plus(bigIntToDecimal(item.co2eq ?? 0n));
+      }
+    }, new Decimal(0));
 
     const resultsByScope = Object.entries(bySubSectorAndDataSource).map(
       ([_subsectorAndDataSource, scopeValues]) => {

@@ -140,7 +140,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     const isExpanded = expandedSubsectors.has(subsector);
 
     return (
-      <Box key={subsector}>
+      <React.Fragment key={subsector}>
         <Table.Row
           cursor="pointer"
           onClick={() => toggleSubsector(subsector)}
@@ -188,7 +188,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           activities.map((item, index) =>
             renderActivityRow(item, `${item.activityTitle}-${index}`),
           )}
-      </Box>
+      </React.Fragment>
     );
   };
 

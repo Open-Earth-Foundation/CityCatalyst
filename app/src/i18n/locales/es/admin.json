@@ -143,6 +143,8 @@
   "user-removed": "Usuario eliminado con éxito",
   "frozen": "Congelado",
   "already-registered-admin": "{{email}} ya está registrado como administrador",
+  "user-already-org-admin": "El usuario ya es un administrador de organización",
+  "error-invite": "Error de invitación",
   "modules": "Módulos",
   "ghg-inventories": "Inventarios GEI",
   "module": "módulo",

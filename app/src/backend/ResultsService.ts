@@ -429,7 +429,7 @@ export const getEmissionsBreakdownBatch = async (
         const byScope = groupBy(scopeValues, "scope_name");
 
         const scopes: { [key: string]: Decimal } = {};
-        let totalSectorEmissions = new Decimal(0);
+        let totalSubSectorEmissions = new Decimal(0);
 
         // Aggregate emissions by scope
         Object.entries(byScope).forEach(([scopeName, scopeItems]) => {
@@ -448,7 +448,8 @@ export const getEmissionsBreakdownBatch = async (
             }
           }, new Decimal(0));
           scopes[scopeName] = scopeEmissions;
-          totalSectorEmissions = totalSectorEmissions.plus(scopeEmissions);
+          totalSubSectorEmissions =
+            totalSubSectorEmissions.plus(scopeEmissions);
           return scopeEmissions;
         });
 
@@ -457,11 +458,16 @@ export const getEmissionsBreakdownBatch = async (
           (scopeValue) => scopeValue.activities,
         );
 
+        const percentage = calculatePercentage(
+          totalSubSectorEmissions,
+          totalEmissions,
+        );
+
         return {
           activityTitle: scopeValues[0].subsector_name,
           scopes,
-          totalEmissions: totalSectorEmissions,
-          percentage: calculatePercentage(totalSectorEmissions, totalEmissions),
+          totalEmissions: totalSubSectorEmissions,
+          percentage,
           datasource_id: scopeValues[0].datasource_id,
           datasource_name: scopeValues[0].datasource_name,
           activities,

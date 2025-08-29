@@ -63,10 +63,7 @@ import type {
   ModuleDataSummaryResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
-import {
-  createApi,
-  fetchBaseQuery,
-} from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: "api",
@@ -666,6 +663,11 @@ export const api = createApi({
           "InventoryValue",
           "InventoryProgress",
           "ReportResults",
+          "SubSectorValue",
+          "YearlyReportResults",
+          "InventoryValue",
+          "SectorBreakdown",
+          "Inventory",
         ],
         transformResponse: (response: { data: EmissionsFactorResponse }) =>
           response.data,

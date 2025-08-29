@@ -18,7 +18,8 @@ def test_get_emissionfactor_datasources_success(monkeypatch):
                         "dataset_name": "Test Dataset",
                         "dataset_url": "http://example.com",
                         "publisher_id": 1,
-                        "dataset_id": 1
+                        "dataset_id": 1,
+                        "dataset_name_i18n": None
                     }]
             return DummyResult()
     monkeypatch.setattr("routes.emissionfactor_datasource_endpoint.SessionLocal", lambda: DummySession())

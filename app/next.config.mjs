@@ -19,6 +19,14 @@ const nextConfig = {
     NEXT_AWS_SECRET_ACCESS_KEY: process.env.NEXT_AWS_SECRET_ACCESS_KEY,
     NEXT_AWS_S3_BUCKET_ID: process.env.NEXT_AWS_S3_BUCKET_ID,
   },
+  async rewrites() {
+    return [
+      {
+        source: "/.well-known/oauth-authorization-server",
+        destination: "/api/v0/oauth/metadata/",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

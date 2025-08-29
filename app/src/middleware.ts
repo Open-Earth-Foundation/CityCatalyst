@@ -25,32 +25,40 @@ const excludedApi = [
   /^\/api\/v0\/auth\//,
   /^\/api\/v0\/check\//,
   /^\/api\/v0\/mock\//,
-  /^\/api\/v0\/chat\//
-]
+  /^\/api\/v0\/chat\//,
+];
 
 export async function middleware(req: NextRequestWithAuth) {
-
-  if (req.nextUrl.pathname.startsWith('/api')) {
-    if (excludedApi.some(ptrn => req.nextUrl.pathname.match(ptrn))) {
+  if (
+    req.nextUrl.pathname.startsWith("/api") ||
+    req.nextUrl.pathname.startsWith("/.well-known")
+  ) {
+    if (excludedApi.some((ptrn) => req.nextUrl.pathname.match(ptrn))) {
       return NextResponse.next();
     }
-    if (req.method === 'OPTIONS') {
+    if (req.method === "OPTIONS") {
       return new Response(null, {
         status: 200,
         headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-          'Access-Control-Max-Age': '86400', // 24 hours
-          'Access-Control-Allow-Credentials': 'false'
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Max-Age": "86400", // 24 hours
+          "Access-Control-Allow-Credentials": "false",
         },
       });
     }
     const response = NextResponse.next();
-    response.headers.set('Access-Control-Allow-Origin', '*');
-    response.headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    response.headers.set('Access-Control-Allow-Credentials', 'false');
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    response.headers.set(
+      "Access-Control-Allow-Methods",
+      "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+    );
+    response.headers.set(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization",
+    );
+    response.headers.set("Access-Control-Allow-Credentials", "false");
     return response;
   }
 

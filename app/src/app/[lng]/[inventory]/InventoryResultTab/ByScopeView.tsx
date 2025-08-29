@@ -196,28 +196,30 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     <Box py={4}>
       <Table.Root variant="line">
         <Table.Header textTransform="uppercase">
-          <Table.ColumnHeader>
-            <ButtonSmall>{tData("subsector")}</ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            <ButtonSmall>{tDashboard("total-emissions")}</ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            <ButtonSmall>{tDashboard("%-of-sector-emissions")}</ButtonSmall>
-          </Table.ColumnHeader>
-          {scopes.map((s) => (
-            <Table.ColumnHeader key={s}>
-              <ButtonSmall>
-                {tDashboard("emissions-scope")} {s}
-              </ButtonSmall>
+          <Table.Row>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tData("subsector")}</ButtonSmall>
             </Table.ColumnHeader>
-          ))}
-          <Table.ColumnHeader>
-            <ButtonSmall>{tDashboard("source")}</ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            {/* this is where the chevron is */}
-          </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tDashboard("total-emissions")}</ButtonSmall>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tDashboard("%-of-sector-emissions")}</ButtonSmall>
+            </Table.ColumnHeader>
+            {scopes.map((s) => (
+              <Table.ColumnHeader key={s}>
+                <ButtonSmall>
+                  {tDashboard("emissions-scope")} {s}
+                </ButtonSmall>
+              </Table.ColumnHeader>
+            ))}
+            <Table.ColumnHeader>
+              <ButtonSmall>{tDashboard("source")}</ButtonSmall>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              {/* this is where the chevron is */}
+            </Table.ColumnHeader>
+          </Table.Row>
         </Table.Header>
         <Table.Body>
           {Object.entries(groupedData).map(([subsector, activities]) =>

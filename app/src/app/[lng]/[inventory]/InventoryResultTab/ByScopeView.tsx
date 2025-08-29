@@ -95,19 +95,23 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
         </Table.Cell>
       ))}
       <Table.Cell>
-        <BodyMedium
-          color="content.link"
-          textDecoration={"underline"}
-          textTransform={"uppercase"}
-          fontWeight={"bold"}
-          onClick={(e) => {
-            e.stopPropagation();
-            setSelectedSourceId(item.datasource_id || "");
-            onSourceDrawerOpen();
-          }}
-        >
-          {item.datasource_name || tDashboard("N/A")}
-        </BodyMedium>
+        {item.datasource_name ? (
+          <BodyMedium
+            color="content.link"
+            textDecoration={"underline"}
+            textTransform={"uppercase"}
+            fontWeight={"bold"}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedSourceId(item.datasource_id || "");
+              onSourceDrawerOpen();
+            }}
+          >
+            {item.datasource_name}
+          </BodyMedium>
+        ) : (
+          <BodyMedium color="content.secondary">{tDashboard("n-a")}</BodyMedium>
+        )}
       </Table.Cell>
       <Table.Cell></Table.Cell>
     </Table.Row>

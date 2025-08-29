@@ -261,17 +261,12 @@ export default function AddDataSteps(props: {
       if (sectorProgress.total === 0) {
         return step;
       }
-      const connectedProgress = clamp(
+      step.connectedProgress = clamp(
         sectorProgress.thirdParty / sectorProgress.total,
       );
-      const addedProgress = clamp(
+      step.addedProgress = clamp(
         sectorProgress.uploaded / sectorProgress.total,
       );
-      step.connectedProgress = Math.max(
-        connectedProgress,
-        step.connectedProgress,
-      );
-      step.addedProgress = Math.max(addedProgress, step.addedProgress);
       return step;
     });
     setSteps(updatedSteps);

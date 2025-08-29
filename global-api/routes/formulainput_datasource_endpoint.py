@@ -17,7 +17,8 @@ def get_formulainput_datasources():
                             a.dataset_name,
                             a.dataset_url,
                             a.publisher_id,
-                            a.dataset_id
+                            a.dataset_id,
+                            a.dataset_name_i18n
             from modelled.publisher_datasource a
             inner join modelled.formula_input b
             on a.publisher_id = b.publisher_id 
@@ -35,7 +36,8 @@ def get_formulainput_datasources():
             "dataset_name": row["dataset_name"],
             "URL": row["dataset_url"],
             "publisher_id": row["publisher_id"],
-            "datasource_id": row["dataset_id"]
+            "datasource_id": row["dataset_id"],
+            "dataset_name_i18n": row["dataset_name_i18n"]
         }
         for row in result
     ]

@@ -143,6 +143,8 @@
   "frozen": "Congelado",
   "role-update-success-toast-title": "Função atualizada com sucesso",
   "already-registered-admin": "{{email}} já está registrado como administrador",
+  "user-already-org-admin": "O usuário já é um administrador da organização",
+  "error-invite": "Erro de convite",
   "modules": "Módulos",
   "ghg-inventories": "Inventários GEE",
   "module": "módulo",

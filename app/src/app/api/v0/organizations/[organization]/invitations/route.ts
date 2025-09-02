@@ -65,8 +65,11 @@ export const POST = apiHandler(async (req, { params, session }) => {
         .map((admin) => admin.user.email)
         .join(", ")}`,
     );
-    (error as any).code = 'USER_ALREADY_ORG_ADMIN';
-    (error as any).data = { emails: existingOrgAdmins.map((admin) => admin.user.email) };
+    (error as any).code = "USER_ALREADY_ORG_ADMIN";
+    (error as any).data = {
+      emails: existingOrgAdmins.map((admin) => admin.user.email),
+      errorKey: "user-already-org-admin",
+    };
     throw error;
   }
 

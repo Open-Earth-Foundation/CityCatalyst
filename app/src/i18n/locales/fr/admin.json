@@ -143,6 +143,8 @@
   "role-update-success-toast-title": "Rôle mis à jour avec succès",
   "frozen": "Gelé",
   "already-registered-admin": "{{email}} est déjà un administrateur enregistré",
+  "user-already-org-admin": "L'utilisateur est déjà un administrateur d'organisation",
+  "error-invite": "Erreur d'invitation",
   "modules": "Modules",
   "ghg-inventories": "Inventaires GES",
   "module": "module",

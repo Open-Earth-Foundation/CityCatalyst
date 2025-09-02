@@ -143,6 +143,8 @@
   "role-update-success-toast-title": "Rolle erfolgreich aktualisiert",
   "frozen": "Eingefroren",
   "already-registered-admin": "{{email}} ist bereits ein registrierter Administrator",
+  "user-already-org-admin": "Benutzer ist bereits ein Organisationsadministrator",
+  "error-invite": "Einladungsfehler",
   "modules": "Module",
   "ghg-inventories": "THG-Inventare",
   "module": "modul",

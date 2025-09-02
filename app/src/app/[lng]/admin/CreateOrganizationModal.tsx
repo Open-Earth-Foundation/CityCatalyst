@@ -19,6 +19,7 @@ import { MdWarning } from "react-icons/md";
 import { api } from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { OrganizationRole } from "@/util/types";
+import { CustomInviteError } from "@/lib/custom-errors/custom-invite-error";
 
 interface CreateOrganizationModalProps {
   isOpen: boolean;
@@ -122,13 +123,16 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
         showSuccessToast();
         closeFunction();
       } else if (inviteError) {
-        let error = inviteError as any;
+        let error = inviteError as CustomInviteError;
+        const safeErrorKey =
+          error?.data?.error?.data?.errorKey || "unknown-error";
+        const safeEmails = (error?.data?.error?.data?.emails || []).map(
+          (email) => email.replace(/[<>"'&]/g, ""),
+        );
+
         showErrorToast({
           title: t("error-invite"),
-          description:
-            t(error.data.error.data.errorKey as string) +
-            " " +
-            error.data.error.data.emails.join(", "),
+          description: t(safeErrorKey) + " " + safeEmails.join(", "),
         });
       }
     } else {

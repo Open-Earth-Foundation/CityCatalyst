@@ -10,7 +10,7 @@ spec:
     app: hiap-dev
   ports:
   - protocol: TCP
-    port: 8080
+    port: 80
     targetPort: 8000
     name: http
   type: ClusterIP 

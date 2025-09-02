@@ -1,5 +1,9 @@
 name: Push tagged Web app to GHCR and deploy to production
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   workflow_dispatch:
   push:

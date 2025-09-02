@@ -1,5 +1,10 @@
 name: Push Global API to latest and deploy to EKS
 
+permissions:
+  contents: read
+  packages: write
+  checks: write
+
 on:
   workflow_dispatch:
 
@@ -51,7 +56,7 @@ jobs:
       - name: Build coverage file
         run: |
             pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=global_api tests/ | tee pytest-coverage.txt
-      
+
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:

@@ -144,6 +144,8 @@
   "role-update-success-toast-title": "Role updated successfully",
   "frozen": "Frozen",
   "already-registered-admin": "{{email}} is already a registered admin",
+  "user-already-org-admin": "User is already an organization admin",
+  "error-invite": "Invitation error",
   "modules": "Modules",
   "ghg-inventories": "GHG Inventories",
   "module": "module",

@@ -67,7 +67,20 @@
     "message": "Votre compte a été gelé. Cela signifie que vous et tous les autres administrateurs et collaborateurs ne pourrez pas modifier de projets ou d'inventaires dans votre compte.",
     "contact": "Pour activer votre compte, veuillez contacter {{email}}",
     "cta": "Se Connecter",
-    "footer": "Open Earth Foundation est une corporation à but non lucratif de Californie, États-Unis. EIN: 85-3261449"
+    "footer": "Open Earth Foundation est une corporation à but non lucratif de Californie, États-Unis. EIN: 85-3261449",
+    "ready-to-upgrade-heading": "Prêt à continuer",
+    "ready-to-upgrade-message": "Débloquez un accès complet à tous vos projets et fonctionnalités",
+    "ready-to-upgrade-cta": "Mettez à jour maintenant",
+    "ready-to-talk": "Préférez-vous en discuter ?",
+    "ready-to-talk-cta": "Planifiez un appel rapide avec notre équipe",
+    "Survey-heading": "Vous avez une minute ?",
+    "survery-text": "Nous aimerions entendre parler de votre expérience.",
+    "survey-cta": "Répondez à 3 questions rapides",
+    "survery-raffle-draw": "En participant, trois consultants chanceux seront sélectionnés pour recevoir chacun une licence gratuite d'un an pour CityCatalyst.",
+    "footer-1": "CityCatalyst est conçu pour aider les villes et les consultants à avancer plus rapidement, plus intelligemment et ensemble, et nous serions ravis de soutenir votre travail sur le long terme.",
+    "footer-2": "Si vous avez des questions ou besoin d'aide pour choisir le meilleur plan, répondez simplement à cet email.",
+    "footer-3": "Merci d'avoir essayé CityCatalyst",
+    "footer-4": "L'équipe CityCatalyst"
   },
   "account-unfrozen": {
     "subject": "City Catalyst - Compte Activé",
@@ -130,7 +143,13 @@
     "greeting": "Bonjour {{name}},",
     "message": "Vous êtes invité à rejoindre CityCatalyst et à contribuer à l'inventaire des émissions de l'organisation :",
     "cta": "REJOINDRE MAINTENANT",
-    "footer": "Open Earth Foundation est une corporation à but non lucratif de Californie, États-Unis. EIN: 85-3261449"
+    "footer": "Open Earth Foundation est une corporation à but non lucratif de Californie, États-Unis. EIN: 85-3261449",
+    "greeting-no-name": "Salut,",
+    "steps-heading": "Voici ce que vous pouvez faire dès maintenant",
+    "step1": "<1>Configurez votre premier inventaire</1> - Vous pouvez commencer avec une ville pendant cet essai.",
+    "step2": "<1>Invitez des collaborateurs</1> - Travaillez en équipe pour construire et examiner vos données.",
+    "step3": "<1>Découvrez les fonctionnalités clés</1> - De la construction de votre inventaire de GES à la personnalisation de votre logo et de vos couleurs.",
+    "step4": "<1>Demander à l'IA</1> - Notre Assistant Climatique est prêt à répondre à vos questions et à vous soutenir dans le processus. en revoyant les actions d'impact suggérées."
   },
   "role-update": {
     "subject": "City Catalyst - Rôle Mis à Jour",
@@ -152,5 +171,21 @@
     "cta": "Voir le Projet",
     "footer": "Ceci est un message automatisé, veuillez ne pas répondre.",
     "brand": "CityCatalyst"
+  },
+  "admin-invite-accepted": {
+    "subject": "Bienvenue à CityCatalyst! 🎉 Commençons. ",
+    "preview": "Bienvenue à CityCatalyst! 🎉 Commençons. ",
+    "brand": "CityCatalyst",
+    "title": "Bienvenue à CityCatalyst !",
+    "greeting": "Salut {{name}},",
+    "message": "Nous sommes ravis de vous avoir à bord. Voici comment profiter au maximum de votre essai gratuit d'un mois : ",
+    "step1": "Créez votre premier projet de ville (l'essai comprend 1 ville)",
+    "step2": "Invitez des collaborateurs de votre équipe ou des partenaires",
+    "step3": "Personnalisez votre espace de travail avec votre logo et vos couleurs",
+    "step4": "Personnalisez votre espace de travail avec votre logo et vos couleurs",
+    "footer-1": "Besoin d'aide ? Nous sommes là pour vous aider, veuillez nous contacter à citycatalyst@openearth.org si vous avez des questions !",
+    "footer-2": "Faisons travailler les données climatiques locales plus dur, ensemble.",
+    "footer-3": "L'équipe CityCatalyst",
+    "footer": "Open Earth Foundation est une organisation à but non lucratif de Californie, USA. EIN : 85-3261449"
   }
 }

@@ -63,10 +63,7 @@ import type {
   ModuleDataSummaryResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
-import {
-  createApi,
-  fetchBaseQuery,
-} from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: "api",
@@ -98,6 +95,7 @@ export const api = createApi({
     "Cities",
     "Hiap",
     "Themes",
+    "Client",
     "CityDashboard",
     "Modules",
   ],
@@ -1353,6 +1351,9 @@ export const api = createApi({
       getClient: builder.query<Client, string>({
         query: (clientId: string) => `client/${clientId}/`,
         transformResponse: (response: { data: Client }) => response.data,
+        providesTags: (result, error, clientId) => [
+          { type: "Client", id: clientId },
+        ],
       }),
       generateCode: builder.mutation({
         query: ({
@@ -1400,6 +1401,39 @@ export const api = createApi({
         },
         transformResponse: (response: { data: CityLocationResponse[] }) =>
           response.data,
+      }),
+      getClients: builder.query<Client[], void>({
+        query: () => `client/`,
+        transformResponse: (response: { data: Client[] }) => response.data,
+        providesTags: ["Client"],
+      }),
+      addClient: builder.mutation({
+        query: ({
+          redirectUri,
+          name,
+          description,
+        }: {
+          redirectUri: string;
+          name: Record<string, string>;
+          description: Record<string, string>;
+        }) => ({
+          method: "POST",
+          url: `/client/`,
+          body: {
+            redirectUri,
+            name,
+            description,
+          },
+        }),
+        transformResponse: (response: { data: Client }) => response.data,
+        invalidatesTags: ["Client"],
+      }),
+      deleteClient: builder.mutation<void, string>({
+        query: (clientId: string) => ({
+          method: "DELETE",
+          url: `/client/${clientId}`,
+        }),
+        invalidatesTags: ["Client"],
       }),
     };
   },
@@ -1515,5 +1549,8 @@ export const {
   useGetClientQuery,
   useGenerateCodeMutation,
   useGetUserPermissionsQuery,
+  useGetClientsQuery,
+  useAddClientMutation,
+  useDeleteClientMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

@@ -37,7 +37,6 @@ class CityEmissionsData(BaseModel):
     )
     afoluEmissions: Optional[float] = Field(
         default=None,
-        ge=0,
         description="Agriculture, forestry, and other land use emissions",
     )
 

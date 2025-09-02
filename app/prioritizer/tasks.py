@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Union, Callable, Tuple
 from datetime import datetime
 import time
 import logging
@@ -6,11 +6,11 @@ from prioritizer.utils.tournament import tournament_ranking
 from prioritizer.utils.tournament_quick_select import quickselect_top_k
 from prioritizer.utils.ml_comparator import ml_compare
 from utils.build_city_data import build_city_data
-from services.get_actions import get_actions
 from services.get_context import get_context
 from services.get_ccra import get_ccra
 from prioritizer.utils.filter_actions_by_biome import filter_actions_by_biome
 from prioritizer.utils.add_explanations import generate_multilingual_explanation
+import os
 from prioritizer.models import (
     RankedAction,
     MetaData,
@@ -24,6 +24,92 @@ from prioritizer.models import (
 from prioritizer.task_storage import task_storage
 
 logger = logging.getLogger(__name__)
+
+# Activate or deactivate explanations, default to active (true)
+EXPLANATIONS_ENABLED = os.getenv("EXPLANATIONS_ENABLED", "true").lower() == "true"
+
+
+def _rank_actions_for_city(
+    cityData_dict: dict,
+    filteredActions: List[dict],
+    prioritizationType: PrioritizationType,
+    country_code: str,
+    languages: List[str],
+    ranking_function: Callable[..., List[Tuple[dict, int]]],
+) -> tuple[List[RankedAction], List[RankedAction]]:
+    """
+    Helper function to rank actions for a single city.
+
+    Args:
+        cityData_dict: dict
+        filteredActions: List[dict]
+        prioritizationType: PrioritizationType
+        country_code: str
+        languages: List[str]
+        ranking_function: tournament_ranking or quickselect_top_k
+    Returns:
+        tuple[List[RankedAction], List[RankedAction]]
+    """
+    rankedActionsMitigation: List[RankedAction] = []
+    rankedActionsAdaptation: List[RankedAction] = []
+
+    if prioritizationType in [PrioritizationType.MITIGATION, PrioritizationType.BOTH]:
+        mitigationActions = [
+            action
+            for action in filteredActions
+            if action.get("ActionType") is not None
+            and isinstance(action["ActionType"], list)
+            and "mitigation" in action["ActionType"]
+        ]
+        mitigationRanking = ranking_function(
+            cityData_dict,
+            mitigationActions,
+            comparator=ml_compare,
+        )
+        for action, rank in mitigationRanking:
+            explanation = None
+            if EXPLANATIONS_ENABLED:
+                explanation = generate_multilingual_explanation(
+                    country_code=country_code,
+                    city_data=cityData_dict,
+                    single_action=action,
+                    rank=rank,
+                    languages=languages,
+                )
+            rankedActionsMitigation.append(
+                RankedAction(
+                    actionId=action["ActionID"], rank=rank, explanation=explanation
+                )
+            )
+
+    if prioritizationType in [PrioritizationType.ADAPTATION, PrioritizationType.BOTH]:
+        adaptationActions = [
+            action
+            for action in filteredActions
+            if action.get("ActionType") is not None
+            and isinstance(action["ActionType"], list)
+            and "adaptation" in action["ActionType"]
+        ]
+        adaptationRanking = ranking_function(
+            cityData_dict, adaptationActions, comparator=ml_compare
+        )
+        for action, rank in adaptationRanking:
+            explanation = None
+            if EXPLANATIONS_ENABLED:
+                explanation = generate_multilingual_explanation(
+                    country_code=country_code,
+                    city_data=cityData_dict,
+                    single_action=action,
+                    rank=rank,
+                    languages=languages,
+                )
+            rankedActionsAdaptation.append(
+                RankedAction(
+                    actionId=action["ActionID"], rank=rank, explanation=explanation
+                )
+            )
+
+    return rankedActionsMitigation, rankedActionsAdaptation
 
 
 def _execute_prioritization(task_uuid: str, background_task_input: Dict):
@@ -85,8 +171,8 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
             # Build city data
             cityData_dict = build_city_data(cityContext, requestData, cityCCRA)
 
-            # API call to get actions data
-            actions = get_actions()
+            # Load actions passed as argument
+            actions = background_task_input.get("actions")
             if not actions:
                 task_storage[task_uuid]["status"] = "failed"
                 task_storage[task_uuid][
@@ -98,67 +184,14 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                 "prioritizationType", PrioritizationType.BOTH
             )
 
-            rankedActionsMitigation = []
-            rankedActionsAdaptation = []
-
-            if prioritizationType in [
-                PrioritizationType.MITIGATION,
-                PrioritizationType.BOTH,
-            ]:
-                mitigationActions = [
-                    action
-                    for action in filteredActions
-                    if action.get("ActionType") is not None
-                    and isinstance(action["ActionType"], list)
-                    and "mitigation" in action["ActionType"]
-                ]
-                mitigationRanking = tournament_ranking(
-                    cityData_dict, mitigationActions, comparator=ml_compare
-                )
-
-                rankedActionsMitigation = [
-                    RankedAction(
-                        actionId=action["ActionID"],
-                        rank=rank,
-                        explanation=generate_multilingual_explanation(
-                            country_code=country_code,
-                            city_data=cityData_dict,
-                            single_action=action,
-                            rank=rank,
-                            languages=languages,
-                        ),
-                    )
-                    for action, rank in mitigationRanking
-                ]
-
-            if prioritizationType in [
-                PrioritizationType.ADAPTATION,
-                PrioritizationType.BOTH,
-            ]:
-                adaptationActions = [
-                    action
-                    for action in filteredActions
-                    if action.get("ActionType") is not None
-                    and isinstance(action["ActionType"], list)
-                    and "adaptation" in action["ActionType"]
-                ]
-                adaptationRanking = tournament_ranking(
-                    cityData_dict, adaptationActions, comparator=ml_compare
-                )
-                rankedActionsAdaptation = [
-                    RankedAction(
-                        actionId=action["ActionID"],
-                        rank=rank,
-                        explanation=generate_multilingual_explanation(
-                            country_code=country_code,
-                            city_data=cityData_dict,
-                            single_action=action,
-                            rank=rank,
-                            languages=languages,
-                        ),
-                    )
-                    for action, rank in adaptationRanking
-                ]
+            rankedActionsMitigation, rankedActionsAdaptation = _rank_actions_for_city(
+                cityData_dict=cityData_dict,
+                filteredActions=filteredActions,
+                prioritizationType=prioritizationType,
+                country_code=country_code,
+                languages=languages,
+                ranking_function=tournament_ranking,
+            )
             prioritizer_response = PrioritizerResponse(
                 metadata=MetaData(
                     locode=background_task_input["cityData"].cityContextData.locode,
@@ -190,6 +223,104 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
         task_storage[task_uuid]["error"] = f"Error during prioritization: {str(e)}"
 
 
+def compute_prioritization_bulk_subtask(
+    background_task_input: Dict, mode: str = "quickselect_top_k"
+) -> Dict[str, Union[str, Dict]]:
+    """
+    Compute-only version of the bulk subtask suitable for execution in a separate process.
+    Mode can be either "quickselect_top_k" or "tournament_ranking".
+    The default mode is "quickselect_top_k".
+
+    Inputs:
+    - background_task_input: Dict
+    - mode: str, either "quickselect_top_k" or "tournament_ranking"
+
+    Expects background_task_input with keys:
+      - requestData: dict with locode, populationSize, emission fields
+      - prioritizationType: str or PrioritizationType
+      - language: List[str]
+      - countryCode: str
+
+    Returns a dict:
+      {"status": "completed", "result": PrioritizerResponse as dict}
+      or
+      {"status": "failed", "error": str}
+    """
+
+    if mode == "quickselect_top_k":
+        ranking_function = quickselect_top_k
+    elif mode == "tournament_ranking":
+        ranking_function = tournament_ranking
+    else:
+        raise ValueError(f"Invalid mode: {mode}")
+
+    try:
+        start_time = time.time()
+        requestData = background_task_input["requestData"]
+        prioritizationType = background_task_input["prioritizationType"]
+        if isinstance(prioritizationType, str):
+            try:
+                prioritizationType = PrioritizationType(prioritizationType)
+            except Exception:
+                return {"status": "failed", "error": "Invalid prioritizationType"}
+        languages: List[str] = background_task_input["language"]
+        country_code: str = background_task_input["countryCode"]
+
+        # Fetch context and data
+        cityContext = get_context(requestData["locode"])
+        if not cityContext:
+            return {
+                "status": "failed",
+                "error": "No city context data found from global API.",
+            }
+
+        cityCCRA = get_ccra(requestData["locode"], "current")
+        if not cityCCRA:
+            return {"status": "failed", "error": "No CCRA data found from CCRA API."}
+
+        cityData_dict = build_city_data(cityContext, requestData, cityCCRA)
+
+        # Load actions passed as argument
+        actions = background_task_input.get("actions")
+        if not actions:
+            return {
+                "status": "failed",
+                "error": "No actions data found from global API.",
+            }
+        filteredActions = filter_actions_by_biome(cityData_dict, actions)
+
+        rankedActionsMitigation, rankedActionsAdaptation = _rank_actions_for_city(
+            cityData_dict=cityData_dict,
+            filteredActions=filteredActions,
+            prioritizationType=prioritizationType,
+            country_code=country_code,
+            languages=languages,
+            ranking_function=ranking_function,
+        )
+
+        prioritizer_response = PrioritizerResponse(
+            metadata=MetaData(
+                locode=requestData["locode"],
+                rankedDate=datetime.now(),
+            ),
+            rankedActionsMitigation=rankedActionsMitigation,
+            rankedActionsAdaptation=rankedActionsAdaptation,
+        )
+
+        process_time = time.time() - start_time
+        logger.info(
+            f"Bulk subtask {requestData['locode']}: Prioritization completed in {process_time:.2f}s"
+        )
+        return {"status": "completed", "result": prioritizer_response.model_dump()}
+
+    except Exception as e:
+        logger.error(
+            f"Process subtask error for locode={background_task_input.get('requestData', {}).get('locode')}: {str(e)}",
+            exc_info=True,
+        )
+        return {"status": "failed", "error": f"Error during prioritization: {str(e)}"}
+
+
 def _execute_prioritization_bulk_subtask(
     main_task_id: str,
     subtask_idx: int,
@@ -202,7 +333,8 @@ def _execute_prioritization_bulk_subtask(
     It extracts the necessary data from the city data, calls the prioritization logic,
     and stores the result in the subtask.
 
-    It uses the faster quickselect_top_k function instead of the slower tournament_ranking function.
+    It uses tournament_ranking function instead of the faster quickselect_top_k function.
+    It is aimed to to be used for the cap_off_app implementation for 50 cities.
     """
 
     try:
@@ -230,7 +362,7 @@ def _execute_prioritization_bulk_subtask(
         logger.info(
             f"Task {main_task_id}: Starting prioritization for locode={city_data.cityContextData.locode}"
         )
-        logger.info("API endpoint uses quickselect_top_k function")
+        logger.info("API endpoint uses tournament_ranking function")
 
         start_time = time.time()
         try:
@@ -255,7 +387,9 @@ def _execute_prioritization_bulk_subtask(
                 return
 
             cityData_dict = build_city_data(cityContext, requestData, cityCCRA)
-            actions = get_actions()
+
+            # Load actions passed as argument
+            actions = background_task_input.get("actions")
             if not actions:
                 task_storage[main_task_id]["subtasks"][subtask_idx]["status"] = "failed"
                 task_storage[main_task_id]["subtasks"][subtask_idx][
@@ -265,73 +399,14 @@ def _execute_prioritization_bulk_subtask(
                 return
             filteredActions = filter_actions_by_biome(cityData_dict, actions)
 
-            rankedActionsMitigation = []
-            rankedActionsAdaptation = []
-
-            if prioritizationType in [
-                PrioritizationType.MITIGATION,
-                PrioritizationType.BOTH,
-            ]:
-                mitigationActions = [
-                    action
-                    for action in filteredActions
-                    if action.get("ActionType") is not None
-                    and isinstance(action["ActionType"], list)
-                    and "mitigation" in action["ActionType"]
-                ]
-                mitigationRanking = quickselect_top_k(
-                    city=cityData_dict,
-                    actions=mitigationActions,
-                    k=20,
-                    comparator=ml_compare,
-                )
-
-                rankedActionsMitigation = [
-                    RankedAction(
-                        actionId=action["ActionID"],
-                        rank=rank,
-                        explanation=generate_multilingual_explanation(
-                            country_code=country_code,
-                            city_data=cityData_dict,
-                            single_action=action,
-                            rank=rank,
-                            languages=languages,
-                        ),
-                    )
-                    for action, rank in mitigationRanking
-                ]
-
-            if prioritizationType in [
-                PrioritizationType.ADAPTATION,
-                PrioritizationType.BOTH,
-            ]:
-                adaptationActions = [
-                    action
-                    for action in filteredActions
-                    if action.get("ActionType") is not None
-                    and isinstance(action["ActionType"], list)
-                    and "adaptation" in action["ActionType"]
-                ]
-                adaptationRanking = quickselect_top_k(
-                    city=cityData_dict,
-                    actions=adaptationActions,
-                    k=20,
-                    comparator=ml_compare,
-                )
-                rankedActionsAdaptation = [
-                    RankedAction(
-                        actionId=action["ActionID"],
-                        rank=rank,
-                        explanation=generate_multilingual_explanation(
-                            country_code=country_code,
-                            city_data=cityData_dict,
-                            single_action=action,
-                            rank=rank,
-                            languages=languages,
-                        ),
-                    )
-                    for action, rank in adaptationRanking
-                ]
+            rankedActionsMitigation, rankedActionsAdaptation = _rank_actions_for_city(
+                cityData_dict=cityData_dict,
+                filteredActions=filteredActions,
+                prioritizationType=prioritizationType,
+                country_code=country_code,
+                languages=languages,
+                ranking_function=tournament_ranking,
+            )
 
             prioritizer_response = PrioritizerResponse(
                 metadata=MetaData(
@@ -387,6 +462,23 @@ def _update_bulk_task_status(main_task_id: str):
         task_storage[main_task_id]["prioritizer_response_bulk"] = (
             PrioritizerResponseBulk(prioritizerResponseList=results)
         )
+        # Log elapsed time based on created_at for consistency with single-task flow
+        created_at_str = task_storage.get(main_task_id, {}).get("created_at")
+        if created_at_str:
+            try:
+                created_at_dt = datetime.fromisoformat(created_at_str)
+                elapsed_seconds = (datetime.now() - created_at_dt).total_seconds()
+                logger.info(
+                    f"Task {main_task_id}: Bulk prioritization completed for {len(results)} cities in {elapsed_seconds:.2f}s"
+                )
+            except Exception:
+                logger.info(
+                    f"Task {main_task_id}: Bulk prioritization completed for {len(results)} cities"
+                )
+        else:
+            logger.info(
+                f"Task {main_task_id}: Bulk prioritization completed for {len(results)} cities"
+            )
     elif any(s == "failed" for s in statuses):
         task_storage[main_task_id]["status"] = "failed"
         errors = [s["error"] for s in subtasks if s["status"] == "failed"]

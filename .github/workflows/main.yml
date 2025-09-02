@@ -18,17 +18,16 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      LANGCHAIN_API_KEY: ${{ secrets.LANGCHAIN_API_KEY }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       LANGCHAIN_PROJECT: hiap-test
       LANGCHAIN_PROJECT_NAME_PRIORITIZER: hiap-test-prioritizer
       LANGCHAIN_ENDPOINT: https://api.smith.langchain.com
-      LANGCHAIN_TRACING_V2: true
-      S3_BUCKET_NAME: openearth.cap
+      LANGCHAIN_TRACING_V2: false
       OPENAI_MODEL_NAME_PLAN_CREATOR: gpt-4.1
-      OPENAI_MODEL_NAME_EXPLANATIONS: gpt-4.1
+      OPENAI_MODEL_NAME_EXPLANATIONS: gpt-4.1-mini
       OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY: gpt-4.1
+      EXPLANATIONS_ENABLED: false
+      XGBOOST_NUM_THREADS: 1
+      BULK_CONCURRENCY: 1
 
     steps:
       - uses: actions/checkout@v4
@@ -116,7 +115,7 @@ jobs:
 
           # Set environment variables for production
           kubectl set env deployment/hiap \
-            OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1 \
+            OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-mini \
             OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY=gpt-4.1 \
             OPENAI_MODEL_NAME_PLAN_CREATOR=gpt-4.1 \
             LANGCHAIN_PROJECT=hiap-prod \
@@ -124,6 +123,9 @@ jobs:
             LANGCHAIN_ENDPOINT=https://api.smith.langchain.com \
             LANGCHAIN_TRACING_V2=true \
             S3_BUCKET_NAME=openearth.cap \
+            EXPLANATIONS_ENABLED=true \
+            XGBOOST_NUM_THREADS=1 \
+            BULK_CONCURRENCY=10 \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
             LANGCHAIN_API_KEY=${{secrets.LANGCHAIN_API_KEY}} \
             AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} \

@@ -9,9 +9,10 @@ Follow these guidelines carefully to complete the task:
 1. Understand the national strategy you are given.
 2. Understand the city context you are given.
 3. Understand the action and its rank you are given.
-4. Create a concise explanation for the action in the requested languages. 
-    - Include the action code, short description and target of the national strategy in the explanation for the strongest relevance to the national strategy.
-    - If no national strategy is relevant, do not mention the national strategy at all.
+4. Create a concise explanation for the action in the requested languages containing the following information:
+    - A brief explanation of why the climate action is a priority for the city.
+    - Inlcude a brief explanation of how the climate action is related to the national strategy. Mention the action_code of the national strategy and the target of the action of the national strategy.
+    - Note: If no national strategy is relevant or given, do not mention the national strategy at all.
 </task>
 
 <input>
@@ -19,32 +20,29 @@ Your input is:
 - national strategy of the country
     - This is a JSON object containing information about the country's national climate strategy.
     - It contains the following keys:
-        - "content": The action name and action description
-        - "metadata": It containts the action code, the target of the action and the relevance score of the retrieved national strategy to the action. The relevance score is a number between 0 and 1 with 1 being the most relevant.
+        - "content": It contains the action name and action description of the action of the national strategy.
+        - "metadata": It containts the action_code, the target and the relevance score of the retrieved national strategy to the action. The relevance score is a number between 0 and 1 with 1 being the most relevant.
 - city context
 - exactly one action
 - the rank of the action
 - a list of languages
-
-The national strategy is a JSON object containing information about the country's national climate strategy.
-The rank is a number between 1 and 20, where 1 is the highest priority and 20 is the lowest priority. The rank is purely for your information, do not mention it in the explanation.
 </input>
 
 <output>
-Each explanation must be 3-5 sentences describing why this action is a priority for the city, in the requested language.
+Each explanation must be 2-4 sentences describing why this action is a priority for the city, in the requested language.
 The explanation should be positive, with the tone influenced by the rank (higher rank = more positive tone).
-Do not include numeric scores or internal model references. Do not mention the rank in the explanation.
-Include the action code, short description and target of the national strategy in the explanation for the strongest relevance to the national strategy.
+Do not include numeric scores or internal model references. Do not mention the actionID of the climate action or the rank of the climate action in the explanation.
+Include the action code of the national strategy, short description and target of the national strategy in the explanation.
 Only include the requested languages as keys in the JSON object. Do not include any extra keys or text.
-</output>
 
 <example_output>
 {{ 
-    "en": <explanation in English why this action is a priority for the city and how this action is related to the national strategy>,
-    "es": <explanation in Spanish why this action is a priority for the city and how this action is related to the national strategy>,
-    "de": <explanation in German why this action is a priority for the city and how this action is related to the national strategy>
+    "en": Implementing <name of the climate action> is a priority for the city because <explanation of why the action is a priority for the city> and <explanation of how the action is related to the national strategy>.
+    "es": <spanish>
+    "de": <german>
 }}
 </example_output>
+</output>
 
 Constraints:
 - No numeric scores or internal model references.

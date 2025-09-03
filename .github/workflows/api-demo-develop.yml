@@ -11,6 +11,7 @@ on:
   push:
     paths:
       - api-demo/**
+      - .github/workflows/api-demo-develop.yml
     branches: ["develop"]
 
 jobs:

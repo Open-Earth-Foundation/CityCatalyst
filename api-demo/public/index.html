@@ -54,7 +54,7 @@
         try {
           let tokens = await client.authorizationCodeGrant(
             disco,
-            window.location,
+            new URL(window.location),
             {
               pkceCodeVerifier: sessionStorage.getItem('code_verifier'),
               expectedState: sessionStorage.getItem('state'),
@@ -83,7 +83,7 @@
 
       document.addEventListener("DOMContentLoaded", async () => {
         let disco = await client.discovery(
-          CC_ORIGIN,
+          new URL(CC_ORIGIN),
           CLIENT_ID
         )
         const params = new URLSearchParams(window.location.search);

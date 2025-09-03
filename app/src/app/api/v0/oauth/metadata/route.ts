@@ -47,7 +47,7 @@ export const GET = apiHandler(async (_req) => {
     );
   }
 
-  const origin = _req.nextUrl.origin;
+  const origin = process.env.HOST || (new URL(_req.url)).origin;
 
   if (!origin) {
     throw createHttpError.InternalServerError(
@@ -56,7 +56,7 @@ export const GET = apiHandler(async (_req) => {
   }
 
   return NextResponse.json<OAuthMetadata>({
-    issuer: `${origin}/`,
+    issuer: origin,
     authorization_endpoint: `${origin}/authorize/`,
     token_endpoint: `${origin}/api/v0/token/`,
     scopes_supported: ["read", "write"],

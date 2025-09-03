@@ -65,6 +65,6 @@ jobs:
 
       - name: Deploying service
         run: |
-          kubectl apply -f api-demo/k8s/api-demo-deploy.yml -n default
-          kubectl apply -f api-demo/k8s/api-demo-service.yml -n default
+          kubectl apply -f api-demo/k8s/api-demo-deploy.yaml -n default
+          kubectl apply -f api-demo/k8s/api-demo-service.yaml -n default
           kubectl rollout restart deployment api-demo -n default

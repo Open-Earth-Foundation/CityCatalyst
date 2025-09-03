@@ -11,8 +11,7 @@
       <span id="status"></span>
     </p>
     <script type="module">
-
-      import * as oauth from './oauth4webapi.min.js'
+      import * as client from 'https://cdn.jsdelivr.net/npm/openid-client@6/+esm'
 
       import { config } from './config.js'
       const { CC_ORIGIN, CLIENT_ID } = config
@@ -21,125 +20,80 @@
 
       const username_url = `${CC_ORIGIN}/api/v0/user/whoami/`
 
-      const issuer = {
-        issuer: `${CC_ORIGIN}/`,
-        authorization_endpoint: `${CC_ORIGIN}/authorize/`,
-        token_endpoint: `${CC_ORIGIN}/api/v0/token/`
-      };
-
-      const client = {
-        client_id: CLIENT_ID
-      };
-
       const redirect_uri = `${APP_ORIGIN}`;
 
-      async function getUsername(username_url, token) {
-        const res = await fetch(username_url, {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          }
-        })
-        if (!res.ok) {
-          throw new Error("Response was bad")
-        }
-        const json = await res.json()
-        return json.data.name
-      }
       function setStatus(text) {
         document.getElementById("status").textContent = text;
       }
 
+      async function startLogin (disco) {
+        setStatus("Logging in...");
+        const code_verifier = client.generateRandomCodeVerifier();
+        const code_challenge = await client.calculatePKCECodeChallenge(code_verifier);
+        const state = crypto.randomUUID()
+
+        sessionStorage.setItem('code_verifier', code_verifier);
+        sessionStorage.setItem('state', state);
+
+        const scope = 'read write'
+
+        let parameters = {
+          redirect_uri,
+          scope,
+          code_challenge,
+          code_challenge_method: 'S256',
+          state
+        }
+
+        let redirectTo = client.buildAuthorizationUrl(disco, parameters)
+
+        window.location.href = redirectTo.toString();
+      }
+
+      async function finishLogin (disco) {
+        try {
+          let tokens = await client.authorizationCodeGrant(
+            disco,
+            window.location,
+            {
+              pkceCodeVerifier: sessionStorage.getItem('code_verifier'),
+              expectedState: sessionStorage.getItem('state'),
+            },
+          )
+        } catch (error) {
+          setStatus(err.message)
+        }
+      }
+
+      async function showUsername (disco) {
+        const access_token = sessionStorage.getItem('access_token');
+        try {
+          let whoamiResponse = await client.fetchProtectedResource(
+            disco,
+            access_token,
+            new URL(username_url),
+            'GET',
+          )
+          let whoami = await whoamiResponse.json()
+          setStatus(`Hello, ${whoami.data.name}`);
+        } catch (error) {
+          setStatus(error.message)
+        }
+      }
+
       document.addEventListener("DOMContentLoaded", async () => {
+        let disco = await client.discovery(
+          CC_ORIGIN,
+          CLIENT_ID
+        )
         const params = new URLSearchParams(window.location.search);
         if (sessionStorage.getItem('access_token')) {
-          const access_token = sessionStorage.getItem('access_token');
-          const username = await getUsername(username_url, access_token);
-          setStatus(`Hello, ${username}`);
+          await showUsername(disco)
         } else if (params.get("state")) {
-          if (params.get("state") !== sessionStorage.getItem("state")) {
-            setStatus(`Invalid state`);
-          } else {
-            sessionStorage.removeItem("state")
-            const error = params.get("error");
-            const error_description = params.get("error_description")
-            if (error) {
-              switch (error) {
-                case "invalid_request":
-                  setStatus((error_description)
-                    ? `Invalid request: ${error_description}`
-                    : 'Invalid request'
-                  );
-                  break;
-                case "access_denied":
-                  setStatus((error_description)
-                    ? `Access denied: ${error_description}`
-                    : 'Access denied.'
-                  );
-                  break;
-                case "unauthorized_client":
-                  setStatus(`Unauthorized client.`);
-                  break;
-                case "unsupported_response_type":
-                  setStatus(`Unsupported response_type parameter.`);
-                  break;
-                case "invalid_scope":
-                  setStatus(`Invalid scope parameter.`);
-                  break;
-                case "server_error":
-                  setStatus((error_description)
-                    ? `The CityCatalyst server had an error: ${error_description}`
-                    : 'The CityCatalyst server had an error.'
-                  );
-                  break;
-                case "temporarily_unavailable":
-                  setStatus(
-                    `The CityCatalyst server is temporarily unavailable.`
-                  );
-                  break;
-              }
-            } else {
-              const code = params.get("code");
-              const code_verifier = sessionStorage.getItem('code_verifier');
-              const response = await fetch(issuer.token_endpoint, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                  grant_type: 'authorization_code',
-                  code,
-                  client_id: client.client_id,
-                  redirect_uri,
-                  code_verifier,
-                }),
-              });
-              const result = await response.json();
-              const access_token = result.access_token;
-              sessionStorage.setItem('access_token', access_token);
-              window.location.href = '/';
-            }
-          }
+          await finishLogin(disco)
         }
         document.getElementById("login").addEventListener("click", async () => {
-          setStatus("Logging in...");
-          const code_verifier = oauth.generateRandomCodeVerifier();
-          const code_challenge = await oauth.calculatePKCECodeChallenge(code_verifier);
-          const state = crypto.randomUUID()
-
-          sessionStorage.setItem('code_verifier', code_verifier);
-          sessionStorage.setItem('state', state);
-
-          const url = new URL(issuer.authorization_endpoint);
-
-          url.searchParams.set('client_id', client.client_id);
-          url.searchParams.set('redirect_uri', redirect_uri);
-          url.searchParams.set('response_type', 'code');
-          url.searchParams.set('scope', 'read write');
-          url.searchParams.set('code_challenge', code_challenge);
-          url.searchParams.set('code_challenge_method', 'S256');
-          url.searchParams.set('state', state);
-
-          window.location.href = url.toString();  // redirect to auth server
+          await startLogin(disco)
         });
       });
     </script>

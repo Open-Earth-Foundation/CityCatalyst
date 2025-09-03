@@ -97,5 +97,8 @@
   "primary-purpose": {
     "ghg_reduction": "GHG Reduction",
     "climate_resilience": "Climate Resilience"
-  }
+  },
+  "actions": "Actions",
+  "open-cc-actions": "Open CC Actions",
+  "top-climate-actions": "Top High-Impact Actions"
 }

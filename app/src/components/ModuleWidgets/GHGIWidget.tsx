@@ -10,14 +10,17 @@ import { useGetCityPopulationQuery } from "@/services/api";
 import { MdOpenInNew } from "react-icons/md";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
+import { GHGInventorySummary } from "@/util/types";
 
 export const GHGIWidget: React.FC<DashboardWidgetProps> = ({
   moduleId,
   cityId,
-  data,
+  data: moduleData,
+  lng,
   error,
 }) => {
-  const { t } = useTranslation("en", "dashboard");
+  const data = moduleData as GHGInventorySummary;
+  const { t } = useTranslation(lng, "dashboard");
   const router = useRouter();
 
   const { data: population } = useGetCityPopulationQuery(

@@ -1,25 +1,175 @@
-import React from "react";
-import { Card, Text } from "@chakra-ui/react";
+import React, { useState, useMemo } from "react";
+import { Box, Text, Skeleton, HStack, Tabs, Icon } from "@chakra-ui/react";
 import { DashboardWidgetProps } from "./types";
 import { useTranslation } from "@/i18n/client";
+import { ACTION_TYPES, HIAction, HIAPSummary } from "@/util/types";
+import { ClimateActionCard } from "@/components/ClimateActionCard";
+import { ActionDrawer } from "@/components/ActionDrawer";
+import { HeadlineSmall } from "../Texts/Headline";
+import { Button } from "../ui/button";
+import { MdOpenInNew } from "react-icons/md";
+import { useRouter } from "next/navigation";
+import { AdaptationTabIcon, MitigationTabIcon } from "../icons";
 
-export const HIAPWidget: React.FC<DashboardWidgetProps> = ({ 
-  moduleId,
-  data, 
-  error 
+// Helper function to get top picks - reused from ActionPlanSection
+const getTopPickActions = (actions: HIAction[]): HIAction[] => {
+  const selectedActions = actions.filter((action) => action.isSelected);
+
+  if (selectedActions.length > 0) {
+    return [...selectedActions].sort((a, b) => a.rank - b.rank).slice(0, 3);
+  } else {
+    return [...actions].sort((a, b) => a.rank - b.rank).slice(0, 3);
+  }
+};
+
+export const HIAPWidget: React.FC<DashboardWidgetProps> = ({
+  data: dataFromProps,
+  cityId,
+  error: widgetError,
+  lng,
 }) => {
-  const { t } = useTranslation("en", "dashboard");
-  
+  const data = dataFromProps as HIAPSummary;
+  const { t } = useTranslation(lng, "hiap");
+  const [actionType, setActionType] = useState<ACTION_TYPES>(
+    ACTION_TYPES.Mitigation,
+  );
+  const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
+
+  // Calculate topPickActions whenever actionType or data changes
+  const topPickActions = useMemo(() => {
+    const actions = data[actionType]?.rankedActions || [];
+    return getTopPickActions(actions);
+  }, [actionType, data]);
+
+  const error = widgetError;
+  const router = useRouter();
+  const isLoading = false;
+
+  console.log("HIAPWidget data:", data);
+
   return (
-    <Card.Root>
-      <Card.Header>
-        <Text fontWeight="bold">{t("hiap-module")}</Text>
-      </Card.Header>
-      <Card.Body>
-        <Text>{t("module-id")}: {moduleId}</Text>
-        {error && <Text color="red.500">{t("error")}: {error}</Text>}
-        {data && <Text>{t("data-loaded")}</Text>}
-      </Card.Body>
-    </Card.Root>
+    <>
+      {selectedAction && (
+        <ActionDrawer
+          action={selectedAction}
+          isOpen={!!selectedAction}
+          onClose={() => setSelectedAction(null)}
+          t={t}
+        />
+      )}
+      <Box w="full">
+        <HStack justifyContent="space-between" mb={2}>
+          <Text color="content.link">{t("actions")}</Text>
+          <Button
+            onClick={() => {
+              router.push(`/cities/${cityId}/HIAP`);
+            }}
+            variant="outline"
+            borderColor="border.neutral"
+            color="content.primary"
+          >
+            <Text>{t("open-cc-actions")}</Text>
+            <MdOpenInNew />
+          </Button>
+        </HStack>
+        <HeadlineSmall>
+          <Text
+            fontFamily="heading"
+            fontWeight="bold"
+            fontSize="title.lg"
+            color="content.primary"
+          >
+            {t("top-climate-actions")}
+          </Text>
+        </HeadlineSmall>
+        <Text fontSize="body.md" color="content.tertiary" mt="8px" mb={10}>
+          {t("top-actions-for-your-city-description")}
+        </Text>
+      </Box>
+      <Box>
+        {error && (
+          <Box p="24px">
+            <Text color="red.500" fontSize="body.md">
+              {t("error-loading-data")}
+            </Text>
+          </Box>
+        )}
+
+        {isLoading && (
+          <Box
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))"
+            gap="24px"
+          >
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} height="400px" borderRadius="8px" />
+            ))}
+          </Box>
+        )}
+
+        {!isLoading && !error && topPickActions.length === 0 && (
+          <Box p="24px" textAlign="center">
+            <Text color="content.tertiary" fontSize="body.lg">
+              {t("no-actions-available")}
+            </Text>
+          </Box>
+        )}
+
+        {!isLoading && !error && (
+          <Tabs.Root
+            variant="line"
+            lazyMount
+            value={actionType}
+            onValueChange={(details) =>
+              setActionType(details.value as ACTION_TYPES)
+            }
+          >
+            <Tabs.List>
+              {Object.values(ACTION_TYPES).map((type) => (
+                <Tabs.Trigger
+                  key={type}
+                  value={type}
+                  color="interactive.control"
+                  display="flex"
+                  gap="16px"
+                  _selected={{
+                    color: "interactive.secondary",
+                    fontFamily: "heading",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <Icon
+                    as={
+                      type === ACTION_TYPES.Mitigation
+                        ? MitigationTabIcon
+                        : AdaptationTabIcon
+                    }
+                  />
+                  {t(`action-type-${type}`)}
+                </Tabs.Trigger>
+              ))}
+            </Tabs.List>
+            {Object.values(ACTION_TYPES).map((type) => (
+              <Tabs.Content key={type} value={type} mt={10} p="0" w="full">
+                <Box
+                  display="grid"
+                  gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))"
+                  gap="24px"
+                >
+                  {topPickActions.map((action) => (
+                    <ClimateActionCard
+                      key={action.id}
+                      action={action}
+                      t={t}
+                      onSeeMoreClick={() => setSelectedAction(action)}
+                    />
+                  ))}
+                </Box>
+              </Tabs.Content>
+            ))}
+          </Tabs.Root>
+        )}
+      </Box>
+    </>
   );
 };

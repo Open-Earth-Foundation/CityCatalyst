@@ -9,22 +9,23 @@ import { HIAPWidget } from "./HIAPWidget";
 import ProgressLoader from "../ProgressLoader";
 import { EmptyDashboard } from "../CityDashboard/EmptyDashboard";
 import { TFunction } from "i18next";
+import { DashboardWidgetProps } from "./types";
 
 interface ModuleDashboardWidgetsProps {
   cityId: string;
-  lng?: string;
+  lng: string;
   t: TFunction;
 }
 
 // Simple widget registry - map module IDs to their widget components
-const WIDGET_REGISTRY: Record<string, React.FC<any>> = {
+const WIDGET_REGISTRY: Record<string, React.FC<DashboardWidgetProps>> = {
   [Modules.GHGI.id]: GHGIWidget,
-  // [Modules.HIAP.id]: HIAPWidget,
+  [Modules.HIAP.id]: HIAPWidget,
 };
 
 export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
   cityId,
-  lng = "en",
+  lng,
   t,
 }) => {
   // Fetch all dashboard data with one query
@@ -84,6 +85,7 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
                 <Box key={moduleId} mb={4}>
                   <WidgetComponent
                     cityId={cityId}
+                    lng={lng}
                     moduleId={moduleId}
                     data={moduleData || null}
                     isLoading={false}

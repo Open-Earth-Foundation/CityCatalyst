@@ -11,7 +11,7 @@
       <span id="status"></span>
     </p>
     <script type="module">
-      import * as client from 'https://cdn.jsdelivr.net/npm/openid-client@6/+esm'
+      import * as oauth from './oauth4webapi.min.js'
 
       import { config } from './config.js'
       const { CC_ORIGIN, CLIENT_ID } = config
@@ -26,53 +26,78 @@
         document.getElementById("status").textContent = text;
       }
 
-      async function startLogin (disco) {
+      async function startLogin (as, client) {
         setStatus("Logging in...");
-        const code_verifier = client.generateRandomCodeVerifier();
-        const code_challenge = await client.calculatePKCECodeChallenge(code_verifier);
-        const state = crypto.randomUUID()
+        const code_verifier = oauth.generateRandomCodeVerifier();
+        const code_challenge = await oauth.calculatePKCECodeChallenge(code_verifier);
+        const state = oauth.generateRandomState()
 
         sessionStorage.setItem('code_verifier', code_verifier);
         sessionStorage.setItem('state', state);
 
         const scope = 'read write'
 
-        let parameters = {
-          redirect_uri,
-          scope,
-          code_challenge,
-          code_challenge_method: 'S256',
-          state
-        }
+        const authz = new URL(as.authorization_endpoint)
+        authz.searchParams.set('client_id', client.client_id)
+        authz.searchParams.set('redirect_uri', redirect_uri)
+        authz.searchParams.set('response_type', 'code')
+        authz.searchParams.set('scope', 'read write')
+        authz.searchParams.set('code_challenge', code_challenge)
+        authz.searchParams.set('code_challenge_method', code_challenge_method)
+        authz.searchParams.set('state', state)
 
-        let redirectTo = client.buildAuthorizationUrl(disco, parameters)
-
-        window.location.href = redirectTo.toString();
+        window.location.href = authz.toString();
       }
 
-      async function finishLogin (disco) {
+      async function finishLogin (as, client) {
         try {
-          let tokens = await client.authorizationCodeGrant(
-            disco,
+          const state = sessionStorage.getItem('state')
+          const code_verifier = sessionStorage.getItem('code_verifier')
+
+          const params = oauth.validateAuthResponse(
+            as,
+            client,
             new URL(window.location),
-            {
-              pkceCodeVerifier: sessionStorage.getItem('code_verifier'),
-              expectedState: sessionStorage.getItem('state'),
-            },
+            state
           )
+
+          const response = await oauth.authorizationCodeGrantRequest(
+            as,
+            client,
+            oauth.None(),
+            params,
+            redirect_uri,
+            code_verifier
+          )
+
+          const result = await oauth.processAuthorizationCodeResponse(
+            as,
+            client,
+            response
+          )
+
+          const { access_token } = result
+
+          sessionStorage.setItem('access_token', access_token)
+
+          sessionStorage.removeItem('state')
+          sessionStorage.removeItem('code_verifier')
+
+          window.location.href = redirect_uri
         } catch (error) {
           setStatus(err.message)
+          sessionStorage.removeItem('state')
+          sessionStorage.removeItem('code_verifier')
         }
       }
 
-      async function showUsername (disco) {
+      async function showUsername (as) {
         const access_token = sessionStorage.getItem('access_token');
         try {
-          let whoamiResponse = await client.fetchProtectedResource(
-            disco,
+          let whoamiResponse = await oauth.protectedResourceRequest(
             access_token,
-            new URL(username_url),
             'GET',
+            new URL(username_url),
           )
           let whoami = await whoamiResponse.json()
           setStatus(`Hello, ${whoami.data.name}`);
@@ -82,18 +107,20 @@
       }
 
       document.addEventListener("DOMContentLoaded", async () => {
-        let disco = await client.discovery(
+        const client = { client_id: CLIENT_ID }
+        const res = await oauth.discoveryRequest(
           new URL(CC_ORIGIN),
-          CLIENT_ID
+          { algorithm: 'oauth2' }
         )
-        const params = new URLSearchParams(window.location.search);
+        const as = oauth.processDiscoveryResponse(issuer, response)
+        const params = new URLSearchParams(window.location.search)
         if (sessionStorage.getItem('access_token')) {
-          await showUsername(disco)
+          await showUsername(as, client)
         } else if (params.get("state")) {
-          await finishLogin(disco)
+          await finishLogin(as, client)
         }
         document.getElementById("login").addEventListener("click", async () => {
-          await startLogin(disco)
+          await startLogin(as, client)
         });
       });
     </script>

@@ -4,7 +4,6 @@ import {
   api,
   useGetMostRecentCityPopulationQuery,
   useGetInventoriesQuery,
-  useGetCityDashboardQuery,
 } from "@/services/api";
 import { Box, HStack, Separator, useDisclosure, Image } from "@chakra-ui/react";
 import Cookies from "js-cookie";
@@ -18,7 +17,6 @@ import { HeadlineMedium } from "../Texts/Headline";
 import ModalPublish from "../GHGIHomePage/DownloadAndShareModals/ModalPublish";
 import { InventoryResponse } from "@/util/types";
 import { Button } from "../ui/button";
-import { EmptyDashboard } from "./EmptyDashboard";
 import { ModuleDashboardWidgets } from "../ModuleWidgets";
 
 export default function CitiesDashboardPage({
@@ -69,13 +67,6 @@ export default function CitiesDashboardPage({
   const latestInventory = inventories?.[0];
 
 
-  const { data: dashboardData, isLoading: isDashboardLoading } =
-    useGetCityDashboardQuery(
-      { cityId: cityIdFromParam!, lng },
-      { skip: !cityIdFromParam },
-    );
-
-
   const { data: orgData, isLoading: isOrgDataLoading } =
     api.useGetOrganizationForCityQuery(cityIdFromParam!, {
       skip: !cityIdFromParam,
@@ -105,8 +96,7 @@ export default function CitiesDashboardPage({
     isOrgDataLoading ||
     isUserInfoLoading ||
     isCityLoading ||
-    isInventoriesLoading ||
-    isDashboardLoading
+    isInventoriesLoading
   ) {
     return <ProgressLoader />;
   }
@@ -143,17 +133,11 @@ export default function CitiesDashboardPage({
               </Button>
             </HStack>
             <Box h="1px" mt="6" bg="border.neutral" />
-            {dashboardData && Object.keys(dashboardData).length > 0 ? (
-              <ModuleDashboardWidgets
-                cityId={cityIdFromParam!}
-                lng={lng}
-                t={t}
-              />
-            ) : (
-              <>
-                <EmptyDashboard t={t} />
-              </>
-            )}
+            <ModuleDashboardWidgets
+              cityId={cityIdFromParam!}
+              lng={lng}
+              t={t}
+            />
           </Box>
         </>
       )}

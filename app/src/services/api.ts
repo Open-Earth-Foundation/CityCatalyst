@@ -61,12 +61,11 @@ import type {
   DashboardResponseType,
   HIAPResponse,
   ModuleDataSummaryResponse,
+  GHGInventorySummary,
+  HIAPSummary,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
-import {
-  createApi,
-  fetchBaseQuery,
-} from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: "api",
@@ -100,6 +99,8 @@ export const api = createApi({
     "Themes",
     "CityDashboard",
     "Modules",
+    "GHGIDashboard",
+    "HiapDashboard",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1341,14 +1342,23 @@ export const api = createApi({
         transformResponse: (response: { data: { hasAccess: boolean } }) =>
           response.data,
       }),
-      getCityDashboard: builder.query<
-        ModuleDataSummaryResponse,
+      getCityGHGIDashboard: builder.query<
+        GHGInventorySummary,
+        { cityId: string }
+      >({
+        query: ({ cityId }) => `city/${cityId}/modules/ghgi/dashboard`,
+        transformResponse: (response: { data: GHGInventorySummary }) =>
+          response.data,
+        providesTags: ["CityDashboard", "Modules", "GHGIDashboard"],
+      }),
+      getCityHIAPDashboard: builder.query<
+        HIAPSummary,
         { cityId: string; lng?: string }
       >({
         query: ({ cityId, lng = "en" }) =>
-          `city/${cityId}/dashboard?lng=${lng}`,
-        transformResponse: (response: DashboardResponseType) => response.data,
-        providesTags: ["CityDashboard", "Modules"],
+          `city/${cityId}/modules/hiap/dashboard?lng=${lng}`,
+        transformResponse: (response: { data: HIAPSummary }) => response.data,
+        providesTags: ["CityDashboard", "Modules", "HiapDashboard"],
       }),
       getClient: builder.query<Client, string>({
         query: (clientId: string) => `client/${clientId}/`,
@@ -1511,7 +1521,8 @@ export const {
   useGetModulesQuery,
   useGetProjectModulesQuery,
   useGetCityModuleAccessQuery,
-  useGetCityDashboardQuery,
+  useGetCityGHGIDashboardQuery,
+  useGetCityHIAPDashboardQuery,
   useGetClientQuery,
   useGenerateCodeMutation,
   useGetUserPermissionsQuery,

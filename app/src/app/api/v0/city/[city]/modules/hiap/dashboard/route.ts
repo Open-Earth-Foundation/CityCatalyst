@@ -21,19 +21,19 @@ export const GET = apiHandler(async (req: Request, context) => {
   const searchParams = new URL(req.url).searchParams;
   const lng = searchParams.get("lng") || "en";
 
-  // Get dashboard data for all enabled modules
-  const dashboardData = await ModuleDashboardService.getCityDashboardData(
+  // Get HIAP dashboard data
+  const hiapData = await ModuleDashboardService.getHIAPDashboardData(
     cityId,
-    city.project.projectId,
     lng,
   );
 
   return NextResponse.json({
-    data: dashboardData,
+    data: hiapData,
     metadata: {
       cityId,
       cityName: city.name,
       projectId: city.project.projectId,
+      moduleId: "hiap",
     },
   });
 });

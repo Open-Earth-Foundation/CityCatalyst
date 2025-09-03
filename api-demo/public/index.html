@@ -112,7 +112,10 @@
           new URL(CC_ORIGIN),
           { algorithm: 'oauth2' }
         )
-        const as = await oauth.processDiscoveryResponse(issuer, response)
+        const as = await oauth.processDiscoveryResponse(
+          new URL(CC_ORIGIN),
+          response
+        )
         const params = new URLSearchParams(window.location.search)
         if (sessionStorage.getItem('access_token')) {
           await showUsername(as, client)

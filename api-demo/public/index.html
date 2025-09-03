@@ -12,13 +12,12 @@
     </p>
     <script type="module">
 
-      // Change this if you want to host elsewhere. Note that you have
-      // to set up the client in your env file!
-
-      const APP_ORIGIN = "http://localhost:2000"
-      const CC_ORIGIN = "http://localhost:3000"
-
       import * as oauth from './oauth4webapi.min.js'
+
+      import { config } from './config.js'
+      const { CC_ORIGIN, CLIENT_ID } = config
+
+      const APP_ORIGIN = (new URL(window.location)).origin
 
       const username_url = `${CC_ORIGIN}/api/v0/user/whoami/`
 
@@ -28,10 +27,8 @@
         token_endpoint: `${CC_ORIGIN}/api/v0/token/`
       };
 
-      // This needs to be set up in your env file, also
-
       const client = {
-        client_id: "phc7oUo_rq_QmrWX5ZPbZ"
+        client_id: CLIENT_ID
       };
 
       const redirect_uri = `${APP_ORIGIN}`;

@@ -1,11 +1,11 @@
 """
 This script runs the prioritization pipeline for multiple cities in bulk.
-It uses the HIAP API background task function _execute_prioritization_bulk_subtask to run the prioritization pipeline for each city.
+It uses the compute-only function compute_prioritization_bulk_subtask to run the prioritization pipeline for each city.
 
 The pipeline processes all cities listed in a JSON file containing locodes located at `app/cap_off_app/data/city_data/city_data.json`.
 For each city, it will:
 1. Run the prioritization pipeline
-2. Store the result in the `app/cap_off_app/data/prioritization/prioritization_results.json` file
+2. Store the result in the `app/cap_off_app/data/prioritizations/prioritization_results_local.json` file
 
 Usage:
     This script needs to be run from the 'app' directory to be able to import the prioritizer module.
@@ -13,9 +13,7 @@ Usage:
     python -m cap_off_app.scripts.run_prioritization_local
 """
 
-import uuid
 import json
-from datetime import datetime
 from pathlib import Path
 import threading
 import time
@@ -25,9 +23,11 @@ from prioritizer.models import (
     CityContextData,
     CityEmissionsData,
     CityData,
+    PrioritizerResponse,
+    PrioritizerResponseBulk,
 )
-from prioritizer.tasks import _execute_prioritization_bulk_subtask
-from prioritizer.task_storage import task_storage
+from prioritizer.tasks import compute_prioritization_bulk_subtask
+from services.get_actions import get_actions
 
 
 # Load local city data JSON
@@ -65,42 +65,60 @@ languages = ["en", "es", "pt"]
 country_code = "BR"
 
 
-# Initialize the bulk task (same structure as the API)
-main_task_id = str(uuid.uuid4())
-task_storage[main_task_id] = {
-    "status": "pending",
-    "created_at": datetime.now().isoformat(),
-    "subtasks": [
-        {
-            "locode": c.cityContextData.locode,
-            "status": "pending",
-            "result": None,
-            "error": None,
-        }
-        for c in city_data_list
-    ],
-    "prioritizer_response_bulk": None,
-    "error": None,
-}
+# Get actions from the API
+actions = get_actions()
+if not actions:
+    raise Exception("Could not retrieve actions from the API.")
 
 
-# Run subtasks in parallel using a similar pattern as the API
-start_time = time.time()
-threads = []
-for idx, city_data in enumerate(city_data_list):
+results: list[PrioritizerResponse | None] = [None] * len(city_data_list)
+errors: list[str | None] = [None] * len(city_data_list)
+
+
+# Helper to build requestData for compute function
+def build_request_data(city_data: CityData) -> dict:
+    return {
+        "locode": city_data.cityContextData.locode,
+        "populationSize": city_data.cityContextData.populationSize,
+        "stationaryEnergyEmissions": city_data.cityEmissionsData.stationaryEnergyEmissions,
+        "transportationEmissions": city_data.cityEmissionsData.transportationEmissions,
+        "wasteEmissions": city_data.cityEmissionsData.wasteEmissions,
+        "ippuEmissions": city_data.cityEmissionsData.ippuEmissions,
+        "afoluEmissions": city_data.cityEmissionsData.afoluEmissions,
+    }
+
+
+def worker(idx: int, city_data: CityData):
     background_task_input = {
-        "cityData": city_data,
+        "requestData": build_request_data(city_data),
         "prioritizationType": prioritization_type,
         "language": languages,
         "countryCode": country_code,
+        "actions": actions,
     }
+    try:
+        resp = compute_prioritization_bulk_subtask(
+            background_task_input, mode="tournament_ranking"
+        )
+        status = resp.get("status")
+        if status == "completed":
+            result_dict = resp.get("result")
+            # Validate into model for consistent serialization
+            results[idx] = PrioritizerResponse.model_validate(result_dict)
+        else:
+            errors[idx] = str(resp.get("error") or "Unknown error")
+    except Exception as e:
+        errors[idx] = str(e)
+
+
+# Run subtasks in parallel using threads
+start_time = time.time()
+threads = []
+for idx, city_data in enumerate(city_data_list):
     print(
         f"Starting prioritization for {city_data.cityContextData.locode} ({idx+1}/{len(city_data_list)})"
     )
-    thread = threading.Thread(
-        target=_execute_prioritization_bulk_subtask,
-        args=(main_task_id, idx, background_task_input),
-    )
+    thread = threading.Thread(target=worker, args=(idx, city_data))
     threads.append(thread)
     thread.start()
 
@@ -113,8 +131,9 @@ print("All prioritizations completed.")
 print(f"Total execution time: {end_time - start_time:.2f} seconds")
 
 
-# Read the aggregated result (PrioritizerResponseBulk)
-result = task_storage[main_task_id]["prioritizer_response_bulk"]
+# Aggregate successful results only, mirroring API behavior
+successful_results = [r for r in results if r is not None]
+result = PrioritizerResponseBulk(prioritizerResponseList=successful_results)
 
 # Save results to file
 output_dir = project_root / "app" / "cap_off_app" / "data" / "prioritizations"

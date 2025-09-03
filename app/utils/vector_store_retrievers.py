@@ -85,7 +85,7 @@ def retriever_vectorstore_national_strategy_tool(
 
     docs_and_scores = vector_store.similarity_search_with_relevance_scores(
         query=search_query,
-        k=5,
+        k=1,
         score_threshold=0.33,
     )
 

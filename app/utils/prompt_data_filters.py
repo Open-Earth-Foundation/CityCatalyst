@@ -40,6 +40,18 @@ def build_prompt_inputs(
         city_data_for_prompt.pop("totalEmissions", None)
         action_data_for_prompt.pop("GHGReductionPotential", None)
 
+        # Keep CCRA but restrict fields to the minimum required for prompts
+        # Only preserve: keyimpact, hazard, normalised_risk_score
+        ccra_entries = city_data_for_prompt.get("ccra")
+        if isinstance(ccra_entries, list):
+            allowed_keys = {"keyimpact", "hazard", "normalised_risk_score"}
+            filtered_entries = []
+            for entry in ccra_entries:
+                if isinstance(entry, dict):
+                    filtered_entry = {k: entry[k] for k in allowed_keys if k in entry}
+                    filtered_entries.append(filtered_entry)
+            city_data_for_prompt["ccra"] = filtered_entries
+
     # Common removals
     city_data_for_prompt.pop("biome", None)
     action_data_for_prompt.pop("Biome", None)

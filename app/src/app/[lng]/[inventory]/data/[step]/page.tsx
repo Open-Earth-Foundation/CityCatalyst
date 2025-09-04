@@ -46,7 +46,7 @@ import {
   useSteps,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, usePathname } from "next/navigation";
 import { forwardRef, useEffect, useState } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { FiTarget, FiTrash2 } from "react-icons/fi";
@@ -203,6 +203,7 @@ export default function AddDataSteps() {
   const inventory = getParamValueRequired(params.inventory);
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
+  const pathname = usePathname();
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -636,7 +637,7 @@ export default function AddDataSteps() {
               fontSize="14px"
               color="content.link"
               fontWeight="bold"
-              onClick={() => router.push(`/${lng}/${inventory}/data`)}
+              onClick={() => router.push(pathname.replace(`/${step}`, ""))}
             >
               <Icon as={MdArrowBack} boxSize={6} />
               {t("go-back")}

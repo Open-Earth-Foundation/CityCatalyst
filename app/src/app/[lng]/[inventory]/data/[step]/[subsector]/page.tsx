@@ -18,7 +18,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { forwardRef, useState, use } from "react";
 import { MdArrowBack, MdChevronRight, MdOutlineHomeWork } from "react-icons/md";
 import {
@@ -65,6 +65,7 @@ function SubSectorPage(props: {
   const { lng, step, inventory: inventoryId, subsector } = use(props.params);
 
   const router = useRouter();
+  const pathname = usePathname();
   const { t } = useTranslation(lng, "data");
   const { scrollY } = useScroll();
   const { organization } = useOrganizationContext();
@@ -255,14 +256,14 @@ function SubSectorPage(props: {
                     }
                   >
                     <BreadcrumbLink
-                      href={`/${inventoryId}/data`}
+                      href={pathname.replace(`/${step}/${subsector}`, "")}
                       color="content.tertiary"
                       truncate
                     >
                       {t("all-sectors")}
                     </BreadcrumbLink>
                     <BreadcrumbLink
-                      href={`/${inventoryId}/data/${step}`}
+                      href={pathname.replace(`/${subsector}`, "")}
                       color="content.tertiary"
                       truncate
                     >
@@ -301,7 +302,7 @@ function SubSectorPage(props: {
                   }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
-                  <Link href={`/${inventoryId}/data/${step}`}>
+                  <Link href={pathname.replace(`/${subsector}`, "")}>
                     <Icon
                       as={MdArrowBack}
                       h="24px"

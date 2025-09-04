@@ -54,7 +54,7 @@ class PlanRequest(BaseModel):
 # --- Response models ---
 
 
-class StartPlanCreationResponse(BaseModel):
+class StartTaskResponse(BaseModel):
     taskId: str
     status: str
 
@@ -190,6 +190,7 @@ class PlanCreatorMetadata(BaseModel):
     cityName: str
     actionId: str
     actionName: str
+    language: str
     createdAt: datetime
 
 
@@ -216,14 +217,3 @@ class TranslatePlanRequest(BaseModel):
     outputLanguage: str = Field(
         ..., min_length=2, max_length=2, description="ISO Language code"
     )
-
-
-# --- Translate plan response models ---
-
-
-class StartPlanTranslationResponse(BaseModel):
-    taskId: str
-    status: str
-
-
-class PlanResponseTranslation(BaseModel):

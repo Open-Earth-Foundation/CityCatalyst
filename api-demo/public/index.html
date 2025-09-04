@@ -16,11 +16,9 @@
       import { config } from './config.js'
       const { CC_ORIGIN, CLIENT_ID } = config
 
-      const APP_ORIGIN = (new URL(window.location)).origin
-
       const username_url = `${CC_ORIGIN}/api/v0/user/whoami/`
 
-      const redirect_uri = `${APP_ORIGIN}`;
+      const redirect_uri = (new URL(window.location)).origin
 
       function setStatus(text) {
         document.getElementById("status").textContent = text;
@@ -85,7 +83,7 @@
 
           window.location.href = redirect_uri
         } catch (error) {
-          setStatus(err.message)
+          setStatus(error.message)
           sessionStorage.removeItem('state')
           sessionStorage.removeItem('code_verifier')
         }

@@ -248,8 +248,13 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       const errorData = error.data as any;
       if (errorData.error?.type === "ManualInputValidationError") {
         handleManalInputValidationError(errorData.error.issues);
+      } else if (errorData.error?.data?.type === "CalculationError") {
+        console.log(errorData);
+        showErrorToast({
+          title: t("invalid-request"),
+          description: t(errorData.error.data.errorKey),
+        });
       } else {
-        const error = response.error as FetchBaseQueryError;
         showErrorToast();
       }
     }

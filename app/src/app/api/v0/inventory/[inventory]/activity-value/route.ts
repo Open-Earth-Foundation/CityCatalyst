@@ -23,14 +23,37 @@ export const POST = apiHandler(async (req, { params, session }) => {
   // just for access control
   await PermissionService.canEditInventory(session, params.inventory);
 
-  const result = await ActivityService.createActivity(
-    data,
-    params.inventory,
-    inventoryValueId,
-    inventoryValueParams,
-    gasValues,
-  );
-  return NextResponse.json({ success: !!result, data: result });
+  try {
+    const result = await ActivityService.createActivity(
+      data,
+      params.inventory,
+      inventoryValueId,
+      inventoryValueParams,
+      gasValues,
+    );
+    return NextResponse.json({ success: !!result, data: result });
+  } catch (error: any) {
+    // Handle JavaScript BigInt conversion errors
+    if (
+      error.message &&
+      error.message.includes("Cannot convert") &&
+      error.message.includes("to a BigInt")
+    ) {
+      const customError = new createHttpError.BadRequest(
+        "Invalid request",
+      ) as createHttpError.HttpError & {
+        data?: { type: string; errorKey: string };
+      };
+      customError.data = {
+        type: "CalculationError",
+        errorKey: "calculated-emission-values-too-large",
+      };
+      throw customError;
+    }
+
+    // Re-throw other errors
+    throw error;
+  }
 });
 
 export const GET = apiHandler(async (req, { params, session }) => {

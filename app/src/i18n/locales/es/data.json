@@ -1261,5 +1261,7 @@
   "waste-composition-percentage": "{{percent}}%",
   "categories": "Categorías",
   "percentage": "Porcentaje",
-  "go-to-source": "Ir a la fuente"
+  "go-to-source": "Ir a la fuente",
+  "calculated-emission-values-too-large": "Los valores de emisiones calculados son demasiado grandes para almacenar. Por favor, reduzca las cantidades de actividad o los factores de emisión para evitar el desbordamiento.",
+  "invalid-request": "Solicitud Inválida"
 }

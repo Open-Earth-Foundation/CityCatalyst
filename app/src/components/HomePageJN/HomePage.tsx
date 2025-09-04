@@ -130,13 +130,40 @@ export default function HomePage({
     }
   }, [isOrgDataLoading, orgData, setTheme]);
 
+  // Handle invalid city ID - redirect to default city or onboarding
+  useEffect(() => {
+    if (isUserInfoLoading || isCityLoading) return;
+
+    if (cityError || !city) {
+      if (userInfo?.defaultCityId) {
+        router.replace(`/${lng}/cities/${userInfo.defaultCityId}`);
+      } else {
+        router.replace(`/${lng}/cities/onboarding`);
+      }
+    }
+  }, [
+    cityError,
+    city,
+    userInfo,
+    isUserInfoLoading,
+    isCityLoading,
+    lng,
+    router,
+  ]);
+
   if (
     isOrgDataLoading ||
     isUserInfoLoading ||
     isAllModulesLoading ||
-    isProjectModulesLoading
+    isProjectModulesLoading ||
+    isCityLoading
   ) {
     return <ProgressLoader />;
+  }
+
+  // If city doesn't exist, don't render (will redirect)
+  if (cityError || !city) {
+    return null;
   }
 
   return (

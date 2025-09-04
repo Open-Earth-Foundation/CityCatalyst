@@ -25,14 +25,16 @@ const TopActionsDataState = ({
   isActionsPending,
 }: {
   t: TFunction;
-  inventory: InventoryResponse;
+  inventory: InventoryResponse | null;
   hasActions?: boolean;
   actionType: ACTION_TYPES;
   onRefetch: () => void;
   isActionsPending: boolean;
 }) => {
   const { data: inventoryProgress, isLoading } =
-    api.useGetInventoryProgressQuery(inventory.inventoryId);
+    api.useGetInventoryProgressQuery(inventory!.inventoryId, {
+      skip: !inventory,
+    });
 
   // Check if there are any inventory values (activity level data)
   const hasInventoryData =

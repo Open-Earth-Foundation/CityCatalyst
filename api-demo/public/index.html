@@ -11,6 +11,7 @@
       <span id="status"></span>
     </p>
     <script type="module">
+      // @ts-check
       import * as oauth from './oauth4webapi.min.js'
 
       import { config } from './config.js'
@@ -18,10 +19,13 @@
 
       const username_url = `${CC_ORIGIN}/api/v0/user/whoami/`
 
-      const redirect_uri = (new URL(window.location)).origin
+      const redirect_uri = (new URL(window.location.href)).origin
 
       function setStatus(text) {
-        document.getElementById("status").textContent = text;
+        const el = document.getElementById("status")
+        if (el) {
+          el.textContent = text;
+        }
       }
 
       async function startLogin (as, client) {
@@ -55,7 +59,7 @@
           const params = oauth.validateAuthResponse(
             as,
             client,
-            new URL(window.location),
+            new URL(window.location.href),
             state
           )
 
@@ -116,13 +120,16 @@
         )
         const params = new URLSearchParams(window.location.search)
         if (sessionStorage.getItem('access_token')) {
-          await showUsername(as, client)
+          await showUsername(as)
         } else if (params.get("state")) {
           await finishLogin(as, client)
         }
-        document.getElementById("login").addEventListener("click", async () => {
-          await startLogin(as, client)
-        });
+        const loginEl = document.getElementById("login")
+        if (loginEl) {
+          loginEl.addEventListener("click", async () => {
+            await startLogin(as, client)
+          });
+        }
       });
     </script>
   </body>

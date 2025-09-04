@@ -86,6 +86,7 @@ def _execute_plan_creation(task_uuid: str, background_task_input):
                 cityName=result["city_data"]["name"],
                 actionId=result["climate_action_data"]["ActionID"],
                 actionName=result["climate_action_data"]["ActionName"],
+                language=background_task_input["language"],
                 createdAt=datetime.now(UTC),
             )
 
@@ -142,3 +143,51 @@ def _execute_plan_creation(task_uuid: str, background_task_input):
         )
         task_storage[task_uuid]["status"] = "failed"
         task_storage[task_uuid]["error"] = f"Error generating plan: {str(e)}"
+
+
+def _execute_plan_translation(task_uuid: str, background_task_input):
+    """Background task to execute plan translation"""
+    try:
+        # Update status to running
+        task_storage[task_uuid]["status"] = "running"
+        logger.info(
+            f"Task {task_uuid}: Starting plan translation from language {background_task_input['inputLanguage']} to language {background_task_input['outputLanguage']}"
+        )
+
+        # Dummy result
+        plan_response = PlanResponse(
+            metadata=PlanCreatorMetadata(
+                locode="test",
+                cityName="test",
+                actionId="test",
+                actionName="test",
+                language=background_task_input["outputLanguage"],
+                createdAt=datetime.now(UTC),
+            ),
+            content=PlanContent(
+                introduction=Introduction(
+                    city_description="test",
+                    action_description="test",
+                    national_strategy_explanation="test",
+                ),
+                subactions=SubactionList(items=[]),
+                institutions=InstitutionList(items=[]),
+                milestones=MilestoneList(items=[]),
+                timeline=[Timeline()],
+                costBudget=[CostBudget()],
+                merIndicators=MerIndicatorList(items=[]),
+                mitigations=MitigationList(items=[]),
+                adaptations=AdaptationList(items=[]),
+                sdgs=SDGList(items=[]),
+            ),
+        )
+        # Store the result
+        task_storage[task_uuid]["status"] = "completed"
+        task_storage[task_uuid]["plan_response"] = plan_response
+    except Exception as e:
+        logger.error(
+            f"Task {task_uuid}: Unexpected error during plan translation: {str(e)}",
+            exc_info=True,
+        )
+        task_storage[task_uuid]["status"] = "failed"
+        task_storage[task_uuid]["error"] = f"Error translating plan: {str(e)}"

@@ -11,15 +11,17 @@ from services.get_actions import get_actions
 
 from plan_creator_bundle.plan_creator.models import (
     PlanRequest,
-    StartPlanCreationResponse,
+    StartTaskResponse,
     CheckProgressResponse,
     PlanResponse,
     TranslatePlanRequest,
-    StartPlanTranslationResponse,
 )
 
 from limiter import limiter
-from plan_creator_bundle.plan_creator.tasks import _execute_plan_creation
+from plan_creator_bundle.plan_creator.tasks import (
+    _execute_plan_creation,
+    _execute_plan_translation,
+)
 from plan_creator_bundle.plan_creator.task_storage import task_storage
 
 logger = logging.getLogger(__name__)
@@ -28,11 +30,31 @@ router = APIRouter()
 
 
 @router.post(
-    "/v1/start_plan_creation", response_model=StartPlanCreationResponse, status_code=202
+    "/v1/start_plan_creation", response_model=StartTaskResponse, status_code=202
 )
 @limiter.limit("5/minute")
 async def start_plan_creation(request: Request, req: PlanRequest):
-    """Start asynchronous plan creation process"""
+    """
+    Start a background task to create an action implementation plan for a city.
+
+    This endpoint enqueues an asynchronous job that combines provided city data
+    with global context and the selected action to generate a plan. Use the
+    returned `taskId` with the progress and retrieval endpoints to monitor and
+    fetch results.
+
+    **Body**:
+    - `cityData` (`CityData`): Minimal city context and emissions inputs.
+    - `countryCode` (`str`): ISO 3166-1 alpha-2 code (defaults to "BR").
+    - `actionId` (`str`): Identifier of the action to plan for.
+    - `language` (`str`): ISO 639-1 code for output language (defaults to "en").
+
+    **Returns**:
+    - `StartTaskResponse`: Contains `taskId` and initial `status` (e.g. `pending`).
+
+    **Errors**:
+    - `404`: City context from global API not found, or action not found from global API.
+    - `500`: Failed to start background processing.
+    """
     # Generate a unique task ID
     task_uuid = str(uuid.uuid4())
     logger.info(f"Task {task_uuid}: Received plan creation request")
@@ -136,15 +158,28 @@ async def start_plan_creation(request: Request, req: PlanRequest):
         )
 
     # Return the task ID immediately
-    return StartPlanCreationResponse(
-        taskId=task_uuid, status=task_storage[task_uuid]["status"]
-    )
+    return StartTaskResponse(taskId=task_uuid, status=task_storage[task_uuid]["status"])
 
 
 @router.get("/v1/check_progress/{task_uuid}", response_model=CheckProgressResponse)
 @limiter.limit("10/minute")
 async def check_progress(request: Request, task_uuid: str):
-    """Check the progress of a plan creation task"""
+    """
+    Check the current status of a background task.
+
+    Use the `task_uuid` returned by a start endpoint to query progress. If the
+    task failed, an error message may be included in the response.
+
+    **Path params**:
+    - `task_uuid` (`str`): Identifier of the task to check.
+
+    **Returns**:
+    - `CheckProgressResponse`: `status` (e.g. `pending`, `running`, `completed`, `failed`)
+      and optional `error` when `status` is `failed`.
+
+    **Errors**:
+    - `404`: Task not found.
+    """
     logger.info(f"Task {task_uuid}: Checking progress")
 
     if task_uuid not in task_storage:
@@ -166,7 +201,23 @@ async def check_progress(request: Request, task_uuid: str):
 @router.get("/v1/get_plan/{task_uuid}", response_model=PlanResponse)
 @limiter.limit("10/minute")
 async def get_plan(request: Request, task_uuid: str):
-    """Get the completed plan for a task. Returns error details if failed or not ready."""
+    """
+    Retrieve the completed plan for a finished task.
+
+    Only call this after the task reports `completed` via the progress endpoint.
+
+    **Path params**:
+    - `task_uuid` (`str`): Identifier of the plan creation task.
+
+    **Returns**:
+    - `PlanResponse`: The generated plan content and metadata.
+
+    **Errors**:
+    - `404`: Task not found.
+    - `409`: Task not completed yet.
+    - `400`: Task missing plan response.
+    - `500`: Task failed or an internal error occurred while returning the plan.
+    """
     logger.info(f"Task {task_uuid}: Retrieving plan")
     if task_uuid not in task_storage:
         logger.warning(f"Task {task_uuid}: Task not found")
@@ -187,6 +238,14 @@ async def get_plan(request: Request, task_uuid: str):
             status_code=409,
             detail=f"Plan for task {task_uuid} is not ready yet. Current status: {task_info['status']}",
         )
+    if "plan_response" not in task_info or task_info["plan_response"] is None:
+        logger.error(
+            f"Task {task_uuid}: Task does not contain a plan response or the plan response is None."
+        )
+        raise HTTPException(
+            status_code=400,
+            detail=f"Task {task_uuid} does not contain a plan response or the plan response is None.",
+        )
 
     try:
         return task_info["plan_response"]
@@ -197,20 +256,26 @@ async def get_plan(request: Request, task_uuid: str):
         raise HTTPException(status_code=500, detail="Error returning plan response.")
 
 
-@router.post("/v1/translate_plan", response_model=StartPlanTranslationResponse)
+@router.post("/v1/translate_plan", response_model=StartTaskResponse)
 @limiter.limit("10/minute")
 async def translate_plan(
     request: Request,
     req: TranslatePlanRequest,
 ):
-    """Translate a plan from one language into another language.
+    """
+    Translate a plan from one language into another language.
 
-    Args:
-        inputPlan: The plan to translate. It is a PlanResponse object like the one returned by the get_plan endpoint.
-        inputLanguage: The input language of the plan response.
-        outputLanguage: The output language to translate the plan into.
+    **Args**:
 
-    The input language and output language are ISO 639-1 codes.
+    - **inputPlan**: The plan to translate.
+      It is a `PlanResponse` object like the one returned by the `get_plan` endpoint.
+
+    - **inputLanguage** (`str`): The input language of the plan response (ISO 639-1 code).
+
+    - **outputLanguage** (`str`): The output language to translate the plan into (ISO 639-1 code).
+
+    **Notes**:
+    - Both `inputLanguage` and `outputLanguage` must be valid [ISO 639-1 codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
     """
     task_uuid = str(uuid.uuid4())
 
@@ -219,34 +284,27 @@ async def translate_plan(
     logger.info(
         f"Task {task_uuid}: Translating plan from {req.inputLanguage} to {req.outputLanguage}"
     )
-    logger.info(f"Task {task_uuid}: Input plan: {req.inputPlan}")
 
     # Initialize task status
     task_storage[task_uuid] = {
         "status": "pending",
         "created_at": datetime.now().isoformat(),
-        # "inputLanguage": req.inputLanguage,
-        # "outputLanguage": req.outputLanguage,
-        # "inputPlan": req.inputPlan,
     }
 
     # Create background task input
     background_task_input = {
-        "plan": req.inputPlan,
+        "inputPlan": req.inputPlan,
         "inputLanguage": req.inputLanguage,
         "outputLanguage": req.outputLanguage,
     }
 
     try:
-        # Update task status to running
-        task_storage[task_uuid]["status"] = "running"
         thread = threading.Thread(
             target=_execute_plan_translation,
             args=(task_uuid, background_task_input),
         )
         thread.daemon = True
         thread.start()
-        logger.info(f"Task {task_uuid}: Started background processing for task")
     except Exception as e:
         logger.error(
             f"Task {task_uuid}: Failed to start background thread: {str(e)}",
@@ -261,45 +319,4 @@ async def translate_plan(
             detail="Failed to start background thread for plan translation.",
         )
 
-    # TODO: Return the acctual translated plan response here and not the original plan response
-    return StartPlanTranslationResponse(
-        taskId=task_uuid, status=task_storage[task_uuid]["status"]
-    )
-
-
-@router.get("/v1/get_translated_plan/{task_uuid}", response_model=PlanResponse)
-@limiter.limit("10/minute")
-async def get_translated_plan(request: Request, task_uuid: str):
-    """Get the completed translated plan for a task. Returns error details if failed or not ready."""
-    logger.info(f"Task {task_uuid}: Retrieving translated plan")
-    if task_uuid not in task_storage:
-        logger.warning(f"Task {task_uuid}: Task not found")
-        raise HTTPException(status_code=404, detail=f"Task {task_uuid} not found")
-
-    task_info = task_storage[task_uuid]
-    if task_info["status"] == "failed":
-        logger.error(
-            f"Task {task_uuid}: Task failed: {task_info.get('error')}", exc_info=True
-        )
-        raise HTTPException(
-            status_code=500,
-            detail=f"Task {task_uuid} failed: {task_info.get('error', 'Unknown error')}",
-        )
-    if task_info["status"] != "completed":
-        logger.info(f"Task {task_uuid}: Task not completed yet: {task_info['status']}")
-        raise HTTPException(
-            status_code=409,
-            detail=f"Plan for task {task_uuid} is not ready yet. Current status: {task_info['status']}",
-        )
-
-    try:
-        # Return the translated plan response
-        pass
-    except Exception as e:
-        logger.error(
-            f"Task {task_uuid}: Error returning translated plan response: {str(e)}",
-            exc_info=True,
-        )
-        raise HTTPException(
-            status_code=500, detail="Error returning translated plan response."
-        )
+    return StartTaskResponse(taskId=task_uuid, status=task_storage[task_uuid]["status"])

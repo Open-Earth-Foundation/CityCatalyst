@@ -1,14 +1,9 @@
 "use client";
 
 import ChatPopover from "@/components/ChatBot/chat-popover";
-import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
-import {
-  api,
-  useGetOrganizationForInventoryQuery,
-  useGetUserQuery,
-} from "@/services/api";
+import { api, useGetOrganizationForInventoryQuery } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useEffect, use } from "react";
 import { useTheme } from "next-themes";
@@ -16,9 +11,12 @@ import { useOrganizationContext } from "@/hooks/organization-context-provider/us
 import { useParams } from "next/navigation";
 import { getParamValueRequired } from "@/util/helpers";
 
-export default function InventoryLayout({ children }: { children: React.ReactNode }) {
+export default function InventoryLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const params = useParams();
-  const lng = getParamValueRequired(params.lng);
   const inventory = getParamValueRequired(params.inventory);
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -43,7 +41,10 @@ export default function InventoryLayout({ children }: { children: React.ReactNod
       const logoUrl = inventoryOrgData?.logoUrl ?? null;
       const active = inventoryOrgData?.active ?? true;
 
-      if (organization?.logoUrl !== logoUrl || organization?.active !== active) {
+      if (
+        organization?.logoUrl !== logoUrl ||
+        organization?.active !== active
+      ) {
         setOrganization({ logoUrl, active });
       }
       setTheme(inventoryOrgData?.theme?.themeKey ?? ("blue_theme" as string));
@@ -63,7 +64,6 @@ export default function InventoryLayout({ children }: { children: React.ReactNod
       flexDirection="column"
       bg="background.backgroundLight"
     >
-      <NavigationBar showMenu lng={lng} />
       <Toaster />
       <Box w="full" h="full">
         {children}

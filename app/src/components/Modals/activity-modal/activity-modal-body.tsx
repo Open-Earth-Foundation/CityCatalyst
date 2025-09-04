@@ -88,6 +88,8 @@ export type Inputs = {
   subcategoryData: Record<string, SubcategoryData>;
 };
 
+const EMISSION_FACTOR_MAX = 100000;
+
 const ActivityModalBody = ({
   t,
   register,
@@ -117,6 +119,22 @@ const ActivityModalBody = ({
   const emissionsFactorTypeValue = useWatch({
     control,
     name: "activity.emissionFactorType",
+  });
+
+  // Watch emission factor values for validation
+  const co2EmissionFactor = useWatch({
+    control,
+    name: "activity.CO2EmissionFactor",
+  });
+
+  const n2oEmissionFactor = useWatch({
+    control,
+    name: "activity.N2OEmissionFactor",
+  });
+
+  const ch4EmissionFactor = useWatch({
+    control,
+    name: "activity.CH4EmissionFactor",
   });
 
   const { field } = useController({
@@ -178,6 +196,51 @@ const ActivityModalBody = ({
       }
     }
   }, [emissionsFactorTypes, emissionsFactorTypeValue, setValue, t]);
+
+  // Validate emission factors in real-time (only when custom factor type is selected)
+  useEffect(() => {
+    const validateEmissionFactor = (value: number, fieldName: string) => {
+      // Only validate if custom emission factor type is selected
+      if (emissionsFactorTypeValue !== "custom") {
+        clearErrors(`activity.${fieldName}`);
+        return;
+      }
+
+      // Check if value is empty, null, undefined
+      if (value === null || value === undefined) {
+        setError(`activity.${fieldName}`, {
+          type: "required",
+          message: t("emission-factor-required"),
+        });
+      } else if (value < 0) {
+        setError(`activity.${fieldName}`, {
+          type: "min",
+          message: t("emission-factor-negative"),
+        });
+      } else if (value > EMISSION_FACTOR_MAX) {
+        setError(`activity.${fieldName}`, {
+          type: "max",
+          message: t("emission-factor-too-large", {
+            max: EMISSION_FACTOR_MAX.toLocaleString(),
+          }),
+        });
+      } else {
+        clearErrors(`activity.${fieldName}`);
+      }
+    };
+
+    validateEmissionFactor(co2EmissionFactor, "CO2EmissionFactor");
+    validateEmissionFactor(n2oEmissionFactor, "N2OEmissionFactor");
+    validateEmissionFactor(ch4EmissionFactor, "CH4EmissionFactor");
+  }, [
+    co2EmissionFactor,
+    n2oEmissionFactor,
+    ch4EmissionFactor,
+    emissionsFactorTypeValue,
+    setError,
+    clearErrors,
+    t,
+  ]);
 
   const filteredFields = fields.filter((f) => {
     return !(f.id.includes("-source") && f.type === "text");
@@ -536,7 +599,7 @@ const ActivityModalBody = ({
                   <Box display="flex" gap="6px" alignItems="center" mt="6px">
                     <Icon as={MdWarning} color="sentiment.negativeDefault" />
                     <Text fontSize="body.md">
-                      {t("emission-amount-form-error")}
+                      {t(errors?.activity?.[title]?.message as string)}
                     </Text>
                   </Box>
                 ) : (
@@ -658,7 +721,10 @@ const ActivityModalBody = ({
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">
                   <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
-                    {t("emission-amount-form-error")}
+                    {t(
+                      errors?.activity?.["CO2EmissionFactor"]
+                        ?.message as string,
+                    )}
                   </Text>
                 </Box>
               ) : (
@@ -683,7 +749,7 @@ const ActivityModalBody = ({
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">
                   <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
-                    {t("emission-amount-form-error")}
+                    {errors?.activity?.["N2OEmissionFactor"]?.message}
                   </Text>
                 </Box>
               ) : (
@@ -708,7 +774,7 @@ const ActivityModalBody = ({
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">
                   <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
-                    {t("emission-amount-form-error")}
+                    {errors?.activity?.["CH4EmissionFactor"]?.message}
                   </Text>
                 </Box>
               ) : (
@@ -771,7 +837,7 @@ const ActivityModalBody = ({
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
                       <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text fontSize="body.md">
-                        {t("emission-amount-form-error")}
+                        {errors?.activity?.["CO2EmissionFactor"]?.message}
                       </Text>
                     </Box>
                   ) : (
@@ -809,7 +875,7 @@ const ActivityModalBody = ({
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
                       <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text fontSize="body.md">
-                        {t("emission-amount-form-error")}
+                        {errors?.activity?.["N2OEmissionFactor"]?.message}
                       </Text>
                     </Box>
                   ) : (
@@ -852,7 +918,7 @@ const ActivityModalBody = ({
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
                       <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text fontSize="body.md">
-                        {t("emission-amount-form-error")}
+                        {errors?.activity?.["CH4EmissionFactor"]?.message}
                       </Text>
                     </Box>
                   ) : (

@@ -43,7 +43,7 @@
         authz.searchParams.set('response_type', 'code')
         authz.searchParams.set('scope', 'read write')
         authz.searchParams.set('code_challenge', code_challenge)
-        authz.searchParams.set('code_challenge_method', code_challenge_method)
+        authz.searchParams.set('code_challenge_method', 'S256')
         authz.searchParams.set('state', state)
 
         window.location.href = authz.toString();

@@ -72,6 +72,10 @@
             code_verifier
           )
 
+          if (!response.ok) {
+            throw new Error(`Bad status from token endpoint: ${response.status}`)
+          }
+
           const result = await oauth.processAuthorizationCodeResponse(
             as,
             client,
@@ -101,6 +105,9 @@
             'GET',
             new URL(username_url),
           )
+          if (!whoamiResponse.ok) {
+            throw new Error(`Bad status from whoami endpoint: ${whoamiResponse.status}`)
+          }
           let whoami = await whoamiResponse.json()
           setStatus(`Hello, ${whoami.data.name}`);
         } catch (error) {
@@ -114,6 +121,9 @@
           new URL(CC_ORIGIN),
           { algorithm: 'oauth2' }
         )
+        if (!res.ok) {
+          throw new Error(`Bad status from discovery: ${res.status}`)
+        }
         const as = await oauth.processDiscoveryResponse(
           new URL(CC_ORIGIN),
           res

@@ -1,0 +1,21 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "plugins": ["@html-eslint"],
+  "overrides": [
+    {
+      "files": ["*.html"],
+      "parser": "@html-eslint/parser",
+      "rules": {
+        "no-undef": "error",
+        "no-unused-vars": "warn"
+      }
+    }
+  ],
+  "rules": {
+    "no-undef": "error",
+    "no-unused-vars": "warn"
+  }
+}

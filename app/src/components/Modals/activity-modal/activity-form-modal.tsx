@@ -249,7 +249,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       if (errorData.error?.type === "ManualInputValidationError") {
         handleManalInputValidationError(errorData.error.issues);
       } else if (errorData.error?.data?.type === "CalculationError") {
-        console.log(errorData);
         showErrorToast({
           title: t("invalid-request"),
           description: t(errorData.error.data.errorKey),

@@ -88,6 +88,8 @@ export type Inputs = {
   subcategoryData: Record<string, SubcategoryData>;
 };
 
+const EMISSION_FACTOR_MAX = 100000;
+
 const ActivityModalBody = ({
   t,
   register,
@@ -134,8 +136,6 @@ const ActivityModalBody = ({
     control,
     name: "activity.CH4EmissionFactor",
   });
-
-  const EMISSION_FACTOR_MAX = 100000;
 
   const { field } = useController({
     name: `activity.${methodology.activitySelectionField?.id}`,
@@ -206,8 +206,8 @@ const ActivityModalBody = ({
         return;
       }
 
-      // Check if value is empty, null, undefined, or zero
-      if (value === null || value === undefined || value === 0) {
+      // Check if value is empty, null, undefined
+      if (value === null || value === undefined) {
         setError(`activity.${fieldName}`, {
           type: "required",
           message: t("emission-factor-required"),

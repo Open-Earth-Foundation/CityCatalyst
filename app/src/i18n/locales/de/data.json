@@ -1278,5 +1278,8 @@
   "percentage": "Prozentsatz",
   "go-to-source": "Gehe zur Quelle",
   "calculated-emission-values-too-large": "Die berechneten Emissionswerte sind zu groß zum Speichern. Bitte reduzieren Sie Ihre Aktivitätsmengen oder Emissionsfaktoren, um einen Überlauf zu vermeiden.",
-  "invalid-request": "Ungültige Anfrage"
+  "invalid-request": "Ungültige Anfrage",
+  "emission-factor-too-large": "Der Emissionsfaktor darf {{max}} nicht überschreiten. Bitte geben Sie einen kleineren Wert ein.",
+  "emission-factor-required": "Emissionsfaktor erforderlich",
+  "emission-factor-negative": "Emissionsfaktor kann nicht negativ sein. Bitte geben Sie einen positiven Wert ein."
 }

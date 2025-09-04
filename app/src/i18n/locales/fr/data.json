@@ -1253,5 +1253,8 @@
   "percentage": "Pourcentage",
   "go-to-source": "Accéder à la source",
   "calculated-emission-values-too-large": "Les valeurs d'émissions calculées sont trop importantes pour être stockées. Veuillez réduire vos quantités d'activité ou facteurs d'émission pour éviter le débordement.",
-  "invalid-request": "Demande Invalide"
+  "invalid-request": "Demande Invalide",
+  "emission-factor-too-large": "Le facteur d'émission ne peut pas dépasser {{max}}. Veuillez saisir une valeur plus petite.",
+  "emission-factor-required": "Facteur d'émission requis",
+  "emission-factor-negative": "Le facteur d'émission ne peut pas être négatif. Veuillez saisir une valeur positive."
 }

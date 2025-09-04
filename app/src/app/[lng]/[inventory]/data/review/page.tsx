@@ -9,7 +9,7 @@ import { RootState } from "@/lib/store";
 
 import { MdArrowBack } from "react-icons/md";
 import { Box, Button, Card, Heading, Icon, Text } from "@chakra-ui/react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, usePathname } from "next/navigation";
 
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
@@ -24,6 +24,7 @@ import { logger } from "@/services/logger";
 export default function ReviewPage() {
   const params = useParams();
   const lng = getParamValueRequired(params.lng);
+  const pathname = usePathname();
 
   const { t } = useTranslation(lng, "data");
   const { inventory: inventoryParam } = useParams();
@@ -208,7 +209,9 @@ export default function ReviewPage() {
                   variant="ghost"
                   w="181px"
                   gap="8px"
-                  onClick={() => router.push(`/${inventoryId}/data/1`)}
+                  onClick={() =>
+                    router.push(`${pathname.replace("/review", "")}/1`)
+                  }
                 >
                   <MdOutlineEdit size="24px" />
                   <Heading
@@ -352,7 +355,9 @@ export default function ReviewPage() {
                   variant="ghost"
                   w="181px"
                   gap="8px"
-                  onClick={() => router.push(`/${inventoryId}/data/2`)}
+                  onClick={() =>
+                    router.push(`${pathname.replace("/review", "")}/2`)
+                  }
                 >
                   <MdOutlineEdit size="24px" />
                   <Heading
@@ -476,7 +481,9 @@ export default function ReviewPage() {
                   variant="ghost"
                   w="181px"
                   gap="8px"
-                  onClick={() => router.push(`/${inventoryId}/data/3`)}
+                  onClick={() =>
+                    router.push(`${pathname.replace("/review", "")}/3`)
+                  }
                 >
                   <MdOutlineEdit size="24px" />
                   <Heading

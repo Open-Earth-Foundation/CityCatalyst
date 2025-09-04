@@ -8,6 +8,9 @@
     <h1>CityCatalyst API demo</h1>
     <p>
       <button id="login">Login with CityCatalyst</button>
+      <button id="logout" disabled="disabled">Logout</button>
+    </p>
+    <p>
       <span id="status"></span>
     </p>
     <script type="module">
@@ -116,6 +119,10 @@
       }
 
       document.addEventListener("DOMContentLoaded", async () => {
+
+        const loginEl = document.getElementById("login")
+        const logoutEl = document.getElementById("logout")
+
         const client = { client_id: CLIENT_ID }
         const res = await oauth.discoveryRequest(
           new URL(CC_ORIGIN),
@@ -130,16 +137,24 @@
         )
         const params = new URLSearchParams(window.location.search)
         if (sessionStorage.getItem('access_token')) {
+          loginEl?.setAttribute('disabled', 'disabled')
+          logoutEl?.removeAttribute('disabled')
           await showUsername(as)
         } else if (params.get("state")) {
+          loginEl?.setAttribute('disabled', 'disabled')
+          logoutEl?.setAttribute('disabled', 'disabled')
           await finishLogin(as, client)
+        } else {
+          loginEl?.removeAttribute('disabled')
+          logoutEl?.setAttribute('disabled', 'disabled')
         }
-        const loginEl = document.getElementById("login")
-        if (loginEl) {
-          loginEl.addEventListener("click", async () => {
-            await startLogin(as, client)
-          });
-        }
+        loginEl?.addEventListener("click", async () => {
+          await startLogin(as, client)
+        });
+        logoutEl?.addEventListener("click", async () => {
+          sessionStorage.clear()
+          window.location.href = redirect_uri
+        });
       });
     </script>
   </body>

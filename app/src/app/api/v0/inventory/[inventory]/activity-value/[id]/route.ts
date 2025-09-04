@@ -35,6 +35,22 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
     return NextResponse.json({ success: true, data: result });
   } catch (error: any) {
+    // Check for database bigint conversion errors
+    if (
+      error.message &&
+      error.message.includes("is out of range for type bigint")
+    ) {
+      const customError = createHttpError.BadRequest(
+        "Invalid request",
+      ) as createHttpError.HttpError & {
+        data?: { errorKey: string; type: string };
+      };
+      customError.data = {
+        errorKey: "calculated-emission-values-too-large",
+        type: "CalculationError",
+      };
+      throw customError;
+    }
     // Check for JavaScript BigInt conversion errors
     if (
       error.message &&

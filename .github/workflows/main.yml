@@ -18,13 +18,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      LANGCHAIN_PROJECT: hiap-test
-      LANGCHAIN_PROJECT_NAME_PRIORITIZER: hiap-test-prioritizer
+      LANGCHAIN_PROJECT: hiap-prod
+      LANGCHAIN_PROJECT_NAME_PRIORITIZER: hiap-prod-prioritizer
+      LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION: hiap-prod-plan-translation
       LANGCHAIN_ENDPOINT: https://api.smith.langchain.com
       LANGCHAIN_TRACING_V2: false
       OPENAI_MODEL_NAME_PLAN_CREATOR: gpt-4.1
       OPENAI_MODEL_NAME_EXPLANATIONS: gpt-4.1-mini
       OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY: gpt-4.1
+      OPENAI_MODEL_NAME_PLAN_TRANSLATION: gpt-4.1-mini
       EXPLANATIONS_ENABLED: false
       XGBOOST_NUM_THREADS: 1
       BULK_CONCURRENCY: 1
@@ -118,8 +120,10 @@ jobs:
             OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-mini \
             OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY=gpt-4.1 \
             OPENAI_MODEL_NAME_PLAN_CREATOR=gpt-4.1 \
+            OPENAI_MODEL_NAME_PLAN_TRANSLATION=gpt-4.1-mini \
             LANGCHAIN_PROJECT=hiap-prod \
             LANGCHAIN_PROJECT_NAME_PRIORITIZER=hiap-prod-prioritizer \
+            LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION=hiap-prod-plan-translation \
             LANGCHAIN_ENDPOINT=https://api.smith.langchain.com \
             LANGCHAIN_TRACING_V2=true \
             S3_BUCKET_NAME=openearth.cap \

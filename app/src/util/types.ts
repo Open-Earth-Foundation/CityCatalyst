@@ -680,6 +680,18 @@ export interface PermissionCheckResponse {
   };
 }
 
+export interface HIAPSummary {
+  mitigation: {
+    id: string;
+    rankedActions: HIAction[];
+  };
+  adaptation: {
+    id: string;
+    rankedActions: HIAction[];
+  };
+  inventoryId: string;
+}
+
 export interface GHGInventorySummary {
   inventory: InventoryResponse;
   totalEmissions: {

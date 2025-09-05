@@ -93,6 +93,21 @@ export const buttonRecipe = defineRecipe({
           border: "none",
         },
       },
+      ghostLink: {
+        color: "content.link",
+        bg: "transparent",
+        textDecoration: "underline",
+        outline: "none",
+        border: "none",
+        _hover: {
+          bg: "background.transparentGrey",
+          color: "content.link",
+        },
+        _active: {
+          outline: "none",
+          border: "none",
+        },
+      },
       lightGhost: {
         color: "base.light",
         outline: "none",

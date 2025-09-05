@@ -1,8 +1,11 @@
 import { PermissionHelpers, CityWithProject } from "@/backend/permissions";
 import { ModuleDashboardService } from "@/backend/ModuleDashboardService";
+import { ModuleService } from "@/backend/ModuleService";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { Modules } from "@/util/constants";
+import createHttpError from "http-errors";
 
 const paramsSchema = z.object({
   city: z.string().uuid("City ID must be a valid UUID"),
@@ -21,19 +24,20 @@ export const GET = apiHandler(async (req: Request, context) => {
   const searchParams = new URL(req.url).searchParams;
   const lng = searchParams.get("lng") || "en";
 
-  // Get dashboard data for all enabled modules
-  const dashboardData = await ModuleDashboardService.getCityDashboardData(
+  // Get HIAP dashboard data
+  const hiapData = await ModuleDashboardService.getHIAPDashboardData(
     cityId,
-    city.project.projectId,
+    city.project?.projectId,
     lng,
   );
 
   return NextResponse.json({
-    data: dashboardData,
+    data: hiapData,
     metadata: {
       cityId,
       cityName: city.name,
-      projectId: city.project.projectId,
+      projectId: city.project?.projectId,
+      moduleId: Modules.HIAP.id,
     },
   });
 });

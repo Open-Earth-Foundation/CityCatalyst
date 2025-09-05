@@ -1,28 +1,19 @@
-import type { SectorAttributes } from "@/models/Sector";
 import {
   Badge,
-  Box,
-  Heading,
   HStack,
   Icon,
-  Link,
-  Separator,
   Stack,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
-import { RefObject } from "react";
-import { MdArrowBack, MdHomeWork, MdInfoOutline } from "react-icons/md";
-import { getTranslationFromDict } from "@/i18n";
-import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
+import { MdArrowBack } from "react-icons/md";
 import {
   DrawerBackdrop,
   DrawerBody,
   DrawerContent,
   DrawerRoot,
 } from "@/components/ui/drawer";
-import { Tooltip } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { TitleLarge, TitleMedium } from "@/components/Texts/Title";
 import { BodyLarge } from "@/components/Texts/Body";

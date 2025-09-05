@@ -3,8 +3,7 @@ import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/services/api";
 import { useGetCityYearsQuery } from "@/services/api";
-import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
-import HomePage from "@/components/GHGIHomePage/HomePage";
+import ProgressLoader from "@/components/ProgressLoader";
 
 export default function GHGIPage() {
   const router = useRouter();
@@ -59,7 +58,7 @@ export default function GHGIPage() {
 
   // Show loading state while determining where to redirect
   if (userInfoLoading || cityYearsLoading) {
-    return <div>Loading...</div>;
+    return <ProgressLoader />;
   }
 
   // This should not render as we always redirect

@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/services/api";
 import InventoryPage from "@/components/shared/InventoryPage";
+import ProgressLoader from "@/components/ProgressLoader";
 
 export default function PrivateHome() {
   const router = useRouter();
@@ -50,7 +51,7 @@ export default function PrivateHome() {
 
   // Show loading state while validating
   if (userInfoLoading || inventoryLoading) {
-    return <div>Loading...</div>;
+    return <ProgressLoader />;
   }
 
   // If inventory doesn't exist, don't render (will redirect)

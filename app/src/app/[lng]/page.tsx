@@ -7,6 +7,7 @@ import { Box } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { api } from "@/services/api";
+import ProgressLoader from "@/components/ProgressLoader";
 
 export default function PrivateHome(props: {
   params: Promise<{ lng: string }>;
@@ -46,7 +47,7 @@ export default function PrivateHome(props: {
         bg="background.backgroundLight"
       >
         <NavigationBar showMenu lng={lng} />
-        <Box p={4}>Loading...</Box>
+        <ProgressLoader />
       </Box>
     );
   }

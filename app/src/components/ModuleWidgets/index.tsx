@@ -13,6 +13,8 @@ interface ModuleDashboardWidgetsProps {
   t: TFunction;
 }
 
+const WIDGET_COUNT = 2;
+
 export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
   cityId,
   lng,
@@ -28,12 +30,19 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
     };
   }, []);
 
-  const handleGHGIVisibility = useMemo(() => createVisibilityHandler("ghgi"), [createVisibilityHandler]);
-  const handleHIAPVisibility = useMemo(() => createVisibilityHandler("hiap"), [createVisibilityHandler]);
+  const handleGHGIVisibility = useMemo(
+    () => createVisibilityHandler("ghgi"),
+    [createVisibilityHandler],
+  );
+  const handleHIAPVisibility = useMemo(
+    () => createVisibilityHandler("hiap"),
+    [createVisibilityHandler],
+  );
 
   const visibleWidgetCount =
     Object.values(widgetVisibility).filter(Boolean).length;
-  const allWidgetsReported = Object.keys(widgetVisibility).length === 2;
+  const allWidgetsReported =
+    Object.keys(widgetVisibility).length >= WIDGET_COUNT;
   const showEmptyState = allWidgetsReported && visibleWidgetCount === 0;
 
   if (showEmptyState) {

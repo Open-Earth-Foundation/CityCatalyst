@@ -211,7 +211,7 @@ jobs:
             "HIAP_API_URL=http://hiap-service-dev" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
-            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,CAP_TAB_ENABLED,ACCOUNT_SETTINGS_ENABLED,JN_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED" \
+            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,CAP_TAB_ENABLED,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED" \
             "NEXT_PUBLIC_POSTHOG_KEY=${{secrets.NEXT_PUBLIC_POSTHOG_KEY}}" \
             "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" \
             "NEXT_PUBLIC_DEPLOYMENT_ENV=development" \

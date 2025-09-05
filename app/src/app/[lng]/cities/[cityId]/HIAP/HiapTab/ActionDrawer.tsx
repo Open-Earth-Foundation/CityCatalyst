@@ -34,31 +34,7 @@ import {
   ACTION_TYPES,
 } from "@/util/types";
 import { ButtonMedium } from "@/components/Texts/Button";
-
-// Bar Visualization Component
-const BarVisualization = ({
-  value,
-  total,
-  width = "16px",
-}: {
-  value: number;
-  total: number;
-  width?: string;
-}) => {
-  return (
-    <HStack gap={1}>
-      {Array.from({ length: total }).map((_, index) => (
-        <Box
-          key={index}
-          w={width}
-          h="4px"
-          bg={index < value ? "blue.500" : "gray.200"}
-          borderRadius="sm"
-        />
-      ))}
-    </HStack>
-  );
-};
+import { BarVisualization } from "@/components/BarVisualization";
 
 export function ActionDrawer({
   action,

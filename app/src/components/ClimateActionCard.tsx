@@ -15,6 +15,11 @@ import { TopPickIcon, GeneratePlanIcon } from "@/components/icons";
 import { HIAction } from "@/util/types";
 import { RiFile3Line } from "react-icons/ri";
 import { GoLocation } from "react-icons/go";
+import { LevelBadge } from "@/components/LevelBadge";
+import { TitleLarge, TitleMedium, TitleSmall } from "./Texts/Title";
+import { BodyLarge, BodySmall } from "./Texts/Body";
+import { LabelMedium } from "./Texts/Label";
+import { HeadlineMedium } from "./Texts/Headline";
 
 export const ClimateActionCard = ({
   action,
@@ -86,25 +91,19 @@ export const ClimateActionCard = ({
           </Text>
         </Card.Title>
       )}
-      <Card.Description
-        pt={action.isSelected || action.rank <= 3 ? "32px" : "24px"}
-      >
-        <Text
+      <Box pt={action.isSelected || action.rank <= 3 ? "32px" : "24px"}>
+        <TitleLarge
           textOverflow="ellipsis"
           overflow="hidden"
           whiteSpace="nowrap"
           lineClamp={2}
-          fontFamily="heading"
-          fontWeight="bold"
-          fontSize="title.lg"
           color="content.secondary"
-          lineHeight="28px"
         >
           {action.name}
-        </Text>
-        <Text fontSize="body.sm" color="content.tertiary" mt="8px">
+        </TitleLarge>
+        <BodySmall color="content.tertiary" mt="8px">
           {action.description}
-        </Text>
+        </BodySmall>
 
         <Box display="flex" gap="8px" py="12px" w="full">
           <LevelBadge level={reductionLevel} />
@@ -119,23 +118,15 @@ export const ClimateActionCard = ({
           borderColor="border.overlay"
           pb="12px"
         >
-          <Text
-            fontSize="body.sm"
-            color="content.tertiary"
-            fontFamily="heading"
-            fontWeight="semibold"
-          >
+          <LabelMedium color="content.tertiary">
             {t("reduction-potential")}
-          </Text>
-          <Text
-            fontSize="title.md"
+          </LabelMedium>
+          <TitleMedium
             color={getReductionColor(reductionLevel)}
-            fontFamily="heading"
-            fontWeight="bold"
             textTransform="capitalize"
           >
             {t(reductionLevel)}
-          </Text>
+          </TitleMedium>
         </Box>
 
         <Box
@@ -152,21 +143,12 @@ export const ClimateActionCard = ({
             justifyContent="space-between"
             w="full"
           >
-            <Text
-              color="content.tertiary"
-              fontSize="body.sm"
-              fontWeight="semibold"
-            >
+            <LabelMedium color="content.tertiary">
               {t("sector-name")}
-            </Text>
-            <Text
-              fontSize="title.sm"
-              color="content.tertiary"
-              fontWeight="semibold"
-              textTransform="capitalize"
-            >
+            </LabelMedium>
+            <TitleSmall color="content.tertiary" textTransform="capitalize">
               {action.sectors?.[0] || "N/A"}
-            </Text>
+            </TitleSmall>
           </Box>
 
           <Box
@@ -175,21 +157,12 @@ export const ClimateActionCard = ({
             justifyContent="space-between"
             w="full"
           >
-            <Text
-              color="content.tertiary"
-              fontSize="body.sm"
-              fontWeight="semibold"
-            >
+            <LabelMedium color="content.tertiary">
               {t("estimated-cost")}
-            </Text>
-            <Text
-              fontSize="title.sm"
-              color="content.tertiary"
-              fontWeight="semibold"
-              textTransform="capitalize"
-            >
+            </LabelMedium>
+            <TitleSmall color="content.tertiary" textTransform="capitalize">
               {t(action.costInvestmentNeeded)}
-            </Text>
+            </TitleSmall>
           </Box>
 
           <Box
@@ -198,21 +171,14 @@ export const ClimateActionCard = ({
             justifyContent="space-between"
             w="full"
           >
-            <Text
-              color="content.tertiary"
-              fontSize="body.sm"
-              fontWeight="semibold"
-            >
+            <LabelMedium color="content.tertiary">
               {t("implementation-time")}
-            </Text>
-            <Text
-              fontSize="title.sm"
-              color="content.tertiary"
-              fontWeight="semibold"
-            >
+            </LabelMedium>
+            <TitleSmall color="content.tertiary">
               {t(action.timelineForImplementation)}
-            </Text>
+            </TitleSmall>
           </Box>
+
           {onSeeMoreClick && (
             <Box display="flex" justifyContent="flex-start">
               <Button
@@ -234,7 +200,7 @@ export const ClimateActionCard = ({
             </>
           )}
         </Box>
-      </Card.Description>
+      </Box>
     </Card.Root>
   );
 };
@@ -289,14 +255,9 @@ const GeneratePlanDialog = ({ t }: { t: TFunction }) => {
             </Dialog.Header>
             <Dialog.Body>
               <VStack alignItems="flex-start" gap="24px" w="full">
-                <Text
-                  fontFamily="heading"
-                  fontWeight="bold"
-                  fontSize="headline.md"
-                  color="content.primary"
-                >
+                <HeadlineMedium fontWeight="bold" color="content.primary">
                   {t("generated-action-plan-title")}
-                </Text>
+                </HeadlineMedium>
                 <Box
                   display="flex"
                   alignItems="center"
@@ -307,24 +268,14 @@ const GeneratePlanDialog = ({ t }: { t: TFunction }) => {
                   w="full"
                 >
                   <Icon as={GoLocation} boxSize="24px" color="content.link" />
-                  <Text
-                    fontFamily="heading"
-                    fontWeight="bold"
-                    fontSize="title.lg"
-                    color="content.primary"
-                  >
+                  <TitleLarge fontWeight="bold" color="content.primary">
                     {t("generated-action-plan-location")}
-                  </Text>
+                  </TitleLarge>
                 </Box>
                 <Box display="flex" alignItems="center" w="full">
-                  <Text
-                    fontFamily="body"
-                    fontWeight="normal"
-                    fontSize="body.lg"
-                    color="content.tertiary"
-                  >
+                  <BodyLarge fontWeight="normal" color="content.tertiary">
                     {t("generated-action-plan-location-description")}
-                  </Text>
+                  </BodyLarge>
                 </Box>
                 <Box
                   display="flex"
@@ -335,24 +286,14 @@ const GeneratePlanDialog = ({ t }: { t: TFunction }) => {
                   borderColor="border.overlay"
                   w="full"
                 >
-                  <Text
-                    fontFamily="heading"
-                    fontWeight="bold"
-                    fontSize="title.lg"
-                    color="content.link"
-                  >
+                  <TitleLarge fontWeight="bold" color="content.link">
                     {t("subactions")}
-                  </Text>
+                  </TitleLarge>
                 </Box>
                 <Box display="flex" alignItems="center" w="full">
-                  <Text
-                    fontFamily="body"
-                    fontWeight="normal"
-                    fontSize="body.lg"
-                    color="content.tertiary"
-                  >
+                  <BodyLarge fontWeight="normal" color="content.tertiary">
                     {t("subactions-description")}
-                  </Text>
+                  </BodyLarge>
                 </Box>
                 <Box
                   display="flex"
@@ -363,25 +304,18 @@ const GeneratePlanDialog = ({ t }: { t: TFunction }) => {
                   borderColor="border.overlay"
                   w="full"
                 >
-                  <Text
-                    fontFamily="heading"
+                  <TitleLarge
                     fontWeight="bold"
-                    fontSize="title.lg"
                     color="content.link"
                     textTransform="capitalize"
                   >
                     {t("municipal-institutions-involved")}
-                  </Text>
+                  </TitleLarge>
                 </Box>
                 <Box display="flex" alignItems="center" w="full">
-                  <Text
-                    fontFamily="body"
-                    fontWeight="normal"
-                    fontSize="body.lg"
-                    color="content.tertiary"
-                  >
+                  <BodyLarge fontWeight="normal" color="content.tertiary">
                     {t("municipal-institutions-involved-description")}
-                  </Text>
+                  </BodyLarge>
                 </Box>
               </VStack>
             </Dialog.Body>
@@ -389,49 +323,5 @@ const GeneratePlanDialog = ({ t }: { t: TFunction }) => {
         </Dialog.Positioner>
       </Portal>
     </Dialog.Root>
-  );
-};
-
-const LevelBadge = ({ level }: { level: string }) => {
-  const getBarConfig = (level: string) => {
-    switch (level) {
-      case "high":
-        return {
-          color: "sentiment.negativeDefault",
-          filledBars: 3,
-        };
-      case "medium":
-        return {
-          color: "sentiment.warningDefault",
-          filledBars: 2,
-        };
-      case "low":
-        return {
-          color: "content.link",
-          filledBars: 1,
-        };
-      default:
-        return {
-          color: "content.tertiary",
-          filledBars: 0,
-        };
-    }
-  };
-
-  const { color, filledBars } = getBarConfig(level);
-  const totalBars = 3;
-
-  return (
-    <Box display="flex" gap="2px" alignItems="center">
-      {Array.from({ length: totalBars }, (_, index) => (
-        <Box
-          key={index}
-          bg={index < filledBars ? color : "border.overlay"}
-          w="98px"
-          h="5px"
-          borderRadius="2.5px"
-        />
-      ))}
-    </Box>
   );
 };

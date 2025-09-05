@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { VStack } from "@chakra-ui/react";
 import { GHGIWidget } from "./GHGIWidget";
 import { HIAPWidget } from "./HIAPWidget";
@@ -22,9 +22,14 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
     Record<string, boolean>
   >({});
 
-  const handleWidgetVisibility = (widgetId: string, hasContent: boolean) => {
-    setWidgetVisibility((prev) => ({ ...prev, [widgetId]: hasContent }));
-  };
+  const createVisibilityHandler = useMemo(() => {
+    return (widgetId: string) => (hasContent: boolean) => {
+      setWidgetVisibility((prev) => ({ ...prev, [widgetId]: hasContent }));
+    };
+  }, []);
+
+  const handleGHGIVisibility = useMemo(() => createVisibilityHandler("ghgi"), [createVisibilityHandler]);
+  const handleHIAPVisibility = useMemo(() => createVisibilityHandler("hiap"), [createVisibilityHandler]);
 
   const visibleWidgetCount =
     Object.values(widgetVisibility).filter(Boolean).length;
@@ -40,16 +45,12 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
       <GHGIWidget
         cityId={cityId}
         lng={lng}
-        onVisibilityChange={(hasContent: boolean) =>
-          handleWidgetVisibility("ghgi", hasContent)
-        }
+        onVisibilityChange={handleGHGIVisibility}
       />
       <HIAPWidget
         cityId={cityId}
         lng={lng}
-        onVisibilityChange={(hasContent: boolean) =>
-          handleWidgetVisibility("hiap", hasContent)
-        }
+        onVisibilityChange={handleHIAPVisibility}
       />
     </VStack>
   );

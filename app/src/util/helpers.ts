@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { HIAction } from "./types";
 
 export const getTranslationFromDictionary = (
   translations: Record<string, string> | string | undefined,
@@ -374,3 +375,14 @@ export const isEmptyObject = (obj: Record<string, any>) => {
 
 export const clamp = (num: number, min: number = 0, max: number = 1) =>
   Math.min(Math.max(num, min), max);
+
+// Helper function to get top picks - reused from ActionPlanSection
+export const getTopPickActions = (actions: HIAction[]): HIAction[] => {
+  const selectedActions = actions.filter((action) => action.isSelected);
+
+  if (selectedActions.length > 0) {
+    return [...selectedActions].sort((a, b) => a.rank - b.rank).slice(0, 3);
+  } else {
+    return [...actions].sort((a, b) => a.rank - b.rank).slice(0, 3);
+  }
+};

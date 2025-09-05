@@ -11,17 +11,7 @@ import { MdOpenInNew } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { AdaptationTabIcon, MitigationTabIcon } from "../icons";
 import { useGetCityHIAPDashboardQuery } from "@/services/api";
-
-// Helper function to get top picks - reused from ActionPlanSection
-const getTopPickActions = (actions: HIAction[]): HIAction[] => {
-  const selectedActions = actions.filter((action) => action.isSelected);
-
-  if (selectedActions.length > 0) {
-    return [...selectedActions].sort((a, b) => a.rank - b.rank).slice(0, 3);
-  } else {
-    return [...actions].sort((a, b) => a.rank - b.rank).slice(0, 3);
-  }
-};
+import { getTopPickActions } from "@/util/helpers";
 
 interface HIAPWidgetProps {
   cityId: string;
@@ -100,16 +90,7 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
             <MdOpenInNew />
           </Button>
         </HStack>
-        <HeadlineSmall>
-          <Text
-            fontFamily="heading"
-            fontWeight="bold"
-            fontSize="title.lg"
-            color="content.primary"
-          >
-            {t("top-climate-actions")}
-          </Text>
-        </HeadlineSmall>
+        <HeadlineSmall>{t("top-climate-actions")}</HeadlineSmall>
         <Text fontSize="body.md" color="content.tertiary" mt="8px" mb={10}>
           {t("top-actions-for-your-city-description")}
         </Text>

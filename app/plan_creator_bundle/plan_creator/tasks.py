@@ -19,6 +19,7 @@ from plan_creator_bundle.plan_creator.models import (
     PlanResponse,
 )
 from plan_creator_bundle.plan_creator.task_storage import task_storage
+from plan_creator_bundle.plan_creator.utils.translate_plan import translate_plan
 
 logger = logging.getLogger(__name__)
 
@@ -154,36 +155,29 @@ def _execute_plan_translation(task_uuid: str, background_task_input):
             f"Task {task_uuid}: Starting plan translation from language {background_task_input['inputLanguage']} to language {background_task_input['outputLanguage']}"
         )
 
-        # Dummy result
-        plan_response = PlanResponse(
-            metadata=PlanCreatorMetadata(
-                locode="test",
-                cityName="test",
-                actionId="test",
-                actionName="test",
-                language=background_task_input["outputLanguage"],
-                createdAt=datetime.now(UTC),
-            ),
-            content=PlanContent(
-                introduction=Introduction(
-                    city_description="test",
-                    action_description="test",
-                    national_strategy_explanation="test",
-                ),
-                subactions=SubactionList(items=[]),
-                institutions=InstitutionList(items=[]),
-                milestones=MilestoneList(items=[]),
-                timeline=[Timeline()],
-                costBudget=[CostBudget()],
-                merIndicators=MerIndicatorList(items=[]),
-                mitigations=MitigationList(items=[]),
-                adaptations=AdaptationList(items=[]),
-                sdgs=SDGList(items=[]),
-            ),
+        plan_to_translate = background_task_input["inputPlan"]
+
+        translated_plan = translate_plan(
+            input_plan=plan_to_translate,
+            input_language=background_task_input["inputLanguage"],
+            output_language=background_task_input["outputLanguage"],
         )
+
+        if translated_plan is None:
+            error_message = (
+                f"Task {task_uuid}: Error translating plan from language "
+                f"{background_task_input['inputLanguage']} to language "
+                f"{background_task_input['outputLanguage']}"
+            )
+            logger.error(error_message)
+            task_storage[task_uuid]["status"] = "failed"
+            task_storage[task_uuid]["error"] = error_message
+            return
+
         # Store the result
         task_storage[task_uuid]["status"] = "completed"
-        task_storage[task_uuid]["plan_response"] = plan_response
+        task_storage[task_uuid]["plan_response"] = translated_plan
+        logger.info(f"Task {task_uuid}: Plan translation completed successfully")
     except Exception as e:
         logger.error(
             f"Task {task_uuid}: Unexpected error during plan translation: {str(e)}",

@@ -4,13 +4,29 @@ import InventoryProgressService from "@/backend/InventoryProgressService";
 import { fetchRanking } from "@/backend/hiap/HiapService";
 import { logger } from "@/services/logger";
 import { ACTION_TYPES } from "@/util/types";
+import { ModuleService } from "@/backend/ModuleService";
+import { Modules } from "@/util/constants";
+import createHttpError from "http-errors";
 
 export class ModuleDashboardService {
   /**
    * Get GHGI module dashboard data
    */
-  public static async getGHGIDashboardData(cityId: string): Promise<any> {
+  public static async getGHGIDashboardData(
+    cityId: string,
+    projectId: string,
+  ): Promise<any> {
     try {
+      // Check if the project has access to the GHGI module
+      const hasModuleAccess = await ModuleService.hasModuleAccess(
+        projectId,
+        Modules.GHGI.id,
+      );
+
+      if (!hasModuleAccess) {
+        throw new createHttpError.Forbidden("module-access-denied-ghgi");
+      }
+
       // Get most recent inventory for the city
       const inventory = await db.models.Inventory.findOne({
         where: { cityId },
@@ -29,7 +45,7 @@ export class ModuleDashboardService {
 
       // Get emissions results
       const emissionResults = await getEmissionResults(inventory?.inventoryId);
-      
+
       const {
         totalEmissionsBySector = [],
         topEmissionsBySubSector = [],
@@ -47,6 +63,9 @@ export class ModuleDashboardService {
       };
     } catch (error) {
       logger.error("Error fetching GHGI dashboard data:", { error, cityId });
+      if (error instanceof createHttpError.HttpError) {
+        throw error;
+      }
       return {
         error: `Failed to fetch GHGI data: ${(error as Error).message}`,
       };
@@ -58,9 +77,20 @@ export class ModuleDashboardService {
    */
   public static async getHIAPDashboardData(
     cityId: string,
+    projectId: string,
     lng: string = "en",
   ): Promise<any> {
     try {
+      // Check if the project has access to the HIAP module
+      const hasModuleAccess = await ModuleService.hasModuleAccess(
+        projectId,
+        Modules.HIAP.id,
+      );
+
+      if (!hasModuleAccess) {
+        throw new createHttpError.Forbidden("module-access-denied-hiap");
+      }
+
       // Get most recent inventory for the city
       const inventory = await db.models.Inventory.findOne({
         where: { cityId },
@@ -125,7 +155,10 @@ export class ModuleDashboardService {
       try {
         switch (moduleUrl) {
           case "/GHGI":
-            dashboardData[moduleId] = await this.getGHGIDashboardData(cityId);
+            dashboardData[moduleId] = await this.getGHGIDashboardData(
+              cityId,
+              projectId,
+            );
             break;
           case "/HIAP":
             dashboardData[moduleId] = await this.getHIAPDashboardData(

@@ -3,12 +3,13 @@ import { ModuleDashboardService } from "@/backend/ModuleDashboardService";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { Modules } from "@/util/constants";
 
 const paramsSchema = z.object({
   city: z.string().uuid("City ID must be a valid UUID"),
 });
 
-export const GET = apiHandler(async (req: Request, context) => {
+export const GET = apiHandler(async (_req: Request, context) => {
   const { city: cityId } = paramsSchema.parse(context.params);
   const { session } = context;
 
@@ -18,8 +19,11 @@ export const GET = apiHandler(async (req: Request, context) => {
     cityId,
   );
 
-  // Get GHGI dashboard data
-  const ghgiData = await ModuleDashboardService.getGHGIDashboardData(cityId);
+  // Get GHGI dashboard data (module access check is now handled inside the service)
+  const ghgiData = await ModuleDashboardService.getGHGIDashboardData(
+    cityId,
+    city.project.projectId,
+  );
 
   return NextResponse.json({
     data: ghgiData,
@@ -27,7 +31,7 @@ export const GET = apiHandler(async (req: Request, context) => {
       cityId,
       cityName: city.name,
       projectId: city.project.projectId,
-      moduleId: "ghgi",
+      moduleId: Modules.GHGI.id,
     },
   });
 });

@@ -1332,7 +1332,7 @@ export const api = createApi({
         query: (projectId: string) => `projects/${projectId}/modules`,
         transformResponse: (response: { data: ModuleAttributes[] }) =>
           response.data,
-      }),
+    }),
       getCityModuleAccess: builder.query<
         { hasAccess: boolean },
         { cityId: string; moduleId: string }

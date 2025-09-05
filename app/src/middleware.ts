@@ -80,7 +80,9 @@ export async function middleware(req: NextRequestWithAuth) {
     if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
       return NextResponse.redirect(new URL(`/${lng}/cities/`, req.url));
     }
-    return NextResponse.redirect(new URL(`/${lng}/`, req.url));
+    // When JN is disabled, let the PrivateHome component handle the routing
+    // Don't redirect here to avoid infinite loops
+    return NextResponse.next();
   }
 
   // redirect for paths that don't have lng at the start

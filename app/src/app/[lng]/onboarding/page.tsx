@@ -4,9 +4,7 @@ import { use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
 import Image from "next/image";
-import NextLink from "next/link";
 import { MdArrowForward } from "react-icons/md";
-import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useRouter } from "next/navigation";
 
 export default function Onboarding(props: {
@@ -67,7 +65,15 @@ export default function Onboarding(props: {
           </Box>
         </Box>
       </Box>
-      <Box bg="base.light" h="145px" w="full" pos="fixed" bottom="0" left="0" zIndex={999}>
+      <Box
+        bg="base.light"
+        h="145px"
+        w="full"
+        pos="fixed"
+        bottom="0"
+        left="0"
+        zIndex={999}
+      >
         {/* Place holder steppers */}
         <HStack p="4px">
           {steps.map((step) => (

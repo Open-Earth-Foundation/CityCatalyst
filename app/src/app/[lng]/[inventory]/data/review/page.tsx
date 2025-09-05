@@ -9,7 +9,7 @@ import { RootState } from "@/lib/store";
 
 import { MdArrowBack } from "react-icons/md";
 import { Box, Button, Card, Heading, Icon, Text } from "@chakra-ui/react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, usePathname } from "next/navigation";
 
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
@@ -17,14 +17,14 @@ import { MdOutlineEdit } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
 import { clear, removeSectorData } from "@/features/city/inventoryDataSlice";
 import { api } from "@/services/api";
-import { appendFileToFormData } from "@/util/helpers";
-import { useState, use } from "react";
+import { appendFileToFormData, getParamValueRequired } from "@/util/helpers";
+import { useState } from "react";
 import { logger } from "@/services/logger";
 
-export default function ReviewPage(props: {
-  params: Promise<{ lng: string }>;
-}) {
-  const { lng } = use(props.params);
+export default function ReviewPage() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const pathname = usePathname();
 
   const { t } = useTranslation(lng, "data");
   const { inventory: inventoryParam } = useParams();
@@ -209,7 +209,9 @@ export default function ReviewPage(props: {
                   variant="ghost"
                   w="181px"
                   gap="8px"
-                  onClick={() => router.push(`/${inventoryId}/data/1`)}
+                  onClick={() =>
+                    router.push(`${pathname.replace("/review", "")}/1`)
+                  }
                 >
                   <MdOutlineEdit size="24px" />
                   <Heading
@@ -353,7 +355,9 @@ export default function ReviewPage(props: {
                   variant="ghost"
                   w="181px"
                   gap="8px"
-                  onClick={() => router.push(`/${inventoryId}/data/2`)}
+                  onClick={() =>
+                    router.push(`${pathname.replace("/review", "")}/2`)
+                  }
                 >
                   <MdOutlineEdit size="24px" />
                   <Heading
@@ -477,7 +481,9 @@ export default function ReviewPage(props: {
                   variant="ghost"
                   w="181px"
                   gap="8px"
-                  onClick={() => router.push(`/${inventoryId}/data/3`)}
+                  onClick={() =>
+                    router.push(`${pathname.replace("/review", "")}/3`)
+                  }
                 >
                   <MdOutlineEdit size="24px" />
                   <Heading

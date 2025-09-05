@@ -7,7 +7,7 @@ import { InventoryTypeEnum } from "@/util/constants";
 import { Selector } from "@/components/selector";
 import React, { useMemo } from "react";
 import { api, useGetCitiesAndYearsQuery } from "@/services/api";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 import { DataAlertIcon } from "../icons";
 
@@ -26,6 +26,7 @@ export function TabHeader({
 
   const [setUserInfo] = api.useSetUserInfoMutation();
   const router = useRouter();
+  const pathname = usePathname();
 
   const targetYears = useMemo(() => {
     if (citiesAndYears && inventory) {
@@ -70,9 +71,7 @@ export function TabHeader({
               <Button
                 variant={"outline"}
                 p={6}
-                onClick={() =>
-                  router.push(`/${inventory?.inventoryId}/data/manage-sectors`)
-                }
+                onClick={() => router.push(`${pathname}/manage-sectors`)}
                 display="flex"
                 gap={0}
               >

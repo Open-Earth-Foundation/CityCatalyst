@@ -2,6 +2,7 @@
 import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
+import { useParams, usePathname } from "next/navigation";
 import {
   Box,
   Card,
@@ -17,17 +18,22 @@ import AddDataCard from "@/components/Cards/add-data-card";
 import { getSectorsForInventory, InventoryTypeEnum } from "@/util/constants";
 import { api } from "@/services/api";
 import { MdArrowBack } from "react-icons/md";
+import { getParamValueRequired } from "@/util/helpers";
 
-export default function AddDataIntro(props: {
-  params: Promise<{ lng: string; inventory: string }>;
-}) {
-  const { lng, inventory } = use(props.params);
+export default function AddDataIntro() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const inventory = getParamValueRequired(params.inventory);
+  const pathname = usePathname();
   const { t } = useTranslation(lng, "data");
   const { data: inventoryData } = api.useGetInventoryQuery(inventory);
 
   return (
     <Box pt={16} pb={16} w="1090px" mx="auto" px={4}>
-      <Link href={`/${lng}/${inventory}`} _hover={{ textDecoration: "none" }}>
+      <Link
+        href={pathname.replace("/data", "")}
+        _hover={{ textDecoration: "none" }}
+      >
         <Box
           display="flex"
           alignItems="center"

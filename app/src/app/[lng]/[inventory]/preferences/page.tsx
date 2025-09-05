@@ -1,16 +1,17 @@
 "use client";
 
-import React, { use } from "react";
+import React from "react";
+import { useParams } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import PreferencesExplanation from "./PreferencesExplanation";
 import PreferencesPageLayout from "./PreferencesPageLayout";
+import { getParamValueRequired } from "@/util/helpers";
 
 import { LINKS } from "@/app/[lng]/[inventory]/preferences/constants";
 
-export default function PreferencesExplanationPage(props: {
-  params: Promise<{ lng: string }>;
-}) {
-  const { lng } = use(props.params);
+export default function PreferencesExplanationPage() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
   const { t } = useTranslation(lng, "preferences");
 
   return (

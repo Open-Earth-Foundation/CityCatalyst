@@ -1,36 +1,61 @@
-import { PermissionHelpers, CityWithProject } from "@/backend/permissions";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 import { ModuleDashboardService } from "@/backend/ModuleDashboardService";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { Modules } from "@/util/constants";
+import createHttpError from "http-errors";
+import { Inventory } from "@/models/Inventory";
 
 const paramsSchema = z.object({
   city: z.string().uuid("City ID must be a valid UUID"),
 });
 
-export const GET = apiHandler(async (_req: Request, context) => {
+const querySchema = z.object({
+  inventoryId: z.string().uuid("Inventory ID must be a valid UUID"),
+});
+
+export const GET = apiHandler(async (req: Request, context) => {
   const { city: cityId } = paramsSchema.parse(context.params);
   const { session } = context;
 
-  // Use PermissionHelpers to verify access and get city with proper typing
-  const city: CityWithProject = await PermissionHelpers.getAuthorizedCity(
+  const searchParams = new URL(req.url).searchParams;
+  const { inventoryId } = querySchema.parse({
+    inventoryId: searchParams.get("inventoryId"),
+  });
+
+  // Check if user can access this inventory (handles public inventories automatically)
+  const { resource } = await PermissionService.canAccessInventory(
     session,
-    cityId,
+    inventoryId,
+    { includeResource: true },
   );
 
-  // Get GHGI dashboard data (module access check is now handled inside the service)
+  const inventory = resource as Inventory;
+
+  if (!inventory) {
+    throw new createHttpError.NotFound("Inventory not found");
+  }
+
+  // Verify the inventory belongs to the requested city
+  if (inventory.cityId !== cityId) {
+    throw new createHttpError.BadRequest(
+      "Inventory does not belong to the specified city",
+    );
+  }
+
+  // Get GHGI dashboard data for the specific inventory
   const ghgiData = await ModuleDashboardService.getGHGIDashboardData(
     cityId,
-    city.project.projectId,
+    inventory,
   );
 
   return NextResponse.json({
     data: ghgiData,
     metadata: {
       cityId,
-      cityName: city.name,
-      projectId: city.project.projectId,
+      inventoryId,
+      year: inventory.year,
       moduleId: Modules.GHGI.id,
     },
   });

@@ -8,7 +8,6 @@ import {
 import { OAuthClient } from './OAuthClient';
 import { User } from './User';
 
-/** ---------- Types & Interfaces ---------- */
 export interface OAuthClientAuthzAttributes {
   clientId: string;
   userId: string;             // UUID as string
@@ -24,7 +23,6 @@ export type OAuthClientAuthzCreationAttributes = Optional<
   OAuthClientAuthzOptionalAttributes
 >;
 
-/** ---------- Model ---------- */
 export class OAuthClientAuthz extends Model<
   OAuthClientAuthzAttributes,
   OAuthClientAuthzCreationAttributes

@@ -6,6 +6,7 @@ import { UnpublishedView } from "@/components/GHGIHomePage/DownloadAndShareModal
 import { PublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/PublishedView";
 import { InventoryResponse } from "@/util/types";
 import { trackEvent } from "@/lib/analytics";
+import { toaster } from "@/components/ui/toaster";
 
 import {
   DialogRoot,
@@ -37,28 +38,54 @@ const ModalPublish = ({
   const handlePublishChange = async () => {
     const isPublishing = !inventory?.isPublic;
 
-    const result = await changePublishStatus({
-      inventoryId: inventoryId!,
-      data: { isPublic: isPublishing },
-    });
+    try {
+      const result = await changePublishStatus({
+        inventoryId: inventoryId!,
+        data: { isPublic: isPublishing },
+      });
 
-    // Track publish/unpublish action
-    if (result.data) {
-      trackEvent(
-        isPublishing ? "inventory_published" : "inventory_unpublished",
-        {
-          inventory_id: inventoryId,
-          inventory_year: inventory.year,
-          city_name: inventory.city?.name,
-          city_locode: inventory.city?.locode,
-        },
-      );
+      if (result.data) {
+        // Track publish/unpublish action
+        trackEvent(
+          isPublishing ? "inventory_published" : "inventory_unpublished",
+          {
+            inventory_id: inventoryId,
+            inventory_year: inventory.year,
+            city_name: inventory.city?.name,
+            city_locode: inventory.city?.locode,
+          },
+        );
+
+        // Show success toast
+        toaster.success({
+          title: t(isPublishing ? "publish-success-title" : "unpublish-success-title"),
+          description: t(isPublishing ? "publish-success-description" : "unpublish-success-description"),
+          duration: 5000,
+        });
+
+        // Clear internal state and close modal
+        setIsAuthorized(false);
+        onPublishClose();
+      } else if (result.error) {
+        // Show error toast for API errors
+        toaster.error({
+          title: t(isPublishing ? "publish-error-title" : "unpublish-error-title"),
+          description: t(isPublishing ? "publish-error-description" : "unpublish-error-description"),
+        });
+      }
+
+      return result;
+    } catch (error) {
+      // Show error toast for unexpected errors
+      toaster.error({
+        title: t(isPublishing ? "publish-error-title" : "unpublish-error-title"),
+        description: t(isPublishing ? "publish-error-description" : "unpublish-error-description"),
+      });
+      throw error;
     }
-
-    return result;
   };
 
-  
+  console.log("Publish status changed:", inventory?.isPublic);
 
   return (
     <DialogRoot
@@ -105,6 +132,7 @@ const ModalPublish = ({
               disabled={!inventory?.isPublic && !isAuthorized}
               colorScheme="blue"
               mr={3}
+              loading={updateLoading}
               onClick={handlePublishChange}
             >
               {inventory?.isPublic ? t("unpublish") : t("publish-to-web")}

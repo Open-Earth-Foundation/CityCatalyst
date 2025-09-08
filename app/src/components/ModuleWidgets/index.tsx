@@ -11,6 +11,8 @@ interface ModuleDashboardWidgetsProps {
   cityId: string;
   lng: string;
   t: TFunction;
+  isPublic?: boolean;
+  inventoryId?: string;
 }
 
 const WIDGET_COUNT = 2;
@@ -19,6 +21,8 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
   cityId,
   lng,
   t,
+  isPublic = false,
+  inventoryId,
 }) => {
   const [widgetVisibility, setWidgetVisibility] = useState<
     Record<string, boolean>
@@ -49,17 +53,26 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
     return <EmptyDashboard t={t} />;
   }
 
+  // Don't show widgets if no inventoryId is provided
+  if (!inventoryId) {
+    return <EmptyDashboard t={t} />;
+  }
+
   return (
     <VStack gap={8} align="stretch" mt={4} pb={10}>
       <GHGIWidget
         cityId={cityId}
         lng={lng}
+        inventoryId={inventoryId}
         onVisibilityChange={handleGHGIVisibility}
+        isPublic={isPublic}
       />
       <HIAPWidget
         cityId={cityId}
         lng={lng}
+        inventoryId={inventoryId}
         onVisibilityChange={handleHIAPVisibility}
+        isPublic={isPublic}
       />
     </VStack>
   );

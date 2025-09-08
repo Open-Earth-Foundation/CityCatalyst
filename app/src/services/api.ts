@@ -137,6 +137,17 @@ export const api = createApi({
           area: number;
         }) => response,
       }),
+      getPublicCity: builder.query<CityWithProjectDataResponse, string>({
+        query: (cityId) => `public/city/${cityId}`,
+        transformResponse: (response: { data: CityWithProjectDataResponse }) =>
+          response.data,
+      }),
+      getPublicCityInventories: builder.query<InventoryResponse[], string>({
+        query: (cityId) => `public/city/${cityId}/inventories`,
+        transformResponse: (response: { data: InventoryResponse[] }) =>
+          response.data,
+        providesTags: ["Inventories"],
+      }),
       getInventory: builder.query<InventoryResponse, string>({
         query: (inventoryId: string) => `inventory/${inventoryId}`,
         transformResponse: (response: { data: InventoryResponse }) =>
@@ -910,7 +921,7 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: InventoryAttributes }) =>
           response.data,
-        invalidatesTags: ["Inventory"],
+        invalidatesTags: ["Inventory", "Inventories"],
       }),
       updatePassword: builder.mutation({
         query: (data) => ({
@@ -1333,7 +1344,7 @@ export const api = createApi({
         query: (projectId: string) => `projects/${projectId}/modules`,
         transformResponse: (response: { data: ModuleAttributes[] }) =>
           response.data,
-    }),
+      }),
       getCityModuleAccess: builder.query<
         { hasAccess: boolean },
         { cityId: string; moduleId: string }
@@ -1345,19 +1356,20 @@ export const api = createApi({
       }),
       getCityGHGIDashboard: builder.query<
         GHGInventorySummary,
-        { cityId: string }
+        { cityId: string; inventoryId: string }
       >({
-        query: ({ cityId }) => `city/${cityId}/modules/ghgi/dashboard`,
+        query: ({ cityId, inventoryId }) =>
+          `city/${cityId}/modules/ghgi/dashboard?inventoryId=${inventoryId}`,
         transformResponse: (response: { data: GHGInventorySummary }) =>
           response.data,
         providesTags: ["CityDashboard", "Modules", "GHGIDashboard"],
       }),
       getCityHIAPDashboard: builder.query<
         HIAPSummary,
-        { cityId: string; lng?: string }
+        { cityId: string; inventoryId: string; lng?: string }
       >({
-        query: ({ cityId, lng = "en" }) =>
-          `city/${cityId}/modules/hiap/dashboard?lng=${lng}`,
+        query: ({ cityId, inventoryId, lng = "en" }) =>
+          `city/${cityId}/modules/hiap/dashboard?inventoryId=${inventoryId}&lng=${lng}`,
         transformResponse: (response: { data: HIAPSummary }) => response.data,
         providesTags: ["CityDashboard", "Modules", "HiapDashboard"],
       }),
@@ -1484,6 +1496,8 @@ export const GLOBAL_API_URL =
 export const {
   useGetCityQuery,
   useGetCityYearsQuery,
+  useGetPublicCityQuery,
+  useGetPublicCityInventoriesQuery,
   useGetCitiesAndYearsQuery,
   useGetYearOverYearResultsQuery,
   useAddCityMutation,

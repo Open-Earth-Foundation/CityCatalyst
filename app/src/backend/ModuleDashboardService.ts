@@ -7,6 +7,8 @@ import { ACTION_TYPES } from "@/util/types";
 import { ModuleService } from "@/backend/ModuleService";
 import { Modules } from "@/util/constants";
 import createHttpError from "http-errors";
+import { Inventory } from "@/models/Inventory";
+import { fetchCCRAData } from "@/backend/ccra/CcraApiService";
 
 export class ModuleDashboardService {
   /**
@@ -190,5 +192,46 @@ export class ModuleDashboardService {
     }
 
     return dashboardData;
+  }
+
+  public static async getCCRADashboardData(
+    cityId: string,
+    inventory: Inventory,
+  ): Promise<any> {
+    try {
+      const city = await db.models.City.findOne({
+        where: { cityId },
+      });
+
+      if (!city) {
+        throw new createHttpError.NotFound("city-not-found");
+      }
+
+      // Check if the project has access to the CCRA module
+      const hasModuleAccess = await ModuleService.hasModuleAccess(
+        city.projectId as string,
+        Modules.CCRA.id,
+      );
+
+      if (!hasModuleAccess) {
+        throw new createHttpError.Forbidden("module-access-denied-ccra");
+      }
+
+      // Get CCRA dashboard data
+      const ccraData = await fetchCCRAData(inventory.inventoryId);
+
+      return {
+        ...ccraData,
+        inventoryId: inventory.inventoryId,
+      };
+    } catch (error) {
+      logger.error("Error fetching CCRA dashboard data:", { error, cityId });
+      if (error instanceof createHttpError.HttpError) {
+        throw error;
+      }
+      return {
+        error: `Failed to fetch CCRA data: ${(error as Error).message}`,
+      };
+    }
   }
 }

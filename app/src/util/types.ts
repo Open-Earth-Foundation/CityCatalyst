@@ -692,6 +692,24 @@ export interface HIAPSummary {
   inventoryId: string;
 }
 
+export interface CCRARiskAssessment {
+  hazard: string;
+  keyimpact: string;
+  risk_score: number;
+  original_risk_score?: number;
+  hazard_score: number;
+  exposure_score: number;
+  vulnerability_score: number;
+  original_vulnerability_score?: number;
+}
+
+export interface CCRASummary {
+  riskAssessment: CCRARiskAssessment[];
+  resilienceScore?: number | null;
+  cityName?: string;
+  inventoryId: string;
+}
+
 export interface GHGInventorySummary {
   inventory: InventoryResponse;
   totalEmissions: {
@@ -703,7 +721,7 @@ export interface GHGInventorySummary {
 }
 
 export interface ModuleDataSummaryResponse {
-  [key: string]: GHGInventorySummary | any;
+  [key: string]: GHGInventorySummary | HIAPSummary | CCRASummary | any;
 }
 
 export interface DashboardResponseType {

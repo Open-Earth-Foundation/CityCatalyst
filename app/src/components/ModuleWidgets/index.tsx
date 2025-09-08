@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import { VStack } from "@chakra-ui/react";
 import { GHGIWidget } from "./GHGIWidget";
 import { HIAPWidget } from "./HIAPWidget";
+import { CCRAWidget } from "./CCRAMainWidget";
 import { EmptyDashboard } from "../CityDashboard/EmptyDashboard";
 import { TFunction } from "i18next";
 
@@ -11,14 +12,16 @@ interface ModuleDashboardWidgetsProps {
   cityId: string;
   lng: string;
   t: TFunction;
+  inventoryId?: string;
 }
 
-const WIDGET_COUNT = 2;
+const WIDGET_COUNT = 3;
 
 export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
   cityId,
   lng,
   t,
+  inventoryId,
 }) => {
   const [widgetVisibility, setWidgetVisibility] = useState<
     Record<string, boolean>
@@ -36,6 +39,10 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
   );
   const handleHIAPVisibility = useMemo(
     () => createVisibilityHandler("hiap"),
+    [createVisibilityHandler],
+  );
+  const handleCCRAVisibility = useMemo(
+    () => createVisibilityHandler("ccra"),
     [createVisibilityHandler],
   );
 

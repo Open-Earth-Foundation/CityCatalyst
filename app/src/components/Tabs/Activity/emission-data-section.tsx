@@ -136,8 +136,8 @@ const EmissionDataSection = ({
               const { id, prefills } = suggestedActivity;
               return (
                 <SuggestedActivityCard
-                  key={id}
                   id={id}
+                  key={`${id}-${prefills[0]?.key ?? "no-key"}-${prefills[0]?.value ?? "no-value"}`}
                   prefillKey={prefills[0]?.key}
                   prefillValue={prefills[0]?.value}
                   t={t}

@@ -31,6 +31,10 @@
   "reduction-potential": "Potencial de redução",
   "high": "Alto",
   "sector-name": "Setor",
+  "citycatalyst-actions-title": "citycatalyst actions",
+  "top-actions-for-your-city": "Principais ações para sua cidade",
+  "top-actions-for-your-city-description": "Estas são as 40 principais ações que recomendamos com base no seu inventário de GEE e dados de contexto da cidade. Você encontrará 20 ações para Mitigação e 20 para Adaptação em suas respectivas abas. É recomendado executar novamente o priorizador após qualquer atualização ou mudança relevante nos dados.",
+  "re-prioritize-actions": "Repriorizar ações",
   "generated-action-plan": "gerar plano de ação",
   "export-as-pdf": "exportar como PDF",
   "subactions": "Subações",
@@ -81,5 +85,17 @@
     ">10 years": "Mais de 10 anos"
   },
   "adaptation-effectiveness": "Eficácia da Adaptação",
-  "primary-purpose": "[object Object]"
+  "primary-purpose": {
+    "ghg_reduction": "Redução de GEE",
+    "climate_resilience": "Resiliência Climática"
+  },
+  "generating-actions": "Gerando ações...",
+  "checking-activity-data": "Verificando dados de atividade",
+  "generating-climate-actions": "As suas principais ações climáticas estão sendo processadas",
+  "generating-climate-actions-description": "Este processo pode levar até 15 minutos. Você receberá um email e verá aqui quando estiver pronto",
+  "implementation-of-urban-toll": "Implementação de pedágio urbano",
+  "encourage-renewable-energy-policies": "Incentive políticas de energia renovável no nível municipal",
+  "stationary-energy": "Energia estacionária",
+  "waste": "Resíduos",
+  "low": "Baixo"
 }

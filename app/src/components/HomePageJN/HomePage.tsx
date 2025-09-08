@@ -118,7 +118,10 @@ export default function HomePage({
       const logoUrl = orgData?.logoUrl ?? null;
       const active = orgData?.active ?? true;
 
-      if (organization?.logoUrl !== logoUrl || organization?.active !== active) {
+      if (
+        organization?.logoUrl !== logoUrl ||
+        organization?.active !== active
+      ) {
         setOrganization({ logoUrl, active });
       }
       setTheme(orgData?.theme?.themeKey ?? "blue_theme");
@@ -151,7 +154,12 @@ export default function HomePage({
 
           <Box display="flex" mx="auto" w="full" maxW="1090px">
             <VStack align="start" w="full">
-              <ActionCards t={t} lng={language} organization={orgData} />
+              <ActionCards
+                t={t}
+                lng={language}
+                organization={orgData}
+                city={city}
+              />
             </VStack>
           </Box>
           <Box

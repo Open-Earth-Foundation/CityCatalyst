@@ -1,5 +1,6 @@
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { db } from "@/models";
+import { Inventory } from "@/models/Inventory";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
 import { createInventoryValue } from "@/util/validation";
@@ -9,10 +10,13 @@ import { randomUUID } from "node:crypto";
 import { Op } from "sequelize";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
-  const { resource: inventory } = await PermissionService.canEditInventory(
+  const { resource } = await PermissionService.canEditInventory(
     session,
     params.inventory
   );
+
+  const inventory = resource as Inventory;
+
   const inventoryValue = await db.models.InventoryValue.findOne({
     where: {
       subCategoryId: params.subcategory,
@@ -50,10 +54,12 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const body = createInventoryValue.parse(await req.json());
 
-  const { resource: inventory } = await PermissionService.canEditInventory(
+  const { resource } = await PermissionService.canEditInventory(
     session,
     params.inventory
   );
+
+  const inventory = resource as Inventory;
 
   let inventoryValue = await db.models.InventoryValue.findOne({
     where: {

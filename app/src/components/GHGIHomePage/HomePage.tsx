@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { BsPlus } from "react-icons/bs";
 import Cookies from "js-cookie";
@@ -13,7 +12,6 @@ import {
   api,
   useGetCityPopulationQuery,
   useGetCityYearsQuery,
-  useGetOrganizationForInventoryQuery,
 } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
@@ -33,6 +31,7 @@ import { useUserPermissions } from "@/hooks/useUserPermissions";
 import { UserRole } from "@/util/types";
 import { logger } from "@/services/logger";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import { useInventoryOrganization } from "@/hooks/use-inventory-organization";
 
 function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
   return typeof error === "object" && error != null && "status" in error;
@@ -183,7 +182,7 @@ export default function HomePage({
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
-  const { data: cityYears, isLoading } = useGetCityYearsQuery(
+  const { data: cityYears } = useGetCityYearsQuery(
     inventory?.cityId as string,
     { skip: !inventory?.cityId || !inventory?.year },
   );
@@ -203,28 +202,9 @@ export default function HomePage({
     skip: !inventory?.cityId,
   });
 
-  const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
-    useGetOrganizationForInventoryQuery(inventoryIdFromParam!, {
-      skip: !inventoryIdFromParam,
-    });
+  const { isInventoryOrgDataLoading } = useInventoryOrganization(inventoryIdFromParam!);
 
-  const { isFrozenCheck, organization, setOrganization } =
-    useOrganizationContext();
-  const { setTheme } = useTheme();
-
-  useEffect(() => {
-    if (inventoryOrgData) {
-      const logoUrl = inventoryOrgData?.logoUrl ?? null;
-      const active = inventoryOrgData?.active ?? true;
-
-      if (organization?.logoUrl !== logoUrl || organization?.active !== active) {
-        setOrganization({ logoUrl, active });
-      }
-      setTheme(inventoryOrgData?.theme?.themeKey ?? "blue_theme");
-    } else if (!isInventoryOrgDataLoading && !inventoryOrgData) {
-      setTheme("blue_theme");
-    }
-  }, [isInventoryOrgDataLoading, inventoryOrgData, setTheme]);
+  const { isFrozenCheck } = useOrganizationContext();
 
   if (isUserInfoLoading) {
     return <ProgressLoader />;

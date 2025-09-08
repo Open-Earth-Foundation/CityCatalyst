@@ -16,29 +16,25 @@ export class ModuleDashboardService {
    */
   public static async getGHGIDashboardData(
     cityId: string,
-    projectId: string,
+    inventory: Inventory,
   ): Promise<any> {
     try {
+      const city = await db.models.City.findOne({
+        where: { cityId },
+      });
+
+      if (!city) {
+        throw new createHttpError.NotFound("city-not-found");
+      }
+
       // Check if the project has access to the GHGI module
       const hasModuleAccess = await ModuleService.hasModuleAccess(
-        projectId,
+        city.projectId as string,
         Modules.GHGI.id,
       );
 
       if (!hasModuleAccess) {
         throw new createHttpError.Forbidden("module-access-denied-ghgi");
-      }
-
-      // Get most recent inventory for the city
-      const inventory = await db.models.Inventory.findOne({
-        where: { cityId },
-        order: [["year", "DESC"]],
-        limit: 1,
-      });
-
-      if (!inventory) {
-        logger.info(`No inventory found for city ${cityId}`);
-        return { error: "No inventory found" };
       }
 
       logger.info(
@@ -79,29 +75,26 @@ export class ModuleDashboardService {
    */
   public static async getHIAPDashboardData(
     cityId: string,
-    projectId: string,
+    inventory: Inventory,
     lng: string = "en",
   ): Promise<any> {
     try {
+      const city = await db.models.City.findOne({
+        where: { cityId },
+      });
+
+      if (!city) {
+        throw new createHttpError.NotFound("city-not-found");
+      }
+
       // Check if the project has access to the HIAP module
       const hasModuleAccess = await ModuleService.hasModuleAccess(
-        projectId,
+        city.projectId as string,
         Modules.HIAP.id,
       );
 
       if (!hasModuleAccess) {
         throw new createHttpError.Forbidden("module-access-denied-hiap");
-      }
-
-      // Get most recent inventory for the city
-      const inventory = await db.models.Inventory.findOne({
-        where: { cityId },
-        order: [["year", "DESC"]],
-        limit: 1,
-      });
-
-      if (!inventory) {
-        return { error: "No inventory found" };
       }
 
       // Get high impact action plan data
@@ -130,108 +123,44 @@ export class ModuleDashboardService {
     }
   }
 
-  /**
-   * Get dashboard data for all enabled modules in a city
-   */
-  public static async getCityDashboardData(
-    cityId: string,
-    projectId: string,
-    lng: string = "en",
-  ): Promise<Record<string, any>> {
-    // Use ModuleService to get enabled modules for this project
-    const { ModuleService } = await import("./ModuleService");
-    const enabledModules =
-      await ModuleService.getEnabledProjectModules(projectId);
+    public static async getCCRADashboardData(
+        cityId: string,
+        inventory: Inventory,
+    ): Promise<any> {
+        try {
+            const city = await db.models.City.findOne({
+                where: { cityId },
+            });
 
-    const dashboardData: Record<string, any> = {};
+            if (!city) {
+                throw new createHttpError.NotFound("city-not-found");
+            }
 
-    // For each enabled module, get its dashboard data
-    for (const enabledModule of enabledModules) {
-      const moduleId = enabledModule.id;
-      const moduleUrl = enabledModule.url;
-
-      logger.info(
-        `Fetching dashboard data for module ${moduleId} (${moduleUrl})`,
-      );
-
-      try {
-        switch (moduleUrl) {
-          case "/GHGI":
-            dashboardData[moduleId] = await this.getGHGIDashboardData(
-              cityId,
-              projectId,
+            // Check if the project has access to the CCRA module
+            const hasModuleAccess = await ModuleService.hasModuleAccess(
+                city.projectId as string,
+                Modules.CCRA.id,
             );
-            break;
-          case "/HIAP":
-            dashboardData[moduleId] = await this.getHIAPDashboardData(
-              cityId,
-              lng,
-            );
-            break;
-          default:
-            // For unknown modules, return basic info
-            dashboardData[moduleId] = {
-              moduleId,
-              moduleName: enabledModule.name,
-              moduleUrl,
-              available: true,
+
+            if (!hasModuleAccess) {
+                throw new createHttpError.Forbidden("module-access-denied-ccra");
+            }
+
+            // Get CCRA dashboard data
+            const ccraData = await fetchCCRAData(inventory.inventoryId);
+
+            return {
+                ...ccraData,
+                inventoryId: inventory.inventoryId,
+            };
+        } catch (error) {
+            logger.error("Error fetching CCRA dashboard data:", { error, cityId });
+            if (error instanceof createHttpError.HttpError) {
+                throw error;
+            }
+            return {
+                error: `Failed to fetch CCRA data: ${(error as Error).message}`,
             };
         }
-      } catch (error) {
-        // Module fails individually - don't break the whole response
-        logger.error(
-          `Failed to fetch dashboard data for module ${moduleId}:`,
-          error,
-        );
-        dashboardData[moduleId] = {
-          error: (error as Error).message || "Failed to load module data",
-          moduleId,
-          moduleName: enabledModule.name,
-        };
-      }
     }
-
-    return dashboardData;
-  }
-
-  public static async getCCRADashboardData(
-    cityId: string,
-    inventory: Inventory,
-  ): Promise<any> {
-    try {
-      const city = await db.models.City.findOne({
-        where: { cityId },
-      });
-
-      if (!city) {
-        throw new createHttpError.NotFound("city-not-found");
-      }
-
-      // Check if the project has access to the CCRA module
-      const hasModuleAccess = await ModuleService.hasModuleAccess(
-        city.projectId as string,
-        Modules.CCRA.id,
-      );
-
-      if (!hasModuleAccess) {
-        throw new createHttpError.Forbidden("module-access-denied-ccra");
-      }
-
-      // Get CCRA dashboard data
-      const ccraData = await fetchCCRAData(inventory.inventoryId);
-
-      return {
-        ...ccraData,
-        inventoryId: inventory.inventoryId,
-      };
-    } catch (error) {
-      logger.error("Error fetching CCRA dashboard data:", { error, cityId });
-      if (error instanceof createHttpError.HttpError) {
-        throw error;
-      }
-      return {
-        error: `Failed to fetch CCRA data: ${(error as Error).message}`,
-      };
-    }
-  }
 }

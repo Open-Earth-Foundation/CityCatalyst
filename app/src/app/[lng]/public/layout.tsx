@@ -4,10 +4,10 @@ import { Box } from "@chakra-ui/react";
 
 export default async function DataLayout(props: {
   children: React.ReactNode;
-  params: Promise<{ lng: string; inventory: string }>;
+  params: Promise<{ lng: string }>;
 }) {
   const { lng } = await props.params;
-  
+
   return (
     <Box
       h="full"

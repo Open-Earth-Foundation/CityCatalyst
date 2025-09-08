@@ -1,6 +1,7 @@
 import type { SectorAttributes } from "@/models/Sector";
 import {
   Badge,
+  Box,
   Heading,
   HStack,
   Icon,
@@ -33,7 +34,7 @@ import {
   ACTION_TYPES,
 } from "@/util/types";
 import { ButtonMedium } from "@/components/Texts/Button";
-import { BarVisualization } from ".";
+import { BarVisualization } from "@/components/BarVisualization";
 
 export function ActionDrawer({
   action,

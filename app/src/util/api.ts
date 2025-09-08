@@ -207,7 +207,8 @@ export function apiHandler(handler: NextHandler) {
             "Invalid or expired access token",
           );
         }
-        if (token.aud !== new URL(req.url).origin) {
+        const origin = process.env.HOST || (new URL(req.url)).origin
+        if (token.aud !== origin) {
           throw new createHttpError.Unauthorized("Wrong server for token");
         }
         const client = await OAuthClient.findByPk(token.client_id);

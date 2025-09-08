@@ -63,7 +63,7 @@ export const POST = apiHandler(async (_req, { params, session }) => {
     );
   }
 
-  const origin = (new URL(_req.url)).origin;
+  const origin = process.env.HOST || (new URL(_req.url)).origin;
 
   const code = jwt.sign(
     {

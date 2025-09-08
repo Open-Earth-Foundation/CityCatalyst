@@ -14,7 +14,7 @@ import AccountFrozenNotificationTemplate from "@/lib/emails/AccountFrozenNotific
 import AccountUnFrozenNotificationTemplate from "@/lib/emails/AccountUnFrozenNotificationTemplate";
 import { City } from "@/models/City";
 import RemoveUserFromMultipleCitiesTemplate from "@/lib/emails/RemoveUsersFromMultipleCities";
-import { LANGUAGES, OrganizationRole } from "@/util/types";
+import { ACTION_TYPES, LANGUAGES, OrganizationRole } from "@/util/types";
 import RoleUpdateNotificationTemplate from "@/lib/emails/RoleUpdateNotificationTemplate";
 import CitiesAddedToProjectNotificationTemplate from "@/lib/emails/CitiesAddedToProjectNotification";
 import i18next from "@/i18n/server";
@@ -25,6 +25,8 @@ import ForgotPasswordTemplate from "@/lib/emails/ForgotPasswordTemplate";
 import InviteUserTemplate from "@/lib/emails/InviteUserTemplate";
 import confirmRegistrationTemplate from "@/lib/emails/confirmRegistrationTemplate";
 import { UserFileResponse } from "@/util/types";
+import HiapRankingReadyTemplate from "@/lib/emails/HiapRankingReadyTemplate";
+import { AppSession } from "@/lib/auth";
 
 interface EmailTranslation {
   subject: string;
@@ -758,11 +760,7 @@ export default class EmailService {
     }
   }
 
-  public static async sendAdminInviteAccepted({
-    user,
-  }: {
-    user: User;
-  }) {
+  public static async sendAdminInviteAccepted({ user }: { user: User }) {
     const host = process.env.HOST ?? "http://localhost:3000";
     const url = `${host}/login`;
 
@@ -789,6 +787,48 @@ export default class EmailService {
       logger.error(
         { email: user.email, error: err instanceof Error ? err.message : err },
         "Failed to send admin invite accepted email",
+      );
+      throw err;
+    }
+  }
+
+  public static async sendHiapRankingReadyEmail({
+    actionType,
+    user,
+  }: {
+    actionType: ACTION_TYPES;
+    user: User;
+  }) {
+    const host = process.env.HOST ?? "http://localhost:3000";
+    const url = `${host}/hiap/`;
+    try {
+      const html = await render(
+        HiapRankingReadyTemplate({
+          url,
+          user: user,
+          actionType,
+          language: user.preferredLanguage,
+        }),
+      );
+
+      const translatedSubject = this.getTranslation(
+        user,
+        "hiap-ranking-ready.subject",
+      ).subject;
+
+      await sendEmail({
+        to: user?.email as string,
+        subject: translatedSubject,
+        html,
+      });
+    } catch (err) {
+      logger.error(
+        {
+          user: user?.email as string,
+          actionType,
+          error: err instanceof Error ? err.message : err,
+        },
+        "Failed to send hiap ranking ready email",
       );
       throw err;
     }

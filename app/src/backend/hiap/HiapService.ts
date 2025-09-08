@@ -1,5 +1,5 @@
 import { LANGUAGES, ACTION_TYPES } from "@/util/types";
-import {S3Client } from "@aws-sdk/client-s3";
+import { S3Client } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
@@ -8,9 +8,7 @@ import {
   getTotalEmissionsBySector,
   EmissionsBySector,
 } from "../ResultsService";
-import {
-  HighImpactActionRanking,
-} from "@/models/HighImpactActionRanking";
+import { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
 import { HighImpactActionRankingStatus } from "@/util/types";
 import {
   startPrioritization,
@@ -21,6 +19,10 @@ import { InventoryService } from "../InventoryService";
 import GlobalAPIService from "../GlobalAPIService";
 import { PrioritizerResponse, PrioritizerCityData } from "./types";
 import { uniqBy } from "lodash";
+import EmailService from "../EmailService";
+import { User } from "@/models/User";
+import { getSession } from "next-auth/react";
+import { AppSession } from "@/lib/auth";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 logger.info("Using HIAP API at", HIAP_API_URL);
@@ -487,13 +489,20 @@ async function copyRankedActionsToLang(ranking: any, lang: LANGUAGES) {
   return await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
 }
 
+// Helper: Send email to user that the ranking is ready
+async function sendRankedReadyEmail(user: User, actionType: ACTION_TYPES) {
+  await EmailService.sendHiapRankingReadyEmail({ actionType, user });
+}
+
 // Main orchestrator
 export const fetchRanking = async (
   inventoryId: string,
   type: ACTION_TYPES,
   lang: LANGUAGES,
+  session: AppSession,
 ) => {
   try {
+    const user = await db.models.User.findByPk(session.user.id);
     const locode = await InventoryService.getLocode(inventoryId);
     const ranking = await findOrSelectRanking(inventoryId, locode, lang);
     if (ranking) {
@@ -504,25 +513,34 @@ export const fetchRanking = async (
       }
       // If ranking is pending, trigger job in background and return empty actions
       if (ranking.status === HighImpactActionRankingStatus.PENDING) {
-        logger.info('Ranking is pending, triggering background job');
+        logger.info("Ranking is pending, triggering background job");
         checkActionRankingJob(ranking, lang, type);
         return { ...ranking.toJSON(), rankedActions: [] };
       } else if (ranking.status === HighImpactActionRankingStatus.SUCCESS) {
-        logger.info('Ranking is success, copying actions to requested language');
+        // Send email to user that the ranking is ready
+        sendRankedReadyEmail(user!, type);
+        logger.info(
+          "Ranking is success, copying actions to requested language",
+        );
         const newRanked = await copyRankedActionsToLang(ranking, lang);
+        if (newRanked.length > 0) {
+          sendRankedReadyEmail(user!, type);
+        } else {
+          logger.info("No ranked actions found");
+        }
         return { ...ranking.toJSON(), rankedActions: newRanked };
       } else if (ranking.status === HighImpactActionRankingStatus.FAILURE) {
-        logger.info('Ranking is failure, starting new job');
+        logger.info("Ranking is failure, starting new job");
         return await startActionRankingJob(inventoryId, locode, lang, type);
       }
-      logger.info('No ranking found, starting new job');
+      logger.info("No ranking found, starting new job");
       return await startActionRankingJob(inventoryId, locode, lang, type);
     } else {
-      logger.info('No ranking found at all, starting new job');
+      logger.info("No ranking found at all, starting new job");
       return await startActionRankingJob(inventoryId, locode, lang, type);
     }
   } catch (err) {
-    logger.error({ err: err }, 'Error fetching prioritized climate actions:');
+    logger.error({ err: err }, "Error fetching prioritized climate actions:");
     throw err;
   }
 };

@@ -705,9 +705,7 @@ export interface CCRARiskAssessment {
 }
 
 export interface CCRASummary {
-  riskAssessment: CCRARiskAssessment[];
-  resilienceScore?: number | null;
-  cityName?: string;
+  topRisks: CCRARiskAssessment[];
   inventoryId: string;
 }
 
@@ -732,4 +730,33 @@ export interface DashboardResponseType {
     cityName: string;
     projectId: string;
   };
+}
+
+export interface RiskAssessment {
+  hazard: string;
+  keyimpact: string;
+  risk_score: number;
+  original_risk_score?: number;
+  hazard_score: number;
+  exposure_score: number;
+  vulnerability_score: number;
+  original_vulnerability_score?: number;
+  risk_lower_limit?: number;
+  risk_upper_limit?: number;
+  normalised_risk_score?: number;
+}
+
+export interface Indicator {
+  hazard: string;
+  keyimpact: string;
+  category: string;
+  indicator_name?: string;
+  value?: number;
+}
+
+export interface CCRATopRisksData {
+  riskAssessment: RiskAssessment[];
+  indicators?: Indicator[];
+  cityName?: string;
+  region?: string;
 }

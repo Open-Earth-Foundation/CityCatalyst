@@ -79,6 +79,12 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
         onVisibilityChange={handleHIAPVisibility}
         isPublic={isPublic}
       />
+      <CCRAWidget
+        cityId={cityId}
+        lng={lng}
+        inventoryId={inventoryId}
+        onVisibilityChange={handleCCRAVisibility}
+      />
     </VStack>
   );
 };

@@ -7,6 +7,8 @@ import { MdOpenInNew } from "react-icons/md";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import TopRisksWidget from "./CCRAWidget";
+import { HeadlineLarge, HeadlineSmall } from "../Texts/Headline";
+import { BodyLarge } from "../Texts/Body";
 
 interface CCRAWidgetProps {
   cityId: string;
@@ -21,7 +23,7 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
   lng,
   onVisibilityChange,
 }) => {
-  const { t } = useTranslation(lng, "dashboard");
+  const { t } = useTranslation(lng, "ccra");
   const router = useRouter();
 
   // Fetch CCRA dashboard data
@@ -32,9 +34,7 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
   } = useGetCityCCRADashboardQuery({ cityId, inventoryId });
 
   const hasContent =
-    ccraData &&
-    ccraData.riskAssessment &&
-    ccraData.riskAssessment.length > 0;
+    ccraData && ccraData.topRisks && ccraData.topRisks.length > 0;
 
   React.useEffect(() => {
     if (!isLoading) {
@@ -58,35 +58,19 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
     <Box w="full">
       <HStack justifyContent="space-between" mb={2}>
         <Text color="content.link">{t("climate-risk-assessment")}</Text>
-        <Button
-          onClick={() => {
-            router.push(`/cities/${cityId}/CCRA`);
-          }}
-          variant="outline"
-          borderColor="border.neutral"
-          color="content.primary"
-        >
-          <Text>{t("open-ccra")}</Text>
-          <MdOpenInNew />
-        </Button>
       </HStack>
-      <Heading fontSize="headline.sm" fontWeight="semibold" lineHeight="32">
-        {t("climate-risks-for-city")}
-      </Heading>
-      <Text
-        fontWeight="regular"
-        fontSize="body.lg"
-        color="interactive.control"
-        letterSpacing="wide"
-      >
-        {t("see-your-citys-climate-risks")}
-      </Text>
-      <Box mt={6}>
+      <HeadlineSmall fontWeight="semibold">
+        {t("top-climate-risks")}
+      </HeadlineSmall>
+      <BodyLarge fontWeight="regular" color="interactive.control">
+        {t("top-climate-risks-description")}
+      </BodyLarge>
+      <Box mt={10}>
         <TopRisksWidget
           cityId={cityId}
-          cityName={ccraData.cityName}
-          riskAssessment={ccraData.riskAssessment}
-          resilienceScore={ccraData.resilienceScore}
+          cityName={""}
+          riskAssessment={ccraData.topRisks}
+          lng={lng}
         />
       </Box>
     </Box>

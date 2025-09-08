@@ -518,7 +518,6 @@ export const fetchRanking = async (
         return { ...ranking.toJSON(), rankedActions: [] };
       } else if (ranking.status === HighImpactActionRankingStatus.SUCCESS) {
         // Send email to user that the ranking is ready
-        sendRankedReadyEmail(user!, type);
         logger.info(
           "Ranking is success, copying actions to requested language",
         );

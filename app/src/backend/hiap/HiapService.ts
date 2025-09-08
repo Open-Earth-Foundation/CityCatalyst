@@ -499,10 +499,10 @@ export const fetchRanking = async (
   inventoryId: string,
   type: ACTION_TYPES,
   lang: LANGUAGES,
-  session: AppSession,
+  session?: AppSession,
 ) => {
   try {
-    const user = await db.models.User.findByPk(session.user.id);
+    const user = await db.models.User.findByPk(session?.user.id);
     const locode = await InventoryService.getLocode(inventoryId);
     const ranking = await findOrSelectRanking(inventoryId, locode, lang);
     if (ranking) {

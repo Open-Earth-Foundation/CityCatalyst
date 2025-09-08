@@ -147,6 +147,22 @@ const ActivityModalBody = ({
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
     useState<boolean>(true);
 
+  // Function to determine default units based on methodology type
+  const getDefaultUnits = (methodologyId: string): string => {
+    if (
+      methodologyId.includes("energy-consumption") ||
+      methodologyId.includes("electricity-consumption")
+    ) {
+      return "kg/kWh";
+    }
+    return "kg/m3"; // Default for fuel combustion and other activities
+  };
+
+  // State to store the current emission factor units
+  const [emissionFactorUnits, setEmissionFactorUnits] = useState<string>(
+    getDefaultUnits(methodology.id),
+  );
+
   useEffect(() => {
     setIsEmissionFactorInputDisabled(emissionsFactorTypeValue !== "custom");
   }, [emissionsFactorTypeValue]);
@@ -165,6 +181,12 @@ const ActivityModalBody = ({
           "activity.emissionFactorName",
           t("custom-emission-factor-name"),
         );
+        // Reset to default units for custom emission factors based on methodology
+        const defaultUnits = getDefaultUnits(methodology.id);
+        setValue("activity.co2EmissionFactorUnit", defaultUnits);
+        setValue("activity.n2oEmissionFactorUnit", defaultUnits);
+        setValue("activity.ch4EmissionFactorUnit", defaultUnits);
+        setEmissionFactorUnits(defaultUnits);
         setIsEmissionFactorInputDisabled(false);
       } else {
         let co2Val =
@@ -186,11 +208,45 @@ const ActivityModalBody = ({
                 .emissionsPerActivity
             : "";
 
+        // Extract units from the first available gas value
+        const methodologyDefaultUnits = getDefaultUnits(methodology.id);
+        let units = methodologyDefaultUnits; // default fallback based on methodology
+        if (
+          emissionFactor?.gasValuesByGas["CO2"]?.gasValues.length &&
+          emissionFactor.gasValuesByGas["CO2"].gasValues.length > 0
+        ) {
+          units =
+            emissionFactor.gasValuesByGas["CO2"].gasValues[0].units ||
+            methodologyDefaultUnits;
+        } else if (
+          emissionFactor?.gasValuesByGas["N2O"]?.gasValues.length &&
+          emissionFactor.gasValuesByGas["N2O"].gasValues.length > 0
+        ) {
+          units =
+            emissionFactor.gasValuesByGas["N2O"].gasValues[0].units ||
+            methodologyDefaultUnits;
+        } else if (
+          emissionFactor?.gasValuesByGas["CH4"]?.gasValues.length &&
+          emissionFactor.gasValuesByGas["CH4"].gasValues.length > 0
+        ) {
+          units =
+            emissionFactor.gasValuesByGas["CH4"].gasValues[0].units ||
+            methodologyDefaultUnits;
+        }
+
         setValue("activity.CO2EmissionFactor", co2Val ? co2Val : 0);
         setValue("activity.N2OEmissionFactor", n2oVal ? n2oVal : 0);
         setValue("activity.CH4EmissionFactor", ch4Val ? ch4Val : 0);
         setValue("activity.emissionFactorName", emissionFactor?.name);
         setValue("activity.emissionFactorReference", emissionFactor?.reference);
+
+        // Set the extracted units for each gas
+        setValue("activity.co2EmissionFactorUnit", units);
+        setValue("activity.n2oEmissionFactorUnit", units);
+        setValue("activity.ch4EmissionFactorUnit", units);
+
+        // Set the extracted units for display
+        setEmissionFactorUnits(units);
 
         setIsEmissionFactorInputDisabled(true);
       }
@@ -824,11 +880,7 @@ const ActivityModalBody = ({
                           w="full"
                           textAlign="center"
                         >
-                          {t("kg")}/
-                          {methodology.id.includes("energy-consumption") ||
-                          methodology.id.includes("electricity-consumption")
-                            ? t("kWh")
-                            : t("m3")}
+                          {emissionFactorUnits}
                         </Text>
                       )}
                     </FormattedNumberInput>
@@ -863,11 +915,7 @@ const ActivityModalBody = ({
                       <Spinner size="sm" color="border.neutral" />
                     ) : (
                       <Text truncate lineClamp={1} w="full" textAlign="center">
-                        {t("kg")}/
-                        {methodology.id.includes("energy-consumption") ||
-                        methodology.id.includes("electricity-consumption")
-                          ? t("kWh")
-                          : t("m3")}
+                        {emissionFactorUnits}
                       </Text>
                     )}
                   </FormattedNumberInput>
@@ -906,11 +954,7 @@ const ActivityModalBody = ({
                         w="full"
                         textAlign="center"
                       >
-                        {t("kg")}/
-                        {methodology.id.includes("energy-consumption") ||
-                        methodology.id.includes("electricity-consumption")
-                          ? t("kWh")
-                          : t("m3")}
+                        {emissionFactorUnits}
                       </Text>
                     )}
                   </FormattedNumberInput>

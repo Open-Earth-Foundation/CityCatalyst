@@ -125,7 +125,6 @@ export const RiskCard = ({
                 </Text>
               )}
               <TitleLarge fontWeight="bold" color={riskLevel.color}>
-                {}
                 {formatScore(risk.risk_score)}
               </TitleLarge>
             </HStack>

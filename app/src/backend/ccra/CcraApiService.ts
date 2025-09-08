@@ -1,7 +1,6 @@
 // backend/ccra/CcraApiService.ts
 import { logger } from "@/services/logger";
 import { CCRATopRisksData, Indicator, RiskAssessment } from "@/util/types";
-import { inventoryId } from "tests/api/results_sector.data";
 
 const CCRA_API_URL =
   (process.env.GLOBAL_API_URL || "http://ccra-service") + "/api/v0";

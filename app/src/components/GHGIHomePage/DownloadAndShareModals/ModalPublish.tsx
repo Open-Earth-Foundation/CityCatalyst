@@ -85,8 +85,6 @@ const ModalPublish = ({
     }
   };
 
-  console.log("Publish status changed:", inventory?.isPublic);
-
   return (
     <DialogRoot
       open={isPublishOpen}

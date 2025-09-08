@@ -255,7 +255,7 @@
   "go-back": "Go Back",
   "publish-success-title": "Published Successfully",
   "publish-success-description": "Your inventory has been successfully published to the web.",
-  "unpublish-success-title": "Unpublished Successfully", 
+  "unpublish-success-title": "Unpublished Successfully",
   "unpublish-success-description": "Your inventory has been successfully unpublished.",
   "publish-error-title": "Publishing Failed",
   "publish-error-description": "There was an error publishing your inventory. Please try again.",

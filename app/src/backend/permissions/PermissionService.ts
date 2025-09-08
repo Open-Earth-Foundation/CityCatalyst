@@ -3,6 +3,7 @@ import { createPermissionError, PERMISSION_ERRORS } from "@/util/permission-erro
 import createHttpError from "http-errors";
 import { Roles } from "@/util/types";
 import { logger } from "@/services/logger";
+import { db } from "@/models";
 
 import { 
   UserRole, 
@@ -51,6 +52,30 @@ export class PermissionService {
     context: PermissionContext,
     options: PermissionOptions = {}
   ): Promise<ResourceAccess> {
+    // Check for public inventory access before requiring authentication
+    if (!session?.user && context.inventoryId) {
+      logger.debug('Checking public inventory access', { inventoryId: context.inventoryId });
+      
+      // Load inventory to check if it's public
+      const inventory = await db.models.Inventory.findByPk(context.inventoryId);
+      
+      if (inventory?.isPublic) {
+        logger.debug('Public inventory access granted', { inventoryId: context.inventoryId });
+        
+        const shouldLoadResource = options.excludeResource ? false : (options.includeResource !== false);
+        const resource = shouldLoadResource 
+          ? await ResourceLoader.getResource(context) 
+          : undefined;
+          
+        return {
+          hasAccess: true,
+          userRole: UserRole.PUBLIC_READER,
+          organizationId: await PermissionResolver.resolveOrganizationId(context) || 'public',
+          resource
+        };
+      }
+    }
+    
     if (!session?.user) {
       logger.warn('Permission check failed: No authenticated session', { context });
       throw new createHttpError.Unauthorized("Authentication required");

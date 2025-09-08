@@ -1,3 +1,5 @@
+"use client";
+
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useTranslation } from "@/i18n/client";
 import {
@@ -5,6 +7,7 @@ import {
   useGetMostRecentCityPopulationQuery,
   useGetInventoriesQuery,
 } from "@/services/api";
+import { useInventoryOrganization } from "@/hooks/use-inventory-organization";
 import { Box, HStack, Separator, useDisclosure, Image } from "@chakra-ui/react";
 import Cookies from "js-cookie";
 import { useTheme } from "next-themes";
@@ -18,6 +21,8 @@ import ModalPublish from "../GHGIHomePage/DownloadAndShareModals/ModalPublish";
 import { InventoryResponse } from "@/util/types";
 import { Button } from "../ui/button";
 import { ModuleDashboardWidgets } from "../ModuleWidgets";
+import MissingCityDashboard from "../missing-city-dashboard";
+import { isFetchBaseQueryError } from "@/util/helpers";
 
 export default function CitiesDashboardPage({
   params,
@@ -45,55 +50,71 @@ export default function CitiesDashboardPage({
     onClose: onPublishClose,
   } = useDisclosure();
 
+  // Use different API calls based on public mode
   const {
-    data: city,
-    isLoading: isCityLoading,
-    error: cityError,
+    data: privateCity,
+    isLoading: isPrivateCityLoading,
+    error: privateCityError,
   } = api.useGetCityQuery(cityId!, {
-    skip: !cityIdFromParam,
+    skip: !cityIdFromParam || isPublic,
   });
+
+  const {
+    data: publicCity,
+    isLoading: isPublicCityLoading,
+    error: publicCityError,
+  } = api.useGetPublicCityQuery(cityId!, {
+    skip: !cityIdFromParam || !isPublic,
+  });
+
+  // Use the appropriate data based on mode
+  const city = isPublic ? publicCity : privateCity;
+  const isCityLoading = isPublic ? isPublicCityLoading : isPrivateCityLoading;
+  const cityError = isPublic ? publicCityError : privateCityError;
 
   const { data: population } = useGetMostRecentCityPopulationQuery(
     { cityId: cityIdFromParam! },
     { skip: !cityIdFromParam },
   );
 
-  const { data: inventories, isLoading: isInventoriesLoading } =
+  // Use different inventory queries based on public mode
+  const { data: privateInventories, isLoading: isPrivateInventoriesLoading } =
     useGetInventoriesQuery(
       { cityId: cityIdFromParam! },
-      { skip: !cityIdFromParam },
+      { skip: !cityIdFromParam || isPublic },
     );
+
+  const { data: publicInventories, isLoading: isPublicInventoriesLoading } =
+    api.useGetPublicCityInventoriesQuery(cityIdFromParam!, {
+      skip: !cityIdFromParam || !isPublic,
+    });
+
+  // Use the appropriate data based on mode
+  const inventories = isPublic ? publicInventories : privateInventories;
+  const isInventoriesLoading = isPublic
+    ? isPublicInventoriesLoading
+    : isPrivateInventoriesLoading;
 
   const latestInventory = inventories?.[0];
 
+  // Use inventory organization hook for theming
+  const { isInventoryOrgDataLoading } = useInventoryOrganization(
+    latestInventory?.inventoryId!,
+  );
 
-  const { data: orgData, isLoading: isOrgDataLoading } =
-    api.useGetOrganizationForCityQuery(cityIdFromParam!, {
-      skip: !cityIdFromParam,
-    });
-
-  const { organization, setOrganization } = useOrganizationContext();
-  const { setTheme } = useTheme();
-
-  useEffect(() => {
-    if (orgData) {
-      const logoUrl = orgData?.logoUrl ?? null;
-      const active = orgData?.active ?? true;
-
-      if (
-        organization?.logoUrl !== logoUrl ||
-        organization?.active !== active
-      ) {
-        setOrganization({ logoUrl, active });
-      }
-      setTheme(orgData?.theme?.themeKey ?? "blue_theme");
-    } else if (!isOrgDataLoading && !orgData) {
-      setTheme("blue_theme");
-    }
-  }, [isOrgDataLoading, orgData, setTheme]);
+  if (isFetchBaseQueryError(cityError)) {
+    return (
+      <MissingCityDashboard
+        lng={lng}
+        cityId={cityIdFromParam}
+        error={cityError}
+        isPublic={isPublic}
+      />
+    );
+  }
 
   if (
-    isOrgDataLoading ||
+    isInventoryOrgDataLoading ||
     isUserInfoLoading ||
     isCityLoading ||
     isInventoriesLoading
@@ -103,13 +124,13 @@ export default function CitiesDashboardPage({
 
   return (
     <Box h="100%" minH="100vh" bg="base.light">
-      {cityIdFromParam && city && orgData && latestInventory && (
+      {cityIdFromParam && city && latestInventory && (
         <>
           <Hero
             city={city}
             year={parsedYear}
             isPublic={isPublic}
-            isLoading={isOrgDataLoading || isCityLoading}
+            isLoading={isInventoryOrgDataLoading || isCityLoading}
             t={t}
             population={population}
           />
@@ -121,22 +142,26 @@ export default function CitiesDashboardPage({
                   {t("journey.your-city-dashboard")}
                 </HeadlineMedium>
               </HStack>
-              <Button variant="outline" onClick={onPublishOpen}>
-                <Image
-                  fill="pink"
-                  src="/assets/public_blue.svg"
-                  alt="publish-to-web"
-                  width="24px"
-                  height="24px"
-                />
-                {t("publish")}
-              </Button>
+              {!isPublic && (
+                <Button variant="outline" onClick={onPublishOpen}>
+                  <Image
+                    fill="pink"
+                    src="/assets/public_blue.svg"
+                    alt="publish-to-web"
+                    width="24px"
+                    height="24px"
+                  />
+                  {t("publish")}
+                </Button>
+              )}
             </HStack>
             <Box h="1px" mt="6" bg="border.neutral" />
             <ModuleDashboardWidgets
               cityId={cityIdFromParam!}
               lng={lng}
               t={t}
+              isPublic={isPublic}
+              inventoryId={latestInventory?.inventoryId}
             />
           </Box>
         </>

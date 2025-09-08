@@ -16,13 +16,17 @@ import { useRouter } from "next/navigation";
 interface GHGIWidgetProps {
   cityId: string;
   lng: string;
+  inventoryId: string;
   onVisibilityChange?: (hasContent: boolean) => void;
+  isPublic?: boolean;
 }
 
 export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
   cityId,
   lng,
+  inventoryId,
   onVisibilityChange,
+  isPublic = false,
 }) => {
   const { t } = useTranslation(lng, "dashboard");
   const router = useRouter();
@@ -32,7 +36,7 @@ export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
     data: ghgiData,
     isLoading,
     error,
-  } = useGetCityGHGIDashboardQuery({ cityId });
+  } = useGetCityGHGIDashboardQuery({ cityId, inventoryId });
   const { data: population } = useGetCityPopulationQuery(
     { cityId: cityId, year: ghgiData?.year as number },
     { skip: !cityId || !ghgiData?.year },
@@ -66,17 +70,19 @@ export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
     <Box w="full">
       <HStack justifyContent="space-between" mb={2}>
         <Text color="content.link">{t("inventories")}</Text>
-        <Button
-          onClick={() => {
-            router.push(`/cities/${cityId}/GHGI`);
-          }}
-          variant="outline"
-          borderColor="border.neutral"
-          color="content.primary"
-        >
-          <Text>{t("open-cc-inventories")}</Text>
-          <MdOpenInNew />
-        </Button>
+        {!isPublic && (
+          <Button
+            onClick={() => {
+              router.push(`/cities/${cityId}/GHGI`);
+            }}
+            variant="outline"
+            borderColor="border.neutral"
+            color="content.primary"
+          >
+            <Text>{t("open-cc-inventories")}</Text>
+            <MdOpenInNew />
+          </Button>
+        )}
       </HStack>
       <Heading fontSize="headline.sm" fontWeight="semibold" lineHeight="32">
         <Trans

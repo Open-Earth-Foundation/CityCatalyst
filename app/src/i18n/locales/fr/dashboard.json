@@ -245,5 +245,20 @@
     "goHome": "Allez à la page d'accueil"
   },
   "open-cc-inventories": "Inventaires CC Ouverts",
-  "inventories": "Inventaires"
+  "inventories": "Inventaires",
+  "access-denied": "Accès Refusé",
+  "city-not-found": "Ville Non Trouvée",
+  "access-denied-description": "Vous n'avez pas la permission de voir le tableau de bord de cette ville. Cette ville peut être privée ou vous ne faites peut-être pas partie de cette organisation.",
+  "city-not-found-description": "Le tableau de bord de la ville que vous recherchez n'existe pas ou a été déplacé.",
+  "possible-mistake": "Si vous pensez que c'est une erreur",
+  "please-contact-us": "veuillez nous contacter",
+  "go-back": "Retourner",
+  "publish-success-title": "Publié avec succès",
+  "publish-success-description": "Votre inventaire a été publié avec succès sur le web.",
+  "unpublish-success-title": "Dépublié avec succès",
+  "unpublish-success-description": "Votre inventaire a été retiré avec succès.",
+  "publish-error-title": "Échec de la publication",
+  "publish-error-description": "Il y a eu une erreur lors de la publication de votre inventaire. Veuillez réessayer.",
+  "unpublish-error-title": "Échec de la dépublication",
+  "unpublish-error-description": "Une erreur s'est produite lors de la dépublication de votre inventaire. Veuillez réessayer."
 }

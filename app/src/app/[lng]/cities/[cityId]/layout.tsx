@@ -19,19 +19,6 @@ export default function CitiesLayout(props: {
   const router = useRouter();
   const { data } = useSession();
 
-  useEffect(() => {
-    if (!hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
-      toaster.error({
-        title: t("not-found-description"),
-      });
-      const REDIRECT_DELAY_MS = 2000;
-      setTimeout(() => {
-        const fallbackPath = `/${lng}`;
-        router.push(fallbackPath);
-      }, REDIRECT_DELAY_MS);
-    }
-  }, [data, router, lng, t]);
-
   return (
     <Box
       h="full"
@@ -40,26 +27,7 @@ export default function CitiesLayout(props: {
       bg="background.backgroundLight"
     >
       <Box w="full" h="full">
-        {hasFeatureFlag(FeatureFlags.JN_ENABLED) ? (
-          children
-        ) : (
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            w="full"
-          >
-            <Box
-              w="full"
-              py={12}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <ProgressLoader />
-            </Box>
-          </Box>
-        )}
+        {children}
       </Box>
     </Box>
   );

@@ -622,7 +622,7 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
       );
     }
 
-    // NEW: Detect emission factor units and use appropriate calculation path
+    //Detect emission factor units and use appropriate calculation path
     const isMassBased = emissionsFactor.units?.includes("kg/kg");
     const isVolumeBased = emissionsFactor.units?.includes("kg/m3");
 

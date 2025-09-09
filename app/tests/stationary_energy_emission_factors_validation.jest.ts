@@ -80,8 +80,6 @@ describe("Emission Factor Validation Tests", () => {
 
     // Load CSV test data
     testData = await loadManualTestData();
-
-    // Loaded test data points
   });
 
   afterAll(async () => {
@@ -317,7 +315,6 @@ async function performCalculationTest(
     };
 
     // Use the system's calculation method
-    // Using methodology ID
 
     let calculationResult;
     try {
@@ -348,7 +345,6 @@ async function performCalculationTest(
     // Debug: Log the actual calculation result structure
     // CalculationService result
 
-    // Extract totalCO2e from the result
     let totalCO2eKg = 0;
     if (calculationResult.totalCO2e) {
       // Handle Decimal objects
@@ -361,10 +357,6 @@ async function performCalculationTest(
     const calculatedCO2eTonnes = totalCO2eKg / 1000;
     const expectedCO2eTonnes = testData.expected_co2e_tonnes;
     const difference = Math.abs(calculatedCO2eTonnes - expectedCO2eTonnes);
-
-    // console.log(
-    //   `   Expected: ${expectedCO2eTonnes}, Calculated: ${calculatedCO2eTonnes}, Diff: ${difference.toFixed(6)}`,
-    // );
 
     // Test should use the actual service output
     const withinTolerance = difference <= TOLERANCE;
@@ -394,8 +386,6 @@ async function performCalculationTest(
 async function createEmissionFactorsFromGlobalAPI(testData: ManualTestData) {
   const emissionFactors: any = {};
 
-  // Using Global API values from CSV
-
   // Create emission factor objects using Global API values from CSV
   if (testData.co2_global_api > 0) {
     emissionFactors["CO2"] = {
@@ -404,7 +394,6 @@ async function createEmissionFactorsFromGlobalAPI(testData: ManualTestData) {
       units: testData.units_in_global_api,
       region: "world",
     };
-    // Created CO2 factor
   }
 
   if (testData.ch4_global_api > 0) {
@@ -414,7 +403,6 @@ async function createEmissionFactorsFromGlobalAPI(testData: ManualTestData) {
       units: testData.units_in_global_api,
       region: "world",
     };
-    // Created CH4 factor
   }
 
   if (testData.n2o_global_api > 0) {
@@ -424,7 +412,6 @@ async function createEmissionFactorsFromGlobalAPI(testData: ManualTestData) {
       units: testData.units_in_global_api,
       region: "world",
     };
-    // Created N2O factor
   }
 
   return { emissionFactors, queryErrors: [] };

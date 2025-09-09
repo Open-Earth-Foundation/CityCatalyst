@@ -1,21 +1,17 @@
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import jwt from "jsonwebtoken";
 import { logger } from "@/services/logger";
 import { v4 } from "uuid";
 import { OAuthClient } from "@/models/OAuthClient";
-import { Client, LangMap } from "@/util/types";
 import crypto from "node:crypto";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 
-const CODE_EXPIRY = 5 * 60;
-
 /** Return an authorization code */
 
-export const POST = apiHandler(async (_req, { params, session }) => {
+export const POST = apiHandler(async (req, { params, session }) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
   }
@@ -38,7 +34,7 @@ export const POST = apiHandler(async (_req, { params, session }) => {
   }
 
   const { clientId, redirectUri, codeChallenge, scope, csrfToken } =
-    await _req.json();
+    await req.json();
 
   if (csrfToken !== crypto.createHmac("sha256", csrfSecret).digest("hex")) {
     throw createHttpError.BadRequest("csrfToken does not match");
@@ -54,7 +50,7 @@ export const POST = apiHandler(async (_req, { params, session }) => {
     throw new createHttpError.BadRequest("Redirect URI mismatch");
   }
 
-  const origin = process.env.HOST || new URL(_req.url).origin;
+  const origin = process.env.HOST || new URL(req.url).origin;
 
   await OAuthClientAuthz.upsert({
     clientId,

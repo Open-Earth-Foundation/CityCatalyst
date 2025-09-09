@@ -245,5 +245,21 @@
     "goHome": "Go to home page"
   },
   "open-cc-inventories": "Open CC Inventories",
-  "inventories": "Inventories"
+  "inventories": "Inventories",
+  "access-denied": "Access Denied",
+  "city-not-found": "City Not Found",
+  "access-denied-description": "You don't have permission to view this city's dashboard. This city may be private or you may not be part of this organization.",
+  "city-not-found-description": "The city dashboard you're looking for doesn't exist or has been moved.",
+  "possible-mistake": "If you think this is a mistake",
+  "please-contact-us": "please contact us",
+  "go-back": "Go Back",
+  "publish-success-title": "Published Successfully",
+  "publish-success-description": "Your inventory has been successfully published to the web.",
+  "unpublish-success-title": "Unpublished Successfully",
+  "unpublish-success-description": "Your inventory has been successfully unpublished.",
+  "link-copied-to-clipboard": "Link copied to clipboard",
+  "publish-error-title": "Publishing Failed",
+  "publish-error-description": "There was an error publishing your inventory. Please try again.",
+  "unpublish-error-title": "Unpublishing Failed",
+  "unpublish-error-description": "There was an error unpublishing your inventory. Please try again."
 }

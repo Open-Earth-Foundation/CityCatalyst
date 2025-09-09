@@ -185,5 +185,17 @@
     "footer-2": "Let’s make local climate data work harder, together.",
     "footer-3": "The CityCatalyst Team",
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
+  },
+  "hiap-ranking-ready": {
+    "subject": "City Catalyst - HIAP Ranking Ready",
+    "preview": "CityCatalyst: HIAP Ranking Ready",
+    "brand": "CityCatalyst",
+    "title": "Your mitigation actions are ready!",
+    "cta": "Got to your actions",
+    "greeting": "Hi {{name}},",
+    "message": "Your city's greenhouse gas inventory has been processed, and we've identified the Top 20 mitigation actions tailored for your city. These actions will support your journey towards a low-carbon future.",
+    "message2": "You can now view and explore these actions through the CityCatalyst platform.",
+    "message3": "Click the button below to access your mitigation actions table — this personalized page contains detailed actions your city can take to reduce emissions and build climate resilience.",
+    "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   }
 }

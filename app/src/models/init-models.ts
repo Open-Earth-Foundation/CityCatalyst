@@ -215,6 +215,13 @@ import {
 } from "./OAuthClientI18N";
 import { se } from "date-fns/locale";
 
+import { OAuthClientAuthz as _OAuthClientAuthz } from "./OAuthClientAuthz";
+import {
+  OAuthClientAuthzAttributes,
+  OAuthClientAuthzCreationAttributes,
+  OAuthClientAuthzOptionalAttributes,
+} from "./OAuthClientAuthz";
+
 export {
   _ActivityData as ActivityData,
   _ActivityValue as ActivityValue,
@@ -265,6 +272,7 @@ export {
   _ProjectModules as ProjectModules,
   _OAuthClient as OAuthClient,
   _OAuthClientI18N as OAuthClientI18N,
+  _OAuthClientAuthz as OAuthClientAuthz,
 };
 
 export type {
@@ -364,6 +372,9 @@ export type {
   OAuthClientI18NAttributes,
   OAuthClientI18NCreationAttributes,
   OAuthClientI18NOptionalAttributes,
+  OAuthClientAuthzAttributes,
+  OAuthClientAuthzCreationAttributes,
+  OAuthClientAuthzOptionalAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -420,6 +431,7 @@ export function initModels(sequelize: Sequelize) {
   const ProjectModules = _ProjectModules.initModel(sequelize);
   const OAuthClient = _OAuthClient.initModel(sequelize);
   const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
+  const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
 
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
@@ -1020,7 +1032,22 @@ export function initModels(sequelize: Sequelize) {
     as: "highImpactActionRanked",
     foreignKey: "hiaRankingId",
   });
-  OAuthClient.hasMany(OAuthClientI18N, { foreignKey: "clientId" });
+  OAuthClient.hasMany(OAuthClientI18N, { as: "i18n", foreignKey: "clientId" });
+
+  OAuthClientAuthz.belongsTo(OAuthClient, {
+    as: "client",
+    foreignKey: "clientId",
+    targetKey: "clientId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  OAuthClientAuthz.belongsTo(User, {
+    as: "user",
+    foreignKey: "userId",
+    targetKey: "userId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
 
   return {
     ActivityData: ActivityData,
@@ -1072,5 +1099,6 @@ export function initModels(sequelize: Sequelize) {
     ProjectModules: ProjectModules,
     OAuthClient: OAuthClient,
     OAuthClientI18N: OAuthClientI18N,
+    OAuthClientAuthz: OAuthClientAuthz,
   };
 }

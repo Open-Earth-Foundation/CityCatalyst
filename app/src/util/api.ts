@@ -17,6 +17,7 @@ import { Roles } from "@/util/types";
 import jwt from "jsonwebtoken";
 import { FeatureFlags, hasFeatureFlag } from "./feature-flags";
 import { OAuthClient } from "@/models/OAuthClient";
+import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 
 export type ApiResponse = NextResponse | StreamingTextResponse;
 
@@ -207,7 +208,7 @@ export function apiHandler(handler: NextHandler) {
             "Invalid or expired access token",
           );
         }
-        const origin = process.env.HOST || (new URL(req.url)).origin
+        const origin = process.env.HOST || new URL(req.url).origin;
         if (token.aud !== origin) {
           throw new createHttpError.Unauthorized("Wrong server for token");
         }
@@ -225,6 +226,16 @@ export function apiHandler(handler: NextHandler) {
         ) {
           throw new createHttpError.Unauthorized("No write scope available");
         }
+        const authz = await OAuthClientAuthz.findOne({
+          where: {
+            clientId: token.client_id,
+            userId: token.sub,
+          },
+        });
+        if (!authz) {
+          throw new createHttpError.Unauthorized("Authorization revoked");
+        }
+        await authz.update({ lastUsed: new Date() });
         session = await makeOAuthUserSession(token);
       } else {
         session = await Auth.getServerSession();

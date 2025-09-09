@@ -46,8 +46,8 @@ import {
   useSteps,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { useRouter } from "next/navigation";
-import { forwardRef, useEffect, useState, use } from "react";
+import { useRouter, useParams, usePathname } from "next/navigation";
+import { forwardRef, useEffect, useState } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
@@ -92,6 +92,7 @@ import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { getParamValueRequired } from "@/util/helpers";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -161,7 +162,11 @@ function NoDataSourcesMessage({
   year?: number;
 }) {
   return (
-    <Flex align="center" direction="column" data-testid="no-data-sources-message">
+    <Flex
+      align="center"
+      direction="column"
+      data-testid="no-data-sources-message"
+    >
       <Box borderRadius="full" p={4} bgColor="background.neutral" mb={6}>
         <Icon
           as={NoDatasourcesIcon}
@@ -195,12 +200,14 @@ function NoDataSourcesMessage({
   );
 }
 
-export default function AddDataSteps(props: {
-  params: Promise<{ lng: string; step: string; inventory: string }>;
-}) {
-  const { lng, step, inventory } = use(props.params);
+export default function AddDataSteps() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const step = getParamValueRequired(params.step);
+  const inventory = getParamValueRequired(params.inventory);
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
+  const pathname = usePathname();
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -261,17 +268,12 @@ export default function AddDataSteps(props: {
       if (sectorProgress.total === 0) {
         return step;
       }
-      const connectedProgress = clamp(
+      step.connectedProgress = clamp(
         sectorProgress.thirdParty / sectorProgress.total,
       );
-      const addedProgress = clamp(
+      step.addedProgress = clamp(
         sectorProgress.uploaded / sectorProgress.total,
       );
-      step.connectedProgress = Math.max(
-        connectedProgress,
-        step.connectedProgress,
-      );
-      step.addedProgress = Math.max(addedProgress, step.addedProgress);
       return step;
     });
     setSteps(updatedSteps);
@@ -530,6 +532,11 @@ export default function AddDataSteps(props: {
       );
       // TODO show alert
       setDisconnectingDataSourceId(null);
+      setNewlyConnectedDataSourceIds(
+        newlyConnectedDataSourceIds.filter(
+          (connectedSource) => connectedSource !== source.datasourceId,
+        ),
+      );
       onSearchDataSourcesClicked();
     } else {
       logger.error("Something went wrong when disconnecting data source");
@@ -634,7 +641,7 @@ export default function AddDataSteps(props: {
               fontSize="14px"
               color="content.link"
               fontWeight="bold"
-              onClick={() => router.push(`/${lng}/${inventory}/data`)}
+              onClick={() => router.push(pathname.replace(`/${step}`, ""))}
             >
               <Icon as={MdArrowBack} boxSize={6} />
               {t("go-back")}

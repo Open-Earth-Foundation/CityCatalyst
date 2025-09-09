@@ -27,6 +27,7 @@ import { Hero } from "./Hero";
 import { ActionCards } from "./ActionCards";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { HeadlineMedium } from "@/components/Texts/Headline";
 import { useResourceValidation } from "@/hooks/useResourceValidation";
 import {
@@ -40,7 +41,7 @@ import { BodyLarge } from "@/components/Texts/Body";
 import { TitleLarge } from "@/components/Texts/Title";
 import { LuChevronDown } from "react-icons/lu";
 import { NoModulesCard } from "./NoModulesCard";
-import { StageNames } from "@/util/constants";
+import { Modules } from "@/util/constants";
 import { stageOrder } from "@/config/stages";
 
 export default function HomePage({
@@ -196,6 +197,10 @@ export default function HomePage({
               <AccordionRoot multiple>
                 {stageOrder.map((stage) => {
                   const modules = projectModules.filter((mod) => {
+                    // Filter out CCRA module unless feature flag is enabled
+                    if (mod.id === Modules.CCRA.id && !hasFeatureFlag(FeatureFlags.CCRA_MODULE)) {
+                      return false;
+                    }
                     return mod.stage === stage;
                   });
                   return (

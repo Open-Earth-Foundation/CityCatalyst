@@ -1,6 +1,5 @@
 import { db } from "@/models";
 import { getEmissionResults } from "@/backend/ResultsService";
-import InventoryProgressService from "@/backend/InventoryProgressService";
 import { fetchRanking } from "@/backend/hiap/HiapService";
 import { logger } from "@/services/logger";
 import { ACTION_TYPES } from "@/util/types";
@@ -8,6 +7,8 @@ import { ModuleService } from "@/backend/ModuleService";
 import { Modules } from "@/util/constants";
 import createHttpError from "http-errors";
 import { Inventory } from "@/models/Inventory";
+import { CcraService, TopRisksResult } from "./ccra/CcraService";
+import { fetchCCRATopRisksData } from "./ccra/CcraApiService";
 
 export class ModuleDashboardService {
   /**
@@ -119,6 +120,63 @@ export class ModuleDashboardService {
       return {
         error: `Failed to fetch HIAP data: ${(error as Error).message}`,
       };
+    }
+  }
+
+  public static async getCCRADashboardData(
+    cityId: string,
+    inventory: Inventory,
+    resilienceScore?: number | null,
+  ): Promise<TopRisksResult & { inventoryId: string }> {
+    try {
+      const city = await db.models.City.findOne({
+        where: { cityId },
+      });
+
+      if (!city) {
+        throw new createHttpError.NotFound("city-not-found");
+      }
+
+      // Check module access
+      const hasModuleAccess = await ModuleService.hasModuleAccess(
+        city.projectId as string,
+        Modules.CCRA.id,
+      );
+
+      if (!hasModuleAccess) {
+        throw new createHttpError.Forbidden("module-access-denied-ccra");
+      }
+
+      logger.info(`Fetching CCRA top risks for inventory ${city.locode}`);
+
+      // Fetch CCRA data
+      const ccraData = await fetchCCRATopRisksData(city.locode as string);
+
+      // Process top risks (default to top 3)
+      const topRisksResult = CcraService.processTopRisks(
+        ccraData,
+        3,
+        resilienceScore,
+      );
+
+      logger.info(
+        `Successfully processed CCRA top risks for inventory ${inventory.inventoryId}`,
+      );
+
+      return {
+        ...topRisksResult,
+        inventoryId: inventory.inventoryId,
+      };
+    } catch (error) {
+      logger.error("Error fetching CCRA dashboard data:", { error, cityId });
+      if (error instanceof createHttpError.HttpError) {
+        throw error;
+      }
+      return {
+        topRisks: [],
+        inventoryId: inventory.inventoryId,
+        error: `Failed to fetch CCRA data: ${(error as Error).message}`,
+      } as any;
     }
   }
 }

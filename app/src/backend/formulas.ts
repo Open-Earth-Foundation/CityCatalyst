@@ -558,27 +558,57 @@ export async function handleMethaneCommitmentFormula(
   return [{ gas: "CH4", amount: ch4Emissions }];
 }
 
+function getMassBasedActivityAmount(
+  activityValue: ActivityValue,
+  inventoryValue: InventoryValue,
+): number {
+  // For kg/kg fuels, we want MASS (kg) without density conversion
+  const rawData = { ...activityValue.activityData };
+  const activityAmountKey = activityValue.metadata?.["activityTitle"];
+  const fuelAmount = rawData[activityAmountKey] || 0;
+  const fuelUnit = rawData[`${activityAmountKey}-unit`] || "units-kilograms";
+
+  // Convert to kg if needed, but NO density conversion
+  if (fuelUnit === "units-kilograms") {
+    return fuelAmount; // Already in kg
+  } else if (fuelUnit === "units-tonnes") {
+    return fuelAmount * 1000; // Convert tonnes to kg
+  } else {
+    // Convert using UnitConversionService but force mass-to-mass only
+    return UnitConversionService.convertUnitsWithoutDensity(
+      fuelAmount,
+      fuelUnit,
+      "units-kilograms",
+    );
+  }
+}
+
+function getVolumeBasedActivityAmount(
+  activityValue: ActivityValue,
+  inventoryValue: InventoryValue,
+): number {
+  // For kg/m³ fuels, use existing logic with unit conversion
+  const data = convertDataToDefaultUnit(
+    activityValue,
+    inventoryValue.inputMethodology!,
+    inventoryValue.gpcReferenceNumber!,
+  );
+
+  const activityAmountKey = activityValue.metadata?.["activityTitle"];
+  return data?.[activityAmountKey] || 0;
+}
+
 export function handleActivityAmountTimesEmissionsFactorFormula(
   activityValue: ActivityValue,
   gasValues: GasValueWithEmissionsFactor[],
   inventoryValue: InventoryValue,
 ): Gas[] {
-  // TODO add actvityAmount column to ActivityValue
-  // const activityAmount = activityValue.activityAmount || 0;
   if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
     throw new createHttpError.BadRequest(
       "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
     );
   }
-  const data = convertDataToDefaultUnit(
-    // use convert all the values
-    activityValue,
-    inventoryValue.inputMethodology,
-    inventoryValue.gpcReferenceNumber,
-  );
 
-  const activityAmountKey = activityValue.metadata?.["activityTitle"];
-  const activityAmount = data?.[activityAmountKey] || 0;
   const gases = gasValues?.map((gasValue) => {
     const emissionsFactor = gasValue.emissionsFactor;
     if (emissionsFactor == null) {
@@ -591,8 +621,40 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
         `Emissions factor for ${emissionsFactor?.gas} has no emissions per activity`,
       );
     }
-    const amount = Decimal.mul(activityAmount, emissionsFactor.emissionsPerActivity);
 
+    //Detect emission factor units and use appropriate calculation path
+    const isMassBased = emissionsFactor.units?.includes("kg/kg");
+    const isVolumeBased = emissionsFactor.units?.includes("kg/m3");
+
+    let activityAmount: number;
+
+    if (isMassBased) {
+      // Path A: Handle solid fuels (kg/kg) - no density conversion
+      activityAmount = getMassBasedActivityAmount(
+        activityValue,
+        inventoryValue,
+      );
+    } else if (isVolumeBased) {
+      // Path B: Handle gas/liquid fuels (kg/m³) - existing logic with conversion
+      activityAmount = getVolumeBasedActivityAmount(
+        activityValue,
+        inventoryValue,
+      );
+    } else {
+      // Fallback: Use existing logic for unknown units
+      console.warn(
+        `Unknown emission factor units: ${emissionsFactor.units}, using fallback logic`,
+      );
+      activityAmount = getVolumeBasedActivityAmount(
+        activityValue,
+        inventoryValue,
+      );
+    }
+
+    const amount = Decimal.mul(
+      activityAmount,
+      emissionsFactor.emissionsPerActivity,
+    );
     return { gas: gasValue.gas!, amount };
   });
 

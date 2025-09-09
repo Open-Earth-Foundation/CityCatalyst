@@ -10,6 +10,7 @@ export enum FeatureFlags {
   JN_ENABLED = "JN_ENABLED",
   OAUTH_ENABLED = "OAUTH_ENABLED",
   ANALYTICS_ENABLED = "ANALYTICS_ENABLED",
+  CCRA_MODULE = "CCRA_MODULE"
 }
 
 let cachedFeatureFlags: string[] | null = null;

@@ -63,6 +63,7 @@ import type {
   ModuleDataSummaryResponse,
   GHGInventorySummary,
   HIAPSummary,
+  CCRASummary,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -102,6 +103,7 @@ export const api = createApi({
     "Modules",
     "GHGIDashboard",
     "HiapDashboard",
+    "CCRADashboard",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1378,6 +1380,15 @@ export const api = createApi({
         transformResponse: (response: { data: HIAPSummary }) => response.data,
         providesTags: ["CityDashboard", "Modules", "HiapDashboard"],
       }),
+      getCityCCRADashboard: builder.query<
+        CCRASummary,
+        { cityId: string; inventoryId: string }
+      >({
+        query: ({ cityId, inventoryId }) =>
+          `city/${cityId}/modules/ccra/dashboard?inventoryId=${inventoryId}`,
+        transformResponse: (response: { data: CCRASummary }) => response.data,
+        providesTags: ["CityDashboard", "Modules", "CCRADashboard"],
+      }),
       getClient: builder.query<Client, string>({
         query: (clientId: string) => `client/${clientId}/`,
         transformResponse: (response: { data: Client }) => response.data,
@@ -1579,6 +1590,7 @@ export const {
   useGetCityModuleAccessQuery,
   useGetCityGHGIDashboardQuery,
   useGetCityHIAPDashboardQuery,
+  useGetCityCCRADashboardQuery,
   useGetClientQuery,
   useGenerateCodeMutation,
   useGetUserPermissionsQuery,

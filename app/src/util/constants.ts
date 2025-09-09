@@ -211,4 +211,5 @@ export enum StageNames {
 export const Modules = {
   GHGI: { id: "077690c6-6fa3-44e1-84b7-6d758a6a4d88" },
   HIAP: { id: "9ee0e1ea-94ea-4329-b156-28d10ecd0ff8" },
+  CCRA: { id: "3d1a4b2c-8e7f-4d5a-9c6b-1f2e3d4c5b6a" },
 };

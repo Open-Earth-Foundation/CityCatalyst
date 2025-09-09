@@ -164,5 +164,6 @@
   "my-apps-no-description": "(No description)",
   "my-apps-authorized-on": "Authorized on",
   "my-apps-last-used": "Last used",
-  "my-apps-never": "(Never)"
+  "my-apps-never": "(Never)",
+  "my-apps-error-loading-apps": "Error loading apps."
 }

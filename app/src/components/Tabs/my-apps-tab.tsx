@@ -20,8 +20,7 @@ const MyAppsTab: FC<MyAppsTabProps> = ({
 }) => {
   const { t } = useTranslation(lng, "settings");
 
-
-  const { data: apps, isLoading: isAppsLoading } = api.useGetAuthzsQuery()
+const { data: apps, isLoading: isAppsLoading, error } = api.useGetAuthzsQuery()
 
   return (
     <>
@@ -49,14 +48,15 @@ const MyAppsTab: FC<MyAppsTabProps> = ({
               {t("my-apps-sub-title")}
             </Text>
           </Box>
-
           { (isAppsLoading)
             ? <ProgressLoader />
-            : (!apps || apps.length === 0)
-              ? <Box>{t("no-apps")}</Box>
-              : apps.map((app) => (
-                <AppCard key={app.clientId} lng={lng} app={app} />
-              ))
+            : error
+              ? <Box>{t("my-apps-error-loading-apps")}</Box>
+              : (!apps || apps.length === 0)
+                ? <Box>{t("no-apps")}</Box>
+                : apps.map((app) => (
+                    <AppCard key={app.clientId} lng={lng} app={app} />
+                  ))
           }
         </Box>
       </Tabs.Content>

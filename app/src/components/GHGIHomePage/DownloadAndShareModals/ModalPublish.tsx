@@ -1,5 +1,6 @@
 import { Box, Button, HStack, Image, Text } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
+import i18next from "i18next";
 import { api } from "@/services/api";
 import { useState } from "react";
 import { UnpublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/UnpublishedView";
@@ -7,6 +8,7 @@ import { PublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/
 import { InventoryResponse } from "@/util/types";
 import { trackEvent } from "@/lib/analytics";
 import { toaster } from "@/components/ui/toaster";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 import {
   DialogRoot,
@@ -32,6 +34,7 @@ const ModalPublish = ({
   setModalOpen: (open: boolean) => void;
 }) => {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+  const { copyToClipboard } = useCopyToClipboard({});
 
   const [changePublishStatus, { isLoading: updateLoading }] =
     api.useUpdateInventoryMutation();
@@ -56,12 +59,25 @@ const ModalPublish = ({
           },
         );
 
-        // Show success toast
-        toaster.success({
-          title: t(isPublishing ? "publish-success-title" : "unpublish-success-title"),
-          description: t(isPublishing ? "publish-success-description" : "unpublish-success-description"),
-          duration: 5000,
-        });
+        if (isPublishing) {
+          // Copy public URL to clipboard when publishing
+          const publicUrl = `${window.location.protocol}//${window.location.host}/${i18next.language}/public/${inventoryId}`;
+          copyToClipboard(publicUrl);
+          
+          // Show success toast with clipboard message
+          toaster.success({
+            title: t("publish-success-title"),
+            description: t("link-copied-to-clipboard"),
+            duration: 5000,
+          });
+        } else {
+          // Show success toast for unpublishing
+          toaster.success({
+            title: t("unpublish-success-title"),
+            description: t("unpublish-success-description"),
+            duration: 5000,
+          });
+        }
 
         // Clear internal state and close modal
         setIsAuthorized(false);

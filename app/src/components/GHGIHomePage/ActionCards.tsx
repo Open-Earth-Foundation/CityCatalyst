@@ -7,6 +7,7 @@ import DownloadButton from "@/components/GHGIHomePage/DownloadButton";
 import type { CityAttributes } from "@/models/City";
 import type { InventoryAttributes } from "@/models/Inventory";
 import { AddCollaboratorButton } from "@/components/GHGIHomePage/AddCollaboratorButton";
+import { usePathname } from "next/navigation";
 
 export function ActionCards({
   city,
@@ -21,11 +22,13 @@ export function ActionCards({
   lng: string;
   inventory?: InventoryAttributes;
 }) {
+  const pathname = usePathname();
+
   return (
     <Box display="flex" gap="24px" w="full">
       <NextLink
         data-testid={"add-data-to-inventory-card"}
-        href={`/${lng}/${inventoryId}/data`}
+        href={`${pathname}/data`}
         role="button"
         aria-label={t("add-data-to-inventory")}
       >

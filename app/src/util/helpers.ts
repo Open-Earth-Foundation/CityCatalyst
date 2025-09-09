@@ -1,5 +1,10 @@
 import Decimal from "decimal.js";
 import { HIAction } from "./types";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+
+export function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
+  return typeof error === "object" && error != null && "status" in error;
+}
 
 export const getTranslationFromDictionary = (
   translations: Record<string, string> | string | undefined,
@@ -385,4 +390,27 @@ export const getTopPickActions = (actions: HIAction[]): HIAction[] => {
   } else {
     return [...actions].sort((a, b) => a.rank - b.rank).slice(0, 3);
   }
+};
+
+/**
+ * Safely extracts a parameter value from useParams(), handling both string and string[] types
+ * @param param - The parameter value from useParams() (can be string | string[] | undefined)
+ * @returns The parameter value as a string, or undefined if not available
+ */
+export const getParamValue = (param: string | string[] | undefined): string | undefined => {
+  if (!param) return undefined;
+  return Array.isArray(param) ? param[0] : param;
+};
+
+/**
+ * Safely extracts a parameter value from useParams() with type assertion to string
+ * @param param - The parameter value from useParams() (can be string | string[] | undefined)
+ * @returns The parameter value as a string, throws error if not available
+ */
+export const getParamValueRequired = (param: string | string[] | undefined): string => {
+  const value = getParamValue(param);
+  if (!value) {
+    throw new Error(`Required parameter is missing or undefined`);
+  }
+  return value;
 };

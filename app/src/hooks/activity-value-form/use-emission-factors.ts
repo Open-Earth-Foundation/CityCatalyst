@@ -66,7 +66,9 @@ const reduceEmissionsToUniqueSourcesAndUnits = (
             gasValues: uniqBy(
               source.gasValuesByGas[currentValue].gasValues,
               "emissionsPerActivity",
-            ).filter((factor) => ["kg/m3", "kg/kWh"].includes(factor.units)), // filter only emissions that have kg/m3 or kg/kWh as the unit
+            ).filter((factor) =>
+              ["kg/m3", "kg/kWh", "kg/kg"].includes(factor.units),
+            ), // filter only emissions that have kg/m3, kg/kWh, or kg/kg as the unit
           },
         };
       },

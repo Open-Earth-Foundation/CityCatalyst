@@ -17,7 +17,7 @@ interface TopRisksWidgetProps {
 
 const TopRisksWidget: React.FC<TopRisksWidgetProps> = ({
   cityId,
-  cityName = "Your City",
+  cityName = "your-city",
   riskAssessment,
   resilienceScore = null, // Default to null if not provided
   className = "",

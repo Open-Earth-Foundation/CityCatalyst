@@ -9,7 +9,7 @@ class CCRAApiService {
   /**
    * Fetch risk assessment data for current scenario
    */
-  async getRiskAssessment(actorId: string): Promise<RiskAssessment[]> {
+ public static  async getRiskAssessment(actorId: string): Promise<RiskAssessment[]> {
     try {
       const response = await fetch(
         `${CCRA_API_URL}/ccra/risk_assessment/city/${actorId}/current`,
@@ -37,7 +37,7 @@ class CCRAApiService {
   /**
    * Fetch indicator details for vulnerability calculations
    */
-  async getIndicatorDetails(actorId: string): Promise<Indicator[]> {
+public static  async getIndicatorDetails(actorId: string): Promise<Indicator[]> {
     try {
       const response = await fetch(
         `${CCRA_API_URL}/ccra/impactchain_indicators/city/${actorId}/current`,
@@ -63,7 +63,7 @@ class CCRAApiService {
   /**
    * Fetch CCRA data for top risks display
    */
-  async fetchCCRATopRisksData(actorId: string): Promise<CCRATopRisksData> {
+  public static async fetchCCRATopRisksData(actorId: string): Promise<CCRATopRisksData> {
     try {
       logger.info(`Fetching CCRA top risks data for actor ${actorId}`);
 
@@ -86,9 +86,7 @@ class CCRAApiService {
   }
 }
 
-// Export singleton instance
-export const ccraApi = new CCRAApiService();
 
 // Export the main fetch function
 export const fetchCCRATopRisksData = (actorId: string) =>
-  ccraApi.fetchCCRATopRisksData(actorId);
+  CCRAApiService.fetchCCRATopRisksData(actorId);

@@ -12,7 +12,7 @@ export interface OAuthClientAuthzAttributes {
   clientId: string;
   userId: string;             // UUID as string
   lastUsed?: Date | null;
-  created?: Date;
+  created: Date;
 }
 
 export type OAuthClientAuthzPk = 'clientId' | 'userId';

@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import { toaster } from "@/components/ui/toaster";
 import { useGetCityModuleAccessQuery } from "@/services/api";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 interface UseModuleAccessProps {
   cityId: string;
@@ -19,13 +20,18 @@ export const useModuleAccess = ({
 }: UseModuleAccessProps) => {
   const { t } = useTranslation(lng, "not-found");
   const router = useRouter();
-  
+
   const { data, isLoading, error, refetch } = useGetCityModuleAccessQuery({
     cityId,
     moduleId,
   });
 
   useEffect(() => {
+    // Skip module access check when JN_ENABLED feature flag is OFF
+    if (!hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
+      return;
+    }
+
     if (!isLoading && !data?.hasAccess) {
       toaster.error({
         title: t("not-found-description"),
@@ -36,7 +42,8 @@ export const useModuleAccess = ({
   }, [data, isLoading, router, lng, t, fallbackPath]);
 
   return {
-    hasAccess: data?.hasAccess || false,
+    hasAccess:
+      !hasFeatureFlag(FeatureFlags.JN_ENABLED) || data?.hasAccess || false,
     isAccessLoading: isLoading,
     error,
     refetch,

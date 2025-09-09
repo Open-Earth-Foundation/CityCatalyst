@@ -18,6 +18,9 @@ export const useModuleAccessLayout = ({
   children,
 }: UseModuleAccessLayoutProps): React.ReactElement => {
   const { lng, cityId } = use(params);
+
+  // Skip module access check when JN_ENABLED feature flag is OFF
+  const shouldCheckAccess = hasFeatureFlag(FeatureFlags.JN_ENABLED);
   const { hasAccess } = useModuleAccess({
     cityId,
     moduleId,
@@ -33,7 +36,7 @@ export const useModuleAccessLayout = ({
       bg="background.backgroundLight"
     >
       <Box w="full" h="full">
-        {hasFeatureFlag(FeatureFlags.JN_ENABLED) && hasAccess ? (
+        {!shouldCheckAccess || hasAccess ? (
           children
         ) : (
           <Box
@@ -56,4 +59,4 @@ export const useModuleAccessLayout = ({
       </Box>
     </Box>
   );
-}; 
+};

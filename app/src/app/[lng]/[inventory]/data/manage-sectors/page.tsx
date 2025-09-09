@@ -1,26 +1,21 @@
 "use client";
 
 import { Box } from "@chakra-ui/react";
-import React, { use } from "react";
+import React from "react";
+import { useParams } from "next/navigation";
 import Heading from "./Heading";
 import { useTranslation } from "@/i18n/client";
 import NotationsDefinitionAccordion from "./NotationsDefinitionAccordion";
 import SectorTabs from "./SectorTabs";
-import { api } from "@/services/api";
 import { Toaster } from "@/components/ui/toaster";
+import { getParamValueRequired } from "@/util/helpers";
 
-const ManageSubSectors = (props: {
-  params: Promise<{ lng: string; step: string; inventory: string }>;
-}) => {
-  const { lng, step, inventory } = use(props.params);
+const ManageSubSectors = () => {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const inventory = getParamValueRequired(params.inventory);
 
   const { t } = useTranslation(lng, "manage-subsectors");
-  // fetch invnetory data
-  const {
-    data: inventoryData,
-    isLoading: isInventoryDataLoading,
-    error: inventoryDataError,
-  } = api.useGetInventoryProgressQuery(inventory);
 
   return (
     <Box w="full" bg="background.backgroundLight">

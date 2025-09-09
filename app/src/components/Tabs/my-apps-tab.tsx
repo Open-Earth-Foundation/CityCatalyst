@@ -38,7 +38,7 @@ const MyAppsTab: FC<MyAppsTabProps> = ({ lng }) => {
             <Box>{t("no-apps")}</Box>
           ) : (
             apps.map((app) => (
-              <AppCard key={app.clientId} lng={lng} app={app} />
+              <AppCard key={app.client.clientId} lng={lng} app={app} />
             ))
           )}
         </Box>

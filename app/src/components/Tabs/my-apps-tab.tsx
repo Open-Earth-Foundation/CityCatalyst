@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Tabs,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Tabs, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -12,15 +8,17 @@ import { AppCard } from "../Cards/AppCard";
 import { useTranslation } from "@/i18n/client";
 
 interface MyAppsTabProps {
-  lng: string; /** Language to use for UI and client descriptions */
+  lng: string /** Language to use for UI and client descriptions */;
 }
 
-const MyAppsTab: FC<MyAppsTabProps> = ({
-  lng,
-}) => {
+const MyAppsTab: FC<MyAppsTabProps> = ({ lng }) => {
   const { t } = useTranslation(lng, "settings");
 
-const { data: apps, isLoading: isAppsLoading, error } = api.useGetAuthzsQuery()
+  const {
+    data: apps,
+    isLoading: isAppsLoading,
+    error,
+  } = api.useGetAuthzsQuery();
 
   return (
     <>
@@ -48,16 +46,17 @@ const { data: apps, isLoading: isAppsLoading, error } = api.useGetAuthzsQuery()
               {t("my-apps-sub-title")}
             </Text>
           </Box>
-          { (isAppsLoading)
-            ? <ProgressLoader />
-            : error
-              ? <Box>{t("my-apps-error-loading-apps")}</Box>
-              : (!apps || apps.length === 0)
-                ? <Box>{t("no-apps")}</Box>
-                : apps.map((app) => (
-                    <AppCard key={app.clientId} lng={lng} app={app} />
-                  ))
-          }
+          {isAppsLoading ? (
+            <ProgressLoader />
+          ) : error ? (
+            <Box>{t("my-apps-error-loading-apps")}</Box>
+          ) : !apps || apps.length === 0 ? (
+            <Box>{t("no-apps")}</Box>
+          ) : (
+            apps.map((app) => (
+              <AppCard key={app.clientId} lng={lng} app={app} />
+            ))
+          )}
         </Box>
       </Tabs.Content>
     </>

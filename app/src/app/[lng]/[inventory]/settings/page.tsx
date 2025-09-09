@@ -170,7 +170,7 @@ export default function Settings() {
                     {t("my-inventories")}
                   </Text>
                 </Tabs.Trigger>
-                {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) &&
+                {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
                   <Tabs.Trigger
                     _selected={{
                       borderColor: "content.link",
@@ -190,8 +190,8 @@ export default function Settings() {
                     >
                       {t("my-apps")}
                     </Text>
-                </Tabs.Trigger>
-}
+                  </Tabs.Trigger>
+                )}
               </Tabs.List>
 
               <MyProfileTab t={t} userInfo={userInfo} lng={lng} />
@@ -202,9 +202,9 @@ export default function Settings() {
                 t={t}
                 defaultCityId={cityId}
               />
-              { hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) &&
+              {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
                 <MyAppsTab lng={lng} />
-              }
+              )}
             </Tabs.Root>
           </Box>
         </Box>

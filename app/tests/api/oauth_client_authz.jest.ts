@@ -1,6 +1,4 @@
-import {
-  GET as listClientAuthz
-} from "@/app/api/v0/user/clients/route";
+import { GET as listClientAuthz } from "@/app/api/v0/user/clients/route";
 
 import {
   GET as getClientAuthz,
@@ -28,10 +26,7 @@ import {
   OAuthClientAuthz,
   OAuthClientAuthzAttributes,
 } from "@/models/OAuthClientAuthz";
-import {
-  User,
-  UserAttributes
-} from "@/models/User";
+import { User, UserAttributes } from "@/models/User";
 import {
   cascadeDeleteDataSource,
   createRequest,
@@ -109,17 +104,17 @@ const testClientI18Ns: OAuthClientI18NAttributes[] = [
 const testOAuthClientAuthzs: OAuthClientAuthzAttributes[] = [
   {
     clientId: "test-client-1",
-    userId: testUserID
+    userId: testUserID,
   },
   {
     clientId: "test-client-2",
-    userId: testUserID
+    userId: testUserID,
   },
   {
     clientId: "test-client-3",
-    userId: testUserID
-  }
-]
+    userId: testUserID,
+  },
+];
 
 const testClientDNE = "test-client-does-not-exist";
 
@@ -136,7 +131,7 @@ describe("OAuth Client Authz API", () => {
       await OAuthClientI18N.create(clientI18N);
     }
     for (const clientAuthz of testOAuthClientAuthzs) {
-      await OAuthClientAuthz.create(clientAuthz)
+      await OAuthClientAuthz.create(clientAuthz);
     }
   });
 
@@ -145,7 +140,7 @@ describe("OAuth Client Authz API", () => {
       await OAuthClientAuthz.destroy({
         where: {
           clientId: clientAuthz.clientId,
-          userId: clientAuthz.userId
+          userId: clientAuthz.userId,
         },
       });
     }
@@ -173,7 +168,9 @@ describe("OAuth Client Authz API", () => {
       expect(Array.isArray(data)).toBe(true);
       expect(data.length).toEqual(testOAuthClientAuthzs.length);
       for (const clientAuthz of testOAuthClientAuthzs) {
-        let authz = data.find((authz: any) => authz.client.clientId == clientAuthz.clientId);
+        let authz = data.find(
+          (authz: any) => authz.client.clientId == clientAuthz.clientId,
+        );
         expect(authz).toBeDefined();
         expect(authz.client).toBeDefined();
         expect(authz.lastUsed).toBeDefined();
@@ -185,11 +182,10 @@ describe("OAuth Client Authz API", () => {
         expect(client.name).not.toBeNull();
         expect(typeof client.description).toBe("object");
         expect(client.description).not.toBeNull();
-        expect(typeof(client.redirectURI)).toBe("string");
+        expect(typeof client.redirectURI).toBe("string");
       }
     });
   });
-
 
   describe("GET /api/v0/user/clients/[client]", () => {
     it("should get the client object", async () => {
@@ -202,9 +198,9 @@ describe("OAuth Client Authz API", () => {
       const { data } = await res.json();
       expect(data.lastUsed).toBeDefined();
       expect(data.created).toBeDefined();
-      expect(typeof(data.created)).toEqual("string");
+      expect(typeof data.created).toEqual("string");
       expect(data.client).toBeDefined();
-      expect(typeof(data.client)).toEqual("object");
+      expect(typeof data.client).toEqual("object");
       expect(data.client).not.toBeNull();
       const client = data.client;
       expect(client.clientId).toEqual(clientAuthz.clientId);
@@ -218,7 +214,6 @@ describe("OAuth Client Authz API", () => {
       expect(res.status).toEqual(404);
     });
 
-
     it("should fail for an unauthorized client", async () => {
       const req = mockRequest();
       const res = await getClientAuthz(req, {
@@ -229,7 +224,6 @@ describe("OAuth Client Authz API", () => {
   });
 
   describe("DELETE /api/v0/user/clients/[client]", () => {
-
     it("should delete the authorization", async () => {
       const req = mockRequest();
       const res = await deleteClientAuthz(req, {
@@ -244,7 +238,9 @@ describe("OAuth Client Authz API", () => {
       expect(res.status).toEqual(200);
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);
-      const found = data.find((cl: any) => cl.client.clientId === "test-client-3");
+      const found = data.find(
+        (cl: any) => cl.client.clientId === "test-client-3",
+      );
       expect(found).toBeUndefined();
     });
 

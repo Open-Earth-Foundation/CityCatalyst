@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta charset="UTF-8" />
@@ -15,61 +15,61 @@
     </p>
     <script type="module">
       // @ts-check
-      import * as oauth from './oauth4webapi.min.js'
+      import * as oauth from "./oauth4webapi.min.js";
 
-      import { config } from './config.js'
-      const { CC_ORIGIN, CLIENT_ID } = config
+      import { config } from "./config.js";
+      const { CC_ORIGIN, CLIENT_ID } = config;
 
-      const ccOriginUrl = new URL(CC_ORIGIN)
-      const allowInsecureRequests = (ccOriginUrl.hostname === 'localhost')
-        ? true
-        : false
+      const ccOriginUrl = new URL(CC_ORIGIN);
+      const allowInsecureRequests =
+        ccOriginUrl.hostname === "localhost" ? true : false;
 
-      const username_url = `${CC_ORIGIN}/api/v0/user/whoami/`
+      const username_url = `${CC_ORIGIN}/api/v0/user/whoami/`;
 
-      const redirect_uri = (new URL(window.location.href)).origin + '/';
+      const redirect_uri = new URL(window.location.href).origin + "/";
 
       function setStatus(text) {
-        const el = document.getElementById("status")
+        const el = document.getElementById("status");
         if (el) {
           el.textContent = text;
         }
       }
 
-      async function startLogin (as, client) {
+      async function startLogin(as, client) {
         setStatus("Logging in...");
         const code_verifier = oauth.generateRandomCodeVerifier();
-        const code_challenge = await oauth.calculatePKCECodeChallenge(code_verifier);
-        const state = oauth.generateRandomState()
+        const code_challenge =
+          await oauth.calculatePKCECodeChallenge(code_verifier);
+        const state = oauth.generateRandomState();
 
-        sessionStorage.setItem('code_verifier', code_verifier);
-        sessionStorage.setItem('state', state);
+        sessionStorage.setItem("code_verifier", code_verifier);
+        sessionStorage.setItem("state", state);
 
-        const scope = 'read write'
+        const scope = "read write";
 
-        const authz = new URL(as.authorization_endpoint)
-        authz.searchParams.set('client_id', client.client_id)
-        authz.searchParams.set('redirect_uri', redirect_uri)
-        authz.searchParams.set('response_type', 'code')
-        authz.searchParams.set('scope', 'read write')
-        authz.searchParams.set('code_challenge', code_challenge)
-        authz.searchParams.set('code_challenge_method', 'S256')
-        authz.searchParams.set('state', state)
+        const authz = new URL(as.authorization_endpoint);
+        authz.searchParams.set("client_id", client.client_id);
+        authz.searchParams.set("redirect_uri", redirect_uri);
+        authz.searchParams.set("response_type", "code");
+        authz.searchParams.set("scope", "read write");
+        authz.searchParams.set("code_challenge", code_challenge);
+        authz.searchParams.set("code_challenge_method", "S256");
+        authz.searchParams.set("state", state);
 
         window.location.href = authz.toString();
       }
 
-      async function finishLogin (as, client) {
+      async function finishLogin(as, client) {
         try {
-          const state = sessionStorage.getItem('state')
-          const code_verifier = sessionStorage.getItem('code_verifier')
+          const state = sessionStorage.getItem("state");
+          const code_verifier = sessionStorage.getItem("code_verifier");
 
           const params = oauth.validateAuthResponse(
             as,
             client,
             new URL(window.location.href),
-            state
-          )
+            state,
+          );
 
           const response = await oauth.authorizationCodeGrantRequest(
             as,
@@ -78,92 +78,94 @@
             params,
             redirect_uri,
             code_verifier,
-            { [oauth.allowInsecureRequests]: allowInsecureRequests }
-          )
+            { [oauth.allowInsecureRequests]: allowInsecureRequests },
+          );
 
           if (!response.ok) {
-            throw new Error(`Bad status from token endpoint: ${response.status}`)
+            throw new Error(
+              `Bad status from token endpoint: ${response.status}`,
+            );
           }
 
           const result = await oauth.processAuthorizationCodeResponse(
             as,
             client,
-            response
-          )
+            response,
+          );
 
-          const { access_token } = result
+          const { access_token } = result;
 
-          sessionStorage.setItem('access_token', access_token)
+          sessionStorage.setItem("access_token", access_token);
 
-          sessionStorage.removeItem('state')
-          sessionStorage.removeItem('code_verifier')
+          sessionStorage.removeItem("state");
+          sessionStorage.removeItem("code_verifier");
 
-          window.location.href = redirect_uri
+          window.location.href = redirect_uri;
         } catch (error) {
-          setStatus(error.message)
-          sessionStorage.removeItem('state')
-          sessionStorage.removeItem('code_verifier')
+          setStatus(error.message);
+          sessionStorage.removeItem("state");
+          sessionStorage.removeItem("code_verifier");
         }
       }
 
-      async function showUsername (as) {
-        const access_token = sessionStorage.getItem('access_token');
+      async function showUsername(as) {
+        const access_token = sessionStorage.getItem("access_token");
         try {
           let whoamiResponse = await oauth.protectedResourceRequest(
             access_token,
-            'GET',
+            "GET",
             new URL(username_url),
             null,
             null,
-            { [oauth.allowInsecureRequests]: allowInsecureRequests }
-          )
+            { [oauth.allowInsecureRequests]: allowInsecureRequests },
+          );
           if (!whoamiResponse.ok) {
-            throw new Error(`Bad status from whoami endpoint: ${whoamiResponse.status}`)
+            throw new Error(
+              `Bad status from whoami endpoint: ${whoamiResponse.status}`,
+            );
           }
-          let whoami = await whoamiResponse.json()
+          let whoami = await whoamiResponse.json();
           setStatus(`Hello, ${whoami.data.name}`);
         } catch (error) {
-          setStatus(error.message)
+          setStatus(error.message);
         }
       }
 
       document.addEventListener("DOMContentLoaded", async () => {
+        const loginEl = document.getElementById("login");
+        const logoutEl = document.getElementById("logout");
 
-        const loginEl = document.getElementById("login")
-        const logoutEl = document.getElementById("logout")
-
-        const client = { client_id: CLIENT_ID }
-        const res = await oauth.discoveryRequest(
-          new URL(CC_ORIGIN),
-          { algorithm: 'oauth2',
-            [oauth.allowInsecureRequests]: allowInsecureRequests }
-        )
+        const client = { client_id: CLIENT_ID };
+        const res = await oauth.discoveryRequest(new URL(CC_ORIGIN), {
+          algorithm: "oauth2",
+          [oauth.allowInsecureRequests]: allowInsecureRequests,
+        });
         if (!res.ok) {
-          throw new Error(`Bad status from discovery: ${res.status}`)
+          throw new Error(`Bad status from discovery: ${res.status}`);
         }
         const as = await oauth.processDiscoveryResponse(
           new URL(CC_ORIGIN),
-          res
-        )
-        const params = new URLSearchParams(window.location.search)
-        if (sessionStorage.getItem('access_token')) {
-          loginEl?.setAttribute('disabled', 'disabled')
-          logoutEl?.removeAttribute('disabled')
-          await showUsername(as)
+          res,
+        );
+        const params = new URLSearchParams(window.location.search);
+        if (sessionStorage.getItem("access_token")) {
+          loginEl?.setAttribute("disabled", "disabled");
+          logoutEl?.removeAttribute("disabled");
+          await showUsername(as);
         } else if (params.get("state")) {
-          loginEl?.setAttribute('disabled', 'disabled')
-          logoutEl?.setAttribute('disabled', 'disabled')
-          await finishLogin(as, client)
+          loginEl?.setAttribute("disabled", "disabled");
+          logoutEl?.setAttribute("disabled", "disabled");
+          await finishLogin(as, client);
         } else {
-          loginEl?.removeAttribute('disabled')
-          logoutEl?.setAttribute('disabled', 'disabled')
+          loginEl?.removeAttribute("disabled");
+          logoutEl?.setAttribute("disabled", "disabled");
         }
         loginEl?.addEventListener("click", async () => {
-          await startLogin(as, client)
+          await startLogin(as, client);
         });
         logoutEl?.addEventListener("click", async () => {
-          sessionStorage.clear()
-          window.location.href = redirect_uri
+          sessionStorage.clear();
+          window.location.href = redirect_uri;
         });
       });
     </script>

@@ -1,11 +1,4 @@
-import {
-  Box,
-  Card,
-  Text,
-  Spinner,
-  IconButton,
-  Icon
-} from "@chakra-ui/react";
+import { Box, Card, Text, Spinner, IconButton, Icon } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -19,8 +12,8 @@ import { MdDelete } from "react-icons/md";
 import { useTranslation } from "@/i18n/client";
 
 interface AppCardProps {
-  lng: string,
-  app: Authz
+  lng: string;
+  app: Authz;
 }
 
 const LocalizedTime = ({ date }: { date: Date }) => {
@@ -86,10 +79,11 @@ export function AppCard({ lng, app }: AppCardProps) {
                 {t("my-apps-last-used")}:{" "}
               </Box>
               <Box as="span" color="blue.500">
-                { (app.lastUsed)
-                  ? <LocalizedTime date={new Date(app.lastUsed)} />
-                  : <Text>{t("my-apps-never")}</Text>
-                }
+                {app.lastUsed ? (
+                  <LocalizedTime date={new Date(app.lastUsed)} />
+                ) : (
+                  <Text>{t("my-apps-never")}</Text>
+                )}
               </Box>
             </Box>
           </Box>

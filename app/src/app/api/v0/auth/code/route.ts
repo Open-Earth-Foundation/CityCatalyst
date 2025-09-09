@@ -16,7 +16,6 @@ const CODE_EXPIRY = 5 * 60;
 /** Return an authorization code */
 
 export const POST = apiHandler(async (_req, { params, session }) => {
-
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
   }
@@ -38,38 +37,29 @@ export const POST = apiHandler(async (_req, { params, session }) => {
     throw createHttpError.InternalServerError("Error in server");
   }
 
-  const {
-    clientId,
-    redirectUri,
-    codeChallenge,
-    scope,
-    csrfToken
-  } = await _req.json();
+  const { clientId, redirectUri, codeChallenge, scope, csrfToken } =
+    await _req.json();
 
-  if (csrfToken !== crypto.createHmac('sha256', csrfSecret).digest('hex')) {
-    throw createHttpError.BadRequest("csrfToken does not match")
+  if (csrfToken !== crypto.createHmac("sha256", csrfSecret).digest("hex")) {
+    throw createHttpError.BadRequest("csrfToken does not match");
   }
 
   const client = await OAuthClient.findByPk(clientId);
 
   if (!client) {
-    throw new createHttpError.BadRequest(
-      `No such client: ${clientId}`
-    );
+    throw new createHttpError.BadRequest(`No such client: ${clientId}`);
   }
 
   if (client.redirectURI !== redirectUri) {
-    throw new createHttpError.BadRequest(
-      'Redirect URI mismatch'
-    );
+    throw new createHttpError.BadRequest("Redirect URI mismatch");
   }
 
-  const origin = process.env.HOST || (new URL(_req.url)).origin;
+  const origin = process.env.HOST || new URL(_req.url).origin;
 
   await OAuthClientAuthz.upsert({
     clientId,
     userId: session.user.id,
-    lastUsed: new Date()
+    lastUsed: new Date(),
   });
 
   const code = jwt.sign(
@@ -77,7 +67,7 @@ export const POST = apiHandler(async (_req, { params, session }) => {
       client_id: clientId,
       redirect_uri: redirectUri,
       scope,
-      code_challenge: codeChallenge
+      code_challenge: codeChallenge,
     },
     process.env.VERIFICATION_TOKEN_SECRET,
     {
@@ -85,12 +75,12 @@ export const POST = apiHandler(async (_req, { params, session }) => {
       issuer: origin,
       audience: origin,
       subject: session.user.id,
-      jwtid: v4()
+      jwtid: v4(),
     },
   );
   return NextResponse.json({
     data: {
-      code
-    }
+      code,
+    },
   });
-})
+});

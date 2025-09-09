@@ -208,7 +208,7 @@ export function apiHandler(handler: NextHandler) {
             "Invalid or expired access token",
           );
         }
-        const origin = process.env.HOST || (new URL(req.url)).origin
+        const origin = process.env.HOST || new URL(req.url).origin;
         if (token.aud !== origin) {
           throw new createHttpError.Unauthorized("Wrong server for token");
         }
@@ -219,8 +219,8 @@ export function apiHandler(handler: NextHandler) {
         const authz = await OAuthClientAuthz.findOne({
           where: {
             clientId: token.client_id,
-            userId: token.sub
-          }
+            userId: token.sub,
+          },
         });
         if (!authz) {
           throw new createHttpError.Unauthorized("Authorization revoked");

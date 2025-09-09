@@ -27,7 +27,7 @@
 
       const username_url = `${CC_ORIGIN}/api/v0/user/whoami/`
 
-      const redirect_uri = (new URL(window.location.href)).origin
+      const redirect_uri = (new URL(window.location.href)).origin + '/';
 
       function setStatus(text) {
         const el = document.getElementById("status")

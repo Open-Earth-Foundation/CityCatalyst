@@ -3,7 +3,7 @@ import type { GasValueAttributes } from "@/models/GasValue";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import { Publisher } from "@/models/Publisher";
 import { Scope, ScopeAttributes } from "@/models/Scope";
-import type { Sector, SectorAttributes } from "@/models/Sector";
+import type { SectorAttributes } from "@/models/Sector";
 import { SubCategoryAttributes } from "@/models/SubCategory";
 import { SubSectorAttributes } from "@/models/SubSector";
 import type { EmissionsFactorWithDataSources } from "@/util/types";

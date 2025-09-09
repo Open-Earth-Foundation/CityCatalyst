@@ -245,5 +245,21 @@
     "goHome": "Zur Startseite gehen"
   },
   "open-cc-inventories": "Offene CC-Inventare",
-  "inventories": "Inventar"
+  "inventories": "Inventar",
+  "access-denied": "Zugriff verweigert",
+  "city-not-found": "Stadt nicht gefunden",
+  "access-denied-description": "Sie haben keine Berechtigung, das Dashboard dieser Stadt zu sehen. Diese Stadt könnte privat sein oder Sie sind möglicherweise kein Teil dieser Organisation.",
+  "city-not-found-description": "Das Stadt-Dashboard, das Sie suchen, existiert nicht oder wurde verschoben.",
+  "possible-mistake": "Wenn Sie denken, dass dies ein Fehler ist",
+  "please-contact-us": "bitte kontaktieren Sie uns",
+  "go-back": "Geh Zurück",
+  "publish-success-title": "Erfolgreich veröffentlicht",
+  "publish-success-description": "Ihr Inventar wurde erfolgreich im Web veröffentlicht.",
+  "unpublish-success-title": "Erfolgreich Unveröffentlicht",
+  "unpublish-success-description": "Ihr Inventar wurde erfolgreich zurückgezogen.",
+  "publish-error-title": "Veröffentlichung fehlgeschlagen",
+  "publish-error-description": "Es gab einen Fehler beim Veröffentlichen Ihres Inventars. Bitte versuchen Sie es erneut.",
+  "unpublish-error-title": "Fehler beim Zurückziehen",
+  "unpublish-error-description": "Es gab einen Fehler beim Zurückziehen Ihres Inventars. Bitte versuchen Sie es erneut.",
+  "link-copied-to-clipboard": "Link in die Zwischenablage kopiert"
 }

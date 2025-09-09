@@ -1,0 +1,57 @@
+subsector,methodology_id,methodology_name,methodology_status,fuel_type,covered_json,values_available_from_ipcc,co2_global_api,ch4_global_api,n2o_global_api,units_in_GlobalAPI,co2_gwp,ch4_gwp,n2o_gwp,total_fuel_value,total_fuel_units,Final_emissions_CO2e_manually_tonnes,Final_emissions_CO2e_prod_tonnes,Related_Bugs,Final_emissions_CO2e_manually_dev,difference_between_manual_calculation_and_dev_tonnes
+I.1.1,fuel-combustion-residential-buildings-methodology,fuel-consumption,Active,fuel-type-natural-gas,yes,yes,2.244,0.0002,4.00E-06,kg/m3,1,28,265,100,m3,0.23,0.52,,0.23,0.00
+I.1.1,fuel-combustion-residential-buildings-methodology,fuel-consumption,Active,fuel-type-charcoal,yes,yes,1190.56,2.126,0.01063,kg/m3,1,28,265,100,m3,125.29,125.55,ON-4284,125.29,0.00
+I.1.1,fuel-combustion-residential-buildings-methodology,fuel-consumption,Active,fuel-type-charcoal,yes,yes,3.304,0.0059,2.95E-05,kg/kg,1,28,265,100,kg,0.35,0.5,,still not working - value displayed is for kg/m3,
+I.1.1,fuel-combustion-residential-buildings-methodology,fuel-consumption,Active,fuel-type-liquefied-petroleum-gases,yes,yes,1617.884,0.1282,0.002564,kg/m3,1,28,265,100,m3,162.22,162.42,,162.22,0.00
+I.1.1,fuel-combustion-residential-buildings-methodology,fuel-consumption,Active,fuel-type-peat,yes,yes,1.6536,0.00468,2.18E-05,kg/kg,1,28,265,100,kg,0.18,NA,,value isn't display in the form,
+I.1.1,fuel-combustion-residential-buildings-methodology,fuel-consumption,Active,fuel-type-anthracite,yes,yes,2.62460999999999,0.00801,4.01E-05,kg/kg,1,28,265,100,kg,0.29,NA,,value isn't display in the form,
+I.1.1,fuel-combustion-residential-buildings-methodology,fuel-consumption,Active,fuel-type-gasoline,yes,yes,2414.412,0.3484,0.020904,kg/m3,1,28,265,100,m3,242.97,243.22,,242.97,0.00
+I.1.1,fuel-combustion-residential-buildings-methodology,fuel-consumption,Active,fuel-type-firewood,yes,yes,1.74719999999999,0.00468,6.24E-05,kg/kg,1,28,265,100,kg,0.19,NA,,,
+I.2.1,fuel-combustion-commercial-buildings-methodology,fuel-consumption,Active,fuel-type-wood-wood-waste,yes,yes,2.276848,0.0060987,8.13E-05,kg/kg,1,28,265,100,kg,0.25,NA,,NA,
+I.2.1,fuel-combustion-commercial-buildings-methodology,fuel-consumption,Active,fuel-type-natural-gas,yes,yes,2.244,0.0002,4.00E-06,kg/m3,1,28,265,100,m3,0.23,0.52,,0.23,0.00
+I.2.1,fuel-combustion-commercial-buildings-methodology,fuel-consumption,Active,fuel-type-liquefied-petroleum-gases,yes,yes,1617.884,0.1282,0.002564,kg/m3,1,28,265,100,m3,162.22,162.42,,162.22,0.00
+I.2.1,fuel-combustion-commercial-buildings-methodology,fuel-consumption,Active,fuel-type-anthracite,yes,yes,2.62460999999999,0.000267,4.01E-05,kg/kg,1,28,265,100,kg,0.26,NA,,NA,
+I.2.1,fuel-combustion-commercial-buildings-methodology,fuel-consumption,Active,fuel-type-gasoline,yes,yes,2414.412,0.3484,0.020904,kg/m3,1,28,265,100,m3,242.97,243.22,,242.97,0.00
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-anthracite,yes,yes,2.62460999999999,0.000267,4.01E-05,kg/kg,1,28,265,100,kg,0.26,NA,,,
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-sub-bituminous-coal,yes,yes,1.81629,0.000188999999999999,2.83E-05,kg/kg,1,28,265,100,kg,0.18,NA,,,
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-lignite,yes,yes,1.2019,0.000118999999999999,1.79E-05,kg/kg,1,28,265,100,kg,0.12,NA,,,
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-coking-coal,yes,yes,2273.238,0.240299999999999,0.036045,kg/m3,1,28,265,100,m3,228.95,229.08,,228.95,0.00
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-coking-coal,yes,yes,2.7285478,0.00028843,4.33E-05,kg/kg,1,28,265,100,kg,0.27,NA,,,
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-natural-gas,yes,yes,2.244,4.00E-05,4.00E-06,kg/m3,1,28,265,100,m3,0.22,0.52,,0.22,0.00
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-residual-fuel-oil,yes,yes,3127.734,0.12123,0.024246,kg/m3,1,28,265,100,m3,313.76,314,,313.76,0.00
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-gas-oil,yes,yes,2883.231,0.11673,0.023346,kg/m3,1,28,265,100,m3,289.27,289.46,,289.27,0.00
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-diesel-oil,yes,yes,2852.109,0.11547,0.023094,kg/m3,1,28,265,100,m3,286.15,286.34,,286.15,0.00
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-other-kerosene,yes,yes,2519.376,0.10512,0.021024,kg/m3,1,28,265,100,m3,252.79,253.04,,252.79,0.00
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-crude-oil,yes,yes,2819.118,0.11538,0.023076,kg/m3,1,28,265,100,m3,282.85,283.04,,,
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-naphtha,yes,yes,2553.772,0.10452,0.020904,kg/m3,1,28,265,100,m3,256.22,256.48,,256.22,0.00
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-refinery-gas,yes,yes,1.99583999999999,3.46E-05,3.47E-06,kg/m3,1,28,265,100,m3,0.20,0.49,,0.2,0.00
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-coke-oven-gas,yes,yes,0.9364626,2.11E-05,2.11E-06,kg/m3,1,28,265,100,m3,0.09,0.39,,0.09,0.00
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-natural-gas-liquids,yes,yes,1517.688,0.07092,0.014184,kg/m3,1,28,265,100,m3,152.34,152.52,,152.34,0.00
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-waste-oils,yes,yes,2710.9272,1.10952,0.147936,kg/m3,1,28,265,100,m3,278.12,278.18,,278.12,0.00
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-liquefied-petroleum-gases,yes,yes,1617.884,0.02564,0.002564,kg/m3,1,28,265,100,m3,161.93,162.14,,not shown in form,
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-bitumen,yes,yes,7664.88599999999,0.284939999999999,0.056988,kg/m3,1,28,265,100,m3,768.80,768.89,,768.8,0.00
+I.3.1,fuel-combustion-manufacturing-and-construction-methodology,fuel-consumption,Active,fuel-type-bitumen,yes,yes,3.24414,0.0001206,2.41E-05,kg/kg,1,28,265,100,kg,0.33,NA,,,
+I.4.1,fuel-combustion-energy-industries-methodology,fuel-consumption,Active,fuel-type-anthracite,yes,yes,2.62460999999999,2.67E-05,4.01E-05,kg/kg,1,28,265,100,kg,0.26,NA,,,
+I.4.1,fuel-combustion-energy-industries-methodology,fuel-consumption,Active,fuel-type-sub-bituminous-coal,yes,yes,1.81629,1.89E-05,2.83E-05,kg/kg,1,28,265,100,kg,0.18,NA,,,
+I.4.1,fuel-combustion-energy-industries-methodology,fuel-consumption,Active,fuel-type-lignite,yes,yes,1.2019,1.19E-05,1.79E-05,kg/kg,1,28,265,100,kg,0.12,NA,,,
+I.4.1,fuel-combustion-energy-industries-methodology,fuel-consumption,Active,fuel-type-coking-coal,yes,yes,2.7285478,2.88E-05,4.33E-05,kg/kg,1,28,265,100,kg,0.27,NA,,,
+I.4.1,fuel-combustion-energy-industries-methodology,fuel-consumption,Active,fuel-type-coking-coal,yes,yes,2273.238,0.02403,0.036045,kg/m3,1,28,265,100,m3,228.35,228.47,,228.35,0.00
+I.4.1,fuel-combustion-energy-industries-methodology,fuel-consumption,Active,fuel-type-natural-gas,yes,yes,2.244,4.00E-05,4.00E-06,kg/m3,1,28,265,100,m3,0.22,0.52,,0.22,0.00
+I.4.1,fuel-combustion-energy-industries-methodology,fuel-consumption,Active,fuel-type-residual-fuel-oil,yes,yes,3127.734,0.12123,0.024246,kg/m3,1,28,265,100,m3,313.76,313.93,,313.76,0.00
+I.4.1,fuel-combustion-energy-industries-methodology,fuel-consumption,Active,fuel-type-crude-oil,yes,yes,2819.118,0.11538,0.023076,kg/m3,1,28,265,100,m3,282.85,283.04,,282.85,0.00
+I.4.1,fuel-combustion-energy-industries-methodology,fuel-consumption,Active,fuel-type-refinery-gas,yes,yes,1.99583999999999,3.46E-05,3.47E-06,kg/m3,1,28,265,100,m3,0.20,0.49,,0.2,0.00
+I.4.1,fuel-combustion-energy-industries-methodology,fuel-consumption,Active,fuel-type-coke-oven-gas,yes,yes,0.9364626,2.11E-05,2.11E-06,kg/m3,1,28,265,100,m3,0.09,0.39,,0.09,0.00
+I.4.1,fuel-combustion-energy-industries-methodology,fuel-consumption,Active,fuel-type-natural-gas-liquids,yes,yes,1517.688,0.07092,0.014184,kg/m3,1,28,265,100,m3,152.34,152.52,,152.34,0.00
+I.4.1,fuel-combustion-energy-industries-methodology,fuel-consumption,Active,fuel-type-jet-kerosene,yes,yes,2690.54499999999,0.112889999999999,0.0225779999999999,kg/m3,1,28,265,100,m3,269.97,270.19,,269.97,0.00
+I.5.1,fuel-combustion-agriculture-forestry-fishing-activities-methodology,fuel-consumption,Active,fuel-type-diesel-oil,yes,yes,2852.109,0.1597335,1.100814,kg/m3,1,28,265,100,m3,314.83,315.07,,314.83,0.00
+I.6.1,fuel-combustion-non-specific-sources-methodology,fuel-consumption,Active,fuel-type-gas-oil,yes,yes,2883.231,0.3891,0.023346,kg/m3,1,28,265,100,m3,290.03,290.21,,290.03,0.00
+I.6.1,fuel-combustion-non-specific-sources-methodology,fuel-consumption,Active,fuel-type-naphtha,yes,yes,2553.772,0.3484,0.020904,kg/m3,1,28,265,100,m3,256.91,257.15,,256.91,0.00
+I.6.1,fuel-combustion-non-specific-sources-methodology,fuel-consumption,Active,fuel-type-diesel-oil,yes,yes,2852.109,0.3849,0.023094,kg/m3,1,28,265,100,m3,286.90,287.1,,286.9,0.00
+I.6.1,fuel-combustion-non-specific-sources-methodology,fuel-consumption,Active,fuel-type-natural-gas,yes,yes,2.244,0.0002,4.00E-06,kg/m3,1,28,265,100,m3,0.23,0.52,,0.23,0.00
+I.6.1,fuel-combustion-non-specific-sources-methodology,fuel-consumption,Active,fuel-type-liquefied-petroleum-gases,yes,yes,1617.884,0.1282,0.002564,kg/m3,1,28,265,100,m3,162.22,162.42,,162.22,0.00
+I.6.1,fuel-combustion-non-specific-sources-methodology,fuel-consumption,Active,fuel-type-wood-wood-waste,yes,yes,2.276848,0.0060987,8.13E-05,kg/kg,1,28,265,100,kg,0.25,NA,,,
+I.6.1,fuel-combustion-non-specific-sources-methodology,fuel-consumption,Active,fuel-type-other-primary-solid-biomass,yes,yes,1.16,0.00348,4.64E-05,kg/kg,1,28,265,100,kg,0.13,NA,,,
+I.6.1,fuel-combustion-non-specific-sources-methodology,fuel-consumption,Active,fuel-type-charcoal,yes,yes,3.304,0.0059,2.95E-05,kg/kg,1,28,265,100,kg,0.35,NA,,,
+I.6.1,fuel-combustion-non-specific-sources-methodology,fuel-consumption,Active,fuel-type-charcoal,yes,yes,1190.56,2.126,0.01063,kg/m3,1,28,265,100,m3,125.29,125.55,ON-4284,125.29,0.00
+I.6.1,fuel-combustion-non-specific-sources-methodology,fuel-consumption,Active,fuel-type-peat,yes,yes,1.6536,0.00468,2.18E-05,kg/kg,1,28,265,100,kg,0.18,NA,,,
+I.2.1,fuel-combustion-commercial-buildings-methodology,fuel-consumption,Active,fuel-type-firewood,yes,yes,1.74719999999999,0.00468,6.24E-05,kg/kg,1,28,265,100,kg,0.19,NA,,NA,

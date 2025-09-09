@@ -151,5 +151,19 @@
   "confirm-remove-city-user": "Êtes-vous sûr de vouloir supprimer l'utilisateur avec l'email : <bold>{{email}}</bold> de <bold>{{cityName}}</bold>",
   "confirm-org-admin-delete": "Êtes-vous sûr de vouloir supprimer le propriétaire de l'organisation avec l'e-mail : <bold>{{email}}</bold> de <bold>{{orgName}}</bold> ?",
   "user-removed": "Utilisateur supprimé avec succès",
-  "preferred-language": "Langue préférée"
+  "preferred-language": "Langue préférée",
+  "my-apps": "Mes Applications",
+  "my-apps-sub-title": "Applications qui ont accès à mes données",
+  "no-apps": "Aucune application autorisée.",
+  "my-apps-revoke-confirm": "Révoquer l'accès pour cette application ?",
+  "my-apps-revoke-success": "Accès révoqué avec succès",
+  "my-apps-revoke-error": "Erreur lors de la révocation de l'accès",
+  "success": "Succès",
+  "error": "Erreur",
+  "my-apps-no-name": "(Sans nom)",
+  "my-apps-no-description": "(Aucune description)",
+  "my-apps-authorized-on": "Autorisé sur",
+  "my-apps-last-used": "Dernière utilisation",
+  "my-apps-never": "(Jamais)",
+  "my-apps-error-loading-apps": "Erreur de chargement des applications."
 }

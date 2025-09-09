@@ -55,6 +55,7 @@ import {
   Client,
   LangMap,
   PermissionCheckResponse,
+  Authz,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -63,6 +64,7 @@ import type {
   ModuleDataSummaryResponse,
   GHGInventorySummary,
   HIAPSummary,
+  CCRASummary,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -102,6 +104,8 @@ export const api = createApi({
     "Modules",
     "GHGIDashboard",
     "HiapDashboard",
+    "Authz",
+    "CCRADashboard",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -679,6 +683,11 @@ export const api = createApi({
           "InventoryValue",
           "InventoryProgress",
           "ReportResults",
+          "SubSectorValue",
+          "YearlyReportResults",
+          "InventoryValue",
+          "SectorBreakdown",
+          "Inventory",
         ],
         transformResponse: (response: { data: EmissionsFactorResponse }) =>
           response.data,
@@ -1373,6 +1382,15 @@ export const api = createApi({
         transformResponse: (response: { data: HIAPSummary }) => response.data,
         providesTags: ["CityDashboard", "Modules", "HiapDashboard"],
       }),
+      getCityCCRADashboard: builder.query<
+        CCRASummary,
+        { cityId: string; inventoryId: string }
+      >({
+        query: ({ cityId, inventoryId }) =>
+          `city/${cityId}/modules/ccra/dashboard?inventoryId=${inventoryId}`,
+        transformResponse: (response: { data: CCRASummary }) => response.data,
+        providesTags: ["CityDashboard", "Modules", "CCRADashboard"],
+      }),
       getClient: builder.query<Client, string>({
         query: (clientId: string) => `client/${clientId}/`,
         transformResponse: (response: { data: Client }) => response.data,
@@ -1459,6 +1477,18 @@ export const api = createApi({
           url: `/client/${clientId}`,
         }),
         invalidatesTags: ["Client"],
+      }),
+      getAuthzs: builder.query<Authz[], void>({
+        query: () => `/user/clients/`,
+        transformResponse: (response: { data: Authz[] }) => response.data,
+        providesTags: ["Authz"],
+      }),
+      revokeAuthz: builder.mutation<void, string>({
+        query: (clientId: string) => ({
+          method: "DELETE",
+          url: `/user/clients/${clientId}/`,
+        }),
+        invalidatesTags: ["Authz"],
       }),
     };
   },
@@ -1574,6 +1604,7 @@ export const {
   useGetCityModuleAccessQuery,
   useGetCityGHGIDashboardQuery,
   useGetCityHIAPDashboardQuery,
+  useGetCityCCRADashboardQuery,
   useGetClientQuery,
   useGenerateCodeMutation,
   useGetUserPermissionsQuery,

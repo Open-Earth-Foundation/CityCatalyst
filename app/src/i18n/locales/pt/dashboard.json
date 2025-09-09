@@ -246,5 +246,21 @@
     "goHome": "Vá para a página inicial"
   },
   "open-cc-inventories": "Inventários Abertos de CC",
-  "inventories": "Inventários"
+  "inventories": "Inventários",
+  "access-denied": "Acesso Negado",
+  "city-not-found": "Cidade Não Encontrada",
+  "access-denied-description": "Você não tem permissão para visualizar o painel desta cidade. Esta cidade pode ser privada ou você pode não fazer parte desta organização.",
+  "city-not-found-description": "O painel da cidade que você está procurando não existe ou foi movido.",
+  "possible-mistake": "Se você acha que isso é um erro",
+  "please-contact-us": "por favor entre em contato conosco",
+  "go-back": "Voltar",
+  "publish-success-title": "Publicado com Sucesso",
+  "publish-success-description": "O seu inventário foi publicado com sucesso na web.",
+  "unpublish-success-title": "Despublicado com Sucesso",
+  "unpublish-success-description": "O seu inventário foi despublicado com sucesso.",
+  "publish-error-title": "Falha ao Publicar",
+  "publish-error-description": "Houve um erro ao publicar o seu inventário. Por favor, tente novamente.",
+  "unpublish-error-title": "Falha ao Despublicar",
+  "unpublish-error-description": "Ocorreu um erro ao despublicar o seu inventário. Por favor, tente novamente.",
+  "link-copied-to-clipboard": "Link copiado para a área de transferência"
 }

@@ -260,5 +260,6 @@
   "publish-error-title": "Échec de la publication",
   "publish-error-description": "Il y a eu une erreur lors de la publication de votre inventaire. Veuillez réessayer.",
   "unpublish-error-title": "Échec de la dépublication",
-  "unpublish-error-description": "Une erreur s'est produite lors de la dépublication de votre inventaire. Veuillez réessayer."
+  "unpublish-error-description": "Une erreur s'est produite lors de la dépublication de votre inventaire. Veuillez réessayer.",
+  "link-copied-to-clipboard": "Lien copié dans le presse-papiers"
 }

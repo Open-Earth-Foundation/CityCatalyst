@@ -260,5 +260,6 @@
   "publish-error-title": "Veröffentlichung fehlgeschlagen",
   "publish-error-description": "Es gab einen Fehler beim Veröffentlichen Ihres Inventars. Bitte versuchen Sie es erneut.",
   "unpublish-error-title": "Fehler beim Zurückziehen",
-  "unpublish-error-description": "Es gab einen Fehler beim Zurückziehen Ihres Inventars. Bitte versuchen Sie es erneut."
+  "unpublish-error-description": "Es gab einen Fehler beim Zurückziehen Ihres Inventars. Bitte versuchen Sie es erneut.",
+  "link-copied-to-clipboard": "Link in die Zwischenablage kopiert"
 }

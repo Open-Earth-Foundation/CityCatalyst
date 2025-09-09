@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { H } from "@highlight-run/next/client";
 import { useSession } from "next-auth/react";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
@@ -10,14 +9,22 @@ export default function HighlightIdentifier() {
 
   useEffect(() => {
     if (
+      process.env.NODE_ENV !== "test" &&
       hasFeatureFlag(FeatureFlags.HIGHLIGHT_ENABLED) &&
       session?.user?.email
     ) {
-      H.identify(session.user.email, {
-        id: session.user.id,
-      });
+      // Dynamically import Highlight to avoid issues in test environment
+      import("@highlight-run/next/client")
+        .then(({ H }) => {
+          H.identify(session.user.email, {
+            id: session.user.id,
+          });
+        })
+        .catch((error) => {
+          console.warn("Failed to load Highlight client:", error);
+        });
     }
-  }, [session, FeatureFlags.HIGHLIGHT_ENABLED]);
+  }, [session]);
 
   return null;
 }

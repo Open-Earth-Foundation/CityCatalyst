@@ -26,7 +26,9 @@ export default function RootLayout(props: {
   params: Promise<{ lng: string }>;
 }) {
   const { lng } = use(props.params);
-  const isHighlightEnabled = hasFeatureFlag(FeatureFlags.HIGHLIGHT_ENABLED);
+  const isHighlightEnabled =
+    process.env.NODE_ENV !== "test" &&
+    hasFeatureFlag(FeatureFlags.HIGHLIGHT_ENABLED);
 
   return (
     <>

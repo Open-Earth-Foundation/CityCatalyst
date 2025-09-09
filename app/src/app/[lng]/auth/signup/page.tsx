@@ -119,6 +119,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           name: userData.user.name,
           preferredLanguage: userData.user.preferredLanguage,
           role: userData.user.role,
+          email: userData.user.email,
         });
         router.push(callbackUrl ?? getDashboardPath(lng));
       } else {

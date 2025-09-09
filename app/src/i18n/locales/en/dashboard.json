@@ -257,6 +257,7 @@
   "publish-success-description": "Your inventory has been successfully published to the web.",
   "unpublish-success-title": "Unpublished Successfully",
   "unpublish-success-description": "Your inventory has been successfully unpublished.",
+  "link-copied-to-clipboard": "Link copied to clipboard",
   "publish-error-title": "Publishing Failed",
   "publish-error-description": "There was an error publishing your inventory. Please try again.",
   "unpublish-error-title": "Unpublishing Failed",

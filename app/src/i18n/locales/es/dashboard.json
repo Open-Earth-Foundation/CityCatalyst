@@ -248,5 +248,21 @@
     "goHome": "Ir a la página de inicio"
   },
   "open-cc-inventories": "Inventarios Abiertos de CC",
-  "inventories": "Inventarios"
+  "inventories": "Inventarios",
+  "access-denied": "Acceso Denegado",
+  "city-not-found": "Ciudad No Encontrada",
+  "access-denied-description": "No tienes permiso para ver el panel de control de esta ciudad. Esta ciudad puede ser privada o es posible que no seas parte de esta organización.",
+  "city-not-found-description": "El panel de control de la ciudad que estás buscando no existe o ha sido trasladado.",
+  "possible-mistake": "Si crees que esto es un error",
+  "please-contact-us": "por favor contáctenos",
+  "go-back": "Regresar",
+  "publish-success-title": "Publicado con Éxito",
+  "publish-success-description": "Su inventario se ha publicado con éxito en la web.",
+  "unpublish-success-title": "Despublicado Exitosamente",
+  "unpublish-success-description": "Tu inventario ha sido retirado con éxito.",
+  "publish-error-title": "Falló la Publicación",
+  "publish-error-description": "Hubo un error al publicar tu inventario. Por favor, inténtalo de nuevo.",
+  "unpublish-error-title": "Error al Despublicar",
+  "unpublish-error-description": "Hubo un error al despublicar tu inventario. Por favor, inténtalo de nuevo.",
+  "link-copied-to-clipboard": "Enlace copiado al portapapeles"
 }

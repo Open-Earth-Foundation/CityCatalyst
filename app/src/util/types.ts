@@ -732,6 +732,18 @@ export interface DashboardResponseType {
   };
 }
 
+export interface Authz {
+  clientId: string;
+  userId: string;
+  lastUsed: string | null;
+  created: string;
+  client: {
+    redirectUri: string;
+    name: LangMap;
+    description: LangMap;
+  };
+}
+
 export interface RiskAssessment {
   hazard: string;
   keyimpact: string;

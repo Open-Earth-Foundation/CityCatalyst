@@ -17,6 +17,7 @@ import { Roles } from "@/util/types";
 import jwt from "jsonwebtoken";
 import { FeatureFlags, hasFeatureFlag } from "./feature-flags";
 import { OAuthClient } from "@/models/OAuthClient";
+import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 
 export type ApiResponse = NextResponse | StreamingTextResponse;
 
@@ -214,6 +215,15 @@ export function apiHandler(handler: NextHandler) {
         const client = await OAuthClient.findByPk(token.client_id);
         if (!client) {
           throw new createHttpError.Unauthorized("Invalid client");
+        }
+        const authz = await OAuthClientAuthz.findOne({
+          where: {
+            clientId: token.client_id,
+            userId: token.sub
+          }
+        });
+        if (!authz) {
+          throw new createHttpError.Unauthorized("Authorization revoked");
         }
         const scopes = token.scope.split(" ");
         if (req.method in ["GET", "HEAD"] && !("read" in scopes)) {

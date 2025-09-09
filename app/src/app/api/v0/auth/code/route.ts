@@ -9,6 +9,7 @@ import { OAuthClient } from "@/models/OAuthClient";
 import { Client, LangMap } from "@/util/types";
 import crypto from "node:crypto";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 
 const CODE_EXPIRY = 5 * 60;
 
@@ -64,6 +65,12 @@ export const POST = apiHandler(async (_req, { params, session }) => {
   }
 
   const origin = process.env.HOST || (new URL(_req.url)).origin;
+
+  await OAuthClientAuthz.upsert({
+    clientId,
+    userId: session.user.id,
+    lastUsed: new Date()
+  });
 
   const code = jwt.sign(
     {

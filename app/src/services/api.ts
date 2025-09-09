@@ -679,6 +679,11 @@ export const api = createApi({
           "InventoryValue",
           "InventoryProgress",
           "ReportResults",
+          "SubSectorValue",
+          "YearlyReportResults",
+          "InventoryValue",
+          "SectorBreakdown",
+          "Inventory",
         ],
         transformResponse: (response: { data: EmissionsFactorResponse }) =>
           response.data,

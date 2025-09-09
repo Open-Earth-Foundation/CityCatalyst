@@ -99,6 +99,12 @@
     "ghg_reduction": "GHG Reduction",
     "climate_resilience": "Climate Resilience"
   },
+<<<<<<< HEAD
   "top-actions-tip": "Your top actions list is based on your current inventory progress. We recommend completing it before using this module.",
   "climate-actions-title": "Climate actions"
+=======
+  "actions": "Actions",
+  "open-cc-actions": "Open CC Actions",
+  "top-climate-actions": "Top High-Impact Actions"
+>>>>>>> develop
 }

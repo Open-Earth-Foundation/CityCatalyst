@@ -100,6 +100,12 @@
   "stationary-energy": "Stationäre Energie",
   "waste": "Abfall",
   "low": "Niedrig",
+<<<<<<< HEAD
   "top-actions-tip": "Ihre Top-Aktionsliste basiert auf Ihrem aktuellen Inventar-Fortschritt. Wir empfehlen, es vor der Verwendung dieses Moduls zu vervollständigen.",
   "climate-actions-title": "Klimaschutzmaßnahmen"
+=======
+  "actions": "Maßnahmen",
+  "open-cc-actions": "Öffne CC-Aktionen",
+  "top-climate-actions": "Top Hochwirksame Maßnahmen"
+>>>>>>> develop
 }

@@ -1,50 +1,93 @@
 import React from "react";
-import { Card, Text, HStack, Box, Heading, Link } from "@chakra-ui/react";
-import { DashboardWidgetProps } from "./types";
+import { Text, HStack, Box, Heading } from "@chakra-ui/react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/i18n/client";
 import EmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsWidget";
 import TopEmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/TopEmissionsWidget";
-import { BlueSubtitle } from "../Texts/BlueSubtitle";
 import { Trans } from "react-i18next";
-import { useGetCityPopulationQuery } from "@/services/api";
+import {
+  useGetCityPopulationQuery,
+  useGetCityGHGIDashboardQuery,
+} from "@/services/api";
 import { MdOpenInNew } from "react-icons/md";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 
-export const GHGIWidget: React.FC<DashboardWidgetProps> = ({
-  moduleId,
+interface GHGIWidgetProps {
+  cityId: string;
+  lng: string;
+  inventoryId: string;
+  onVisibilityChange?: (hasContent: boolean) => void;
+  isPublic?: boolean;
+}
+
+export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
   cityId,
-  data,
-  error,
+  lng,
+  inventoryId,
+  onVisibilityChange,
+  isPublic = false,
 }) => {
-  const { t } = useTranslation("en", "dashboard");
+  const { t } = useTranslation(lng, "dashboard");
   const router = useRouter();
 
+  // Fetch GHGI dashboard data
+  const {
+    data: ghgiData,
+    isLoading,
+    error,
+  } = useGetCityGHGIDashboardQuery({ cityId, inventoryId });
   const { data: population } = useGetCityPopulationQuery(
-    { cityId: cityId as string, year: data?.year as number },
-    { skip: !cityId || !data?.year },
+    { cityId: cityId, year: ghgiData?.year as number },
+    { skip: !cityId || !ghgiData?.year },
   );
+
+  const hasContent =
+    ghgiData &&
+    ghgiData.inventory &&
+    ghgiData.totalEmissions?.total &&
+    ghgiData.totalEmissions.total > 0;
+
+  React.useEffect(() => {
+    if (!isLoading) {
+      onVisibilityChange?.(!!hasContent);
+    }
+  }, [hasContent, isLoading, onVisibilityChange]);
+
+  if (isLoading) {
+    return (
+      <Box w="full" p="24px">
+        <Skeleton height="200px" borderRadius="8px" />
+      </Box>
+    );
+  }
+
+  if (error || !hasContent) {
+    return null;
+  }
 
   return (
     <Box w="full">
       <HStack justifyContent="space-between" mb={2}>
         <Text color="content.link">{t("inventories")}</Text>
-        <Button
-          onClick={() => {
-            router.push(`/cities/${cityId}/GHGI`);
-          }}
-          variant="outline"
-          borderColor="border.neutral"
-          color="content.primary"
-        >
-          <Text>{t("open-cc-inventories")}</Text>
-          <MdOpenInNew />
-        </Button>
+        {!isPublic && (
+          <Button
+            onClick={() => {
+              router.push(`/cities/${cityId}/GHGI`);
+            }}
+            variant="outline"
+            borderColor="border.neutral"
+            color="content.primary"
+          >
+            <Text>{t("open-cc-inventories")}</Text>
+            <MdOpenInNew />
+          </Button>
+        )}
       </HStack>
       <Heading fontSize="headline.sm" fontWeight="semibold" lineHeight="32">
         <Trans
           i18nKey="sector-emissions-in"
-          values={{ year: data?.year || "N/A" }}
+          values={{ year: ghgiData?.year || "N/A" }}
           t={t}
         ></Trans>
       </Heading>
@@ -56,23 +99,21 @@ export const GHGIWidget: React.FC<DashboardWidgetProps> = ({
       >
         {t("see-your-citys-emissions")}
       </Text>
-      {data?.inventory ? (
-        <HStack alignItems="start" mt={12} gap={4}>
-          <EmissionsWidget
-            t={t}
-            inventory={{
-              ...data?.inventory,
-              totalEmissions: Number(data?.totalEmissions.total) || 0,
-            }}
-            population={population}
-          />
-          <TopEmissionsWidget
-            t={t}
-            inventory={data?.inventory}
-            isPublic={data?.inventory.isPublic || false}
-          />
-        </HStack>
-      ) : null}
+      <HStack alignItems="start" mt={12} gap={4}>
+        <EmissionsWidget
+          t={t}
+          inventory={{
+            ...ghgiData.inventory,
+            totalEmissions: Number(ghgiData.totalEmissions.total) || 0,
+          }}
+          population={population}
+        />
+        <TopEmissionsWidget
+          t={t}
+          inventory={ghgiData.inventory}
+          isPublic={ghgiData.inventory.isPublic || false}
+        />
+      </HStack>
     </Box>
   );
 };

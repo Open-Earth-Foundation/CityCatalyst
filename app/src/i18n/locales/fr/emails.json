@@ -187,5 +187,17 @@
     "footer-2": "Faisons travailler les données climatiques locales plus dur, ensemble.",
     "footer-3": "L'équipe CityCatalyst",
     "footer": "Open Earth Foundation est une organisation à but non lucratif de Californie, USA. EIN : 85-3261449"
+  },
+  "hiap-ranking-ready": {
+    "subject": "Catalyseur de Ville - HIAP Classement Prêt",
+    "preview": "CityCatalyst : Classement HIAP Prêt",
+    "brand": "CityCatalyst",
+    "title": "Vos actions d'atténuation sont prêtes !",
+    "cta": "Accédez à vos actions",
+    "greeting": "Salut {{name}},",
+    "message": "L'inventaire des gaz à effet de serre de votre ville a été traité, et nous avons identifié les 20 principales actions d'atténuation adaptées à votre ville. Ces actions soutiendront votre parcours vers un avenir à faible émission de carbone.",
+    "message2": "Vous pouvez désormais visualiser et explorer ces actions via la plateforme CityCatalyst.",
+    "message3": "Cliquez sur le bouton ci-dessous pour accéder à votre tableau d'actions d'atténuation — cette page personnalisée contient des actions détaillées que votre ville peut entreprendre pour réduire les émissions et renforcer la résilience climatique.",
+    "footer": "Open Earth Foundation est une organisation à but non lucratif de bienfaisance publique de Californie, USA. EIN : 85-3261449"
   }
 }

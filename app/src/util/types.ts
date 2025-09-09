@@ -663,6 +663,7 @@ export enum UserRole {
   ORG_ADMIN = "ORG_ADMIN",
   PROJECT_ADMIN = "PROJECT_ADMIN",
   COLLABORATOR = "COLLABORATOR",
+  PUBLIC_READER = "PUBLIC_READER",
   NO_ACCESS = "NO_ACCESS",
 }
 
@@ -678,6 +679,18 @@ export interface PermissionCheckResponse {
     cityId?: string;
     inventoryId?: string;
   };
+}
+
+export interface HIAPSummary {
+  mitigation: {
+    id: string;
+    rankedActions: HIAction[];
+  };
+  adaptation: {
+    id: string;
+    rankedActions: HIAction[];
+  };
+  inventoryId: string;
 }
 
 export interface GHGInventorySummary {

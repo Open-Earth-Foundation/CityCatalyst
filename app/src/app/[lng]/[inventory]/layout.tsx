@@ -1,61 +1,14 @@
 "use client";
 
-import ChatPopover from "@/components/ChatBot/chat-popover";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
-import {
-  api,
-  useGetOrganizationForInventoryQuery,
-  useGetUserQuery,
-} from "@/services/api";
-import ProgressLoader from "@/components/ProgressLoader";
-import { useEffect, use } from "react";
-import { useTheme } from "next-themes";
-import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { useParams } from "next/navigation";
+import { getParamValueRequired } from "@/util/helpers";
 
-export default function DataLayout(props: {
-  children: React.ReactNode;
-  params: Promise<{ lng: string; inventory: string }>;
-}) {
-  const { lng, inventory } = use(props.params);
+export default function DataLayout(props: { children: React.ReactNode }) {
   const { children } = props;
-
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
-
-  let inventoryId: string | null;
-  if (inventory && inventory !== "null") {
-    inventoryId = inventory;
-  } else {
-    inventoryId = userInfo?.defaultInventoryId ?? null;
-  }
-
-  const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
-    useGetOrganizationForInventoryQuery(inventoryId!, {
-      skip: !inventoryId,
-    });
-
-  const { organization, setOrganization } = useOrganizationContext();
-  const { setTheme } = useTheme();
-
-  useEffect(() => {
-    if (inventoryOrgData) {
-      const logoUrl = inventoryOrgData?.logoUrl ?? null;
-      const active = inventoryOrgData?.active ?? true;
-
-      if (organization?.logoUrl !== logoUrl || organization?.active !== active) {
-        setOrganization({ logoUrl, active });
-      }
-      setTheme(inventoryOrgData?.theme?.themeKey ?? ("blue_theme" as string));
-    } else {
-      setTheme("blue_theme");
-    }
-  }, [isInventoryOrgDataLoading, inventoryOrgData, setOrganization, setTheme]);
-
-  if (isInventoryOrgDataLoading || isUserInfoLoading) {
-    return <ProgressLoader />;
-  }
+  const params = useParams();
 
   return (
     <Box
@@ -64,12 +17,11 @@ export default function DataLayout(props: {
       flexDirection="column"
       bg="background.backgroundLight"
     >
-      <NavigationBar showMenu lng={lng} />
+      <NavigationBar showMenu lng={getParamValueRequired(params.lng)} />
       <Toaster />
       <Box w="full" h="full">
         {children}
       </Box>
-      <ChatPopover inventoryId={inventory} />
     </Box>
   );
 }

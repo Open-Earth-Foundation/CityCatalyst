@@ -27,14 +27,14 @@ import {
   ColumnDef,
   Row,
 } from "@tanstack/react-table";
-import { ActionDrawer } from "./ActionDrawer";
+import { ActionDrawer } from "@/components/ActionDrawer";
 import { useGetHiapQuery } from "@/services/api";
 import { logger } from "@/services/logger";
 import { HighImpactActionRankingStatus } from "@/util/types";
 import ClimateActionsEmptyState from "./ClimateActionsEmptyState";
 import ActionPlanSection from "./ActionPlanSection";
 
-export const BarVisualization = ({
+const BarVisualization = ({
   value,
   total,
   width = "16px",
@@ -112,7 +112,7 @@ export function HiapTab({
             header: t("hazards-covered"),
             cell: ({ row }: { row: Row<HIAction> }) => {
               const action = row.original as AdaptationAction;
-              const hazardCount = action.hazards.length;
+              const hazardCount = action.hazards?.length || 0;
               return (
                 <Badge colorScheme="orange">
                   {hazardCount} {t("hazards")}

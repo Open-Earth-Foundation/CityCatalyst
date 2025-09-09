@@ -99,6 +99,12 @@
   "stationary-energy": "Energia estacionária",
   "waste": "Resíduos",
   "low": "Baixo",
+<<<<<<< HEAD
   "top-actions-tip": "Sua lista de principais ações é baseada no progresso atual do seu inventário. Recomendamos completá-lo antes de usar este módulo.",
   "climate-actions-title": "Ações climáticas"
+=======
+  "actions": "Ações",
+  "open-cc-actions": "Ações Abertas do CC",
+  "top-climate-actions": "Principais Ações de Alto Impacto"
+>>>>>>> develop
 }

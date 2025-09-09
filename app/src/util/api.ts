@@ -195,11 +195,14 @@ export function apiHandler(handler: NextHandler) {
     let session: AppSession | null = null;
     let error: Error | null = null;
 
-    // Start Highlight tracing
-    const { span } = H.startWithHeaders("api-request", {
-      method: req.method,
-      path: new URL(req.url).pathname,
-    });
+    // Start Highlight tracing (skip in test environment)
+    let span;
+    if (process.env.NODE_ENV !== "test" && H) {
+      span = H.startWithHeaders("api-request", {
+        method: req.method,
+        path: new URL(req.url).pathname,
+      }).span;
+    }
 
     try {
       if (!db.initialized) {
@@ -215,7 +218,7 @@ export function apiHandler(handler: NextHandler) {
             "Invalid or expired access token",
           );
         }
-        const origin = process.env.HOST || (new URL(req.url)).origin
+        const origin = process.env.HOST || new URL(req.url).origin;
         if (token.aud !== origin) {
           throw new createHttpError.Unauthorized("Wrong server for token");
         }
@@ -245,7 +248,7 @@ export function apiHandler(handler: NextHandler) {
       });
 
       if (orgContextCheckResult) {
-        span.end();
+        span?.end();
         return orgContextCheckResult;
       }
 
@@ -262,7 +265,7 @@ export function apiHandler(handler: NextHandler) {
       result = errorHandler(err, req);
 
       // Record error in the span
-      span.recordException(error);
+      span?.recordException(error);
     }
 
     const duration = Date.now() - startTime;
@@ -276,7 +279,7 @@ export function apiHandler(handler: NextHandler) {
     };
 
     // Add attributes to the span
-    span.setAttributes({
+    span?.setAttributes({
       "api.status": result.status,
       "api.duration": duration,
       "api.user": session?.user?.email || "anonymous",
@@ -290,7 +293,7 @@ export function apiHandler(handler: NextHandler) {
       logger.info(record);
     }
 
-    span.end();
+    span?.end();
     return result;
   };
 }

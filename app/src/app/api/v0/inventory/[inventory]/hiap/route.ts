@@ -24,10 +24,15 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
   }
 
   try {
-    const data = await fetchRanking(params.inventory, type, lng);
-    return Response.json({data});
+    const data = await fetchRanking(params.inventory, type, lng, session);
+    return Response.json({ data });
   } catch (error) {
-    logger.error("Error fetching HIAP data:", { err: error, inventory: params.inventory, type, lng });
+    logger.error("Error fetching HIAP data:", {
+      err: error,
+      inventory: params.inventory,
+      type,
+      lng,
+    });
     throw new Error(
       `Failed to fetch HIAP data for city ${inventory.city.locode}: ${(error as Error).message}`,
       { cause: error },

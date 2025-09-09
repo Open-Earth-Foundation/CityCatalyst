@@ -18,7 +18,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { forwardRef, useState, use } from "react";
 import { MdArrowBack, MdChevronRight, MdOutlineHomeWork } from "react-icons/md";
 import {
@@ -65,10 +65,11 @@ function SubSectorPage(props: {
   const { lng, step, inventory: inventoryId, subsector } = use(props.params);
 
   const router = useRouter();
+  const pathname = usePathname();
   const { t } = useTranslation(lng, "data");
   const { scrollY } = useScroll();
   const { organization } = useOrganizationContext();
-  const paddingTopMax = organization.active ? "100px" : "150px";
+  const paddingTopMax = organization?.active ? "100px" : "150px";
   const paddingTop = useTransform(scrollY, [0, 100], [paddingTopMax, "50px"], {
     ease: easeInOut,
   });
@@ -254,24 +255,20 @@ function SubSectorPage(props: {
                       <Icon as={MdChevronRight} color="gray.500" h="24px" />
                     }
                   >
-                    <BreadcrumbItem>
-                      <BreadcrumbLink
-                        href={`/${inventoryId}/data`}
-                        color="content.tertiary"
-                        truncate
-                      >
-                        {t("all-sectors")}
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbItem>
-                      <BreadcrumbLink
-                        href={`/${inventoryId}/data/${step}`}
-                        color="content.tertiary"
-                        truncate
-                      >
-                        {t(getSectorName(step))}
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
+                    <BreadcrumbLink
+                      href={pathname.replace(`/${step}/${subsector}`, "")}
+                      color="content.tertiary"
+                      truncate
+                    >
+                      {t("all-sectors")}
+                    </BreadcrumbLink>
+                    <BreadcrumbLink
+                      href={pathname.replace(`/${subsector}`, "")}
+                      color="content.tertiary"
+                      truncate
+                    >
+                      {t(getSectorName(step))}
+                    </BreadcrumbLink>
                     <BreadcrumbCurrentLink
                       color="content.link"
                       textDecoration="underline"
@@ -305,7 +302,7 @@ function SubSectorPage(props: {
                   }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
-                  <Link href={`/${inventoryId}/data/${step}`}>
+                  <Link href={pathname.replace(`/${subsector}`, "")}>
                     <Icon
                       as={MdArrowBack}
                       h="24px"

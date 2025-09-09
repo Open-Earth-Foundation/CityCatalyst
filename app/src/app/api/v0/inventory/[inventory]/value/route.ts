@@ -1,5 +1,6 @@
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { db } from "@/models";
+import { Inventory } from "@/models/Inventory";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
@@ -14,10 +15,12 @@ export const GET = apiHandler(async (req, { params, session }) => {
   }
   const subCategoryIds = subCategoryIdsParam.split(",");
 
-  const { resource: inventory } = await PermissionService.canEditInventory(
+  const { resource } = await PermissionService.canEditInventory(
     session,
     params.inventory
   );
+
+  const inventory = resource as Inventory;
 
   const inventoryValues = await db.models.InventoryValue.findAll({
     where: {

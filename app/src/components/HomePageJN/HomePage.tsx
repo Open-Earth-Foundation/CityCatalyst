@@ -27,7 +27,9 @@ import { Hero } from "./Hero";
 import { ActionCards } from "./ActionCards";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { HeadlineMedium } from "@/components/Texts/Headline";
+import { useResourceValidation } from "@/hooks/useResourceValidation";
 import {
   AccordionRoot,
   AccordionItem,
@@ -39,7 +41,7 @@ import { BodyLarge } from "@/components/Texts/Body";
 import { TitleLarge } from "@/components/Texts/Title";
 import { LuChevronDown } from "react-icons/lu";
 import { NoModulesCard } from "./NoModulesCard";
-import { StageNames } from "@/util/constants";
+import { Modules } from "@/util/constants";
 import { stageOrder } from "@/config/stages";
 
 export default function HomePage({
@@ -118,7 +120,10 @@ export default function HomePage({
       const logoUrl = orgData?.logoUrl ?? null;
       const active = orgData?.active ?? true;
 
-      if (organization.logoUrl !== logoUrl || organization.active !== active) {
+      if (
+        organization?.logoUrl !== logoUrl ||
+        organization?.active !== active
+      ) {
         setOrganization({ logoUrl, active });
       }
       setTheme(orgData?.theme?.themeKey ?? "blue_theme");
@@ -127,13 +132,27 @@ export default function HomePage({
     }
   }, [isOrgDataLoading, orgData, setTheme]);
 
+  // Handle invalid city ID - redirect to default city or onboarding
+  const { shouldRender: shouldRenderCity } = useResourceValidation({
+    resourceId: cityIdFromParam,
+    resourceQuery: { data: city, error: cityError, isLoading: isCityLoading },
+    lng,
+    resourceType: "city",
+  });
+
   if (
     isOrgDataLoading ||
     isUserInfoLoading ||
     isAllModulesLoading ||
-    isProjectModulesLoading
+    isProjectModulesLoading ||
+    isCityLoading
   ) {
     return <ProgressLoader />;
+  }
+
+  // If city doesn't exist, don't render (will redirect)
+  if (!shouldRenderCity) {
+    return null;
   }
 
   return (
@@ -151,7 +170,12 @@ export default function HomePage({
 
           <Box display="flex" mx="auto" w="full" maxW="1090px">
             <VStack align="start" w="full">
-              <ActionCards t={t} lng={language} organization={orgData} />
+              <ActionCards
+                t={t}
+                lng={language}
+                organization={orgData}
+                city={city}
+              />
             </VStack>
           </Box>
           <Box
@@ -173,6 +197,10 @@ export default function HomePage({
               <AccordionRoot multiple>
                 {stageOrder.map((stage) => {
                   const modules = projectModules.filter((mod) => {
+                    // Filter out CCRA module unless feature flag is enabled
+                    if (mod.id === Modules.CCRA.id && !hasFeatureFlag(FeatureFlags.CCRA_MODULE)) {
+                      return false;
+                    }
                     return mod.stage === stage;
                   });
                   return (

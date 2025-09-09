@@ -19,7 +19,10 @@ import { signIn } from "next-auth/react";
 import { LANGUAGES } from "@/util/types";
 import { LanguageSelector } from "./LanguageSelector";
 import i18next from "i18next";
-import { trackEvent } from "@/lib/analytics";
+import { trackEvent, identifyUser } from "@/lib/analytics";
+import { hasFeatureFlag } from "@/util/feature-flags";
+import { FeatureFlags } from "@/util/feature-flags";
+import { getDashboardPath } from "@/util/routes";
 
 type Inputs = {
   inventory?: string;
@@ -57,7 +60,6 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   if (!callbackUrl || callbackUrl === "null" || callbackUrl === "undefined") {
     callbackUrl = undefined;
   }
-  const isUserInvite = !!callbackUrl?.includes("user/invite");
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (data.password !== data.confirmPassword) {
@@ -112,7 +114,14 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
       });
 
       if (!loginResponse?.error) {
-        router.push(callbackUrl ?? "/");
+        // Identify the user for future tracking with additional properties
+        identifyUser(userData.user.email, {
+          name: userData.user.name,
+          preferredLanguage: userData.user.preferredLanguage,
+          role: userData.user.role,
+          email: userData.user.email,
+        });
+        router.push(callbackUrl ?? getDashboardPath(lng));
       } else {
         logger.error("Failed to login", loginResponse);
         setError(t("invalid-email-password"));

@@ -80,8 +80,6 @@ describe("Emission Factor Validation Tests", () => {
 
     // Load CSV test data
     testData = await loadManualTestData();
-
-    console.log(`\n📊 Loaded ${testData.length} manual test data points`);
   });
 
   afterAll(async () => {
@@ -107,35 +105,15 @@ describe("Emission Factor Validation Tests", () => {
     const sampledData = sampleTestData(testData, SAMPLE_SIZE);
     const results: TestResult[] = [];
 
-    console.log(`\n🧪 Testing ${sampledData.length} randomly selected cases\n`);
+    // Testing cases
 
     // Run the tests and collect results
     for (let i = 0; i < sampledData.length; i++) {
       const testData = sampledData[i];
-      console.log(
-        `Test ${i + 1}/${sampledData.length}: ${testData.subsector} - ${testData.methodology_name} (${testData.fuel_type})`,
-      );
+      // Test case info
 
       const result = await performCalculationTest(testData, testInventory);
       results.push(result);
-
-      if (result.success) {
-        console.log(
-          `✅ PASS - Expected: ${result.expected}, Calculated: ${result.calculated}, Diff: ${result.difference?.toFixed(6)}`,
-        );
-      } else if (result.error && result.error.startsWith("SKIPPED:")) {
-        console.log(`⏭️  SKIPPED - ${result.error.replace("SKIPPED: ", "")}`);
-      } else {
-        console.log(`❌ FAIL - ${result.error || "Calculation mismatch"}`);
-        if (result.expected && result.calculated) {
-          console.log(
-            `   Expected: ${result.expected}, Calculated: ${result.calculated}, Diff: ${result.difference?.toFixed(6)}`,
-          );
-        }
-        console.log(
-          `   Available factors: ${result.availableFactors?.join(", ")}`,
-        );
-      }
     }
 
     // Calculate success statistics (excluding skipped tests)
@@ -150,13 +128,17 @@ describe("Emission Factor Validation Tests", () => {
     const successRate = totalValid > 0 ? (passed / totalValid) * 100 : 0;
 
     console.log(`\n📈 === FINAL RESULTS ===`);
-    console.log(`Total tests: ${results.length}`);
-    console.log(`Passed: ${passed}`);
-    console.log(`Failed: ${failed}`);
-    console.log(`Skipped: ${skipped}`);
-    console.log(`Success rate: ${successRate.toFixed(1)}% (excluding skipped)`);
+    console.log(
+      `Success rate: ${successRate.toFixed(1)}% (${passed}/${totalValid} tests passed)`,
+    );
+    if (failed > 0) {
+      console.log(`Failed: ${failed} tests`);
+    }
+    if (skipped > 0) {
+      console.log(`Skipped: ${skipped} tests`);
+    }
 
-    // Show failed test details (excluding skipped)
+    // Show failed test details for debugging
     const actualFailures = results.filter(
       (r) => !r.success && (!r.error || !r.error.startsWith("SKIPPED:")),
     );
@@ -165,19 +147,28 @@ describe("Emission Factor Validation Tests", () => {
       actualFailures.forEach((result, index) => {
         console.log(`\nFailed Test ${index + 1}:`);
         console.log(`  Subsector: ${result.testData.subsector}`);
-        console.log(`  Methodology: ${result.testData.methodology}`);
-        console.log(`  Expected: ${result.expected}`);
-        console.log(`  Calculated: ${result.calculated || "N/A"}`);
+        console.log(`  Fuel Type: Unknown`); // fuel_type not available in formatted testData
+        console.log(
+          `  Methodology: ${result.testData.methodology || "Unknown"}`,
+        );
+        console.log(`  Expected: ${result.expected} tonnes`);
+        console.log(`  Calculated: ${result.calculated || "N/A"} tonnes`);
+        if (result.difference) {
+          console.log(`  Difference: ${result.difference.toFixed(6)} tonnes`);
+          console.log(
+            `  % Difference: ${Math.abs((result.difference / result.expected) * 100).toFixed(1)}%`,
+          );
+        }
         console.log(`  Error: ${result.error || "Calculation mismatch"}`);
         if (result.calculations) {
-          console.log(`  Breakdown: ${JSON.stringify(result.calculations)}`);
+          console.log(
+            `  Calculation Details: ${JSON.stringify(result.calculations, null, 2)}`,
+          );
         }
       });
     }
 
-    // Flexible assertion - expect reasonable success rate
-    // This allows for some expected discrepancies due to different calculation methods
-    expect(successRate).toBeGreaterThanOrEqual(60); // 60% minimum success rate
+    expect(successRate).toBeGreaterThanOrEqual(100); // 50% minimum success rate
     expect(results.length).toBeGreaterThan(0); // Ensure we actually ran tests
   });
 });
@@ -204,11 +195,12 @@ async function loadManualTestData(): Promise<ManualTestData[]> {
     process.cwd(),
     "tests",
     "emission_factors_sample_data",
-    "stationary_energy_full_data.csv",
+    "stationary_energy_manual_data_v1.csv",
   );
 
   return new Promise((resolve, reject) => {
     const results: ManualTestData[] = [];
+    let totalRows = 0;
 
     fs.createReadStream(csvPath)
       .pipe(
@@ -220,10 +212,7 @@ async function loadManualTestData(): Promise<ManualTestData[]> {
       )
       .on("data", (row: any) => {
         // Skip rows with invalid data
-        if (
-          !row.subsector ||
-          !row["Final emissions CO2e (manually) (tonnes)"]
-        ) {
+        if (!row.subsector || !row["Final_emissions_CO2e_manually_tonnes"]) {
           return;
         }
 
@@ -236,17 +225,17 @@ async function loadManualTestData(): Promise<ManualTestData[]> {
               : row.methodology_name,
           methodology_status: row.methodology_status || "",
           fuel_type: row.fuel_type || "",
-          co2_global_api: parseFloat(row["CO2 Global API"]) || 0,
-          ch4_global_api: parseFloat(row["CH4 Global API"]) || 0,
-          n2o_global_api: parseFloat(row["N2O Global API"]) || 0,
-          units_in_global_api: row["units in GlobalAPI"] || "",
-          co2_gwp: parseInt(row["CO2 GWP"]) || 1,
-          ch4_gwp: parseInt(row["CH4 GWP"]) || 28,
-          n2o_gwp: parseInt(row["N2O GWP"]) || 265,
-          total_fuel_value: parseFloat(row["total fuel value"]),
-          total_fuel_units: row["total fuel units"],
+          co2_global_api: parseFloat(row["co2_global_api"]) || 0,
+          ch4_global_api: parseFloat(row["ch4_global_api"]) || 0,
+          n2o_global_api: parseFloat(row["n2o_global_api"]) || 0,
+          units_in_global_api: row["units_in_GlobalAPI"] || "",
+          co2_gwp: parseInt(row["co2_gwp"]) || 1,
+          ch4_gwp: parseInt(row["ch4_gwp"]) || 28,
+          n2o_gwp: parseInt(row["n2o_gwp"]) || 265,
+          total_fuel_value: parseFloat(row["total_fuel_value"]),
+          total_fuel_units: row["total_fuel_units"],
           expected_co2e_tonnes: parseFloat(
-            row["Final emissions CO2e (manually) (tonnes)"],
+            row["Final_emissions_CO2e_manually_tonnes"],
           ),
         });
       })
@@ -259,28 +248,8 @@ function sampleTestData(
   data: ManualTestData[],
   sampleSize: number,
 ): ManualTestData[] {
-  // Create a stratified sample to ensure we test different subsectors
-  const groupedBySubsector = data.reduce(
-    (acc, item) => {
-      if (!acc[item.subsector]) acc[item.subsector] = [];
-      acc[item.subsector].push(item);
-      return acc;
-    },
-    {} as Record<string, ManualTestData[]>,
-  );
-
-  const subsectors = Object.keys(groupedBySubsector);
-  const samplesPerSubsector = Math.ceil(sampleSize / subsectors.length);
-
-  const samples: ManualTestData[] = [];
-  for (const subsector of subsectors) {
-    const subsectorData = groupedBySubsector[subsector];
-    const shuffled = [...subsectorData].sort(() => 0.5 - Math.random());
-    samples.push(...shuffled.slice(0, samplesPerSubsector));
-  }
-
-  // Trim to exact sample size and shuffle
-  return samples.slice(0, sampleSize).sort(() => 0.5 - Math.random());
+  // Test all available data - no sampling needed
+  return data;
 }
 
 async function performCalculationTest(
@@ -346,7 +315,6 @@ async function performCalculationTest(
     };
 
     // Use the system's calculation method
-    console.log(`   🧮 Using methodology ID: ${testData.methodology_id}`);
 
     let calculationResult;
     try {
@@ -359,7 +327,7 @@ async function performCalculationTest(
     } catch (error: any) {
       // Handle missing fuel density or other calculation errors
       if (error.message && error.message.includes("Density for fuel type")) {
-        console.log(`   ⚠️  SKIPPED - ${error.message}`);
+        // Skipped due to error
         return {
           success: false,
           error: `SKIPPED: ${error.message}`,
@@ -375,28 +343,20 @@ async function performCalculationTest(
     }
 
     // Debug: Log the actual calculation result structure
-    console.log(
-      `   🔍 CalculationService result:`,
-      JSON.stringify(calculationResult, null, 2),
-    );
+    // CalculationService result
 
-    // Extract totalCO2e from the result
     let totalCO2eKg = 0;
     if (calculationResult.totalCO2e) {
       // Handle Decimal objects
       totalCO2eKg = parseFloat(calculationResult.totalCO2e.toString());
     }
 
-    console.log(`   📊 CalculationService totalCO2e: ${totalCO2eKg} kg`);
+    // CalculationService totalCO2e
 
     // Convert to tonnes for comparison
     const calculatedCO2eTonnes = totalCO2eKg / 1000;
     const expectedCO2eTonnes = testData.expected_co2e_tonnes;
     const difference = Math.abs(calculatedCO2eTonnes - expectedCO2eTonnes);
-
-    console.log(
-      `   Expected: ${expectedCO2eTonnes}, Calculated: ${calculatedCO2eTonnes}, Diff: ${difference.toFixed(6)}`,
-    );
 
     // Test should use the actual service output
     const withinTolerance = difference <= TOLERANCE;
@@ -426,17 +386,6 @@ async function performCalculationTest(
 async function createEmissionFactorsFromGlobalAPI(testData: ManualTestData) {
   const emissionFactors: any = {};
 
-  console.log(`   📊 Using Global API values from CSV:`);
-  console.log(
-    `   - CO2: ${testData.co2_global_api} ${testData.units_in_global_api}`,
-  );
-  console.log(
-    `   - CH4: ${testData.ch4_global_api} ${testData.units_in_global_api}`,
-  );
-  console.log(
-    `   - N2O: ${testData.n2o_global_api} ${testData.units_in_global_api}`,
-  );
-
   // Create emission factor objects using Global API values from CSV
   if (testData.co2_global_api > 0) {
     emissionFactors["CO2"] = {
@@ -445,9 +394,6 @@ async function createEmissionFactorsFromGlobalAPI(testData: ManualTestData) {
       units: testData.units_in_global_api,
       region: "world",
     };
-    console.log(
-      `   ✅ Created CO2 factor: ${testData.co2_global_api} ${testData.units_in_global_api}`,
-    );
   }
 
   if (testData.ch4_global_api > 0) {
@@ -457,9 +403,6 @@ async function createEmissionFactorsFromGlobalAPI(testData: ManualTestData) {
       units: testData.units_in_global_api,
       region: "world",
     };
-    console.log(
-      `   ✅ Created CH4 factor: ${testData.ch4_global_api} ${testData.units_in_global_api}`,
-    );
   }
 
   if (testData.n2o_global_api > 0) {
@@ -469,9 +412,6 @@ async function createEmissionFactorsFromGlobalAPI(testData: ManualTestData) {
       units: testData.units_in_global_api,
       region: "world",
     };
-    console.log(
-      `   ✅ Created N2O factor: ${testData.n2o_global_api} ${testData.units_in_global_api}`,
-    );
   }
 
   return { emissionFactors, queryErrors: [] };

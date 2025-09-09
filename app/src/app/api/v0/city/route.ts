@@ -9,6 +9,7 @@ import { DEFAULT_PROJECT_ID } from "@/util/constants";
 import EmailService from "@/backend/EmailService";
 import UserService from "@/backend/UserService";
 import { PermissionService } from "@/backend/permissions/PermissionService";
+import { Project } from "@/models/Project";
 
 export const POST = apiHandler(async (req, { session }) => {
   const body = createCityRequest.parse(await req.json());
@@ -24,10 +25,12 @@ export const POST = apiHandler(async (req, { session }) => {
   }
 
   // Check permission to create city in this project (ORG_ADMIN or PROJECT_ADMIN required)
-  const { resource: project } = await PermissionService.canCreateCity(
+  const { resource } = await PermissionService.canCreateCity(
     session,
     body.projectId as string,
   );
+
+  const project = resource as Project;
 
   if (!project) {
     throw new createHttpError.NotFound("Project not found");

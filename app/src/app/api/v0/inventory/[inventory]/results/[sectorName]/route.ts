@@ -1,5 +1,4 @@
 import { PermissionService } from "@/backend/permissions/PermissionService";
-import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import {

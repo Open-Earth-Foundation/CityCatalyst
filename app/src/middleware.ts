@@ -1,4 +1,5 @@
 import { fallbackLng, languages } from "@/i18n/settings";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import acceptLanguage from "accept-language";
 import { withAuth, type NextRequestWithAuth } from "next-auth/middleware";
 import type { NextMiddlewareResult } from "next/dist/server/web/types";
@@ -25,32 +26,40 @@ const excludedApi = [
   /^\/api\/v0\/auth\//,
   /^\/api\/v0\/check\//,
   /^\/api\/v0\/mock\//,
-  /^\/api\/v0\/chat\//
-]
+  /^\/api\/v0\/chat\//,
+];
 
 export async function middleware(req: NextRequestWithAuth) {
-
-  if (req.nextUrl.pathname.startsWith('/api')) {
-    if (excludedApi.some(ptrn => req.nextUrl.pathname.match(ptrn))) {
+  if (
+    req.nextUrl.pathname.startsWith("/api") ||
+    req.nextUrl.pathname.startsWith("/.well-known")
+  ) {
+    if (excludedApi.some((ptrn) => req.nextUrl.pathname.match(ptrn))) {
       return NextResponse.next();
     }
-    if (req.method === 'OPTIONS') {
+    if (req.method === "OPTIONS") {
       return new Response(null, {
         status: 200,
         headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-          'Access-Control-Max-Age': '86400', // 24 hours
-          'Access-Control-Allow-Credentials': 'false'
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Max-Age": "86400", // 24 hours
+          "Access-Control-Allow-Credentials": "false",
         },
       });
     }
     const response = NextResponse.next();
-    response.headers.set('Access-Control-Allow-Origin', '*');
-    response.headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    response.headers.set('Access-Control-Allow-Credentials', 'false');
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    response.headers.set(
+      "Access-Control-Allow-Methods",
+      "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+    );
+    response.headers.set(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization",
+    );
+    response.headers.set("Access-Control-Allow-Credentials", "false");
     return response;
   }
 
@@ -67,8 +76,13 @@ export async function middleware(req: NextRequestWithAuth) {
     lng = fallbackLng;
   }
 
-  if (req.nextUrl.pathname === `/${lng}`) {
-    return NextResponse.redirect(new URL(`/${lng}/`, req.url));
+  if ([`/${lng}`, `/${lng}/`].includes(req.nextUrl.pathname)) {
+    if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
+      return NextResponse.redirect(new URL(`/${lng}/cities/`, req.url));
+    }
+    // When JN is disabled, let the PrivateHome component handle the routing
+    // Don't redirect here to avoid infinite loops
+    return NextResponse.next();
   }
 
   // redirect for paths that don't have lng at the start

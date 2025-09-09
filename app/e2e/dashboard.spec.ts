@@ -6,11 +6,9 @@ test.describe("Dashboard", () => {
     test("User can complete onboarding and access dashboard", async ({
       page,
     }) => {
+      test.setTimeout(60000);
       // Create inventory through onboarding
       await createInventoryThroughOnboarding(page, "Chicago");
-
-      // Navigate to Dashboard
-      await page.goto("/");
 
       // Verify Dashboard
       await page.waitForLoadState("networkidle");

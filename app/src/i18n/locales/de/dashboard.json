@@ -229,7 +229,37 @@
     "assess-&-analyze": "Bewerten und Analysieren",
     "plan": "Planen",
     "implement": "Umsetzen",
-    "monitor-evaluate-&-report": "Überwachen, Bewerten und Berichten"
+    "monitor-evaluate-&-report": "Überwachen, Bewerten und Berichten",
+    "assess-&-analyze-description": "Unterstützen Sie Städte dabei, eine solide Datenbasis zu schaffen, um ihre Klimaauswirkungen und Verwundbarkeiten zu verstehen. In dieser Phase liegt der Schwerpunkt auf der Bewertung von Emissionen und Klimarisiken, um die Grundlage für eine effektive Planung zu legen.",
+    "plan-description": "Ermöglichen Sie Städten den Übergang vom Verständnis zur Strategie. Diese Phase unterstützt die Aktionsplanung und die Abstimmung der Bemühungen mit verfügbaren Finanzierungsmöglichkeiten.",
+    "implement-description": "Unterstützen Sie Städte dabei, von Plänen zur Finanzierung und Umsetzung überzugehen. Diese Phase stellt sicher, dass Ideen zu finanzierten Projekten werden, die mit den Zielen der Stadt und den Finanzierungsmechanismen übereinstimmen.",
+    "monitor-evaluate-&-report-description": "Unterstützen Sie Städte dabei, von Plänen zur Finanzierung und Umsetzung überzugehen. Diese Phase stellt sicher, dass Ideen zu finanzierten Projekten werden, die mit den Zielen der Stadt und Finanzierungsmechanismen übereinstimmen.",
+    "GHGI": "Treibhausgasinventare",
+    "HIAP": "Aktionen & Pläne",
+    "your-city-dashboard": "Dashboard Ihrer Stadt"
   },
-  "home": "Startseite"
+  "home": "Startseite",
+  "empty": {
+    "title": "Hier ist noch nichts zu sehen",
+    "description": "Sobald Ihre Module Daten zur Anzeige haben, finden Sie diese hier zusammengefasst.",
+    "goHome": "Zur Startseite gehen"
+  },
+  "open-cc-inventories": "Offene CC-Inventare",
+  "inventories": "Inventar",
+  "access-denied": "Zugriff verweigert",
+  "city-not-found": "Stadt nicht gefunden",
+  "access-denied-description": "Sie haben keine Berechtigung, das Dashboard dieser Stadt zu sehen. Diese Stadt könnte privat sein oder Sie sind möglicherweise kein Teil dieser Organisation.",
+  "city-not-found-description": "Das Stadt-Dashboard, das Sie suchen, existiert nicht oder wurde verschoben.",
+  "possible-mistake": "Wenn Sie denken, dass dies ein Fehler ist",
+  "please-contact-us": "bitte kontaktieren Sie uns",
+  "go-back": "Geh Zurück",
+  "publish-success-title": "Erfolgreich veröffentlicht",
+  "publish-success-description": "Ihr Inventar wurde erfolgreich im Web veröffentlicht.",
+  "unpublish-success-title": "Erfolgreich Unveröffentlicht",
+  "unpublish-success-description": "Ihr Inventar wurde erfolgreich zurückgezogen.",
+  "publish-error-title": "Veröffentlichung fehlgeschlagen",
+  "publish-error-description": "Es gab einen Fehler beim Veröffentlichen Ihres Inventars. Bitte versuchen Sie es erneut.",
+  "unpublish-error-title": "Fehler beim Zurückziehen",
+  "unpublish-error-description": "Es gab einen Fehler beim Zurückziehen Ihres Inventars. Bitte versuchen Sie es erneut.",
+  "link-copied-to-clipboard": "Link in die Zwischenablage kopiert"
 }

@@ -21,7 +21,7 @@ export function useUserPermissions(params: UseUserPermissionsParams) {
       cityId: params.cityId,
       inventoryId: params.inventoryId,
     },
-    { skip: params.skip }
+    { skip: params.skip },
   );
 
   const userRole = data?.userRole || UserRole.NO_ACCESS;
@@ -30,10 +30,11 @@ export function useUserPermissions(params: UseUserPermissionsParams) {
   // Helper to get role display name
   const getRoleDisplayName = (role: UserRole): string => {
     const roleNames = {
-      [UserRole.ORG_ADMIN]: 'Organization Administrator',
-      [UserRole.PROJECT_ADMIN]: 'Project Administrator', 
-      [UserRole.COLLABORATOR]: 'Collaborator',
-      [UserRole.NO_ACCESS]: 'No Access'
+      [UserRole.ORG_ADMIN]: "Organization Administrator",
+      [UserRole.PROJECT_ADMIN]: "Project Administrator",
+      [UserRole.COLLABORATOR]: "Collaborator",
+      [UserRole.PUBLIC_READER]: "Public Reader",
+      [UserRole.NO_ACCESS]: "No Access",
     };
     return roleNames[role];
   };
@@ -43,7 +44,7 @@ export function useUserPermissions(params: UseUserPermissionsParams) {
     data,
     isLoading,
     error,
-    
+
     // Derived values
     userRole,
     hasAccess,

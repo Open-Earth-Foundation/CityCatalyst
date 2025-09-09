@@ -1,5 +1,9 @@
 name: Push tagged Web app to GHCR and deploy to production
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   workflow_dispatch:
   push:
@@ -46,6 +50,8 @@ jobs:
         run: npm ci
 
       - name: Set up database
+        env:
+          GLOBAL_API_URL: https://ccglobal-test.openearth.dev
         run: |
           docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
           sleep 10
@@ -54,6 +60,8 @@ jobs:
           cp env.example .env
           npm run db:migrate
           npm run db:seed
+          npm run sync-catalogue
+          npm run sync-emissions-factors
 
       - name: Run NextJS build
         run: npm run build

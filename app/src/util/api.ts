@@ -216,15 +216,6 @@ export function apiHandler(handler: NextHandler) {
         if (!client) {
           throw new createHttpError.Unauthorized("Invalid client");
         }
-        const authz = await OAuthClientAuthz.findOne({
-          where: {
-            clientId: token.client_id,
-            userId: token.sub,
-          },
-        });
-        if (!authz) {
-          throw new createHttpError.Unauthorized("Authorization revoked");
-        }
         const scopes = token.scope.split(" ");
         if (req.method in ["GET", "HEAD"] && !("read" in scopes)) {
           throw new createHttpError.Unauthorized("No read scope available");
@@ -235,6 +226,16 @@ export function apiHandler(handler: NextHandler) {
         ) {
           throw new createHttpError.Unauthorized("No write scope available");
         }
+        const authz = await OAuthClientAuthz.findOne({
+          where: {
+            clientId: token.client_id,
+            userId: token.sub,
+          },
+        });
+        if (!authz) {
+          throw new createHttpError.Unauthorized("Authorization revoked");
+        }
+        await authz.update({ lastUsed: new Date() });
         session = await makeOAuthUserSession(token);
       } else {
         session = await Auth.getServerSession();

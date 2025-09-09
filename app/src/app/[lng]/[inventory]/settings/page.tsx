@@ -9,6 +9,7 @@ import { MyProfileTab } from "@/components/Tabs/MyProfileTab";
 import MyFilesTab from "@/components/Tabs/my-files-tab";
 import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
 import { api } from "@/services/api";
+import { getParamValueRequired } from "@/util/helpers";
 
 export type ProfileInputs = {
   name: string;
@@ -38,8 +39,9 @@ export type CityData = {
 
 const tabValues = ["my-profile", "my-files", "my-inventories"];
 
-export default function Settings(props: { params: Promise<{ lng: string }> }) {
-  const { lng } = use(props.params);
+export default function Settings() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
 
   const searchParams = useSearchParams();
   const paramValue = searchParams.get("tabIndex");

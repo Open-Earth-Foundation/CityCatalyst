@@ -28,6 +28,7 @@ import { ActionCards } from "./ActionCards";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { HeadlineMedium } from "@/components/Texts/Headline";
+import { useResourceValidation } from "@/hooks/useResourceValidation";
 import {
   AccordionRoot,
   AccordionItem,
@@ -130,13 +131,27 @@ export default function HomePage({
     }
   }, [isOrgDataLoading, orgData, setTheme]);
 
+  // Handle invalid city ID - redirect to default city or onboarding
+  const { shouldRender: shouldRenderCity } = useResourceValidation({
+    resourceId: cityIdFromParam,
+    resourceQuery: { data: city, error: cityError, isLoading: isCityLoading },
+    lng,
+    resourceType: "city",
+  });
+
   if (
     isOrgDataLoading ||
     isUserInfoLoading ||
     isAllModulesLoading ||
-    isProjectModulesLoading
+    isProjectModulesLoading ||
+    isCityLoading
   ) {
     return <ProgressLoader />;
+  }
+
+  // If city doesn't exist, don't render (will redirect)
+  if (!shouldRenderCity) {
+    return null;
   }
 
   return (

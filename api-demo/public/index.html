@@ -20,6 +20,11 @@
       import { config } from './config.js'
       const { CC_ORIGIN, CLIENT_ID } = config
 
+      const ccOriginUrl = new URL(CC_ORIGIN)
+      const allowInsecureRequests = (ccOriginUrl.hostname === 'localhost')
+        ? true
+        : false
+
       const username_url = `${CC_ORIGIN}/api/v0/user/whoami/`
 
       const redirect_uri = (new URL(window.location.href)).origin
@@ -72,7 +77,8 @@
             oauth.None(),
             params,
             redirect_uri,
-            code_verifier
+            code_verifier,
+            { [oauth.allowInsecureRequests]: allowInsecureRequests }
           )
 
           if (!response.ok) {
@@ -107,6 +113,9 @@
             access_token,
             'GET',
             new URL(username_url),
+            null,
+            null,
+            { [oauth.allowInsecureRequests]: allowInsecureRequests }
           )
           if (!whoamiResponse.ok) {
             throw new Error(`Bad status from whoami endpoint: ${whoamiResponse.status}`)
@@ -126,7 +135,8 @@
         const client = { client_id: CLIENT_ID }
         const res = await oauth.discoveryRequest(
           new URL(CC_ORIGIN),
-          { algorithm: 'oauth2' }
+          { algorithm: 'oauth2',
+            [oauth.allowInsecureRequests]: allowInsecureRequests }
         )
         if (!res.ok) {
           throw new Error(`Bad status from discovery: ${res.status}`)

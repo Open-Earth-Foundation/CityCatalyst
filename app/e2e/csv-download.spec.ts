@@ -437,7 +437,29 @@ test.describe("CSV Download", () => {
     await page.waitForTimeout(3000);
 
     // Navigate back to dashboard to download CSV
-    await page.goto("/");
+    {
+      const urlObj = new URL(page.url());
+      // Try to extract from inventory routes like /<lng>/<inventoryId>/... (including /data/...)
+      let match = urlObj.pathname.match(
+        /^\/(\w{2})\/([0-9a-f-]{36})(?:\/.*)?$/,
+      );
+      // Or from onboarding done: /<lng>/onboarding/done/<city>/<year>/<inventoryId>
+      if (!match) {
+        match = urlObj.pathname.match(
+          /^\/(\w{2})\/onboarding\/done\/[^/]+\/[^/]+\/([0-9a-f-]{36})\/?/,
+        );
+      }
+      if (match) {
+        const targetRoot = `/${match[1]}/${match[2]}/`;
+        await page.goto(targetRoot);
+      } else {
+        console.log(
+          "⚠️ Could not derive inventory root from:",
+          urlObj.pathname,
+          "— staying on current page",
+        );
+      }
+    }
     await page.waitForLoadState("networkidle");
 
     // Download CSV with the added data

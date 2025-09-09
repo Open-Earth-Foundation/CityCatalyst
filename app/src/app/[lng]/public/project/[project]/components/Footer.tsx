@@ -1,7 +1,8 @@
 /* eslint-disable i18next/no-literal-string */
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Link, Text } from "@chakra-ui/react";
 import Image from "next/image";
-import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import NextLink from "next/link";
 
 export interface FooterProps {
   copyright: string;
@@ -12,27 +13,47 @@ export interface FooterProps {
 }
 
 const Footer = ({ copyright, links }: FooterProps) => {
-  const { logoUrl } = useLogo();
+  const { organization } = useOrganizationContext();
   return (
-    <Box className="bg-[#010018] py-6 px-6 text-white" w="100%">
-      <Box className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center">
+    <Box bg="#010018" py={6} px={6} color="white" w="100%">
+      <Box
+        maxW="7xl"
+        mx="auto"
+        display="flex"
+        flexDirection={{ base: "column", lg: "row" }}
+        justifyContent="space-between"
+        alignItems="center"
+      >
         {/* Copyright text */}
-        <Box className="mb-4 lg:mb-0 text-sm text-gray-300">{copyright}</Box>
+        <Box mb={{ base: 4, lg: 0 }} fontSize="sm" color="gray.300">
+          {copyright}
+        </Box>
 
         {/* Powered by section */}
-        <Box className="flex items-center gap-4 mb-4 lg:mb-0 order-first lg:order-none">
-          <Text className="text-sm text-gray-300">
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={4}
+          mb={{ base: 4, lg: 0 }}
+          order={{ base: -1, lg: "unset" }}
+        >
+          <Text fontSize="sm" color="gray.300">
             Powered by open technology from
           </Text>
-          <Box className="flex items-center gap-3">
-            <a
+          <Box display="flex" alignItems="center" gap={3}>
+            <Link
               href="https://openearth.org"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block"
+              display="inline-block"
             >
-              {logoUrl ? (
-                <img src={logoUrl} height={40} width={250} alt="Org logo" />
+              {organization?.logoUrl ? (
+                <img
+                  src={organization.logoUrl}
+                  height={40}
+                  width={250}
+                  alt="Org logo"
+                />
               ) : (
                 <Image
                   src="/assets/logo.svg"
@@ -41,22 +62,28 @@ const Footer = ({ copyright, links }: FooterProps) => {
                   alt="CityCatalyst logo"
                 />
               )}
-            </a>
+            </Link>
           </Box>
         </Box>
 
         {/* Footer links */}
-        <div className="flex gap-6">
+        <Box display="flex" gap={6}>
           {links.map((link, index) => (
-            <a
+            <Link
               key={index}
               href={link.href}
-              className="text-sm text-gray-300 hover:text-white transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+              fontSize="0.875rem"
+              color="#D1D5DB"
+              transition="color 0.2s"
+              onMouseOver={(e) => (e.currentTarget.style.color = "#fff")}
+              onMouseOut={(e) => (e.currentTarget.style.color = "#D1D5DB")}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
-        </div>
+        </Box>
       </Box>
     </Box>
   );

@@ -1,0 +1,7 @@
+{
+  "something-went-wrong": "Something went wrong",
+  "error-details": "Error details",
+  "try-again": "Try again",
+  "module-access-denied-ghgi": "Your city does not have access to the GHG Inventories module",
+  "module-access-denied-hiap": "Your city does not have access to the Actions & Plans module"
+}

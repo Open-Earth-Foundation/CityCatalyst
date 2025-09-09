@@ -9,7 +9,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { MdAdd, MdMoreVert } from "react-icons/md";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { useGetOrganizationQuery, useGetProjectsQuery } from "@/services/api";
 import {
@@ -28,11 +28,12 @@ import { RiDeleteBin6Line, RiEditLine } from "react-icons/ri";
 import DeleteProjectModal from "@/app/[lng]/admin/organization/[id]/projects/DeleteProjectModal";
 import ProgressLoader from "@/components/ProgressLoader";
 
-const AdminOrganizationProjectsPage = ({
-  params: { lng, id },
-}: {
-  params: { lng: string; id: string };
+const AdminOrganizationProjectsPage = (props: {
+  params: Promise<{ lng: string; id: string }>;
 }) => {
+  const { lng, id } = use(props.params);
+  const { t } = useTranslation(lng, "admin");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [projectToEdit, setProjectToEdit] = useState<{
@@ -41,8 +42,6 @@ const AdminOrganizationProjectsPage = ({
     cityCountLimit: number;
     projectId: string;
   } | null>(null);
-
-  const { t } = useTranslation(lng, "admin");
 
   const { data: organization, isLoading: isOrganizationLoading } =
     useGetOrganizationQuery(id);
@@ -104,13 +103,23 @@ const AdminOrganizationProjectsPage = ({
       </Box>
       <Box>
         {isProjectDataLoading && (
-          <div className="flex items-center justify-center w-full">
-            <Box className="w-full py-12 flex items-center justify-center">
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            w="full"
+          >
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              w="full"
+            >
               <ProgressCircleRoot value={null}>
                 <ProgressCircleRing cap="round" />
               </ProgressCircleRoot>
             </Box>
-          </div>
+          </Box>
         )}
         {!isProjectDataLoading && projects?.length === 0 && (
           <Text color="content.tertiary" fontSize="body.lg">
@@ -139,12 +148,21 @@ const AdminOrganizationProjectsPage = ({
             <Table.Row key={idx}>
               <Table.Cell>{item.name}</Table.Cell>
               <Table.Cell>{item.cities}</Table.Cell>
-              <Table.Cell className="truncate" maxW="200px">
+              <Table.Cell
+                maxW="200px"
+                textOverflow="ellipsis"
+                overflow="hidden"
+                whiteSpace="nowrap"
+                truncate
+              >
                 {item.admin}
               </Table.Cell>
               <Table.Cell
-                className="truncate"
                 maxW="200px"
+                textOverflow="ellipsis"
+                overflow="hidden"
+                whiteSpace="nowrap"
+                truncate
                 title={item.description}
               >
                 {item.description}
@@ -185,14 +203,18 @@ const AdminOrganizationProjectsPage = ({
                       }}
                     >
                       <Icon
-                        className="group-hover:text-white"
+                        _groupHover={{
+                          color: "white",
+                        }}
                         color="interactive.control"
                         as={RiEditLine}
                         h="24px"
                         w="24px"
                       />
                       <Text
-                        className="group-hover:text-white"
+                        _groupHover={{
+                          color: "white",
+                        }}
                         color="content.primary"
                       >
                         {t("edit-project")}
@@ -221,14 +243,18 @@ const AdminOrganizationProjectsPage = ({
                       }}
                     >
                       <Icon
-                        className="group-hover:text-white"
+                        _groupHover={{
+                          color: "white",
+                        }}
                         color="sentiment.negativeDefault"
                         as={RiDeleteBin6Line}
                         h="24px"
                         w="24px"
                       />
                       <Text
-                        className="group-hover:text-white"
+                        _groupHover={{
+                          color: "white",
+                        }}
                         color="content.primary"
                       >
                         {t("remove")}

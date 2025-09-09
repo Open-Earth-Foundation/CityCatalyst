@@ -8,9 +8,9 @@ const packageInfo = JSON.parse(packageJson);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
+  serverExternalPackages: ["sequelize"],
   experimental: {
-    serverComponentsExternalPackages: ["sequelize"],
-    optimizePackageImports: ['@chakra-ui/react']
+    optimizePackageImports: ["@chakra-ui/react"],
   },
   env: {
     APP_VERSION: packageInfo.version,
@@ -18,6 +18,14 @@ const nextConfig = {
     NEXT_AWS_ACCESS_KEY_ID: process.env.NEXT_AWS_ACCESS_KEY_ID,
     NEXT_AWS_SECRET_ACCESS_KEY: process.env.NEXT_AWS_SECRET_ACCESS_KEY,
     NEXT_AWS_S3_BUCKET_ID: process.env.NEXT_AWS_S3_BUCKET_ID,
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/.well-known/oauth-authorization-server",
+        destination: "/api/v0/oauth/metadata/",
+      },
+    ];
   },
 };
 

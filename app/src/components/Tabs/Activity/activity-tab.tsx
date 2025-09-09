@@ -23,6 +23,7 @@ import ExternalDataSection from "@/components/Tabs/Activity/external-data-sectio
 import { api } from "@/services/api";
 import { MdModeEditOutline } from "react-icons/md";
 import { Switch } from "@/components/ui/switch";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -216,6 +217,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
     }
   }, [inventoryValue]);
 
+  const { isFrozenCheck } = useOrganizationContext();
+
   return (
     <>
       <Box
@@ -237,7 +240,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
             checked={
               showUnavailableForm || !!inventoryValue?.unavailableExplanation
             }
-            onChange={handleSwitch}
+            onChange={() => (isFrozenCheck() ? null : handleSwitch)}
           />
           <Text
             opacity={!!externalInventoryValue ? 0.4 : 1}
@@ -289,7 +292,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
                 fontSize="body.md"
                 fontFamily="body"
                 flex="1 0 0"
-                className="overflow-ellipsis line-clamp-2"
+                truncate
+                lineClamp={2}
               >
                 <Text fontSize="body.md" fontFamily="body">
                   <strong> {t("reason")}: </strong>
@@ -300,7 +304,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
                 fontSize="body.md"
                 flex="1 0 0"
                 fontFamily="body"
-                className="line-clamp-2"
+                truncate
+                lineClamp={2}
               >
                 {inventoryValue.unavailableExplanation}
               </Text>

@@ -1,25 +1,21 @@
-# Build stage
-FROM node:20-alpine AS build
+# Shared base stage
+FROM node:20-alpine AS base
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+
+# Full build stage
+FROM base AS full-build
+RUN npm install
 COPY . .
 RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
 
 # Production stage
-FROM node:20-alpine AS release
-WORKDIR /app
-
-# Copy package files and install only production dependencies
-COPY package*.json ./
-RUN npm ci --only=production
-
-# Copy built application from build stage
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/public ./public
-
-# Expose port
+FROM base AS release
+RUN npm ci --omit=dev
+COPY --from=full-build /app/.next ./.next
+COPY --from=full-build /app/public ./public
+COPY --from=full-build /app/templates ./templates
 EXPOSE 3000
-
-# Start the application
 CMD ["npm", "run", "start"]

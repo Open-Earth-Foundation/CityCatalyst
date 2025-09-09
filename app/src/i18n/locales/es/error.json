@@ -1,0 +1,7 @@
+{
+  "something-went-wrong": "Algo salió mal",
+  "error-details": "Detalles del error",
+  "try-again": "Intenta de nuevo",
+  "module-access-denied-ghgi": "Tu ciudad no tiene acceso al módulo de Inventarios de Gases de Efecto Invernadero",
+  "module-access-denied-hiap": "Tu ciudad no tiene acceso al módulo de Acciones y Planes"
+}

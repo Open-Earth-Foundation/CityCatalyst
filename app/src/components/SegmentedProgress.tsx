@@ -93,7 +93,8 @@ export function SegmentedProgress({
         ref={tooltipRef}
         backgroundColor="background.neutral"
         w="full"
-        className="flex flex-row"
+        display="flex"
+        flexDirection="row"
         borderRightRadius="10px"
         borderLeftRadius="10px"
       >
@@ -120,7 +121,9 @@ export function SegmentedProgress({
       {progressBars}
       <Box
         w="full"
-        className="flex flex-row flex-wrap"
+        display="flex"
+        flexDirection="row"
+        flexWrap="wrap"
         borderRadius="full"
         verticalAlign="center"
         gap={2}

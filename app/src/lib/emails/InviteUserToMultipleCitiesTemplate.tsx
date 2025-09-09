@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string */
+import React from "react";
 import { City } from "@/models/City";
 import {
   Body,
@@ -13,18 +13,28 @@ import {
   Section,
   Text,
 } from "@react-email/components";
+import i18next from "@/i18n/server";
+import { LANGUAGES } from "@/util/types";
 
 export function InviteUserToMultipleCitiesTemplate({
   url,
   email,
   cities,
   invitingUser,
+  brandInformation,
+  language,
 }: {
   url?: string;
   email: string;
   cities: City[];
   invitingUser: { name: string; email: string };
+  brandInformation?: {
+    color: string;
+    logoUrl: string;
+  };
+  language?: string;
 }) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
   const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
     <Html>
@@ -41,57 +51,81 @@ export function InviteUserToMultipleCitiesTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: City Invitation</Preview>
+      <Preview>{t("invite-multiple.subject")}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section>
-            <Img
-              src={ImageURL}
-              alt="City Catalyst logo"
-              width="36"
-              height="36"
-            />
-            <Text style={brandHeading}>CityCatalyst</Text>
-            <Text style={heading}>
-              You&apos;ve been invited to CityCatalyst
-            </Text>
-            <Text style={greeting}>Hi {email},</Text>
-            <Text style={paragraph}>
-              {invitingUser?.name} ({invitingUser?.email}) has invited you to
-              join CityCatalyst and contribute to the emission inventory for the{" "}
-              {cities.length == 1 ? "city" : "cities"}:
-            </Text>
-            <div>
-              {cities.map(({ locode, name }) => (
-                <div style={cityBox} key={name}>
-                  <div
+            {brandInformation ? (
+              <Section
+                style={{
+                  backgroundColor: brandInformation.color || "#ffffff",
+                  paddingLeft: "24px",
+                  paddingRight: "24px",
+                }}
+              >
+                {brandInformation.logoUrl ? (
+                  <Img src={brandInformation.logoUrl} alt="logo" height="100" />
+                ) : (
+                  <Text
                     style={{
-                      background: `url('https://flagsapi.com/${locode!.split(" ")[0]}/flat/64.png') no-repeat center center`,
-                      backgroundSize: "cover",
-                      height: "32px",
-                      width: "32px",
-                      flexShrink: 0,
+                      ...brandHeading,
+                      ...(brandInformation.color ? { color: "#ffffff" } : {}),
                     }}
-                  />
-                  <div style={cityNameText}>{name}</div>
-                </div>
-              ))}
-            </div>
+                  >
+                    {t("invite-multiple.brand")}
+                  </Text>
+                )}
+              </Section>
+            ) : (
+              <Section style={{ padding: "24px", paddingBottom: "0" }}>
+                <Text style={brandHeading}>{t("invite-multiple.brand")}</Text>
+              </Section>
+            )}
+            <Section style={{ padding: "24px" }}>
+              <Text style={headingGreen}>{t("invite-multiple.title")}</Text>
+              <Text style={greeting}>
+                {t("invite-multiple.greeting", { email })}
+              </Text>
+              <Text style={paragraph}>
+                {t("invite-multiple.message", {
+                  citiesCount:
+                    cities?.length === 1 ? "this city" : "these cities",
+                })}
+              </Text>
+              <div>
+                {cities?.map(({ countryLocode, name }) => (
+                  <div style={cityBox} key={name}>
+                    <div
+                      style={{
+                        background: `url('https://flagsapi.com/${countryLocode}/flat/64.png') no-repeat center center`,
+                        backgroundSize: "cover",
+                        height: "32px",
+                        width: "32px",
+                        flexShrink: 0,
+                      }}
+                    />
+                    <div style={cityNameText}>{name}</div>
+                  </div>
+                ))}
+              </div>
+              <Section style={buttonSection}>
+                <Link
+                  href={url}
+                  style={{
+                    ...urlLink,
+                    ...(brandInformation?.color
+                      ? { backgroundColor: brandInformation?.color }
+                      : {}),
+                  }}
+                >
+                  {t("invite-multiple.cta")}
+                </Link>
+              </Section>
+            </Section>
           </Section>
-          <Section style={buttonSection}>
-            <Link href={url} style={urlLink}>
-              JOIN NOW
-            </Link>
-          </Section>
-          <Text style={footerText}>
-            This invite will remain valid for the next 30 days or until claimed,
-            whichever happens first.
-          </Text>
+          <Text style={footerText}>{t("invite-multiple.expiry")}</Text>
           <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-          <Text style={footerText}>
-            Open Earth Foundation is a nonprofit public benefit corporation from
-            California, USA. EIN: 85-3261449
-          </Text>
+          <Text style={footerText}>{t("invite-multiple.footer")}</Text>
         </Container>
       </Body>
     </Html>
@@ -179,4 +213,12 @@ const cityNameText = {
   lineHeight: "32px", // Match this with the flag height
   letterSpacing: "0.5px",
   color: "#484848",
+};
+
+const headingGreen = {
+  fontSize: "24px",
+  lineHeight: "32px",
+  fontWeight: "700",
+  color: "#24BE00",
+  marginTop: "50px",
 };

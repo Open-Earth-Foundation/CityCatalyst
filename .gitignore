@@ -146,3 +146,7 @@ lcov.info
 
 #Intellij
 /.idea/**
+
+# api demo config
+
+api-demo/public/config.js

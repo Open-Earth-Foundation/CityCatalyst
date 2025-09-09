@@ -1,0 +1,30 @@
+{
+  "sector": "setor",
+  "stationary-energy": "Energia Estacionária",
+  "transportation": "Transporte",
+  "ippu": "IPPU",
+  "afolu": "AFOLU",
+  "waste": "Resíduos",
+  "multiple": "Metodologias Multissetoriais",
+  "key-assumptions": "Suposições Chave",
+  "advantages": "Vantagens",
+  "limitations": "Limitações",
+  "methodology": "Metodologia",
+  "calculation-method": "Método de Cálculo",
+  "explanation-of-parameters": "Explicação dos Parâmetros",
+  "parameter-code": "Código do Parâmetro",
+  "parameter-description": "Descrição do Parâmetro",
+  "units": "Unidades",
+  "methodologies-introduction": {
+    "title": "Metodologias",
+    "introduction": "Introdução",
+    "about": "Sobre Metodologias",
+    "p1": "Esta plataforma segue padrões internacionalmente reconhecidos para a contabilização de gases de efeito estufa (GEE), baseando-se principalmente no Protocolo Global para Inventários de Emissões de Gases de Efeito Estufa em Escala Comunitária (GPC) e nas Diretrizes do IPCC para Inventários Nacionais de Gases de Efeito Estufa (Refinamento de 2006 e 2019). Essas metodologias fornecem um quadro transparente e consistente para as cidades estimarem, reportarem e gerenciarem emissões em todos os principais setores. Cada metodologia aplicada aqui é selecionada para corresponder ao nível de disponibilidade de dados, capacidade técnica e necessidades de relatório das cidades. Sempre que possível, priorizamos os métodos do IPCC de Nível 1 e abordagens compatíveis com o GPC, que se baseiam em fatores de emissão padrão e dados de atividade geral. Nos casos em que dados de maior resolução ou entradas alternativas estão disponíveis, permitimos ajustes menores ou modelos simplificados, garantindo flexibilidade metodológica enquanto mantemos o alinhamento com os princípios fundamentais de relatório.",
+    "p2": "As metodologias são organizadas por setor (por exemplo, Energia Estacionária, Transporte, Resíduos) e são acompanhadas por descrições claras, suposições chave, vantagens e limitações. Isso ajuda os usuários a entenderem como cada valor de emissão é gerado e garante transparência no processo de construção do inventário.",
+    "p3": "Cada método visa apoiar as cidades no desenvolvimento de inventários que são:",
+    "complete": "Completo, cobrindo todas as principais fontes;",
+    "consistent": "Consistente, ano após ano;",
+    "comparable": "Comparável, entre cidades e regiões;",
+    "transparent": "Transparente, com documentação clara de entradas e suposições."
+  }
+}

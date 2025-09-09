@@ -1,16 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { use } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+
 import { useTranslation } from "@/i18n/client";
 import { Box, Tabs, Text } from "@chakra-ui/react";
-
-import { useSession } from "next-auth/react";
-
 import { MyProfileTab } from "@/components/Tabs/MyProfileTab";
 import MyFilesTab from "@/components/Tabs/my-files-tab";
 import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
+import MyAppsTab from "@/components/Tabs/my-apps-tab";
 import { api } from "@/services/api";
-import { useParams, useSearchParams } from "next/navigation";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { getParamValueRequired } from "@/util/helpers";
 
 export type ProfileInputs = {
   name: string;
@@ -20,6 +21,7 @@ export type ProfileInputs = {
   locode: string;
   userId: string;
   title?: string | null;
+  preferredLanguage?: string;
 };
 
 export type UserDetails = {
@@ -39,14 +41,15 @@ export type CityData = {
 
 const tabValues = ["my-profile", "my-files", "my-inventories"];
 
-export default function Settings({
-  params: { lng },
-}: {
-  params: { lng: string };
-}) {
-  const { data: session, status } = useSession();
-  const searchParams = useSearchParams();
+if (hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
+  tabValues.push("my-apps");
+}
 
+export default function Settings() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+
+  const searchParams = useSearchParams();
   const paramValue = searchParams.get("tabIndex");
   const tabIndex = paramValue ? Number(paramValue) : 0;
   const defaultTab = tabValues[tabIndex] ?? tabValues[0];
@@ -76,7 +79,7 @@ export default function Settings({
 
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">
-      <Box className="flex mx-auto w-[1090px] h-[100vh]">
+      <Box display="flex" mx="auto" w="full" maxW="1090px" px={4}>
         <Box w="full">
           <Box paddingTop="64px">
             <Text
@@ -167,24 +170,41 @@ export default function Settings({
                     {t("my-inventories")}
                   </Text>
                 </Tabs.Trigger>
+                {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
+                  <Tabs.Trigger
+                    _selected={{
+                      borderColor: "content.link",
+                      borderBottomWidth: "2px",
+                      boxShadow: "none",
+                      fontWeight: "bold",
+                      borderRadius: "0",
+                      color: "content.link",
+                      backgroundColor: "background.backgroundLight",
+                    }}
+                    value="my-apps"
+                  >
+                    <Text
+                      fontSize="title.md"
+                      fontStyle="normal"
+                      lineHeight="24px"
+                    >
+                      {t("my-apps")}
+                    </Text>
+                  </Tabs.Trigger>
+                )}
               </Tabs.List>
 
               <MyProfileTab t={t} userInfo={userInfo} lng={lng} />
-              <MyFilesTab
-                lng={lng}
-                session={session}
-                status={status}
-                t={t}
-                userInfo={userInfo!}
-                userFiles={userFiles!}
-                inventory={inventory!}
-              />
+              <MyFilesTab t={t} userFiles={userFiles!} inventory={inventory!} />
               <MyInventoriesTab
                 lng={lng}
                 cities={cities}
                 t={t}
                 defaultCityId={cityId}
               />
+              {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
+                <MyAppsTab lng={lng} />
+              )}
             </Tabs.Root>
           </Box>
         </Box>

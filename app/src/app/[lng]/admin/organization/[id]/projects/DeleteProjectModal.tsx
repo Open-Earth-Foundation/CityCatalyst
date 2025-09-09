@@ -66,6 +66,7 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
   const closeFunction = () => {
     onClose();
     setStep(1);
+    setProjectToDelete("");
   };
 
   return (

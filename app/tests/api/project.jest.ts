@@ -10,13 +10,13 @@ import {
 import {
   GET as getProjects,
   POST as createProject,
-} from "@/app/api/v0/organizations/[organizationId]/projects/route";
+} from "@/app/api/v0/organizations/[organization]/projects/route";
 
 import {
   DELETE as deleteProject,
   GET as getProject,
   PATCH as updateProject,
-} from "@/app/api/v0/projects/[projectId]/route";
+} from "@/app/api/v0/projects/[project]/route";
 import { mockRequest, setupTests, testUserID } from "../helpers";
 
 import {
@@ -30,12 +30,12 @@ import { randomUUID } from "node:crypto";
 import { Organization } from "@/models/Organization";
 
 const organizationData: CreateOrganizationRequest = {
-  name: "Test Organization project",
+  name: "Test Organization project - Project API Test",
   contactEmail: "testproject@organization.com",
 };
 
 const projectData: CreateProjectRequest = {
-  name: "Test Project",
+  name: "Test Project - Project API Test",
   cityCountLimit: 10,
   description: "Test Description",
 };
@@ -65,6 +65,7 @@ describe("Project API", () => {
     await db.initialize();
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
     organization = await db.models.Organization.create({
+      active: true,
       ...organizationData,
       organizationId: randomUUID(),
     });
@@ -75,6 +76,7 @@ describe("Project API", () => {
       where: { name: organizationData.name },
     });
     organization = await db.models.Organization.create({
+      active: true,
       ...organizationData,
       organizationId: randomUUID(),
     });
@@ -92,7 +94,9 @@ describe("Project API", () => {
         organizationId: organization.organizationId,
       });
       const response = await createProject(req, {
-        params: { organizationId: organization.organizationId },
+        params: Promise.resolve({
+          organization: organization.organizationId,
+        }),
       });
       expect(response.status).toBe(200);
       const data = await response.json();
@@ -110,7 +114,9 @@ describe("Project API", () => {
         organizationId: organization.organizationId,
       });
       const response = await createProject(req, {
-        params: { organizationId: organization.organizationId },
+        params: Promise.resolve({
+          organization: organization.organizationId,
+        }),
       });
       expect(response.status).toBe(400);
     });
@@ -128,7 +134,9 @@ describe("Project API", () => {
 
       const req = await mockRequest();
       const response = await getProjects(req, {
-        params: { organizationId: organization.organizationId },
+        params: Promise.resolve({
+          organization: organization.organizationId,
+        }),
       });
       expect(response.status).toBe(200);
       const data = await response.json();
@@ -153,7 +161,7 @@ describe("Project API", () => {
 
       const req = await mockRequest();
       const response = await getProject(req, {
-        params: { projectId: project.projectId },
+        params: Promise.resolve({ project: project.projectId }),
       });
       expect(response.status).toBe(200);
       const data = await response.json();
@@ -168,7 +176,7 @@ describe("Project API", () => {
     it("should return 404 if project does not exist", async () => {
       const req = await mockRequest();
       const response = await getProject(req, {
-        params: { projectId: randomUUID() },
+        params: Promise.resolve({ project: randomUUID() }),
       });
       const data = await response.json();
       expect(response.status).toBe(404);
@@ -190,7 +198,7 @@ describe("Project API", () => {
 
       const req = await mockRequest(updatedProject);
       const response = await updateProject(req, {
-        params: { projectId: project.projectId },
+        params: Promise.resolve({ project: project.projectId }),
       });
       expect(response.status).toBe(200);
       const data = await response.json();
@@ -214,7 +222,7 @@ describe("Project API", () => {
 
       const req = await mockRequest();
       const response = await deleteProject(req, {
-        params: { projectId: project.projectId },
+        params: Promise.resolve({ project: project.projectId }),
       });
       expect(response.status).toBe(200);
     });

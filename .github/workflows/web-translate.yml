@@ -1,11 +1,16 @@
 name: Translate Web interface
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   workflow_dispatch:
   push:
     branches: [ "develop" ]
     paths:
       - app/src/i18n/locales/en/**
+      - app/src/scripts/update-translation.js
       - .github/workflows/web-translate.yml
 
 jobs:
@@ -15,6 +20,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -32,20 +39,65 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Make translation PRs
+      - name: Check if i18n branch exists
+        id: check_branch
+        run: |
+          if git ls-remote --exit-code --heads origin i18n; then
+            echo "branch_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "branch_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create or checkout i18n branch
+        run: |
+          if [ "${{ steps.check_branch.outputs.branch_exists }}" = "true" ]; then
+            git fetch origin i18n
+            git checkout i18n
+            git merge origin/develop --no-edit
+          else
+            git checkout -b i18n
+          fi
+
+      - name: Update all translations
         env:
           OPENAI_API_KEY: ${{ secrets.TRANSLATION_OPENAI_API_KEY }}
-          EXTRA: ${{ github.sha }}
-          GH_TOKEN: ${{ github.token }}
         working-directory: ./app
         run: |
-          for lang in de es pt; do
-            git checkout -b "i18n/$lang/$EXTRA"
+          for lang in de es fr pt; do
+            echo "Updating translations for $lang..."
             node scripts/update-translation.js $lang
-            git add src/i18n/locales/$lang
-            git commit -m "i18n: Update translations for $lang"
-            git push --set-upstream origin "i18n/$lang/$EXTRA"
-            gh pr create --base develop --title "i18n: Update translations for $lang" --body "This PR updates the translations for the $lang language."
-            git checkout develop
-            git branch -D "i18n/$lang/$EXTRA"
           done
+
+      - name: Commit and push changes
+        run: |
+          git add app/src/i18n/locales/
+          if git diff --staged --quiet; then
+            echo "No translation changes to commit"
+          else
+            git commit -m "i18n: Update translations for all languages"
+            git push --set-upstream origin i18n
+          fi
+
+      - name: Check if PR exists
+        id: check_pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh pr list --head i18n --base develop --state open --json number | grep -q "number"; then
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create PR if it doesn't exist
+        if: steps.check_pr.outputs.pr_exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create \
+            --base develop \
+            --head i18n \
+            --title "i18n: Update translations" \
+            --body "This PR contains updated translations for all supported languages (de, es, fr, pt).
+
+          This PR is automatically updated whenever English translations change."

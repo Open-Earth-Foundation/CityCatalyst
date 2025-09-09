@@ -1,6 +1,7 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import { Organization } from "@/models/Organization";
+import { User } from "@/models/User";
 
 export interface OrganizationAdminAttributes {
   organizationAdminId: string;
@@ -28,6 +29,7 @@ export class OrganizationAdmin
   organizationAdminId!: string;
   organizationId!: string;
   userId!: string;
+  user!: User;
   created?: Date;
   lastUpdated?: Date;
 

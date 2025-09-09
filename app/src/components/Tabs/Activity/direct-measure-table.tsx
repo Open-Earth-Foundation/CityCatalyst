@@ -25,6 +25,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 interface DirectMeasureTableProps {
   t: TFunction;
@@ -71,6 +72,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   const filteredFields = extraFields.filter((f) => {
     return !f.id.includes(groupBy as string);
   });
+
+  const { isFrozenCheck } = useOrganizationContext();
 
   const renderTable = (list: ActivityValue[]) => {
     return (
@@ -234,20 +237,17 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                           bg: "content.link",
                           cursor: "pointer",
                         }}
-                        className="group"
-                        onClick={() => onEditActivity(activity)}
+                        onClick={() =>
+                          isFrozenCheck() ? null : onEditActivity(activity)
+                        }
                       >
                         <Icon
-                          className="group-hover:text-white"
                           color="interactive.control"
                           as={MdModeEditOutline}
                           h="24px"
                           w="24px"
                         />
-                        <Text
-                          className="group-hover:text-white"
-                          color="content.primary"
-                        >
+                        <Text color="content.primary">
                           {t("update-activity")}
                         </Text>
                       </MenuItem>
@@ -263,20 +263,17 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                           cursor: "pointer",
                         }}
                         data-testid="delete-activity-button"
-                        className="group"
-                        onClick={() => onDeleteActivity(activity)}
+                        onClick={() =>
+                          isFrozenCheck() ? null : onDeleteActivity(activity)
+                        }
                       >
                         <Icon
-                          className="group-hover:text-white"
                           color="sentiment.negativeDefault"
                           as={FiTrash2}
                           h="24px"
                           w="24px"
                         />
-                        <Text
-                          className="group-hover:text-white"
-                          color="content.primary"
-                        >
+                        <Text color="content.primary">
                           {t("delete-activity")}
                         </Text>
                       </MenuItem>

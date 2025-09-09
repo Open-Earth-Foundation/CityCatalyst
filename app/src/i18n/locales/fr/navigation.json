@@ -3,5 +3,6 @@
   "admin": "Admin",
   "cities": "villes",
   "settings": "Paramètres",
-  "account-settings": "Paramètres du compte"
+  "account-settings": "Paramètres du compte",
+  "account-frozen-warning-text": "Votre compte est gelé. Veuillez contacter un administrateur ou <bold>{{ email }}</bold> pour le réactiver"
 }

@@ -1,0 +1,30 @@
+{
+  "sector": "Sektor",
+  "stationary-energy": "Stationäre Energie",
+  "transportation": "Verkehr",
+  "ippu": "IPPU",
+  "afolu": "AFOLU",
+  "waste": "Abfall",
+  "multiple": "Multisektorale Methoden",
+  "key-assumptions": "Schlüsselannahmen",
+  "advantages": "Vorteile",
+  "limitations": "Einschränkungen",
+  "methodology": "Methodik",
+  "calculation-method": "Berechnungsmethode",
+  "explanation-of-parameters": "Erklärung der Parameter",
+  "parameter-code": "Parametercode",
+  "parameter-description": "Parameterbeschreibung",
+  "units": "Einheiten",
+  "methodologies-introduction": {
+    "title": "Methoden",
+    "introduction": "Einführung",
+    "about": "Über Methoden",
+    "p1": "Diese Plattform folgt international anerkannten Standards für die Treibhausgas (THG) Bilanzierung, hauptsächlich basierend auf dem Globalen Protokoll für Gemeinschaftsmaßstab Treibhausgasemissionsinventare (GPC) und den IPCC-Richtlinien für nationale Treibhausgasinventare (2006 und 2019 Verfeinerung). Diese Methoden bieten einen transparenten und konsistenten Rahmen für Städte, um Emissionen in allen wichtigen Sektoren zu schätzen, zu berichten und zu verwalten. Jede hier angewandte Methode wird ausgewählt, um dem Grad der Datenverfügbarkeit, der technischen Kapazität und den Berichtsanforderungen der Städte zu entsprechen. Wann immer möglich, priorisieren wir Tier 1 IPCC-Methoden und GPC-konforme Ansätze, die auf Standardemissionsfaktoren und allgemeinen Aktivitätsdaten basieren. In Fällen, in denen höher aufgelöste Daten oder alternative Eingaben verfügbar sind, ermöglichen wir kleinere Anpassungen oder vereinfachte Modelle, um methodische Flexibilität zu gewährleisten und gleichzeitig die Übereinstimmung mit den Kernberichtsprinzipien zu wahren.",
+    "p2": "Die Methoden sind nach Sektor organisiert (z.B. stationäre Energie, Verkehr, Abfall) und werden von klaren Beschreibungen, Schlüsselannahmen, Vorteilen und Einschränkungen begleitet. Dies hilft den Benutzern zu verstehen, wie jeder Emissionswert erzeugt wird und gewährleistet Transparenz im Inventarisierungsprozess.",
+    "p3": "Jede Methode zielt darauf ab, Städte bei der Entwicklung von Inventaren zu unterstützen, die folgendes sind:",
+    "complete": "Vollständig, abdeckend alle wichtigen Quellen;",
+    "consistent": "Konstant, Jahr für Jahr;",
+    "comparable": "Vergleichbar, über Städte und Regionen hinweg;",
+    "transparent": "Transparent, mit klarer Dokumentation von Eingaben und Annahmen."
+  }
+}

@@ -11,7 +11,7 @@ import {
   DELETE as deleteOrganization,
   GET as getOrganization,
   PATCH as updateOrganization,
-} from "@/app/api/v0/organizations/[organizationId]/route";
+} from "@/app/api/v0/organizations/[organization]/route";
 import { db } from "@/models";
 import { CreateOrganizationRequest } from "@/util/validation";
 import { mockRequest, setupTests, testUserID } from "../helpers";
@@ -21,13 +21,13 @@ import { AppSession, Auth } from "@/lib/auth";
 import { Roles } from "@/util/types";
 
 const organizationData: CreateOrganizationRequest = {
-  name: "Test Organization",
-  contactEmail: "test@organization.com",
+  name: "Test Organization - Organization API Test",
+  contactEmail: "test-org-api-test@organization.com",
 };
 
 const organization2: CreateOrganizationRequest = {
-  name: "Test Organization 2",
-  contactEmail: "test2@organization.com",
+  name: "Test Organization 2 - Organization API Test",
+  contactEmail: "test2-org-api-test@organization.com",
 };
 
 const invalidOrganization = {
@@ -60,6 +60,7 @@ describe("Organization API", () => {
       where: { name: organizationData.name },
     });
     organization = await db.models.Organization.create({
+      active: true,
       ...organizationData,
       organizationId: randomUUID(),
     });
@@ -73,7 +74,7 @@ describe("Organization API", () => {
   it("should find an organization", async () => {
     const req = mockRequest();
     const res = await getOrganization(req, {
-      params: { organizationId: organization.organizationId },
+      params: Promise.resolve({ organization: organization.organizationId }),
     });
     expect(res.status).toEqual(200);
     const data = await res.json();
@@ -84,7 +85,7 @@ describe("Organization API", () => {
   it("should not find a non-existing organization", async () => {
     const req = mockRequest();
     const res = await getOrganization(req, {
-      params: { organizationId: randomUUID() },
+      params: Promise.resolve({ organization: randomUUID() }),
     });
     expect(res.status).toEqual(404);
   });
@@ -92,7 +93,7 @@ describe("Organization API", () => {
   it("should update an organization", async () => {
     const req = mockRequest(organization2);
     const res = await updateOrganization(req, {
-      params: { organizationId: organization.organizationId },
+      params: Promise.resolve({ organization: organization.organizationId }),
     });
     expect(res.status).toEqual(200);
     const data = await res.json();
@@ -103,7 +104,7 @@ describe("Organization API", () => {
   it("should not update an organization with invalid values", async () => {
     const req = mockRequest(invalidOrganization);
     const res = await updateOrganization(req, {
-      params: { organizationId: organization.organizationId },
+      params: Promise.resolve({ organization: organization.organizationId }),
     });
     expect(res.status).toEqual(400);
     const {
@@ -123,7 +124,7 @@ describe("Organization API", () => {
   it("should delete an organization", async () => {
     const req = mockRequest();
     const res = await deleteOrganization(req, {
-      params: { organizationId: organization.organizationId },
+      params: Promise.resolve({ organization: organization.organizationId }),
     });
     expect(res.status).toEqual(200);
     const { deleted } = await res.json();
@@ -133,7 +134,7 @@ describe("Organization API", () => {
   it("should not delete a non-existing organization", async () => {
     const req = mockRequest();
     const res = await deleteOrganization(req, {
-      params: { organizationId: randomUUID() },
+      params: Promise.resolve({ organization: randomUUID() }),
     });
     expect(res.status).toEqual(404);
   });
@@ -142,7 +143,7 @@ describe("Organization API", () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
     const req = mockRequest(organization2);
     const res = await updateOrganization(req, {
-      params: { organizationId: organization.organizationId },
+      params: Promise.resolve({ organization: organization.organizationId }),
     });
     expect(res.status).toEqual(403);
   });
@@ -151,7 +152,7 @@ describe("Organization API", () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
     const req = mockRequest();
     const res = await deleteOrganization(req, {
-      params: { organizationId: organization.organizationId },
+      params: Promise.resolve({ organization: organization.organizationId }),
     });
     expect(res.status).toEqual(403);
   });

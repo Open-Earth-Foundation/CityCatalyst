@@ -29,6 +29,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 interface EmissionDataSectionProps {
   t: TFunction;
@@ -116,6 +117,7 @@ const EmissionDataSection = ({
   };
 
   const { lng } = useParams();
+  const { isFrozenCheck } = useOrganizationContext();
 
   const renderSuggestedActivities = () => (
     <>
@@ -129,18 +131,22 @@ const EmissionDataSection = ({
           >
             {t("activity-suggestion")}
           </Text>
-          <Box className="flex flex-col gap-4">
+          <Box display="flex" flexDirection="column" gap={4}>
             {suggestedActivities.map((suggestedActivity) => {
               const { id, prefills } = suggestedActivity;
               return (
                 <SuggestedActivityCard
-                  key={id}
                   id={id}
+                  key={`${id}-${prefills[0]?.key ?? "no-key"}-${prefills[0]?.value ?? "no-value"}`}
                   prefillKey={prefills[0]?.key}
                   prefillValue={prefills[0]?.value}
                   t={t}
                   isSelected={selectedActivity?.id === id}
-                  onActivityAdded={() => handleActivityAdded(suggestedActivity)}
+                  onActivityAdded={() =>
+                    isFrozenCheck()
+                      ? null
+                      : handleActivityAdded(suggestedActivity)
+                  }
                 />
               );
             })}
@@ -180,7 +186,7 @@ const EmissionDataSection = ({
             </Box>
           </Box>
           <Button
-            onClick={() => handleActivityAdded()}
+            onClick={() => (isFrozenCheck() ? null : handleActivityAdded())}
             data-testid="add-emission-data-button"
             title={t("add-emission-data")}
             h="48px"
@@ -225,7 +231,9 @@ const EmissionDataSection = ({
             {activityValues.length > 0 && (
               <Button
                 data-testid="add-emission-data-button"
-                onClick={handleActivityAddDataDialog}
+                onClick={() =>
+                  isFrozenCheck() ? null : handleActivityAddDataDialog()
+                }
                 title="Add Activity"
                 h="48px"
                 aria-label="activity-button"
@@ -259,18 +267,20 @@ const EmissionDataSection = ({
                     bg: "content.link",
                     cursor: "pointer",
                   }}
-                  className="group"
-                  onClick={handleChangeMethodology}
+                  _groupHover={{}}
+                  onClick={() =>
+                    isFrozenCheck() ? null : handleChangeMethodology()
+                  }
                 >
                   <Icon
-                    className="group-hover:text-white"
+                    _groupHover={{ color: "white" }}
                     color="interactive.control"
                     as={FaNetworkWired}
                     h="24px"
                     w="24px"
                   />
                   <Text
-                    className="group-hover:text-white"
+                    _groupHover={{ color: "white" }}
                     color="content.primary"
                     fontSize="body.lg"
                   >
@@ -290,17 +300,21 @@ const EmissionDataSection = ({
                       cursor: "pointer",
                     }}
                     className="group"
-                    onClick={handleDeleteAllActivityDataDialog}
+                    onClick={() =>
+                      isFrozenCheck()
+                        ? null
+                        : handleDeleteAllActivityDataDialog()
+                    }
                   >
                     <Icon
-                      className="group-hover:text-white"
+                      _hover={{ color: "white" }}
                       color="sentiment.negativeDefault"
                       as={FiTrash2}
                       h="24px"
                       w="24px"
                     />
                     <Text
-                      className="group-hover:text-white"
+                      _hover={{ color: "white" }}
                       color="content.primary"
                       fontSize="body.lg"
                     >

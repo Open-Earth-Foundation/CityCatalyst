@@ -2,10 +2,14 @@ import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
-import UserService from "@/backend/UserService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 
+import { City } from "@/models/City";
+import DataSourceService from "@/backend/DataSourceService";
+
+/** disconnects a datasource from an inventory */
 export const DELETE = apiHandler(async (_req, { params, session }) => {
-  await UserService.findUserInventory(params.inventoryId, session);
+  await PermissionService.canEditInventory(session, params.inventoryId);
 
   const inventoryValues = await db.models.InventoryValue.findAll({
     where: {
@@ -25,4 +29,39 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
   });
 
   return NextResponse.json({ data: inventoryValues, deleted: true });
+});
+
+/** gets a datasource from an inventory and scales it if necessary */
+export const GET = apiHandler(async (_req, { params, session }) => {
+  await PermissionService.canEditInventory(session, params.inventoryId);
+
+  const inventory = await db.models.Inventory.findOne({
+    where: { inventoryId: params.inventoryId },
+    include: [{ model: City, as: "city" }],
+  });
+  if (!inventory) {
+    throw new createHttpError.NotFound("Inventory not found");
+  }
+
+  const source = await DataSourceService.findSource(
+    params.inventoryId,
+    params.datasourceId,
+  );
+  if (!source) {
+    throw new createHttpError.NotFound("Data source not found");
+  }
+
+  const {
+    countryPopulationScaleFactor,
+    regionPopulationScaleFactor,
+    populationIssue,
+  } = await DataSourceService.findPopulationScaleFactors(inventory, [source]);
+  const sourceData = await DataSourceService.getSourceWithData(
+    source,
+    inventory,
+    countryPopulationScaleFactor,
+    regionPopulationScaleFactor,
+    populationIssue,
+  );
+  return NextResponse.json(sourceData);
 });

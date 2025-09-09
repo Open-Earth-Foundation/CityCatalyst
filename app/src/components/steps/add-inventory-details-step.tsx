@@ -5,7 +5,6 @@ import {
   FieldErrors,
   UseFormRegister,
 } from "react-hook-form";
-import { Inputs } from "../../app/[lng]/onboarding/setup/page";
 import { FC, useEffect, useState } from "react";
 import {
   Box,
@@ -33,6 +32,21 @@ import { Button } from "../ui/button";
 import { InventoryButtonCheckIcon } from "../icons";
 import CustomSelectableButton from "../custom-selectable-buttons";
 
+// Type for general onboarding inputs
+type GeneralInputs = {
+  city: string;
+  year: number;
+  inventoryGoal: string;
+  globalWarmingPotential: string;
+  cityPopulation: number;
+  cityPopulationYear: number;
+  regionPopulation: number;
+  regionPopulationYear: number;
+  countryPopulation: number;
+  countryPopulationYear: number;
+  totalCountryEmissions: number;
+};
+
 export default function SetInventoryDetailsStep({
   t,
   register,
@@ -42,9 +56,9 @@ export default function SetInventoryDetailsStep({
   years,
 }: {
   t: TFunction;
-  register: UseFormRegister<Inputs>;
-  errors: FieldErrors<Inputs>;
-  control: Control<Inputs>;
+  register: UseFormRegister<GeneralInputs>;
+  errors: FieldErrors<GeneralInputs>;
+  control: Control<GeneralInputs>;
   setValue: any;
   years: number[];
 }) {
@@ -82,7 +96,7 @@ export default function SetInventoryDetailsStep({
         gap="24px"
         mb="48px"
       >
-        <Heading data-testId="inventory-details-heading" size="xl">
+        <Heading data-testid="inventory-details-heading" size="xl">
           {t("setup-inventory-details-heading")}
         </Heading>
         <Text
@@ -91,7 +105,7 @@ export default function SetInventoryDetailsStep({
           fontStyle="normal"
           fontWeight="400"
           letterSpacing="wide"
-          data-testId="inventory-details-description"
+          data-testid="inventory-details-description"
         >
           {t("setup-inventory-details-description")}
         </Text>
@@ -116,7 +130,7 @@ export default function SetInventoryDetailsStep({
               fontStyle="normal"
               fontWeight="bold"
               lineHeight="24px"
-              data-testId="inventory-year"
+              data-testid="inventory-year"
             >
               {t("inventory-year")}
             </Text>
@@ -155,7 +169,7 @@ export default function SetInventoryDetailsStep({
                   size="lg"
                   w="400px"
                   _placeholder={{ color: "content.tertiary" }}
-                  data-testId="inventory-detils-year"
+                  data-testid="inventory-detils-year"
                   {...register("year", {
                     required: t("inventory-year-required"),
                   })}
@@ -214,7 +228,7 @@ export default function SetInventoryDetailsStep({
               <Trans i18nKey="inventory-goal-description" t={t}>
                 Want to learn more about these inventory formats?{" "}
                 <Link
-                  href="/"
+                  href="/app/public"
                   fontFamily="heading"
                   fontWeight="bold"
                   color="content.link"
@@ -309,7 +323,7 @@ export default function SetInventoryDetailsStep({
               <Trans i18nKey="gwp-description" t={t}>
                 Want to learn more about these inventory formats?{" "}
                 <Link
-                  href="/"
+                  href="/app/public"
                   fontFamily="heading"
                   fontWeight="bold"
                   color="content.link"

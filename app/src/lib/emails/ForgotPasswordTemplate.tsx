@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string */
+import React from "react";
 import {
   Body,
   Button,
@@ -9,23 +9,31 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
+import i18next from "@/i18n/server";
+import { LANGUAGES } from "@/util/types";
 
-export default function ForgotPasswordTemplate({ url }: { url: string }) {
+export default function ForgotPasswordTemplate({
+  url,
+  language,
+}: {
+  url: string;
+  language?: string;
+}) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
+
   return (
     <Html>
       <Head />
-      <Preview>CityCatalyst: Reset your password</Preview>
+      <Preview>{t("reset-password.preview")}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={brandHeading}>CityCatalyst</Text>
-          <Text style={heading}>Forgot your password?</Text>
-          <Text style={paragraph}>Reset it by clicking the button below:</Text>
+          <Text style={brandHeading}>{t("reset-password.brand")}</Text>
+          <Text style={heading}>{t("reset-password.title")}</Text>
+          <Text style={paragraph}>{t("reset-password.message")}</Text>
           <Button href={url} style={button}>
-            Reset Password
+            {t("reset-password.cta")}
           </Button>
-          <Text style={paragraph}>
-            Or copy this link to your browser&apos;s URL bar:
-          </Text>
+          <Text style={paragraph}>{t("reset-password.linkText")}</Text>
           <Link href={url}>{url}</Link>
         </Container>
       </Body>

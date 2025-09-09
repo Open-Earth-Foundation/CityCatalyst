@@ -46,37 +46,46 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
   }, [locode, data, height, width]);
 
   return (
-    <Box w={width} h={height} className="relative">
-      {isLoading && (
+    <Box w={width} h={height} position="relative">
+      {isLoading ? (
         <Box
           w={width}
           h={height}
-          className="absolute top-0 left-0 z-[1000] pointer-events-none"
+          style={{
+            position: "relative",
+            top: 0,
+            left: 0,
+            zIndex: 1000,
+            pointerEvents: "none",
+          }}
         >
           <Center h="full">
             <Spinner size="lg" />
           </Center>
         </Box>
-      )}
-      <Map
-        height={height}
-        center={center}
-        zoom={zoom}
-        onBoundsChanged={onBoundsChanged}
-        attributionPrefix={false}
-      >
-        <GeoJson
-          svgAttributes={{
-            fill: "#648bff99",
-            strokeWidth: "3",
-            stroke: "#648bff",
-          }}
+      ) : (
+        <Map
+          height={height}
+          center={center}
+          zoom={zoom}
+          onBoundsChanged={onBoundsChanged}
+          attributionPrefix={false}
         >
-          {data?.data && (
-            <GeoJsonFeature feature={{ type: "Feature", geometry: data.data }} />
-          )}
-        </GeoJson>
-      </Map>
+          <GeoJson
+            svgAttributes={{
+              fill: "#648bff99",
+              strokeWidth: "3",
+              stroke: "#648bff",
+            }}
+          >
+            {data?.data && (
+              <GeoJsonFeature
+                feature={{ type: "Feature", geometry: data.data }}
+              />
+            )}
+          </GeoJson>
+        </Map>
+      )}
     </Box>
   );
 };

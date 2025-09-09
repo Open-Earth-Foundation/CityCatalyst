@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 "use client";
 
-import { useState } from "react";
+import { useState, use } from "react";
 import { api } from "@/services/api";
 import type { CityMetadata } from "./ProjectMap";
 import ProjectMap from "./ProjectMap";
@@ -100,7 +100,7 @@ function LinkCard({
             target="_blank"
             rel="noopener noreferrer"
             color="interactive.secondary"
-            className="underline"
+            style={{ textDecoration: "underline" }}
           >
             More about the methodology
           </Link>
@@ -110,12 +110,12 @@ function LinkCard({
   );
 }
 
-export default function ProjectPage({
-  params: { project, lng },
-}: {
-  params: { project: string; lng: string };
+export default function ProjectPage(props: {
+  params: Promise<{ project: string; lng: string }>;
 }) {
+  const { lng, project } = use(props.params);
   const { t } = useTranslation(lng, "dashboard");
+
   const {
     data: projectSummary,
     isLoading,
@@ -156,9 +156,9 @@ export default function ProjectPage({
   };
 
   return (
-    <VStack className="min-h-screen" gap={0} flexDirection="column">
+    <VStack minH="100vh" gap={0} flexDirection="column">
       <Navbar lng={lng} project={project} t={t} />
-      <Box flex={1} className="flex-grow" w="100%">
+      <Box flex={1} flexGrow={1} w="100%">
         <Hero />
         <PartnerLogos partners={partners} />
       </Box>
@@ -183,7 +183,7 @@ export default function ProjectPage({
             methodologyLink=""
           />
           <LinkCard
-            title="CAP"
+            title="HIAP"
             description="Climate risk assessment, focusing on vulnerabilities and adaptations strategies."
             link={`https://cap.openearth.dev/#/city/${selectedCity?.name}`}
             disabled={!selectedCity}

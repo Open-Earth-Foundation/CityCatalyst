@@ -46,11 +46,6 @@ function FormattedNumberInput({
 }: FormattedNumberInputProps) {
   const { lng } = useParams();
 
-  const value = useWatch({
-    control,
-    name,
-  });
-
   const format = (nval: number | string) => {
     nval = nval.toString();
     const locale = REGIONALLOCALES[lng as string] || "en-US"; // Get the user's locale
@@ -72,6 +67,7 @@ function FormattedNumberInput({
     // Format the number part
     const formattedNumber = new Intl.NumberFormat(locale, {
       maximumFractionDigits: 20,
+      notation: "standard",
     }).format(numericValue);
 
     // If the input ends with a separator, add it back to the formatted string
@@ -135,6 +131,7 @@ function FormattedNumberInput({
             value={format(field.value)}
             shadow="1dp"
             w="full"
+            hideWheelControls
             borderRightRadius={children ? 0 : "md"} // Adjust border radius
             bgColor={isDisabled ? "background.neutral" : "base.light"}
             pos="relative"
@@ -145,7 +142,7 @@ function FormattedNumberInput({
           >
             <NumberInputField
               value={format(field.value)}
-              data-testId={testId}
+              data-testid={testId}
               onChange={(e: any) => {
                 const parsedValue = parse(e.target.value);
                 field.onChange(parsedValue);
@@ -156,7 +153,6 @@ function FormattedNumberInput({
                 field.onChange(parseFloat(parsedValue));
               }}
               placeholder={placeholder}
-              // Use text type to allow formatted input
             />
           </NumberInputRoot>
           {children && (

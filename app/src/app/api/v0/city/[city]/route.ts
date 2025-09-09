@@ -35,7 +35,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
     currentDefaultInventory?.defaultInventory?.cityId;
   if (currentDefaultCityId === params.city) {
     const rawQuery = `
-        SELECT i.inventory_id
+        SELECT i.inventory_id, i.city_id
         FROM "CityUser" cu
                  JOIN "City" c ON c.city_id = cu.city_id
                  JOIN "Inventory" i ON i.city_id = c.city_id
@@ -43,17 +43,23 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
           AND cu.city_id != :cityId
         LIMIT 1;
     `;
-    const nextDefaultInventory: { inventory_id: string }[] =
+    const nextDefaultInventory: { inventory_id: string; city_id: string }[] =
       await db.sequelize!.query(rawQuery, {
         replacements: { userId, cityId: currentDefaultCityId },
         type: QueryTypes.SELECT,
       });
 
     if (nextDefaultInventory.length > 0) {
-      const inventoryId = nextDefaultInventory[0].inventory_id;
-
+      const nextDefault = nextDefaultInventory[0];
+      const inventoryId = nextDefault.inventory_id ?? null;
+      const cityId = nextDefault.city_id ?? null;
       await User.update(
-        { defaultInventoryId: inventoryId },
+        { defaultInventoryId: inventoryId, defaultCityId: cityId },
+        { where: { userId } },
+      );
+    } else {
+      await User.update(
+        { defaultInventoryId: null, defaultCityId: null },
         { where: { userId } },
       );
     }

@@ -896,6 +896,7 @@
   "treatment-type-anaerobic-shallow-lagoon": "Laguna poco profunda anaeróbica",
   "treatment-type-anaerobic-deep-lagoon": "Laguna profunda anaeróbica",
   "treatment-type-septic-system": "Sistema séptico",
+  "treatment-type-latrine": "Letrina",
   "treatment-type-latrine-dry-climate-small-family": "Letrina: Clima seco, nivel freático inferior a la letrina, familia pequeña (3-5 personas)",
   "treatment-type-latrine-dry-climate-communal": "Letrina: Clima seco, nivel freático inferior a la letrina, comunal (muchos usuarios)",
   "treatment-type-latrine-wet-climate": "Letrina: Clima húmedo/uso de agua de descarga, nivel de agua subterránea más alto que la letrina",
@@ -1259,5 +1260,11 @@
   "waste-composition-total-percentage": "{{percent}} / 100%",
   "waste-composition-percentage": "{{percent}}%",
   "categories": "Categorías",
-  "percentage": "Porcentaje"
+  "percentage": "Porcentaje",
+  "go-to-source": "Ir a la fuente",
+  "calculated-emission-values-too-large": "Los valores de emisiones calculados son demasiado grandes para almacenar. Por favor, reduzca las cantidades de actividad o los factores de emisión para evitar el desbordamiento.",
+  "invalid-request": "Solicitud Inválida",
+  "emission-factor-too-large": "El factor de emisión no puede exceder {{max}}. Por favor, ingrese un valor menor.",
+  "emission-factor-required": "Factor de emisión requerido",
+  "emission-factor-negative": "El factor de emisión no puede ser negativo. Por favor, ingrese un valor positivo."
 }

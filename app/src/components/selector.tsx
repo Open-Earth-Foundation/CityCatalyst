@@ -28,7 +28,11 @@ export function Selector<T extends string>({
     >
       <NativeSelectField value={value} onChange={onChange}>
         {options.map((opt) => (
-          <option key={opt} value={opt} className="text-left p-2">
+          <option
+            key={opt}
+            value={opt}
+            style={{ textAlign: "left", padding: "8px" }}
+          >
             <Text
               fontWeight="regular"
               color="interactive.control"

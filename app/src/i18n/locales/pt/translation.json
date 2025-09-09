@@ -6,5 +6,12 @@
   "dashboard": "Painel",
   "go-back": "Voltar",
   "log-out": "Sair",
-  "settings": "Configurações"
+  "settings": "Configurações",
+  "languages": {
+    "en": "Inglês",
+    "es": "Espanhol",
+    "fr": "Francês",
+    "de": "Alemão",
+    "pt": "Português"
+  }
 }

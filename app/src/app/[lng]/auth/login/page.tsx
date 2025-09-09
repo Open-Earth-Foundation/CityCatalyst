@@ -7,13 +7,13 @@ import { Box, Heading, Link, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, use } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { UseSuccessToast } from "@/hooks/Toasts";
-import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
+import { trackEvent, identifyUser } from "@/lib/analytics";
 
 export type LoginInputs = {
   email: string;
@@ -39,12 +39,10 @@ function VerifiedNotification({ t }: { t: TFunction }) {
   return null;
 }
 
-export default function Login({
-  params: { lng },
-}: {
-  params: { lng: string };
-}) {
+export default function Login(props: { params: Promise<{ lng: string }> }) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "auth");
+
   const router = useRouter();
   const [error, setError] = useState("");
   const {
@@ -59,21 +57,13 @@ export default function Login({
 
   // only redirect to user invite page as a fallback if there is a token present in the search params
   if (!callbackUrl) {
-    if ("token" in queryParams) {
-      const paramsString = new URLSearchParams(queryParams).toString();
-      callbackUrl = `/${lng}/user/invites?${paramsString}`;
-    } else {
+    if (!("token" in queryParams)) {
       callbackUrl = `/`;
     }
   }
 
   // redirect to dashboard if user is already authenticated
   const { data: _session, status } = useSession();
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/");
-    }
-  }, [status, router]);
 
   const { showSuccessToast: showLoginSuccessToast } = UseSuccessToast({
     title: t("verified-toast-title"),
@@ -82,15 +72,22 @@ export default function Login({
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
       const res = await signIn("credentials", {
-        redirect: false,
+        redirect: true,
         email: data.email,
         password: data.password,
-        callbackUrl,
+        callbackUrl: callbackUrl || `/${lng}/`,
       });
 
       if (res?.ok && !res?.error) {
+        // Track successful login
+        trackEvent("user_logged_in", {
+          method: "credentials",
+        });
+
+        // Identify the user for future tracking
+        identifyUser(data.email);
+
         showLoginSuccessToast();
-        router.push(callbackUrl);
         setError("");
         return;
       } else {
@@ -130,51 +127,45 @@ export default function Login({
       <Text my={4} color="content.tertiary">
         {t("login-details")}
       </Text>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <EmailInput register={register} error={errors.email} t={t} />
-        <PasswordInput register={register} error={errors.password} t={t} />
-        <Text color="semantic.danger">{error}</Text>
-        <div className="w-full text-right">
-          <Link href="/auth/forgot-password" className="underline">
-            {t("forgot-password")}
-          </Link>
-          <Text my={2}>
-            <Trans t={t} i18nKey="read-privacy-policy">
-              Read our{" "}
-              <Link
-                href="https://citycatalyst.openearth.org/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline"
-              >
-                Privacy Policy
-              </Link>
-            </Trans>
-          </Text>
-        </div>
-        <Button
-          type="submit"
-          formNoValidate
-          loading={isSubmitting}
-          h={16}
-          width="full"
-          bgColor="interactive.secondary"
-        >
-          {t("log-in")}
-        </Button>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Box display="flex" flexDirection="column" gap="16px">
+          <EmailInput register={register} error={errors.email} t={t} />
+          <PasswordInput register={register} error={errors.password} t={t} />
+          <Text color="semantic.danger">{error}</Text>
+          <Box w="full" textAlign="right">
+            <Link href="/auth/forgot-password" textDecoration="underline">
+              {t("forgot-password")}
+            </Link>
+          </Box>
+          <Button
+            type="submit"
+            formNoValidate
+            loading={isSubmitting}
+            h={16}
+            width="full"
+            bgColor="interactive.secondary"
+          >
+            {t("log-in")}
+          </Button>
+        </Box>
       </form>
-      <Text
-        className="w-full text-center mt-4 text-sm"
-        color="content.tertiary"
-      >
-        {t("no-account")}{" "}
-        <Link
-          href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-          className="underline"
+      {callbackUrl.includes("token") && (
+        <Text
+          w="full"
+          textAlign="center"
+          mt={4}
+          fontSize="sm"
+          color="content.tertiary"
         >
-          {t("sign-up")}
-        </Link>
-      </Text>
+          {t("no-account")}{" "}
+          <Link
+            href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+            textDecoration="underline"
+          >
+            {t("sign-up")}
+          </Link>
+        </Text>
+      )}
       <Suspense>
         <VerifiedNotification t={t} />
       </Suspense>

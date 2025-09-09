@@ -44,18 +44,19 @@ import {
 } from "@/components/ui/menu";
 import { RiDeleteBin6Line, RiEditLine } from "react-icons/ri";
 import { Tag } from "@/components/ui/tag";
-import AddCollaboratorsModal from "@/components/HomePage/AddCollaboratorModal/AddCollaboratorsModal";
+import AddCollaboratorsModal from "@/components/GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
 import { Trans } from "react-i18next";
+import { useSession } from "next-auth/react";
 
 const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
   const { t } = useTranslation(lng, "settings");
 
   const TagMapping = {
     [OrganizationRole.ORG_ADMIN]: {
-      color: "green",
-      text: t("owner"),
+      color: "blue",
+      text: t("admin"),
     },
     [OrganizationRole.ADMIN]: {
       color: "blue",
@@ -69,6 +70,7 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
 
   const [selectedProject, setSelectedProject] = React.useState<string[]>([]);
   const [selectedCity, setSelectedCity] = React.useState<string | null>("");
+  const sessionData = useSession();
 
   const { data: organization, isLoading: isOrganizationLoading } =
     useGetOrganizationQuery(id);
@@ -186,10 +188,10 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
         display="flex"
         gap={9}
         mt={12}
-        alignItems="center"
+        alignItems="flex-start"
         justifyContent="space-between"
       >
-        <Box w="250px" flex={1}>
+        <Box w="250px" overflowY="hidden">
           <Text
             fontSize="title.md"
             mb={3}
@@ -360,56 +362,62 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
                   </Table.Cell>
 
                   <Table.Cell>
-                    <MenuRoot>
-                      <MenuTrigger>
-                        <IconButton
-                          data-testid="activity-more-icon"
-                          aria-label="more-icon"
-                          variant="ghost"
-                          color="content.tertiary"
-                        >
-                          <Icon as={MdMoreVert} size="lg" />
-                        </IconButton>
-                      </MenuTrigger>
-                      <MenuContent
-                        w="auto"
-                        borderRadius="8px"
-                        shadow="2dp"
-                        px="0"
-                      >
-                        <MenuItem
-                          value={t("remove-user")}
-                          valueText={t("remove-user")}
-                          p="16px"
-                          display="flex"
-                          alignItems="center"
-                          gap="16px"
-                          _hover={{
-                            bg: "content.link",
-                            cursor: "pointer",
-                          }}
-                          className="group"
-                          onClick={() => {
-                            setIsDeleteModalOpen(true);
-                            setUserToRemove(item);
-                          }}
-                        >
-                          <Icon
-                            className="group-hover:text-white"
-                            color="sentiment.negativeDefault"
-                            as={RiDeleteBin6Line}
-                            h="24px"
-                            w="24px"
-                          />
-                          <Text
-                            className="group-hover:text-white"
-                            color="content.primary"
+                    {sessionData.data?.user.email !== item.email && (
+                      <MenuRoot>
+                        <MenuTrigger>
+                          <IconButton
+                            data-testid="activity-more-icon"
+                            aria-label="more-icon"
+                            variant="ghost"
+                            color="content.tertiary"
                           >
-                            {t("remove-user")}
-                          </Text>
-                        </MenuItem>
-                      </MenuContent>
-                    </MenuRoot>
+                            <Icon as={MdMoreVert} size="lg" />
+                          </IconButton>
+                        </MenuTrigger>
+                        <MenuContent
+                          w="auto"
+                          borderRadius="8px"
+                          shadow="2dp"
+                          px="0"
+                        >
+                          <MenuItem
+                            value={t("remove-user")}
+                            valueText={t("remove-user")}
+                            p="16px"
+                            display="flex"
+                            alignItems="center"
+                            gap="16px"
+                            _hover={{
+                              bg: "content.link",
+                              cursor: "pointer",
+                            }}
+                            className="group"
+                            onClick={() => {
+                              setIsDeleteModalOpen(true);
+                              setUserToRemove(item);
+                            }}
+                          >
+                            <Icon
+                              color="sentiment.negativeDefault"
+                              as={RiDeleteBin6Line}
+                              h="24px"
+                              w="24px"
+                              _groupHover={{
+                                color: "white",
+                              }}
+                            />
+                            <Text
+                              color="content.primary"
+                              _groupHover={{
+                                color: "white",
+                              }}
+                            >
+                              {t("remove-user")}
+                            </Text>
+                          </MenuItem>
+                        </MenuContent>
+                      </MenuRoot>
+                    )}
                   </Table.Cell>
                 </Table.Row>
               )}
@@ -422,7 +430,6 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         organizationId={id}
-        isAdmin={true}
       />
       <RemoveUserModal
         t={t}

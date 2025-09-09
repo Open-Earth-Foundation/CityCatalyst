@@ -6,7 +6,7 @@ import { InviteStatus } from "@/util/types";
 
 export interface CityInviteAttributes {
   id: string;
-  cityId?: string;
+  cityId: string;
   userId?: string;
   email?: string;
   invitingUserId?: string;
@@ -22,7 +22,6 @@ export type CityInviteCreationAttributes = Optional<
   CityInviteOptionalAttributes
 >;
 export type CityInviteOptionalAttributes =
-  | "cityId"
   | "userId"
   | "email"
   | "invitingUserId"
@@ -35,7 +34,7 @@ export class CityInvite
   implements Partial<CityInviteAttributes>
 {
   id!: string;
-  cityId?: string | undefined;
+  cityId!: string;
   userId?: string | undefined;
   email?: string | undefined;
   invitingUserId?: string | undefined;
@@ -70,7 +69,7 @@ export class CityInvite
         },
         cityId: {
           type: DataTypes.UUID,
-          allowNull: true,
+          allowNull: false,
           references: {
             model: "City",
             key: "city_id",

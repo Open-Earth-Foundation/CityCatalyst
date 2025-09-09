@@ -16,6 +16,8 @@ import { UserFile } from "@/models/UserFile";
 import { Project } from "@/models/Project";
 import { hasOrgOwnerLevelAccess } from "@/backend/RoleBasedAccessService";
 import { logger } from "@/services/logger";
+import EmailService from "@/backend/EmailService";
+import uniqBy from "lodash/uniqBy";
 
 export default class UserService {
   public static async findUser(
@@ -57,6 +59,17 @@ export default class UserService {
           model: db.models.User,
           as: "users",
         },
+        {
+          model: db.models.Project,
+          as: "project",
+          include: [
+            {
+              model: db.models.Organization,
+              as: "organization",
+              attributes: ["organizationId", "name"],
+            },
+          ],
+        },
       ],
     });
 
@@ -67,6 +80,16 @@ export default class UserService {
       return city;
     }
     if (!session) throw new createHttpError.Unauthorized("Not signed in");
+
+    const hasOrgLevelAccess = await hasOrgOwnerLevelAccess(
+      city.project?.organizationId,
+      session.user.id,
+    );
+
+    if (hasOrgLevelAccess) {
+      return city;
+    }
+
     if (
       (city.users.length === 0 ||
         !city.users.map((u) => u.userId).includes(session?.user?.id)) &&
@@ -160,16 +183,211 @@ export default class UserService {
         type: QueryTypes.SELECT,
       },
     )) as { inventory_id: string }[];
-    if (!inventory) {
-      throw new createHttpError.NotFound("Inventory not found");
+
+    if (inventory) {
+      await db.models.User.update(
+        {
+          defaultInventoryId: inventory?.inventory_id,
+        },
+        { where: { userId } },
+      );
+      return inventory?.inventory_id;
     }
+
+    const adminData = await db.models.OrganizationAdmin.findOne({
+      where: {
+        userId: userId,
+      },
+      include: {
+        model: db.models.Organization,
+        as: "organization",
+        include: [
+          {
+            model: db.models.Project,
+            as: "projects",
+            include: [
+              {
+                model: db.models.City,
+                as: "cities",
+                include: [
+                  {
+                    model: db.models.Inventory,
+                    as: "inventories",
+                    attributes: ["inventoryId"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    let newDefaultInventoryId: string | null = null;
+
+    if (adminData) {
+      // if the user is an org owner, they can pick any of the inventories belonging to his organization
+      const inventories = adminData.organization.projects.flatMap((project) =>
+        project.cities.flatMap((city) => city.inventories),
+      );
+
+      if (inventories.length > 0) {
+        newDefaultInventoryId = inventories[0].inventoryId;
+      }
+    }
+
+    if (newDefaultInventoryId) {
+      await db.models.User.update(
+        {
+          defaultInventoryId: newDefaultInventoryId,
+        },
+        { where: { userId } },
+      );
+      return newDefaultInventoryId;
+    }
+
+    throw new createHttpError.NotFound("Inventory not found");
+  }
+
+  public static async updateDefaults(userId: string) {
+    // First, try to find the most recent inventory for the user
+    const [inventory] = (await db.sequelize!.query(
+      `
+            SELECT i.inventory_id, i.city_id
+            FROM "Inventory" i
+                     JOIN "CityUser" cu ON i.city_id = cu.city_id
+            WHERE cu.user_id = :userId
+            ORDER BY i.last_updated DESC
+            LIMIT 1
+        `,
+      {
+        replacements: { userId },
+        type: QueryTypes.SELECT,
+      },
+    )) as { inventory_id: string; city_id: string }[];
+
+    if (inventory) {
+      // User has an inventory, set both defaults
+      await db.models.User.update(
+        {
+          defaultInventoryId: inventory?.inventory_id,
+          defaultCityId: inventory?.city_id,
+        },
+        { where: { userId } },
+      );
+      return inventory?.inventory_id;
+    }
+
+    // No inventory found, but let's try to set a default city if possible
+    const [city] = (await db.sequelize!.query(
+      `
+            SELECT c.city_id, c.name, c.created
+            FROM "City" c
+                     JOIN "CityUser" cu ON c.city_id = cu.city_id
+            WHERE cu.user_id = :userId
+            ORDER BY c.created DESC
+        `,
+      {
+        replacements: { userId },
+        type: QueryTypes.SELECT,
+      },
+    )) as { city_id: string; name: string; created: string }[];
+
+    if (city) {
+      // User has a city but no inventory, set default city only
+      await db.models.User.update(
+        {
+          defaultCityId: city?.city_id,
+        },
+        { where: { userId } },
+      );
+
+      return null; // No inventory to return
+    }
+
+    // If user is an org admin, try to find any city/inventory from their organization
+    const adminData = await db.models.OrganizationAdmin.findOne({
+      where: {
+        userId: userId,
+      },
+      include: {
+        model: db.models.Organization,
+        as: "organization",
+        include: [
+          {
+            model: db.models.Project,
+            as: "projects",
+            include: [
+              {
+                model: db.models.City,
+                as: "cities",
+                include: [
+                  {
+                    model: db.models.Inventory,
+                    as: "inventories",
+                    attributes: ["inventoryId"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    if (adminData) {
+      // if the user is an org owner, they can pick any of the inventories belonging to his organization
+      const inventories = adminData.organization.projects.flatMap((project) =>
+        project.cities.flatMap((city) => city.inventories),
+      );
+
+      if (inventories.length > 0) {
+        const newDefaultInventoryId = inventories[0].inventoryId;
+        // Find the city for this inventory
+        const cityForInventory = adminData.organization.projects
+          .flatMap((project) => project.cities)
+          .find((city) =>
+            city.inventories.some(
+              (inv) => inv.inventoryId === newDefaultInventoryId,
+            ),
+          );
+
+        await db.models.User.update(
+          {
+            defaultInventoryId: newDefaultInventoryId,
+            defaultCityId: cityForInventory?.cityId || null,
+          },
+          { where: { userId } },
+        );
+        return newDefaultInventoryId;
+      } else {
+        // No inventories, but maybe there are cities
+        const cities = adminData.organization.projects.flatMap(
+          (project) => project.cities,
+        );
+        if (cities.length > 0) {
+          await db.models.User.update(
+            {
+              defaultCityId: cities[0].cityId,
+              defaultInventoryId: null,
+            },
+            { where: { userId } },
+          );
+          return null;
+        }
+      }
+    }
+
+    // No city or inventory found at all
     await db.models.User.update(
       {
-        defaultInventoryId: inventory?.inventory_id,
+        defaultCityId: null,
+        defaultInventoryId: null,
       },
       { where: { userId } },
     );
-    return inventory?.inventory_id;
+
+    return null;
   }
 
   /**
@@ -190,14 +408,33 @@ export default class UserService {
       throw new createHttpError.NotFound("User not found");
     }
 
-    if (!user.defaultInventoryId) {
-      await UserService.updateDefaultInventoryId(user.userId);
-    }
-    if (!user.defaultInventoryId) {
-      throw new createHttpError.NotFound("Inventory not found");
+    if (!user.defaultInventoryId || !user.defaultCityId) {
+      await UserService.updateDefaults(user.userId);
     }
 
-    return user.defaultInventoryId;
+    return user.defaultInventoryId!;
+  }
+
+  public static async findUserDefaultCity(
+    session: AppSession | null,
+  ): Promise<string> {
+    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+    const userId = session.user.id;
+    const user = await db.models.User.findOne({
+      attributes: ["defaultCityId", "userId"],
+      where: {
+        userId,
+      },
+    });
+    if (!user) {
+      throw new createHttpError.NotFound("User not found");
+    }
+
+    if (!user.defaultCityId) {
+      await UserService.updateDefaults(user.userId);
+    }
+
+    return user.defaultCityId!;
   }
 
   /**
@@ -269,7 +506,7 @@ export default class UserService {
   ) {
     if (!session) throw new createHttpError.Forbidden("Forbidden");
 
-    const adminUser = !session || session.user.role !== Roles.Admin;
+    const adminUser = session.user.role === Roles.Admin;
 
     if (adminUser) {
       return;
@@ -306,7 +543,7 @@ export default class UserService {
         {
           model: db.models.City,
           as: "cities",
-          attributes: ["cityId", "name", "countryLocode"],
+          attributes: ["cityId", "name", "countryLocode", "country"],
           include: [
             {
               model: db.models.Inventory,
@@ -333,7 +570,7 @@ export default class UserService {
           {
             model: db.models.City,
             as: "cities",
-            attributes: ["cityId", "name", "countryLocode"],
+            attributes: ["cityId", "name", "countryLocode", "country"],
             include: [
               {
                 model: db.models.Inventory,
@@ -354,7 +591,7 @@ export default class UserService {
       include: {
         model: db.models.City,
         as: "city",
-        attributes: ["cityId", "name", "countryLocode"],
+        attributes: ["cityId", "name", "countryLocode", "country"],
         include: [
           {
             model: db.models.Project,
@@ -378,10 +615,9 @@ export default class UserService {
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
 
     // OEF admin and organization owner can see all projects
-    const orgOwner = await hasOrgOwnerLevelAccess(
-      organizationId,
-      session.user.id,
-    );
+    const orgOwner =
+      (await hasOrgOwnerLevelAccess(organizationId, session.user.id)) ||
+      session.user.role === Roles.Admin;
     if (session.user.role == Roles.Admin || orgOwner) {
       return await UserService.findAllProjectForAdminAndOwner(organizationId);
     }
@@ -417,7 +653,9 @@ export default class UserService {
         name: city.name as string,
         cityId: city.cityId as string,
         inventories: city.inventories as any,
+        country: city.country as string,
         countryLocode: city.countryLocode as string,
+        locode: city.locode as string,
       });
     }
 
@@ -442,24 +680,37 @@ export default class UserService {
       where: { organizationId: project.organizationId },
     });
 
+    const orgAdmins = await db.models.OrganizationAdmin.findAll({
+      where: { organizationId: project.organizationId },
+      include: [
+        {
+          model: db.models.User,
+          as: "user",
+        },
+      ],
+    });
+
+    const invitedEmails = new Set(orgInvites.map((invite) => invite.email));
+
+    const dedupedOrgAdmin: {
+      email: string;
+      status: InviteStatus;
+      role: OrganizationRole;
+    }[] = orgAdmins
+      .filter((orgAdmin) => !invitedEmails.has(orgAdmin.user.email))
+      .map((orgAdmin) => ({
+        email: orgAdmin.user.email as string,
+        status: InviteStatus.ACCEPTED,
+        role: OrganizationRole.ORG_ADMIN,
+      }));
+
     users.push(
       ...orgInvites.map((invite) => ({
         email: invite?.email as string,
         status: invite?.status as InviteStatus,
         role: OrganizationRole.ORG_ADMIN,
       })),
-    );
-
-    // project level users
-    const projectInvites = await db.models.ProjectInvite.findAll({
-      where: { projectId },
-    });
-    users.push(
-      ...projectInvites.map((invite) => ({
-        email: invite?.email as string,
-        status: invite?.status as InviteStatus,
-        role: OrganizationRole.ADMIN,
-      })),
+      ...dedupedOrgAdmin,
     );
 
     // city collaborators level users -invites only.
@@ -474,6 +725,29 @@ export default class UserService {
       ],
     });
 
+    const cityUsersData = await db.models.CityUser.findAll({
+      include: [
+        {
+          model: db.models.User,
+          as: "user",
+        },
+        {
+          model: db.models.City,
+          as: "city",
+          where: {
+            projectId,
+          },
+        },
+      ],
+    });
+
+    const cityUsers = cityUsersData.map((cityUser) => ({
+      email: cityUser.user.email as string,
+      status: InviteStatus.ACCEPTED,
+      role: OrganizationRole.COLLABORATOR,
+      cityId: cityUser.cityId as string,
+    }));
+
     const cityInvites = cities.flatMap((city) =>
       city.cityInvites.map((invite) => ({
         email: invite?.email as string,
@@ -483,13 +757,25 @@ export default class UserService {
       })),
     );
 
-    users.push(...cityInvites);
-
-    return users;
+    users.push(...cityUsers, ...cityInvites);
+    return uniqBy(users, "email");
   }
 
   public static async removeUserFromProject(projectId: string, email: string) {
-    const project = await Project.findByPk(projectId as string);
+    const project = await Project.findByPk(projectId, {
+      include: [
+        {
+          model: db.models.Organization,
+          as: "organization",
+          include: [
+            {
+              model: db.models.Theme,
+              as: "theme",
+            },
+          ],
+        },
+      ],
+    });
 
     if (!project) {
       throw new createHttpError.NotFound("project-not-found");
@@ -498,7 +784,24 @@ export default class UserService {
     const user = await User.findOne({ where: { email } });
     const cities = await City.findAll({
       where: { projectId },
-      attributes: ["cityId"],
+      include: [
+        {
+          model: db.models.Project,
+          as: "project",
+          include: [
+            {
+              model: db.models.Organization,
+              as: "organization",
+              include: [
+                {
+                  model: db.models.Theme,
+                  as: "theme",
+                },
+              ],
+            },
+          ],
+        },
+      ],
       raw: true,
     });
     const cityIds = cities.map((city) => city.cityId);
@@ -536,9 +839,22 @@ export default class UserService {
           },
           transaction: t,
         });
+
+        EmailService.sendChangeToCityAccessNotification({
+          cities: cities as City[],
+          email: user ? (user.email as string) : email,
+          brandInformation: {
+            logoUrl: project.organization.logoUrl || "",
+            color: project.organization.theme?.primaryColor,
+          },
+          user: user,
+        });
       });
     } catch (error) {
-      logger.error({ projectId, email, err: error }, "Error removing user from project");
+      logger.error(
+        { projectId, email, err: error },
+        "Error removing user from project",
+      );
       throw new createHttpError.InternalServerError(
         "failed-to-remove-user-from-project",
       );
@@ -549,7 +865,27 @@ export default class UserService {
   }
 
   public static async removeUserFromCity(cityId: string, email: string) {
-    const city = await City.findByPk(cityId as string);
+    const city = await City.findByPk(cityId as string, {
+      include: [
+        {
+          model: db.models.Project,
+          as: "project",
+          include: [
+            {
+              model: db.models.Organization,
+              as: "organization",
+              include: [
+                {
+                  model: db.models.Theme,
+                  as: "theme",
+                  attributes: ["primaryColor"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
 
     if (!city) {
       throw new createHttpError.NotFound("city-not-found");
@@ -575,6 +911,16 @@ export default class UserService {
             email: email,
           },
           transaction: t,
+        });
+
+        EmailService.sendChangeToCityAccessNotification({
+          cities: [city],
+          email: user ? (user.email as string) : email,
+          brandInformation: {
+            logoUrl: city.project.organization.logoUrl || "",
+            color: city.project.organization.theme?.primaryColor,
+          },
+          user: user,
         });
       });
     } catch (error) {

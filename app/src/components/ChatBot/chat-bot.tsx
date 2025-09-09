@@ -36,12 +36,13 @@ interface Message {
   role: "user" | "assistant" | "code";
   text: string;
 }
-import { logger } from "@/services/logger"
+import { logger } from "@/services/logger";
+import { trackEvent } from "@/lib/analytics";
 
 const SUGGESTION_KEYS = ["gpc", "collect-data", "ipcc"];
 
 function useEnterSubmit(): {
-  formRef: RefObject<HTMLFormElement>;
+  formRef: RefObject<HTMLFormElement | null>;
   onKeyDown: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 } {
   const formRef = useRef<HTMLFormElement>(null);
@@ -144,6 +145,11 @@ export default function ChatBot({
 
   // TODO: Convert to Redux #ON-2137
   const sendMessage = async (text: string) => {
+    // Track chat interaction
+    trackEvent("chat_message_sent", {
+      inventory_id: inventoryId,
+    });
+
     // If no thread Id is set, create a thread.
     if (!threadIdRef.current) {
       await initializeThread();
@@ -388,7 +394,10 @@ export default function ChatBot({
       ) {
         logger.info("Stream processing was aborted.");
       } else {
-        logger.error({ err: error }, "An error occurred while processing the stream:");
+        logger.error(
+          { err: error },
+          "An error occurred while processing the stream:",
+        );
       }
     }
   };
@@ -489,11 +498,8 @@ export default function ChatBot({
   };
 
   return (
-    <div className="flex flex-col w-full stretch">
-      <div
-        className="overflow-y-auto max-h-[35vh] space-y-4"
-        ref={messagesWrapperRef}
-      >
+    <Box display="flex" flexDirection="column" w="full" h="stretch">
+      <Box overflowY="auto" maxH="35vh" spaceY={4} ref={messagesWrapperRef}>
         {messages.map((m, i) => {
           const isUser = m.role === "user";
           return (
@@ -511,21 +517,24 @@ export default function ChatBot({
                 </Box>
                 <Spacer />
                 <Box
-                  className={`rounded-2xl border-r-t px-6 py-4 ${isUser ? userStyles : botStyles}`}
+                  borderTopLeftRadius={isUser ? "2xl" : "0"}
+                  borderBottomLeftRadius={isUser ? "2xl" : "0"}
+                  borderTopRightRadius={isUser ? "0" : "2xl"}
+                  borderBottomRightRadius={isUser ? "0" : "2xl"}
+                  borderTopRadius="2xl"
+                  px={6}
+                  py={4}
                   bg={isUser ? "content.link" : "base.light"}
+                  whiteSpace="pre-wrap"
+                  color={isUser ? "base.light" : "content.tertiary"}
+                  letterSpacing="0.5px"
+                  lineHeight="24px"
+                  fontSize="16px"
                 >
                   <>
-                    <Text
-                      className="whitespace-pre-wrap"
-                      color={isUser ? "base.light" : "content.tertiary"}
-                      letterSpacing="0.5px"
-                      lineHeight="24px"
-                      fontSize="16px"
-                    >
-                      <ReactMarkdown rehypePlugins={[remarkGfm]}>
-                        {m.text}
-                      </ReactMarkdown>
-                    </Text>
+                    <ReactMarkdown rehypePlugins={[remarkGfm]}>
+                      {m.text}
+                    </ReactMarkdown>
                     {!isUser &&
                       i === messages.length - 1 &&
                       messages.length > 1 && (
@@ -537,17 +546,17 @@ export default function ChatBot({
                           />
                           <HStack asChild>
                             {/* <IconButton
-                          variant="ghost"
-                          icon={<Icon as={MdOutlineThumbUp} boxSize={5} />}
-                          aria-label="Vote good"
-                          color="content.tertiary"
-                        />
-                        <IconButton
-                          variant="ghost"
-                          icon={<Icon as={MdOutlineThumbDown} boxSize={5} />}
-                          aria-label="Vote bad"
-                          color="content.tertiary"
-                        /> */}
+                              variant="ghost"
+                              icon={<Icon as={MdOutlineThumbUp} boxSize={5} />}
+                              aria-label="Vote good"
+                              color="content.tertiary"
+                            />
+                            <IconButton
+                              variant="ghost"
+                              icon={<Icon as={MdOutlineThumbDown} boxSize={5} />}
+                              aria-label="Vote bad"
+                              color="content.tertiary"
+                            /> */}
                             <IconButton
                               onClick={() => copyToClipboard(m.text)}
                               variant="ghost"
@@ -565,19 +574,19 @@ export default function ChatBot({
                             </IconButton>
                             {/* <Spacer /> */}
                             {/* <Button
-                          onClick={() => reload()}
-                          leftIcon={<Icon as={MdRefresh} boxSize={5} />}
-                          variant="outline"
-                          textTransform="none"
-                          fontFamily="body"
-                          color="content.tertiary"
-                          borderColor="border.neutral"
-                          fontWeight="400"
-                          lineHeight="16px"
-                          letterSpacing="0.5px"
-                        >
-                          {t("regenerate")}
-                        </Button> */}
+                              onClick={() => reload()}
+                              leftIcon={<Icon as={MdRefresh} boxSize={5} />}
+                              variant="outline"
+                              textTransform="none"
+                              fontFamily="body"
+                              color="content.tertiary"
+                              borderColor="border.neutral"
+                              fontWeight="400"
+                              lineHeight="16px"
+                              letterSpacing="0.5px"
+                            >
+                              {t("regenerate")}
+                            </Button> */}
                           </HStack>
                         </>
                       )}
@@ -588,11 +597,11 @@ export default function ChatBot({
           );
         })}
         {/* <div ref={messagesEndRef} /> */}
-      </div>
+      </Box>
 
       <Box divideX="2px" mt={2} mb={6} borderColor="border.neutral" />
 
-      <div className="overflow-x-auto space-x-2 whitespace-nowrap pb-3">
+      <Box display="flex" overflowX="auto" gap={2} whiteSpace="nowrap" pb="3">
         {suggestions.map((suggestion, i) => (
           <Button
             key={i}
@@ -616,7 +625,7 @@ export default function ChatBot({
             {suggestion.preview}
           </Button>
         ))}
-      </div>
+      </Box>
 
       <form onSubmit={handleSubmit} ref={formRef}>
         <HStack mt={1}>
@@ -629,7 +638,9 @@ export default function ChatBot({
           <Textarea
             h="80px"
             ref={inputRef}
-            className="flex-grow w-full p-4"
+            flexGrow={1}
+            w="full"
+            p={4}
             value={userInput}
             placeholder={t("ask-assistant")}
             onChange={(e) => setUserInput(e.target.value)}
@@ -656,6 +667,6 @@ export default function ChatBot({
           )}
         </HStack>
       </form>
-    </div>
+    </Box>
   );
 }

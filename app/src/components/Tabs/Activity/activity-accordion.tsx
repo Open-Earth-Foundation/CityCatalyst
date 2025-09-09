@@ -21,6 +21,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 interface IActivityGroup {
   activityData: ActivityValue[];
@@ -56,6 +57,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
   // split the data into groups
   // for each table group by the group by field
 
+  const { isFrozenCheck } = useOrganizationContext();
   const methodology = findMethodology(methodologyId!, referenceNumber);
 
   const { activityGroups } = useMemo<{
@@ -324,17 +326,19 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           cursor: "pointer",
                         }}
                         className="group"
-                        onClick={() => onEditActivity(activity)}
+                        onClick={() =>
+                          isFrozenCheck() ? null : onEditActivity(activity)
+                        }
                       >
                         <Icon
-                          className="group-hover:text-white"
+                          _hover={{ color: "white" }}
                           color="interactive.control"
                           as={MdModeEditOutline}
                           h="24px"
                           w="24px"
                         />
                         <Text
-                          className="group-hover:text-white"
+                          _hover={{ color: "white" }}
                           color="content.primary"
                         >
                           {t("update-activity")}
@@ -352,17 +356,19 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           cursor: "pointer",
                         }}
                         className="group"
-                        onClick={() => onDeleteActivity(activity)}
+                        onClick={() =>
+                          isFrozenCheck() ? null : onDeleteActivity(activity)
+                        }
                       >
                         <Icon
-                          className="group-hover:text-white"
+                          _hover={{ color: "white" }}
                           color="sentiment.negativeDefault"
                           as={FiTrash2}
                           h="24px"
                           w="24px"
                         />
                         <Text
-                          className="group-hover:text-white"
+                          _hover={{ color: "white" }}
                           color="content.primary"
                         >
                           {t("delete-activity")}
@@ -464,6 +470,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           pos="relative"
                           onClick={(e) => {
                             e.stopPropagation();
+                            if (isFrozenCheck()) return;
                             showActivityModal();
                           }}
                           _hover={{ bg: "none" }}

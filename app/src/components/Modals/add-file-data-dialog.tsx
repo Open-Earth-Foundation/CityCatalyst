@@ -108,10 +108,9 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
   }
 
   // TODO this is fixed on dev so use that version once stable
-  /* const { data: inventoryData } = api.useGetInventoryQuery(inventory!, {
+  const { data: inventoryData } = api.useGetInventoryQuery(inventory!, {
     skip: !userInfo,
-  }); */
-  const inventoryData: any = null;
+  });
 
   const [addUserFile, { isLoading }] = api.useAddUserFileMutation();
   const DEFAULT_STATUS = "pending";
@@ -247,7 +246,14 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
             </Text>
             <Separator borderColor="divider.neutral" borderWidth="2px" />
             <Box w="100%">
-              <form className="w-full flex flex-col gap-[36px]">
+              <form
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "36px",
+                }}
+              >
                 <Field
                   label={
                     <>

@@ -1,52 +1,56 @@
 "use client";
 
 import { NavigationBar } from "@/components/navigation-bar";
-import { toaster, Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
-import { api } from "@/services/api";
-import { Roles } from "@/util/types";
-import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
-import { useTranslation } from "@/i18n/client";
-import { useSession } from "next-auth/react";
+import { api, useGetOrganizationForCityQuery } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
+import { use } from "react";
+import { useTheme } from "next-themes";
+import { useEffect } from "react";
 
-export default function CitiesLayout({
-  children,
-  params: { lng },
-}: {
+export default function CitiesLayout(props: {
   children: React.ReactNode;
-  params: { lng: string };
+  params: Promise<{ lng: string }>;
 }) {
-  const router = useRouter();
+  const { lng } = use(props.params);
+  const { children } = props;
 
-  const { t } = useTranslation(lng, "admin");
-  const { data } = useSession();
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+
+  // Get organization data for the user's default city
+  const { data: cityOrgData, isLoading: isCityOrgDataLoading } =
+    useGetOrganizationForCityQuery(userInfo?.defaultCityId!, {
+      skip: !userInfo?.defaultCityId,
+    });
+
+  const { setTheme } = useTheme();
 
   useEffect(() => {
-    if (data?.user.role !== Roles.Admin) {
-      toaster.error({
-        title: t("not-authorized"),
-      });
-      const REDIRECT_DELAY_MS = 2000;
-      setTimeout(() => {
-        const fallbackPath = `/${lng}`;
-        router.push(fallbackPath);
-      }, REDIRECT_DELAY_MS);
+    if (cityOrgData) {
+      setTheme(cityOrgData?.theme?.themeKey ?? ("blue_theme" as string));
+    } else {
+      setTheme("blue_theme");
     }
-  }, [data?.user.role, lng, router, t]);
+  }, [cityOrgData, setTheme]);
+
+  if (isUserInfoLoading || isCityOrgDataLoading) {
+    return <ProgressLoader />;
+  }
 
   return (
-    <Box className="h-full flex flex-col" bg="background.backgroundLight">
-      <NavigationBar lng={lng} />
+    <Box
+      h="full"
+      display="flex"
+      flexDirection="column"
+      bg="background.backgroundLight"
+    >
+      <NavigationBar showMenu lng={lng} />
       <Toaster />
-      <div className="w-full h-full">
-        {data?.user?.role === Roles.Admin ? children : <ProgressLoader />}
-      </div>
+      <Box w="full" h="full">
+        {children}
+      </Box>
     </Box>
   );
 }

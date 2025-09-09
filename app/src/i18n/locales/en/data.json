@@ -116,7 +116,7 @@
   "more-datasets": "View more datasets",
   "less-datasets": "View less datasets",
   "add-data-heading": "Add Data to Your Inventory Data",
-  "add-data-details": "These are the subsectors to be completed according to the GPC methodology for the transport sector. Select a sub-sector and fill in the information to complete your inventory.",
+  "add-data-details": "These are the subsectors to be completed according to the GPC methodology for the current sector. Select a sub-sector and fill in the information to complete your inventory.",
   "select-subsector": "Select sub-sector",
   "residential-buildings": "Residential buildings",
   "residential-buildings-description": "Includes high rise buildings, landed buildings, workers’ quarters in industrial establishments, residential in agricultural farms.",
@@ -876,6 +876,7 @@
   "treatment-type-anaerobic-shallow-lagoon": "Anaerobic shallow lagoon",
   "treatment-type-anaerobic-deep-lagoon": "Anaerobic deep lagoon",
   "treatment-type-septic-system": "Septic system",
+  "treatment-type-latrine": "Latrine",
   "treatment-type-latrine-dry-climate-small-family": "Latrine: Dry climate, ground water table lower than latrine, small family (3-5 persons)",
   "treatment-type-latrine-dry-climate-communal": "Latrine: Dry climate, ground water table lower than latrine, communal (many users)",
   "treatment-type-latrine-wet-climate": "Latrine: Wet climate/flush water use, ground water table higher than latrine",
@@ -1249,5 +1250,11 @@
   "waste-composition-total-percentage": "{{percent}} / 100%",
   "waste-composition-percentage": "{{percent}}%",
   "categories": "Categories",
-  "percentage": "Percentage"
+  "percentage": "Percentage",
+  "go-to-source": "Go to source",
+  "calculated-emission-values-too-large": "Calculated emission values are too large to store. Please reduce your activity amounts or emission factors to avoid overflow.",
+  "invalid-request": "Invalid Request",
+  "emission-factor-too-large": "Emission factor cannot exceed {{max}}. Please enter a smaller value.",
+  "emission-factor-required": "Emission factor required",
+  "emission-factor-negative": "Emission factor cannot be negative. Please enter a positive value."
 }

@@ -43,6 +43,7 @@ import {
 import { MdInfoOutline } from "react-icons/md";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
+import Callout from "@/components/ui/callout";
 
 const categoryIconMapping: Record<string, any> = {
   "waste-composition-municipal-solid-waste": MunicipalSolidWasteIcon,
@@ -214,7 +215,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                     flex={1}
                     fontSize="label.lg"
                     fontWeight="bold"
-                    className="capitalize"
+                    textTransform="capitalize"
                   >
                     {t("categories")}
                   </Text>
@@ -222,7 +223,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                     w="116px"
                     fontSize="label.lg"
                     fontWeight="bold"
-                    className="capitalize"
+                    textTransform="capitalize"
                   >
                     {t("percentage")}
                   </Text>
@@ -271,7 +272,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                   fontWeight="bold"
                   mt={6}
                 >
-                  <Text fontSize="title.sm" className="uppercase" flex={1}>
+                  <Text fontSize="title.sm" textTransform="uppercase" flex={1}>
                     {t("total")}
                   </Text>
                   <Text fontSize="title.sm">
@@ -288,25 +289,12 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                 {wasteCompositionLoading && <ProgressLoader />}
                 {wasteCompositionValues && (
                   <>
-                    <Box bg="background.neutral" p={6} borderRadius={3}>
-                      <HStack color="content.link">
-                        <MdInfoOutline />
-                        <Text
-                          fontSize="label.md"
-                          fontWeight="semibold"
-                          color="content.link"
-                        >
-                          {t("waste-composition-default-values-heading")}
-                        </Text>
-                      </HStack>
-                      <Text
-                        fontSize="body.small"
-                        fontWeight="normal"
-                        color="content.secondary"
-                      >
-                        {t("waste-composition-default-values-description")}
-                      </Text>
-                    </Box>
+                    <Callout
+                      heading={t("waste-composition-default-values-heading")}
+                      description={t(
+                        "waste-composition-default-values-description",
+                      )}
+                    />
                     <Box
                       w="full"
                       p={6}
@@ -320,7 +308,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                           flex={1}
                           fontSize="label.lg"
                           fontWeight="bold"
-                          className="capitalize"
+                          textTransform="capitalize"
                         >
                           {t("categories")}
                         </Text>
@@ -328,7 +316,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                           w="116px"
                           fontSize="label.lg"
                           fontWeight="bold"
-                          className="capitalize"
+                          textTransform="capitalize"
                         >
                           {t("percentage")}
                         </Text>
@@ -349,7 +337,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                         color={totalPercent === 100 ? "green.500" : "red.500"}
                         fontWeight="bold"
                       >
-                        <Text className="uppercase" flex={1}>
+                        <Text textTransform="uppercase" flex={1}>
                           {t("total")}
                         </Text>
                         <Text>{totalPercent}%</Text>
@@ -376,7 +364,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
               flex={1}
               fontSize="label.lg"
               fontWeight="bold"
-              className="capitalize"
+              textTransform="capitalize"
             >
               {t("categories")}
             </Text>
@@ -384,7 +372,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
               w="116px"
               fontSize="label.lg"
               fontWeight="bold"
-              className="capitalize"
+              textTransform="capitalize"
             >
               {t("percentage")}
             </Text>
@@ -430,7 +418,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
             fontWeight="bold"
             mt={6}
           >
-            <Text fontSize="title.sm" className="uppercase" flex={1}>
+            <Text fontSize="title.sm" textTransform="uppercase" flex={1}>
               {t("total")}
             </Text>
             <Text fontSize="title.sm">

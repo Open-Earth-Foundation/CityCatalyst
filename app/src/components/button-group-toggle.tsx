@@ -1,4 +1,5 @@
 import { Box, Button, Icon } from "@chakra-ui/react";
+import type { JSX } from "react";
 import { IconBaseProps } from "react-icons";
 
 const ButtonGroupToggle = ({
@@ -15,7 +16,8 @@ const ButtonGroupToggle = ({
 }) => {
   return (
     <Box
-      className="flex items-center"
+      display="flex"
+      alignItems="center"
       borderWidth="1px"
       borderColor="border.overlay"
       borderRadius="4px"
@@ -25,7 +27,10 @@ const ButtonGroupToggle = ({
           key={option.label}
           variant="outline"
           onClick={option.onClick}
-          className="py-3 px-4 flex gap-2"
+          display="flex"
+          gap={2}
+          py={3}
+          px={4}
           fontSize="14px"
           rounded="4px"
           backgroundColor={

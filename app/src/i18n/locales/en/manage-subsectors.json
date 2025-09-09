@@ -1210,6 +1210,7 @@
   "deselect-all": "Deselect all",
   "success": "Success",
   "notation-keys-updated": "Notation keys updated",
+  "error-updating-notation-keys": "Failed to update notation keys",
   "quick-action-applied": "Quick action applied",
   "changes-can-be-lost": "Your changes can be lost",
   "changes-can-be-lost-description": "Do you want to discard all changes made since last edit? This cannot be undone.",

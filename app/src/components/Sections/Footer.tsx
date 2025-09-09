@@ -1,20 +1,22 @@
-import { Box, Button, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import { Link } from "@chakra-ui/react";
 import React from "react";
 import FooterLink from "../Navigation/FooterLink";
 import { useTranslation } from "@/i18n/client";
 import { getCurrentVersion } from "@/util/helpers";
-import { useLogo } from "@/hooks/logo-provider/use-logo-provider";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { TitleSmall } from "../Texts/Title";
 
 const Footer = ({ lng }: { lng: string }) => {
   const currentVersion = getCurrentVersion();
   const { t } = useTranslation(lng, "footer");
-  const { logoUrl } = useLogo();
+  const { organization } = useOrganizationContext();
+  const logoUrl = organization?.logoUrl;
   return (
-    <footer className="w-full h-[320px] bg-[#00001f] pt-[48px]">
-      <Box className="w-full px-[64px]">
-        <Box className="flex justify-between w-full pb-10">
+    <Box as="footer" w="full" h="320px" bg="#00001f" pt={"48px"}>
+      <Box w="full" px={"64px"}>
+        <Box display="flex" justifyContent="space-between" w="full" pb={10}>
           <Box>
             {logoUrl ? (
               <img src={logoUrl} width={200} alt="Org logo" />
@@ -28,41 +30,63 @@ const Footer = ({ lng }: { lng: string }) => {
             )}
           </Box>
           <Box
-            fontFamily="heading"
-            className="text-white text-[14px] w-[60%] grid grid-cols-3  gap-6 font-poppins"
+            color="white"
+            fontSize="14px"
+            w="60%"
+            display="grid"
+            gridTemplateColumns="repeat(3, 1fr)"
+            gap={6}
+            fontFamily="poppins"
           >
-            <FooterLink
-              url="https://citycatalyst.openearth.org/"
-              title={t("about-citycatalyst")}
-            />
-            <FooterLink
-              url="https://github.com/Open-Earth-Foundation/OpenClimate/blob/develop/CONTRIBUTING.md"
-              title={t("contribution-guide")}
-            />
-            <FooterLink
-              url="https://github.com/Open-Earth-Foundation/CityCatalyst"
-              title={t("goto-gh")}
-            />
-            <FooterLink
-              url="https://wiki.climatedata.network/"
-              title={t("cad")}
-            />
-            <FooterLink
-              url="https://github.com/Open-Earth-Foundation/CityCatalyst/wiki"
-              title={t("read-the-docs")}
-            />
-            <FooterLink url="./cdp" title={t("submit-to-cdp")} />
-            <FooterLink
-              url="https://citycatalyst.openearth.org/privacy"
-              title={t("our-privacy-policy")}
-            />
+            <VStack align="flex-start">
+              <TitleSmall color="background.overlay" textTransform="uppercase">
+                {t("about")}
+              </TitleSmall>
+              <FooterLink
+                url="https://citycatalyst.openearth.org/"
+                title={t("about-citycatalyst")}
+              />
+              <FooterLink
+                url="https://wiki.climatedata.network/"
+                title={t("cad")}
+              />
+
+              <FooterLink
+                url="https://citycatalyst.openearth.org/privacy"
+                title={t("our-privacy-policy")}
+              />
+            </VStack>
+            <VStack align="flex-start">
+              <TitleSmall color="background.overlay" textTransform="uppercase">
+                {t("developers")}
+              </TitleSmall>
+
+              <FooterLink
+                url="https://github.com/Open-Earth-Foundation/CityCatalyst"
+                title={t("goto-gh")}
+              />
+              <FooterLink
+                url="https://github.com/Open-Earth-Foundation/OpenClimate/blob/develop/CONTRIBUTING.md"
+                title={t("contribution-guide")}
+              />
+
+              <FooterLink
+                url="https://github.com/Open-Earth-Foundation/CityCatalyst/wiki"
+                title={t("read-the-docs")}
+              />
+            </VStack>
+
+            <VStack align="flex-start">
+              <TitleSmall color="background.overlay" textTransform="uppercase">
+                {t("resources")}
+              </TitleSmall>
+              <FooterLink url="/methodologies" title={t("methodologies")} />
+              <FooterLink url="./cdp" title={t("submit-to-cdp")} />
+            </VStack>
           </Box>
           <Box>
             <Link href="mailto:info@openearth.org">
-              <Button
-                variant="solid"
-                className="h-[48px] w-[150px] gap-3 rounded-full"
-              >
+              <Button h={"48px"} minW={"150px"} gap={3} borderRadius="48px">
                 <Text
                   color="base.light"
                   fontFamily="heading"
@@ -77,8 +101,8 @@ const Footer = ({ lng }: { lng: string }) => {
             </Link>
           </Box>
         </Box>
-        <Box backgroundColor="body" className="h-[1px]" />
-        <Box className="flex gap-4 align-middle" mt={12}>
+        <Box bg="body" h={1} />
+        <Box display="flex" gap={4} alignItems="center" mt={12}>
           <Box mt={-1.5}>
             <Image
               src="/assets/powered_by_logo.svg"
@@ -97,9 +121,13 @@ const Footer = ({ lng }: { lng: string }) => {
             <>v{currentVersion}</>
           </Text>
           <Box
-            backgroundColor="border.neutral"
-            borderRadius={18}
-            className="h-[20px] w-[61px] flex items-center justify-center"
+            h={"20px"}
+            w={"61px"}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            bg="border.neutral"
+            borderRadius="20px"
           >
             <Text
               fontFamily="heading"
@@ -133,7 +161,7 @@ const Footer = ({ lng }: { lng: string }) => {
           </Link>
         </Box>
       </Box>
-    </footer>
+    </Box>
   );
 };
 

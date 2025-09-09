@@ -1,0 +1,56 @@
+datasource_name,dataset_name,URL,publisher_id,datasource_id
+IEA + Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,b88fc2aa-9df2-393a-8f35-ebe24291a9be
+IEA + Electricity Maps Estimation; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,d8b2777e-2703-318e-b45c-4ad879b6c304
+EMBER + Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,a7350de0-c5de-30a3-96cd-48d965b6174f
+EMBER + Electricity Maps Estimation; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,2de011ab-7b46-33bc-9888-b5d9fdfa8ba0
+Electricity Maps Estimation; EMBER + Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,bbc804f3-04af-3084-9f83-e031758b1e18
+Electricity Maps Estimation; IEA + Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,184e7202-b880-3d31-91c3-cbc7986b052e
+portalweb.cammesa.com; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,e24fa88e-db6b-333c-87d4-65c6d0ee532f
+Electricity Maps Estimation; cammesaweb.cammesa.com,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,dc1f1507-8c8a-365e-a0b9-a4a05bf8b579
+cammesaweb.cammesa.com; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,73c3661c-59ca-38dd-b217-7760b7da9ac8
+entsoe.eu,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,b8f8e313-2687-3170-bdd2-34e7a2e57483
+Electricity Maps Estimation; entsoe.eu,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,98310037-a63b-383a-87b7-351fb7b8930f
+Electricity Maps,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,758dea5b-1c00-3f00-994a-98d9387520fa
+webaruba.com; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,c3d6d1fc-e7b4-366e-ae2e-d0ec7bce5ecf
+Electricity Maps Estimation; webaruba.com,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,cb3edbca-a01a-387a-8971-3f65ac8caf03
+kraftnat.aland.fi; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,911d4c1f-5bfc-374a-9bad-f548125526eb
+kraftnat.ax; kraftnat.aland.fi; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,b39fcb04-3540-3f78-96b1-5fb2a504948c
+kraftnat.ax,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,d230d7cd-ee08-3815-b2f2-aad71a99cb9d
+Electricity Maps Estimation; kraftnat.ax,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,8dee9ca5-efaa-3ae2-8c8b-1e00b3367e98
+entsoe.eu; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,b81b190f-66ee-3532-96c1-2b68df359734
+Electricity Maps Estimation; erp.pgcb.gov.bd,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,9918c086-c02b-3a94-a4ec-ffda30265126
+eso.bg; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,c5140287-086b-3383-a9a8-7eb0ddba9107
+Electricity Maps Estimation; eso.bg,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,698d2e6c-c51b-3082-a3a4-b78d87461bb1
+IRENA + Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,2f46bb4b-eddc-3445-ae5c-0cad485a313d
+Electricity Maps Estimation; IRENA + Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,87a76b1d-e513-31a9-8e7c-494e7362022e
+cndc.bo; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,68cbd373-5a86-328a-85b2-b18382d33fb7
+coordinador.cl; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,6dc549e6-88ad-3a01-8511-a16e4566d892
+Electricity Maps Estimation; coordinador.cl,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,30170129-aa82-3087-877d-8937121c6a70
+Electricity Maps Estimation; xm.com.co,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,28360519-ddfd-3a16-aafe-d7fb10a24e8f
+xm.com.co; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,33c7a278-3585-3b1e-8aed-b323d3135131
+Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,870507f0-5889-371b-9a46-657db9a7810a
+Electricity Maps Estimation; grupoice.com,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,8c78058d-3272-30b1-b794-56e7d55ef094
+grupoice.com; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,259c8aae-a2b5-32df-89f0-eb9550e640d1
+Electricity Maps Estimation; tsoc.org.cy,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,ac0a54c3-4d4c-3fb1-8e91-23c678a6c4eb
+ceps.cz,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,9f9fda06-7d9f-3625-92b0-fccb2972a77e
+demanda.ree.es; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,a068d13c-6fcf-3492-be1a-a9cba3a16cd5
+demanda.ree.es,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,5bc86f50-b143-3217-8f31-55274564c386
+Electricity Maps Estimation; opendata.edf.fr,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,2111c4a7-a21f-3995-916e-6733c7cad942
+opendata.edf.fr; Electricity Maps Estimation; edf.fr; opendata-corse.edf.fr,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,937d2b40-1b87-38e5-a6dc-06f2dc11977e
+edf.fr; opendata-corse.edf.fr; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,fe110c3a-2473-3b6a-a07e-14f8291fc824
+Electricity Maps Estimation; opendata-corse.edf.fr,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,55be2d6d-a6d1-3072-abae-b4d7d92b1fac
+cenace.gob.mx; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,91cbec8c-55c3-3e34-a060-12a961f337fc
+Electricity Maps Estimation; cenace.gob.mx,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,dfc8754d-cbaa-35aa-802b-cae4508ffbf4
+cenace.gob.mx,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,a2fed249-0b20-3185-936b-e8753765309f
+Electricity Maps Estimation; niggrid.org,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,31ec2391-dfb6-3b9f-8872-cca504fc3784
+niggrid.org; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,b8b12580-87b1-3b64-ac12-1b59b7301eb1
+niggrid.org,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,c11a8c12-25ca-3d4a-a8b3-1995611fce49
+eia.gov,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,ce83b30a-b559-34aa-999f-800e342c0659
+eia.gov; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,3c27bb87-6d8b-3453-ae6f-ebf18d58026f
+Electricity Maps Estimation; eia.gov,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,7dd82ec2-ccbe-3a4a-a8d4-649ef05bfd07
+pronos.adme.com.uy,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,66f47a49-fabb-3af4-9988-5a337b7761e0
+pronos.adme.com.uy; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,1bcf3e4b-4fe2-3ea0-a79d-10eb135e089f
+Electricity Maps Estimation; pronos.adme.com.uy,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,861a1145-f920-336f-870c-24f3963aa855
+eskom.co.za,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,f23e3a3e-2817-3d71-9f04-c7c61080b3f1
+eskom.co.za; Electricity Maps Estimation,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,dc9551a2-28c1-37ba-b2b8-5e9686f5bd9f
+Electricity Maps Estimation; eskom.co.za,Carbon intensity,https://portal.electricitymaps.com/datasets/,758dea5b-1c00-3f00-994a-98d9387520fa,b4e6e644-f7fa-31ae-a7ce-49a33a4e4c09

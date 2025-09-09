@@ -1,18 +1,18 @@
 import NotificationService from "@/backend/NotificationService";
 import UserService from "@/backend/UserService";
-import AdminNotificationTemplate from "@/lib/emails/AdminNotificationTemplate";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { bytesToMB, fileEndingToMIMEType } from "@/util/helpers";
 import { createUserFileRequset } from "@/util/validation";
-import { render } from "@react-email/components";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
+import { LANGUAGES } from "@/util/types";
+import { FeatureFlags, hasServerFeatureFlag } from "@/util/feature-flags";
 
 // TODO: use these variables to configure file size and format
 const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_FILE_FORMATS = []; // file formats types to be parsed and refined later
+const ACCEPTED_FILE_FORMATS = ["csv", "xlsx", "json"]; // file formats types to be parsed and refined later
 
 export const GET = apiHandler(async (_req: Request, context) => {
   if (!context.session) {
@@ -61,7 +61,12 @@ export const GET = apiHandler(async (_req: Request, context) => {
 
 export const POST = apiHandler(
   async (req: NextRequest, { params, session }) => {
-    const service = NotificationService.getInstance(); // TODO cache this/ make it a singleton
+    if (!hasServerFeatureFlag(FeatureFlags.UPLOAD_OWN_DATA_ENABLED)) {
+      throw new createHttpError.ServiceUnavailable(
+        "Feature flag UPLOAD_OWN_DATA_ENABLED is not enabled on this service",
+      );
+    }
+
     const user = session?.user;
     const cityId = params.city;
 
@@ -72,6 +77,19 @@ export const POST = apiHandler(
 
     if (!file) {
       throw new createHttpError.BadRequest("File not found, Please add a file");
+    }
+
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+    if (!fileExtension || !ACCEPTED_FILE_FORMATS.includes(fileExtension)) {
+      throw new createHttpError.BadRequest(
+        `Invalid file type. Accepted formats are: ${ACCEPTED_FILE_FORMATS.join(", ")}`,
+      );
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      throw new createHttpError.BadRequest(
+        `File too large. Maximum allowed size is ${bytesToMB(MAX_FILE_SIZE)}MB.`,
+      );
     }
 
     const filename = file.name;
@@ -89,7 +107,7 @@ export const POST = apiHandler(
       fileReference: formData.get("fileReference"),
       url: formData.get("url"),
       data: buffer,
-      fileType: fileType,
+      fileType: fileType === "blob" ? "csv" : fileType,
       fileName: filename,
       sector: formData.get("sector"),
       subsectors: subsectors.split(","),
@@ -131,7 +149,12 @@ export const POST = apiHandler(
     };
 
     await NotificationService.sendNotificationEmail({
-      user: { email: user?.email!, name: user?.name! },
+      user: {
+        email: user?.email!,
+        name: user?.name!,
+        // default to english since the email goes to admins
+        preferredLanguage: LANGUAGES.en,
+      },
       fileData: newFileData,
       city,
       inventoryId,

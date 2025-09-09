@@ -1,16 +1,15 @@
 import { db } from "@/models";
 import { QueryTypes } from "sequelize";
-import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import groupBy from "lodash/groupBy";
-import mapValues from "lodash/mapValues";
-import { toKebabCase } from "@/util/helpers";
-import { ActivityDataByScope, GroupedActivity } from "@/util/types";
+import { ActivityDataByScope } from "@/util/types";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import createHttpError from "http-errors";
 import GlobalAPIService from "./GlobalAPIService";
 import { Inventory } from "@/models/Inventory";
 import { logger } from "@/services/logger";
+import { Op } from "sequelize";
+import { ActivityValue } from "@/models/ActivityValue";
 
 function multiplyBigIntByFraction(
   stringValue: string,
@@ -30,12 +29,6 @@ function calculatePercentage(co2eq: Decimal, total: Decimal): number {
     return 0;
   }
   return co2eq.times(100).div(total).round().toNumber();
-}
-
-interface TotalEmissionsRecord {
-  inventory_id: string;
-  co2eq: bigint;
-  sector_name: SectorNamesInDB;
 }
 
 interface TopEmissionRecord {
@@ -79,23 +72,8 @@ interface EmissionResults {
   };
 }
 
-type ActivitiesForSectorBreakdownBulk = {
-  [inventoryId: string]: {
-    [sectorName in SectorNamesInDB]?: ActivityForSectorBreakdown[];
-  };
-};
-
 interface GroupedActivityResult {
-  // byActivity: ResponseWithoutTotals;
   byScope: ActivityDataByScope[];
-}
-
-interface ResponseWithoutTotals {
-  [activity: string]: {
-    [key: string]: {
-      [units: string]: GroupedActivity;
-    };
-  };
 }
 
 interface ActivityForSectorBreakdown {
@@ -106,21 +84,13 @@ interface ActivityForSectorBreakdown {
   subsector_name: string;
   scope_name: string;
   sector_name: SectorNamesInDB;
+  datasource_id: string;
+  datasource_name: string;
 }
 
 type ActivityForSectorBreakdownRecords = ActivityForSectorBreakdown & {
   co2eq: bigint;
 };
-
-interface UngroupedActivityData {
-  activityTitle: string;
-  activityValue: Decimal | string;
-  activityUnits: string;
-  activityEmissions: Decimal;
-  emissionsPercentage: number;
-  subsectorName: string;
-  scopeName: string;
-}
 
 /** we get this names for the sectors in the query from the FE */
 export type SectorNamesInFE =
@@ -162,38 +132,40 @@ interface TotalEmissionsBySectorAndSubsector {
   ss_reference_number: string;
 }
 
+export interface EmissionsBySector {
+  co2eq: bigint;
+  inventory_id: string;
+  sector_name: SectorNamesInDB;
+  reference_number: string;
+}
+
 export async function getTotalEmissionsBySector(inventoryIds: string[]) {
   const rawQuery = `
-      SELECT iv.inventory_id, SUM(iv.co2eq) AS co2eq, s.sector_name, s.reference_number
-      FROM "InventoryValue" iv
-               JOIN "Sector" s ON iv.sector_id = s.sector_id
-      WHERE iv.inventory_id IN (:inventoryIds)
-      GROUP BY iv.inventory_id, s.sector_name, s.reference_number
-      ORDER BY iv.inventory_id, SUM(iv.co2eq) DESC
+    SELECT iv.inventory_id, SUM(iv.co2eq) AS co2eq, s.sector_name, s.reference_number
+    FROM "InventoryValue" iv
+           JOIN "Sector" s ON iv.sector_id = s.sector_id
+    WHERE iv.inventory_id IN (:inventoryIds)
+    GROUP BY iv.inventory_id, s.sector_name, s.reference_number
+    ORDER BY iv.inventory_id, SUM(iv.co2eq) DESC
   `;
 
   return (await db.sequelize!.query(rawQuery, {
     replacements: { inventoryIds },
     type: QueryTypes.SELECT,
-  })) as {
-    co2eq: bigint;
-    inventory_id: string;
-    sector_name: SectorNamesInDB;
-    reference_number: string;
-  }[];
+  })) as EmissionsBySector[];
 }
 
 export async function getTotalEmissionsBySectorAndSubsector(
   inventoryId: string,
 ) {
   const rawQuery = `
-      SELECT iv.inventory_id, SUM(iv.co2eq) AS co2eq, s.reference_number, ss.reference_number as ss_reference_number
-      FROM "InventoryValue" iv
-               JOIN "Sector" s ON iv.sector_id = s.sector_id
-               LEFT JOIN "SubSector" ss on iv.sub_sector_id = ss.subsector_id
-      WHERE iv.inventory_id = :inventoryId
-      GROUP BY iv.inventory_id, s.reference_number, ss.reference_number
-      ORDER BY iv.inventory_id, SUM(iv.co2eq) DESC;
+    SELECT iv.inventory_id, SUM(iv.co2eq) AS co2eq, s.reference_number, ss.reference_number as ss_reference_number
+    FROM "InventoryValue" iv
+           JOIN "Sector" s ON iv.sector_id = s.sector_id
+           LEFT JOIN "SubSector" ss on iv.sub_sector_id = ss.subsector_id
+    WHERE iv.inventory_id = :inventoryId
+    GROUP BY iv.inventory_id, s.reference_number, ss.reference_number
+    ORDER BY iv.inventory_id, SUM(iv.co2eq) DESC;
   `;
 
   return (await db.sequelize!.query(rawQuery, {
@@ -241,15 +213,15 @@ async function fetchTopEmissionsBulk(
   inventoryIds: string[],
 ): Promise<{ [inventoryId: string]: TopEmission[] }> {
   const rawQuery = `
-      SELECT iv.inventory_id, iv.co2eq, s.sector_name, ss.subsector_name, scope.scope_name
-      FROM "InventoryValue" iv
-               JOIN "Sector" s ON iv.sector_id = s.sector_id
-               JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
-               LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
-               JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
-      WHERE iv.inventory_id IN (:inventoryIds)
-        AND iv.co2eq IS NOT NULL
-      ORDER BY iv.inventory_id, iv.co2eq DESC
+    SELECT iv.inventory_id, iv.co2eq, s.sector_name, ss.subsector_name, scope.scope_name
+    FROM "InventoryValue" iv
+           JOIN "Sector" s ON iv.sector_id = s.sector_id
+           JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
+           LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
+           JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
+    WHERE iv.inventory_id IN (:inventoryIds)
+      AND iv.co2eq IS NOT NULL
+    ORDER BY iv.inventory_id, iv.co2eq DESC
   `;
 
   const topEmissionsRaw: TopEmissionRecord[] = await db.sequelize!.query(
@@ -279,74 +251,6 @@ async function fetchTopEmissionsBulk(
   }
 
   return topEmissions;
-}
-
-// c. Fetch Activities for Sector Breakdown (Bulk)
-async function fetchActivitiesBulk(
-  inventoryIds: string[],
-  sectorNamesMap: { [inventoryId: string]: string[] },
-): Promise<ActivitiesForSectorBreakdownBulk> {
-  // Flatten sector names and ensure uniqueness
-  const uniqueSectorNames = Array.from(
-    new Set(
-      Object.values(sectorNamesMap)
-        .flat()
-        .map((name) => name.toLowerCase().replace("-", " ")),
-    ),
-  );
-
-  const rawQuery = `
-      SELECT iv.inventory_id,
-             av.activity_data_jsonb,
-             sc.reference_number,
-             iv.input_methodology,
-             av.co2eq,
-             s.sector_name,
-             ss.subsector_name,
-             scope.scope_name
-      FROM "ActivityValue" av
-               JOIN "InventoryValue" iv ON av.inventory_value_id = iv.id
-               JOIN "Sector" s ON iv.sector_id = s.sector_id
-               JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
-               LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
-               JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
-      WHERE iv.inventory_id IN (:inventoryIds)
-        AND LOWER(s.sector_name) IN (:sectorNames)
-  `;
-
-  const activitiesRaw: ActivityForSectorBreakdownRecords[] =
-    await db.sequelize!.query(rawQuery, {
-      replacements: { inventoryIds, sectorNames: uniqueSectorNames },
-      type: QueryTypes.SELECT,
-    });
-
-  // Group by inventory_id and sector_name
-  const grouped = groupBy(activitiesRaw, "inventory_id");
-
-  const activitiesByInventory: ActivitiesForSectorBreakdownBulk = {};
-
-  for (const [inventoryId, records] of Object.entries(grouped)) {
-    activitiesByInventory[inventoryId] = {};
-
-    const sectors = (sectorNamesMap[inventoryId] as SectorNamesInDB[]) || [];
-
-    sectors.forEach((sectorName) => {
-      const normalizedSectorName = sectorName.toLowerCase().replace("-", " ");
-      const filteredActivities = records.filter(
-        (record) =>
-          (record.sector_name as string).toLowerCase() === normalizedSectorName,
-      );
-
-      activitiesByInventory[inventoryId][sectorName] = filteredActivities.map(
-        (record) => ({
-          ...record,
-          co2eq: bigIntToDecimal(record.co2eq || 0n),
-        }),
-      );
-    });
-  }
-
-  return activitiesByInventory;
 }
 
 // Core Emission Results Function
@@ -402,89 +306,173 @@ export async function getEmissionResultsBatch(
   return emissionResults;
 }
 
+// Type for raw query result from InventoryValue join query
+interface InventoryValueQueryResult {
+  co2eq: bigint;
+  subsector_name: string;
+  scope_name: string;
+  datasource_id: string;
+  datasource_name: string;
+  inventory_value_id: string;
+}
+
+interface InventoryValuesBySector {
+  sector_name?: SectorNamesInDB;
+  subsector_name: string;
+  scope_name: string;
+  co2eq: bigint;
+  datasource_name: string;
+  datasource_id: string;
+  inventory_value_id: string;
+  activities: ActivityValue[];
+}
+
 const fetchInventoryValuesBySector = async (
   inventoryId: string,
   sectorName: SectorNamesInFE,
 ) => {
+  // Get individual inventory values with their activities
   const rawQuery = `
-      SELECT sum(iv.co2eq) as co2eq,
-             ss.subsector_name,
-             scope.scope_name
-      FROM "InventoryValue" iv
-               LEFT JOIN "ActivityValue" av ON av.inventory_value_id = iv.id
-               JOIN "Sector" s ON iv.sector_id = s.sector_id
-               JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
-               LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
-               JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
-      WHERE iv.inventory_id = (:inventoryId)
-        and iv.co2eq IS NOT NULL
-        AND (s.sector_name) = (:sectorName)
-      GROUP BY ss.subsector_name, scope.scope_name
+    SELECT
+      iv.co2eq,
+      ss.subsector_name,
+      scope.scope_name,
+      iv.datasource_id,
+      ds.datasource_name,
+      iv.id as inventory_value_id
+    FROM "InventoryValue" iv
+           JOIN "Sector" s ON iv.sector_id = s.sector_id
+           JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
+           LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
+           JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
+           LEFT JOIN "DataSourceI18n" ds ON iv.datasource_id = ds.datasource_id
+    WHERE iv.inventory_id = (:inventoryId)
+      and iv.co2eq IS NOT NULL
+      AND (s.sector_name) = (:sectorName)
   `;
-  const activitiesRaw: ActivityForSectorBreakdownRecords[] =
-    await db.sequelize!.query(rawQuery, {
-      replacements: {
-        inventoryId,
-        sectorName: SectorMappingsFromFEToDB[sectorName as SectorNamesInFE],
+  const sectorNameDB = SectorMappingsFromFEToDB[sectorName as SectorNamesInFE];
+
+  const inventoryValues = (await db.sequelize!.query(rawQuery, {
+    replacements: {
+      inventoryId,
+      sectorName: sectorNameDB,
+    },
+    type: QueryTypes.SELECT,
+  })) as InventoryValueQueryResult[];
+
+  // Get all relevant InventoryValue IDs
+  const inventoryValueIds = inventoryValues.map(
+    (row) => row.inventory_value_id,
+  );
+
+  let activityInstances: ActivityValue[] = [];
+  if (inventoryValueIds.length > 0) {
+    activityInstances = await ActivityValue.findAll({
+      where: {
+        inventoryValueId: { [Op.in]: inventoryValueIds },
       },
-      type: QueryTypes.SELECT,
     });
-  return activitiesRaw as InventoryValuesBySector[];
+  }
+  const activitiesGrouped: Record<string, ActivityValue[]> = groupBy(
+    activityInstances,
+    "inventoryValueId",
+  );
+
+  // Attach activities to each inventory value
+  const inventoryValuesWithActivities: InventoryValuesBySector[] =
+    inventoryValues.map((iv) => ({
+      ...iv,
+      activities: activitiesGrouped[iv.inventory_value_id] || [],
+    }));
+
+  return inventoryValuesWithActivities;
 };
 
-interface InventoryValuesBySector {
-  sector_name: SectorNamesInDB;
-  scope_name: string;
-  co2eq: bigint;
-}
-
-type InventoryValuesBySectorByScope = {
-  [sectorName in SectorNamesInDB]: InventoryValuesBySector[];
-};
-
-/** Core Emissions Breakdown Function
- * Simplified version with only data by sector, not by activity. works for data inputted manually and from 3rd parties.
- * [ON-3126] restore byActivity:  bring back changes from commit 9584504412c2da47eeba2a8e3eaaa15c739e05bc*/
 export const getEmissionsBreakdownBatch = async (
   inventoryId: string,
   sectorName: SectorNamesInFE,
-): Promise<GroupedActivityResult> => {
+): Promise<
+  GroupedActivityResult & {
+    byScope: ActivityDataByScope[];
+  }
+> => {
   try {
     const emissionsForSector = await fetchInventoryValuesBySector(
       inventoryId,
       sectorName,
     );
 
-    const bySubSector: InventoryValuesBySectorByScope = groupBy(
+    const bySubSectorAndDataSource = groupBy(
       emissionsForSector,
-      "subsector_name",
-    ) as InventoryValuesBySectorByScope;
-
-    const totalEmissions = bigIntToDecimal(
-      sumBigIntBy(emissionsForSector, "co2eq"),
+      (e) => `${e.subsector_name}-${e.datasource_id}`,
     );
 
-    const resultsByScope = Object.entries(bySubSector).map(
-      ([sectorName, scopeValues]) => {
-        const totalSectorEmissions = bigIntToDecimal(
-          sumBigIntBy(scopeValues, "co2eq"),
+    const totalEmissions = emissionsForSector.reduce((sum, item) => {
+      // Sum the co2eq from all activities for this inventory value
+      if (item.activities.length > 0) {
+        const activitySum = item.activities.reduce(
+          (activitySum, activity) =>
+            activitySum.plus(bigIntToDecimal(activity.co2eq ?? 0n)),
+          new Decimal(0),
         );
-        const scopes: { [key: string]: Decimal } = {};
+        return sum.plus(activitySum);
+      } else {
+        return sum.plus(bigIntToDecimal(item.co2eq ?? 0n));
+      }
+    }, new Decimal(0));
 
-        scopeValues.forEach(
-          ({ scope_name, co2eq }: { scope_name: string; co2eq: bigint }) => {
-            scopes[scope_name] = bigIntToDecimal(co2eq || 0n);
-          },
+    const resultsByScope = Object.entries(bySubSectorAndDataSource).map(
+      ([_subsectorAndDataSource, scopeValues]) => {
+        // Group by scope within this subsector/datasource combination
+        const byScope = groupBy(scopeValues, "scope_name");
+
+        const scopes: { [key: string]: Decimal } = {};
+        let totalSubSectorEmissions = new Decimal(0);
+
+        // Aggregate emissions by scope
+        Object.entries(byScope).forEach(([scopeName, scopeItems]) => {
+          // Sum the co2eq from all activities for this inventory value
+          const scopeEmissions = scopeItems.reduce((sum, item) => {
+            if (item.activities.length > 0) {
+              // Sum the co2eq from all activities for this inventory value
+              const activitySum = item.activities.reduce(
+                (activitySum, activity) =>
+                  activitySum.plus(bigIntToDecimal(activity.co2eq || 0n)),
+                new Decimal(0),
+              );
+              return sum.plus(activitySum);
+            } else {
+              return sum.plus(bigIntToDecimal(item.co2eq || 0n));
+            }
+          }, new Decimal(0));
+          scopes[scopeName] = scopeEmissions;
+          totalSubSectorEmissions =
+            totalSubSectorEmissions.plus(scopeEmissions);
+          return scopeEmissions;
+        });
+
+        // Collect all activities from this subsector/datasource combination
+        const activities = scopeValues.flatMap(
+          (scopeValue) => scopeValue.activities,
+        );
+
+        const percentage = calculatePercentage(
+          totalSubSectorEmissions,
+          totalEmissions,
         );
 
         return {
-          activityTitle: sectorName,
+          activityTitle: scopeValues[0].subsector_name,
           scopes,
-          totalEmissions: totalSectorEmissions,
-          percentage: calculatePercentage(totalSectorEmissions, totalEmissions),
+          totalEmissions: totalSubSectorEmissions,
+          percentage,
+          datasource_id: scopeValues[0].datasource_id,
+          datasource_name: scopeValues[0].datasource_name,
+          activities,
         };
       },
     );
+
     return { byScope: resultsByScope };
   } catch (error) {
     logger.error({ err: error }, "Error in getEmissionsBreakdownBatch:");
@@ -492,271 +480,11 @@ export const getEmissionsBreakdownBatch = async (
   }
 };
 
-// Existing Helper Functions (Unchanged)
-const getActivityDataValues = (
-  activity: ActivityForSectorBreakdown,
-  sumOfEmissions: Decimal,
-): UngroupedActivityData | null => {
-  const {
-    reference_number,
-    input_methodology,
-    activity_data_jsonb,
-    co2eq,
-    subsector_name,
-    scope_name,
-  } = activity;
-  const manualInputHierarchyElement = MANUAL_INPUT_HIERARCHY[reference_number];
-  const isDirectMeasure = input_methodology === "direct-measure";
-  const methodologyFields = isDirectMeasure
-    ? manualInputHierarchyElement.directMeasure
-    : manualInputHierarchyElement.methodologies?.find(
-        (m) => m.id === input_methodology,
-      );
-
-  if (!methodologyFields) {
-    logger.error(
-      `Methodology fields not found for ${reference_number}, ${input_methodology}`,
-    );
-    return null;
-  }
-
-  const { activityTypeField, activityUnitsField } = methodologyFields;
-  const activityPrefix = isDirectMeasure ? "" : "activity-";
-
-  return {
-    activityTitle: activityTypeField
-      ? toKebabCase(activity_data_jsonb[activityTypeField])
-      : "N/A",
-    activityValue: activityUnitsField
-      ? activity_data_jsonb[activityPrefix + activityUnitsField]
-      : "N/A",
-    activityUnits: activityUnitsField
-      ? activity_data_jsonb[activityPrefix + activityUnitsField + "-unit"]
-      : "N/A",
-    activityEmissions: co2eq,
-    emissionsPercentage: calculatePercentage(co2eq, sumOfEmissions),
-    subsectorName: toKebabCase(subsector_name),
-    scopeName: scope_name,
-  };
-};
-
-const fetch3rdPartyInventoryValues = (inventoryId: string) => {
-  const rawQuery = `SELECT iv.id,
-                           iv.co2eq,
-                           scope.scope_name
-                    FROM "InventoryValue" iv
-                             JOIN "Sector" s ON iv.sector_id = s.sector_id
-                             JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
-                             LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
-                             JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
-                    WHERE iv.inventory_id = (:inventoryId)
-                      and iv.datasource_id is not null;`;
-
-  return db.sequelize!.query(rawQuery, {
-    replacements: { inventoryId },
-    type: QueryTypes.SELECT,
-  }) as {} as Promise<
-    {
-      id: string;
-      co2eq: bigint;
-      scope_name: string;
-    }[]
-  >;
-};
-
-async function calculateThirdPartyEmissionsByScope(
-  inventoryId: string,
-): Promise<ActivityDataByScope[]> {
-  const inventoryValues = await fetch3rdPartyInventoryValues(inventoryId);
-  const scopes = inventoryValues.map((value) => {
-    const scopeName = value.scope_name;
-
-    if (!scopeName) {
-      throw new createHttpError.InternalServerError(
-        "Scope name not found for inventory value " + value.id,
-      );
-    }
-
-    const co2eq = value.co2eq ?? 0n;
-    const totalEmissions = bigIntToDecimal(co2eq || 0n);
-
-    return {
-      activityTitle: "mixed-activities",
-      scopes: {
-        [scopeName]: bigIntToDecimal(co2eq || 0n),
-      },
-      totalEmissions,
-      percentage: 100,
-    };
-  });
-
-  return scopes;
-}
-
-function calculateEmissionsByScope(
-  activityValues: UngroupedActivityData[],
-): ActivityDataByScope[] {
-  const activities: { [key: string]: ActivityDataByScope } = {};
-  let total = new Decimal(0);
-
-  // First pass: sum up emissions by activity and scope
-  activityValues.forEach((item) => {
-    const emissions = item.activityEmissions;
-    const { activityTitle, scopeName } = item;
-
-    if (!activities[activityTitle]) {
-      activities[activityTitle] = {
-        activityTitle,
-        scopes: {},
-        totalEmissions: new Decimal(0),
-        percentage: 0,
-      };
-    }
-
-    if (!(scopeName in activities[activityTitle].scopes)) {
-      activities[activityTitle].scopes[scopeName] = new Decimal(0);
-    }
-
-    activities[activityTitle].scopes[scopeName] =
-      activities[activityTitle].scopes[scopeName].plus(emissions);
-    activities[activityTitle].totalEmissions =
-      activities[activityTitle].totalEmissions.plus(emissions);
-    total = total.plus(emissions);
-  });
-
-  // Second pass: calculate percentages
-  Object.values(activities).forEach((activity) => {
-    activity.percentage = calculatePercentage(activity.totalEmissions, total);
-  });
-
-  // Convert the activities object to an array
-  return Object.values(activities);
-}
-
-const groupActivities = (
-  activitiesForSectorBreakdown: UngroupedActivityData[],
-) => {
-  const groupedBySubsector = groupBy(
-    activitiesForSectorBreakdown,
-    "subsectorName",
-  );
-
-  return mapValues(groupedBySubsector, (subsectorActivities) => {
-    const groupedByActivity = groupBy(subsectorActivities, (e) =>
-      toKebabCase(e.activityTitle),
-    );
-
-    return mapValues(groupedByActivity, (activityGroup) => {
-      const groupedByUnit = groupBy(activityGroup, "activityUnits");
-
-      return mapValues(groupedByUnit, (unitGroup) => {
-        const isActivityValueNa = unitGroup.some(
-          (e) => e.activityValue === "N/A",
-        );
-        return unitGroup.reduce<GroupedActivity>(
-          (acc, current) => {
-            const currentActivityValue =
-              current.activityValue === "N/A"
-                ? "N/A"
-                : new Decimal(current.activityValue);
-            const newActivityValue =
-              isActivityValueNa ||
-              acc.activityValue === "N/A" ||
-              currentActivityValue === "N/A"
-                ? "N/A"
-                : Decimal.sum(acc.activityValue, currentActivityValue);
-            return {
-              activityValue: newActivityValue,
-              activityUnits: current.activityUnits,
-              totalActivityEmissions: (
-                acc.totalActivityEmissions as Decimal
-              ).plus(current.activityEmissions),
-              totalEmissionsPercentage:
-                acc.totalEmissionsPercentage + current.emissionsPercentage,
-            };
-          },
-          {
-            activityValue: isActivityValueNa ? "N/A" : new Decimal(0),
-            activityUnits: "",
-            totalActivityEmissions: new Decimal(0),
-            totalEmissionsPercentage: 0,
-          },
-        );
-      });
-    });
-  });
-};
-
-function calculateActivityTotals(grouped: ResponseWithoutTotals) {
-  const byActivity = grouped;
-  for (const activity in byActivity) {
-    const activityData: any = byActivity[activity];
-    const totalActivityValueByUnit: any = {};
-    let totalActivityEmissions = new Decimal(0);
-
-    for (const fuelType in activityData) {
-      if (fuelType === "totals") continue;
-
-      const fuelTypeData = activityData[fuelType];
-
-      for (const unit in fuelTypeData) {
-        const data = fuelTypeData[unit];
-
-        const activityValue = data.activityValue;
-        const activityUnits = data.activityUnits;
-        const activityEmissions = data.totalActivityEmissions;
-
-        if (activityEmissions !== "N/A") {
-          const emissionsToAdd =
-            activityEmissions instanceof Decimal
-              ? activityEmissions
-              : new Decimal(activityEmissions);
-          totalActivityEmissions = totalActivityEmissions.plus(emissionsToAdd);
-        }
-
-        if (!totalActivityValueByUnit[activityUnits]) {
-          totalActivityValueByUnit[activityUnits] = {
-            totalActivityValue: new Decimal(0),
-            hasNA: false,
-          };
-        }
-
-        if (activityValue === "N/A") {
-          totalActivityValueByUnit[activityUnits].hasNA = true;
-        } else {
-          const decimalActivityValue =
-            activityValue instanceof Decimal
-              ? activityValue
-              : new Decimal(activityValue);
-          totalActivityValueByUnit[activityUnits].totalActivityValue =
-            totalActivityValueByUnit[activityUnits].totalActivityValue.plus(
-              decimalActivityValue,
-            );
-        }
-      }
-    }
-
-    const totalActivityValueByUnitOutput: any = {};
-    for (const unit in totalActivityValueByUnit) {
-      const { totalActivityValue, hasNA } = totalActivityValueByUnit[unit];
-      totalActivityValueByUnitOutput[unit] = hasNA ? "N/A" : totalActivityValue;
-    }
-
-    activityData.totals = {
-      totalActivityValueByUnit: totalActivityValueByUnitOutput,
-      totalActivityEmissions,
-    };
-  }
-
-  return grouped;
-}
-
 /** entry point for results/[sectorName] */
 export async function getEmissionsBreakdown(
   inventory: string,
   sectorName: SectorNamesInFE,
 ): Promise<{
-  // byActivity: ResponseWithoutTotals;
   byScope: ActivityDataByScope[];
 }> {
   return getEmissionsBreakdownBatch(inventory, sectorName);

@@ -6,5 +6,12 @@
   "go-back": "Regresa",
   "dashboard": "Tablero",
   "log-out": "Cerrar Sesión",
-  "settings": "Ajustes"
+  "settings": "Ajustes",
+  "languages": {
+    "en": "Inglés",
+    "es": "Español",
+    "fr": "Francés",
+    "de": "Alemán",
+    "pt": "Portugués"
+  }
 }

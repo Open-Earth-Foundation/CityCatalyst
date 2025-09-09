@@ -19,10 +19,10 @@ import { randomUUID } from "node:crypto";
 import { AppSession, Auth } from "@/lib/auth";
 import { Roles } from "@/util/types";
 
-const organizationData: CreateOrganizationRequest = {
-  name: "Test Organization",
-  contactEmail: "test@organization.com",
-};
+const getUniqueOrganizationData = (): CreateOrganizationRequest => ({
+  name: `Test Organization ${randomUUID().slice(0, 8)}`,
+  contactEmail: `test+${randomUUID().slice(0, 8)}@organization.com`,
+});
 
 const invalidOrganization = {
   name: "",
@@ -39,9 +39,12 @@ const mockUserSession: AppSession = {
   expires: "1h",
 };
 
+const emptyParams = { params: Promise.resolve({}) };
+
 describe("Organization API", () => {
   let organization: Organization;
   let prevGetServerSession = Auth.getServerSession;
+  let organizationData: CreateOrganizationRequest;
 
   beforeAll(async () => {
     setupTests();
@@ -49,10 +52,10 @@ describe("Organization API", () => {
   });
 
   beforeEach(async () => {
-    await db.models.Organization.destroy({
-      where: { name: organizationData.name },
-    });
+    // Create unique organization data for each test to avoid conflicts
+    organizationData = getUniqueOrganizationData();
     organization = await db.models.Organization.create({
+      active: true,
       ...organizationData,
       organizationId: randomUUID(),
     });
@@ -65,21 +68,20 @@ describe("Organization API", () => {
   });
 
   it("should create an organization", async () => {
-    await db.models.Organization.destroy({
-      where: { name: organizationData.name },
-    });
-
-    const req = mockRequest(organizationData);
-    const res = await createOrganization(req, { params: {} });
+    // Create unique org data for this test
+    const uniqueOrgData = getUniqueOrganizationData();
+    
+    const req = mockRequest(uniqueOrgData);
+    const res = await createOrganization(req, emptyParams);
     expect(res.status).toEqual(201);
     const data = await res.json();
-    expect(data.name).toEqual(organizationData.name);
-    expect(data.contactEmail).toEqual(organizationData.contactEmail);
+    expect(data.name).toEqual(uniqueOrgData.name);
+    expect(data.contactEmail).toEqual(uniqueOrgData.contactEmail);
   });
 
   it("should not create an organization with invalid data", async () => {
     const req = mockRequest(invalidOrganization);
-    const res = await createOrganization(req, { params: {} });
+    const res = await createOrganization(req, emptyParams);
     expect(res.status).toEqual(400);
     const {
       error: { issues },
@@ -96,15 +98,16 @@ describe("Organization API", () => {
 
   it("should not allow non-admins to create an organization", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
-    const req = mockRequest(organizationData);
-    const res = await createOrganization(req, { params: {} });
+    const uniqueOrgData = getUniqueOrganizationData();
+    const req = mockRequest(uniqueOrgData);
+    const res = await createOrganization(req, emptyParams);
     expect(res.status).toEqual(403);
   });
 
   it("should allow admin to query organizations", async () => {
     const req = mockRequest();
     const res = await getOrganizations(req, {
-      params: { organizationId: organization.organizationId },
+      params: Promise.resolve({ organizationId: organization.organizationId }),
     });
     expect(res.status).toEqual(200);
     const data = await res.json();
@@ -115,7 +118,7 @@ describe("Organization API", () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
     const req = mockRequest();
     const res = await getOrganizations(req, {
-      params: { organizationId: organization.organizationId },
+      params: Promise.resolve({ organizationId: organization.organizationId }),
     });
     expect(res.status).toEqual(403);
   });

@@ -3,6 +3,7 @@ import { Icon, Input, Text } from "@chakra-ui/react";
 import { FieldError } from "react-hook-form";
 import { Fieldset } from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
+import LabelLarge from "@/components/Texts/Label";
 
 export default function EmailInput({
   children,
@@ -24,7 +25,11 @@ export default function EmailInput({
   defaultValue?: string;
 }) {
   return (
-    <Field label={name} invalid={!!error} errorText={error?.message}>
+    <Field
+      label={<LabelLarge>{name}</LabelLarge>}
+      invalid={!!error}
+      errorText={error?.message}
+    >
       <Input
         readOnly={disabled}
         type="email"

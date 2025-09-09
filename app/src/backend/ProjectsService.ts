@@ -1,8 +1,7 @@
 import { db } from "@/models";
 import { logger } from "@/services/logger";
-import { uniqBy } from "lodash";
 import { ProjectWithCities } from "@/util/types";
-import { OK } from "zod";
+import uniqBy from "lodash/uniqBy";
 
 interface ProjectInfo {
   projectId: string;
@@ -116,7 +115,9 @@ export class ProjectService {
             name: city.name as string,
             cityId: city.cityId as string,
             inventories: city.inventories as any,
+            country: city.country as string,
             countryLocode: city.countryLocode as string,
+            locode: city.locode as string,
           })),
         })),
       ...organizationAdminAssociations.flatMap((assoc) =>
@@ -130,7 +131,9 @@ export class ProjectService {
             name: city.name as string,
             cityId: city.cityId as string,
             inventories: city.inventories as any,
+            country: city.country as string,
             countryLocode: city.countryLocode as string,
+            locode: city.locode as string,
           })),
         })),
       ),

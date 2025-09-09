@@ -8,6 +8,7 @@ import {
 } from "next-auth/providers/credentials";
 import { Roles } from "@/util/types";
 import { logger } from "@/services/logger";
+import crypto from "node:crypto";
 
 // extracted from next-auth/providers/credentials
 // added here since the node test runner/ tsx wouldn't properly import ESM modules
@@ -35,6 +36,7 @@ export type AppSession = DefaultSession & {
     id: string;
     role: Roles;
   };
+  csrfSecret?: string;
 };
 
 export class Auth {
@@ -73,7 +75,7 @@ export const authOptions: NextAuthOptions = {
           }
           const users = await db.models.User.findAll();
           user = await db.models.User.findOne({
-            where: { email: credentials.email },
+            where: { email: credentials.email.toLowerCase() },
           });
         } catch (err: any) {
           logger.error({ err: err }, "Failed to login:");
@@ -111,6 +113,7 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as unknown as User).role;
         token.picture = user.image;
         token.name = user.name;
+        token.csrfSecret = crypto.randomBytes(32).toString('hex');
       }
       return token;
     },
@@ -122,6 +125,7 @@ export const authOptions: NextAuthOptions = {
           id: token.sub,
           role: token.role,
         },
+        csrfSecret: token.csrfSecret
       };
     },
   },

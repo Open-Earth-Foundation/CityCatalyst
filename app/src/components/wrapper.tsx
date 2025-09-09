@@ -7,7 +7,7 @@ interface WrapperProps {
 
 const Wrapper: FC<WrapperProps> = ({ children }) => {
   return (
-    <Box className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
+    <Box pt={16} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
       {children}
     </Box>
   );

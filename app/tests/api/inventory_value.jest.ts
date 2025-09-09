@@ -23,6 +23,7 @@ import {
   setupTests,
   testUserID,
 } from "../helpers";
+import { createTestData, cleanupTestData, TestData } from "../helpers/testDataCreationHelper";
 
 import { Inventory } from "@/models/Inventory";
 import { InventoryValue } from "@/models/InventoryValue";
@@ -71,6 +72,7 @@ describe("Inventory Value API", () => {
   let subCategory: SubCategory;
   let subSector: SubSector;
   let inventoryValue: InventoryValue;
+  let testData: TestData;
 
   beforeAll(async () => {
     setupTests();
@@ -82,7 +84,6 @@ describe("Inventory Value API", () => {
     await db.models.SubSector.destroy({
       where: { subsectorName },
     });
-    await db.models.City.destroy({ where: { locode } });
 
     const prevInventory = await db.models.Inventory.findOne({
       where: { inventoryName },
@@ -96,16 +97,23 @@ describe("Inventory Value API", () => {
       });
     }
 
-    const city = await db.models.City.create({
-      cityId: randomUUID(),
-      locode,
+    // Create proper test data hierarchy
+    testData = await createTestData({
+      cityName: locode,
+      countryLocode: "XX"
     });
+
+    const city = await db.models.City.findByPk(testData.cityId);
+    if (!city) {
+      throw new Error(`Failed to find city with ID ${testData.cityId}`);
+    }
+    
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city.addUser(testUserID);
     inventory = await db.models.Inventory.create({
       inventoryId: randomUUID(),
       inventoryName: "TEST_SUBCATEGORY_INVENTORY",
-      cityId: city.cityId,
+      cityId: testData.cityId,
     });
 
     subSector = await db.models.SubSector.create({
@@ -135,6 +143,7 @@ describe("Inventory Value API", () => {
   });
 
   afterAll(async () => {
+    await cleanupTestData(testData);
     if (db.sequelize) await db.sequelize.close();
   });
 
@@ -144,10 +153,10 @@ describe("Inventory Value API", () => {
     });
     const req = mockRequest(inventoryValue1);
     const res = await upsertInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
-      },
+      }),
     });
     await expectStatusCode(res, 200);
     const { data } = await res.json();
@@ -160,10 +169,10 @@ describe("Inventory Value API", () => {
   it.skip("should not create an inventory value with invalid data", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await upsertInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
-      },
+      }),
     });
     await expectStatusCode(res, 400);
     const {
@@ -175,10 +184,10 @@ describe("Inventory Value API", () => {
   it("should find an inventory value", async () => {
     const req = mockRequest();
     const res = await findInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
-      },
+      }),
     });
 
     const { data } = await res.json();
@@ -211,9 +220,9 @@ describe("Inventory Value API", () => {
     ].join(",");
     const req = mockRequest(null, { subCategoryIds });
     const res = await batchFindInventoryValues(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
-      },
+      }),
     });
 
     const { data } = await res.json();
@@ -244,10 +253,10 @@ describe("Inventory Value API", () => {
   it("should not find a non-existing sub category", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await findInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         subcategory: randomUUID(),
-      },
+      }),
     });
     await expectStatusCode(res, 404);
   });
@@ -255,10 +264,10 @@ describe("Inventory Value API", () => {
   it.skip("should update an inventory value", async () => {
     const req = mockRequest(inventoryValue1);
     const res = await upsertInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
-      },
+      }),
     });
     await expectStatusCode(res, 200);
     const { data } = await res.json();
@@ -270,10 +279,10 @@ describe("Inventory Value API", () => {
   it.skip("should not update an inventory value with invalid data", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await upsertInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
-      },
+      }),
     });
     await expectStatusCode(res, 400);
     const {

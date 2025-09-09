@@ -1,23 +1,24 @@
 "use client";
+import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
 import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
 import Image from "next/image";
-import NextLink from "next/link";
 import { MdArrowForward } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
-export default function Onboarding({
-  params: { lng },
-}: {
-  params: { lng: string };
+export default function Onboarding(props: {
+  params: Promise<{ lng: string }>;
 }) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
+  const router = useRouter();
 
   const steps = [1, 2, 3, 4];
 
   return (
     <>
-      <Box className="pt-[100px] w-[1050px] max-w-full mx-auto">
+      <Box w={"1090px"} maxW="full" mx="auto">
         <Box display="flex" gap="55px" alignItems="center">
           <Box w="full" h="full" display="flex" flexDir="column" gap="24px">
             <Text
@@ -64,7 +65,15 @@ export default function Onboarding({
           </Box>
         </Box>
       </Box>
-      <Box bg="base.light" h="145px" w="full" pos="fixed" bottom="0" left="0">
+      <Box
+        bg="base.light"
+        h="145px"
+        w="full"
+        pos="fixed"
+        bottom="0"
+        left="0"
+        zIndex={999}
+      >
         {/* Place holder steppers */}
         <HStack p="4px">
           {steps.map((step) => (
@@ -85,18 +94,20 @@ export default function Onboarding({
           py="32px"
           px="175px"
         >
-          <NextLink href="/onboarding/setup">
-            <Button w="auto" gap="8px" py="16px" px="24px" h="64px">
-              <Text
-                fontFamily="button.md"
-                fontWeight="600"
-                letterSpacing="wider"
-              >
-                {t("start-inventory")}
-              </Text>
-              <MdArrowForward height="24px" width="24px" />
-            </Button>
-          </NextLink>
+          <Button
+            w="auto"
+            gap="8px"
+            py="16px"
+            px="24px"
+            h="64px"
+            data-testid="start-inventory-button"
+            onClick={() => router.push("/onboarding/setup")}
+          >
+            <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
+              {t("start-inventory")}
+            </Text>
+            <MdArrowForward height="24px" width="24px" />
+          </Button>
         </Box>
       </Box>
     </>

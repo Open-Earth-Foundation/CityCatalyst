@@ -11,7 +11,7 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import { TabHeader } from "@/components/HomePage/TabHeader";
+import { TabHeader } from "@/components/GHGIHomePage/TabHeader";
 import EmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsWidget";
 import TopEmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/TopEmissionsWidget";
 import { BlueSubtitle } from "@/components/Texts/BlueSubtitle";
@@ -241,6 +241,7 @@ function SectorTabs({
                   )}
                   {shouldShowTableByScope && (
                     <ByScopeView
+                      inventoryId={inventory.inventoryId}
                       inventoryType={inventory.inventoryType}
                       data={sectorBreakdown!.byScope}
                       tData={tData}
@@ -364,12 +365,13 @@ export function EmissionPerSectors({
               );
             }
 
-
             const totalInventoryPercentage = inventoryEmissions
-              ? Number(new Decimal(sectorData.co2eq?.toString())
-                  .mul(100)
-                  .div(inventoryEmissions?.toString())
-                  .toFixed(3))
+              ? Number(
+                  new Decimal(sectorData.co2eq?.toString())
+                    .mul(100)
+                    .div(inventoryEmissions?.toString())
+                    .toFixed(3),
+                )
               : null;
 
             let percentageChange: number | null = null;
@@ -428,17 +430,27 @@ export function EmissionPerSectors({
   let containerRef = useRef<HTMLDivElement>(document.createElement("div"));
 
   return (
-    <Box className="flex flex-col gap-[8px] w-full">
+    <Box display="flex" flexDirection="column" gap={8} w="full">
       <Card.Root>
         <Card.Body>
-          <Box className="flex items-center justify-between">
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
             <Card.Header padding={0}>
               <Heading size="sm">{t("ghg-by-sector-heading")}</Heading>
             </Card.Header>
             <ButtonGroupToggle options={options} activeOption={selectedView} />
           </Box>
           {loadingState && (
-            <Box className="w-full py-12 flex items-center justify-center">
+            <Box
+              w="full"
+              py={12}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
               <ProgressCircleRoot value={null}>
                 <ProgressCircleRing cap="round" />
               </ProgressCircleRoot>
@@ -456,7 +468,7 @@ export function EmissionPerSectors({
           {
             // if we have data, we can display the table or the chart
             !loadingState && transformedYearOverYearData.length > 0 && (
-              <Box className="pt-6">
+              <Box pt={6}>
                 {selectedView === "table" ? (
                   <EmissionBySectorTableSection
                     lng={lng}
@@ -464,12 +476,12 @@ export function EmissionPerSectors({
                   />
                 ) : (
                   <TooltipProvider container={containerRef}>
-                    <div className="min-h-[600px]" ref={containerRef}>
+                    <Box minH="600px" ref={containerRef}>
                       <EmissionBySectorChart
                         data={transformedYearOverYearData}
                         lng={lng}
                       />
-                    </div>
+                    </Box>
                   </TooltipProvider>
                 )}
               </Box>
@@ -496,7 +508,7 @@ export default function InventoryResultTab({
   return (
     <>
       {inventory && (
-        <Box className="flex flex-col gap-[8px] w-full">
+        <Box display="flex" flexDirection="column" gap={8} w="full">
           <TabHeader
             t={t}
             inventory={inventory}

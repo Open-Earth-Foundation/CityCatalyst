@@ -6,8 +6,8 @@ const { bulkUpsert } = require("./util/util.cjs");
 
 const folders = [
   "EFDB_2006_IPCC_guidelines",
-  "CarbonFootPrint_2023",
-  "ghgprotocol",
+  //"CarbonFootPrint_2023",
+  //"ghgprotocol",
 ];
 
 const toJson = ({
@@ -56,7 +56,20 @@ async function parseFile(filename, folder) {
 /** @type {import("sequelize-cli").Migration} */
 module.exports = {
   async up(queryInterface) {
+    // Skip emissions factors seeding - now handled by emissions-factors-sync.ts
+    console.error("Skipping emissions factors seeding - using sync script instead");
+    return;
     await queryInterface.sequelize.transaction(async (transaction) => {
+      // set all existing emissions factors to deprecated
+      // if they aren't overridden by the new data, they will be deleted (if unused in inventories) after all seed folders are processed
+      await queryInterface.bulkUpdate(
+        "EmissionsFactor",
+        { deprecated: true },
+        {}, // no where clause, update all
+        { transaction },
+        {}, // don't return attributes
+      );
+
       for (const folder of folders) {
         console.log("Loading emissions factor folder " + folder + "...");
         const dataSources = await parseFile("DataSource", folder);
@@ -70,6 +83,7 @@ module.exports = {
           const metadata = ef.metadata ? ef.metadata : "{}";
           ef.metadata = metadata.replace(/'/g, '"');
           ef.year = !!ef.year ? parseInt(ef.year) : null;
+          ef.deprecated = false; // set to false, as we set all existing emissions factors to deprecated at the start of this seeder
           return ef;
         });
 
@@ -117,12 +131,26 @@ module.exports = {
           "emissions_factor_id", // TODO handle multiple primary keys
           transaction,
         );
-        console.info("Done, have a nice day ✨");
+        console.info("Finished adding DataSourceEmissionsFactor entries");
       }
+
+      console.info("Deleting unused deprecated emissions factors...");
+      await queryInterface.sequelize.query(
+        `DELETE FROM "EmissionsFactor" ef
+        WHERE ef.deprecated = true AND ef.inventory_id IS NULL AND NOT EXISTS (
+          SELECT FROM "GasValue" gv WHERE gv.emissions_factor_id = ef.id
+        );`,
+        { transaction },
+      );
+
+      console.info("Done, have a nice day ✨");
     });
   },
 
   async down(queryInterface) {
+    // Skip rollback - emissions factors are now managed by sync script
+    console.error("Skipping emissions factors rollback - managed by sync script");
+    return;
     await queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.bulkDelete("DataSourceEmissionsFactor", null, {
         transaction,

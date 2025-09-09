@@ -19,6 +19,7 @@ import { MdWarning } from "react-icons/md";
 import { api } from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { OrganizationRole } from "@/util/types";
+import { CustomInviteError } from "@/lib/custom-errors/custom-invite-error";
 
 interface CreateOrganizationModalProps {
   isOpen: boolean;
@@ -79,8 +80,10 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
   const [createProject, { isLoading: isProjectLoading }] =
     api.useCreateProjectMutation();
 
-  const [createOrganizationInvite, { isLoading: isInviteLoading }] =
-    api.useCreateOrganizationInviteMutation();
+  const [
+    createOrganizationInvite,
+    { isLoading: isInviteLoading, error: inviteError },
+  ] = api.useCreateOrganizationInviteMutation();
 
   const isSubmitting = isLoading || isProjectLoading || isInviteLoading;
 
@@ -114,13 +117,23 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
       const inviteResponse = await createOrganizationInvite({
         organizationId: orgId,
         role: OrganizationRole.ORG_ADMIN,
-        inviteeEmail: response.data.contactEmail,
+        inviteeEmails: [response.data.contactEmail],
       });
       if (projectResponse.data && inviteResponse.data) {
         showSuccessToast();
         closeFunction();
-      } else {
-        showErrorToast();
+      } else if (inviteError) {
+        let error = inviteError as CustomInviteError;
+        const safeErrorKey =
+          error?.data?.error?.data?.errorKey || "unknown-error";
+        const safeEmails = (error?.data?.error?.data?.emails || []).map(
+          (email) => email.replace(/[<>"'&]/g, ""),
+        );
+
+        showErrorToast({
+          title: t("error-invite"),
+          description: t(safeErrorKey) + " " + safeEmails.join(", "),
+        });
       }
     } else {
       showErrorToast();
@@ -192,7 +205,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
               <HStack
                 mt="24px"
                 flexDirection="column"
-                className="items-start"
+                alignItems="start"
                 gap="24px"
               >
                 <Field
@@ -248,7 +261,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
               <HStack
                 mt="24px"
                 flexDirection="column"
-                className="items-start"
+                alignItems="start"
                 gap="24px"
               >
                 <Field labelClassName="font-semibold" label={t("project-name")}>

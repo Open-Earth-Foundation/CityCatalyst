@@ -1,4 +1,5 @@
 "use client";
+import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
 import { Box, Heading, HStack, Tabs, Text } from "@chakra-ui/react";
@@ -8,15 +9,14 @@ import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
 
 // TODO create tabs component with recipe
-const AccountSettingsPage = ({
-  params: { lng, id },
-}: {
-  params: { lng: string; id: string };
+const AccountSettingsPage = (props: {
+  params: Promise<{ lng: string; id: string }>;
 }) => {
+  const { lng, id } = use(props.params);
   const { t } = useTranslation(lng, "settings");
 
   return (
-    <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
+    <Box pt={16} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
       <Link href={`/${lng}`}>
         <Box
           display="flex"
@@ -111,13 +111,12 @@ const AccountSettingsPage = ({
                 <Box w="full">
                   <Heading
                     fontSize="headline.sm"
-                    mb={2}
+                    mb={4}
                     fontWeight="semibold"
                     lineHeight="32px"
                     fontStyle="normal"
                     textTransform="capitalize"
                     color="content.secondary"
-                    mt={12}
                   >
                     {t("account")}
                   </Heading>

@@ -5,16 +5,27 @@ import { createInventoryRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import { City } from "@/models/City";
 
 export const POST = apiHandler(
   async (req: NextRequest, { session, params }) => {
     const body = createInventoryRequest.parse(await req.json());
 
-    const city = await UserService.findUserCity(params.city, session);
+    // Check permission to create inventory in this city (ORG_ADMIN or PROJECT_ADMIN required)
+    const { resource: city } = await PermissionService.canCreateInventory(
+      session,
+      params.city,
+    );
+
+    if (!city) {
+      throw new createHttpError.NotFound("City not found");
+    }
+
     let didExistAlready = true;
     let inventory = await db.models.Inventory.findOne({
       where: {
-        cityId: city.cityId,
+        cityId: (city as City)?.cityId,
         year: body.year,
       },
     });
@@ -23,7 +34,7 @@ export const POST = apiHandler(
       inventory = await db.models.Inventory.create({
         ...body,
         inventoryId: randomUUID(),
-        cityId: city.cityId,
+        cityId: (city as City)?.cityId,
       });
       didExistAlready = false;
     }
@@ -33,9 +44,13 @@ export const POST = apiHandler(
 
 export const GET = apiHandler(
   async (_req: NextRequest, { session, params }) => {
-    const city = await UserService.findUserCity(params.city, session);
+    // Check permission to access city
+    const { resource: city } = await PermissionService.canAccessCity(
+      session,
+      params.city,
+    );
     const inventory = await db.models.Inventory.findAll({
-      where: { cityId: city?.cityId },
+      where: { cityId: (city as City)?.cityId },
     });
 
     if (!inventory) {

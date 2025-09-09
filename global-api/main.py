@@ -28,6 +28,18 @@ from routes.ccra_assessment import api_router as ccra_assessment
 from routes.ghgi_emission_forecast import api_router as emission_forecast
 from routes.city_context import api_router as city_context_route
 from routes.get_climate_actions import api_router as climate_actions_route
+from routes.emissionfactor_publisher_endpoint import api_router as emissionfactor_publisher_route
+from routes.emissionfactor_methodology_endpoint import api_router as emissionfactor_methodology_route
+from routes.emissionfactor_datasource_endpoint import api_router as emissionfactor_datasource_route
+from routes.emissionfactor_emissionfactor_datasource_endpoint import api_router as emissionfactor_emissionfactor_datasource_route
+from routes.emissionfactor_emissionsfactor_endpoint import api_router as emissionfactor_emissionsfactor_route
+
+# Formula Input endpoints
+from routes.formulainput_publisher_endpoint import api_router as formulainput_publisher_route
+from routes.formulainput_methodology_endpoint import api_router as formulainput_methodology_route
+from routes.formulainput_datasource_endpoint import api_router as formulainput_datasource_route
+from routes.formulainput_formulainput_datasource_endpoint import api_router as formulainput_formulainput_datasource_route
+from routes.formulainput_formulainput_endpoint import api_router as formulainput_formulainput_route
 
 """
 Logger instance initialized and configured
@@ -174,6 +186,57 @@ app.include_router(
 app.include_router(
     region_code_endpoint_route,
     tags=["GHGI Emissions"],
+)
+
+app.include_router(
+    emissionfactor_publisher_route,
+    tags=["GHGI Emission Factors"],
+)
+
+app.include_router(
+    emissionfactor_methodology_route,
+    tags=["GHGI Emission Factors"],
+)
+
+app.include_router(
+    emissionfactor_datasource_route,
+    tags=["GHGI Emission Factors"],
+)
+
+app.include_router(
+    emissionfactor_emissionfactor_datasource_route,
+    tags=["GHGI Emission Factors"],
+)
+
+app.include_router(
+    emissionfactor_emissionsfactor_route,
+    tags=["GHGI Emission Factors"],
+)
+
+# Formula Input endpoints
+app.include_router(
+    formulainput_publisher_route,
+    tags=["GHGI Formula Inputs"],
+)
+
+app.include_router(
+    formulainput_methodology_route,
+    tags=["GHGI Formula Inputs"],
+)
+
+app.include_router(
+    formulainput_datasource_route,
+    tags=["GHGI Formula Inputs"],
+)
+
+app.include_router(
+    formulainput_formulainput_datasource_route,
+    tags=["GHGI Formula Inputs"],
+)
+
+app.include_router(
+    formulainput_formulainput_route,
+    tags=["GHGI Formula Inputs"],
 )
 
 ## Endpoints for CCRA

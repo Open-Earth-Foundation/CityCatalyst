@@ -1,9 +1,14 @@
-import HomePage from "@/components/HomePage/HomePage";
+import HomePage from "@/components/GHGIHomePage/HomePage";
+import { checkInventoryRedirect } from "./actions";
 
-export default function PublicHome({
-  params: { lng },
-}: {
-  params: { lng: string };
+export default async function PublicHome(props: {
+  params: Promise<{ lng: string; inventory: string }>;
 }) {
-  return <HomePage lng={lng} isPublic={true} />;
+  const { lng, inventory } = await props.params;
+
+  // Check if we should redirect to city dashboard (server action handles the logic)
+  await checkInventoryRedirect(inventory, lng);
+
+  // If no redirect happened, show the original inventory page
+  return <HomePage lng={lng} isPublic={true} inventoryId={inventory} />;
 }

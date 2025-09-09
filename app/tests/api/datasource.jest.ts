@@ -1,6 +1,7 @@
 import { GET as getDataSourcesForSector } from "@/app/api/v0/datasource/[inventoryId]/[sectorId]/route";
 import { GET as getAllDataSources } from "@/app/api/v0/datasource/[inventoryId]/route";
 import { DELETE as deleteInventoryValue } from "@/app/api/v0/datasource/[inventoryId]/datasource/[datasourceId]/route";
+import { GET as getSingleDataSource } from "@/app/api/v0/datasource/[inventoryId]/datasource/[datasourceId]/route";
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
 import { literal, Op } from "sequelize";
@@ -11,6 +12,7 @@ import {
   setupTests,
   testUserID,
 } from "../helpers";
+import { createTestData, cleanupTestData, TestData } from "../helpers/testDataCreationHelper";
 import { City } from "@/models/City";
 import { CreateInventoryRequest } from "@/util/validation";
 import { Sector } from "@/models/Sector";
@@ -74,7 +76,6 @@ async function cleanupDatabase() {
   await cascadeDeleteDataSource({
     [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)],
   });
-  await db.models.City.destroy({ where: { locode } });
   await db.models.SubCategory.destroy({ where: { subcategoryName } });
   await db.models.SubSector.destroy({ where: { subsectorName } });
   await db.models.Sector.destroy({ where: { sectorName } });
@@ -85,6 +86,7 @@ describe("DataSource API", () => {
   let inventory: Inventory;
   let sector: Sector;
   let prevGetServerSession = Auth.getServerSession;
+  let testData: TestData;
 
   beforeAll(async () => {
     setupTests();
@@ -93,11 +95,24 @@ describe("DataSource API", () => {
     await db.initialize();
     await cleanupDatabase();
 
-    city = await db.models.City.create({
-      cityId: randomUUID(),
-      locode,
-      name: "CC_",
+    // Create proper test data hierarchy
+    testData = await createTestData({
+      cityName: locode,
+      countryLocode: "XX"
     });
+
+    city = await db.models.City.findByPk(testData.cityId) as City;
+    if (!city) {
+      throw new Error(`Failed to find city with ID ${testData.cityId}`);
+    }
+    
+    // Update city with datasource test specific data
+    await city.update({
+      name: "CC_",
+      locode: locode
+    });
+    
+    await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await db.models.CityUser.create({
       cityUserId: randomUUID(),
       userId: testUserID,
@@ -107,7 +122,7 @@ describe("DataSource API", () => {
     inventory = await db.models.Inventory.create({
       ...inventoryData,
       inventoryId: randomUUID(),
-      cityId: city.cityId,
+      cityId: testData.cityId,
     });
 
     sector = await db.models.Sector.create({
@@ -146,12 +161,17 @@ describe("DataSource API", () => {
         .apiEndpoint!.replace(":locode", locode)
         .replace(":year", inventory.year!.toString())
         .replace(":gpcReferenceNumber", subCategory.referenceNumber!);
+      
+      // Update the datasource with the computed URL
+      await source.update({ url });
+      
       fetchMock.mock(url, mockGlobalApiResponses[i]);
     }
   });
 
   afterAll(async () => {
     await cleanupDatabase();
+    await cleanupTestData(testData);
     Auth.getServerSession = prevGetServerSession;
     if (db.sequelize) await db.sequelize.close();
   });
@@ -159,7 +179,10 @@ describe("DataSource API", () => {
   it("should get the data sources for a sector", async () => {
     const req = mockRequest();
     const res = await getDataSourcesForSector(req, {
-      params: { inventoryId: inventory.inventoryId, sectorId: sector.sectorId },
+      params: Promise.resolve({
+        inventoryId: inventory.inventoryId,
+        sectorId: sector.sectorId,
+      }),
     });
     expect(res.status).toBe(200);
     const { data } = await res.json();
@@ -176,7 +199,7 @@ describe("DataSource API", () => {
   it("should get the data sources for all sectors", async () => {
     const req = mockRequest();
     const res = await getAllDataSources(req, {
-      params: { inventoryId: inventory.inventoryId },
+      params: Promise.resolve({ inventoryId: inventory.inventoryId }),
     });
     expect(res.status).toBe(200);
     const { data } = await res.json();
@@ -195,6 +218,8 @@ describe("DataSource API", () => {
       },
     });
 
+    if (!datasource) throw new Error("Test setup failed: datasource not found");
+
     const { datasourceId } = datasource;
     const inventoryValueId = randomUUID();
     await db.models.InventoryValue.create({
@@ -204,10 +229,10 @@ describe("DataSource API", () => {
     });
     const req = mockRequest();
     const res = await deleteInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventoryId: inventory.inventoryId,
         datasourceId,
-      },
+      }),
     });
     await expectStatusCode(res, 200);
     const { deleted } = await res.json();
@@ -221,11 +246,57 @@ describe("DataSource API", () => {
   it("should not delete a non-existing inventory value", async () => {
     const req = mockRequest();
     const res = await deleteInventoryValue(req, {
-      params: {
+      params: Promise.resolve({
         inventoryId: randomUUID(),
         datasourceId: randomUUID(),
-      },
+      }),
     });
     await expectStatusCode(res, 404);
+  });
+
+  it("should get a single datasource with scaling", async () => {
+    // Use the first created datasource for the positive test
+    const datasource = await db.models.DataSource.findOne({
+      where: { sectorId: sector.sectorId },
+    });
+    if (!datasource) throw new Error("Test setup failed: datasource not found");
+    const req = mockRequest();
+    const res = await getSingleDataSource(req, {
+      params: Promise.resolve({
+        inventoryId: inventory.inventoryId,
+        datasourceId: datasource.datasourceId,
+      }),
+    });
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.source.datasourceId).toBe(datasource.datasourceId);
+    expect(data.data).toBeDefined();
+    expect(data.data.scaleFactor).toBeDefined();
+  });
+
+  it("should return 404 if datasource not found", async () => {
+    const req = mockRequest();
+    const res = await getSingleDataSource(req, {
+      params: Promise.resolve({
+        inventoryId: inventory.inventoryId,
+        datasourceId: randomUUID(),
+      }),
+    });
+    expect(res.status).toBe(404);
+  });
+
+  it("should return 404 if inventory not found", async () => {
+    const datasource = await db.models.DataSource.findOne({
+      where: { sectorId: sector.sectorId },
+    });
+    if (!datasource) throw new Error("Test setup failed: datasource not found");
+    const req = mockRequest();
+    const res = await getSingleDataSource(req, {
+      params: Promise.resolve({
+        inventoryId: randomUUID(),
+        datasourceId: datasource.datasourceId,
+      }),
+    });
+    expect(res.status).toBe(404);
   });
 });

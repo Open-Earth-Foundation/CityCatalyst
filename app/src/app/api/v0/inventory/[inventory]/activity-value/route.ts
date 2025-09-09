@@ -1,6 +1,8 @@
 import ActivityService from "@/backend/ActivityService";
+import { PermissionService } from "@/backend/permissions";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
+import { Inventory } from "@/models/Inventory";
 import type { InventoryValue } from "@/models/InventoryValue";
 import { apiHandler } from "@/util/api";
 import { createActivityValueRequest } from "@/util/validation";
@@ -19,16 +21,55 @@ export const POST = apiHandler(async (req, { params, session }) => {
   } = body;
 
   // just for access control
-  await UserService.findUserInventory(params.inventory, session);
+  await PermissionService.canEditInventory(session, params.inventory);
 
-  const result = await ActivityService.createActivity(
-    data,
-    params.inventory,
-    inventoryValueId,
-    inventoryValueParams,
-    gasValues,
-  );
-  return NextResponse.json({ success: !!result, data: result });
+  try {
+    const result = await ActivityService.createActivity(
+      data,
+      params.inventory,
+      inventoryValueId,
+      inventoryValueParams,
+      gasValues,
+    );
+    return NextResponse.json({ success: !!result, data: result });
+  } catch (error: any) {
+    // Check for database bigint conversion errors
+    if (
+      error.message &&
+      error.message.includes("is out of range for type bigint")
+    ) {
+      const customError = new createHttpError.BadRequest(
+        "Invalid request",
+      ) as createHttpError.HttpError & {
+        data?: { type: string; errorKey: string };
+      };
+      customError.data = {
+        type: "CalculationError",
+        errorKey: "calculated-emission-values-too-large",
+      };
+      throw customError;
+    }
+    // Handle JavaScript BigInt conversion errors
+    if (
+      error.message &&
+      error.message.includes("Cannot convert") &&
+      error.message.includes("to a BigInt")
+    ) {
+      const customError = new createHttpError.BadRequest(
+        "Invalid request",
+      ) as createHttpError.HttpError & {
+        data?: { type: string; errorKey: string };
+      };
+      customError.data = {
+        type: "CalculationError",
+        errorKey: "calculated-emission-values-too-large",
+      };
+      throw customError;
+    }
+
+    // Re-throw other errors
+    throw error;
+  }
 });
 
 export const GET = apiHandler(async (req, { params, session }) => {
@@ -56,10 +97,12 @@ export const GET = apiHandler(async (req, { params, session }) => {
     z.string().uuid().parse(methodologyId);
   }
 
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
+  const { resource } = await PermissionService.canEditInventory(
     session,
+    params.inventory,
   );
+
+  const inventory = resource as Inventory;
 
   const query: WhereOptions<InventoryValue> = {
     inventoryId: inventory.inventoryId,
@@ -116,10 +159,12 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
     );
   }
 
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
+  const { resource } = await PermissionService.canEditInventory(
     session,
+    params.inventory,
   );
+
+  const inventory = resource as Inventory;
 
   const count = await ActivityService.deleteAllActivitiesInSubsector({
     inventoryId: inventory.inventoryId,

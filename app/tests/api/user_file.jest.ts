@@ -47,11 +47,15 @@ const fileData = {
   sector: "Energy Sector",
   url: "http://www.acme.com",
   status: STATUS.INPROGRESS,
-  data: testFileFormat,
+  data: {
+    ...testFileFormat,
+    fileType: "csv",
+  },
   subsectors: "test1, test2, test3",
   scopes: "1,2,3",
   gpc_ref_no: "XXXTESTXXX",
   file_reference: "XXXTESTXXX",
+  file_type: "csv",
 };
 
 const invalidFileData = {
@@ -63,12 +67,17 @@ const invalidFileData = {
   url: "invalid.com",
   cityId: "XXINVALID_ID",
   status: "7",
-  data: "",
+  data: {
+    ...testFileFormat,
+    fileType: "csv",
+  },
   gpc_ref_no: "43",
   file_reference: "0",
+  file_type: "csv",
 };
 
-describe("UserFile API", () => {
+// TODO enable these tests again when the API is re-enabled
+describe.skip("UserFile API", () => {
   beforeAll(async () => {
     setupTests();
     await db.initialize();
@@ -111,13 +120,14 @@ describe("UserFile API", () => {
     formData.append("subsectors", fileData.subsectors);
     formData.append("scopes", fileData.scopes);
     formData.append("url", fileData.url);
-    formData.append("data", fileStream);
+    formData.append("data", fileStream, "blob.csv");
     formData.append("status", fileData.status);
     formData.append("fileReference", fileData.file_reference);
     formData.append("gpcRefNo", fileData.gpc_ref_no);
+    formData.append("fileType", fileData.file_type);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, {
-      params: { city: testCityID },
+      params: Promise.resolve({ city: testCityID }),
     });
     await expectStatusCode(res, 200);
     const { data } = await res.json();
@@ -141,21 +151,24 @@ describe("UserFile API", () => {
     formData.append("cityId", invalidFileData.cityId);
     formData.append("sector", invalidFileData.sector);
     formData.append("url", invalidFileData.url);
-    formData.append("data", fileStream);
+    formData.append("data", fileStream, "blob.csv");
     formData.append("status", invalidFileData.status);
     formData.append("subsectors", invalidFileData.subsectors);
     formData.append("scopes", invalidFileData.scopes);
     formData.append("fileReference", invalidFileData.file_reference);
     formData.append("gpcRefNo", invalidFileData.gpc_ref_no);
+    formData.append("fileType", invalidFileData.file_type);
     const req = mockRequestFormData(formData);
-    const res = await createUserFile(req, { params: { city: testCityID } });
+    const res = await createUserFile(req, {
+      params: Promise.resolve({ city: testCityID }),
+    });
     expect(res.status).toBe(400);
   });
 
   it("should find all user files", async () => {
     const req = mockRequest();
     const res = await findUserFiles(req, {
-      params: { user: testUserID, city: testCityID },
+      params: Promise.resolve({ user: testUserID, city: testCityID }),
     });
     const { data } = await res.json();
 
@@ -169,14 +182,22 @@ describe("UserFile API", () => {
   it("should find a user file", async () => {
     const getFilesReq = mockRequest();
     const getFilesRes = await findUserFiles(getFilesReq, {
-      params: { user: testUserID, file: randomUUID(), city: testCityID },
+      params: Promise.resolve({
+        user: testUserID,
+        file: randomUUID(),
+        city: testCityID,
+      }),
     });
     const { data: userFilesData } = await getFilesRes.json();
 
     const userFiles = userFilesData[0];
     const req = mockRequest();
     const res = await findUserFile(req, {
-      params: { user: testUserID, file: userFiles.id, city: testCityID },
+      params: Promise.resolve({
+        user: testUserID,
+        file: userFiles.id,
+        city: testCityID,
+      }),
     });
     const { data: userFile } = await res.json();
     expect(userFile?.sector).toBe(fileData.sector);
@@ -188,7 +209,11 @@ describe("UserFile API", () => {
   it("should not find a user file", async () => {
     const req = mockRequest();
     const res = await findUserFile(req, {
-      params: { user: testUserID, file: randomUUID(), city: testCityID },
+      params: Promise.resolve({
+        user: testUserID,
+        file: randomUUID(),
+        city: testCityID,
+      }),
     });
 
     expect(res.status).toBe(404);
@@ -204,19 +229,24 @@ describe("UserFile API", () => {
     formData.append("scopes", fileData.scopes);
     formData.append("url", fileData.url);
     formData.append("cityId", fileData.cityId);
-    formData.append("data", fileStream);
+    formData.append("data", fileStream, "blob.csv");
     formData.append("status", fileData.status);
     formData.append("fileReference", fileData.file_reference);
     formData.append("gpcRefNo", fileData.gpc_ref_no);
+    formData.append("fileType", fileData.file_type);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, {
-      params: { user: testUserID, city: testCityID },
+      params: Promise.resolve({ user: testUserID, city: testCityID }),
     });
     expect(res.status).toBe(200);
     const { data } = await res.json();
     const deletRequest = mockRequest();
     const deleteResponse = await deleteUserfile(deletRequest, {
-      params: { user: testUserID, file: data.id, city: testCityID },
+      params: Promise.resolve({
+        user: testUserID,
+        file: data.id,
+        city: testCityID,
+      }),
     });
 
     const { deleted } = await deleteResponse.json();
@@ -227,7 +257,11 @@ describe("UserFile API", () => {
   it("should not delete a non-existent user file", async () => {
     const deletRequest = mockRequest();
     const deleteResponse = await deleteUserfile(deletRequest, {
-      params: { user: testUserID, file: randomUUID(), city: testCityID },
+      params: Promise.resolve({
+        user: testUserID,
+        file: randomUUID(),
+        city: testCityID,
+      }),
     });
 
     expect(deleteResponse.status).toBe(404);

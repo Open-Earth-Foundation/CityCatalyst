@@ -1,10 +1,11 @@
 import { smtpOptions } from "@/lib/email";
 import AdminNotificationTemplate from "@/lib/emails/AdminNotificationTemplate";
 import { City } from "@/models/City";
-import { UserFileResponse } from "@/util/types";
+import { LANGUAGES, UserFileResponse } from "@/util/types";
 import { render } from "@react-email/components";
 import nodemailer, { Transporter } from "nodemailer";
 import { logger } from "@/services/logger";
+import EmailService from "./EmailService";
 
 export interface EmailOptions {
   to: string;
@@ -64,7 +65,7 @@ class NotificationService {
     city,
     inventoryId,
   }: {
-    user: { name: string; email: string };
+    user: { name: string; email: string; preferredLanguage: LANGUAGES };
     fileData: UserFileResponse;
     city: City;
     inventoryId: string;
@@ -79,12 +80,17 @@ class NotificationService {
           name: user?.name!,
         },
         inventoryId,
+        language: user.preferredLanguage,
       }),
     );
+    const translatedSubject = EmailService.getTranslation(
+      user,
+      "admin-notification.subject",
+    ).subject;
 
     await NotificationService.sendEmail({
       to: process.env.ADMIN_EMAILS!,
-      subject: "CityCatalyst File Upload",
+      subject: translatedSubject,
       text: "City Catalyst",
       html,
     });

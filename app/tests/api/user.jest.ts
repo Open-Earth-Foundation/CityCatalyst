@@ -19,16 +19,27 @@ const userData: UserAttributes = {
 
 const userUpdate = {
   defaultInventoryId: inventoryId,
+  defaultCityId: cityId,
 };
 
 const invalidUserUpdate = {
   defaultInventoryId: "invalid",
+  defaultCityId: "invalid",
 };
+
+const emptyParams = { params: Promise.resolve({}) };
 
 describe("User API", () => {
   beforeAll(async () => {
     setupTests();
     await db.initialize();
+
+    // First, update any users that might have this city as their default
+    await db.models.User.update(
+      { defaultCityId: null },
+      { where: { defaultCityId: cityId } },
+    );
+
     await db.models.Inventory.destroy({
       where: { inventoryId },
     });
@@ -47,12 +58,26 @@ describe("User API", () => {
   });
 
   afterAll(async () => {
+    // Clean up in the correct order to avoid foreign key constraint violations
+    await db.models.Inventory.destroy({
+      where: { inventoryId },
+    });
+
+    // Update any users that might have this city as their default
+    await db.models.User.update(
+      { defaultCityId: null },
+      { where: { defaultCityId: cityId } },
+    );
+
+    await db.models.CityUser.destroy({ where: { cityUserId } });
+    await db.models.City.destroy({ where: { cityId } });
+
     if (db.sequelize) await db.sequelize.close();
   });
 
   it("should update a user", async () => {
     const req = mockRequest(userUpdate);
-    const res = await updateUser(req, { params: {} });
+    const res = await updateUser(req, emptyParams);
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.success).toBeTruthy();
@@ -61,11 +86,12 @@ describe("User API", () => {
     });
     expect(user).not.toBeNull();
     expect(user!.defaultInventoryId).toBe(inventoryId);
+    expect(user!.defaultCityId).toBe(cityId);
   });
 
   it("should not update a user with invalid data", async () => {
     const req = mockRequest(invalidUserUpdate);
-    const res = await updateUser(req, { params: {} });
+    const res = await updateUser(req, emptyParams);
     expect(res.status).toBe(400);
     const user = await db.models.User.findOne({
       where: { userId: userData.userId },
@@ -74,5 +100,6 @@ describe("User API", () => {
     expect(user!.defaultInventoryId).not.toBe(
       invalidUserUpdate.defaultInventoryId,
     );
+    expect(user!.defaultCityId).not.toBe(invalidUserUpdate.defaultCityId);
   });
 });

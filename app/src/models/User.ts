@@ -6,7 +6,7 @@ import type { Inventory, InventoryId } from "./Inventory";
 import type { UserFile, UserFileId } from "./UserFile";
 import { City, CityId } from "./City";
 
-import { Roles } from "@/util/types";
+import { LANGUAGES, Roles } from "@/util/types";
 
 export interface UserAttributes {
   userId: string;
@@ -17,9 +17,12 @@ export interface UserAttributes {
   role?: Roles;
   created?: Date;
   lastUpdated?: Date;
-  defaultInventoryId?: string;
+  defaultInventoryId?: string | null;
   // Professional title or position of the user within their organization
   title?: string;
+  // User's preferred language for emails and UI
+  preferredLanguage?: string;
+  defaultCityId?: string | null;
 }
 
 export type UserPk = "userId";
@@ -33,7 +36,9 @@ export type UserOptionalAttributes =
   | "created"
   | "lastUpdated"
   | "defaultInventoryId"
-  | "title";
+  | "title"
+  | "preferredLanguage"
+  | "defaultCityId";
 export type UserCreationAttributes = Optional<
   UserAttributes,
   UserOptionalAttributes
@@ -41,7 +46,8 @@ export type UserCreationAttributes = Optional<
 
 export class User
   extends Model<UserAttributes, UserCreationAttributes>
-  implements Partial<UserAttributes> {
+  implements Partial<UserAttributes>
+{
   userId!: string;
   name?: string;
   pictureUrl?: string;
@@ -52,6 +58,8 @@ export class User
   lastUpdated?: Date;
   defaultInventoryId?: string;
   title?: string;
+  preferredLanguage?: LANGUAGES;
+  defaultCityId?: string | null;
 
   // User belongsTo Inventory via defaultInventoryId
   defaultInventory!: Inventory;
@@ -187,6 +195,22 @@ export class User
             key: "inventory_id",
           },
           field: "default_inventory_id",
+        },
+        preferredLanguage: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "preferred_language",
+        },
+        defaultCityId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "City",
+            key: "city_id",
+          },
+          onDelete: "SET NULL",
+          onUpdate: "CASCADE",
+          field: "default_city_id",
         },
       },
       {

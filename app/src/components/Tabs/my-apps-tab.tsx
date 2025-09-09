@@ -12,7 +12,7 @@ import { AppCard } from "../Cards/AppCard";
 import { useTranslation } from "@/i18n/client";
 
 interface MyAppsTabProps {
-  lng: string;
+  lng: string; /** Language to use for UI and client descriptions */
 }
 
 const MyAppsTab: FC<MyAppsTabProps> = ({

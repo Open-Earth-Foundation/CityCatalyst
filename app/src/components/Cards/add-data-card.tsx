@@ -8,7 +8,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import React from "react";
 import { IconType } from "react-icons";
 import { BsPlus } from "react-icons/bs";
@@ -35,9 +35,12 @@ function AddDataCard({
   inventory,
 }: AddDataCardProps) {
   const router = useRouter();
+  const pathname = usePathname();
   return (
     <Card.Root
-      className="grow flex flex-col"
+      flexGrow={1}
+      display="flex"
+      flexDirection="column"
       boxShadow="none"
       data-testid={testId}
       p={6}
@@ -46,7 +49,7 @@ function AddDataCard({
       height="100%"
     >
       <VStack justify="space-between" gap="24px" height="100%">
-        <Box className="flex flex-col gap-6">
+        <Box display="flex" flexDirection="column" gap={6}>
           <VStack align="left" display="flex" gap="24px">
             <Icon
               as={icon}
@@ -72,7 +75,7 @@ function AddDataCard({
         <Button
           data-testid="sector-card-button"
           width="100%"
-          onClick={() => router.push(`/${inventory}/data/${number}`)}
+          onClick={() => router.push(`${pathname}/${number}`)}
           variant="ghost"
           h="48px"
           bg="interactive.secondary"

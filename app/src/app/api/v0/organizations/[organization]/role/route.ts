@@ -101,6 +101,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
           logoUrl: org.logoUrl as string,
         },
         organizationName: org.name as string,
+        user,
       });
 
       return NextResponse.json({ success: true });

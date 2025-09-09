@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string */
+import React from "react";
 import { City } from "@/models/City";
 import {
   Body,
@@ -13,6 +13,8 @@ import {
   Section,
   Text,
 } from "@react-email/components";
+import i18next from "@/i18n/server";
+import { LANGUAGES } from "@/util/types";
 
 export function CitiesAddedToProjectNotificationTemplate({
   url,
@@ -21,6 +23,7 @@ export function CitiesAddedToProjectNotificationTemplate({
   user,
   project,
   organizationName,
+  language,
 }: {
   url?: string;
   cities: City[];
@@ -31,7 +34,9 @@ export function CitiesAddedToProjectNotificationTemplate({
   user: { name: string; email: string };
   project: { name: string };
   organizationName: string;
+  language?: string;
 }) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
   const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
     <Html>
@@ -48,7 +53,7 @@ export function CitiesAddedToProjectNotificationTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: Cities Added</Preview>
+      <Preview>{t("cities-added.subject")}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section>
@@ -56,31 +61,40 @@ export function CitiesAddedToProjectNotificationTemplate({
               <Section
                 style={{
                   backgroundColor: brandInformation.color || "#ffffff",
+                  paddingLeft: "24px",
+                  paddingRight: "24px",
                 }}
               >
-                <Img
-                  src={brandInformation.logoUrl || ImageURL}
-                  alt="logo"
-                  height="100"
-                />
+                {brandInformation.logoUrl ? (
+                  <Img src={brandInformation.logoUrl} alt="logo" height="100" />
+                ) : (
+                  <Text
+                    style={{
+                      ...brandHeading,
+                      ...(brandInformation.color ? { color: "#ffffff" } : {}),
+                    }}
+                  >
+                    {t("cities-added.brand")}
+                  </Text>
+                )}
               </Section>
             ) : (
-              <Section>
-                <Img
-                  src={ImageURL}
-                  alt="City Catalyst logo"
-                  width="36"
-                  height="36"
-                />
-                <Text style={brandHeading}>CityCatalyst</Text>
+              <Section style={{ padding: "24px", paddingBottom: "0" }}>
+                <Text style={brandHeading}>{t("cities-added.brand")}</Text>
               </Section>
             )}
             <Section style={{ padding: "24px" }}>
-              {/* eslint-disable-next-line react/no-unescaped-entities */}
-              <Text style={headingGreen}>Changes to {project?.name}</Text>
-              <Text style={greeting}>Hi {user?.name},</Text>
+              <Text style={headingGreen}>
+                {t("cities-added.title", { projectName: project?.name })}
+              </Text>
+              <Text style={greeting}>
+                {t("cities-added.greeting", { name: user?.name })}
+              </Text>
               <Text style={paragraph}>
-                Some cities have been added to the {project?.name} project{" "}
+                {t("cities-added.message", {
+                  projectName: project?.name,
+                  organizationName: organizationName,
+                })}
               </Text>
               <div>
                 {cities?.map(({ countryLocode, name }) => (
@@ -108,16 +122,13 @@ export function CitiesAddedToProjectNotificationTemplate({
                       : {}),
                   }}
                 >
-                  Sign In
+                  {t("cities-added.cta")}
                 </Link>
               </Section>
             </Section>
           </Section>
           <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-          <Text style={footerText}>
-            Open Earth Foundation is a nonprofit public benefit corporation from
-            California, USA. EIN: 85-3261449
-          </Text>
+          <Text style={footerText}>{t("cities-added.footer")}</Text>
         </Container>
       </Body>
     </Html>

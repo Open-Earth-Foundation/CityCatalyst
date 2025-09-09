@@ -1,14 +1,14 @@
 import NotificationService from "@/backend/NotificationService";
 import UserService from "@/backend/UserService";
-import AdminNotificationTemplate from "@/lib/emails/AdminNotificationTemplate";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { bytesToMB, fileEndingToMIMEType } from "@/util/helpers";
 import { createUserFileRequset } from "@/util/validation";
-import { render } from "@react-email/components";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
+import { LANGUAGES } from "@/util/types";
+import { FeatureFlags, hasServerFeatureFlag } from "@/util/feature-flags";
 
 // TODO: use these variables to configure file size and format
 const MAX_FILE_SIZE = 5000000;
@@ -61,7 +61,12 @@ export const GET = apiHandler(async (_req: Request, context) => {
 
 export const POST = apiHandler(
   async (req: NextRequest, { params, session }) => {
-    const service = NotificationService.getInstance(); // TODO cache this/ make it a singleton
+    if (!hasServerFeatureFlag(FeatureFlags.UPLOAD_OWN_DATA_ENABLED)) {
+      throw new createHttpError.ServiceUnavailable(
+        "Feature flag UPLOAD_OWN_DATA_ENABLED is not enabled on this service",
+      );
+    }
+
     const user = session?.user;
     const cityId = params.city;
 
@@ -144,7 +149,12 @@ export const POST = apiHandler(
     };
 
     await NotificationService.sendNotificationEmail({
-      user: { email: user?.email!, name: user?.name! },
+      user: {
+        email: user?.email!,
+        name: user?.name!,
+        // default to english since the email goes to admins
+        preferredLanguage: LANGUAGES.en,
+      },
       fileData: newFileData,
       city,
       inventoryId,

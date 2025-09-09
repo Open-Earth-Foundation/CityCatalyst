@@ -87,9 +87,11 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
             (filterMappings[metadata[key]] as string) || metadata[key], // we need to have some mapping
         });
       }
+      logger.debug({orConditions, clause})
       andCondition.push(clause);
     }
 
+    logger.debug({andCondition})
     whereClause = {
       [Op.and]: andCondition,
     };
@@ -101,18 +103,7 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
     whereClause.gpcReferenceNumber = referenceNumber;
   }
 
-  if (methodologyId) {
-    if (methodologyId.includes("fuel-combustion"))
-      whereClause.methodologyName = "fuel-combustion-consumption";
-    if (methodologyId.includes("scaled"))
-      whereClause.methodologyName = "sampling-scaled-data";
-    if (methodologyId.includes("modeled-data"))
-      whereClause.methodologyName = "modeled-data";
-    if (methodologyId.includes("electricity-consumption"))
-      whereClause.methodologyName = "electricity-consumption";
-    if (methodologyId.includes("energy-consumption"))
-      whereClause.methodologyName = "energy-consumption";
-  }
+  whereClause.methodologyName = methodologyId
 
   // Unified priority list (order matters)
   const priorityArray: string[] = [];
@@ -137,11 +128,13 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
       const rank = index + 1;
       const escapedValue = db.sequelize!.escape(value);
       return `
-        WHEN "EmissionsFactor"."region" = ${escapedValue} THEN ${rank}
-        WHEN "EmissionsFactor"."actor_id" = ${escapedValue} THEN ${rank}
+        WHEN "region" = ${escapedValue} THEN ${rank}
+        WHEN "actor_id" = ${escapedValue} THEN ${rank}
       `;
     })
     .join("\n");
+
+  logger.debug({whereClause});
 
   const emissionsFactors = await db.models.EmissionsFactor.findAll({
     where: whereClause,
@@ -158,11 +151,6 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
       ],
     ],
   });
-
-  // const emissionsFactors = await db.models.EmissionsFactor.findAll({
-  //   where: whereClause,
-  //   include: [{ model: db.models.DataSource, as: "dataSources" }],
-  // });
 
   logger.info(
     { locode: parsedLocode },

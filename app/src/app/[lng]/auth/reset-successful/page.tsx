@@ -16,7 +16,7 @@ export default function ResetSuccessful(props: {
   return (
     <>
       <Heading size="xl">{t("reset-successful-heading")}</Heading>
-      <Text className="my-4" color="#7A7B9A">
+      <Text my={4} color="content.tertiary">
         <Trans t={t}>reset-successful-details</Trans>
       </Text>
       <NextLink href="/">

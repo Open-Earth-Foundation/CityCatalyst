@@ -46,8 +46,8 @@ import {
   useSteps,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { useRouter } from "next/navigation";
-import { forwardRef, useEffect, useState, use } from "react";
+import { useRouter, useParams, usePathname } from "next/navigation";
+import { forwardRef, useEffect, useState } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
@@ -91,6 +91,8 @@ import { TbWorldSearch } from "react-icons/tb";
 import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { getParamValueRequired } from "@/util/helpers";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -160,7 +162,11 @@ function NoDataSourcesMessage({
   year?: number;
 }) {
   return (
-    <Flex align="center" direction="column">
+    <Flex
+      align="center"
+      direction="column"
+      data-testid="no-data-sources-message"
+    >
       <Box borderRadius="full" p={4} bgColor="background.neutral" mb={6}>
         <Icon
           as={NoDatasourcesIcon}
@@ -181,7 +187,7 @@ function NoDataSourcesMessage({
           I<br />I
           <Link
             href={getMailURI(locode, sector, year)}
-            className="underline"
+            textDecoration="underline"
             color="content.link"
             fontWeight="bold"
           >
@@ -194,12 +200,14 @@ function NoDataSourcesMessage({
   );
 }
 
-export default function AddDataSteps(props: {
-  params: Promise<{ lng: string; step: string; inventory: string }>;
-}) {
-  const { lng, step, inventory } = use(props.params);
+export default function AddDataSteps() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const step = getParamValueRequired(params.step);
+  const inventory = getParamValueRequired(params.inventory);
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
+  const pathname = usePathname();
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -249,8 +257,8 @@ export default function AddDataSteps(props: {
       );
       if (!sectorProgress) {
         logger.error(
+          { referenceNumber: step.referenceNumber },
           "No progress entry found for sector",
-          step.referenceNumber,
         );
         return step;
       }
@@ -260,17 +268,12 @@ export default function AddDataSteps(props: {
       if (sectorProgress.total === 0) {
         return step;
       }
-      const connectedProgress = clamp(
+      step.connectedProgress = clamp(
         sectorProgress.thirdParty / sectorProgress.total,
       );
-      const addedProgress = clamp(
+      step.addedProgress = clamp(
         sectorProgress.uploaded / sectorProgress.total,
       );
-      step.connectedProgress = Math.max(
-        connectedProgress,
-        step.connectedProgress,
-      );
-      step.addedProgress = Math.max(addedProgress, step.addedProgress);
       return step;
     });
     setSteps(updatedSteps);
@@ -349,7 +352,7 @@ export default function AddDataSteps(props: {
       );
       return;
     }
-    logger.debug("Connect source", source);
+    logger.debug({ source }, "Connect source");
     setConnectingDataSourceId(source.datasourceId);
     try {
       const response = await connectDataSource({
@@ -421,12 +424,12 @@ export default function AddDataSteps(props: {
     onOpen: onSubsectorDrawerOpen,
   } = useDisclosure();
   const onSubsectorClick = (subsector: SubSectorWithRelations) => {
-    logger.debug(subsector);
+    logger.debug({ subsector });
     setSelectedSubsector(subsector);
     onSubsectorDrawerOpen();
   };
   const onSubsectorSave = (subsector: SubSectorWithRelations) => {
-    logger.debug("Save subsector", subsector);
+    logger.debug({ subsector }, "Save subsector");
   };
 
   const [isConfirming, setConfirming] = useState(false);
@@ -437,15 +440,6 @@ export default function AddDataSteps(props: {
     if (activeStep >= steps.length - 1) {
       router.push(`/${inventory}`);
       dispatch(clear());
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      goToNext();
-    }
-  };
-
-  const onSkip = () => {
-    if (activeStep >= steps.length - 1) {
-      router.push(`/${inventory}/data/`);
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
@@ -538,6 +532,11 @@ export default function AddDataSteps(props: {
       );
       // TODO show alert
       setDisconnectingDataSourceId(null);
+      setNewlyConnectedDataSourceIds(
+        newlyConnectedDataSourceIds.filter(
+          (connectedSource) => connectedSource !== source.datasourceId,
+        ),
+      );
       onSearchDataSourcesClicked();
     } else {
       logger.error("Something went wrong when disconnecting data source");
@@ -617,27 +616,32 @@ export default function AddDataSteps(props: {
     <>
       <Box id="top" />
       <Box
-        bg="background.backgroundLight"
+        position="fixed"
+        zIndex={10}
+        top={0}
+        w="full"
+        h={isExpanded ? "205px" : "400px"}
+        transition="all 50ms linear"
+        bg="white"
+        borderBottomWidth={isExpanded ? "1px" : "0px"}
         borderColor="border.neutral"
-        borderBottomWidth={isExpanded ? "1px" : ""}
-        pt={isExpanded ? "0px" : organization.active ? "120px" : "160px"}
-        className={`fixed z-10 top-0 w-full ${isExpanded ? "h-[200px]" : "h-[400px]"} transition-all duration-50 ease-linear`}
+        pt={isExpanded ? "0px" : "115px"}
       >
-        <div className=" w-[1090px] mx-auto px-4  ">
+        <Box w="1090px" mx="auto" px={4}>
           <Box
             w="full"
-            display="flex"
             alignItems="center"
             gap="16px"
             mb="24px"
-            className={`${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
+            transition="all 50ms linear"
+            display="flex"
           >
             <Button
               variant="ghost"
               fontSize="14px"
               color="content.link"
               fontWeight="bold"
-              onClick={() => router.push(`/${inventory}/data`)}
+              onClick={() => router.push(pathname.replace(`/${step}`, ""))}
             >
               <Icon as={MdArrowBack} boxSize={6} />
               {t("go-back")}
@@ -682,20 +686,20 @@ export default function AddDataSteps(props: {
             border="none"
             px={0}
           >
-            <Flex direction="row" className="w-full">
+            <Flex direction="row" w="full">
               <Icon
                 as={currentStep.icon}
                 boxSize={8}
                 color="interactive.secondary"
                 mr={4}
               />
-              <div className="space-y-4 w-[100%]">
+              <Box w="full" display="flex" flexDirection="column" gap={3}>
                 <Heading
                   fontWeight="semibold"
                   textTransform="capitalize"
                   lineHeight="32px"
                   mb={2}
-                  className="transition-all duration-50 ease-linear"
+                  transition="all 50ms linear"
                   fontSize={isExpanded ? "headline.sm" : "headline.md"}
                 >
                   {t(kebab(currentStep.name))}
@@ -724,15 +728,15 @@ export default function AddDataSteps(props: {
                     ]}
                     height={4}
                   />
-                  <Heading size="sm" ml={6} className="whitespace-nowrap -mt-1">
+                  <Heading size="sm" ml={6} mt={-1} whiteSpace="nowrap">
                     {t("completion-percent", {
                       progress: formatPercentage(totalStepCompletion),
                     })}
                   </Heading>
                 </Flex>
                 {scrollPosition <= 0 ? (
-                  <>
-                    <Badge mr={4}>
+                  <Box display="flex" flexDirection="row" gap={2}>
+                    <Badge mr={4} w="auto">
                       <Icon
                         as={CircleIcon}
                         boxSize={6}
@@ -744,7 +748,7 @@ export default function AddDataSteps(props: {
                         ),
                       })}
                     </Badge>
-                    <Badge>
+                    <Badge w="auto">
                       <Icon
                         as={CircleIcon}
                         boxSize={6}
@@ -754,16 +758,16 @@ export default function AddDataSteps(props: {
                         progress: formatPercentage(currentStep.addedProgress),
                       })}
                     </Badge>
-                  </>
+                  </Box>
                 ) : (
                   ""
                 )}
-              </div>
+              </Box>
             </Flex>
           </Box>
-        </div>
+        </Box>
       </Box>
-      <div className="pt-[48px] pb-16 w-[1090px] max-w-full mx-auto px-4">
+      <Box pt={"48px"} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
         {/*** Manual data entry section for subsectors ***/}
         <Card.Root mb={24} mt="350px" shadow="none" border="none">
           <Card.Body>
@@ -794,7 +798,11 @@ export default function AddDataSteps(props: {
                       w="full"
                       height="100px"
                       px={4}
-                      className="shadow-none border border-overlay hover:drop-shadow-xl !duration-300 transition-shadow"
+                      shadow="none"
+                      border="1px solid"
+                      borderColor="border.overlay"
+                      _hover={{ shadow: "xl" }}
+                      transition="all 300ms"
                       onClick={() => {
                         router.push(
                           `/${inventory}/data/${convertSectorReferenceNumberToNumber(currentStep.referenceNumber)}/${subSector.subsectorId}?refNo=${subSector.referenceNumber}`,
@@ -905,7 +913,7 @@ export default function AddDataSteps(props: {
                   w={16}
                   loading={areDataSourcesFetching}
                   onClick={() =>
-                    isFrozenCheck() ? null : onSearchDataSourcesClicked
+                    isFrozenCheck() ? null : onSearchDataSourcesClicked()
                   }
                 >
                   <Icon as={MdRefresh} boxSize={9} />
@@ -917,7 +925,7 @@ export default function AddDataSteps(props: {
                 t={t}
                 isSearching={areDataSourcesLoading}
                 onSearchClicked={() =>
-                  isFrozenCheck() ? null : onSearchDataSourcesClicked
+                  isFrozenCheck() ? null : onSearchDataSourcesClicked()
                 }
               />
             ) : dataSourcesError ? (
@@ -945,6 +953,7 @@ export default function AddDataSteps(props: {
                     return (
                       <Card.Root
                         key={source.datasourceId}
+                        data-testid="source-card"
                         variant="outline"
                         borderColor={
                           isSourceConnected(source) &&
@@ -953,7 +962,9 @@ export default function AddDataSteps(props: {
                             : ""
                         }
                         borderWidth={2}
-                        className="shadow-none hover:drop-shadow-xl transition-shadow"
+                        shadow="none"
+                        _hover={{ shadow: "xl" }}
+                        transition="all 300ms"
                       >
                         <Card.Header>
                           {/* TODO add icon to DataSource */}
@@ -998,7 +1009,7 @@ export default function AddDataSteps(props: {
                               )}
                           </Text>
                           <Link
-                            className="underline"
+                            textDecoration="underline"
                             mt={4}
                             mb={6}
                             onClick={() => onSourceClick(source, data)}
@@ -1064,140 +1075,145 @@ export default function AddDataSteps(props: {
           </Card.Body>
         </Card.Root>
         {/* Upload own data section */}
-        <Card.Root mb={24} shadow="none" border="none" w="full">
-          <Card.Body>
-            <Heading fontSize="title.lg" mb={2}>
-              {t("upload-your-data-heading")}
-            </Heading>
-            <Text color="content.tertiary" mb={12}>
-              {t("upload-your-data-details")}
-            </Text>
-            <Box display="flex">
-              <Box w="full">
-                <Box w="full">
-                  <Box mb="24px">
-                    <FileInput
-                      onFileSelect={() =>
-                        isFrozenCheck() ? null : handleFileSelect
-                      }
-                      setUploadedFile={setUploadedFile}
-                      t={t}
-                    />
-                  </Box>
-                  <Box mb="24px">
-                    {sectorData[0]?.files.length > 0 ? (
-                      <Heading size="sm">{t("files-uploaded")}</Heading>
-                    ) : (
-                      ""
-                    )}
-                  </Box>
-                  <Box display="flex" flexDirection="column" gap="8px">
-                    {sectorData &&
-                      sectorData[0]?.files.map(
-                        (file: InventoryUserFileAttributes, i: number) => {
-                          return (
-                            <Card.Root
-                              shadow="none"
-                              minH="120px"
-                              w="full"
-                              borderWidth="1px"
-                              borderColor="border.overlay"
-                              borderRadius="8px"
-                              px="16px"
-                              py="16px"
-                              key={i}
-                            >
-                              <Card.Body>
-                                <Box display="flex" gap="16px">
-                                  <Box>
-                                    <ExcelFileIcon />
-                                  </Box>
-                                  <Box
-                                    display="flex"
-                                    flexDirection="column"
-                                    justifyContent="center"
-                                    gap="8px"
-                                  >
-                                    <Heading
-                                      fontSize="lable.lg"
-                                      fontWeight="normal"
-                                      letterSpacing="wide"
-                                      truncate
-                                    >
-                                      {file.fileName}
-                                    </Heading>
-                                    <Text
-                                      fontSize="body.md"
-                                      fontWeight="normal"
-                                      color="interactive.control"
-                                    >
-                                      {bytesToMB(file.size ?? 0)}
-                                    </Text>
-                                  </Box>
-                                  <Box
-                                    color="sentiment.negativeDefault"
-                                    display="flex"
-                                    justifyContent="right"
-                                    alignItems="center"
-                                    w="full"
-                                  >
-                                    <Button
-                                      variant="ghost"
-                                      color="sentiment.negativeDefault"
-                                      onClick={() =>
-                                        removeSectorFile(
-                                          file.fileId,
-                                          sectorData[0].sectorName,
-                                          file.cityId,
-                                        )
-                                      }
-                                    >
-                                      <FiTrash2 size={24} />
-                                    </Button>
-                                  </Box>
-                                </Box>
-                                <Box w="full" className="relative pl-[63px]">
-                                  {file.subsectors
-                                    ?.split(",")
-                                    .map((item: any) => (
-                                      <Tag
-                                        key={item}
-                                        mt={2}
-                                        mr={2}
-                                        size="md"
-                                        variant="solid"
-                                        color="content.alternative"
-                                        bg="background.neutral"
-                                        maxW="150px"
+        {hasFeatureFlag(FeatureFlags.UPLOAD_OWN_DATA_ENABLED) && (
+          <>
+            <Card.Root mb={24} shadow="none" border="none" w="full">
+              <Card.Body>
+                <Heading fontSize="title.lg" mb={2}>
+                  {t("upload-your-data-heading")}
+                </Heading>
+                <Text color="content.tertiary" mb={12}>
+                  {t("upload-your-data-details")}
+                </Text>
+                <Box display="flex">
+                  <Box w="full">
+                    <Box w="full">
+                      <Box mb="24px">
+                        <FileInput
+                          onFileSelect={() =>
+                            isFrozenCheck()
+                              ? null
+                              : handleFileSelect(uploadedFile!)
+                          }
+                          setUploadedFile={setUploadedFile}
+                          t={t}
+                        />
+                      </Box>
+                      <Box mb="24px">
+                        {sectorData[0]?.files.length > 0 ? (
+                          <Heading size="sm">{t("files-uploaded")}</Heading>
+                        ) : (
+                          ""
+                        )}
+                      </Box>
+                      <Box display="flex" flexDirection="column" gap="8px">
+                        {sectorData &&
+                          sectorData[0]?.files.map(
+                            (file: InventoryUserFileAttributes, i: number) => {
+                              return (
+                                <Card.Root
+                                  shadow="none"
+                                  minH="120px"
+                                  w="full"
+                                  borderWidth="1px"
+                                  borderColor="border.overlay"
+                                  borderRadius="8px"
+                                  px="16px"
+                                  py="16px"
+                                  key={i}
+                                >
+                                  <Card.Body>
+                                    <Box display="flex" gap="16px">
+                                      <Box>
+                                        <ExcelFileIcon />
+                                      </Box>
+                                      <Box
+                                        display="flex"
+                                        flexDirection="column"
+                                        justifyContent="center"
+                                        gap="8px"
                                       >
-                                        <TagLabel>{item}</TagLabel>
-                                      </Tag>
-                                    ))}
-                                </Box>
-                              </Card.Body>
-                            </Card.Root>
-                          );
-                        },
-                      )}
+                                        <Heading
+                                          fontSize="lable.lg"
+                                          fontWeight="normal"
+                                          letterSpacing="wide"
+                                          truncate
+                                        >
+                                          {file.fileName}
+                                        </Heading>
+                                        <Text
+                                          fontSize="body.md"
+                                          fontWeight="normal"
+                                          color="interactive.control"
+                                        >
+                                          {bytesToMB(file.size ?? 0)}
+                                        </Text>
+                                      </Box>
+                                      <Box
+                                        color="sentiment.negativeDefault"
+                                        display="flex"
+                                        justifyContent="right"
+                                        alignItems="center"
+                                        w="full"
+                                      >
+                                        <Button
+                                          variant="ghost"
+                                          color="sentiment.negativeDefault"
+                                          onClick={() =>
+                                            removeSectorFile(
+                                              file.fileId,
+                                              sectorData[0].sectorName,
+                                              file.cityId,
+                                            )
+                                          }
+                                        >
+                                          <FiTrash2 size={24} />
+                                        </Button>
+                                      </Box>
+                                    </Box>
+                                    <Box w="full" position="relative" pl="63px">
+                                      {file.subsectors
+                                        ?.split(",")
+                                        .map((item: any) => (
+                                          <Tag
+                                            key={item}
+                                            mt={2}
+                                            mr={2}
+                                            size="md"
+                                            variant="solid"
+                                            color="content.alternative"
+                                            bg="background.neutral"
+                                            maxW="150px"
+                                          >
+                                            <TagLabel>{item}</TagLabel>
+                                          </Tag>
+                                        ))}
+                                    </Box>
+                                  </Card.Body>
+                                </Card.Root>
+                              );
+                            },
+                          )}
+                      </Box>
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            </Box>
-          </Card.Body>
-        </Card.Root>
-        {/* Add fole data modal */}
-        <AddFileDataDialog
-          isOpen={openFileUploadDialog}
-          onClose={onfileDataModalClose}
-          subsectors={currentStep.subSectors}
-          onOpenChange={setOpenFileUploadDialog}
-          t={t}
-          uploadedFile={uploadedFile!}
-          currentStep={currentStep}
-          userInfo={userInfo}
-          inventory={inventory}
-        />
-        {/*** Bottom bar ***/}
+              </Card.Body>
+            </Card.Root>
+            {/* Add file data modal */}
+            <AddFileDataDialog
+              isOpen={openFileUploadDialog}
+              onClose={() => setOpenFileUploadDialog(false)}
+              subsectors={currentStep.subSectors}
+              onOpenChange={setOpenFileUploadDialog}
+              t={t}
+              uploadedFile={uploadedFile!}
+              currentStep={currentStep}
+              userInfo={userInfo}
+              inventory={inventory}
+            />
+          </>
+        )}
 
         {/*** Drawers ***/}
         <SourceDrawer
@@ -1211,7 +1227,7 @@ export default function AddDataSteps(props: {
           t={t}
           inventoryId={inventory}
         />
-      </div>
+      </Box>
     </>
   );
 }

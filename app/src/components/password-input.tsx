@@ -5,13 +5,14 @@ import { TFunction } from "i18next";
 import { Field } from "@/components/ui/field";
 import { PasswordInput as ChakraPasswordInput } from "@/components/ui/password-input";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import LabelLarge from "@/components/Texts/Label";
 
 export default function PasswordInput({
   children,
   error,
   register,
   t,
-  name = "Password",
+  name,
   id = "password",
   w,
   shouldValidate = false,
@@ -29,6 +30,7 @@ export default function PasswordInput({
 }) {
   // Password checks
   const password = watchPassword || "";
+  const labelName = name || t("password");
   const hasLowercase = /[a-z]/.test(password);
   const hasMinLength = password.length >= 8;
   const hasUppercase = /[A-Z]/.test(password);
@@ -37,15 +39,7 @@ export default function PasswordInput({
   return (
     <Field
       invalid={!!error}
-      label={
-        <Text
-          fontWeight="medium"
-          fontFamily="heading"
-          color="content.secondary"
-        >
-          {name}
-        </Text>
-      }
+      label={<LabelLarge>{labelName}</LabelLarge>}
       errorText={error?.message}
       w={w}
     >

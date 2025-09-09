@@ -40,7 +40,7 @@ export default function AdminOrganizationLayout(props: {
   const step = useMemo(() => {
     const pathArray = pathName.replace(/\/$/, "").split("/");
     const path = pathArray[pathArray.length - 1];
-    if (["profile", "team", "projects"].includes(path)) {
+    if (["profile", "team", "projects", "modules"].includes(path)) {
       return path;
     }
     return "profile";
@@ -51,7 +51,7 @@ export default function AdminOrganizationLayout(props: {
   }
 
   return (
-    <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
+    <Box pt={16} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
       <Box>
         <BreadcrumbRoot
           gap="8px"
@@ -75,13 +75,13 @@ export default function AdminOrganizationLayout(props: {
               color="content.tertiary"
               fontWeight="normal"
               truncate
-              className="capitalize"
+              textTransform="capitalize"
             >
               {t("admin-heading")}
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbCurrentLink color="content.primary">
-            <Text truncate lineClamp={1} className="capitalize">
+            <Text truncate lineClamp={1} textTransform="capitalize">
               {!organization ? (
                 <Spinner size="xs" />
               ) : (
@@ -94,7 +94,7 @@ export default function AdminOrganizationLayout(props: {
       <Text
         fontSize="headline.lg"
         marginTop={2}
-        className="capitalize"
+        textTransform="capitalize"
         fontWeight="semibold"
       >
         {!organization ? (
@@ -106,7 +106,7 @@ export default function AdminOrganizationLayout(props: {
       <Box mt={8}>
         <Tabs.Root variant="line" lazyMount defaultValue="profile" value={step}>
           <Tabs.List borderStyle="hidden">
-            {["profile", "team", "projects"].map((tab, index) => (
+            {["profile", "team", "projects", "modules"].map((tab, index) => (
               <Link key={tab} href={`/${lng}/admin/organization/${id}/${tab}`}>
                 <Tabs.Trigger key={index} value={tab}>
                   <Text

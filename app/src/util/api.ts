@@ -14,12 +14,20 @@ import { ManualInputValidationError } from "@/lib/custom-errors/manual-input-err
 import { logger } from "@/services/logger";
 import { Organization } from "@/models/Organization";
 import { Roles } from "@/util/types";
+import jwt from "jsonwebtoken";
+import { FeatureFlags, hasFeatureFlag } from "./feature-flags";
+import { OAuthClient } from "@/models/OAuthClient";
+import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 
 export type ApiResponse = NextResponse | StreamingTextResponse;
 
 export type NextHandler = (
   req: NextRequest,
-  props: { params: Record<string, string>; session: AppSession | null },
+  props: {
+    params: Record<string, string>;
+    session: AppSession | null;
+    searchParams: Record<string, string>;
+  },
 ) => Promise<ApiResponse>;
 
 // TODO extend this to other endpoints that need to skip the frozen check
@@ -147,6 +155,36 @@ const organizationContextCheck = async ({
   }
 };
 
+function getBearerToken(header: string): any {
+  const match = header.match(/^Bearer\s+(.*)$/);
+  if (!match) {
+    throw new createHttpError.BadRequest(`Malformed Authorization header`);
+  }
+  if (!process.env.VERIFICATION_TOKEN_SECRET) {
+    logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
+    throw createHttpError.InternalServerError("Configuration error");
+  }
+  return jwt.verify(match[1], process.env.VERIFICATION_TOKEN_SECRET);
+}
+
+async function makeOAuthUserSession(token: any): Promise<AppSession> {
+  const userId = token.sub;
+  const user = await db.models.User.findOne({ where: { userId } });
+  if (!user) {
+    throw new createHttpError.BadRequest(`Malformed Authorization header`);
+  }
+  return {
+    expires: token.iat,
+    user: {
+      id: user.userId,
+      name: user.name,
+      email: user.email,
+      image: user.pictureUrl,
+      role: user.role || Roles.User,
+    },
+  };
+}
+
 export function apiHandler(handler: NextHandler) {
   return async (
     req: NextRequest,
@@ -161,7 +199,47 @@ export function apiHandler(handler: NextHandler) {
         await db.initialize();
       }
 
-      session = await Auth.getServerSession();
+      const authorization = req.headers.get("Authorization");
+
+      if (authorization && hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
+        const token = getBearerToken(authorization);
+        if (!token) {
+          throw new createHttpError.Unauthorized(
+            "Invalid or expired access token",
+          );
+        }
+        const origin = process.env.HOST || new URL(req.url).origin;
+        if (token.aud !== origin) {
+          throw new createHttpError.Unauthorized("Wrong server for token");
+        }
+        const client = await OAuthClient.findByPk(token.client_id);
+        if (!client) {
+          throw new createHttpError.Unauthorized("Invalid client");
+        }
+        const scopes = token.scope.split(" ");
+        if (req.method in ["GET", "HEAD"] && !("read" in scopes)) {
+          throw new createHttpError.Unauthorized("No read scope available");
+        }
+        if (
+          req.method in ["PUT", "PATCH", "POST", "DELETE"] &&
+          !("write" in scopes)
+        ) {
+          throw new createHttpError.Unauthorized("No write scope available");
+        }
+        const authz = await OAuthClientAuthz.findOne({
+          where: {
+            clientId: token.client_id,
+            userId: token.sub,
+          },
+        });
+        if (!authz) {
+          throw new createHttpError.Unauthorized("Authorization revoked");
+        }
+        await authz.update({ lastUsed: new Date() });
+        session = await makeOAuthUserSession(token);
+      } else {
+        session = await Auth.getServerSession();
+      }
 
       const orgContextCheckResult = await organizationContextCheck({
         req,
@@ -173,8 +251,10 @@ export function apiHandler(handler: NextHandler) {
         return orgContextCheckResult;
       }
 
+      const { searchParams } = new URL(req.url);
       const context = {
         params: await props.params,
+        searchParams: Object.fromEntries(searchParams.entries()),
         session,
       };
 
@@ -221,7 +301,13 @@ function errorHandler(err: unknown, _req: NextRequest) {
     );
   } else if (createHttpError.isHttpError(err) && err.expose) {
     return NextResponse.json(
-      { error: { message: err.message } },
+      {
+        error: {
+          message: err.message,
+          code: (err as any).code || undefined,
+          data: (err as any).data || undefined,
+        },
+      },
       { status: err.statusCode },
     );
   } else if (err instanceof ZodError) {

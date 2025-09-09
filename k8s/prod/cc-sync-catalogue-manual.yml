@@ -24,7 +24,8 @@ spec:
               value: "development"
             - name: GLOBAL_API_URL
               value: "https://api.citycatalyst.io"
-          command: ["npm", "run", "sync-catalogue"]
+          command: ["/bin/sh", "-c"]
+          args: ["npx tsx scripts/catalogue-sync.ts && npx tsx scripts/formula-values-sync.ts && npx tsx scripts/emissions-factors-sync.ts"]
           resources:
             limits:
               memory: "1024Mi"

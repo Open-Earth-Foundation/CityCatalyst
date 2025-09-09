@@ -6,5 +6,12 @@
   "dashboard": "Dashboard",
   "go-back": "Go back",
   "log-out": "Log Out",
-  "settings": "Settings"
+  "settings": "Settings",
+  "languages": {
+    "en": "English",
+    "es": "Spanish",
+    "fr": "French",
+    "de": "German",
+    "pt": "Portuguese"
+  }
 }

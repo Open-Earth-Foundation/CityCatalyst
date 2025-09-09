@@ -7,6 +7,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { InventoryTypeEnum } from "@/util/constants";
+import createHttpError from "http-errors";
 
 const validSectorRefNos = {
   [InventoryTypeEnum.GPC_BASIC]: ["I", "II", "III"],
@@ -103,15 +104,6 @@ export const POST = apiHandler(async (req, { session, params }) => {
   const result = await db.sequelize!.transaction(async (transaction) => {
     const result: InventoryValue[] = [];
     for (const notationKey of body.notationKeys) {
-      const existingInventoryValue = await db.models.InventoryValue.findOne({
-        where: {
-          inventoryId,
-          subCategoryId: notationKey.subCategoryId,
-        },
-        transaction,
-        lock: true,
-      });
-
       const subCategory = await db.models.SubCategory.findOne({
         where: { subcategoryId: notationKey.subCategoryId },
         include: [
@@ -122,7 +114,21 @@ export const POST = apiHandler(async (req, { session, params }) => {
           },
         ],
       });
+      const gpcReferenceNumber = subCategory?.referenceNumber;
+      // Lookup by inventoryId + gpcReferenceNumber (matches unique constraint)
+      const existingInventoryValue = await db.models.InventoryValue.findOne({
+        where: {
+          inventoryId,
+          gpcReferenceNumber,
+        },
+        transaction,
+        lock: true,
+      });
       if (existingInventoryValue) {
+        throw new createHttpError.BadRequest(
+          "Existing notation key found for this subcategory, remove it before setting notation key",
+        );
+        /* TODO decide if this behavior is desirable - UI warning/ confirmation would need to be implemented
         // reset emissions values of inventory value as notation key was used for it
         const inventoryValue = await existingInventoryValue.update(
           {
@@ -142,6 +148,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
           where: { inventoryValueId: existingInventoryValue.id },
           transaction,
         });
+        */
       } else {
         const inventoryValue = await db.models.InventoryValue.create(
           {
@@ -150,7 +157,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
             subSectorId: subCategory?.subsectorId,
             sectorId: subCategory?.subsector?.sectorId,
             inventoryId,
-            gpcReferenceNumber: subCategory?.referenceNumber,
+            gpcReferenceNumber,
           },
           { transaction },
         );

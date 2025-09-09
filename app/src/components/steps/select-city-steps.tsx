@@ -28,6 +28,7 @@ import {
   Input,
   InputAddon,
   Link,
+  Stack,
   Text,
 } from "@chakra-ui/react";
 import { MdCheck, MdInfoOutline, MdSearch, MdWarning } from "react-icons/md";
@@ -50,7 +51,7 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { logger } from "@/services/logger"
+import { logger } from "@/services/logger";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -188,7 +189,10 @@ export default function SelectCityStep({
         numberOfYearsDisplayed,
       );
       if (!population) {
-        logger.error({locode, year}, "Failed to find population data for city");
+        logger.error(
+          { locode, year },
+          "Failed to find population data for city",
+        );
         return;
       }
       setValue("cityPopulation", population.population);
@@ -286,7 +290,7 @@ export default function SelectCityStep({
         gap="24px"
         mb="48px"
       >
-        <Heading data-testId="setup-city-heading" size="xl">
+        <Heading data-testid="setup-city-heading" size="xl">
           {t("setup-city-heading")}
         </Heading>
         <Text
@@ -295,7 +299,7 @@ export default function SelectCityStep({
           fontStyle="normal"
           fontWeight="400"
           letterSpacing="wide"
-          data-testId="setup-city-description"
+          data-testid="setup-city-description"
         >
           {t("setup-city-details")}
         </Text>
@@ -303,7 +307,7 @@ export default function SelectCityStep({
       <Box w="full">
         <Card.Root p={6} shadow="none" px="24px" py="32px">
           <Card.Body>
-            <form className="space-y-8">
+            <Stack gap="4">
               {EnterpriseMode && (
                 <Box w="full">
                   <SelectRoot
@@ -312,11 +316,12 @@ export default function SelectCityStep({
                     onValueChange={(e) => setSelectedProject(e.value)}
                     variant="outline"
                     collection={projectCollection}
+                    data-testid="setup-project-select"
                   >
                     <SelectLabel display="flex" alignItems="center" gap="8px">
                       <Text
                         fontFamily="heading"
-                        className="capitalize"
+                        textTransform="capitalize"
                         color="content.secondary"
                       >
                         {t("project")}
@@ -354,7 +359,7 @@ export default function SelectCityStep({
                   </Box>
                 }
                 label={t("city")}
-                data-testId="setup-city-input-label"
+                data-testid="setup-city-input-label"
               >
                 <InputGroup
                   shadow="1dp"
@@ -373,7 +378,7 @@ export default function SelectCityStep({
                 >
                   <Input
                     type="text"
-                    data-testId="setup-city-input"
+                    data-testid="setup-city-input"
                     placeholder={t("select-city-placeholder")}
                     size="lg"
                     {...register("city", {
@@ -387,10 +392,24 @@ export default function SelectCityStep({
                 {onInputClicked && (
                   <Box
                     shadow="2dp"
-                    className="h-auto max-h-[272px] transition-all duration-150 overflow-scroll flex flex-col py-3 gap-3 rounded-lg w-full absolute bg-white z-50 mt-2 border border-[1px solid #E6E7FF] mt-20"
+                    h="auto"
+                    maxH="272px"
+                    transition="all 150ms"
+                    overflow="auto"
+                    display="flex"
+                    flexDirection="column"
+                    py={3}
+                    gap={3}
+                    borderRadius="lg"
+                    w="full"
+                    position="absolute"
+                    bg="white"
+                    zIndex={50}
+                    mt={20}
+                    border="1px solid #E6E7FF"
                   >
                     {!isLoading && !cityInputQuery && <RecentSearches t={t} />}
-                    {isLoading && <p className="px-4">Fetching Cities...</p>}
+                    {isLoading && <Text px={4}>Fetching Cities...</Text>}
                     {isSuccess &&
                       cities &&
                       cities.map((city: OCCityAttributes) => {
@@ -398,21 +417,31 @@ export default function SelectCityStep({
                           <Box
                             onClick={() => handleSetCity(city)}
                             key={city.actor_id}
-                            className="h-[72px] py-3 w-full flex flex-col justify-center group px-4 hover:bg-[#2351DC] transition-all duration-150 cursor-pointer"
+                            h="72px"
+                            py={3}
+                            w="full"
+                            display="flex"
+                            flexDirection="column"
+                            justifyContent="center"
+                            px={4}
+                            transition="all 150ms"
+                            cursor="pointer"
+                            className="group"
+                            _hover={{ bg: "#2351DC" }}
                           >
                             <Text
-                              className="group-hover:text-white"
                               color="content.secondary"
                               fontSize="body.lg"
                               fontFamily="body"
                               fontWeight="normal"
                               lineHeight="24"
                               letterSpacing="wide"
+                              _groupHover={{ color: "white" }}
                             >
                               {city.name}
                             </Text>
                             <Text
-                              className="group-hover:text-[#E8EAFB]"
+                              _groupHover={{ color: "#E8EAFB" }}
                               color="content.tertiary"
                               fontSize="body.lg"
                               fontFamily="body.md"
@@ -426,7 +455,13 @@ export default function SelectCityStep({
                         );
                       })}
                     {isSuccess && cities.length == 0 && (
-                      <Box className="py-2 w-full items-center flex gap-4 px-4">
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={4}
+                        px={4}
+                        py={2}
+                      >
                         <Box h="full" display="flex" alignItems="center">
                           <Icon
                             as={NoResultsIcon}
@@ -543,7 +578,7 @@ export default function SelectCityStep({
                   </Box>
                 </Box>
               )}
-            </form>
+            </Stack>
           </Card.Body>
         </Card.Root>
       </Box>

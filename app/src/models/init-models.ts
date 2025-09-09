@@ -182,6 +182,45 @@ import {
   ThemeAttributes,
   ThemeCreationAttributes,
 } from "@/models/Theme";
+import type { ModuleAttributes, ModuleCreationAttributes } from "./Module";
+import { Module as _Module } from "./Module";
+import type {
+  ProjectModulesAttributes,
+  ProjectModulesCreationAttributes,
+} from "./ProjectModules";
+import { ProjectModules as _ProjectModules } from "./ProjectModules";
+import {
+  HighImpactActionRanking as _HighImpactActionRanking,
+  HighImpactActionRankingAttributes,
+  HighImpactActionRankingCreationAttributes,
+} from "./HighImpactActionRanking";
+import {
+  HighImpactActionRanked as _HighImpactActionRanked,
+  HighImpactActionRankedAttributes,
+  HighImpactActionRankedCreationAttributes,
+} from "./HighImpactActionRanked";
+
+import { OAuthClient as _OAuthClient } from "./OAuthClient";
+import {
+  OAuthClientAttributes,
+  OAuthClientCreationAttributes,
+  OAuthClientOptionalAttributes,
+} from "./OAuthClient";
+import { OAuthClientI18N as _OAuthClientI18N } from "./OAuthClientI18N";
+import {
+  OAuthClientI18NAttributes,
+  OAuthClientI18NCreationAttributes,
+  OAuthClientI18NOptionalAttributes,
+  OAuthClientI18N,
+} from "./OAuthClientI18N";
+import { se } from "date-fns/locale";
+
+import { OAuthClientAuthz as _OAuthClientAuthz } from "./OAuthClientAuthz";
+import {
+  OAuthClientAuthzAttributes,
+  OAuthClientAuthzCreationAttributes,
+  OAuthClientAuthzOptionalAttributes,
+} from "./OAuthClientAuthz";
 
 export {
   _ActivityData as ActivityData,
@@ -227,6 +266,13 @@ export {
   _ProjectAdmin as ProjectAdmin,
   _ProjectInvite as ProjectInvite,
   _Theme as Theme,
+  _HighImpactActionRanking as HighImpactActionRanking,
+  _HighImpactActionRanked as HighImpactActionRanked,
+  _Module as Module,
+  _ProjectModules as ProjectModules,
+  _OAuthClient as OAuthClient,
+  _OAuthClientI18N as OAuthClientI18N,
+  _OAuthClientAuthz as OAuthClientAuthz,
 };
 
 export type {
@@ -312,6 +358,23 @@ export type {
   ProjectInviteCreationAttributes,
   ThemeAttributes,
   ThemeCreationAttributes,
+  HighImpactActionRankingAttributes,
+  HighImpactActionRankingCreationAttributes,
+  HighImpactActionRankedAttributes,
+  HighImpactActionRankedCreationAttributes,
+  ModuleAttributes,
+  ModuleCreationAttributes,
+  ProjectModulesAttributes,
+  ProjectModulesCreationAttributes,
+  OAuthClientAttributes,
+  OAuthClientCreationAttributes,
+  OAuthClientOptionalAttributes,
+  OAuthClientI18NAttributes,
+  OAuthClientI18NCreationAttributes,
+  OAuthClientI18NOptionalAttributes,
+  OAuthClientAuthzAttributes,
+  OAuthClientAuthzCreationAttributes,
+  OAuthClientAuthzOptionalAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -360,6 +423,15 @@ export function initModels(sequelize: Sequelize) {
   const ProjectAdmin = _ProjectAdmin.initModel(sequelize);
   const ProjectInvite = _ProjectInvite.initModel(sequelize);
   const Theme = _Theme.initModel(sequelize);
+  const HighImpactActionRankingModel =
+    _HighImpactActionRanking.initModel(sequelize);
+  const HighImpactActionRankedModel =
+    _HighImpactActionRanked.initModel(sequelize);
+  const Module = _Module.initModel(sequelize);
+  const ProjectModules = _ProjectModules.initModel(sequelize);
+  const OAuthClient = _OAuthClient.initModel(sequelize);
+  const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
+  const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
 
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
@@ -515,13 +587,25 @@ export function initModels(sequelize: Sequelize) {
     as: "dataSourceActivityData",
     foreignKey: "activitydataId",
   });
+  User.belongsTo(City, { as: "defaultCity", foreignKey: "defaultCityId" });
+  City.hasMany(User, {
+    as: "usersWithDefaultCity",
+    foreignKey: "defaultCityId",
+  });
   User.belongsToMany(City, {
     through: CityUser,
     as: "cities",
     foreignKey: "userId",
     otherKey: "cityId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
-  CityInvite.belongsTo(User, { foreignKey: "userId", as: "user" });
+  CityInvite.belongsTo(User, {
+    foreignKey: "userId",
+    as: "user",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
   CityInvite.belongsTo(City, {
     foreignKey: "cityId",
     as: "city",
@@ -529,6 +613,8 @@ export function initModels(sequelize: Sequelize) {
   CityInvite.belongsTo(User, {
     foreignKey: "invitingUserId",
     as: "invitingUser",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
   City.hasMany(CityInvite, {
     foreignKey: "cityId",
@@ -538,7 +624,12 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "userId",
     as: "organizationInvites",
   });
-  OrganizationInvite.belongsTo(User, { as: "user", foreignKey: "userId" });
+  OrganizationInvite.belongsTo(User, {
+    as: "user",
+    foreignKey: "userId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
   User.belongsTo(Inventory, {
     as: "defaultInventory",
     foreignKey: "defaultInventoryId",
@@ -548,6 +639,8 @@ export function initModels(sequelize: Sequelize) {
     as: "users",
     foreignKey: "cityId",
     otherKey: "userId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
   GDP.belongsTo(City, { as: "city", foreignKey: "cityId" });
   City.hasMany(GDP, { as: "gdps", foreignKey: "cityId" });
@@ -786,13 +879,25 @@ export function initModels(sequelize: Sequelize) {
   });
   User.hasMany(UserFile, { foreignKey: "userId", as: "user" });
   UserFile.belongsTo(User, { as: "userFiles", foreignKey: "userId" });
-  UserFile.belongsTo(City, { foreignKey: "cityId", as: "city" });
-  City.hasMany(UserFile, { foreignKey: "cityId", as: "userFiles" });
+  UserFile.belongsTo(City, {
+    foreignKey: "cityId",
+    as: "city",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  City.hasMany(UserFile, {
+    foreignKey: "cityId",
+    as: "userFiles",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
   City.hasMany(CityInvite, { as: "cityInvite", foreignKey: "cityId" });
   CityInvite.belongsTo(City, { as: "cityInvites", foreignKey: "cityId" });
   Organization.hasMany(OrganizationInvite, {
     as: "organizationInvite",
     foreignKey: "organizationId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
   Organization.belongsTo(Theme, {
     as: "theme",
@@ -805,6 +910,8 @@ export function initModels(sequelize: Sequelize) {
   OrganizationInvite.belongsTo(Organization, {
     as: "organizationInvites",
     foreignKey: "organizationId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
   GasValue.belongsTo(InventoryValue, {
     as: "inventoryValue",
@@ -877,14 +984,69 @@ export function initModels(sequelize: Sequelize) {
   ProjectInvite.belongsTo(Project, {
     foreignKey: "projectId",
     as: "project",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
   Project.hasMany(ProjectInvite, {
     foreignKey: "projectId",
     as: "projectInvites",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
   User.hasMany(ProjectInvite, {
     foreignKey: "userId",
     as: "projectInvites",
+  });
+  ProjectModules.belongsTo(Project, {
+    as: "project",
+    foreignKey: "project_id",
+  });
+  Project.hasMany(ProjectModules, {
+    as: "projectModules",
+    foreignKey: "project_id",
+  });
+  ProjectModules.belongsTo(Module, {
+    as: "module",
+    foreignKey: "module_id",
+  });
+  Module.hasMany(ProjectModules, {
+    as: "projectModules",
+    foreignKey: "module_id",
+  });
+
+  // Associations for HighImpactActionRanking and HighImpactActionRanked
+  HighImpactActionRankingModel.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(HighImpactActionRankingModel, {
+    as: "highImpactActionRankings",
+    foreignKey: "inventoryId",
+  });
+
+  HighImpactActionRankedModel.belongsTo(HighImpactActionRankingModel, {
+    as: "highImpactActionRanking",
+    foreignKey: "hiaRankingId",
+  });
+  HighImpactActionRankingModel.hasMany(HighImpactActionRankedModel, {
+    as: "highImpactActionRanked",
+    foreignKey: "hiaRankingId",
+  });
+  OAuthClient.hasMany(OAuthClientI18N, { as: "i18n", foreignKey: "clientId" });
+
+  OAuthClientAuthz.belongsTo(OAuthClient, {
+    as: "client",
+    foreignKey: "clientId",
+    targetKey: "clientId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  OAuthClientAuthz.belongsTo(User, {
+    as: "user",
+    foreignKey: "userId",
+    targetKey: "userId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
 
   return {
@@ -931,5 +1093,12 @@ export function initModels(sequelize: Sequelize) {
     ProjectAdmin: ProjectAdmin,
     ProjectInvite: ProjectInvite,
     Theme: Theme,
+    HighImpactActionRanking: HighImpactActionRankingModel,
+    HighImpactActionRanked: HighImpactActionRankedModel,
+    Module: Module,
+    ProjectModules: ProjectModules,
+    OAuthClient: OAuthClient,
+    OAuthClientI18N: OAuthClientI18N,
+    OAuthClientAuthz: OAuthClientAuthz,
   };
 }

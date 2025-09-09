@@ -6,7 +6,7 @@ import type {
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
-import { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
+import type { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
 import {
   InventoryValue,
   InventoryValueAttributes,
@@ -20,11 +20,13 @@ import type {
   EmissionsFactorAttributes,
 } from "@/models/EmissionsFactor";
 import type { ActivityValue } from "@/models/ActivityValue";
-import Decimal from "decimal.js";
-import {
+import type Decimal from "decimal.js";
+import type {
   FailedSourceResult,
   RemovedSourceResult,
 } from "@/backend/DataSourceService";
+import type { ProjectAttributes } from "@/models/Project";
+import type { OrganizationAttributes } from "@/models/Organization";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -44,6 +46,19 @@ export type FullInventoryValue = InventoryValue & {
     gasValues: (GasValue & { emissionsFactor?: EmissionsFactor })[];
   })[];
   dataSource: DataSourceAttributes;
+};
+
+export type InventoryDownloadResponse = InventoryAttributes & {
+  inventoryValues: (InventoryValueAttributes & {
+    dataSource?: DataSourceAttributes;
+    gasValues: (GasValueAttributes & {
+      emissionsFactor: EmissionsFactorAttributes;
+    })[];
+  })[];
+  city: CityAttributes & {
+    populationYear: number;
+    population: number;
+  };
 };
 
 export type InventoryResponse = RequiredInventoryAttributes & {
@@ -91,8 +106,10 @@ export interface UserInfoResponse {
   userId: string;
   name: string;
   defaultInventoryId: string | null;
+  defaultCityId: string | null;
   role: Roles;
   email?: string;
+  preferredLanguage?: string;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -365,6 +382,7 @@ export interface ActivityDataByScope {
   percentage: number;
   datasource_id: string;
   datasource_name: string;
+  activities?: ActivityValue[];
 }
 
 export type SectorBreakdownResponse = BreakdownByActivity & {
@@ -393,6 +411,7 @@ export type OrganizationResponse = {
     themeKey: string;
   };
   logoUrl?: string;
+  preferredLanguage?: string;
   active: boolean;
   projects: {
     projectId: string;
@@ -437,6 +456,7 @@ export type ListOrganizationsResponse = {
 export type CityResponse = {
   cityId: string;
   name: string;
+  country: string;
   countryLocode: string;
   locode: string;
   inventories: {
@@ -474,22 +494,8 @@ export enum ACTION_TYPES {
   Adaptation = "adaptation",
 }
 
-export type CityWithProjectDataResponse = {
-  cityId: string;
-  name: string;
-  locode: string;
-  populationYear: number;
-  country: string;
-  population: number;
-  project?: {
-    name: string;
-    cityCountLimit: number;
-    organization: {
-      organizationId: string;
-      name: string;
-      contactEmail: string;
-    };
-  };
+export type CityWithProjectDataResponse = CityAttributes & {
+  project?: ProjectAttributes & { organization: OrganizationAttributes };
 };
 
 export type ThemeResponse = {
@@ -525,6 +531,7 @@ export interface UpdateUserPayload {
   email: string;
   userId: string;
   title?: string;
+  preferredLanguage?: string;
 }
 
 export interface FormulaInputValuesResponse {
@@ -537,4 +544,231 @@ export interface FormulaInputValuesResponse {
   formulaInputUnit: string;
   formulaName: string;
   region: string;
+}
+export enum HighImpactActionRankingStatus {
+  PENDING = "PENDING",
+  SUCCESS = "SUCCESS",
+  FAILURE = "FAILURE",
+}
+export interface CoBenefits {
+  air_quality: number;
+  water_quality: number;
+  habitat: number;
+  cost_of_living: number;
+  housing: number;
+  mobility: number;
+  stakeholder_engagement: number;
+}
+
+export interface GHGReductionPotential {
+  stationary_energy: string | null;
+  transportation: string | null;
+  waste: string | null;
+  ippu: string | null;
+  afolu: string | null;
+}
+
+export interface AdaptationEffectivenessPerHazard {
+  floods: string | null;
+  storms: string | null;
+  diseases: string | null;
+  droughts: string | null;
+  heatwaves: string | null;
+  wildfires: string | null;
+  landslides: string | null;
+  "sea-level-rise": string | null;
+}
+
+export interface Explanation {
+  en: string;
+  es: string;
+  pt: string;
+}
+
+export interface BaseAction {
+  id: string;
+  hiaRankingId: string;
+  lang: string;
+  type: ACTION_TYPES;
+  name: string;
+  hazards: string[];
+  sectors: string[];
+  subsectors: string[];
+  primaryPurposes: string[];
+  description: string;
+  dependencies: string[];
+  cobenefits: CoBenefits;
+  adaptationEffectivenessPerHazard: AdaptationEffectivenessPerHazard;
+  equityAndInclusionConsiderations: string | null;
+  costInvestmentNeeded: string;
+  timelineForImplementation: string;
+  keyPerformanceIndicators: string[];
+  powersAndMandates: string[];
+  biome: string | null;
+  isSelected: boolean;
+  actionId: string;
+  rank: number;
+  explanation: Explanation;
+  created: Date;
+  last_updated: Date;
+}
+
+export interface MitigationAction extends BaseAction {
+  type: ACTION_TYPES.Mitigation;
+  GHGReductionPotential: GHGReductionPotential;
+  adaptationEffectiveness: null;
+}
+
+export interface AdaptationAction extends BaseAction {
+  type: ACTION_TYPES.Adaptation;
+  GHGReductionPotential: null;
+  adaptationEffectiveness: string;
+}
+
+export type HIAction = MitigationAction | AdaptationAction;
+
+export type HIAPResponse = {
+  id: string;
+  locode: string;
+  inventoryId: string;
+  lang: string;
+  jobId: string;
+  status: HighImpactActionRankingStatus;
+  created: Date;
+  last_updated: Date;
+  rankedActions: HIAction[];
+};
+
+export interface LangMap {
+  [langCode: string]: string;
+}
+
+export interface Client {
+  clientId: string;
+  redirectUri: string;
+  name: LangMap;
+  description: LangMap;
+}
+
+export type CityLocationResponse = {
+  locode: string;
+  name: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+};
+
+// Permission system types
+export enum UserRole {
+  ORG_ADMIN = "ORG_ADMIN",
+  PROJECT_ADMIN = "PROJECT_ADMIN",
+  COLLABORATOR = "COLLABORATOR",
+  PUBLIC_READER = "PUBLIC_READER",
+  NO_ACCESS = "NO_ACCESS",
+}
+
+export type UserRoleType = keyof typeof UserRole;
+
+export interface PermissionCheckResponse {
+  hasAccess: boolean;
+  userRole: UserRole;
+  organizationId: string | null;
+  context: {
+    organizationId?: string;
+    projectId?: string;
+    cityId?: string;
+    inventoryId?: string;
+  };
+}
+
+export interface HIAPSummary {
+  mitigation: {
+    id: string;
+    rankedActions: HIAction[];
+  };
+  adaptation: {
+    id: string;
+    rankedActions: HIAction[];
+  };
+  inventoryId: string;
+}
+
+export interface CCRARiskAssessment {
+  hazard: string;
+  keyimpact: string;
+  risk_score: number;
+  original_risk_score?: number;
+  hazard_score: number;
+  exposure_score: number;
+  vulnerability_score: number;
+  original_vulnerability_score?: number;
+}
+
+export interface CCRASummary {
+  topRisks: CCRARiskAssessment[];
+  inventoryId: string;
+}
+
+export interface GHGInventorySummary {
+  inventory: InventoryResponse;
+  totalEmissions: {
+    bySector: SectorEmission[];
+    total: bigint;
+  };
+  topEmissions: { bySubSector: TopEmission[] };
+  year: number;
+}
+
+export interface ModuleDataSummaryResponse {
+  [key: string]: GHGInventorySummary | HIAPSummary | CCRASummary | any;
+}
+
+export interface DashboardResponseType {
+  data: ModuleDataSummaryResponse;
+  metadata: {
+    cityId: string;
+    cityName: string;
+    projectId: string;
+  };
+}
+
+export interface Authz {
+  clientId: string;
+  userId: string;
+  lastUsed: string | null;
+  created: string;
+  client: {
+    redirectUri: string;
+    name: LangMap;
+    description: LangMap;
+  };
+}
+
+export interface RiskAssessment {
+  hazard: string;
+  keyimpact: string;
+  risk_score: number;
+  original_risk_score?: number;
+  hazard_score: number;
+  exposure_score: number;
+  vulnerability_score: number;
+  original_vulnerability_score?: number;
+  risk_lower_limit?: number;
+  risk_upper_limit?: number;
+  normalised_risk_score?: number;
+}
+
+export interface Indicator {
+  hazard: string;
+  keyimpact: string;
+  category: string;
+  indicator_name?: string;
+  value?: number;
+}
+
+export interface CCRATopRisksData {
+  riskAssessment: RiskAssessment[];
+  indicators?: Indicator[];
+  cityName?: string;
+  region?: string;
 }

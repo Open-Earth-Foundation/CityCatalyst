@@ -1,7 +1,7 @@
 import React from "react";
 import { MdPersonAdd } from "react-icons/md";
 import { Button, useDisclosure } from "@chakra-ui/react";
-import AddCollaboratorsModal from "@/components/HomePage/AddCollaboratorModal/AddCollaboratorsModal";
+import AddCollaboratorsModal from "@/components/GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { ButtonMedium } from "@/components/Texts/Button";
 import { useTranslation } from "@/i18n/client";
 
@@ -27,7 +27,7 @@ export function AddCollaboratorButtonSmall({ lng }: { lng: string }) {
         color={"interactive.secondary"}
         padding={4}
       >
-        <MdPersonAdd className="text-white" size={24} />
+        <MdPersonAdd color="white" size={24} />
         <ButtonMedium color="background.default" marginLeft={2}>
           {t("invite")}
         </ButtonMedium>

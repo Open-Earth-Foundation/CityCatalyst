@@ -24,7 +24,17 @@ const SubSectorCard: FC<SubSectorCardProps> = ({
   t,
 }) => {
   return (
-    <Card.Root className="flex flex-row h-[120px] items-center px-4 gap-2 border border-[#E6E7FF] shadow-none">
+    <Card.Root
+      display="flex"
+      flexDirection="row"
+      h="120px"
+      alignItems="center"
+      px={4}
+      gap={2}
+      borderWidth={1}
+      borderColor="#E6E7FF"
+      shadow="none"
+    >
       {percentageCompletion > 0 && percentageCompletion < 100 ? (
         <ProgressCircleRoot
           size="xs"
@@ -46,7 +56,7 @@ const SubSectorCard: FC<SubSectorCardProps> = ({
           }
         />
       )}
-      <Box className="flex flex-col gap-[8px]">
+      <Box display="flex" flexDirection="column" gap="8px">
         <Heading
           fontSize="title.sm"
           fontWeight="medium"

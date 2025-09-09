@@ -2,6 +2,7 @@
 import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
+import { useParams, usePathname } from "next/navigation";
 import {
   Box,
   Card,
@@ -17,17 +18,22 @@ import AddDataCard from "@/components/Cards/add-data-card";
 import { getSectorsForInventory, InventoryTypeEnum } from "@/util/constants";
 import { api } from "@/services/api";
 import { MdArrowBack } from "react-icons/md";
+import { getParamValueRequired } from "@/util/helpers";
 
-export default function AddDataIntro(props: {
-  params: Promise<{ lng: string; inventory: string }>;
-}) {
-  const { lng, inventory } = use(props.params);
+export default function AddDataIntro() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const inventory = getParamValueRequired(params.inventory);
+  const pathname = usePathname();
   const { t } = useTranslation(lng, "data");
   const { data: inventoryData } = api.useGetInventoryQuery(inventory);
 
   return (
-    <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
-      <Link href="/" _hover={{ textDecoration: "none" }}>
+    <Box pt={16} pb={16} w="1090px" mx="auto" px={4}>
+      <Link
+        href={pathname.replace("/data", "")}
+        _hover={{ textDecoration: "none" }}
+      >
         <Box
           display="flex"
           alignItems="center"
@@ -52,11 +58,11 @@ export default function AddDataIntro(props: {
         data-testid="add-data-step-title"
         mb={6}
         mt={12}
-        className="w-full"
+        w="full"
       >
         {t("data-heading")}
       </Heading>
-      <Text color="content.tertiary" className="w-full">
+      <Text color="content.tertiary" w="full">
         <Trans
           i18nKey={
             inventoryData?.inventoryType === InventoryTypeEnum.GPC_BASIC
@@ -68,7 +74,7 @@ export default function AddDataIntro(props: {
           Add data or connect third-party data for your city and complete your
           city&apos;s emission inventory using the GPC Basic methodology.{" "}
           <Link
-            className="underline"
+            textDecoration="underline"
             href="https://ghgprotocol.org/ghg-protocol-cities"
             target="_blank"
             rel="noopener noreferrer"

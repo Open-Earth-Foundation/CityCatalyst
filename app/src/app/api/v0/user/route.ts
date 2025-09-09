@@ -11,7 +11,16 @@ export const GET = apiHandler(async (_req: Request, context) => {
   }
 
   const user = await db.models.User.findOne({
-    attributes: ["userId", "name", "defaultInventoryId", "role", "email", "title"],
+    attributes: [
+      "userId",
+      "name",
+      "defaultInventoryId",
+      "defaultCityId",
+      "role",
+      "email",
+      "title",
+      "preferredLanguage",
+    ],
     where: {
       userId: context.session.user.id,
     },
@@ -25,6 +34,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
 
 const updateUserRequest = z.object({
   defaultInventoryId: z.string().uuid(),
+  defaultCityId: z.string().uuid(),
 });
 
 export const PATCH = apiHandler(async (req: Request, context) => {
@@ -44,11 +54,17 @@ export const PATCH = apiHandler(async (req: Request, context) => {
     // It's not an error, but we don't want to update the user's default inventory in this case.
   }
   if (inventory) {
-    const user = await db.models.User.update(body, {
-      where: {
-        userId: context.session.user.id,
+    const user = await db.models.User.update(
+      {
+        defaultInventoryId: body.defaultInventoryId,
+        defaultCityId: body.defaultCityId,
       },
-    });
+      {
+        where: {
+          userId: context.session.user.id,
+        },
+      },
+    );
     if (!user) {
       throw new createHttpError.NotFound("User not found");
     }

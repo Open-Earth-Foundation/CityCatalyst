@@ -46,7 +46,7 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
     },
   );
   if (isDefaultCity) {
-    await UserService.updateDefaultInventoryId(session.user.id);
+    await UserService.updateDefaults(session.user.id);
   }
   if (cityUser) {
     await cityUser.destroy();

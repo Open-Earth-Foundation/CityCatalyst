@@ -194,8 +194,6 @@ export default class UserService {
       return inventory?.inventory_id;
     }
 
-    // throw new createHttpError.NotFound("Inventory not found");
-
     const adminData = await db.models.OrganizationAdmin.findOne({
       where: {
         userId: userId,
@@ -251,6 +249,147 @@ export default class UserService {
     throw new createHttpError.NotFound("Inventory not found");
   }
 
+  public static async updateDefaults(userId: string) {
+    // First, try to find the most recent inventory for the user
+    const [inventory] = (await db.sequelize!.query(
+      `
+            SELECT i.inventory_id, i.city_id
+            FROM "Inventory" i
+                     JOIN "CityUser" cu ON i.city_id = cu.city_id
+            WHERE cu.user_id = :userId
+            ORDER BY i.last_updated DESC
+            LIMIT 1
+        `,
+      {
+        replacements: { userId },
+        type: QueryTypes.SELECT,
+      },
+    )) as { inventory_id: string; city_id: string }[];
+
+    if (inventory) {
+      // User has an inventory, set both defaults
+      await db.models.User.update(
+        {
+          defaultInventoryId: inventory?.inventory_id,
+          defaultCityId: inventory?.city_id,
+        },
+        { where: { userId } },
+      );
+      return inventory?.inventory_id;
+    }
+
+    // No inventory found, but let's try to set a default city if possible
+    const [city] = (await db.sequelize!.query(
+      `
+            SELECT c.city_id, c.name, c.created
+            FROM "City" c
+                     JOIN "CityUser" cu ON c.city_id = cu.city_id
+            WHERE cu.user_id = :userId
+            ORDER BY c.created DESC
+        `,
+      {
+        replacements: { userId },
+        type: QueryTypes.SELECT,
+      },
+    )) as { city_id: string; name: string; created: string }[];
+
+    if (city) {
+      // User has a city but no inventory, set default city only
+      await db.models.User.update(
+        {
+          defaultCityId: city?.city_id,
+        },
+        { where: { userId } },
+      );
+
+      return null; // No inventory to return
+    }
+
+    // If user is an org admin, try to find any city/inventory from their organization
+    const adminData = await db.models.OrganizationAdmin.findOne({
+      where: {
+        userId: userId,
+      },
+      include: {
+        model: db.models.Organization,
+        as: "organization",
+        include: [
+          {
+            model: db.models.Project,
+            as: "projects",
+            include: [
+              {
+                model: db.models.City,
+                as: "cities",
+                include: [
+                  {
+                    model: db.models.Inventory,
+                    as: "inventories",
+                    attributes: ["inventoryId"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    if (adminData) {
+      // if the user is an org owner, they can pick any of the inventories belonging to his organization
+      const inventories = adminData.organization.projects.flatMap((project) =>
+        project.cities.flatMap((city) => city.inventories),
+      );
+
+      if (inventories.length > 0) {
+        const newDefaultInventoryId = inventories[0].inventoryId;
+        // Find the city for this inventory
+        const cityForInventory = adminData.organization.projects
+          .flatMap((project) => project.cities)
+          .find((city) =>
+            city.inventories.some(
+              (inv) => inv.inventoryId === newDefaultInventoryId,
+            ),
+          );
+
+        await db.models.User.update(
+          {
+            defaultInventoryId: newDefaultInventoryId,
+            defaultCityId: cityForInventory?.cityId || null,
+          },
+          { where: { userId } },
+        );
+        return newDefaultInventoryId;
+      } else {
+        // No inventories, but maybe there are cities
+        const cities = adminData.organization.projects.flatMap(
+          (project) => project.cities,
+        );
+        if (cities.length > 0) {
+          await db.models.User.update(
+            {
+              defaultCityId: cities[0].cityId,
+              defaultInventoryId: null,
+            },
+            { where: { userId } },
+          );
+          return null;
+        }
+      }
+    }
+
+    // No city or inventory found at all
+    await db.models.User.update(
+      {
+        defaultCityId: null,
+        defaultInventoryId: null,
+      },
+      { where: { userId } },
+    );
+
+    return null;
+  }
+
   /**
    * Load inventory information and perform access control
    */
@@ -269,17 +408,33 @@ export default class UserService {
       throw new createHttpError.NotFound("User not found");
     }
 
-    if (!user.defaultInventoryId) {
-      await UserService.updateDefaultInventoryId(user.userId);
+    if (!user.defaultInventoryId || !user.defaultCityId) {
+      await UserService.updateDefaults(user.userId);
     }
 
-    // check if you can find any city attached to this user
+    return user.defaultInventoryId!;
+  }
 
-    if (!user.defaultInventoryId) {
-      throw new createHttpError.NotFound("Inventory not found");
+  public static async findUserDefaultCity(
+    session: AppSession | null,
+  ): Promise<string> {
+    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+    const userId = session.user.id;
+    const user = await db.models.User.findOne({
+      attributes: ["defaultCityId", "userId"],
+      where: {
+        userId,
+      },
+    });
+    if (!user) {
+      throw new createHttpError.NotFound("User not found");
     }
 
-    return user.defaultInventoryId;
+    if (!user.defaultCityId) {
+      await UserService.updateDefaults(user.userId);
+    }
+
+    return user.defaultCityId!;
   }
 
   /**
@@ -388,7 +543,7 @@ export default class UserService {
         {
           model: db.models.City,
           as: "cities",
-          attributes: ["cityId", "name", "countryLocode"],
+          attributes: ["cityId", "name", "countryLocode", "country"],
           include: [
             {
               model: db.models.Inventory,
@@ -415,7 +570,7 @@ export default class UserService {
           {
             model: db.models.City,
             as: "cities",
-            attributes: ["cityId", "name", "countryLocode"],
+            attributes: ["cityId", "name", "countryLocode", "country"],
             include: [
               {
                 model: db.models.Inventory,
@@ -436,7 +591,7 @@ export default class UserService {
       include: {
         model: db.models.City,
         as: "city",
-        attributes: ["cityId", "name", "countryLocode"],
+        attributes: ["cityId", "name", "countryLocode", "country"],
         include: [
           {
             model: db.models.Project,
@@ -460,10 +615,9 @@ export default class UserService {
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
 
     // OEF admin and organization owner can see all projects
-    const orgOwner = await hasOrgOwnerLevelAccess(
-      organizationId,
-      session.user.id,
-    );
+    const orgOwner =
+      (await hasOrgOwnerLevelAccess(organizationId, session.user.id)) ||
+      session.user.role === Roles.Admin;
     if (session.user.role == Roles.Admin || orgOwner) {
       return await UserService.findAllProjectForAdminAndOwner(organizationId);
     }
@@ -499,6 +653,7 @@ export default class UserService {
         name: city.name as string,
         cityId: city.cityId as string,
         inventories: city.inventories as any,
+        country: city.country as string,
         countryLocode: city.countryLocode as string,
         locode: city.locode as string,
       });
@@ -692,6 +847,7 @@ export default class UserService {
             logoUrl: project.organization.logoUrl || "",
             color: project.organization.theme?.primaryColor,
           },
+          user: user,
         });
       });
     } catch (error) {
@@ -764,6 +920,7 @@ export default class UserService {
             logoUrl: city.project.organization.logoUrl || "",
             color: city.project.organization.theme?.primaryColor,
           },
+          user: user,
         });
       });
     } catch (error) {

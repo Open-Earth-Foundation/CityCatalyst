@@ -88,6 +88,8 @@ export type Inputs = {
   subcategoryData: Record<string, SubcategoryData>;
 };
 
+const EMISSION_FACTOR_MAX = 100000;
+
 const ActivityModalBody = ({
   t,
   register,
@@ -119,6 +121,22 @@ const ActivityModalBody = ({
     name: "activity.emissionFactorType",
   });
 
+  // Watch emission factor values for validation
+  const co2EmissionFactor = useWatch({
+    control,
+    name: "activity.CO2EmissionFactor",
+  });
+
+  const n2oEmissionFactor = useWatch({
+    control,
+    name: "activity.N2OEmissionFactor",
+  });
+
+  const ch4EmissionFactor = useWatch({
+    control,
+    name: "activity.CH4EmissionFactor",
+  });
+
   const { field } = useController({
     name: `activity.${methodology.activitySelectionField?.id}`,
     control,
@@ -128,6 +146,22 @@ const ActivityModalBody = ({
   let prefix = "";
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
     useState<boolean>(true);
+
+  // Function to determine default units based on methodology type
+  const getDefaultUnits = (methodologyId: string): string => {
+    if (
+      methodologyId.includes("energy-consumption") ||
+      methodologyId.includes("electricity-consumption")
+    ) {
+      return "kg/kWh";
+    }
+    return "kg/m3"; // Default for fuel combustion and other activities
+  };
+
+  // State to store the current emission factor units
+  const [emissionFactorUnits, setEmissionFactorUnits] = useState<string>(
+    getDefaultUnits(methodology.id),
+  );
 
   useEffect(() => {
     setIsEmissionFactorInputDisabled(emissionsFactorTypeValue !== "custom");
@@ -147,6 +181,12 @@ const ActivityModalBody = ({
           "activity.emissionFactorName",
           t("custom-emission-factor-name"),
         );
+        // Reset to default units for custom emission factors based on methodology
+        const defaultUnits = getDefaultUnits(methodology.id);
+        setValue("activity.co2EmissionFactorUnit", defaultUnits);
+        setValue("activity.n2oEmissionFactorUnit", defaultUnits);
+        setValue("activity.ch4EmissionFactorUnit", defaultUnits);
+        setEmissionFactorUnits(defaultUnits);
         setIsEmissionFactorInputDisabled(false);
       } else {
         let co2Val =
@@ -168,16 +208,95 @@ const ActivityModalBody = ({
                 .emissionsPerActivity
             : "";
 
+        // Extract units from the first available gas value
+        const methodologyDefaultUnits = getDefaultUnits(methodology.id);
+        let units = methodologyDefaultUnits; // default fallback based on methodology
+        if (
+          emissionFactor?.gasValuesByGas["CO2"]?.gasValues.length &&
+          emissionFactor.gasValuesByGas["CO2"].gasValues.length > 0
+        ) {
+          units =
+            emissionFactor.gasValuesByGas["CO2"].gasValues[0].units ||
+            methodologyDefaultUnits;
+        } else if (
+          emissionFactor?.gasValuesByGas["N2O"]?.gasValues.length &&
+          emissionFactor.gasValuesByGas["N2O"].gasValues.length > 0
+        ) {
+          units =
+            emissionFactor.gasValuesByGas["N2O"].gasValues[0].units ||
+            methodologyDefaultUnits;
+        } else if (
+          emissionFactor?.gasValuesByGas["CH4"]?.gasValues.length &&
+          emissionFactor.gasValuesByGas["CH4"].gasValues.length > 0
+        ) {
+          units =
+            emissionFactor.gasValuesByGas["CH4"].gasValues[0].units ||
+            methodologyDefaultUnits;
+        }
+
         setValue("activity.CO2EmissionFactor", co2Val ? co2Val : 0);
         setValue("activity.N2OEmissionFactor", n2oVal ? n2oVal : 0);
         setValue("activity.CH4EmissionFactor", ch4Val ? ch4Val : 0);
         setValue("activity.emissionFactorName", emissionFactor?.name);
         setValue("activity.emissionFactorReference", emissionFactor?.reference);
 
+        // Set the extracted units for each gas
+        setValue("activity.co2EmissionFactorUnit", units);
+        setValue("activity.n2oEmissionFactorUnit", units);
+        setValue("activity.ch4EmissionFactorUnit", units);
+
+        // Set the extracted units for display
+        setEmissionFactorUnits(units);
+
         setIsEmissionFactorInputDisabled(true);
       }
     }
   }, [emissionsFactorTypes, emissionsFactorTypeValue, setValue, t]);
+
+  // Validate emission factors in real-time (only when custom factor type is selected)
+  useEffect(() => {
+    const validateEmissionFactor = (value: number, fieldName: string) => {
+      // Only validate if custom emission factor type is selected
+      if (emissionsFactorTypeValue !== "custom") {
+        clearErrors(`activity.${fieldName}`);
+        return;
+      }
+
+      // Check if value is empty, null, undefined
+      if (value === null || value === undefined) {
+        setError(`activity.${fieldName}`, {
+          type: "required",
+          message: t("emission-factor-required"),
+        });
+      } else if (value < 0) {
+        setError(`activity.${fieldName}`, {
+          type: "min",
+          message: t("emission-factor-negative"),
+        });
+      } else if (value > EMISSION_FACTOR_MAX) {
+        setError(`activity.${fieldName}`, {
+          type: "max",
+          message: t("emission-factor-too-large", {
+            max: EMISSION_FACTOR_MAX.toLocaleString(),
+          }),
+        });
+      } else {
+        clearErrors(`activity.${fieldName}`);
+      }
+    };
+
+    validateEmissionFactor(co2EmissionFactor, "CO2EmissionFactor");
+    validateEmissionFactor(n2oEmissionFactor, "N2OEmissionFactor");
+    validateEmissionFactor(ch4EmissionFactor, "CH4EmissionFactor");
+  }, [
+    co2EmissionFactor,
+    n2oEmissionFactor,
+    ch4EmissionFactor,
+    emissionsFactorTypeValue,
+    setError,
+    clearErrors,
+    t,
+  ]);
 
   const filteredFields = fields.filter((f) => {
     return !(f.id.includes("-source") && f.type === "text");
@@ -196,18 +315,15 @@ const ActivityModalBody = ({
             mb="24px"
             display="flex"
             flexDirection="column"
-            className="items-start"
+            alignItems="flex-start"
             w="full"
           >
-            <Field
-              className="w-full"
-              label={t(methodology.activitySelectionField.id)}
-            >
+            <Field w="full" label={t(methodology.activitySelectionField.id)}>
               <RadioGroup>
                 <HStack
                   display="flex"
                   flexDirection="row"
-                  className="items-start"
+                  alignItems="flex-start"
                   w="full"
                 >
                   {methodology.activitySelectionField.options?.map((option) => (
@@ -224,15 +340,15 @@ const ActivityModalBody = ({
           mb="24px"
           display="flex"
           flexDirection="column"
-          className="items-start"
+          alignItems="flex-start"
           gap="24px"
         >
           {/* handle select, multi-select types, text  */}
           {filteredFields.map((f, idx) => {
             return (
-              <>
+              <Box key={idx}>
                 {f.options && (
-                  <Field key={idx} className="w-full">
+                  <Field w="full">
                     <BuildingTypeSelectInput
                       options={f.options as string[]}
                       required={f.required}
@@ -269,7 +385,7 @@ const ActivityModalBody = ({
                   />
                 )}
                 {f.type === "text" && (
-                  <Field className="w-full" label={t(f.id)}>
+                  <Field w="full" label={t(f.id)}>
                     <Input
                       type="text"
                       borderRadius="4px"
@@ -321,7 +437,7 @@ const ActivityModalBody = ({
                   </Field>
                 )}
                 {f.type === "number" && (
-                  <Field className="w-full" label={t(f.id)}>
+                  <Field w="full" label={t(f.id)}>
                     <HStack>
                       <FormattedNumberInput
                         placeholder={t("activity-data-amount-placeholder")}
@@ -441,7 +557,7 @@ const ActivityModalBody = ({
                   </Field>
                 )}
                 {f.dependsOn && (
-                  <Field className="w-full" label={t(f.id)}>
+                  <Field w="full" label={t(f.id)}>
                     <DependentSelectInput
                       field={f}
                       register={register}
@@ -454,7 +570,7 @@ const ActivityModalBody = ({
                     />
                   </Field>
                 )}
-              </>
+              </Box>
             );
           })}
           {!methodology?.id.includes("direct-measure") && title ? (
@@ -466,7 +582,8 @@ const ActivityModalBody = ({
             >
               <Field
                 invalid={!!resolve(prefix + "activityDataAmount", errors)}
-                label={<Text className="truncate">{t(title)}</Text>}
+                label={<Text truncate>{t(title)}</Text>}
+                flex="2"
               >
                 <HStack>
                   <FormattedNumberInput
@@ -475,6 +592,8 @@ const ActivityModalBody = ({
                     defaultValue="0"
                     t={t}
                     miniAddon
+                    minWidth="300px"
+                    flex={2}
                   />
                   {(units?.length as number) > 0 && (
                     <Controller
@@ -518,7 +637,7 @@ const ActivityModalBody = ({
                         >
                           <NativeSelectField
                             placeholder={t("select-unit")}
-                            value={field.value}
+                            defaultValue={field.value}
                           >
                             {units?.map((item: string) => (
                               <option key={item} value={item}>
@@ -536,7 +655,7 @@ const ActivityModalBody = ({
                   <Box display="flex" gap="6px" alignItems="center" mt="6px">
                     <Icon as={MdWarning} color="sentiment.negativeDefault" />
                     <Text fontSize="body.md">
-                      {t("emission-amount-form-error")}
+                      {t(errors?.activity?.[title]?.message as string)}
                     </Text>
                   </Box>
                 ) : (
@@ -559,6 +678,8 @@ const ActivityModalBody = ({
                 <Field
                   label={t("emission-factor-type")}
                   invalid={!!resolve(prefix + "emissionFactorType", errors)}
+                  maxWidth="250px"
+                  flex="1"
                 >
                   <Controller
                     name="activity.emissionFactorType"
@@ -656,7 +777,10 @@ const ActivityModalBody = ({
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">
                   <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
-                    {t("emission-amount-form-error")}
+                    {t(
+                      errors?.activity?.["CO2EmissionFactor"]
+                        ?.message as string,
+                    )}
                   </Text>
                 </Box>
               ) : (
@@ -681,7 +805,7 @@ const ActivityModalBody = ({
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">
                   <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
-                    {t("emission-amount-form-error")}
+                    {errors?.activity?.["N2OEmissionFactor"]?.message}
                   </Text>
                 </Box>
               ) : (
@@ -706,7 +830,7 @@ const ActivityModalBody = ({
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">
                   <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
-                    {t("emission-amount-form-error")}
+                    {errors?.activity?.["CH4EmissionFactor"]?.message}
                   </Text>
                 </Box>
               ) : (
@@ -721,7 +845,7 @@ const ActivityModalBody = ({
               <Heading
                 size="sm"
                 mb={4}
-                className="font-normal"
+                fontWeight="normal"
                 display="flex"
                 alignItems="center"
               >
@@ -735,7 +859,7 @@ const ActivityModalBody = ({
                   {t("emissions-factor-values")}
                 </Text>
               </Heading>
-              <HStack className="items-start" gap={4} mb={5}>
+              <HStack alignItems="flex-start" gap={4} mb={5}>
                 <Box>
                   <Field label={t("co2-emission-factor")}>
                     <FormattedNumberInput
@@ -756,11 +880,7 @@ const ActivityModalBody = ({
                           w="full"
                           textAlign="center"
                         >
-                          {t("kg")}/
-                          {methodology.id.includes("energy-consumption") ||
-                          methodology.id.includes("electricity-consumption")
-                            ? t("kWh")
-                            : t("m3")}
+                          {emissionFactorUnits}
                         </Text>
                       )}
                     </FormattedNumberInput>
@@ -769,7 +889,7 @@ const ActivityModalBody = ({
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
                       <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text fontSize="body.md">
-                        {t("emission-amount-form-error")}
+                        {errors?.activity?.["CO2EmissionFactor"]?.message}
                       </Text>
                     </Box>
                   ) : (
@@ -795,11 +915,7 @@ const ActivityModalBody = ({
                       <Spinner size="sm" color="border.neutral" />
                     ) : (
                       <Text truncate lineClamp={1} w="full" textAlign="center">
-                        {t("kg")}/
-                        {methodology.id.includes("energy-consumption") ||
-                        methodology.id.includes("electricity-consumption")
-                          ? t("kWh")
-                          : t("m3")}
+                        {emissionFactorUnits}
                       </Text>
                     )}
                   </FormattedNumberInput>
@@ -807,7 +923,7 @@ const ActivityModalBody = ({
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
                       <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text fontSize="body.md">
-                        {t("emission-amount-form-error")}
+                        {errors?.activity?.["N2OEmissionFactor"]?.message}
                       </Text>
                     </Box>
                   ) : (
@@ -838,11 +954,7 @@ const ActivityModalBody = ({
                         w="full"
                         textAlign="center"
                       >
-                        {t("kg")}/
-                        {methodology.id.includes("energy-consumption") ||
-                        methodology.id.includes("electricity-consumption")
-                          ? t("kWh")
-                          : t("m3")}
+                        {emissionFactorUnits}
                       </Text>
                     )}
                   </FormattedNumberInput>
@@ -850,7 +962,7 @@ const ActivityModalBody = ({
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
                       <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text fontSize="body.md">
-                        {t("emission-amount-form-error")}
+                        {errors?.activity?.["CH4EmissionFactor"]?.message}
                       </Text>
                     </Box>
                   ) : (
@@ -929,7 +1041,7 @@ const ActivityModalBody = ({
             )}
           </Field>
           {sourceField && (
-            <Field className="w-full" label={t("data-source")}>
+            <Field w="full" label={t("data-source")}>
               <Input
                 type="text"
                 borderRadius="4px"
@@ -1020,7 +1132,7 @@ const ActivityModalBody = ({
             )}
           </Field>
         </HStack>
-        <HStack className="items-start" mb={13}>
+        <HStack alignItems="flex-start" mb={13}>
           <Icon as={MdInfoOutline} mt={1} color="content.link" />
           <Text color="content.tertiary">
             {t("gwp-info-prefix")}{" "}

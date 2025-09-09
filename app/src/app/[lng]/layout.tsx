@@ -6,6 +6,7 @@ import { languages } from "@/i18n/settings";
 import { PublicEnvScript } from "next-runtime-env";
 import { Toaster } from "@/components/ui/toaster";
 import ClientRootLayout from "@/components/ClientRootLayout";
+import CookieConsent from "@/components/CookieConsent";
 import { use } from "react";
 
 export const metadata: Metadata = {
@@ -24,7 +25,7 @@ export default function RootLayout(props: {
   const { lng } = use(props.params);
 
   return (
-    <html lang={lng} dir={dir(lng)}>
+    <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
       <head>
         <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
         <link rel="icon" type="image/png" href="/assets/icon.png" />
@@ -34,6 +35,7 @@ export default function RootLayout(props: {
         <Providers>
           <Toaster />
           <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
+          <CookieConsent lng={lng} />
         </Providers>
       </body>
     </html>

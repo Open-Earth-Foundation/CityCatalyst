@@ -1,3 +1,26 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Global CSS styles - Tailwind CSS removed */
+/* Add any custom global styles here if needed */
+
+/* Global Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e2e8f0; /* equivalent to border.neutral */
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1; /* equivalent to border.emphasized */
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

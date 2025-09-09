@@ -19,6 +19,7 @@ export default function CustomSelectableButton({
 }) {
   return (
     <Button
+      data-testid={`inventory-goal-${value}`}
       key={value}
       w="181px"
       borderColor={
@@ -37,9 +38,9 @@ export default function CustomSelectableButton({
       lineHeight="20px"
       gap="8px"
       letterSpacing="wide"
-      className="transition-all duration-150"
       borderWidth="1px"
       variant={inputValue === value ? "solid" : "outline"}
+      style={{ transition: "all 150ms" }}
       onClick={() => {
         field.onChange(value);
         inputValueFunction(value);

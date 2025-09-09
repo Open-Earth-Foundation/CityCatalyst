@@ -12,6 +12,7 @@ import {
   setupTests,
   testUserID,
 } from "../helpers";
+import { createTestData, cleanupTestData, TestData } from "../helpers/testDataCreationHelper";
 import { City } from "@/models/City";
 import { CreateInventoryRequest } from "@/util/validation";
 import { Sector } from "@/models/Sector";
@@ -75,17 +76,17 @@ async function cleanupDatabase() {
   await cascadeDeleteDataSource({
     [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)],
   });
-  await db.models.City.destroy({ where: { locode } });
   await db.models.SubCategory.destroy({ where: { subcategoryName } });
   await db.models.SubSector.destroy({ where: { subsectorName } });
   await db.models.Sector.destroy({ where: { sectorName } });
 }
 
-describe.skip("DataSource API", () => {
+describe("DataSource API", () => {
   let city: City;
   let inventory: Inventory;
   let sector: Sector;
   let prevGetServerSession = Auth.getServerSession;
+  let testData: TestData;
 
   beforeAll(async () => {
     setupTests();
@@ -94,11 +95,24 @@ describe.skip("DataSource API", () => {
     await db.initialize();
     await cleanupDatabase();
 
-    city = await db.models.City.create({
-      cityId: randomUUID(),
-      locode,
-      name: "CC_",
+    // Create proper test data hierarchy
+    testData = await createTestData({
+      cityName: locode,
+      countryLocode: "XX"
     });
+
+    city = await db.models.City.findByPk(testData.cityId) as City;
+    if (!city) {
+      throw new Error(`Failed to find city with ID ${testData.cityId}`);
+    }
+    
+    // Update city with datasource test specific data
+    await city.update({
+      name: "CC_",
+      locode: locode
+    });
+    
+    await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await db.models.CityUser.create({
       cityUserId: randomUUID(),
       userId: testUserID,
@@ -108,7 +122,7 @@ describe.skip("DataSource API", () => {
     inventory = await db.models.Inventory.create({
       ...inventoryData,
       inventoryId: randomUUID(),
-      cityId: city.cityId,
+      cityId: testData.cityId,
     });
 
     sector = await db.models.Sector.create({
@@ -147,12 +161,17 @@ describe.skip("DataSource API", () => {
         .apiEndpoint!.replace(":locode", locode)
         .replace(":year", inventory.year!.toString())
         .replace(":gpcReferenceNumber", subCategory.referenceNumber!);
+      
+      // Update the datasource with the computed URL
+      await source.update({ url });
+      
       fetchMock.mock(url, mockGlobalApiResponses[i]);
     }
   });
 
   afterAll(async () => {
     await cleanupDatabase();
+    await cleanupTestData(testData);
     Auth.getServerSession = prevGetServerSession;
     if (db.sequelize) await db.sequelize.close();
   });

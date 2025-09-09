@@ -3,6 +3,7 @@ import { use } from "react";
 
 import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
+import { Box } from "@chakra-ui/react";
 
 export default function AuthLayout(props: {
   children: React.ReactNode;
@@ -11,16 +12,16 @@ export default function AuthLayout(props: {
   const { lng } = use(props.params);
 
   return (
-    <main className="h-screen flex flex-col">
+    <Box as="main" h="full" display="flex" flexDirection="column">
       <NavigationBar lng={lng} showNav={false} isAuth />
-      <div className="flex flex-row items-stretch flex-1">
-        <div className="w-full">
-          <div className="pt-[148px] pb-4 w-[480px] max-w-full mx-auto px-4">
+      <Box display="flex" flexDirection="row" flex={1}>
+        <Box w="full">
+          <Box pt={148} pb={4} w="480px" maxW="full" mx="auto" px={4}>
             <Toaster />
             {props.children}
-          </div>
-        </div>
-      </div>
-    </main>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }

@@ -412,7 +412,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         toaster.create({
           title: t("success"),
           description: t("quick-action-applied"),
-          type: "info",
+          type: "success",
         });
       };
 
@@ -599,7 +599,11 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                               {t(item.subCategoryName)}
                             </Text>
                           </CheckboxCard.Label>
-                          <CheckboxCard.Description w="full">
+                          <CheckboxCard.Description
+                            w="full"
+                            color="content.secondary"
+                            opacity="1"
+                          >
                             <Box
                               mb="48px"
                               display="flex"

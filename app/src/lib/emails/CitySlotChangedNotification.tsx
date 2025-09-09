@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import React from "react";
 import {
   Body,
@@ -14,18 +13,23 @@ import {
 } from "@react-email/components";
 import { User } from "@/models/User";
 import { Project } from "@/models/Project";
+import i18next from "@/i18n/server";
+import { LANGUAGES } from "@/util/types";
 
 export default function CitySlotChangedNotificationTemplate({
   url,
   user,
   project,
   organizationName,
+  language,
 }: {
   url: string;
   project: Project;
   user: User | null;
   organizationName: string;
+  language?: string;
 }) {
+  const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
   return (
     <Html>
       <Head>
@@ -41,23 +45,21 @@ export default function CitySlotChangedNotificationTemplate({
         />
       </Head>
 
-      <Preview>CityCatalyst: Change of City Slots</Preview>
+      <Preview>{t("city-slot-changed.subject")}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={brandHeading}>CityCatalyst</Text>
+          <Text style={brandHeading}>{t("city-slot-changed.brand")}</Text>
           <Text style={headingGreen}>
-            {" "}
-            City Slot changed on <span style={heading}>
-              {organizationName}
-            </span>{" "}
-            account
+            {t("city-slot-changed.title", { organizationName })}
           </Text>
-          <Text style={greeting}>Hi {user?.name},</Text>
+          <Text style={greeting}>
+            {t("city-slot-changed.greeting", { name: user?.name })}
+          </Text>
           <Text style={paragraph}>
-            The {project?.name} project has been updated to have{" "}
-            <span style={boldText}>
-              {project?.cityCountLimit.toString()} city slots.
-            </span>
+            {t("city-slot-changed.message", {
+              projectName: project?.name,
+              cityCount: project?.cityCountLimit.toString(),
+            })}
           </Text>
           <div
             style={{
@@ -66,15 +68,12 @@ export default function CitySlotChangedNotificationTemplate({
             }}
           >
             <Link href={url} style={urlLink}>
-              Sign In
+              {t("city-slot-changed.cta")}
             </Link>
           </div>
 
           <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-          <Text style={footerText}>
-            Open Earth Foundation is a nonprofit public benefit corporation from
-            California, USA. EIN: 85-3261449
-          </Text>
+          <Text style={footerText}>{t("city-slot-changed.footer")}</Text>
         </Container>
       </Body>
     </Html>

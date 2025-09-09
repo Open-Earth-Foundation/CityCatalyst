@@ -16,13 +16,17 @@ import { getTopPickActions } from "@/util/helpers";
 interface HIAPWidgetProps {
   cityId: string;
   lng: string;
+  inventoryId: string;
   onVisibilityChange?: (hasContent: boolean) => void;
+  isPublic?: boolean;
 }
 
 export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
   cityId,
   lng,
+  inventoryId,
   onVisibilityChange,
+  isPublic = false,
 }) => {
   const { t } = useTranslation(lng, "hiap");
   const router = useRouter();
@@ -36,7 +40,7 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
     data: hiapData,
     isLoading,
     error,
-  } = useGetCityHIAPDashboardQuery({ cityId, lng });
+  } = useGetCityHIAPDashboardQuery({ cityId, inventoryId, lng });
 
   // Calculate topPickActions whenever actionType or data changes
   const topPickActions = useMemo(() => {
@@ -78,17 +82,19 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
       <Box w="full">
         <HStack justifyContent="space-between" mb={2}>
           <Text color="content.link">{t("actions")}</Text>
-          <Button
-            onClick={() => {
-              router.push(`/cities/${cityId}/HIAP`);
-            }}
-            variant="outline"
-            borderColor="border.neutral"
-            color="content.primary"
-          >
-            <Text>{t("open-cc-actions")}</Text>
-            <MdOpenInNew />
-          </Button>
+          {!isPublic && (
+            <Button
+              onClick={() => {
+                router.push(`/cities/${cityId}/HIAP`);
+              }}
+              variant="outline"
+              borderColor="border.neutral"
+              color="content.primary"
+            >
+              <Text>{t("open-cc-actions")}</Text>
+              <MdOpenInNew />
+            </Button>
+          )}
         </HStack>
         <HeadlineSmall>{t("top-climate-actions")}</HeadlineSmall>
         <Text fontSize="body.md" color="content.tertiary" mt="8px" mb={10}>

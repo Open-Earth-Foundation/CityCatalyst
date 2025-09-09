@@ -11,6 +11,7 @@ import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
 import MyAppsTab from "@/components/Tabs/my-apps-tab";
 import { api } from "@/services/api";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { getParamValueRequired } from "@/util/helpers";
 
 export type ProfileInputs = {
   name: string;
@@ -44,8 +45,9 @@ if (hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
   tabValues.push("my-apps");
 }
 
-export default function Settings(props: { params: Promise<{ lng: string }> }) {
-  const { lng } = use(props.params);
+export default function Settings() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
 
   const searchParams = useSearchParams();
   const paramValue = searchParams.get("tabIndex");

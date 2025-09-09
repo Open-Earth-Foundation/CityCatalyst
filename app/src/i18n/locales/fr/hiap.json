@@ -34,6 +34,7 @@
   "citycatalyst-actions-title": "citycatalyst actions",
   "top-actions-for-your-city": "Principales actions pour votre ville",
   "top-actions-for-your-city-description": "Voici les 40 principales actions que nous recommandons basées sur votre inventaire GES et les données de contexte de votre ville. Vous trouverez 20 actions pour l'Atténuation et 20 pour l'Adaptation dans leurs onglets respectifs. Il est recommandé de relancer le priorisateur après toute mise à jour ou modification pertinente des données.",
+  "actions-for-your-city-description": "Voici les 40 principales actions que nous recommandons basées sur votre inventaire GES, l'Évaluation des Risques Climatiques et les données de contexte de votre ville. Vous trouverez 20 actions pour l'Atténuation et 20 pour l'Adaptation dans leurs onglets respectifs.",
   "re-prioritize-actions": "Reprioriser les actions",
   "generated-action-plan": "générer plan d'action",
   "export-as-pdf": "exporter en PDF",
@@ -53,10 +54,54 @@
   "click-action-description": "Cliquez sur le bouton ci-dessous pour commencer à lister vos principales actions climatiques.",
   "ready-to-generate-climate-actions-title": "Vous êtes prêt à générer votre liste d'actions climatiques",
   "adaptation-effectiveness": "Efficacité de l'Adaptation",
-  "hazard": "",
-  "sector": "",
-  "effectiveness-level": "",
-  "cost-level": "",
-  "timeline": "[object Object]",
-  "primary-purpose": ""
+  "hazard": {
+    "droughts": "Sécheresses",
+    "heatwaves": "Vagues de chaleur",
+    "diseases": "Maladies",
+    "landslides": "Glissements de terrain",
+    "floods": "Inondations",
+    "wildfires": "Feux de forêt",
+    "sea-level-rise": "Montée du Niveau de la Mer",
+    "storms": "Tempêtes"
+  },
+  "sector": {
+    "stationary_energy": "Énergie Stationnaire",
+    "transportation": "Transport",
+    "waste": "Déchets",
+    "ippu": "UIPP",
+    "afolu": "AFOLU"
+  },
+  "effectiveness-level": {
+    "high": "Haut",
+    "medium": "Moyen",
+    "low": "Faible"
+  },
+  "cost-level": {
+    "low": "Faible",
+    "medium": "Moyen",
+    "high": "Haut"
+  },
+  "timeline": {
+    "<5 years": "Moins de 5 ans",
+    "5-10 years": "5 à 10 ans",
+    ">10 years": "Plus de 10 ans"
+  },
+  "primary-purpose": {
+    "ghg_reduction": "Réduction des GES",
+    "climate_resilience": "Résilience Climatique"
+  },
+  "generating-actions": "Génération d'actions...",
+  "checking-activity-data": "Vérification des données d'activité",
+  "generating-climate-actions": "Vos principales actions climatiques sont en cours de traitement",
+  "generating-climate-actions-description": "Ce processus peut prendre jusqu'à 15 minutes. Vous recevrez un email et les verrez ici une fois terminé",
+  "implementation-of-urban-toll": "Mise en œuvre du péage urbain",
+  "encourage-renewable-energy-policies": "Encouragez les politiques d'énergie renouvelable au niveau municipal",
+  "stationary-energy": "Énergie stationnaire",
+  "waste": "Déchets",
+  "low": "Faible",
+  "top-actions-tip": "Votre liste d'actions principales est basée sur l'avancement actuel de votre inventaire. Nous recommandons de le compléter avant d'utiliser ce module.",
+  "climate-actions-title": "Actions climatiques",
+  "actions": "Actions",
+  "open-cc-actions": "Actions CC Ouvertes",
+  "top-climate-actions": "Principales Actions à Impact Élevé"
 }

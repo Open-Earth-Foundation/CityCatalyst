@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { BsPlus } from "react-icons/bs";
 import Cookies from "js-cookie";
@@ -13,8 +12,6 @@ import {
   api,
   useGetCityPopulationQuery,
   useGetCityYearsQuery,
-  useGetOrganizationForInventoryQuery,
-  useGetUserAccessStatusQuery,
 } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
@@ -34,6 +31,7 @@ import { useUserPermissions } from "@/hooks/useUserPermissions";
 import { UserRole } from "@/util/types";
 import { logger } from "@/services/logger";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import { useInventoryOrganization } from "@/hooks/use-inventory-organization";
 
 function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
   return typeof error === "object" && error != null && "status" in error;
@@ -66,6 +64,11 @@ export default function HomePage({
     setTimeout(() => {
       if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
         if (!cityIdParamValue || cityIdParamValue === "null") {
+          // Check if user has a default city
+          if (userInfo?.defaultCityId) {
+            router.push(`/${language}/cities/${userInfo.defaultCityId}`);
+            return;
+          }
           router.push(`/${language}/onboarding`);
           return;
         }
@@ -103,8 +106,11 @@ export default function HomePage({
       // If we're in a city context (GHGI route), redirect to city GHGI onboarding
       if (cityIdParamValue) {
         router.push(`/${language}/cities/${cityIdParamValue}/GHGI/onboarding`);
+      } else if (userInfo?.defaultCityId) {
+        // If we have a default city but no inventory, redirect to the city page
+        router.push(`/${language}/cities/${userInfo.defaultCityId}/GHGI/`);
       } else {
-        // If we're not in a city context, redirect to general onboarding
+        // If we're not in a city context and no default city, redirect to general onboarding
         router.push(`/${language}/onboarding`);
       }
     }
@@ -114,6 +120,7 @@ export default function HomePage({
     language,
     router,
     cityIdParamValue,
+    userInfo?.defaultCityId,
   ]);
 
   const {
@@ -184,7 +191,7 @@ export default function HomePage({
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
-  const { data: cityYears, isLoading } = useGetCityYearsQuery(
+  const { data: cityYears } = useGetCityYearsQuery(
     inventory?.cityId as string,
     { skip: !inventory?.cityId || !inventory?.year },
   );
@@ -204,28 +211,9 @@ export default function HomePage({
     skip: !inventory?.cityId,
   });
 
-  const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
-    useGetOrganizationForInventoryQuery(inventoryIdFromParam!, {
-      skip: !inventoryIdFromParam,
-    });
+  const { isInventoryOrgDataLoading } = useInventoryOrganization(inventoryIdFromParam!);
 
-  const { isFrozenCheck, organization, setOrganization } =
-    useOrganizationContext();
-  const { setTheme } = useTheme();
-
-  useEffect(() => {
-    if (inventoryOrgData) {
-      const logoUrl = inventoryOrgData?.logoUrl ?? null;
-      const active = inventoryOrgData?.active ?? true;
-
-      if (organization?.logoUrl !== logoUrl || organization?.active !== active) {
-        setOrganization({ logoUrl, active });
-      }
-      setTheme(inventoryOrgData?.theme?.themeKey ?? "blue_theme");
-    } else if (!isInventoryOrgDataLoading && !inventoryOrgData) {
-      setTheme("blue_theme");
-    }
-  }, [isInventoryOrgDataLoading, inventoryOrgData, setTheme]);
+  const { isFrozenCheck } = useOrganizationContext();
 
   if (isUserInfoLoading) {
     return <ProgressLoader />;

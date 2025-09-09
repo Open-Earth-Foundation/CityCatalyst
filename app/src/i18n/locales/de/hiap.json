@@ -37,6 +37,7 @@
   "citycatalyst-actions-title": "citycatalyst aktionen",
   "top-actions-for-your-city": "Top-Aktionen für Ihre Stadt",
   "top-actions-for-your-city-description": "Dies sind die 40 wichtigsten Maßnahmen, die wir basierend auf Ihrer THG-Inventur und Ihren Stadtkontextdaten empfehlen. Sie finden 20 Maßnahmen für Minderung und 20 für Anpassung in den jeweiligen Registerkarten. Es wird empfohlen, den Priorisierungsalgorithmus nach jeder relevanten Datenaktualisierung oder -änderung erneut auszuführen.",
+  "actions-for-your-city-description": "Dies sind die 40 wichtigsten Maßnahmen, die wir basierend auf Ihrer THG-Inventur, Klimarisikobewertung und Ihren Stadtkontextdaten empfehlen. Sie finden 20 Maßnahmen für Minderung und 20 für Anpassung in den jeweiligen Registerkarten.",
   "re-prioritize-actions": "Aktionen neu priorisieren",
   "modules": "Module",
   "generated-action-plan": "Aktionsplan generieren",
@@ -86,5 +87,22 @@
   "error-loading-data": "Fehler beim Laden der Daten",
   "no-actions-found": "Keine Aktionen gefunden",
   "adaptation-effectiveness": "Anpassungseffektivität",
-  "primary-purpose": "[object Object]"
+  "primary-purpose": {
+    "ghg_reduction": "THG-Reduzierung",
+    "climate_resilience": "Klimaresilienz"
+  },
+  "generating-actions": "Aktionen generieren...",
+  "checking-activity-data": "Überprüfung der Aktivitätsdaten",
+  "generating-climate-actions": "Ihre wichtigsten Klimaschutzmaßnahmen werden verarbeitet",
+  "generating-climate-actions-description": "Dieser Prozess kann bis zu 15 Minuten dauern. Sie erhalten eine E-Mail und sehen sie hier, wenn sie fertig sind",
+  "implementation-of-urban-toll": "Umsetzung von städtischen Mautgebühren",
+  "encourage-renewable-energy-policies": "Fördern Sie erneuerbare Energiepolitiken auf kommunaler Ebene",
+  "stationary-energy": "Stationäre Energie",
+  "waste": "Abfall",
+  "low": "Niedrig",
+  "top-actions-tip": "Ihre Top-Aktionsliste basiert auf Ihrem aktuellen Inventar-Fortschritt. Wir empfehlen, es vor der Verwendung dieses Moduls zu vervollständigen.",
+  "climate-actions-title": "Klimaschutzmaßnahmen",
+  "actions": "Maßnahmen",
+  "open-cc-actions": "Öffne CC-Aktionen",
+  "top-climate-actions": "Top Hochwirksame Maßnahmen"
 }

@@ -67,7 +67,20 @@
     "message": "Ihr Konto wurde gesperrt. Das bedeutet, dass Sie und alle anderen Administratoren und Mitarbeiter keine Projekte oder Inventare in Ihrem Konto bearbeiten können.",
     "contact": "Um Ihr Konto zu aktivieren, wenden Sie sich bitte an {{email}}",
     "cta": "Anmelden",
-    "footer": "Open Earth Foundation ist eine gemeinnützige Körperschaft aus Kalifornien, USA. EIN: 85-3261449"
+    "footer": "Open Earth Foundation ist eine gemeinnützige Körperschaft aus Kalifornien, USA. EIN: 85-3261449",
+    "ready-to-upgrade-heading": "Bereit, weiterzumachen",
+    "ready-to-upgrade-message": "Schalten Sie vollen Zugriff auf all Ihre Projekte und Funktionen frei",
+    "ready-to-upgrade-cta": "Jetzt aktualisieren",
+    "ready-to-talk": "Möchten Sie lieber darüber sprechen?",
+    "ready-to-talk-cta": "Vereinbaren Sie einen kurzen Anruf mit unserem Team",
+    "Survey-heading": "Haben Sie eine Minute?",
+    "survery-text": "Wir würden gerne von Ihrer Erfahrung hören.",
+    "survey-cta": "Beantworten Sie 3 schnelle Fragen",
+    "survery-raffle-draw": "Durch die Teilnahme werden drei glückliche Berater ausgewählt, die jeweils eine kostenlose einjährige Lizenz für CityCatalyst erhalten.",
+    "footer-1": "CityCatalyst ist darauf ausgelegt, Städten und Beratern zu helfen, schneller, intelligenter und gemeinsam voranzukommen, und wir würden Ihre Arbeit gerne langfristig unterstützen.",
+    "footer-2": "Wenn Sie Fragen haben oder Hilfe bei der Auswahl des besten Plans benötigen, antworten Sie einfach auf diese E-Mail.",
+    "footer-3": "Danke für das Ausprobieren von CityCatalyst",
+    "footer-4": "Das CityCatalyst Team"
   },
   "account-unfrozen": {
     "subject": "City Catalyst - Konto aktiviert",
@@ -130,7 +143,13 @@
     "greeting": "Hallo {{name}},",
     "message": "Sie sind eingeladen, CityCatalyst beizutreten und zum Emissionsinventar der Organisation beizutragen:",
     "cta": "JETZT BEITRETEN",
-    "footer": "Open Earth Foundation ist eine gemeinnützige Körperschaft aus Kalifornien, USA. EIN: 85-3261449"
+    "footer": "Open Earth Foundation ist eine gemeinnützige Körperschaft aus Kalifornien, USA. EIN: 85-3261449",
+    "greeting-no-name": "Hallo,",
+    "steps-heading": "Hier ist, was Sie jetzt sofort tun können",
+    "step1": "<1>Richten Sie Ihr erstes Inventar ein</1> - Sie können während dieser Testphase mit einer Stadt beginnen.",
+    "step2": "<1>Laden Sie Mitarbeiter ein</1> - Arbeiten Sie als Team, um Ihre Daten zu erstellen und zu überprüfen.",
+    "step3": "<1>Erkunden Sie die Schlüsselfunktionen</1> - Von der Erstellung Ihres Treibhausgasinventars bis zur Anpassung Ihres Logos und Ihrer Farben.",
+    "step4": "<1>Fragen Sie AI</1> - Unser Klimaassistent ist bereit, Ihre Fragen zu beantworten und Sie im Prozess zu unterstützen. Überprüfung vorgeschlagener Auswirkungsmaßnahmen."
   },
   "role-update": {
     "subject": "City Catalyst - Rolle aktualisiert",
@@ -152,5 +171,33 @@
     "cta": "Projekt anzeigen",
     "footer": "Dies ist eine automatisierte Nachricht, bitte nicht antworten.",
     "brand": "CityCatalyst"
+  },
+  "admin-invite-accepted": {
+    "subject": "Willkommen bei CityCatalyst! 🎉 Lass uns anfangen. ",
+    "preview": "Willkommen bei CityCatalyst! 🎉 Lass uns anfangen. ",
+    "brand": "CityCatalyst",
+    "title": "Willkommen bei CityCatalyst!",
+    "greeting": "Hallo {{name}},",
+    "message": "Wir freuen uns, Sie an Bord zu haben. So können Sie Ihren 1-monatigen kostenlosen Test am besten nutzen: ",
+    "step1": "Erstellen Sie Ihr erstes Stadprojekt (Test beinhaltet 1 Stadt)",
+    "step2": "Laden Sie Mitarbeiter aus Ihrem Team oder Partner ein",
+    "step3": "Passen Sie Ihren Arbeitsbereich mit Ihrem Logo und Ihren Farben an",
+    "step4": "Passen Sie Ihren Arbeitsbereich mit Ihrem Logo und Ihren Farben an",
+    "footer-1": "Brauchen Sie Hilfe? Wir sind hier, um zu helfen, bitte wenden Sie sich mit Fragen an citycatalyst@openearth.org!",
+    "footer-2": "Lassen Sie uns lokale Klimadaten gemeinsam härter arbeiten lassen.",
+    "footer-3": "Das CityCatalyst Team",
+    "footer": "Open Earth Foundation ist eine gemeinnützige öffentliche Nutzenkörperschaft aus Kalifornien, USA. EIN: 85-3261449"
+  },
+  "hiap-ranking-ready": {
+    "subject": "Stadt Katalysator - HIAP Ranking Bereit",
+    "preview": "CityCatalyst: HIAP-Ranking bereit",
+    "brand": "CityCatalyst",
+    "title": "Ihre Minderungsmaßnahmen sind bereit!",
+    "cta": "Gehen Sie zu Ihren Aktionen",
+    "greeting": "Hallo {{name}},",
+    "message": "Das Treibhausgasinventar Ihrer Stadt wurde verarbeitet und wir haben die Top 20 Minderungsmaßnahmen identifiziert, die auf Ihre Stadt zugeschnitten sind. Diese Maßnahmen werden Ihre Reise in Richtung einer CO2-armen Zukunft unterstützen.",
+    "message2": "Sie können diese Aktionen jetzt über die CityCatalyst-Plattform anzeigen und erkunden.",
+    "message3": "Klicken Sie auf die Schaltfläche unten, um auf Ihre Tabelle mit Minderungsmaßnahmen zuzugreifen - diese personalisierte Seite enthält detaillierte Maßnahmen, die Ihre Stadt ergreifen kann, um Emissionen zu reduzieren und die Klimaresistenz zu stärken.",
+    "footer": "Open Earth Foundation ist eine gemeinnützige öffentliche Nutzenkörperschaft aus Kalifornien, USA. EIN: 85-3261449"
   }
 }

@@ -49,6 +49,7 @@
   "generating-climate-actions-description": "This process can take up up to 15 mins. You'll get an email and see them here when done",
   "top-actions-for-your-city": "Top actions for your city",
   "top-actions-for-your-city-description": "These are the top 40 actions we recommend based on your GHG inventory and City Context data. You will find 20 actions for Mitigation and 20 for Adaptation in their respective tabs. Re-running the prioritizer after any relevant data update or change is recommended.",
+  "actions-for-your-city-description": "These are the top 40 actions we recommend based on your GHG inventory, Climate Risk Assessment, and City Context data. You will find 20 actions for Mitigation and 20 for Adaptation in their respective tabs.",
   "citycatalyst-actions-title": "citycatalyst actions",
   "re-prioritize-actions": "Re-prioritize actions",
   "generated-action-plan": "generate action plan",
@@ -97,5 +98,10 @@
   "primary-purpose": {
     "ghg_reduction": "GHG Reduction",
     "climate_resilience": "Climate Resilience"
-  }
+  },
+  "top-actions-tip": "Your top actions list is based on your current inventory progress. We recommend completing it before using this module.",
+  "climate-actions-title": "Climate actions",
+  "actions": "Actions",
+  "open-cc-actions": "Open CC Actions",
+  "top-climate-actions": "Top High-Impact Actions"
 }

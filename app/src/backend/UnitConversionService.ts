@@ -80,7 +80,7 @@ export default class UnitConversionService {
     "fuel-type-refinery-gas": 1,
     "fuel-type-residual-fuel-oil": 975,
     "fuel-type-sub-bituminous-coal": 865,
-    "fuel-type-waste-oils": 900
+    "fuel-type-waste-oils": 900,
   };
 
   public static convertUnits(
@@ -134,5 +134,36 @@ export default class UnitConversionService {
     }
 
     return this.conversionTable[toUnit][fromUnit] * value;
+  }
+
+  public static convertUnitsWithoutDensity(
+    value: number,
+    fromUnit: string,
+    toUnit: string,
+  ): number {
+    // Only allow mass-to-mass or volume-to-volume conversions
+    const massUnits = [
+      "units-kilograms",
+      "units-tonnes",
+      "units-pounds",
+      "units-long-tons",
+      "units-short-tons",
+    ];
+
+    const volumeUnits = ["units-cubic-meters", "units-liters", "units-gallons"];
+
+    const fromIsMass = massUnits.includes(fromUnit);
+    const toIsMass = massUnits.includes(toUnit);
+    const fromIsVolume = volumeUnits.includes(fromUnit);
+    const toIsVolume = volumeUnits.includes(toUnit);
+
+    if ((fromIsMass && toIsMass) || (fromIsVolume && toIsVolume)) {
+      // Safe conversion within same unit type
+      return this.convertUnits(value, fromUnit, toUnit);
+    } else {
+      throw new createHttpError.BadRequest(
+        `Cannot convert ${fromUnit} to ${toUnit} without density for solid fuels`,
+      );
+    }
   }
 }

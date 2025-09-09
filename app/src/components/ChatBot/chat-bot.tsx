@@ -149,7 +149,7 @@ export default function ChatBot({
     trackEvent("chat_message_sent", {
       inventory_id: inventoryId,
     });
-    
+
     // If no thread Id is set, create a thread.
     if (!threadIdRef.current) {
       await initializeThread();
@@ -525,19 +525,16 @@ export default function ChatBot({
                   px={6}
                   py={4}
                   bg={isUser ? "content.link" : "base.light"}
+                  whiteSpace="pre-wrap"
+                  color={isUser ? "base.light" : "content.tertiary"}
+                  letterSpacing="0.5px"
+                  lineHeight="24px"
+                  fontSize="16px"
                 >
                   <>
-                    <Text
-                      whiteSpace="pre-wrap"
-                      color={isUser ? "base.light" : "content.tertiary"}
-                      letterSpacing="0.5px"
-                      lineHeight="24px"
-                      fontSize="16px"
-                    >
-                      <ReactMarkdown rehypePlugins={[remarkGfm]}>
-                        {m.text}
-                      </ReactMarkdown>
-                    </Text>
+                    <ReactMarkdown rehypePlugins={[remarkGfm]}>
+                      {m.text}
+                    </ReactMarkdown>
                     {!isUser &&
                       i === messages.length - 1 &&
                       messages.length > 1 && (
@@ -549,17 +546,17 @@ export default function ChatBot({
                           />
                           <HStack asChild>
                             {/* <IconButton
-                          variant="ghost"
-                          icon={<Icon as={MdOutlineThumbUp} boxSize={5} />}
-                          aria-label="Vote good"
-                          color="content.tertiary"
-                        />
-                        <IconButton
-                          variant="ghost"
-                          icon={<Icon as={MdOutlineThumbDown} boxSize={5} />}
-                          aria-label="Vote bad"
-                          color="content.tertiary"
-                        /> */}
+                              variant="ghost"
+                              icon={<Icon as={MdOutlineThumbUp} boxSize={5} />}
+                              aria-label="Vote good"
+                              color="content.tertiary"
+                            />
+                            <IconButton
+                              variant="ghost"
+                              icon={<Icon as={MdOutlineThumbDown} boxSize={5} />}
+                              aria-label="Vote bad"
+                              color="content.tertiary"
+                            /> */}
                             <IconButton
                               onClick={() => copyToClipboard(m.text)}
                               variant="ghost"
@@ -577,19 +574,19 @@ export default function ChatBot({
                             </IconButton>
                             {/* <Spacer /> */}
                             {/* <Button
-                          onClick={() => reload()}
-                          leftIcon={<Icon as={MdRefresh} boxSize={5} />}
-                          variant="outline"
-                          textTransform="none"
-                          fontFamily="body"
-                          color="content.tertiary"
-                          borderColor="border.neutral"
-                          fontWeight="400"
-                          lineHeight="16px"
-                          letterSpacing="0.5px"
-                        >
-                          {t("regenerate")}
-                        </Button> */}
+                              onClick={() => reload()}
+                              leftIcon={<Icon as={MdRefresh} boxSize={5} />}
+                              variant="outline"
+                              textTransform="none"
+                              fontFamily="body"
+                              color="content.tertiary"
+                              borderColor="border.neutral"
+                              fontWeight="400"
+                              lineHeight="16px"
+                              letterSpacing="0.5px"
+                            >
+                              {t("regenerate")}
+                            </Button> */}
                           </HStack>
                         </>
                       )}

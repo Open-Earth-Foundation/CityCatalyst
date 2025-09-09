@@ -1,11 +1,14 @@
 import { Box, Button, HStack, Image, Text } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
+import i18next from "i18next";
 import { api } from "@/services/api";
 import { useState } from "react";
 import { UnpublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/UnpublishedView";
 import { PublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/PublishedView";
 import { InventoryResponse } from "@/util/types";
 import { trackEvent } from "@/lib/analytics";
+import { toaster } from "@/components/ui/toaster";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 import {
   DialogRoot,
@@ -31,34 +34,72 @@ const ModalPublish = ({
   setModalOpen: (open: boolean) => void;
 }) => {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+  const { copyToClipboard } = useCopyToClipboard({});
 
   const [changePublishStatus, { isLoading: updateLoading }] =
     api.useUpdateInventoryMutation();
   const handlePublishChange = async () => {
     const isPublishing = !inventory?.isPublic;
 
-    const result = await changePublishStatus({
-      inventoryId: inventoryId!,
-      data: { isPublic: isPublishing },
-    });
+    try {
+      const result = await changePublishStatus({
+        inventoryId: inventoryId!,
+        data: { isPublic: isPublishing },
+      });
 
-    // Track publish/unpublish action
-    if (result.data) {
-      trackEvent(
-        isPublishing ? "inventory_published" : "inventory_unpublished",
-        {
-          inventory_id: inventoryId,
-          inventory_year: inventory.year,
-          city_name: inventory.city?.name,
-          city_locode: inventory.city?.locode,
-        },
-      );
+      if (result.data) {
+        // Track publish/unpublish action
+        trackEvent(
+          isPublishing ? "inventory_published" : "inventory_unpublished",
+          {
+            inventory_id: inventoryId,
+            inventory_year: inventory.year,
+            city_name: inventory.city?.name,
+            city_locode: inventory.city?.locode,
+          },
+        );
+
+        if (isPublishing) {
+          // Copy public URL to clipboard when publishing
+          const publicUrl = `${window.location.protocol}//${window.location.host}/${i18next.language}/public/${inventoryId}`;
+          copyToClipboard(publicUrl);
+          
+          // Show success toast with clipboard message
+          toaster.success({
+            title: t("publish-success-title"),
+            description: t("link-copied-to-clipboard"),
+            duration: 5000,
+          });
+        } else {
+          // Show success toast for unpublishing
+          toaster.success({
+            title: t("unpublish-success-title"),
+            description: t("unpublish-success-description"),
+            duration: 5000,
+          });
+        }
+
+        // Clear internal state and close modal
+        setIsAuthorized(false);
+        onPublishClose();
+      } else if (result.error) {
+        // Show error toast for API errors
+        toaster.error({
+          title: t(isPublishing ? "publish-error-title" : "unpublish-error-title"),
+          description: t(isPublishing ? "publish-error-description" : "unpublish-error-description"),
+        });
+      }
+
+      return result;
+    } catch (error) {
+      // Show error toast for unexpected errors
+      toaster.error({
+        title: t(isPublishing ? "publish-error-title" : "unpublish-error-title"),
+        description: t(isPublishing ? "publish-error-description" : "unpublish-error-description"),
+      });
+      throw error;
     }
-
-    return result;
   };
-
-  
 
   return (
     <DialogRoot
@@ -105,6 +146,7 @@ const ModalPublish = ({
               disabled={!inventory?.isPublic && !isAuthorized}
               colorScheme="blue"
               mr={3}
+              loading={updateLoading}
               onClick={handlePublishChange}
             >
               {inventory?.isPublic ? t("unpublish") : t("publish-to-web")}

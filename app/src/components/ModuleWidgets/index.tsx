@@ -1,100 +1,90 @@
 "use client";
 
-import React from "react";
-import { VStack, Spinner, Box, Text, Progress } from "@chakra-ui/react";
-import { useGetCityDashboardQuery } from "@/services/api";
-import { Modules } from "@/util/constants";
+import React, { useState, useMemo } from "react";
+import { VStack } from "@chakra-ui/react";
 import { GHGIWidget } from "./GHGIWidget";
 import { HIAPWidget } from "./HIAPWidget";
-import ProgressLoader from "../ProgressLoader";
+import { CCRAWidget } from "./CCRAMainWidget";
 import { EmptyDashboard } from "../CityDashboard/EmptyDashboard";
 import { TFunction } from "i18next";
 
 interface ModuleDashboardWidgetsProps {
   cityId: string;
-  lng?: string;
+  lng: string;
   t: TFunction;
+  isPublic?: boolean;
+  inventoryId?: string;
 }
 
-// Simple widget registry - map module IDs to their widget components
-const WIDGET_REGISTRY: Record<string, React.FC<any>> = {
-  [Modules.GHGI.id]: GHGIWidget,
-  // [Modules.HIAP.id]: HIAPWidget,
-};
+const WIDGET_COUNT = 3;
 
 export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
   cityId,
-  lng = "en",
+  lng,
   t,
+  isPublic = false,
+  inventoryId,
 }) => {
-  // Fetch all dashboard data with one query
-  const {
-    data: dashboardData,
-    isLoading,
-    error,
-  } = useGetCityDashboardQuery({
-    cityId,
-    lng,
-  });
+  const [widgetVisibility, setWidgetVisibility] = useState<
+    Record<string, boolean>
+  >({});
 
-  if (isLoading) {
-    return <ProgressLoader />;
+  const createVisibilityHandler = useMemo(() => {
+    return (widgetId: string) => (hasContent: boolean) => {
+      setWidgetVisibility((prev) => ({ ...prev, [widgetId]: hasContent }));
+    };
+  }, []);
+
+  const handleGHGIVisibility = useMemo(
+    () => createVisibilityHandler("ghgi"),
+    [createVisibilityHandler],
+  );
+  const handleHIAPVisibility = useMemo(
+    () => createVisibilityHandler("hiap"),
+    [createVisibilityHandler],
+  );
+  const handleCCRAVisibility = useMemo(
+    () => createVisibilityHandler("ccra"),
+    [createVisibilityHandler],
+  );
+
+  const visibleWidgetCount =
+    Object.values(widgetVisibility).filter(Boolean).length;
+  const allWidgetsReported =
+    Object.keys(widgetVisibility).length >= WIDGET_COUNT;
+  const showEmptyState = allWidgetsReported && visibleWidgetCount === 0;
+
+  if (showEmptyState) {
+    return <EmptyDashboard t={t} />;
   }
 
-  // Check if all modules have empty data
-  const hasValidData =
-    dashboardData &&
-    Object.entries(dashboardData).some(([moduleId, moduleData]) => {
-      // Check if module has actual inventory data
-      if (moduleId === Modules.GHGI.id) {
-        return (
-          moduleData && !moduleData.error && moduleData.totalEmissions.total > 0
-        );
-      }
-      if (moduleId === Modules.HIAP.id) {
-        return (
-          moduleData &&
-          !moduleData.error &&
-          (moduleData.mitigation || moduleData.adaptation)
-        );
-      }
-      return false;
-    });
+  // Don't show widgets if no inventoryId is provided
+  if (!inventoryId) {
+    return <EmptyDashboard t={t} />;
+  }
 
   return (
-    <>
-      {dashboardData &&
-      Object.keys(dashboardData).length > 0 &&
-      hasValidData ? (
-        <VStack gap={8} align="stretch" mt={4}>
-          {Object.entries(dashboardData)
-            .sort(([moduleIdA], [moduleIdB]) => {
-              // Sort so GHGI appears first
-              if (moduleIdA === Modules.GHGI.id) return -1;
-              if (moduleIdB === Modules.GHGI.id) return 1;
-              return 0;
-            })
-            .map(([moduleId, moduleData]) => {
-              const WidgetComponent = WIDGET_REGISTRY[moduleId];
-              if (!WidgetComponent) {
-                // No widget registered for this module
-                return null;
-              }
-              return (
-                <Box key={moduleId} mb={4}>
-                  <WidgetComponent
-                    cityId={cityId}
-                    moduleId={moduleId}
-                    data={moduleData || null}
-                    isLoading={false}
-                  />
-                </Box>
-              );
-            })}
-        </VStack>
-      ) : (
-        <EmptyDashboard t={t} />
-      )}
-    </>
+    <VStack gap={8} align="stretch" mt={4} pb={10}>
+      <GHGIWidget
+        cityId={cityId}
+        lng={lng}
+        inventoryId={inventoryId}
+        onVisibilityChange={handleGHGIVisibility}
+        isPublic={isPublic}
+      />
+      <HIAPWidget
+        cityId={cityId}
+        lng={lng}
+        inventoryId={inventoryId}
+        onVisibilityChange={handleHIAPVisibility}
+        isPublic={isPublic}
+      />
+      <CCRAWidget
+        cityId={cityId}
+        lng={lng}
+        inventoryId={inventoryId}
+        onVisibilityChange={handleCCRAVisibility}
+      />
+    </VStack>
   );
 };

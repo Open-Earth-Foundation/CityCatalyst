@@ -30,7 +30,6 @@ export function ClimateActionsSection({
   }, [actions?.rankedActions]);
   return (
     <>
-      {/* Top actions section */}
       {actionsByLng && actionsByLng.length > 0 ? (
         <Box display="flex" flexDirection="column" gap="24px" pb="24px">
           <Box display="flex" flexDirection="column" gap="16px">
@@ -69,7 +68,7 @@ export function ClimateActionsSection({
                 h="84px"
                 borderRadius="16px"
                 gap="12px"
-                onClick={onReprioritize}
+                onClick={() => onReprioritize?.()}
               >
                 <Icon
                   as={LuRefreshCw}

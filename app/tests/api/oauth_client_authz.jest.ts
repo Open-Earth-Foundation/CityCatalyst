@@ -105,14 +105,17 @@ const testOAuthClientAuthzs: OAuthClientAuthzAttributes[] = [
   {
     clientId: "test-client-1",
     userId: testUserID,
+    created: new Date()
   },
   {
     clientId: "test-client-2",
     userId: testUserID,
+    created: new Date()
   },
   {
     clientId: "test-client-3",
     userId: testUserID,
+    created: new Date()
   },
 ];
 

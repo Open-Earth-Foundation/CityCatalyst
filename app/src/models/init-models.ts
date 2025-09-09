@@ -1032,15 +1032,17 @@ export function initModels(sequelize: Sequelize) {
     as: "highImpactActionRanked",
     foreignKey: "hiaRankingId",
   });
-  OAuthClient.hasMany(OAuthClientI18N, { foreignKey: "clientId" });
+  OAuthClient.hasMany(OAuthClientI18N, { as: 'i18n', foreignKey: "clientId" });
 
   OAuthClientAuthz.belongsTo(OAuthClient, {
+    as: 'client',
     foreignKey: 'clientId',
     targetKey: 'clientId',
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   });
   OAuthClientAuthz.belongsTo(User, {
+    as: 'user',
     foreignKey: 'userId',
     targetKey: 'userId',
     onDelete: 'CASCADE',
@@ -1097,5 +1099,6 @@ export function initModels(sequelize: Sequelize) {
     ProjectModules: ProjectModules,
     OAuthClient: OAuthClient,
     OAuthClientI18N: OAuthClientI18N,
+    OAuthClientAuthz: OAuthClientAuthz,
   };
 }

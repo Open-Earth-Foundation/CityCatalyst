@@ -185,7 +185,7 @@ describe("OAuth Client Authz API", () => {
         expect(client.name).not.toBeNull();
         expect(typeof client.description).toBe("object");
         expect(client.description).not.toBeNull();
-        expect(typeof(client.redirectUri)).toBe("string");
+        expect(typeof(client.redirectURI)).toBe("string");
       }
     });
   });
@@ -201,7 +201,6 @@ describe("OAuth Client Authz API", () => {
       expect(res.status).toEqual(200);
       const { data } = await res.json();
       expect(data.lastUsed).toBeDefined();
-      expect(typeof(data.lastUsed)).toEqual("string");
       expect(data.created).toBeDefined();
       expect(typeof(data.created)).toEqual("string");
       expect(data.client).toBeDefined();

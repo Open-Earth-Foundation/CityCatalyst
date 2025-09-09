@@ -8,7 +8,9 @@ import { Box, Tabs, Text } from "@chakra-ui/react";
 import { MyProfileTab } from "@/components/Tabs/MyProfileTab";
 import MyFilesTab from "@/components/Tabs/my-files-tab";
 import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
+import MyAppsTab from "@/components/Tabs/my-apps-tab";
 import { api } from "@/services/api";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 export type ProfileInputs = {
   name: string;
@@ -37,6 +39,10 @@ export type CityData = {
 };
 
 const tabValues = ["my-profile", "my-files", "my-inventories"];
+
+if (hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
+  tabValues.push("my-apps");
+}
 
 export default function Settings(props: { params: Promise<{ lng: string }> }) {
   const { lng } = use(props.params);
@@ -162,6 +168,28 @@ export default function Settings(props: { params: Promise<{ lng: string }> }) {
                     {t("my-inventories")}
                   </Text>
                 </Tabs.Trigger>
+                {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) &&
+                  <Tabs.Trigger
+                    _selected={{
+                      borderColor: "content.link",
+                      borderBottomWidth: "2px",
+                      boxShadow: "none",
+                      fontWeight: "bold",
+                      borderRadius: "0",
+                      color: "content.link",
+                      backgroundColor: "background.backgroundLight",
+                    }}
+                    value="my-apps"
+                  >
+                    <Text
+                      fontSize="title.md"
+                      fontStyle="normal"
+                      lineHeight="24px"
+                    >
+                      {t("my-apps")}
+                    </Text>
+                </Tabs.Trigger>
+}
               </Tabs.List>
 
               <MyProfileTab t={t} userInfo={userInfo} lng={lng} />
@@ -172,6 +200,9 @@ export default function Settings(props: { params: Promise<{ lng: string }> }) {
                 t={t}
                 defaultCityId={cityId}
               />
+              { hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) &&
+                <MyAppsTab lng={lng} />
+              }
             </Tabs.Root>
           </Box>
         </Box>

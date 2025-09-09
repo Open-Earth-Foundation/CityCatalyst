@@ -55,6 +55,7 @@ import {
   Client,
   LangMap,
   PermissionCheckResponse,
+  Authz,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -102,6 +103,7 @@ export const api = createApi({
     "Modules",
     "GHGIDashboard",
     "HiapDashboard",
+    "Authz",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1447,6 +1449,18 @@ export const api = createApi({
           url: `/client/${clientId}`,
         }),
         invalidatesTags: ["Client"],
+      }),
+      getAuthzs: builder.query<Authz[], void>({
+        query: () => `/user/clients/`,
+        transformResponse: (response: { data: Authz[] }) => response.data,
+        providesTags: ["Authz"],
+      }),
+      revokeAuthz: builder.mutation<void, string>({
+        query: (clientId: string) => ({
+          method: "DELETE",
+          url: `/user/clients/${clientId}/`,
+        }),
+        invalidatesTags: ["Authz"],
       }),
     };
   },

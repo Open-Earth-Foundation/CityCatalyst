@@ -714,3 +714,15 @@ export interface DashboardResponseType {
     projectId: string;
   };
 }
+
+export interface Authz {
+  clientId: string;
+  userId: string;
+  lastUsed: string|null;
+  created: string;
+  client: {
+    redirectUri: string;
+    name: LangMap;
+    description: LangMap;
+  }
+}

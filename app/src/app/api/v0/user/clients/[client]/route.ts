@@ -70,7 +70,6 @@ export const GET = apiHandler(async (_req, { params, session }) => {
     },
   };
 
-  console.dir(data);
   return NextResponse.json({ data });
 });
 

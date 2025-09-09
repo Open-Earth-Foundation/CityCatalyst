@@ -1,17 +1,19 @@
-import UserService from "@/backend/UserService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { getEmissionsForecasts } from "@/backend/ResultsService";
+import { Inventory } from "@/models/Inventory";
 
 export const GET = apiHandler(
   async (_req, { session, params: { inventory } }) => {
-    // ensure inventory belongs to user
-    const inventoryData = await UserService.findUserInventory(
-      inventory,
+    // ensure inventory belongs to user (read-only access with resource)
+    const { resource } = await PermissionService.canAccessInventory(
       session,
-      [],
-      true,
+      inventory,
     );
+
+    const inventoryData = resource as Inventory;
+
     const forecast = await getEmissionsForecasts(inventoryData);
     return NextResponse.json({
       data: forecast,

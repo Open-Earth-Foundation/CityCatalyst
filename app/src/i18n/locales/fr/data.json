@@ -876,6 +876,7 @@
   "treatment-type-anaerobic-shallow-lagoon": "Lagune peu profonde anaérobie",
   "treatment-type-anaerobic-deep-lagoon": "Lagune profonde anaérobie",
   "treatment-type-septic-system": "Système septique",
+  "treatment-type-latrine": "Latrine",
   "treatment-type-latrine-dry-climate-small-family": "Latrine : Climat sec, nappe phréatique inférieure à la latrine, petite famille (3-5 personnes)",
   "treatment-type-latrine-dry-climate-communal": "Latrine : Climat sec, nappe phréatique inférieure à la latrine, communale (nombreux utilisateurs)",
   "treatment-type-latrine-wet-climate": "Latrine : Climat humide/utilisation d'eau de chasse, nappe d'eau souterraine plus haute que la latrine",
@@ -1250,5 +1251,10 @@
   "waste-composition-percentage": "{{percent}}%",
   "categories": "Catégories",
   "percentage": "Pourcentage",
-  "go-to-source": "Accéder à la source"
+  "go-to-source": "Accéder à la source",
+  "calculated-emission-values-too-large": "Les valeurs d'émissions calculées sont trop importantes pour être stockées. Veuillez réduire vos quantités d'activité ou facteurs d'émission pour éviter le débordement.",
+  "invalid-request": "Demande Invalide",
+  "emission-factor-too-large": "Le facteur d'émission ne peut pas dépasser {{max}}. Veuillez saisir une valeur plus petite.",
+  "emission-factor-required": "Facteur d'émission requis",
+  "emission-factor-negative": "Le facteur d'émission ne peut pas être négatif. Veuillez saisir une valeur positive."
 }

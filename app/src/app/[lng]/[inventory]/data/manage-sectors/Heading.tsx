@@ -1,10 +1,11 @@
+import i18n from "i18next";
 import { ManageDataIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { Box, Icon, Separator, Text } from "@chakra-ui/react";
-import { TFunction } from "i18next";
+import { Box, Icon, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import React, { FC } from "react";
 import { MdArrowBack } from "react-icons/md";
+import type { FC } from "react";
+import type { TFunction } from "i18next";
 
 interface HeadingProps {
   t: TFunction;
@@ -20,7 +21,7 @@ const Heading: FC<HeadingProps> = ({ t, inventoryParam }) => {
           variant="ghost"
           color="content.link"
           px={1}
-          onClick={() => router.push(`/`)}
+          onClick={() => router.push(`/${i18n.language}/${inventoryParam}`)}
         >
           <Icon as={MdArrowBack} />
           {t("go-back")}

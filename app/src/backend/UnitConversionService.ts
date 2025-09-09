@@ -53,11 +53,34 @@ export default class UnitConversionService {
     "fuel-type-naphtha": 710, // Naphtha: 700-720 kg/m³
     "fuel-type-diesel-oil": 830, // Diesel Oil: 820-860 kg/m³
     "fuel-type-liquefied-petroleum-gases": 493, // LPG: 493-580 kg/m³
-    "fuel-type-wood/wood-waste": 700, // Wood/Wood Waste: 600-700 kg/m³ (solid state)
+    "fuel-type-wood-wood-waste": 700, // Wood/Wood Waste: 600-700 kg/m³ (solid state)
     "fuel-type-other-primary-solid-biomass": 700, // Biomass: ~600-700 kg/m³
     "fuel-type-charcoal": 250, // Charcoal: 200-300 kg/m³
     "fuel-type-natural-gas-oil": 820, // Natural Gas Oil: ~820 kg/m³
     "fuel-type-peat": 450, // Peat: ~400-500 kg/m³
+    "fuel-type-propane": 493, // Propane: ~493 kg/m³
+    "fuel-type-firewood": 450, // 225 C-kg/m³ / 0.5 carbon fraction
+    "fuel-type-anthracite": 865, // 800-930 kg/m³
+    "fuel-type-aviation-gasoline": 706,
+    "fuel-type-bitumen": 1000,
+    "fuel-type-coke-oven-coke-and-lignite-coke": 900,
+    "fuel-type-coke-oven-gas": 1,
+    "fuel-type-coking-coal": 793,
+    "fuel-type-crude-oil": 900,
+    "fuel-type-industrial-wastes": 530,
+    "fuel-type-jet-gasoline": 710,
+    "fuel-type-jet-kerosene": 800,
+    "fuel-type-lignite": 750,
+    "fuel-type-municipal-wastes": 150,
+    "fuel-type-natural-charcoal": 265,
+    "fuel-type-natural-gas-liquids": 550,
+    "fuel-type-natural-other-bituminous-coal": 1000,
+    "fuel-type-other-kerosene": 800,
+    "fuel-type-oxygen-steel-furnace-gas": 1,
+    "fuel-type-refinery-gas": 1,
+    "fuel-type-residual-fuel-oil": 975,
+    "fuel-type-sub-bituminous-coal": 865,
+    "fuel-type-waste-oils": 900
   };
 
   public static convertUnits(

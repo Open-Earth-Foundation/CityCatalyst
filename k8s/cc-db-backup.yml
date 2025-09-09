@@ -3,8 +3,7 @@ kind: CronJob
 metadata:
   name: cc-db-backup
 spec:
-  # run every day at 4AM
-  schedule: 0 4 * * *
+  schedule: "0 4 * * *"
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: 86400
@@ -23,31 +22,31 @@ spec:
             - name: PGUSER
               valueFrom:
                 configMapKeyRef:
-                  key: DATABASE_USER
                   name: cc-db-configmap
+                  key: DATABASE_USER
             - name: PGHOST
               valueFrom:
                 configMapKeyRef:
-                  key: DATABASE_HOST
                   name: cc-db-configmap
+                  key: DATABASE_HOST
             - name: PGDATABASE
               valueFrom:
                 configMapKeyRef:
-                  key: DATABASE_NAME
                   name: cc-db-configmap
+                  key: DATABASE_NAME
             - name: PGPASSWORD
               valueFrom:
                 configMapKeyRef:
-                  key: DATABASE_PASSWORD
                   name: cc-db-configmap
+                  key: DATABASE_PASSWORD
+            command: ["/bin/bash", "-c"]
             args:
             - |
-              pg_dump | gzip > /var/backups/citycatalyst.sql.gz
-            command: ['/bin/bash', '-c']
+              pg_dump | gzip > /var/backups/citycatalyst-$(date +%Y%m%d).sql.gz
             resources:
               limits:
                 memory: "1024Mi"
                 cpu: "1000m"
             volumeMounts:
-            - mountPath: "/var/backups/"
-              name: backup
+            - name: backup
+              mountPath: /var/backups/

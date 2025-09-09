@@ -6,6 +6,7 @@ import { languages } from "@/i18n/settings";
 import { PublicEnvScript } from "next-runtime-env";
 import { Toaster } from "@/components/ui/toaster";
 import ClientRootLayout from "@/components/ClientRootLayout";
+import CookieConsent from "@/components/CookieConsent";
 import { use } from "react";
 import { HighlightInit } from "@highlight-run/next/client";
 import HighlightIdentifier from "@/components/HighlightIdentifier";
@@ -28,6 +29,7 @@ export default function RootLayout(props: {
   const isHighlightEnabled = hasFeatureFlag(FeatureFlags.HIGHLIGHT_ENABLED);
 
   return (
+<<<<<<< HEAD
     <>
       {isHighlightEnabled && (
         <HighlightInit
@@ -57,5 +59,21 @@ export default function RootLayout(props: {
         </body>
       </html>
     </>
+=======
+    <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
+      <head>
+        <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
+        <link rel="icon" type="image/png" href="/assets/icon.png" />
+        <PublicEnvScript />
+      </head>
+      <body>
+        <Providers>
+          <Toaster />
+          <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
+          <CookieConsent lng={lng} />
+        </Providers>
+      </body>
+    </html>
+>>>>>>> develop
   );
 }

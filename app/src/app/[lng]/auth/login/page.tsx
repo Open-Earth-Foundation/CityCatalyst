@@ -12,8 +12,8 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { UseSuccessToast } from "@/hooks/Toasts";
-import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
+import { trackEvent, identifyUser } from "@/lib/analytics";
 
 export type LoginInputs = {
   email: string;
@@ -72,15 +72,22 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
       const res = await signIn("credentials", {
-        redirect: false,
+        redirect: true,
         email: data.email,
         password: data.password,
-        callbackUrl,
+        callbackUrl: callbackUrl || `/${lng}/`,
       });
 
       if (res?.ok && !res?.error) {
+        // Track successful login
+        trackEvent("user_logged_in", {
+          method: "credentials",
+        });
+
+        // Identify the user for future tracking
+        identifyUser(data.email);
+
         showLoginSuccessToast();
-        router.push(callbackUrl ?? "/");
         setError("");
         return;
       } else {
@@ -120,35 +127,40 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
       <Text my={4} color="content.tertiary">
         {t("login-details")}
       </Text>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <EmailInput register={register} error={errors.email} t={t} />
-        <PasswordInput register={register} error={errors.password} t={t} />
-        <Text color="semantic.danger">{error}</Text>
-        <div className="w-full text-right">
-          <Link href="/auth/forgot-password" className="underline">
-            {t("forgot-password")}
-          </Link>
-        </div>
-        <Button
-          type="submit"
-          formNoValidate
-          loading={isSubmitting}
-          h={16}
-          width="full"
-          bgColor="interactive.secondary"
-        >
-          {t("log-in")}
-        </Button>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Box display="flex" flexDirection="column" gap="16px">
+          <EmailInput register={register} error={errors.email} t={t} />
+          <PasswordInput register={register} error={errors.password} t={t} />
+          <Text color="semantic.danger">{error}</Text>
+          <Box w="full" textAlign="right">
+            <Link href="/auth/forgot-password" textDecoration="underline">
+              {t("forgot-password")}
+            </Link>
+          </Box>
+          <Button
+            type="submit"
+            formNoValidate
+            loading={isSubmitting}
+            h={16}
+            width="full"
+            bgColor="interactive.secondary"
+          >
+            {t("log-in")}
+          </Button>
+        </Box>
       </form>
       {callbackUrl.includes("token") && (
         <Text
-          className="w-full text-center mt-4 text-sm"
+          w="full"
+          textAlign="center"
+          mt={4}
+          fontSize="sm"
           color="content.tertiary"
         >
           {t("no-account")}{" "}
           <Link
             href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-            className="underline"
+            textDecoration="underline"
           >
             {t("sign-up")}
           </Link>

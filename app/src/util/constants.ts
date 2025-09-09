@@ -200,3 +200,15 @@ export const REGIONALLOCALES: Record<string, string> = {
 export const DEFAULT_PROJECT_ID = "ebe82f61-b51b-4015-90ef-8b94f86fb0b7";
 
 export const DEFAULT_ORGANIZATION_ID = "5a84ebff-33ee-457e-ab52-512b5731978b";
+
+export enum StageNames {
+  "Assess And Analyze" = "assess-&-analyze",
+  "Plan" = "plan",
+  "Implement" = "implement",
+  "Monitor, Evaluate & Report" = "monitor-evaluate-&-report",
+}
+
+export const Modules = {
+  GHGI: { id: "077690c6-6fa3-44e1-84b7-6d758a6a4d88" },
+  HIAP: { id: "9ee0e1ea-94ea-4329-b156-28d10ecd0ff8" },
+};

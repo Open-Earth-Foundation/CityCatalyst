@@ -77,7 +77,11 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
       ) : (
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-[24px]"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "24px",
+          }}
         >
           <FormInput
             label={t("full-name")}

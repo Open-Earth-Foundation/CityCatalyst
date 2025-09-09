@@ -3,7 +3,7 @@
   "data-details": "Verbinden Sie Drittanbieterdaten oder laden Sie Ihre eigenen Daten hoch, um Ihre THG-Inventur nach der GPC-Basismethodik zu erstellen",
   "data-details-+": "Verbinden Sie Drittanbieterdaten oder laden Sie Ihre eigenen Daten hoch, um Ihre THG-Inventur nach der GPC-Basismethodik zu erstellen",
   "data-view-heading": "Sehen Sie die benötigten Daten, um die Inventur Ihrer Stadt abzuschließen",
-  "data-view-details": "Die GPC-Basis umfasst drei Hauptsektoren: Stationäre Energie, Transport und Abfall. Geben Sie die notwendigen Daten für jeden Sektor ein, um eine umfassende THG-Inventur zu erstellen. <2>Weitere Informationen</2>",
+  "data-view-details": "Wählen Sie die notwendigen Daten für den relevanten Sektor aus und füllen Sie diese aus, um eine umfassende THG-Inventur zu erstellen.",
   "scope-required-for-basic": "Umfang erforderlich für die Grund-THG-Inventur",
   "scope-required-for-basic-+": "Umfang erforderlich für die Grund-THG-Inventur+",
   "stationary-energy": "Stationäre Energie",
@@ -908,6 +908,7 @@
   "treatment-type-anaerobic-shallow-lagoon": "Anaerober flacher Teich",
   "treatment-type-anaerobic-deep-lagoon": "Anaerober tiefer Lagune",
   "treatment-type-septic-system": "Kläranlage",
+  "treatment-type-latrine": "Latrine",
   "treatment-type-latrine-dry-climate-small-family": "Latrine: Trockenes Klima, Grundwasserspiegel tiefer als Latrine, kleine Familie (3-5 Personen)",
   "treatment-type-latrine-dry-climate-communal": "Latrine: Trockenes Klima, Grundwasserspiegel tiefer als Latrine, gemeinschaftlich (viele Benutzer)",
   "treatment-type-latrine-wet-climate": "Latrine: Feuchtes Klima/Spülwassernutzung, Grundwassertisch höher als Latrine",
@@ -1275,5 +1276,10 @@
   "waste-composition-percentage": "{{percent}}%",
   "categories": "Kategorien",
   "percentage": "Prozentsatz",
-  "go-to-source": "Gehe zur Quelle"
+  "go-to-source": "Gehe zur Quelle",
+  "calculated-emission-values-too-large": "Die berechneten Emissionswerte sind zu groß zum Speichern. Bitte reduzieren Sie Ihre Aktivitätsmengen oder Emissionsfaktoren, um einen Überlauf zu vermeiden.",
+  "invalid-request": "Ungültige Anfrage",
+  "emission-factor-too-large": "Der Emissionsfaktor darf {{max}} nicht überschreiten. Bitte geben Sie einen kleineren Wert ein.",
+  "emission-factor-required": "Emissionsfaktor erforderlich",
+  "emission-factor-negative": "Emissionsfaktor kann nicht negativ sein. Bitte geben Sie einen positiven Wert ein."
 }

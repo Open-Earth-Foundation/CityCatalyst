@@ -117,6 +117,9 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
+    // Skip rollback - formula inputs are now managed by sync script
+    console.log("Skipping formula inputs rollback - managed by sync script");
+    return;
     await queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.bulkDelete("DataSourceFormulaInput", null, {
         transaction,

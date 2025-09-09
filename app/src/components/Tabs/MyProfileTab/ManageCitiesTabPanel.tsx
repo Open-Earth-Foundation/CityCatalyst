@@ -5,7 +5,6 @@ import {
   Icon,
   IconButton,
   List,
-  PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
@@ -150,11 +149,9 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                       pos="absolute"
                       right="0"
                     >
-                      <PopoverArrow />
                       <PopoverBody padding="0">
                         <List.Root padding="0">
                           <List.Item
-                            className="group"
                             display="flex"
                             cursor="pointer"
                             gap="16px"
@@ -175,7 +172,8 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                               letterSpacing="wide"
                               fontWeight="normal"
                               fontSize="body.lg"
-                              className="group-hover:text-white capitalize"
+                              _groupHover={{ color: "white" }}
+                              textTransform="capitalize"
                             >
                               {t("download-city-data")}
                             </Text>
@@ -184,7 +182,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                             display="flex"
                             cursor="pointer"
                             gap="16px"
-                            className="group"
+                            _groupHover={{}}
                             color="sentiment.negativeDefault"
                             alignItems="center"
                             px="16px"
@@ -206,7 +204,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                               letterSpacing="wide"
                               fontWeight="normal"
                               fontSize="body.lg"
-                              className="group-hover:text-white"
+                              _groupHover={{ color: "white" }}
                             >
                               {t("remove-city")}
                             </Text>

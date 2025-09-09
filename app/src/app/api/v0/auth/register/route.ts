@@ -8,7 +8,9 @@ import bcrypt from "bcrypt";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
-import { Roles } from "@/util/types";
+import { Roles, LANGUAGES } from "@/util/types";
+import i18next from "@/i18n/server";
+import { logger } from "@/services/logger";
 
 export const POST = apiHandler(async (req: Request) => {
   const body = signupRequest.parse(await req.json());
@@ -34,7 +36,6 @@ export const POST = apiHandler(async (req: Request) => {
 
   // Send email to user
   const host = process.env.HOST ?? "http://localhost:3000";
-
   if (process.env.EMAIL_ENABLED === "true") {
     try {
       const html = await render(
@@ -44,12 +45,24 @@ export const POST = apiHandler(async (req: Request) => {
           language: body.preferredLanguage,
         }),
       );
+      const translatedSubject = i18next.t("welcome.subject", {
+        lng: body.preferredLanguage || LANGUAGES.en,
+        ns: "emails",
+      });
       await sendEmail({
         to: body.email,
-        subject: "welcome.subject",
+        subject: translatedSubject,
         html,
       });
     } catch (error) {
+      logger.error(
+        {
+          err: error,
+          email: body.email,
+          language: body.preferredLanguage,
+        },
+        "Failed to send confirmation email",
+      );
       throw new createHttpError.BadRequest("Email could not be sent");
     }
   }

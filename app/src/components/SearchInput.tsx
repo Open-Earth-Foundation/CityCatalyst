@@ -32,7 +32,7 @@ const SearchInput = ({
           >
             <Icon
               as={MdClose}
-              className="opacity-50"
+              style={{ opacity: 0.5 }}
               boxSize={4}
               color={"colors.interactive.control"}
             />

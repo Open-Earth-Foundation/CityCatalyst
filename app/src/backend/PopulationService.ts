@@ -60,4 +60,28 @@ export default class PopulationService {
       regionPopulationYear: regionPopulation?.year,
     };
   }
+
+  public static async getMostRecentPopulationDataForCity(
+    cityId: string,
+  ): Promise<{
+    cityId: string;
+    population?: number | null;
+    year?: number | null;
+  }> {
+    const population = await db.models.Population.findOne({
+      where: {
+        cityId: cityId,
+        population: {
+          [Op.ne]: null,
+        },
+      },
+      order: [["year", "DESC"]],
+    });
+
+    return {
+      cityId: cityId,
+      population: population?.population,
+      year: population?.year,
+    };
+  }
 }

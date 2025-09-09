@@ -20,10 +20,10 @@ function DynamicContent({ t }: { t: Function }) {
     </Text>
   ) : (
     <>
-      <Text className="my-4" color="#7A7B9A">
+      <Text my={4} color="#7A7B9A">
         {t("check-email-details1")}
       </Text>
-      <Text className="my-4" color="#7A7B9A">
+      <Text my={4} color="#7A7B9A">
         {email ? (
           <>
             {t("check-email-details2-prefix")}{" "}

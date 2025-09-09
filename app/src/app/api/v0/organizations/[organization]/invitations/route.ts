@@ -60,11 +60,17 @@ export const POST = apiHandler(async (req, { params, session }) => {
   });
 
   if (existingOrgAdmins.length > 0) {
-    throw new createHttpError.BadRequest(
+    const error = new createHttpError.BadRequest(
       `The following users are already admins for another organization: ${existingOrgAdmins
         .map((admin) => admin.user.email)
         .join(", ")}`,
     );
+    (error as any).code = "USER_ALREADY_ORG_ADMIN";
+    (error as any).data = {
+      emails: existingOrgAdmins.map((admin) => admin.user.email),
+      errorKey: "user-already-org-admin",
+    };
+    throw error;
   }
 
   const failedInvites: { email: string }[] = [];

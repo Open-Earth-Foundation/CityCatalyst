@@ -16,7 +16,7 @@ const AccountSettingsPage = (props: {
   const { t } = useTranslation(lng, "settings");
 
   return (
-    <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
+    <Box pt={16} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
       <Link href={`/${lng}`}>
         <Box
           display="flex"
@@ -111,13 +111,12 @@ const AccountSettingsPage = (props: {
                 <Box w="full">
                   <Heading
                     fontSize="headline.sm"
-                    mb={2}
+                    mb={4}
                     fontWeight="semibold"
                     lineHeight="32px"
                     fontStyle="normal"
                     textTransform="capitalize"
                     color="content.secondary"
-                    mt={12}
                   >
                     {t("account")}
                   </Heading>

@@ -95,19 +95,23 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
         </Table.Cell>
       ))}
       <Table.Cell>
-        <BodyMedium
-          color="content.link"
-          textDecoration={"underline"}
-          textTransform={"uppercase"}
-          fontWeight={"bold"}
-          onClick={(e) => {
-            e.stopPropagation();
-            setSelectedSourceId(item.datasource_id || "");
-            onSourceDrawerOpen();
-          }}
-        >
-          {item.datasource_name || tDashboard("N/A")}
-        </BodyMedium>
+        {item.datasource_name ? (
+          <BodyMedium
+            color="content.link"
+            textDecoration={"underline"}
+            textTransform={"uppercase"}
+            fontWeight={"bold"}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedSourceId(item.datasource_id || "");
+              onSourceDrawerOpen();
+            }}
+          >
+            {item.datasource_name}
+          </BodyMedium>
+        ) : (
+          <BodyMedium color="content.secondary">{tDashboard("n-a")}</BodyMedium>
+        )}
       </Table.Cell>
       <Table.Cell></Table.Cell>
     </Table.Row>
@@ -140,9 +144,8 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     const isExpanded = expandedSubsectors.has(subsector);
 
     return (
-      <>
+      <React.Fragment key={subsector}>
         <Table.Row
-          key={subsector}
           cursor="pointer"
           onClick={() => toggleSubsector(subsector)}
           _hover={{ bg: "gray.50" }}
@@ -189,36 +192,38 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           activities.map((item, index) =>
             renderActivityRow(item, `${item.activityTitle}-${index}`),
           )}
-      </>
+      </React.Fragment>
     );
   };
 
   return (
     <Box py={4}>
       <Table.Root variant="line">
-        <Table.Header className="uppercase">
-          <Table.ColumnHeader>
-            <ButtonSmall>{tData("subsector")}</ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            <ButtonSmall>{tDashboard("total-emissions")}</ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            <ButtonSmall>{tDashboard("%-of-sector-emissions")}</ButtonSmall>
-          </Table.ColumnHeader>
-          {scopes.map((s) => (
-            <Table.ColumnHeader key={s}>
-              <ButtonSmall>
-                {tDashboard("emissions-scope")} {s}
-              </ButtonSmall>
+        <Table.Header textTransform="uppercase">
+          <Table.Row>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tData("subsector")}</ButtonSmall>
             </Table.ColumnHeader>
-          ))}
-          <Table.ColumnHeader>
-            <ButtonSmall>{tDashboard("source")}</ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            {/* this is where the chevron is */}
-          </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tDashboard("total-emissions")}</ButtonSmall>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tDashboard("%-of-sector-emissions")}</ButtonSmall>
+            </Table.ColumnHeader>
+            {scopes.map((s) => (
+              <Table.ColumnHeader key={s}>
+                <ButtonSmall>
+                  {tDashboard("emissions-scope")} {s}
+                </ButtonSmall>
+              </Table.ColumnHeader>
+            ))}
+            <Table.ColumnHeader>
+              <ButtonSmall>{tDashboard("source")}</ButtonSmall>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              {/* this is where the chevron is */}
+            </Table.ColumnHeader>
+          </Table.Row>
         </Table.Header>
         <Table.Body>
           {Object.entries(groupedData).map(([subsector, activities]) =>

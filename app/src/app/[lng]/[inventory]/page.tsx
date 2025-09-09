@@ -1,12 +1,36 @@
 "use client";
-import { use } from "react";
+import { useParams } from "next/navigation";
+import { api } from "@/services/api";
+import InventoryPage from "@/components/shared/InventoryPage";
+import { useResourceValidation } from "@/hooks/useResourceValidation";
 
-import HomePage from "@/components/HomePage/HomePage";
+export default function PrivateHome() {
+  const { inventory, lng } = useParams();
 
-export default function PrivateHome(props: {
-  params: Promise<{ lng: string }>;
-}) {
-  const { lng } = use(props.params);
+  const inventoryValue = Array.isArray(inventory) ? inventory[0] : inventory;
+  const lngValue = Array.isArray(lng) ? lng[0] : lng;
 
-  return <HomePage lng={lng} isPublic={false} />;
+  // Get inventory data to validate if the inventory exists and user has access
+  const inventoryQuery = api.useGetInventoryQuery(inventoryValue!, {
+    skip: !inventoryValue,
+  });
+
+  const { isLoading, shouldRender, LoadingComponent } = useResourceValidation({
+    resourceId: inventoryValue!,
+    resourceQuery: inventoryQuery,
+    lng: lngValue!,
+    resourceType: "inventory",
+  });
+
+  // Show loading state while validating
+  if (isLoading) {
+    return <LoadingComponent />;
+  }
+
+  // If inventory doesn't exist, don't render (will redirect)
+  if (!shouldRender) {
+    return null;
+  }
+
+  return <InventoryPage />;
 }

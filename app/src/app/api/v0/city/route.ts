@@ -7,6 +7,9 @@ import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
 import { DEFAULT_PROJECT_ID } from "@/util/constants";
 import EmailService from "@/backend/EmailService";
+import UserService from "@/backend/UserService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import { Project } from "@/models/Project";
 
 export const POST = apiHandler(async (req, { session }) => {
   const body = createCityRequest.parse(await req.json());
@@ -17,11 +20,24 @@ export const POST = apiHandler(async (req, { session }) => {
   const projectId = body.projectId;
 
   if (!projectId) {
-    logger.info("Project ID is not provided, defaulting to Default Project");
+    logger.info("Project ID is not provided, defaulting to Default Project ");
     body.projectId = DEFAULT_PROJECT_ID;
   }
 
-  const project = await db.models.Project.findByPk(body.projectId, {
+  // Check permission to create city in this project (ORG_ADMIN or PROJECT_ADMIN required)
+  const { resource } = await PermissionService.canCreateCity(
+    session,
+    body.projectId as string,
+  );
+
+  const project = resource as Project;
+
+  if (!project) {
+    throw new createHttpError.NotFound("Project not found");
+  }
+
+  // Load additional project data needed for the rest of the function
+  await project.reload({
     include: [
       {
         model: db.models.City,
@@ -41,15 +57,10 @@ export const POST = apiHandler(async (req, { session }) => {
     ],
   });
 
-  if (!project) {
-    throw new createHttpError.NotFound("Project not found");
-  }
-
-  if (!project.organization.active) {
-    throw new createHttpError.Forbidden("Organization is not active");
-  }
-
-  if (project.cities.length === project.cityCountLimit) {
+  if (Number(project.cities.length) >= Number(project.cityCountLimit)) {
+    logger.error(
+      `City count limit reached for project ${project.projectId}. Current count: ${project?.cities?.length}, Limit: ${project?.cityCountLimit}`,
+    );
     throw new createHttpError.BadRequest("city-count-limit-reached");
   }
 
@@ -100,6 +111,20 @@ export const POST = apiHandler(async (req, { session }) => {
       organizationName: project.organization.name as string,
       cities: [city],
     });
+
+    // Update user defaults to include the newly created city
+    try {
+      await UserService.updateDefaults(session.user.id);
+      logger.info(
+        `Updated user defaults for user ${session.user.id} after city creation`,
+      );
+    } catch (error) {
+      logger.error(
+        { error, userId: session.user.id },
+        "Failed to update user defaults after city creation",
+      );
+      // Don't fail the city creation if updating defaults fails
+    }
   }
 
   return NextResponse.json({ data: city });

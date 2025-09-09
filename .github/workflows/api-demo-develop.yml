@@ -1,0 +1,69 @@
+name: Deploy API Demo development
+
+permissions:
+  contents: read
+  packages: write
+  checks: write
+
+on:
+  workflow_dispatch:
+
+  push:
+    paths:
+      - api-demo/**
+      - .github/workflows/api-demo-develop.yml
+    branches: ["develop"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      REGISTRY: ghcr.io
+      REPOSITORY: open-earth-foundation/cc-api-demo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api-demo/
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:latest
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPOSITORY }}:latest
+          cache-to: type=inline
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+
+      - name: Testing connection to EKS
+        run: kubectl get pods -n default
+
+      - name: Deploying service
+        run: |
+          kubectl rollout restart deployment api-demo -n default

@@ -17,7 +17,7 @@ export default function HighlightIdentifier() {
         id: session.user.id,
       });
     }
-  }, [session]);
+  }, [session, FeatureFlags.HIGHLIGHT_ENABLED]);
 
   return null;
 }

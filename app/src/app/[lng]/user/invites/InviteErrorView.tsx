@@ -17,13 +17,13 @@ const InviteErrorView = ({ lng }: InviteErrorViewProps) => {
 
   return (
     <Center>
-      <Box className="flex w-full relative h-[100vh] z-20">
+      <Box display="flex" w="full" position="relative" h="100vh" zIndex={20}>
         <Image
           src="/assets/not-found-background.svg"
           layout="fill"
           objectFit="cover"
           sizes="100vw"
-          className="relative"
+          style={{ position: "relative" }}
           alt="not-found page background"
         />
         <Box
@@ -48,7 +48,8 @@ const InviteErrorView = ({ lng }: InviteErrorViewProps) => {
             >
               {t("invite-not-valid-description")}{" "}
               <Link
-                className="underline text-nowrap"
+                textDecoration="underline"
+                whiteSpace="nowrap"
                 fontWeight="semibold"
                 color="content.link"
                 href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAILS}`}
@@ -58,7 +59,7 @@ const InviteErrorView = ({ lng }: InviteErrorViewProps) => {
             </BodyXLarge>
           </Center>
           <Button
-            onClick={() => router.push(`/`)}
+            onClick={() => router.push(`/${lng}`)}
             gap="8px"
             h="48px"
             px="24px"

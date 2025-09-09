@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
-import i18next from "i18next";
+import i18next from "@/i18n/server";
 import { LANGUAGES } from "@/util/types";
 
 export const POST = apiHandler(async (req) => {

@@ -4,6 +4,7 @@ import {
   type InventoryValueAttributes,
   type PopulationAttributes,
   type UserAttributes,
+  type ModuleAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import {
@@ -51,6 +52,17 @@ import {
   UpdateUserPayload,
   FormulaInputValuesResponse,
   DataSourceResponse,
+  Client,
+  LangMap,
+  PermissionCheckResponse,
+} from "@/util/types";
+import type {
+  CityLocationResponse,
+  DashboardResponseType,
+  HIAPResponse,
+  ModuleDataSummaryResponse,
+  GHGInventorySummary,
+  HIAPSummary,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -59,6 +71,7 @@ export const api = createApi({
   reducerPath: "api",
   tagTypes: [
     "UserInfo",
+    "UserPermissions",
     "InventoryProgress",
     "UserInventories",
     "SubSectorValue",
@@ -82,8 +95,13 @@ export const api = createApi({
     "ProjectUsers",
     "UserAccessStatus",
     "Cities",
-    "Cap",
+    "Hiap",
     "Themes",
+    "Client",
+    "CityDashboard",
+    "Modules",
+    "GHGIDashboard",
+    "HiapDashboard",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -103,9 +121,9 @@ export const api = createApi({
           response.data,
         providesTags: ["CitiesAndInventories"],
       }),
-      getCity: builder.query<CityAttributes, string>({
+      getCity: builder.query<CityWithProjectDataResponse, string>({
         query: (cityId) => `city/${cityId}`,
-        transformResponse: (response: { data: CityAttributes }) =>
+        transformResponse: (response: { data: CityWithProjectDataResponse }) =>
           response.data,
       }),
       getCityBoundary: builder.query<
@@ -118,6 +136,17 @@ export const api = createApi({
           boundingBox: BoundingBox;
           area: number;
         }) => response,
+      }),
+      getPublicCity: builder.query<CityWithProjectDataResponse, string>({
+        query: (cityId) => `public/city/${cityId}`,
+        transformResponse: (response: { data: CityWithProjectDataResponse }) =>
+          response.data,
+      }),
+      getPublicCityInventories: builder.query<InventoryResponse[], string>({
+        query: (cityId) => `public/city/${cityId}/inventories`,
+        transformResponse: (response: { data: InventoryResponse[] }) =>
+          response.data,
+        providesTags: ["Inventories"],
       }),
       getInventory: builder.query<InventoryResponse, string>({
         query: (inventoryId: string) => `inventory/${inventoryId}`,
@@ -132,6 +161,12 @@ export const api = createApi({
         query: (inventoryId: string) => `inventory/${inventoryId}/populations`,
         transformResponse: (response: { data: InventoryPopulationsResponse }) =>
           response.data,
+      }),
+      getInventoryByCityId: builder.query<InventoryResponse, string>({
+        query: (cityId: string) => `city/${cityId}/ghgi`,
+        transformResponse: (response: { data: InventoryResponse }) =>
+          response.data,
+        providesTags: ["Inventory"],
       }),
       getRequiredScopes: builder.query<RequiredScopesResponse, string>({
         query: (sectorId) => `sector/${sectorId}/required-scopes`,
@@ -236,7 +271,7 @@ export const api = createApi({
       }),
       setUserInfo: builder.mutation<
         UserAttributes,
-        { cityId: string; defaultInventoryId: string }
+        { defaultInventoryId: string; defaultCityId: string }
       >({
         query: (data) => ({
           url: "/user",
@@ -250,6 +285,29 @@ export const api = createApi({
         transformResponse: (response: { data: UserInfoResponse }) =>
           response.data,
         providesTags: ["UserInfo"],
+      }),
+      getUserPermissions: builder.query<
+        PermissionCheckResponse,
+        {
+          organizationId?: string;
+          projectId?: string;
+          cityId?: string;
+          inventoryId?: string;
+        }
+      >({
+        query: (params) => {
+          const searchParams = new URLSearchParams();
+          if (params.organizationId)
+            searchParams.set("organizationId", params.organizationId);
+          if (params.projectId) searchParams.set("projectId", params.projectId);
+          if (params.cityId) searchParams.set("cityId", params.cityId);
+          if (params.inventoryId)
+            searchParams.set("inventoryId", params.inventoryId);
+          return `/user/permissions?${searchParams.toString()}`;
+        },
+        transformResponse: (response: { data: PermissionCheckResponse }) =>
+          response.data,
+        providesTags: ["UserPermissions"],
       }),
       getAllDataSources: builder.query<
         GetDataSourcesResult,
@@ -407,7 +465,6 @@ export const api = createApi({
         PopulationAttributes,
         {
           cityId: string;
-          locode: string;
           cityPopulation: number;
           regionPopulation: number;
           countryPopulation: number;
@@ -434,6 +491,15 @@ export const api = createApi({
         query: (data) => `/city/${data.cityId}/population/${data.year}`,
         transformResponse: (response: { data: PopulationAttributes }) =>
           response.data,
+      }),
+      getMostRecentCityPopulation: builder.query<
+        { cityId: string; year: number; population: number },
+        { cityId: string }
+      >({
+        query: (data) => `/city/${data.cityId}/population`,
+        transformResponse: (response: {
+          data: { cityId: string; year: number; population: number };
+        }) => response.data,
       }),
       getUser: builder.query<
         UserAttributes,
@@ -595,7 +661,7 @@ export const api = createApi({
       >({
         query: (params) => {
           return {
-            url: `/emissions-factor`,
+            url: `/emissions-factor/`,
             method: "POST",
             body: params,
           };
@@ -613,6 +679,11 @@ export const api = createApi({
           "InventoryValue",
           "InventoryProgress",
           "ReportResults",
+          "SubSectorValue",
+          "YearlyReportResults",
+          "InventoryValue",
+          "SectorBreakdown",
+          "Inventory",
         ],
         transformResponse: (response: { data: EmissionsFactorResponse }) =>
           response.data,
@@ -855,7 +926,7 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: InventoryAttributes }) =>
           response.data,
-        invalidatesTags: ["Inventory"],
+        invalidatesTags: ["Inventory", "Inventories"],
       }),
       updatePassword: builder.mutation({
         query: (data) => ({
@@ -1135,16 +1206,18 @@ export const api = createApi({
         }),
         providesTags: ["Inventory"],
       }),
-      getCap: builder.query<
-        string,
+      getHiap: builder.query<
+        HIAPResponse,
         { inventoryId: string; actionType: ACTION_TYPES; lng: LANGUAGES }
       >({
         query: ({ inventoryId, actionType, lng }) => ({
-          url: `inventory/${inventoryId}/cap?actionType=${actionType}&lng=${lng}`,
+          url: `inventory/${inventoryId}/hiap?actionType=${actionType}&lng=${lng}`,
           method: "GET",
         }),
-        transformResponse: (response: { data: string }) => response.data,
-        providesTags: ["Cap"],
+        transformResponse: (response: { data: HIAPResponse }) => {
+          return response.data;
+        },
+        providesTags: ["Hiap"],
       }),
       setOrgWhiteLabel: builder.mutation({
         query: (data: {
@@ -1183,6 +1256,15 @@ export const api = createApi({
         }),
         transformResponse: (response: ThemeResponse[]) => response,
         providesTags: ["Themes"],
+      }),
+      getOrganizationForCity: builder.query({
+        query: (cityId: string) => ({
+          method: "GET",
+          url: `/city/${cityId}/organization`,
+        }),
+        transformResponse: (response: OrganizationWithThemeResponse) =>
+          response,
+        providesTags: ["Organization"],
       }),
       getOrganizationForInventory: builder.query({
         query: (inventoryId: string) => ({
@@ -1258,6 +1340,131 @@ export const api = createApi({
         }),
         invalidatesTags: ["ProjectUsers"],
       }),
+      getModules: builder.query<ModuleAttributes[], void>({
+        query: () => "modules",
+        transformResponse: (response: { data: ModuleAttributes[] }) =>
+          response.data,
+      }),
+      getProjectModules: builder.query<ModuleAttributes[], string>({
+        query: (projectId: string) => `projects/${projectId}/modules`,
+        transformResponse: (response: { data: ModuleAttributes[] }) =>
+          response.data,
+      }),
+      getCityModuleAccess: builder.query<
+        { hasAccess: boolean },
+        { cityId: string; moduleId: string }
+      >({
+        query: ({ cityId, moduleId }) =>
+          `city/${cityId}/modules/${moduleId}/access`,
+        transformResponse: (response: { data: { hasAccess: boolean } }) =>
+          response.data,
+      }),
+      getCityGHGIDashboard: builder.query<
+        GHGInventorySummary,
+        { cityId: string; inventoryId: string }
+      >({
+        query: ({ cityId, inventoryId }) =>
+          `city/${cityId}/modules/ghgi/dashboard?inventoryId=${inventoryId}`,
+        transformResponse: (response: { data: GHGInventorySummary }) =>
+          response.data,
+        providesTags: ["CityDashboard", "Modules", "GHGIDashboard"],
+      }),
+      getCityHIAPDashboard: builder.query<
+        HIAPSummary,
+        { cityId: string; inventoryId: string; lng?: string }
+      >({
+        query: ({ cityId, inventoryId, lng = "en" }) =>
+          `city/${cityId}/modules/hiap/dashboard?inventoryId=${inventoryId}&lng=${lng}`,
+        transformResponse: (response: { data: HIAPSummary }) => response.data,
+        providesTags: ["CityDashboard", "Modules", "HiapDashboard"],
+      }),
+      getClient: builder.query<Client, string>({
+        query: (clientId: string) => `client/${clientId}/`,
+        transformResponse: (response: { data: Client }) => response.data,
+        providesTags: (result, error, clientId) => [
+          { type: "Client", id: clientId },
+        ],
+      }),
+      generateCode: builder.mutation({
+        query: ({
+          clientId,
+          redirectUri,
+          codeChallenge,
+          scope,
+          csrfToken,
+        }: {
+          clientId: string;
+          redirectUri: string;
+          codeChallenge: string;
+          scope: string;
+          csrfToken: string;
+        }) => ({
+          method: "POST",
+          url: `/auth/code/`,
+          body: {
+            clientId,
+            redirectUri,
+            codeChallenge,
+            scope,
+            csrfToken,
+          },
+        }),
+        transformResponse: (response: { data: any }) => response.data.code,
+      }),
+      getBulkCityLocations: builder.query<
+        CityLocationResponse[],
+        { projectId?: string; organizationId?: string }
+      >({
+        query: ({ projectId, organizationId }) => {
+          let params: URLSearchParams | string = "";
+          if (projectId) {
+            params = new URLSearchParams({ projectId });
+          } else if (organizationId) {
+            params = new URLSearchParams({ organizationId });
+          } else {
+            throw new Error(
+              "Need to either provide projectId or organizationId when requesting bulk city locations!",
+            );
+          }
+
+          return `bulk-locations?${params}`;
+        },
+        transformResponse: (response: { data: CityLocationResponse[] }) =>
+          response.data,
+      }),
+      getClients: builder.query<Client[], void>({
+        query: () => `client/`,
+        transformResponse: (response: { data: Client[] }) => response.data,
+        providesTags: ["Client"],
+      }),
+      addClient: builder.mutation({
+        query: ({
+          redirectUri,
+          name,
+          description,
+        }: {
+          redirectUri: string;
+          name: Record<string, string>;
+          description: Record<string, string>;
+        }) => ({
+          method: "POST",
+          url: `/client/`,
+          body: {
+            redirectUri,
+            name,
+            description,
+          },
+        }),
+        transformResponse: (response: { data: Client }) => response.data,
+        invalidatesTags: ["Client"],
+      }),
+      deleteClient: builder.mutation<void, string>({
+        query: (clientId: string) => ({
+          method: "DELETE",
+          url: `/client/${clientId}`,
+        }),
+        invalidatesTags: ["Client"],
+      }),
     };
   },
 });
@@ -1294,6 +1501,8 @@ export const GLOBAL_API_URL =
 export const {
   useGetCityQuery,
   useGetCityYearsQuery,
+  useGetPublicCityQuery,
+  useGetPublicCityInventoriesQuery,
   useGetCitiesAndYearsQuery,
   useGetYearOverYearResultsQuery,
   useAddCityMutation,
@@ -1301,6 +1510,7 @@ export const {
   useSetUserInfoMutation,
   useAddCityPopulationMutation,
   useGetCityPopulationQuery,
+  useGetMostRecentCityPopulationQuery,
   useGetUserQuery,
   useSetCurrentUserDataMutation,
   useGetCityUsersQuery,
@@ -1311,6 +1521,7 @@ export const {
   useGetVerificationTokenQuery,
   useGetCitiesQuery,
   useGetInventoriesQuery,
+  useGetInventoryByCityIdQuery,
   useAddUserFileMutation,
   useGetUserFilesQuery,
   useDeleteUserFileMutation,
@@ -1353,14 +1564,26 @@ export const {
   useGetAllCitiesInSystemQuery,
   useGetUserProjectsQuery,
   useTransferCitiesMutation,
-  useGetCapQuery,
+  useGetHiapQuery,
   useGetThemesQuery,
   useSetOrgWhiteLabelMutation,
   useGetOrganizationForInventoryQuery,
+  useGetOrganizationForCityQuery,
   useDeleteCityMutation,
   useGetWasteCompositionValuesQuery,
   useUpdateOrganizationActiveStatusMutation,
   useGetDataSourceQuery,
   useUpdateUserRoleInOrganizationMutation,
+  useGetModulesQuery,
+  useGetProjectModulesQuery,
+  useGetCityModuleAccessQuery,
+  useGetCityGHGIDashboardQuery,
+  useGetCityHIAPDashboardQuery,
+  useGetClientQuery,
+  useGenerateCodeMutation,
+  useGetUserPermissionsQuery,
+  useGetClientsQuery,
+  useAddClientMutation,
+  useDeleteClientMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

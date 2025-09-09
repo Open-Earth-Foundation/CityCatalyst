@@ -23,10 +23,9 @@ test.describe("Onboarding Flow", () => {
       await expect(description).toHaveText(
         /In this step, configure your city's GHG emissions inventory by selecting the inventory year, setting the target, and adding contextual data such as population./i,
       );
+
       //   Verify the "Start Inventory" button is present and clickable
-      const startButton = page.getByRole("button", {
-        name: /Start inventory/i,
-      });
+      const startButton = page.getByTestId("start-inventory-button");
       await expect(startButton).toBeVisible();
 
       //   Click the "Start Inventory" button
@@ -48,7 +47,7 @@ test.describe("Onboarding Flow", () => {
       //   Verify tht the description is displayed
       const description = page.getByTestId("setup-city-description");
       await expect(description).toHaveText(
-        /Search and select the city or municipality for which you want to create your GHG emission inventory./i,
+        /Search and select the city or municipality you'll work with./i,
       );
 
       //   Verify that the search lable is visible
@@ -81,6 +80,7 @@ test.describe("Onboarding Flow", () => {
 
       // Verify that the map is displayed
       const cityMap = page.locator(".pigeon-overlays");
+      await cityMap.waitFor();
       await expect(cityMap).toBeVisible();
 
       const continueButton = page.getByRole("button", { name: /Continue/i });
@@ -485,6 +485,7 @@ test.describe("Onboarding Flow", () => {
 
         // Verify city heading
         const heading = page.getByTestId("confirm-city-data-heading");
+        await heading.waitFor({ state: 'visible', timeout: 5000 });
         await expect(heading).toBeVisible();
       });
 

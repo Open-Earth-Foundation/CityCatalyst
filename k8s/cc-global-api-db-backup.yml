@@ -4,7 +4,7 @@ metadata:
   name: cc-global-api-db-backup
 spec:
   # run every day at 3AM
-  schedule: 0 3 * * *
+  schedule: "0 3 * * *"
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: 86400
@@ -20,22 +20,39 @@ spec:
             image: postgres:15
             imagePullPolicy: Always
             env:
-            - name: PGUSER
-              value: "ccglobal"
             - name: PGHOST
-              value: "cc-global-api-db"
+              valueFrom:
+                configMapKeyRef:
+                  name: cc-global-api-db-configmap
+                  key: DB_HOST
+            - name: PGPORT
+              valueFrom:
+                configMapKeyRef:
+                  name: cc-global-api-db-configmap
+                  key: DB_PORT
+            - name: PGUSER
+              valueFrom:
+                configMapKeyRef:
+                  name: cc-global-api-db-configmap
+                  key: DB_USER
             - name: PGDATABASE
-              value: "ccglobal"
+              valueFrom:
+                configMapKeyRef:
+                  name: cc-global-api-db-configmap
+                  key: DB_NAME
             - name: PGPASSWORD
-              value: "ccglobal"
+              valueFrom:
+                configMapKeyRef:
+                  name: cc-global-api-db-configmap
+                  key: DB_PASSWORD
+            command: ["/bin/bash", "-c"]
             args:
             - |
-              pg_dump | gzip > /var/backups/ccglobal.sql.gz
-            command: ['/bin/bash', '-c']
+              pg_dump | gzip > /var/backups/ccglobal-$(date +%Y%m%d).sql.gz
             resources:
               limits:
                 memory: "1024Mi"
                 cpu: "1000m"
             volumeMounts:
-            - mountPath: "/var/backups/"
-              name: backup
+            - name: backup
+              mountPath: /var/backups/

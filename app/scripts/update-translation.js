@@ -73,13 +73,24 @@ async function synchFile(sourceLanguage, targetLanguage, fileName) {
     targetData = JSON.parse(await fs.readFile(targetFile, 'utf8'))
   }
 
-  for (const key in sourceData) {
-    if (!(key in targetData)) {
-      targetData[key] = await translateString(sourceLanguage, targetLanguage, key, sourceData[key])
-    }
-  }
+  await synchData(sourceData, sourceLanguage, targetData, targetLanguage);
 
   await fs.writeFile(targetFile, JSON.stringify(targetData, null, 2) + '\n')
+}
+
+async function synchData(sourceData, sourceLanguage, targetData, targetLanguage) {
+  for (const key in sourceData) {
+    if (typeof sourceData[key] === 'string') {
+      if (!(key in targetData) || typeof targetData[key] !== 'string') {
+        targetData[key] = await translateString(sourceLanguage, targetLanguage, key, sourceData[key])
+      }
+    } else if (typeof sourceData[key] === 'object' && !Array.isArray(sourceData[key])) {
+      if (!(key in targetData) || typeof targetData[key] !== 'object') {
+        targetData[key] = {}
+      }
+      await synchData(sourceData[key], sourceLanguage, targetData[key], targetLanguage)
+    }
+  }
 }
 
 if (process.argv.length < 3) {

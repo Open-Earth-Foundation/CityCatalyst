@@ -66,21 +66,15 @@ const reduceEmissionsToUniqueSourcesAndUnits = (
             gasValues: uniqBy(
               source.gasValuesByGas[currentValue].gasValues,
               "emissionsPerActivity",
-            ).filter((factor) => ["kg/m3", "kg/kWh"].includes(factor.units)), // filter only emissions that have kg/m3 or kg/kWh as the unit
+            ).filter((factor) =>
+              ["kg/m3", "kg/kWh", "kg/kg"].includes(factor.units),
+            ), // filter only emissions that have kg/m3, kg/kWh, or kg/kg as the unit
           },
         };
       },
       {},
     ),
   }));
-};
-
-const generateMetadataKey = (key: string) => {
-  if (key.includes("fuel-type")) {
-    return "fuel_type";
-  } else if (key.includes("fugitive-emissions")) {
-    return "activity_name";
-  }
 };
 
 const useEmissionFactors = ({
@@ -111,8 +105,7 @@ const useEmissionFactors = ({
           activityData &&
           field.id in activityData
         ) {
-          let key = generateMetadataKey(field.id) as string;
-          acc[key] = activityData[field.id];
+          acc[field.id] = activityData[field.id];
         }
         return acc;
       },

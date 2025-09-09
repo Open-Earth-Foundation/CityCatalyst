@@ -15,11 +15,15 @@ export default function InviteLayout(props: {
     <Box
       as="main"
       bg="background.backgroundLight"
-      className="h-full flex flex-col"
+      h="full"
+      display="flex"
+      flexDirection="column"
     >
       <Toaster />
       <NavigationBar lng={lng} showNav={false} />
-      <Box className="w-full h-full bg-no-repeat px-8">{props.children}</Box>
+      <Box w="full" h="full" bg="no-repeat" px={8}>
+        {props.children}
+      </Box>
     </Box>
   );
 }

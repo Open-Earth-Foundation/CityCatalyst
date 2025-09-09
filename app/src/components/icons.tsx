@@ -144,29 +144,29 @@ export const TruckIcon = () => {
         d="M21.3335 4H1.3335V21.3333H21.3335V4Z"
         stroke="#2351DC"
         strokeWidth="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M21.3335 10.667H26.6668L30.6668 14.667V21.3337H21.3335V10.667Z"
         stroke="#2351DC"
         strokeWidth="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M7.33333 27.9997C9.17428 27.9997 10.6667 26.5073 10.6667 24.6663C10.6667 22.8254 9.17428 21.333 7.33333 21.333C5.49238 21.333 4 22.8254 4 24.6663C4 26.5073 5.49238 27.9997 7.33333 27.9997Z"
         stroke="#2351DC"
         strokeWidth="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M24.6668 27.9997C26.5078 27.9997 28.0002 26.5073 28.0002 24.6663C28.0002 22.8254 26.5078 21.333 24.6668 21.333C22.8259 21.333 21.3335 22.8254 21.3335 24.6663C21.3335 26.5073 22.8259 27.9997 24.6668 27.9997Z"
         stroke="#2351DC"
         strokeWidth="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -185,29 +185,29 @@ export const WasteIcon = () => {
         d="M4 8H6.66667H28"
         stroke="#2351DC"
         strokeWidth="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M10.6665 8.00033V5.33366C10.6665 4.62641 10.9475 3.94814 11.4476 3.44804C11.9477 2.94794 12.6259 2.66699 13.3332 2.66699H18.6665C19.3737 2.66699 20.052 2.94794 20.5521 3.44804C21.0522 3.94814 21.3332 4.62641 21.3332 5.33366V8.00033M25.3332 8.00033V26.667C25.3332 27.3742 25.0522 28.0525 24.5521 28.5526C24.052 29.0527 23.3737 29.3337 22.6665 29.3337H9.33317C8.62593 29.3337 7.94765 29.0527 7.44755 28.5526C6.94746 28.0525 6.6665 27.3742 6.6665 26.667V8.00033H25.3332Z"
         stroke="#2351DC"
         strokeWidth="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M13.3335 14.667V22.667"
         stroke="#2351DC"
         strokeWidth="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M18.6665 14.667V22.667"
         stroke="#2351DC"
         strokeWidth="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -384,59 +384,59 @@ export const FoodIcon = () => (
           id="Shape"
           d="M7.375 5.126C7.52677 5.126 7.66357 5.21748 7.72155 5.35773C7.77953 5.49798 7.74727 5.65935 7.63981 5.76652C7.53235 5.87369 7.3709 5.90553 7.2308 5.84717C7.09071 5.78881 6.9996 5.65177 7 5.5C6.99973 5.40046 7.03916 5.30493 7.10954 5.23454C7.17993 5.16416 7.27546 5.12473 7.375 5.125"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_2"
           d="M11.3984 6.25098C11.6055 6.25098 11.7734 6.41887 11.7734 6.62598C11.7734 6.83308 11.6055 7.00098 11.3984 7.00098C11.1913 7.00098 11.0234 6.83308 11.0234 6.62598C11.0232 6.52644 11.0626 6.4309 11.133 6.36052C11.2034 6.29013 11.2989 6.25071 11.3984 6.25098"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_3"
           d="M18.625 6.25098C18.8321 6.25098 19 6.41887 19 6.62598C19 6.83308 18.8321 7.00098 18.625 7.00098C18.4179 7.00098 18.25 6.83308 18.25 6.62598C18.2497 6.52644 18.2892 6.4309 18.3595 6.36052C18.4299 6.29013 18.5255 6.25071 18.625 6.25098"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_4"
           d="M15.1523 4.75098C15.3595 4.75098 15.5273 4.91887 15.5273 5.12598C15.5273 5.33308 15.3595 5.50098 15.1523 5.50098C14.9452 5.50098 14.7773 5.33308 14.7773 5.12598C14.7771 5.02644 14.8165 4.9309 14.8869 4.86052C14.9573 4.79013 15.0528 4.75071 15.1523 4.75098"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Rectangle-path"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M1.75 11.501C1.75 10.2583 2.75736 9.25098 4 9.25098H22C23.2426 9.25098 24.25 10.2583 24.25 11.501V11.501C24.25 12.7436 23.2426 13.751 22 13.751H4C2.75736 13.751 1.75 12.7436 1.75 11.501V11.501Z"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_5"
           d="M22.75 9.37998V7.93998C22.75 6.29838 22.0978 4.72403 20.9369 3.56334C19.7761 2.40265 18.2016 1.75071 16.56 1.75098H9.44C7.7984 1.75071 6.22395 2.40265 5.06307 3.56334C3.90219 4.72403 3.25 6.29838 3.25 7.93998V9.37998"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_6"
           d="M22.75 13.623V15.251C22.75 16.9079 21.4069 18.251 19.75 18.251H6.25C4.59315 18.251 3.25 16.9079 3.25 15.251V13.623"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </g>
     </g>
@@ -455,61 +455,61 @@ export const GardenIcon = () => (
       <g id="Regular">
         <path
           id="Shape"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M12.3733 6.64111C12.2241 8.48226 11.4248 10.2103 10.1183 11.5161C8.81179 10.2103 8.01246 8.48226 7.86328 6.64111C8.01281 4.80005 8.81208 3.07214 10.1183 1.76611C11.4245 3.07214 12.2238 4.80005 12.3733 6.64111Z"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_2"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M15.482 15.6762C13.7066 16.186 11.8078 16.0477 10.125 15.2862C10.8861 13.6028 12.2209 12.245 13.891 11.4552C15.6665 10.9454 17.5654 11.084 19.248 11.8462C18.4872 13.5295 17.1522 14.8871 15.482 15.6762Z"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_3"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M15.482 23.1762C13.7066 23.686 11.8078 23.5477 10.125 22.7862C10.8861 21.1028 12.2209 19.745 13.891 18.9552C15.6665 18.4454 17.5654 18.584 19.248 19.3462C18.4872 21.0295 17.1522 22.3871 15.482 23.1762Z"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_4"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M4.763 15.6761C6.53837 16.1859 8.43719 16.0476 10.12 15.2861C9.35946 13.6027 8.02491 12.2448 6.355 11.4551C4.58012 10.9462 2.68213 11.0847 1 11.8461C1.76053 13.5285 3.09422 14.886 4.763 15.6761V15.6761Z"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_5"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M4.763 23.1761C6.53837 23.6859 8.43719 23.5476 10.12 22.7861C9.35946 21.1027 8.02491 19.7448 6.355 18.9551C4.58012 18.4462 2.68213 18.5847 1 19.3461C1.76053 21.0285 3.09422 22.386 4.763 23.1761V23.1761Z"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_6"
           d="M10.1172 11.5161L10.1252 24.2661"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </g>
     </g>
@@ -530,19 +530,19 @@ export const PaperIcon = () => (
           id="Shape"
           d="M16.25 24.25H2.75C1.92157 24.25 1.25 23.5784 1.25 22.75V6.25"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Rectangle-path"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M4.25 2.75C4.25 2.19772 4.69772 1.75 5.25 1.75H19.75C20.3023 1.75 20.75 2.19772 20.75 2.75V20.25C20.75 20.8023 20.3023 21.25 19.75 21.25H5.25C4.69772 21.25 4.25 20.8023 4.25 20.25V2.75Z"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </g>
     </g>
@@ -561,143 +561,143 @@ export const WoodIcon = () => (
       <g id="Regular">
         <path
           id="Oval"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M5.5 16.5C7.57107 16.5 9.25 14.8211 9.25 12.75C9.25 10.6789 7.57107 9 5.5 9C3.42893 9 1.75 10.6789 1.75 12.75C1.75 14.8211 3.42893 16.5 5.5 16.5Z"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Oval_2"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M13 16.5C15.0711 16.5 16.75 14.8211 16.75 12.75C16.75 10.6789 15.0711 9 13 9C10.9289 9 9.25 10.6789 9.25 12.75C9.25 14.8211 10.9289 16.5 13 16.5Z"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape"
           d="M13 9H20.5C22.5711 9 24.25 10.6789 24.25 12.75C24.25 14.8211 22.5711 16.5 20.5 16.5H13"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_2"
           d="M5.5 12.375C5.70711 12.375 5.875 12.5429 5.875 12.75"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_3"
           d="M5.125 12.75C5.125 12.5429 5.29289 12.375 5.5 12.375"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_4"
           d="M5.5 13.125C5.29289 13.125 5.125 12.9571 5.125 12.75"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_5"
           d="M5.875 12.75C5.875 12.9571 5.70711 13.125 5.5 13.125"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_6"
           d="M13 12.375C13.2071 12.375 13.375 12.5429 13.375 12.75"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_7"
           d="M12.625 12.75C12.625 12.5429 12.7929 12.375 13 12.375"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_8"
           d="M13 13.125C12.7929 13.125 12.625 12.9571 12.625 12.75"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_9"
           d="M13.375 12.75C13.375 12.9571 13.2071 13.125 13 13.125"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_10"
           d="M6.56018 6.74495C5.87809 5.17306 6.34823 3.33878 7.70231 2.28877C9.05639 1.23876 10.95 1.24014 12.3025 2.29211C13.6551 3.34409 14.1225 5.17906 13.4382 6.74995"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_11"
           d="M10 1.5H17.5C18.7647 1.50067 19.944 2.13845 20.6369 3.1965C21.3297 4.25454 21.4429 5.59045 20.938 6.75"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_12"
           d="M10 4.875C10.2071 4.875 10.375 5.04289 10.375 5.25"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_13"
           d="M9.625 5.25C9.625 5.04289 9.79289 4.875 10 4.875"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_14"
           d="M10 5.625C9.79289 5.625 9.625 5.45711 9.625 5.25"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           id="Shape_15"
           d="M10.375 5.25C10.375 5.45711 10.2071 5.625 10 5.625"
           stroke="#7A7B9A"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </g>
     </g>
@@ -778,53 +778,53 @@ export const MunicipalSolidWasteIcon = () => {
       <path
         d="M7.375 7.126C7.52677 7.126 7.66357 7.21748 7.72155 7.35773C7.77953 7.49798 7.74727 7.65935 7.63981 7.76652C7.53235 7.87369 7.3709 7.90553 7.2308 7.84717C7.09071 7.78881 6.9996 7.65177 7 7.5C6.99973 7.40046 7.03916 7.30493 7.10954 7.23454C7.17993 7.16416 7.27546 7.12473 7.375 7.125"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M11.3984 8.25098C11.6055 8.25098 11.7734 8.41887 11.7734 8.62598C11.7734 8.83308 11.6055 9.00098 11.3984 9.00098C11.1913 9.00098 11.0234 8.83308 11.0234 8.62598C11.0232 8.52644 11.0626 8.4309 11.133 8.36052C11.2034 8.29013 11.2989 8.25071 11.3984 8.25098"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M18.625 8.25098C18.8321 8.25098 19 8.41887 19 8.62598C19 8.83308 18.8321 9.00098 18.625 9.00098C18.4179 9.00098 18.25 8.83308 18.25 8.62598C18.2497 8.52644 18.2892 8.4309 18.3595 8.36052C18.4299 8.29013 18.5255 8.25071 18.625 8.25098"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M15.1523 6.75098C15.3595 6.75098 15.5273 6.91887 15.5273 7.12598C15.5273 7.33308 15.3595 7.50098 15.1523 7.50098C14.9452 7.50098 14.7773 7.33308 14.7773 7.12598C14.7771 7.02644 14.8165 6.9309 14.8869 6.86052C14.9573 6.79013 15.0528 6.75071 15.1523 6.75098"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M1.75 13.501C1.75 12.2583 2.75736 11.251 4 11.251H22C23.2426 11.251 24.25 12.2583 24.25 13.501V13.501C24.25 14.7436 23.2426 15.751 22 15.751H4C2.75736 15.751 1.75 14.7436 1.75 13.501V13.501Z"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M22.75 11.38V9.93998C22.75 8.29838 22.0978 6.72403 20.9369 5.56334C19.7761 4.40265 18.2016 3.75071 16.56 3.75098H9.44C7.7984 3.75071 6.22395 4.40265 5.06307 5.56334C3.90219 6.72403 3.25 8.29838 3.25 9.93998V11.38"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M22.75 15.623V17.251C22.75 18.9079 21.4069 20.251 19.75 20.251H6.25C4.59315 20.251 3.25 18.9079 3.25 17.251V15.623"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -842,44 +842,44 @@ export const IndustrialSolidWasteIcon = () => {
       <path
         d="M15 14.5L19.915 12.043C20.1475 11.9269 20.4235 11.9395 20.6445 12.0762C20.8655 12.2128 21 12.4542 21 12.714V22.75C21 23.5784 20.3284 24.25 19.5 24.25H3C2.17157 24.25 1.5 23.5784 1.5 22.75V14.5L3.623 4.593C3.69701 4.24727 4.00243 4.00018 4.356 4H6.144C6.49757 4.00018 6.80299 4.24727 6.877 4.593L9 14.5L13.915 12.043C14.1475 11.9269 14.4235 11.9395 14.6445 12.0762C14.8655 12.2128 15 12.4542 15 12.714V14.5"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M9 18.25H12"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M9 21.25H12"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M15 18.25H18"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M15 21.25H18"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M9.00391 1.869C10.036 1.85147 11.0591 2.06394 11.9989 2.491C19.4279 5.662 22.4989 1.75 22.4989 1.75"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -897,24 +897,24 @@ export const HazardousWasteIcon = () => {
       <path
         d="M13 19.75C12.7929 19.75 12.625 19.9179 12.625 20.125C12.625 20.3321 12.7929 20.5 13 20.5C13.2071 20.5 13.375 20.3321 13.375 20.125C13.375 19.9179 13.2071 19.75 13 19.75V19.75"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M13 16.75V9.25"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
+        strokeWidth="2"
+        strokeLinecap="round"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M14.621 2.75976C14.3174 2.14165 13.6887 1.75 13 1.75C12.3114 1.75 11.6826 2.14165 11.379 2.75976L1.90601 22.0578C1.67419 22.5294 1.70221 23.0872 1.98014 23.5332C2.25807 23.9792 2.74652 24.2501 3.27201 24.2498H22.728C23.2535 24.2501 23.742 23.9792 24.0199 23.5332C24.2978 23.0872 24.3258 22.5294 24.094 22.0578L14.621 2.75976Z"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -930,43 +930,43 @@ export const ClinicalWasteIcon = () => {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M13 23.2797C19.2132 23.2797 24.25 18.4444 24.25 12.4797C24.25 6.51501 19.2132 1.67969 13 1.67969C6.7868 1.67969 1.75 6.51501 1.75 12.4797C1.75 18.4444 6.7868 23.2797 13 23.2797Z"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M13 16.0799C15.0711 16.0799 16.75 14.4681 16.75 12.4799C16.75 10.4917 15.0711 8.87988 13 8.87988C10.9289 8.87988 9.25 10.4917 9.25 12.4799C9.25 14.4681 10.9289 16.0799 13 16.0799Z"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M15.6501 5.61426C16.7236 6.6435 17.0453 8.19227 16.4651 9.53805C15.8849 10.8838 14.5173 11.7614 13.0001 11.7614C11.483 11.7614 10.1153 10.8838 9.53512 9.53805C8.95496 8.19227 9.27665 6.6435 10.3501 5.61426"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M5.48047 13.709C5.87283 12.3023 7.10926 11.2611 8.61313 11.071C10.117 10.8808 11.5921 11.5791 12.3505 12.8402C13.1089 14.1014 13.0012 15.6769 12.0776 16.8321C11.1541 17.9872 9.59656 18.4945 8.13147 18.1173"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M17.8698 18.1173C16.4047 18.4945 14.8472 17.9872 13.9237 16.8321C13.0001 15.6769 12.8924 14.1014 13.6508 12.8402C14.4092 11.5791 15.8843 10.8808 17.3882 11.071C18.892 11.2611 20.1285 12.3023 20.5208 13.709"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -984,23 +984,23 @@ export const SewageWasteIcon = () => {
       <path
         d="M1.75 23C3.39945 23.2041 5.05293 22.653 6.25 21.5C7.11214 22.4549 8.33846 22.9999 9.625 22.9999C10.9115 22.9999 12.1379 22.4549 13 21.5C13.8621 22.4549 15.0885 22.9999 16.375 22.9999C17.6615 22.9999 18.8879 22.4549 19.75 21.5C20.9471 22.653 22.6006 23.2041 24.25 23"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M8.5 13.25H1.75"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M1.75 5.75H8.5"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <rect
         x="8.5"
@@ -1009,37 +1009,37 @@ export const SewageWasteIcon = () => {
         height="10.5"
         rx="1"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M16.184 13.8899C15.2326 13.4921 14.215 13.2766 13.184 13.2549H13"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M18.957 15.7998C19.6699 16.544 20.2374 17.415 20.63 18.3678"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M16.0547 8.35547C17.0639 8.59031 18.0419 8.94307 18.9687 9.40647"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M21.8125 11.2822C22.597 11.9591 23.2998 12.7253 23.9065 13.5652"
         stroke="#7A7B9A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -1058,23 +1058,23 @@ export const AskAiIcon = () => {
         <g id="music-genre-stars">
           <path
             id="Shape"
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M13.5 1C13.4892 3.8272 14.868 5.44 18 5.5C15.0924 5.4892 13.6476 7.0492 13.5 10C13.4748 7.216 12.228 5.5 9 5.5C11.8884 5.4604 13.4892 4.066 13.5 1Z"
             stroke="white"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
           <path
             id="Shape_2"
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M7.00057 9C6.9858 13.0827 8.81789 15.3985 13 15.5006C9.12115 15.4846 7.19707 17.7376 7.00057 22C6.96309 17.9788 5.30364 15.4945 1 15.5006C4.85045 15.4416 6.9858 13.4285 7.00057 9Z"
             stroke="white"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </g>
       </g>
@@ -1514,6 +1514,303 @@ export const OtherWasteIcon = () => {
       <path
         d="M6 20.5L4 19V15H3C2.45 15 1.97917 14.8042 1.5875 14.4125C1.19583 14.0208 1 13.55 1 13V5.5C0.716667 5.5 0.479167 5.40417 0.2875 5.2125C0.0958333 5.02083 0 4.78333 0 4.5C0 4.21667 0.0958333 3.97917 0.2875 3.7875C0.479167 3.59583 0.716667 3.5 1 3.5H4V2H3.5C3.21667 2 2.97917 1.90417 2.7875 1.7125C2.59583 1.52083 2.5 1.28333 2.5 1C2.5 0.716667 2.59583 0.479167 2.7875 0.2875C2.97917 0.0958333 3.21667 0 3.5 0H6.5C6.78333 0 7.02083 0.0958333 7.2125 0.2875C7.40417 0.479167 7.5 0.716667 7.5 1C7.5 1.28333 7.40417 1.52083 7.2125 1.7125C7.02083 1.90417 6.78333 2 6.5 2H6V3.5H9C9.28333 3.5 9.52083 3.59583 9.7125 3.7875C9.90417 3.97917 10 4.21667 10 4.5C10 4.78333 9.90417 5.02083 9.7125 5.2125C9.52083 5.40417 9.28333 5.5 9 5.5V13C9 13.55 8.80417 14.0208 8.4125 14.4125C8.02083 14.8042 7.55 15 7 15H6V20.5ZM3 13H7V11.5H5.25C5.05 11.5 4.875 11.425 4.725 11.275C4.575 11.125 4.5 10.95 4.5 10.75C4.5 10.55 4.575 10.375 4.725 10.225C4.875 10.075 5.05 10 5.25 10H7V8.5H5.25C5.05 8.5 4.875 8.425 4.725 8.275C4.575 8.125 4.5 7.95 4.5 7.75C4.5 7.55 4.575 7.375 4.725 7.225C4.875 7.075 5.05 7 5.25 7H7V5.5H3V13ZM13 20C12.45 20 11.9792 19.8042 11.5875 19.4125C11.1958 19.0208 11 18.55 11 18V11.5C11 11.0167 11.0833 10.6167 11.25 10.3C11.4167 9.98333 11.5917 9.70833 11.775 9.475C11.9583 9.24167 12.125 9.05417 12.275 8.9125C12.425 8.77083 12.5 8.63333 12.5 8.5V8C12.2167 8 11.9792 7.90417 11.7875 7.7125C11.5958 7.52083 11.5 7.28333 11.5 7C11.5 6.71667 11.5958 6.47917 11.7875 6.2875C11.9792 6.09583 12.2167 6 12.5 6H17.5C17.7833 6 18.0208 6.09583 18.2125 6.2875C18.4042 6.47917 18.5 6.71667 18.5 7C18.5 7.28333 18.4042 7.52083 18.2125 7.7125C18.0208 7.90417 17.7833 8 17.5 8V8.5C17.5 8.63333 17.5833 8.78333 17.75 8.95C17.9167 9.11667 18.1 9.31667 18.3 9.55C18.4833 9.78333 18.6458 10.0583 18.7875 10.375C18.9292 10.6917 19 11.0667 19 11.5V18C19 18.55 18.8042 19.0208 18.4125 19.4125C18.0208 19.8042 17.55 20 17 20H13ZM13 12H17V11.5C17 11.25 16.925 11.0333 16.775 10.85C16.625 10.6667 16.4583 10.4667 16.275 10.25C16.0917 10.0333 15.9167 9.79167 15.75 9.525C15.5833 9.25833 15.5 8.91667 15.5 8.5V8H14.5V8.5C14.5 8.9 14.4208 9.23333 14.2625 9.5C14.1042 9.76667 13.9333 10.0083 13.75 10.225C13.5667 10.4417 13.3958 10.6458 13.2375 10.8375C13.0792 11.0292 13 11.25 13 11.5V12ZM13 15H17V13.5H13V15ZM13 18H17V16.5H13V18Z"
         fill="#7A7B9A"
+      />
+    </svg>
+  );
+};
+
+export const ModulesIcon = () => {
+  return (
+    <svg
+      width="24"
+      height="25"
+      viewBox="0 0 24 25"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M7.43163 17.75C6.73163 18.3333 6.00246 18.6 5.24413 18.55C4.48579 18.5 3.82329 18.2417 3.25663 17.775C2.68996 17.3083 2.30246 16.6958 2.09413 15.9375C1.88579 15.1792 2.02329 14.4 2.50663 13.6L4.38163 10.5C3.96496 10.1333 3.63579 9.69167 3.39413 9.175C3.15246 8.65833 3.03163 8.1 3.03163 7.5C3.03163 6.4 3.42329 5.45833 4.20663 4.675C4.98996 3.89167 5.93163 3.5 7.03163 3.5C8.13163 3.5 9.07329 3.89167 9.85663 4.675C10.64 5.45833 11.0316 6.4 11.0316 7.5C11.0316 8.6 10.64 9.54167 9.85663 10.325C9.07329 11.1083 8.13163 11.5 7.03163 11.5C6.88163 11.5 6.73163 11.4917 6.58163 11.475C6.43163 11.4583 6.28996 11.4333 6.15663 11.4L4.23163 14.65C4.04829 14.95 3.98996 15.2458 4.05663 15.5375C4.12329 15.8292 4.26496 16.0667 4.48163 16.25C4.69829 16.4333 4.95663 16.5375 5.25663 16.5625C5.55663 16.5875 5.84829 16.4833 6.13163 16.25L16.6316 7.225C17.3316 6.64167 18.065 6.37917 18.8316 6.4375C19.5983 6.49583 20.265 6.75833 20.8316 7.225C21.3983 7.69167 21.7816 8.30417 21.9816 9.0625C22.1816 9.82083 22.04 10.6 21.5566 11.4L19.6816 14.5C20.0983 14.8667 20.4275 15.3083 20.6691 15.825C20.9108 16.3417 21.0316 16.9 21.0316 17.5C21.0316 18.6 20.64 19.5417 19.8566 20.325C19.0733 21.1083 18.1316 21.5 17.0316 21.5C15.9316 21.5 14.99 21.1083 14.2066 20.325C13.4233 19.5417 13.0316 18.6 13.0316 17.5C13.0316 16.4 13.4233 15.4583 14.2066 14.675C14.99 13.8917 15.9316 13.5 17.0316 13.5C17.1816 13.5 17.3275 13.5083 17.4691 13.525C17.6108 13.5417 17.7483 13.5667 17.8816 13.6L19.8316 10.35C20.015 10.05 20.0733 9.75417 20.0066 9.4625C19.94 9.17083 19.7983 8.93333 19.5816 8.75C19.365 8.56667 19.1066 8.4625 18.8066 8.4375C18.5066 8.4125 18.215 8.51667 17.9316 8.75L7.43163 17.75ZM7.03163 9.5C7.58163 9.5 8.05246 9.30417 8.44413 8.9125C8.83579 8.52083 9.03163 8.05 9.03163 7.5C9.03163 6.95 8.83579 6.47917 8.44413 6.0875C8.05246 5.69583 7.58163 5.5 7.03163 5.5C6.48163 5.5 6.01079 5.69583 5.61913 6.0875C5.22746 6.47917 5.03163 6.95 5.03163 7.5C5.03163 8.05 5.22746 8.52083 5.61913 8.9125C6.01079 9.30417 6.48163 9.5 7.03163 9.5ZM17.0316 19.5C17.5816 19.5 18.0525 19.3042 18.4441 18.9125C18.8358 18.5208 19.0316 18.05 19.0316 17.5C19.0316 16.95 18.8358 16.4792 18.4441 16.0875C18.0525 15.6958 17.5816 15.5 17.0316 15.5C16.4816 15.5 16.0108 15.6958 15.6191 16.0875C15.2275 16.4792 15.0316 16.95 15.0316 17.5C15.0316 18.05 15.2275 18.5208 15.6191 18.9125C16.0108 19.3042 16.4816 19.5 17.0316 19.5Z"
+        fill="white"
+      />
+    </svg>
+  );
+};
+
+export const PlanIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="20"
+      viewBox="0 0 18 20"
+      fill="none"
+    >
+      <path
+        d="M8 20V15C8 14.0667 7.85833 13.375 7.575 12.925C7.29167 12.475 6.91667 12.0333 6.45 11.6L7.875 10.175C8.075 10.3583 8.26667 10.5542 8.45 10.7625C8.63333 10.9708 8.81667 11.1917 9 11.425C9.23333 11.1083 9.47083 10.8292 9.7125 10.5875C9.95417 10.3458 10.2 10.1083 10.45 9.875C11.0833 9.29167 11.6583 8.61667 12.175 7.85C12.6917 7.08333 12.9667 5.74167 13 3.825L11.425 5.4L10 4L14 0L18 4L16.6 5.4L15 3.825C14.9667 6.20833 14.6 7.90417 13.9 8.9125C13.2 9.92083 12.5 10.7417 11.8 11.375C11.2667 11.8583 10.8333 12.3292 10.5 12.7875C10.1667 13.2458 10 13.9833 10 15V20H8ZM3.2 6.175C3.13333 5.84167 3.0875 5.475 3.0625 5.075C3.0375 4.675 3.01667 4.25833 3 3.825L1.4 5.4L0 4L4 0L8 4L6.575 5.4L5 3.85C5 4.2 5.01667 4.52917 5.05 4.8375C5.08333 5.14583 5.11667 5.43333 5.15 5.7L3.2 6.175ZM5.35 10.575C5.01667 10.225 4.69583 9.81667 4.3875 9.35C4.07917 8.88333 3.80833 8.30833 3.575 7.625L5.5 7.15C5.66667 7.6 5.85833 7.98333 6.075 8.3C6.29167 8.61667 6.525 8.9 6.775 9.15L5.35 10.575Z"
+        fill="#7A7B9A"
+      />
+    </svg>
+  );
+};
+
+export const AdaptationTabIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <g clipPath="url(#clip0_2858_74751)">
+        <path
+          d="M18.67 19C16.72 19 16.58 20 15.34 20C14.15 20 13.92 19 12.01 19C10.06 19 9.91 20 8.67 20C7.43 20 7.29 19 5.34 19C3.39 19 3.24 20 2 20V22C3.95 22 4.11 21 5.34 21C6.58 21 6.72 22 8.67 22C10.62 22 10.77 21 12.01 21C13.23 21 13.41 22 15.34 22C17.27 22 17.44 21 18.67 21C19.89 21 20.07 22 22 22V20C20.76 20 20.62 19 18.67 19ZM8.68 17.5C10.63 17.5 10.77 16.5 12.01 16.5C13.2 16.5 13.43 17.5 15.34 17.5C17.29 17.5 17.43 16.5 18.67 16.5C19.86 16.5 20.07 17.48 21.98 17.5V15.5C21.35 15.5 20.98 15.22 20.5 14.95L18.48 7.42L20.57 8.27L21.31 6.41L9.78 2L2 11.61L3.57 12.84L4.96 11.06L5.89 14.54C5.71 14.52 5.54 14.49 5.33 14.49C3.38 14.49 3.24 15.49 2 15.49V17.49C3.9 17.49 4.17 16.49 5.35 16.49C6.54 16.5 6.77 17.5 8.68 17.5ZM10.42 4.41L16.16 6.5L18.31 14.52C16.77 14.63 16.49 15.41 15.46 15.48L14.04 10.17L10.18 11.21L11.09 14.6C9.97 14.85 9.68 15.5 8.67 15.5C8.49 15.5 8.34 15.48 8.22 15.45L6.5 9.09L10.42 4.41Z"
+          fill="currentColor"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_2858_74751">
+          <rect width="24" height="24" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+export const MitigationTabIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="13"
+      height="13"
+      viewBox="0 0 13 13"
+      fill="none"
+    >
+      <path
+        d="M-6.11959e-08 1.4L1.4 -5.07052e-07L11 9.6L11 1L13 1L13 13L0.999999 13L1 11L9.6 11L-6.11959e-08 1.4Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+};
+
+export const EmptyStateIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="36"
+      height="36"
+      viewBox="0 0 36 36"
+      fill="none"
+    >
+      <mask
+        id="mask0_2858_74790"
+        maskUnits="userSpaceOnUse"
+        x="-4"
+        y="-4"
+        width="44"
+        height="44"
+      >
+        <rect x="-4" y="-4" width="44" height="44" fill="#D9D9D9" />
+      </mask>
+      <g mask="url(#mask0_2858_74790)">
+        <path
+          d="M18 36C15.51 36 13.17 35.5275 10.98 34.5825C8.79 33.6375 6.885 32.355 5.265 30.735C3.645 29.115 2.3625 27.21 1.4175 25.02C0.4725 22.83 0 20.49 0 18C0 15.51 0.4725 13.17 1.4175 10.98C2.3625 8.79 3.645 6.885 5.265 5.265C6.885 3.645 8.79 2.3625 10.98 1.4175C13.17 0.4725 15.51 0 18 0C20.49 0 22.83 0.4725 25.02 1.4175C27.21 2.3625 29.115 3.645 30.735 5.265C32.355 6.885 33.6375 8.79 34.5825 10.98C35.5275 13.17 36 15.51 36 18C36 18.81 35.955 19.605 35.865 20.385C35.775 21.165 35.625 21.93 35.415 22.68C34.995 22.2 34.5075 21.795 33.9525 21.465C33.3975 21.135 32.79 20.91 32.13 20.79C32.22 20.34 32.2875 19.8825 32.3325 19.4175C32.3775 18.9525 32.4 18.48 32.4 18C32.4 13.98 31.005 10.575 28.215 7.785C25.425 4.995 22.02 3.6 18 3.6C13.98 3.6 10.575 4.995 7.785 7.785C4.995 10.575 3.6 13.98 3.6 18C3.6 22.02 4.995 25.425 7.785 28.215C10.575 31.005 13.98 32.4 18 32.4C19.53 32.4 20.9925 32.175 22.3875 31.725C23.7825 31.275 25.065 30.645 26.235 29.835C26.595 30.345 27.0375 30.795 27.5625 31.185C28.0875 31.575 28.65 31.875 29.25 32.085C27.72 33.315 26.0025 34.275 24.0975 34.965C22.1925 35.655 20.16 36 18 36ZM31.05 28.8C30.42 28.8 29.8875 28.5825 29.4525 28.1475C29.0175 27.7125 28.8 27.18 28.8 26.55C28.8 25.92 29.0175 25.3875 29.4525 24.9525C29.8875 24.5175 30.42 24.3 31.05 24.3C31.68 24.3 32.2125 24.5175 32.6475 24.9525C33.0825 25.3875 33.3 25.92 33.3 26.55C33.3 27.18 33.0825 27.7125 32.6475 28.1475C32.2125 28.5825 31.68 28.8 31.05 28.8ZM23.94 26.46L16.2 18.72V9H19.8V17.28L26.46 23.94L23.94 26.46Z"
+          fill="#7A7B9A"
+        />
+      </g>
+    </svg>
+  );
+};
+
+export const DownloadIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+    >
+      <path
+        d="M14 10V12.6667C14 13.0203 13.8595 13.3594 13.6095 13.6095C13.3594 13.8595 13.0203 14 12.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V10"
+        stroke="#7A7B9A"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M4.66602 6.66669L7.99935 10L11.3327 6.66669"
+        stroke="#7A7B9A"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8 10V2"
+        stroke="#7A7B9A"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const TopPickIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <mask
+        id="mask0_2858_75053"
+        maskUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="24"
+        height="24"
+      >
+        <rect width="24" height="24" fill="#D9D9D9" />
+      </mask>
+      <g mask="url(#mask0_2858_75053)">
+        <path
+          d="M5 21V5C5 4.45 5.19583 3.97917 5.5875 3.5875C5.97917 3.19583 6.45 3 7 3H17C17.55 3 18.0208 3.19583 18.4125 3.5875C18.8042 3.97917 19 4.45 19 5V21L12 18L5 21Z"
+          fill="#2351DC"
+        />
+      </g>
+    </svg>
+  );
+};
+
+export const GeneratePlanIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="23"
+      viewBox="0 0 20 23"
+      fill="none"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M14.334 1C14.3232 3.8272 15.702 5.44 18.834 5.5C15.9264 5.4892 14.4816 7.0492 14.334 10C14.3088 7.216 13.062 5.5 9.83398 5.5C12.7224 5.4604 14.3232 4.066 14.334 1Z"
+        stroke="#2351DC"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M7.83455 9C7.81979 13.0827 9.65187 15.3985 13.834 15.5006C9.95514 15.4846 8.03105 17.7376 7.83455 22C7.79707 17.9788 6.13763 15.4945 1.83398 15.5006C5.68443 15.4416 7.81979 13.4285 7.83455 9Z"
+        stroke="#2351DC"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const LikeIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+    >
+      <g clipPath="url(#clip0_2858_76847)">
+        <path
+          d="M18 42H36C37.66 42 39.08 41 39.68 39.56L45.72 25.46C45.9 25 46 24.52 46 24V20C46 17.8 44.2 16 42 16H29.38L31.28 6.86L31.34 6.22C31.34 5.4 31 4.64 30.46 4.1L28.34 2L15.16 15.18C14.44 15.9 14 16.9 14 18V38C14 40.2 15.8 42 18 42ZM18 18L26.68 9.32L24 20H42V24L36 38H18V18ZM2 18H10V42H2V18Z"
+          fill="#2351DC"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_2858_76847">
+          <rect width="48" height="48" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+export const EmptyActivityDataIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="100"
+      height="100"
+      viewBox="0 0 100 100"
+      fill="none"
+    >
+      <mask
+        id="mask0_2858_76992"
+        maskUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="100"
+        height="100"
+      >
+        <rect width="100" height="100" fill="#D9D9D9" />
+      </mask>
+      <g mask="url(#mask0_2858_76992)">
+        <path
+          d="M70 90V55H90V90H70ZM40 90V10H60V90H40ZM10 90V35H30V90H10Z"
+          fill="#E8EAFB"
+        />
+      </g>
+    </svg>
+  );
+};
+
+export const AddCollaboratorIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="37"
+      height="37"
+      viewBox="0 0 37 37"
+      fill="none"
+    >
+      <mask
+        id="mask0_2858_66927"
+        maskUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="37"
+        height="37"
+      >
+        <rect x="0.666016" y="0.5" width="36" height="36" fill="#D9D9D9" />
+      </mask>
+      <g mask="url(#mask0_2858_66927)">
+        <path
+          d="M27.666 21.5V17H23.166V14H27.666V9.5H30.666V14H35.166V17H30.666V21.5H27.666ZM14.166 18.5C12.516 18.5 11.1035 17.9125 9.92852 16.7375C8.75352 15.5625 8.16602 14.15 8.16602 12.5C8.16602 10.85 8.75352 9.4375 9.92852 8.2625C11.1035 7.0875 12.516 6.5 14.166 6.5C15.816 6.5 17.2285 7.0875 18.4035 8.2625C19.5785 9.4375 20.166 10.85 20.166 12.5C20.166 14.15 19.5785 15.5625 18.4035 16.7375C17.2285 17.9125 15.816 18.5 14.166 18.5ZM2.16602 30.5V26.3C2.16602 25.45 2.38477 24.6687 2.82227 23.9562C3.25977 23.2437 3.84102 22.7 4.56602 22.325C6.11602 21.55 7.69102 20.9688 9.29102 20.5812C10.891 20.1937 12.516 20 14.166 20C15.816 20 17.441 20.1937 19.041 20.5812C20.641 20.9688 22.216 21.55 23.766 22.325C24.491 22.7 25.0723 23.2437 25.5098 23.9562C25.9473 24.6687 26.166 25.45 26.166 26.3V30.5H2.16602ZM5.16602 27.5H23.166V26.3C23.166 26.025 23.0973 25.775 22.9598 25.55C22.8223 25.325 22.641 25.15 22.416 25.025C21.066 24.35 19.7035 23.8438 18.3285 23.5063C16.9535 23.1688 15.566 23 14.166 23C12.766 23 11.3785 23.1688 10.0035 23.5063C8.62852 23.8438 7.26602 24.35 5.91602 25.025C5.69102 25.15 5.50977 25.325 5.37227 25.55C5.23477 25.775 5.16602 26.025 5.16602 26.3V27.5ZM14.166 15.5C14.991 15.5 15.6973 15.2063 16.2848 14.6187C16.8723 14.0312 17.166 13.325 17.166 12.5C17.166 11.675 16.8723 10.9688 16.2848 10.3813C15.6973 9.79375 14.991 9.5 14.166 9.5C13.341 9.5 12.6348 9.79375 12.0473 10.3813C11.4598 10.9688 11.166 11.675 11.166 12.5C11.166 13.325 11.4598 14.0312 12.0473 14.6187C12.6348 15.2063 13.341 15.5 14.166 15.5Z"
+          fill="#008600"
+        />
+      </g>
+    </svg>
+  );
+};
+
+export const AllProjectsIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="37"
+      height="37"
+      viewBox="0 0 37 37"
+      fill="none"
+    >
+      <path
+        d="M5.16602 17V5H17.166V17H5.16602ZM5.16602 32V20H17.166V32H5.16602ZM20.166 17V5H32.166V17H20.166ZM20.166 32V20H32.166V32H20.166ZM8.16602 14H14.166V8H8.16602V14ZM23.166 14H29.166V8H23.166V14ZM23.166 29H29.166V23H23.166V29ZM8.16602 29H14.166V23H8.16602V29Z"
+        fill="#2351DC"
       />
     </svg>
   );

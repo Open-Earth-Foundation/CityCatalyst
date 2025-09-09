@@ -1,5 +1,9 @@
 name: Push tagged Web app to GHCR and deploy to production
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   workflow_dispatch:
   push:
@@ -45,6 +49,8 @@ jobs:
         run: npm ci
 
       - name: Set up database
+        env:
+          GLOBAL_API_URL: https://ccglobal-test.openearth.dev
         run: |
           docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
           sleep 10
@@ -53,6 +59,8 @@ jobs:
           cp env.example .env
           npm run db:migrate
           npm run db:seed
+          npm run sync-catalogue
+          npm run sync-emissions-factors
 
       - name: Run NextJS build
         run: npm run build
@@ -205,11 +213,15 @@ jobs:
             "NEXTAUTH_URL=https://citycatalyst.io" \
             "NEXT_PUBLIC_API_URL=https://api.citycatalyst.io" \
             "GLOBAL_API_URL=https://api.citycatalyst.io" \
+            "HIAP_API_URL=http://hiap-service-dev" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://app.openclimate.network" \
             "OPENCLIMATE_API_URL=https://app.openclimate.network" \
-            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,HIGHLIGHT_ENABLED" \
-            "NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID=4d7yymxd" \
+            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,ANALYTICS_ENABLED,HIGHLIGHT_ENABLED" \
+            "NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID=${{secrets.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID}}" \
             "NEXT_PUBLIC_HIGHLIGHT_BACKEND_URL=https://pub.highlight.io" \
+            "NEXT_PUBLIC_POSTHOG_KEY=${{secrets.NEXT_PUBLIC_POSTHOG_KEY}}" \
+            "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" \
+            "NEXT_PUBLIC_DEPLOYMENT_ENV=production" \
             "AWS_FILE_UPLOAD_S3_BUCKET_ID=citycatalyst-files-prod" \
             "AWS_FILE_UPLOAD_REGION=us-east-1" \
             "AWS_REGION"=${{secrets.AWS_REGION}} \

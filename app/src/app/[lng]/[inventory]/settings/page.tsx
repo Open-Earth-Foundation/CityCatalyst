@@ -9,6 +9,7 @@ import { MyProfileTab } from "@/components/Tabs/MyProfileTab";
 import MyFilesTab from "@/components/Tabs/my-files-tab";
 import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
 import { api } from "@/services/api";
+import { getParamValueRequired } from "@/util/helpers";
 
 export type ProfileInputs = {
   name: string;
@@ -38,8 +39,9 @@ export type CityData = {
 
 const tabValues = ["my-profile", "my-files", "my-inventories"];
 
-export default function Settings(props: { params: Promise<{ lng: string }> }) {
-  const { lng } = use(props.params);
+export default function Settings() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
 
   const searchParams = useSearchParams();
   const paramValue = searchParams.get("tabIndex");
@@ -71,7 +73,7 @@ export default function Settings(props: { params: Promise<{ lng: string }> }) {
 
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">
-      <Box className="flex mx-auto w-[1090px] h-[100vh]">
+      <Box display="flex" mx="auto" w="full" maxW="1090px" px={4}>
         <Box w="full">
           <Box paddingTop="64px">
             <Text

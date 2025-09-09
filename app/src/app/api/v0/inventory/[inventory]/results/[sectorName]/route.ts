@@ -1,5 +1,4 @@
-import UserService from "@/backend/UserService";
-import { db } from "@/models";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import {
@@ -9,8 +8,8 @@ import {
 
 export const GET = apiHandler(
   async (_req, { session, params: { inventory, sectorName } }) => {
-    // ensure inventory belongs to user
-    await UserService.findUserInventory(inventory, session, [], true);
+    // ensure inventory belongs to user (read-only access)
+    await PermissionService.canAccessInventory(session, inventory);
 
     const emissionsBreakdown = await getEmissionsBreakdown(
       inventory,

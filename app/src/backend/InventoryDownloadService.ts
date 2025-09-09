@@ -1,10 +1,13 @@
-import { Op } from "sequelize";
-import UserService from "@/backend/UserService";
-import { AppSession } from "@/lib/auth";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import type { AppSession } from "@/lib/auth";
 import { db } from "@/models";
-import createHttpError from "http-errors";
 import { findClosestYearToInventory, PopulationEntry } from "@/util/helpers";
-import { InventoryResponse } from "@/util/types";
+import type {
+  InventoryDownloadResponse,
+  InventoryResponse,
+} from "@/util/types";
+import createHttpError from "http-errors";
+import { Op } from "sequelize";
 
 // Maximum years to look forward/backward for population data
 const MAX_POPULATION_YEAR_DIFFERENCE = 10;
@@ -13,11 +16,17 @@ export default class InventoryDownloadService {
   public static async queryInventoryData(
     inventoryId: string,
     session: AppSession | null,
-  ) {
-    const inventory = await UserService.findUserInventory(
-      inventoryId,
-      session,
-      [
+  ): Promise<{
+    inventory: InventoryDownloadResponse;
+    output: InventoryResponse;
+  }> {
+    // Check read access permission
+    await PermissionService.canAccessInventory(session, inventoryId);
+
+    // Load inventory with all necessary includes
+    const inventory = await db.models.Inventory.findByPk(inventoryId, {
+      include: [
+        { model: db.models.City, as: "city" },
         {
           model: db.models.InventoryValue,
           as: "inventoryValues",
@@ -58,7 +67,11 @@ export default class InventoryDownloadService {
           ],
         },
       ],
-    );
+    });
+
+    if (!inventory) {
+      throw new createHttpError.NotFound("Inventory not found");
+    }
 
     if (!inventory.year) {
       throw new createHttpError.BadRequest(
@@ -91,10 +104,22 @@ export default class InventoryDownloadService {
       );
     }
 
-    const output: InventoryResponse = inventory.toJSON();
-    output.city.populationYear = population.year;
-    output.city.population = population.population || 0;
+    if (!inventory.city) {
+      throw new createHttpError.NotFound(
+        `City not found for inventory ${inventory.inventoryId}`,
+      );
+    }
 
-    return { output, inventory };
+    return {
+      output: inventory.toJSON() as InventoryResponse,
+      inventory: {
+        ...inventory.toJSON(),
+        city: {
+          ...inventory.city.toJSON(),
+          populationYear: population.year,
+          population: population.population || 0,
+        },
+      },
+    };
   }
 }

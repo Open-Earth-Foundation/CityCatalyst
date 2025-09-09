@@ -6,8 +6,8 @@ const { bulkUpsert } = require("./util/util.cjs");
 
 const folders = [
   "EFDB_2006_IPCC_guidelines",
-  "CarbonFootPrint_2023",
-  "ghgprotocol",
+  //"CarbonFootPrint_2023",
+  //"ghgprotocol",
 ];
 
 const toJson = ({
@@ -56,6 +56,9 @@ async function parseFile(filename, folder) {
 /** @type {import("sequelize-cli").Migration} */
 module.exports = {
   async up(queryInterface) {
+    // Skip emissions factors seeding - now handled by emissions-factors-sync.ts
+    console.error("Skipping emissions factors seeding - using sync script instead");
+    return;
     await queryInterface.sequelize.transaction(async (transaction) => {
       // set all existing emissions factors to deprecated
       // if they aren't overridden by the new data, they will be deleted (if unused in inventories) after all seed folders are processed
@@ -145,6 +148,9 @@ module.exports = {
   },
 
   async down(queryInterface) {
+    // Skip rollback - emissions factors are now managed by sync script
+    console.error("Skipping emissions factors rollback - managed by sync script");
+    return;
     await queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.bulkDelete("DataSourceEmissionsFactor", null, {
         transaction,

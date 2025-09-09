@@ -55,11 +55,12 @@ export const GET = apiHandler(async (_req, { params, session }) => {
     (client as any).i18n?.map((r: any) => [r.language, r.description]) ?? []
   );
 
-  // Collapse i18n rows into a language->name object
+  const { clientId: ignoreCI, userId: ignoreUI, ...authzData } = authz.get({ plain: true });
+  const { i18n: ignoreI18n, ...clientData } = client.get({ plain: true });
   const data = {
-    ...authz.get({ plain: true }),
+    ...authzData,
     client: {
-      ...client.get({ plain: true }),
+      ...clientData,
       name: names,
       description: descriptions
     },

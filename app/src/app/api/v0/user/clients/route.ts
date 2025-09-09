@@ -50,10 +50,14 @@ export const GET = apiHandler(async (_req, { params, session }) => {
     const descriptions = Object.fromEntries(
       (client as any).i18n?.map((r: any) => [r.language, r.description]) ?? []
     );
+
+    const { clientId: ignoreCI, userId: ignoreUI, ...authzData } = authz.get({ plain: true });
+    const { i18n: ignoreI18n, ...clientData } = client.get({ plain: true });
+
     return {
-      ...authz.get({ plain: true }),
+      ...authzData,
       client: {
-        ...client.get({ plain: true }),
+        ...clientData,
         name: names,
         description: descriptions
       },

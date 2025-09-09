@@ -153,7 +153,7 @@
   "confirm-org-admin-delete": "Are you sure you want to remove the organization owner with the email: <bold>{{email}}</bold> from <bold>{{orgName}}</bold>?",
   "user-removed": "User removed successfully",
   "my-apps": "My Apps",
-  "my-apps-sub-title": "Apps that have access to my data",
+  "my-apps-sub-title": "Apps that have access to your data",
   "no-apps": "No apps authorized.",
   "my-apps-revoke-confirm": "Revoke access for this app?",
   "my-apps-revoke-success": "Access successfully revoked",

@@ -1,13 +1,7 @@
 import { OAuthClientAttributes } from "@/models/OAuthClient";
-import {
-  OAuthClientI18NAttributes,
-} from "@/models/OAuthClientI18N";
-import {
-  OAuthClientAuthzAttributes,
-} from "@/models/OAuthClientAuthz";
-import {
-  testUserID,
-} from "../../helpers";
+import { OAuthClientI18NAttributes } from "@/models/OAuthClientI18N";
+import { OAuthClientAuthzAttributes } from "@/models/OAuthClientAuthz";
+import { testUserID } from "../../helpers";
 
 export const testClients: OAuthClientAttributes[] = [
   {

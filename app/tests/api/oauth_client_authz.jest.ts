@@ -37,7 +37,12 @@ import {
   testUserID,
 } from "../helpers";
 import { setFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { testClients, testClientI18Ns, testOAuthClientAuthzs, testClientDNE } from "./fixtures/oauth_client_authz";
+import {
+  testClients,
+  testClientI18Ns,
+  testOAuthClientAuthzs,
+  testClientDNE,
+} from "./fixtures/oauth_client_authz";
 
 describe("OAuth Client Authz API", () => {
   let oldFeatureFlag: boolean;

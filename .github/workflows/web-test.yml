@@ -14,7 +14,7 @@ on:
       - k8s/test/cc-test-web-deploy.yml
       - k8s/test/cc-test/web.yml
       - .github/workflows/web-test.yml
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   runTests:
@@ -187,7 +187,9 @@ jobs:
             "HIAP_API_URL=http://hiap-service-dev" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
-            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,CAP_TAB_ENABLED,ACCOUNT_SETTINGS_ENABLED,ANALYTICS_ENABLED" \
+            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,CAP_TAB_ENABLED,ACCOUNT_SETTINGS_ENABLED,ANALYTICS_ENABLED,HIGHLIGHT_ENABLED" \
+            "NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID=${{secrets.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID}}" \
+            "NEXT_PUBLIC_HIGHLIGHT_BACKEND_URL=https://pub.highlight.io" \
             "NEXT_PUBLIC_POSTHOG_KEY=${{secrets.NEXT_PUBLIC_POSTHOG_KEY}}" \
             "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" \
             "NEXT_PUBLIC_DEPLOYMENT_ENV=staging" \

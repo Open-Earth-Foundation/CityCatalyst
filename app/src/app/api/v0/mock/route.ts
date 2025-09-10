@@ -1,3 +1,25 @@
+/**
+ * @swagger
+ * /api/v0/mock:
+ *   get:
+ *     tags:
+ *       - Mock
+ *     summary: Get mock data (authenticated)
+ *     responses:
+ *       200:
+ *         description: Mock data returned.
+ *       401:
+ *         description: Unauthorized.
+ *   post:
+ *     tags:
+ *       - Mock
+ *     summary: Create mock entry (authenticated)
+ *     responses:
+ *       200:
+ *         description: Mock response returned.
+ *       401:
+ *         description: Unauthorized.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

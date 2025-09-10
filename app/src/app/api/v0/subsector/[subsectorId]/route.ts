@@ -1,3 +1,23 @@
+/**
+ * @swagger
+ * /api/v0/subsector/{subsectorId}:
+ *   get:
+ *     tags:
+ *       - Subsector
+ *     summary: Get subsector by ID
+ *     parameters:
+ *       - in: path
+ *         name: subsectorId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Subsector returned.
+ *       404:
+ *         description: Subsector not found.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

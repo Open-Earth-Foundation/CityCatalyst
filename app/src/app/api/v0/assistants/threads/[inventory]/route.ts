@@ -1,3 +1,31 @@
+/**
+ * @swagger
+ * /api/v0/assistants/threads/{inventory}:
+ *   post:
+ *     tags:
+ *       - Assistants Threads
+ *     summary: Create a thread for an inventory
+ *     description: Creates a new assistant thread with context from the specified inventory and an initial message.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [content]
+ *             properties:
+ *               content:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Thread created successfully.
+ */
 import { apiHandler } from "@/util/api";
 import { setupOpenAI } from "@/util/openai";
 import { NextResponse } from "next/server";

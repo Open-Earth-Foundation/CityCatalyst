@@ -1,3 +1,34 @@
+/**
+ * @swagger
+ * /api/v0/organizations:
+ *   get:
+ *     tags:
+ *       - Organizations
+ *     summary: List organizations
+ *     responses:
+ *       200:
+ *         description: Organizations returned.
+ *   post:
+ *     tags:
+ *       - Organizations
+ *     summary: Create an organization
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, contactEmail]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               contactEmail:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       201:
+ *         description: Organization created.
+ */
 import { Organization } from "@/models/Organization";
 import { randomUUID } from "node:crypto";
 import { createOrganizationRequest } from "@/util/validation";

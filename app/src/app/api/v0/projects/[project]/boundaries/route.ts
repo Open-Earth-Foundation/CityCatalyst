@@ -1,3 +1,23 @@
+/**
+ * @swagger
+ * /api/v0/projects/{project}/boundaries:
+ *   get:
+ *     tags:
+ *       - Projects
+ *     summary: Get city boundaries for a project
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Boundary data and any errors per city.
+ *       404:
+ *         description: Project not found.
+ */
 import { apiHandler } from "@/util/api";
 import { Project } from "@/models/Project";
 import createHttpError from "http-errors";

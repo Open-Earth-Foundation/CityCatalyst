@@ -1,3 +1,17 @@
+/**
+ * @swagger
+ * /api/v0/assistants:
+ *   post:
+ *     tags:
+ *       - Assistants
+ *     summary: Create a new assistant (not implemented)
+ *     description: Reserved endpoint for creating an assistant. Currently returns 501.
+ *     responses:
+ *       501:
+ *         description: Not implemented.
+ *       405:
+ *         description: Method not allowed.
+ */
 import { apiHandler } from "@/util/api";
 import { setupOpenAI } from "@/util/openai";
 import { NextResponse } from "next/server";

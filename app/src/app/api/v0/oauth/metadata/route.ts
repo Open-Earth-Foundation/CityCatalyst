@@ -1,3 +1,17 @@
+/**
+ * @swagger
+ * /api/v0/oauth/metadata:
+ *   get:
+ *     tags:
+ *       - OAuth
+ *     summary: OAuth 2.0 Authorization Server Metadata
+ *     description: Returns RFC 8414-compliant authorization server metadata for this deployment.
+ *     responses:
+ *       200:
+ *         description: Metadata document returned.
+ *       500:
+ *         description: OAuth not enabled or configuration error.
+ */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";

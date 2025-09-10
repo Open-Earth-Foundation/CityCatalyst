@@ -1,3 +1,51 @@
+/**
+ * @swagger
+ * /api/v0/datasource/{inventoryId}/datasource/{datasourceId}:
+ *   get:
+ *     tags:
+ *       - Data Sources
+ *     summary: Get a specific data source with scaled data
+ *     parameters:
+ *       - in: path
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: datasourceId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Data source with data returned.
+ *       404:
+ *         description: Inventory or data source not found.
+ *   delete:
+ *     tags:
+ *       - Data Sources
+ *     summary: Disconnect a data source from an inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: datasourceId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Inventory values deleted for the data source.
+ *       404:
+ *         description: Inventory value not found.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

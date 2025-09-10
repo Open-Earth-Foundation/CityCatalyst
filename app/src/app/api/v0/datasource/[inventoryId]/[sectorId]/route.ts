@@ -1,3 +1,29 @@
+/**
+ * @swagger
+ * /api/v0/datasource/{inventoryId}/{sectorId}:
+ *   get:
+ *     tags:
+ *       - Data Sources
+ *     summary: List applicable data sources with data for a sector
+ *     parameters:
+ *       - in: path
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: sectorId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Applicable sources with data, plus removed and failed sources.
+ *       404:
+ *         description: Inventory or sector not found.
+ */
 import DataSourceService from "@/backend/DataSourceService";
 import { db } from "@/models";
 import { City } from "@/models/City";

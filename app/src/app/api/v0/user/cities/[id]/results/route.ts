@@ -1,3 +1,23 @@
+/**
+ * @swagger
+ * /api/v0/user/cities/{id}/results:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Get year-over-year emission results for a city
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Emission results returned.
+ *       404:
+ *         description: City not found.
+ */
 // return the year over year statistics for inventories attached to the city for this user
 
 import { apiHandler } from "@/util/api";

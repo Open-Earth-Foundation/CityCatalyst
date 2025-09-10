@@ -1,3 +1,35 @@
+/**
+ * @swagger
+ * /api/v0/auth/role:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Change a user's role
+ *     description: Changes the role of a user. Only admins may call this endpoint.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, role]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               role:
+ *                 type: string
+ *                 enum: [user, admin]
+ *     responses:
+ *       200:
+ *         description: Role updated successfully.
+ *       400:
+ *         description: User already has the specified role.
+ *       403:
+ *         description: Only admins can change roles.
+ *       404:
+ *         description: User not found.
+ */
 import { Roles } from "@/util/types";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

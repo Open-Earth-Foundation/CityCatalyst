@@ -1,3 +1,55 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}/inventory:
+ *   get:
+ *     tags:
+ *       - City Inventory
+ *     summary: List inventories for a city
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Inventories returned.
+ *       400:
+ *         description: Request error.
+ *   post:
+ *     tags:
+ *       - City Inventory
+ *     summary: Create an inventory for a city
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [inventoryName, year, inventoryType, globalWarmingPotentialType]
+ *             properties:
+ *               inventoryName:
+ *                 type: string
+ *               year:
+ *                 type: integer
+ *               inventoryType:
+ *                 type: string
+ *               globalWarmingPotentialType:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Inventory created or returned if exists.
+ *       404:
+ *         description: City not found.
+ */
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

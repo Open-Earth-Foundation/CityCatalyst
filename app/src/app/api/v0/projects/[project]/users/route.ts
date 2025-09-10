@@ -1,3 +1,47 @@
+/**
+ * @swagger
+ * /api/v0/projects/{project}/users:
+ *   get:
+ *     tags:
+ *       - Projects
+ *     summary: List users in a project
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Users returned.
+ *       404:
+ *         description: Project not found.
+ *   delete:
+ *     tags:
+ *       - Projects
+ *     summary: Remove a user from a project
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: email
+ *     responses:
+ *       200:
+ *         description: User removed.
+ *       400:
+ *         description: user-not-found query param missing.
+ *       404:
+ *         description: Project not found.
+ */
 import { apiHandler } from "@/util/api";
 import UserService from "@/backend/UserService";
 import { Project } from "@/models/Project";

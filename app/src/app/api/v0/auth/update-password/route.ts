@@ -1,3 +1,31 @@
+/**
+ * @swagger
+ * /api/v0/auth/update-password:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Update password for logged-in user
+ *     description: Validates current password and updates to a new one.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [currentPassword, confirmPassword]
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *               confirmPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password updated.
+ *       400:
+ *         description: Current password is incorrect.
+ *       404:
+ *         description: User not found or session expired.
+ */
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
 import { updatePasswordRequest } from "@/util/validation";

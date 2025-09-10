@@ -1,3 +1,33 @@
+/**
+ * @swagger
+ * /api/v0/auth/password:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Reset password with token
+ *     description: Verifies a reset token and updates the user's password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [newPassword, resetToken]
+ *             properties:
+ *               newPassword:
+ *                 type: string
+ *               resetToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password updated successfully.
+ *       401:
+ *         description: Invalid or expired token.
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Configuration error.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { resetPasswordRequest } from "@/util/validation";

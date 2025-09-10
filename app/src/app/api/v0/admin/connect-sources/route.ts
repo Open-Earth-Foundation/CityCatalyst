@@ -1,3 +1,34 @@
+/**
+ * @swagger
+ * /api/v0/admin/connect-sources:
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: Connect bulk data sources (admin)
+ *     description: Connects data sources for inventories identified by user email, cities, and years. Admin only.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userEmail, cityLocodes, years]
+ *             properties:
+ *               userEmail:
+ *                 type: string
+ *                 format: email
+ *               cityLocodes:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               years:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *     responses:
+ *       200:
+ *         description: Data sources connected.
+ */
 import AdminService from "@/backend/AdminService";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";

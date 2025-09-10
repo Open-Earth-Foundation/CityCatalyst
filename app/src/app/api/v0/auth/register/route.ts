@@ -1,3 +1,41 @@
+/**
+ * @swagger
+ * /api/v0/auth/register:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Register a new user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, email, password, confirmPassword, acceptTerms, preferredLanguage]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *               confirmPassword:
+ *                 type: string
+ *               acceptTerms:
+ *                 type: boolean
+ *               inventory:
+ *                 type: string
+ *                 format: uuid
+ *                 nullable: true
+ *               preferredLanguage:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User registered successfully.
+ *       400:
+ *         description: Email could not be sent or invalid input.
+ */
 import { sendEmail } from "@/lib/email";
 import ConfirmRegistrationTemplate from "@/lib/emails/confirmRegistrationTemplate";
 import { db } from "@/models";

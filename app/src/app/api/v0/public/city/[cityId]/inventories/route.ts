@@ -1,3 +1,25 @@
+/**
+ * @swagger
+ * /api/v0/public/city/{cityId}/inventories:
+ *   get:
+ *     tags:
+ *       - Public
+ *     summary: List public inventories for a city
+ *     parameters:
+ *       - in: path
+ *         name: cityId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Public inventories returned.
+ *       400:
+ *         description: Invalid city ID.
+ *       404:
+ *         description: City not found.
+ */
 import { NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

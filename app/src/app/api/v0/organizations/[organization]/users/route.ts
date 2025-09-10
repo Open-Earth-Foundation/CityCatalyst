@@ -1,3 +1,29 @@
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}/users:
+ *   delete:
+ *     tags:
+ *       - Organization Users
+ *     summary: Remove a user from an organization
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: email
+ *     responses:
+ *       200:
+ *         description: User removed.
+ *       400:
+ *         description: user-not-found query param missing.
+ */
 import { apiHandler } from "@/util/api";
 import UserService from "@/backend/UserService";
 import createHttpError from "http-errors";

@@ -1,3 +1,14 @@
+/**
+ * @swagger
+ * /api/v0/organizations/themes:
+ *   get:
+ *     tags:
+ *       - Organizations
+ *     summary: List available themes
+ *     responses:
+ *       200:
+ *         description: Themes returned.
+ */
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import createHttpError from "http-errors";

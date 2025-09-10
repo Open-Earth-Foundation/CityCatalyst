@@ -1,3 +1,73 @@
+/**
+ * @swagger
+ * /api/v0/projects/{project}:
+ *   get:
+ *     tags:
+ *       - Projects
+ *     summary: Get project by ID
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Project returned.
+ *       404:
+ *         description: Project not found.
+ *   patch:
+ *     tags:
+ *       - Projects
+ *     summary: Update a project
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               cityCountLimit:
+ *                 type: integer
+ *                 minimum: 1
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Project updated.
+ *       400:
+ *         description: Invalid request or default project cannot be updated.
+ *       404:
+ *         description: Project not found.
+ *   delete:
+ *     tags:
+ *       - Projects
+ *     summary: Delete a project
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Project deleted.
+ *       400:
+ *         description: Cannot delete default project.
+ *       404:
+ *         description: Project not found.
+ */
 import { apiHandler } from "@/util/api";
 import UserService from "@/backend/UserService";
 import { Project } from "@/models/Project";

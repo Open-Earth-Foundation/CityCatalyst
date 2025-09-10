@@ -1,3 +1,45 @@
+/**
+ * @swagger
+ * /api/v0/client/{client}:
+ *   get:
+ *     tags:
+ *       - OAuth Clients
+ *     summary: Get OAuth client by ID
+ *     parameters:
+ *       - in: path
+ *         name: client
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Client returned.
+ *       401:
+ *         description: Must be logged in.
+ *       404:
+ *         description: Client not found.
+ *       500:
+ *         description: OAuth not enabled or server error.
+ *   delete:
+ *     tags:
+ *       - OAuth Clients
+ *     summary: Delete OAuth client by ID
+ *     parameters:
+ *       - in: path
+ *         name: client
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Client deleted.
+ *       401:
+ *         description: Must be logged in.
+ *       404:
+ *         description: Client not found.
+ *       500:
+ *         description: OAuth not enabled or server error.
+ */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";

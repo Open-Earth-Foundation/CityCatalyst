@@ -1,3 +1,71 @@
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}:
+ *   get:
+ *     tags:
+ *       - Organizations
+ *     summary: Get organization by ID
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Organization returned.
+ *       404:
+ *         description: Organization not found.
+ *   patch:
+ *     tags:
+ *       - Organizations
+ *     summary: Update organization
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               contactEmail:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Organization updated.
+ *       400:
+ *         description: Cannot update default organization.
+ *       404:
+ *         description: Organization not found.
+ *   delete:
+ *     tags:
+ *       - Organizations
+ *     summary: Delete organization
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Organization deleted.
+ *       400:
+ *         description: Cannot delete default organization.
+ *       404:
+ *         description: Organization not found.
+ */
 import { Organization } from "@/models/Organization";
 import { updateOrganizationRequest } from "@/util/validation";
 import { apiHandler } from "@/util/api";

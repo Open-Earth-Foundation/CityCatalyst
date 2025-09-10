@@ -1,3 +1,72 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}:
+ *   get:
+ *     tags:
+ *       - City
+ *     summary: Get city by ID
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: City returned.
+ *       401:
+ *         description: Unauthorized.
+ *   delete:
+ *     tags:
+ *       - City
+ *     summary: Delete city by ID
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: City deleted.
+ *   patch:
+ *     tags:
+ *       - City
+ *     summary: Update city by ID
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               locode:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               shape:
+ *                 type: object
+ *                 nullable: true
+ *               area:
+ *                 type: integer
+ *                 nullable: true
+ *               projectId:
+ *                 type: string
+ *                 format: uuid
+ *                 nullable: true
+ *     responses:
+ *       200:
+ *         description: City updated.
+ */
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
 import { createCityRequest } from "@/util/validation";

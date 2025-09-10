@@ -1,3 +1,56 @@
+/**
+ * @swagger
+ * /api/v0/token:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Exchange authorization code for tokens (OAuth 2.0 PKCE)
+ *     description: Accepts an authorization code and returns an access token and refresh token. Requires application/x-www-form-urlencoded.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             required: [grant_type, code, redirect_uri, client_id, code_verifier]
+ *             properties:
+ *               grant_type:
+ *                 type: string
+ *                 enum: [authorization_code]
+ *               code:
+ *                 type: string
+ *               redirect_uri:
+ *                 type: string
+ *                 format: uri
+ *               client_id:
+ *                 type: string
+ *               code_verifier:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Tokens issued successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 access_token:
+ *                   type: string
+ *                 token_type:
+ *                   type: string
+ *                 expires_in:
+ *                   type: integer
+ *                 refresh_token:
+ *                   type: string
+ *                 scope:
+ *                   type: string
+ *       400:
+ *         description: Invalid request parameters or verification failed.
+ *       415:
+ *         description: Unsupported content type.
+ *       500:
+ *         description: OAuth not enabled or configuration error.
+ */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";

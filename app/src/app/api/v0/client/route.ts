@@ -1,3 +1,49 @@
+/**
+ * @swagger
+ * /api/v0/client:
+ *   get:
+ *     tags:
+ *       - OAuth Clients
+ *     summary: List OAuth clients
+ *     description: Returns all registered OAuth clients with localized names and descriptions.
+ *     responses:
+ *       200:
+ *         description: List of clients returned.
+ *       401:
+ *         description: Must be logged in.
+ *       500:
+ *         description: OAuth not enabled or server error.
+ *   post:
+ *     tags:
+ *       - OAuth Clients
+ *     summary: Create a new OAuth client
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [redirectUri, name, description]
+ *             properties:
+ *               redirectUri:
+ *                 type: string
+ *                 format: uri
+ *               name:
+ *                 type: object
+ *                 additionalProperties:
+ *                   type: string
+ *               description:
+ *                 type: object
+ *                 additionalProperties:
+ *                   type: string
+ *     responses:
+ *       201:
+ *         description: Client created.
+ *       401:
+ *         description: Must be logged in.
+ *       500:
+ *         description: OAuth not enabled or server error.
+ */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";

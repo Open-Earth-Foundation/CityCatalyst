@@ -1,3 +1,23 @@
+/**
+ * @swagger
+ * /api/v0/projects/{project}/summary:
+ *   get:
+ *     tags:
+ *       - Projects
+ *     summary: Get summary metrics for a project
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Summary returned (totals for cities, emissions, population, data sources).
+ *       404:
+ *         description: Project not found.
+ */
 import { apiHandler } from "@/util/api";
 import { Project } from "@/models/Project";
 import createHttpError from "http-errors";

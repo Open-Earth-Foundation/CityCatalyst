@@ -1,3 +1,40 @@
+/**
+ * @swagger
+ * /api/v0/auth/code:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Issue OAuth authorization code
+ *     description: Returns a short-lived authorization code for a logged-in user and registered OAuth client.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [clientId, redirectUri, codeChallenge, scope, csrfToken]
+ *             properties:
+ *               clientId:
+ *                 type: string
+ *               redirectUri:
+ *                 type: string
+ *                 format: uri
+ *               codeChallenge:
+ *                 type: string
+ *               scope:
+ *                 type: string
+ *               csrfToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Authorization code issued.
+ *       400:
+ *         description: Invalid client or redirect URI / CSRF mismatch.
+ *       401:
+ *         description: Not authenticated.
+ *       500:
+ *         description: OAuth not enabled or configuration error.
+ */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";

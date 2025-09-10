@@ -1,3 +1,31 @@
+/**
+ * @swagger
+ * /api/v0/waste-composition:
+ *   get:
+ *     tags:
+ *       - Waste Composition
+ *     summary: Get waste composition formula inputs
+ *     description: Returns formula input values (WCF_*) for the specified inventory and methodology, filtered by the city’s country LOCODE when available.
+ *     parameters:
+ *       - in: query
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: methodologyName
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Formula input values returned.
+ *       400:
+ *         description: Missing inventoryId or methodologyName.
+ *       401:
+ *         description: Unauthorized.
+ */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { db } from "@/models";

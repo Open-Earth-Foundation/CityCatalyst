@@ -1,3 +1,29 @@
+/**
+ * @swagger
+ * /api/v0/assistants/threads/export:
+ *   post:
+ *     tags:
+ *       - Assistants Threads
+ *     summary: Persist assistant thread metadata
+ *     description: Stores the assistant thread identifier in the application database.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [threadId]
+ *             properties:
+ *               threadId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Thread metadata persisted.
+ *       400:
+ *         description: Invalid threadId provided.
+ *       500:
+ *         description: Server error.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

@@ -1,3 +1,27 @@
+/**
+ * @swagger
+ * /api/v0/assistants/threads/messages:
+ *   post:
+ *     tags:
+ *       - Assistants Threads
+ *     summary: Send a message to a thread and stream results
+ *     description: Adds a user message to the thread and streams the assistant run output.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [threadId, content]
+ *             properties:
+ *               threadId:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Stream of run events.
+ */
 import { apiHandler } from "@/util/api";
 import { setupOpenAI } from "@/util/openai";
 import { NextResponse } from "next/server";

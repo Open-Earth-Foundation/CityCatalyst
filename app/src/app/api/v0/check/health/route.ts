@@ -1,3 +1,17 @@
+/**
+ * @swagger
+ * /api/v0/check/health:
+ *   get:
+ *     tags:
+ *       - Check
+ *     summary: Health check
+ *     description: Returns application health status and version; checks database connectivity.
+ *     responses:
+ *       200:
+ *         description: Service is healthy.
+ *       500:
+ *         description: Database connection failed.
+ */
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import pkg from "../../../../../../package.json";

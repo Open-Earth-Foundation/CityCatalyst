@@ -1,3 +1,31 @@
+/**
+ * @swagger
+ * /api/v0/projects/{project}/modules/{module}/access:
+ *   get:
+ *     tags:
+ *       - Project Modules
+ *     summary: Check if a project has access to a module
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: module
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Access flag returned.
+ *       403:
+ *         description: Access denied.
+ *       404:
+ *         description: Project not found.
+ */
 import { ModuleAccessService } from "@/backend/ModuleAccessService";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";

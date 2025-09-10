@@ -5,7 +5,10 @@ import { NextResponse } from "next/server";
  * @swagger
  * /api/v0:
  *   get:
- *     description: Returns a welcome message.
+ *     tags:
+ *       - Root
+ *     summary: API root
+ *     description: Returns a welcome message for the CityCatalyst backend API.
  *     responses:
  *       200:
  *         description: Welcome to the CityCatalyst backend API!

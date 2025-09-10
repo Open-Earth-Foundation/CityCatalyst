@@ -1,3 +1,52 @@
+/**
+ * @swagger
+ * /api/v0/datasource/{inventoryId}:
+ *   get:
+ *     tags:
+ *       - Data Sources
+ *     summary: List applicable data sources with data for an inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Applicable sources with data, plus removed and failed sources.
+ *       404:
+ *         description: Inventory not found.
+ *   post:
+ *     tags:
+ *       - Data Sources
+ *     summary: Apply selected data sources to an inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [dataSourceIds]
+ *             properties:
+ *               dataSourceIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: uuid
+ *     responses:
+ *       200:
+ *         description: Apply results with successful, failed, invalid, issues, and removedSources.
+ *       404:
+ *         description: Inventory or sources not found.
+ */
 import DataSourceService from "@/backend/DataSourceService";
 import { db } from "@/models";
 import { City } from "@/models/City";

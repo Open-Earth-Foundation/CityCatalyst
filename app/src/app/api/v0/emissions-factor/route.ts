@@ -1,3 +1,37 @@
+/**
+ * @swagger
+ * /api/v0/emissions-factor:
+ *   post:
+ *     tags:
+ *       - Emissions Factors
+ *     summary: Fetch emissions factors
+ *     description: Returns emissions factors filtered by inventory, region, methodology, reference number, and optional metadata. Do not send both inventoryId and regionLocode in the same request.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               inventoryId:
+ *                 type: string
+ *                 description: Inventory ID to infer location context
+ *               regionLocode:
+ *                 type: string
+ *                 description: Region LOCODE to infer location context
+ *               referenceNumber:
+ *                 type: string
+ *               methodologyId:
+ *                 type: string
+ *               metadata:
+ *                 type: object
+ *                 additionalProperties: true
+ *     responses:
+ *       200:
+ *         description: Matching emissions factors returned.
+ *       400:
+ *         description: Invalid parameters (e.g., both inventoryId and regionLocode provided).
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

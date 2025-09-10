@@ -1,3 +1,18 @@
+/**
+ * @swagger
+ * /api/v0/user/access-status:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Get current user's access status
+ *     responses:
+ *       200:
+ *         description: Access status returned.
+ *       401:
+ *         description: Unauthorized.
+ *       404:
+ *         description: User not found.
+ */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { db } from "@/models";

@@ -1,3 +1,18 @@
+/**
+ * @swagger
+ * /api/v0/user/inventories:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: List inventories accessible to current user
+ *     responses:
+ *       200:
+ *         description: Inventories returned with city info.
+ *       401:
+ *         description: Unauthorized.
+ *       404:
+ *         description: User not found.
+ */
 import { db } from "@/models";
 import type { City } from "@/models/City";
 import type { Inventory } from "@/models/Inventory";

@@ -1,3 +1,104 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/activity-value:
+ *   get:
+ *     tags:
+ *       - Inventory Activity
+ *     summary: List activity values for inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: subCategoryIds
+ *         required: false
+ *         description: Comma-separated subcategory IDs
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: subSectorId
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: methodologyId
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Activity values returned.
+ *       400:
+ *         description: Missing required query parameter.
+ *   post:
+ *     tags:
+ *       - Inventory Activity
+ *     summary: Create an activity value
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               activityData:
+ *                 type: object
+ *               metadata:
+ *                 type: object
+ *               inventoryValueId:
+ *                 type: string
+ *                 format: uuid
+ *               inventoryValue:
+ *                 type: object
+ *               gasValues:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *     responses:
+ *       200:
+ *         description: Activity created.
+ *       400:
+ *         description: Invalid data.
+ *   delete:
+ *     tags:
+ *       - Inventory Activity
+ *     summary: Delete activities by subsector or reference number
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: subSectorId
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: gpcReferenceNumber
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Activities deleted.
+ *       400:
+ *         description: Invalid query combination.
+ */
 import ActivityService from "@/backend/ActivityService";
 import { PermissionService } from "@/backend/permissions";
 import UserService from "@/backend/UserService";

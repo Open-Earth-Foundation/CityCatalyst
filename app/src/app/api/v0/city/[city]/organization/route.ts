@@ -1,3 +1,23 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}/organization:
+ *   get:
+ *     tags:
+ *       - City Organization
+ *     summary: Get organization for a city
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Organization details returned.
+ *       404:
+ *         description: City or organization not found.
+ */
 import { apiHandler } from "@/util/api";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";

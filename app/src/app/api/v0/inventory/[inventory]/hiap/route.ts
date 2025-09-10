@@ -1,3 +1,31 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/hiap:
+ *   get:
+ *     tags:
+ *       - Inventory HIAP
+ *     summary: Get HIAP ranking or data for an inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: actionType
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: lng
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: HIAP data returned.
+ */
 import { apiHandler } from "@/util/api";
 import { LANGUAGES } from "@/util/types";
 import { ACTION_TYPES } from "@/util/types";

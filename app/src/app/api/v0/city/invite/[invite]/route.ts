@@ -1,3 +1,41 @@
+/**
+ * @swagger
+ * /api/v0/city/invite/{invite}:
+ *   get:
+ *     tags:
+ *       - City Invites
+ *     summary: Accept a city invite
+ *     parameters:
+ *       - in: path
+ *         name: invite
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: email
+ *       - in: query
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       302:
+ *         description: Redirect to inventory on success.
+ *       400:
+ *         description: Invalid token.
+ *       404:
+ *         description: Not found.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

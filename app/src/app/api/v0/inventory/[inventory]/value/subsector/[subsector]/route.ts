@@ -1,3 +1,81 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/value/subsector/{subsector}:
+ *   get:
+ *     tags:
+ *       - Inventory Values
+ *     summary: List inventory values for a subsector
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: subsector
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Inventory values returned.
+ *   patch:
+ *     tags:
+ *       - Inventory Values
+ *     summary: Upsert inventory value in a subsector by GPC reference number
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: subsector
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [gpcReferenceNumber]
+ *             properties:
+ *               gpcReferenceNumber:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Inventory value updated or created.
+ *       400:
+ *         description: Invalid request.
+ *   delete:
+ *     tags:
+ *       - Inventory Values
+ *     summary: Delete inventory value for a subsector
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: subsector
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Inventory value deleted.
+ *       404:
+ *         description: Inventory value not found.
+ */
 import { apiHandler } from "@/util/api";
 import { db } from "@/models";
 import { PermissionService } from "@/backend/permissions/PermissionService";

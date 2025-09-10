@@ -1,3 +1,23 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/populations:
+ *   get:
+ *     tags:
+ *       - Inventory Populations
+ *     summary: Get population data used by the inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Population data returned.
+ *       404:
+ *         description: Inventory not found.
+ */
 import PopulationService from "@/backend/PopulationService";
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";

@@ -1,3 +1,18 @@
+/**
+ * @swagger
+ * /api/v0/user/cities:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: List cities and inventory years for current user
+ *     responses:
+ *       200:
+ *         description: Cities with inventory year metadata returned.
+ *       401:
+ *         description: Unauthorized.
+ *       404:
+ *         description: User not found.
+ */
 // fetch the cities attached to a user and the year of the inventories attached to the cities
 
 import { apiHandler } from "@/util/api";

@@ -1,3 +1,43 @@
+/**
+ * @swagger
+ * /api/v0/city/invite:
+ *   post:
+ *     tags:
+ *       - City Invites
+ *     summary: Invite a user to a city
+ *     description: Sends an email invite to the specified user to join the city.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [invitingUserId, inventoryId, email, name, cityId]
+ *             properties:
+ *               invitingUserId:
+ *                 type: string
+ *                 format: uuid
+ *               inventoryId:
+ *                 type: string
+ *                 format: uuid
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               name:
+ *                 type: string
+ *               cityId:
+ *                 type: string
+ *                 format: uuid
+ *     responses:
+ *       200:
+ *         description: Invite created and email sent.
+ *       400:
+ *         description: Email could not be sent or invalid input.
+ *       401:
+ *         description: Not authenticated.
+ *       404:
+ *         description: City not found.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { createUserInvite } from "@/util/validation";

@@ -1,3 +1,34 @@
+/**
+ * @swagger
+ * /api/v0/city/transfer:
+ *   patch:
+ *     tags:
+ *       - City Transfer
+ *     summary: Transfer cities to a different project
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [cityIds, projectId]
+ *             properties:
+ *               cityIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: uuid
+ *               projectId:
+ *                 type: string
+ *                 format: uuid
+ *     responses:
+ *       200:
+ *         description: Cities transferred.
+ *       404:
+ *         description: Cities or project not found.
+ *       400:
+ *         description: Project city-count limit exceeded.
+ */
 // patch route to move cities to different projects
 import { apiHandler } from "@/util/api";
 

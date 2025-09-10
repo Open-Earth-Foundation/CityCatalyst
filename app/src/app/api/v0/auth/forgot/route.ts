@@ -1,3 +1,27 @@
+/**
+ * @swagger
+ * /api/v0/auth/forgot:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Send password reset email
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Reset email sent (or silently ignored).
+ *       500:
+ *         description: Configuration error.
+ */
 import { sendEmail } from "@/lib/email";
 import ForgotPasswordTemplate from "@/lib/emails/ForgotPasswordTemplate";
 import { apiHandler } from "@/util/api";

@@ -1,3 +1,52 @@
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}/projects:
+ *   get:
+ *     tags:
+ *       - Organization Projects
+ *     summary: List projects for an organization (context-aware)
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Projects returned.
+ *   post:
+ *     tags:
+ *       - Organization Projects
+ *     summary: Create a project in an organization
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, cityCountLimit]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               cityCountLimit:
+ *                 type: integer
+ *                 minimum: 1
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Project created.
+ *       404:
+ *         description: Organization not found.
+ */
 // creates a new project and lists all projects belonging to an organization
 
 import { Project } from "@/models/Project";

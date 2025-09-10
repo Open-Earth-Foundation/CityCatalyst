@@ -1,3 +1,70 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}/file:
+ *   get:
+ *     tags:
+ *       - City Files
+ *     summary: List files for a city
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: List of files returned.
+ *       401:
+ *         description: Unauthorized.
+ *   post:
+ *     tags:
+ *       - City Files
+ *     summary: Upload a file for a city
+ *     description: Accepts multipart form data to upload and register a file for the city.
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               data:
+ *                 type: string
+ *                 format: binary
+ *               inventoryId:
+ *                 type: string
+ *                 format: uuid
+ *               sector:
+ *                 type: string
+ *               subsectors:
+ *                 type: string
+ *               scopes:
+ *                 type: string
+ *               fileReference:
+ *                 type: string
+ *               url:
+ *                 type: string
+ *                 format: uri
+ *               status:
+ *                 type: string
+ *               gpcRefNo:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: File uploaded and metadata returned.
+ *       400:
+ *         description: Invalid file or payload.
+ *       503:
+ *         description: Feature disabled.
+ */
 import NotificationService from "@/backend/NotificationService";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";

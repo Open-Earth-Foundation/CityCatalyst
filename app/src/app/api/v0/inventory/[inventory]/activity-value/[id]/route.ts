@@ -1,3 +1,75 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/activity-value/{id}:
+ *   get:
+ *     tags:
+ *       - Inventory Activity
+ *     summary: Get an activity value by ID
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Activity value returned.
+ *   patch:
+ *     tags:
+ *       - Inventory Activity
+ *     summary: Update an activity value by ID
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Activity updated.
+ *       400:
+ *         description: Invalid request (e.g., values too large).
+ *   delete:
+ *     tags:
+ *       - Inventory Activity
+ *     summary: Delete an activity value by ID
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Activity deleted.
+ */
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

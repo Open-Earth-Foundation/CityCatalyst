@@ -1,3 +1,41 @@
+/**
+ * @swagger
+ * /api/v0/auth/verify:
+ *   get:
+ *     tags:
+ *       - Auth
+ *     summary: Create verification token for current user
+ *     responses:
+ *       200:
+ *         description: Verification token issued.
+ *       400:
+ *         description: User email missing in session.
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Configuration error.
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Verify password using a token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [password, token]
+ *             properties:
+ *               password:
+ *                 type: string
+ *               token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password verification result returned.
+ *       500:
+ *         description: Configuration error.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { passwordRegex } from "@/util/validation";

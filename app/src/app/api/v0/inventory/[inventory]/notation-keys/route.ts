@@ -1,3 +1,56 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/notation-keys:
+ *   get:
+ *     tags:
+ *       - Inventory Notation Keys
+ *     summary: List notation key candidates grouped by sector reference number
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Notation key candidates returned.
+ *   post:
+ *     tags:
+ *       - Inventory Notation Keys
+ *     summary: Save notation keys for an inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               notationKeys:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required: [subCategoryId, unavailableReason, unavailableExplanation]
+ *                   properties:
+ *                     subCategoryId:
+ *                       type: string
+ *                       format: uuid
+ *                     unavailableReason:
+ *                       type: string
+ *                       enum: [no-occurrance, not-estimated, confidential-information, included-elsewhere]
+ *                     unavailableExplanation:
+ *                       type: string
+ *     responses:
+ *       200:
+ *         description: Notation keys saved.
+ */
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";

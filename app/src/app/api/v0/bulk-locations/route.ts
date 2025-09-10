@@ -1,3 +1,32 @@
+/**
+ * @swagger
+ * /api/v0/bulk-locations:
+ *   get:
+ *     tags:
+ *       - Bulk Locations
+ *     summary: Get bulk city locations
+ *     description: Returns location data (latitude and longitude) for cities filtered by organization or project access.
+ *     parameters:
+ *       - in: query
+ *         name: organizationId
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: projectId
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of city locations.
+ *       400:
+ *         description: Missing organizationId or projectId.
+ *       401:
+ *         description: Unauthorized.
+ *       404:
+ *         description: Cities not found.
+ */
 import CityBoundaryService, {
   CityBoundary,
 } from "@/backend/CityBoundaryService";

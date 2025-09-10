@@ -1,3 +1,17 @@
+/**
+ * @swagger
+ * /api/v0/auth/delete:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Delete current user account
+ *     description: Deletes the account associated with the current authenticated session.
+ *     responses:
+ *       200:
+ *         description: Account deleted successfully.
+ *       401:
+ *         description: Must be logged in.
+ */
 import { authOptions } from "@/lib/auth";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

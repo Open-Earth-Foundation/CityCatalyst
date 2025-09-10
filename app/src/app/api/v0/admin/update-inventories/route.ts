@@ -1,3 +1,37 @@
+/**
+ * @swagger
+ * /api/v0/admin/update-inventories:
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: Bulk update inventories (admin)
+ *     description: Updates inventories for a user's cities and years, and assigns to a project. Admin only.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userEmail, cityLocodes, years, projectId]
+ *             properties:
+ *               userEmail:
+ *                 type: string
+ *                 format: email
+ *               cityLocodes:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               years:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *               projectId:
+ *                 type: string
+ *                 format: uuid
+ *     responses:
+ *       200:
+ *         description: Inventories updated.
+ */
 import AdminService from "@/backend/AdminService";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";

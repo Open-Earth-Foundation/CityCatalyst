@@ -1,3 +1,62 @@
+/**
+ * @swagger
+ * /api/v0/city:
+ *   get:
+ *     tags:
+ *       - City
+ *     summary: List cities for current user
+ *     responses:
+ *       200:
+ *         description: Cities returned.
+ *       401:
+ *         description: Unauthorized.
+ *   post:
+ *     tags:
+ *       - City
+ *     summary: Create a city
+ *     description: Creates a city within a project the user has permissions for.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [locode, name]
+ *             properties:
+ *               locode:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               shape:
+ *                 type: object
+ *                 nullable: true
+ *               country:
+ *                 type: string
+ *                 nullable: true
+ *               region:
+ *                 type: string
+ *                 nullable: true
+ *               countryLocode:
+ *                 type: string
+ *                 nullable: true
+ *               regionLocode:
+ *                 type: string
+ *                 nullable: true
+ *               area:
+ *                 type: integer
+ *                 nullable: true
+ *               projectId:
+ *                 type: string
+ *                 format: uuid
+ *                 nullable: true
+ *     responses:
+ *       200:
+ *         description: City created or returned if exists.
+ *       401:
+ *         description: Unauthorized.
+ *       404:
+ *         description: Project not found.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { createCityRequest } from "@/util/validation";

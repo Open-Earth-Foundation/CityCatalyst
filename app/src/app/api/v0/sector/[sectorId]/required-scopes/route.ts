@@ -1,3 +1,23 @@
+/**
+ * @swagger
+ * /api/v0/sector/{sectorId}/required-scopes:
+ *   get:
+ *     tags:
+ *       - Sector
+ *     summary: Get required scopes for a sector
+ *     parameters:
+ *       - in: path
+ *         name: sectorId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Required scopes returned.
+ *       404:
+ *         description: Sector not found.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

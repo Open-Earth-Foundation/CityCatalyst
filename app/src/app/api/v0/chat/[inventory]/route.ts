@@ -1,3 +1,43 @@
+/**
+ * @swagger
+ * /api/v0/chat/{inventory}:
+ *   post:
+ *     tags:
+ *       - Chat
+ *     summary: Stream chat completion for an inventory
+ *     description: Generates a streamed chat response using either OpenAI or HuggingFace models with inventory context.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [messages]
+ *             properties:
+ *               messages:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     role:
+ *                       type: string
+ *                       enum: [function, data, system, user, assistant, tool]
+ *                     content:
+ *                       type: string
+ *     responses:
+ *       200:
+ *         description: Streamed chat response.
+ *       401:
+ *         description: Unauthorized or no access to inventory.
+ *       404:
+ *         description: Inventory not found.
+ */
 import { HfInference } from "@huggingface/inference";
 import { z } from "zod";
 import { HuggingFaceStream, OpenAIStream, StreamingTextResponse } from "ai";

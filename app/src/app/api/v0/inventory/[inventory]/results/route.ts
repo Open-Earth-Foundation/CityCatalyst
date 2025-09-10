@@ -1,3 +1,21 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/results:
+ *   get:
+ *     tags:
+ *       - Inventory Results
+ *     summary: Get emissions results summary for an inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Emissions totals and top emitters returned.
+ */
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";

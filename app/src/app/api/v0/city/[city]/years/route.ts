@@ -1,3 +1,23 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}/years:
+ *   get:
+ *     tags:
+ *       - City
+ *     summary: Get inventory years for a city
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: City metadata and inventory years returned.
+ *       404:
+ *         description: City not found.
+ */
 // fetch the years of the inventories attached to a city
 
 import { apiHandler } from "@/util/api";

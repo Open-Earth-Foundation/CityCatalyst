@@ -1,6 +1,6 @@
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { OAuthClient } from "@/models/OAuthClient";
 import jwt from "jsonwebtoken";
@@ -8,6 +8,7 @@ import { logger } from "@/services/logger";
 import { createHash } from "node:crypto";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import TTLCache from "@isaacs/ttlcache";
+import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 
 // 10-minute cache, for checking jwtid replay
 
@@ -26,6 +27,20 @@ function verifyPKCE(verifier: string, challenge: string): boolean {
   return base64url === challenge;
 }
 
+const authorizationCodeRequest = z.object({
+  grant_type: z.literal("authorization_code"),
+  code: z.string().min(1, "code is required"),
+  redirect_uri: z.string().url("redirect_uri must be a valid URI"),
+  client_id: z.string().min(1, "client_id is required"),
+  code_verifier: z.string()
+});
+
+const refreshTokenRequest = z.object({
+  grant_type: z.literal("refresh_token"),
+  refresh_token: z.string().min(1, "refresh_token is required"),
+  scope: z.string().optional()
+})
+
 /** accept an authorization code and return an access token  */
 export const POST = apiHandler(async (_req, { params, session }) => {
 
@@ -38,6 +53,7 @@ export const POST = apiHandler(async (_req, { params, session }) => {
     throw createHttpError.InternalServerError("Configuration error");
   }
 
+  const key = process.env.VERIFICATION_TOKEN_SECRET;
   const contentType = _req.headers.get('content-type') || ''
 
   if (!contentType.includes('application/x-www-form-urlencoded')) {
@@ -49,63 +65,39 @@ export const POST = apiHandler(async (_req, { params, session }) => {
 
   const formData = await _req.formData()
 
-  const grantType = formData.get("grant_type");
-  const code = formData.get("code");
-  const redirectUri = formData.get("redirect_uri");
-  const clientId = formData.get("client_id");
-  const codeVerifier = formData.get("code_verifier");
-
-  if (grantType == null) {
-    throw new createHttpError.BadRequest("grant_type is required")
+  const formObj: Record<string, unknown> = {};
+  for (const [key, value] of formData.entries()) {
+    formObj[key] = value;
   }
 
-  if (typeof grantType !== 'string') {
-    throw new createHttpError.BadRequest("grant_type must be a string")
+  switch (formObj.grant_type) {
+    case 'authorization_code': {
+      const tr = authorizationCodeRequest.parse(formObj);
+      return await handleAuthorizationCodeRequest(_req, tr, key)
+    }
+    case 'refresh_token': {
+      const rtr = refreshTokenRequest.parse(formObj);
+      return await handleRefreshTokenRequest(_req, rtr, key);
+    }
+    default: {
+      throw createHttpError.BadRequest("Only 'authorization_code' or 'refresh_token' grant_type allowed")
+    }
   }
+})
 
-  if (grantType !== "authorization_code") {
-    throw new createHttpError.BadRequest("grant_type must 'authorization_code'")
-  }
+async function handleAuthorizationCodeRequest(
+  _req: NextRequest,
+  tr: any,
+  key: string
+) {
 
-  if (code == null) {
-    throw new createHttpError.BadRequest("code is required")
-  }
-
-  if (typeof code !== 'string') {
-    throw new createHttpError.BadRequest("code must be a string")
-  }
-
-  if (clientId == null) {
-    throw new createHttpError.BadRequest("client_id is required")
-  }
-
-  if (typeof clientId !== 'string') {
-    throw new createHttpError.BadRequest("client_id must be a string")
-  }
-
-  if (redirectUri == null) {
-    throw new createHttpError.BadRequest("redirect_uri is required")
-  }
-
-  if (typeof redirectUri !== 'string') {
-    throw new createHttpError.BadRequest("redirect_uri must be a string")
-  }
-
-  if (codeVerifier == null) {
-    throw new createHttpError.BadRequest("code_verifier is required")
-  }
-
-  if (typeof codeVerifier !== 'string') {
-    throw new createHttpError.BadRequest("code_verifier must be a string")
-  }
-
-  const client = await OAuthClient.findByPk(clientId);
+  const client = await OAuthClient.findByPk(tr.client_id);
 
   if (!client) {
     throw new createHttpError.BadRequest("Unrecognized client_id")
   }
 
-  if (client.redirectURI !== redirectUri) {
+  if (client.redirectURI !== tr.redirect_uri) {
     throw new createHttpError.BadRequest("redirect_uri mismatch")
   }
 
@@ -113,8 +105,8 @@ export const POST = apiHandler(async (_req, { params, session }) => {
 
   try {
     decoded = jwt.verify(
-      code,
-      process.env.VERIFICATION_TOKEN_SECRET
+      tr.code,
+      key
     )
   } catch (error: any) {
     if (error.name === "TokenExpiredError") {
@@ -136,17 +128,17 @@ export const POST = apiHandler(async (_req, { params, session }) => {
     throw createHttpError.BadRequest("code issued for a different server.");
   }
 
-  if (decoded.client_id !== clientId) {
+  if (decoded.client_id !== tr.client_id) {
     throw createHttpError.BadRequest("client_id mismatch with code.");
   }
 
-  if (decoded.redirect_uri !== redirectUri) {
+  if (decoded.redirect_uri !== tr.redirect_uri) {
     throw createHttpError.BadRequest("redirect_uri mismatch with code.");
   }
 
   const codeChallenge = decoded.code_challenge;
 
-  if (!verifyPKCE(codeVerifier, codeChallenge)) {
+  if (!verifyPKCE(tr.code_verifier, codeChallenge)) {
     throw createHttpError.BadRequest("PKCE verification failed.");
   }
 
@@ -181,10 +173,10 @@ export const POST = apiHandler(async (_req, { params, session }) => {
   const scope = decoded.scope;
 
   const accessToken = jwt.sign({
-      client_id: clientId,
+      client_id: tr.client_id,
       scope
     },
-    process.env.VERIFICATION_TOKEN_SECRET,
+    key,
     {
       expiresIn: ACCESS_TOKEN_EXPIRY,
       issuer: origin,
@@ -194,10 +186,10 @@ export const POST = apiHandler(async (_req, { params, session }) => {
   );
 
   const refreshToken = jwt.sign({
-      client_id: clientId,
+      client_id: tr.client_id,
       scope
     },
-    process.env.VERIFICATION_TOKEN_SECRET,
+    key,
     {
       expiresIn: REFRESH_TOKEN_EXPIRY,
       issuer: origin,
@@ -213,4 +205,77 @@ export const POST = apiHandler(async (_req, { params, session }) => {
     refresh_token: refreshToken,
     scope
   });
-})
+}
+
+async function handleRefreshTokenRequest(
+  _req: NextRequest,
+  rtr: any,
+  key: string
+) {
+
+  let decoded: any;
+
+  try {
+    decoded = jwt.verify(
+      rtr.refresh_token,
+      key
+    )
+  } catch (error: any) {
+    if (error.name === "TokenExpiredError") {
+      throw createHttpError.BadRequest("Code has expired.");
+    } else {
+      throw createHttpError.BadRequest("Invalid reset token.");
+    }
+  }
+
+  logger.debug({decoded}, 'Decoded refresh_token');
+
+  const origin = process.env.HOST || (new URL(_req.url)).origin;
+
+  if (decoded.iss !== origin) {
+    throw createHttpError.BadRequest("code issued by a different server.");
+  }
+
+  if (decoded.aud !== origin) {
+    throw createHttpError.BadRequest("code issued for a different server.");
+  }
+
+  const client = await OAuthClient.findByPk(decoded.client_id);
+
+  if (!client) {
+    throw new createHttpError.BadRequest("Unrecognized client_id")
+  }
+
+  const authz = await OAuthClientAuthz.findOne({
+    where: {
+      clientId: decoded.client_id,
+      userId: decoded.sub,
+    },
+  });
+
+  if (!authz) {
+    throw new createHttpError.Unauthorized("Authorization revoked");
+  }
+
+  const scope = decoded.scope;
+
+  const accessToken = jwt.sign({
+      client_id: decoded.client_id,
+      scope
+    },
+    key,
+    {
+      expiresIn: ACCESS_TOKEN_EXPIRY,
+      issuer: origin,
+      audience: origin,
+      subject: decoded.sub
+    }
+  );
+
+  return NextResponse.json({
+    access_token: accessToken,
+    token_type: "Bearer",
+    expires_in: ACCESS_TOKEN_EXPIRY,
+    scope
+  });
+}

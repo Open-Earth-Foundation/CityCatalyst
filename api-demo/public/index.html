@@ -9,6 +9,7 @@
     <p>
       <button id="login">Login with CityCatalyst</button>
       <button id="logout" disabled="disabled">Logout</button>
+      <button id="refresh" disabled="disabled">Refresh</button>
     </p>
     <p>
       <span id="status"></span>
@@ -93,9 +94,10 @@
             response,
           );
 
-          const { access_token } = result;
+          const { access_token, refresh_token } = result;
 
           sessionStorage.setItem("access_token", access_token);
+          sessionStorage.setItem("refresh_token", refresh_token);
 
           sessionStorage.removeItem("state");
           sessionStorage.removeItem("code_verifier");
@@ -105,6 +107,42 @@
           setStatus(error.message);
           sessionStorage.removeItem("state");
           sessionStorage.removeItem("code_verifier");
+        }
+      }
+
+      async function refreshAccessToken(as, client) {
+        try {
+          const refreshToken = sessionStorage.getItem("refresh_token");
+
+          const response = await oauth.refreshTokenGrantRequest(
+            as,
+            client,
+            oauth.None(),
+            refreshToken,
+            { [oauth.allowInsecureRequests]: allowInsecureRequests },
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              `Bad status from token endpoint: ${response.status}`,
+            );
+          }
+
+          const result = await oauth.processRefreshTokenResponse(
+            as,
+            client,
+            response,
+          );
+
+          const { access_token } = result;
+
+          sessionStorage.setItem("access_token", access_token);
+
+          setStatus("Token refreshed.");
+
+          window.location.href = redirect_uri;
+        } catch (error) {
+          setStatus(error.message);
         }
       }
 
@@ -134,6 +172,7 @@
       document.addEventListener("DOMContentLoaded", async () => {
         const loginEl = document.getElementById("login");
         const logoutEl = document.getElementById("logout");
+        const refreshEl = document.getElementById("refresh");
 
         const client = { client_id: CLIENT_ID };
         const res = await oauth.discoveryRequest(new URL(CC_ORIGIN), {
@@ -151,14 +190,17 @@
         if (sessionStorage.getItem("access_token")) {
           loginEl?.setAttribute("disabled", "disabled");
           logoutEl?.removeAttribute("disabled");
+          refreshEl?.removeAttribute("disabled");
           await showUsername(as);
         } else if (params.get("state")) {
           loginEl?.setAttribute("disabled", "disabled");
           logoutEl?.setAttribute("disabled", "disabled");
+          refreshEl?.setAttribute("disabled", "disabled");
           await finishLogin(as, client);
         } else {
           loginEl?.removeAttribute("disabled");
           logoutEl?.setAttribute("disabled", "disabled");
+          refreshEl?.setAttribute("disabled", "disabled");
         }
         loginEl?.addEventListener("click", async () => {
           await startLogin(as, client);
@@ -166,6 +208,9 @@
         logoutEl?.addEventListener("click", async () => {
           sessionStorage.clear();
           window.location.href = redirect_uri;
+        });
+        refreshEl?.addEventListener("click", async () => {
+          await refreshAccessToken(as, client);
         });
       });
     </script>

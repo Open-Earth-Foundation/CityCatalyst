@@ -1,3 +1,95 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}:
+ *   get:
+ *     summary: Get inventory details by ID
+ *     description: Returns inventory details including total emissions for the specified inventory ID. If 'default' is provided, returns the user's default inventory.
+ *     tags:
+ *       - Inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Inventory UUID or 'default'
+ *     responses:
+ *       200:
+ *         description: Inventory details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Inventory'
+ *       400:
+ *         description: Invalid inventory ID
+ *       404:
+ *         description: Inventory not found
+ *   delete:
+ *     summary: Delete an inventory by ID
+ *     description: Deletes the specified inventory. Only users with ORG_ADMIN permission can delete inventories.
+ *     tags:
+ *       - Inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Inventory UUID
+ *     responses:
+ *       200:
+ *         description: Inventory deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Inventory'
+ *                 deleted:
+ *                   type: boolean
+ *       403:
+ *         description: Forbidden - insufficient permissions
+ *       404:
+ *         description: Inventory not found
+ *   patch:
+ *     summary: Update inventory details
+ *     description: Updates the specified inventory. Only users with edit permission can update inventories.
+ *     tags:
+ *       - Inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Inventory UUID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpsertInventoryRequest'
+ *     responses:
+ *       200:
+ *         description: Inventory updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Inventory'
+ *       400:
+ *         description: Invalid request body
+ *       403:
+ *         description: Forbidden - insufficient permissions
+ *       404:
+ *         description: Inventory not found
+ */
 import { NextResponse } from "next/server";
 
 import { apiHandler } from "@/util/api";
@@ -45,7 +137,7 @@ export const GET = apiHandler(async (req, { session, params }) => {
 
   // Use PermissionService for access check only
   await PermissionService.canAccessInventory(session, inventoryId);
-  
+
   const inventory = await InventoryService.getInventoryWithTotalEmissions(
     inventoryId,
     session,
@@ -79,9 +171,9 @@ export const PATCH = apiHandler(async (req, context) => {
   const inventory = resource as Inventory;
 
   let updatedInventory = inventory;
-  
+
   if (hasIsPublicProperty(body)) {
-    const publishBody: { isPublic: boolean; publishedAt?: Date | null } = {
+    const publishBody: { isPublic: boolean; publishedAt?: Date | nl } = {
       ...body,
     };
     if (publishBody.isPublic && !inventory.isPublic) {

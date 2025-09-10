@@ -90,6 +90,7 @@ export default function Onboarding(props: {
             px="24px"
             h="64px"
             onClick={() => router.push("setup")}
+            data-testid="start-inventory-button"
           >
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
               {t("start-inventory")}

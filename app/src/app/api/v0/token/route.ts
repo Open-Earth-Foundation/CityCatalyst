@@ -124,6 +124,8 @@ export const POST = apiHandler(async (_req, { params, session }) => {
     }
   }
 
+  logger.debug({decoded}, 'Decoded authorization code');
+
   const origin = process.env.HOST || (new URL(_req.url)).origin;
 
   if (decoded.iss !== origin) {
@@ -148,11 +150,33 @@ export const POST = apiHandler(async (_req, { params, session }) => {
     throw createHttpError.BadRequest("PKCE verification failed.");
   }
 
-  if (cache.has(decoded.jwtid)) {
+  // Same as 'jwtid' on input in code endpoint!
+
+  const jwtid = decoded.jti;
+
+  if (!jwtid) {
+    throw createHttpError.BadRequest("No jwtid in code.");
+  }
+
+  logger.debug(
+    {jwtid},
+    'Checking for replay of jwtid for authorization token'
+  );
+
+  if (cache.has(jwtid)) {
+    logger.debug(
+      {jwtid},
+      'Cache hit'
+    );
     throw createHttpError.BadRequest("Single-use code.");
   }
 
-  cache.set(decoded.jwtid, true);
+  logger.debug(
+    {jwtid},
+    'Cache miss'
+  );
+
+  cache.set(jwtid, true);
 
   const scope = decoded.scope;
 

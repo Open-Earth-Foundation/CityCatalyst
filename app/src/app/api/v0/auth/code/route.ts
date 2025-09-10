@@ -58,6 +58,10 @@ export const POST = apiHandler(async (req, { params, session }) => {
     lastUsed: new Date(),
   });
 
+  const jwtid = v4();
+
+  logger.debug({jwtid}, 'Creating JWT');
+
   const code = jwt.sign(
     {
       client_id: clientId,
@@ -71,7 +75,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
       issuer: origin,
       audience: origin,
       subject: session.user.id,
-      jwtid: v4(),
+      jwtid
     },
   );
   return NextResponse.json({

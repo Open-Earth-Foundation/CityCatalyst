@@ -173,7 +173,7 @@ export const PATCH = apiHandler(async (req, context) => {
   let updatedInventory = inventory;
 
   if (hasIsPublicProperty(body)) {
-    const publishBody: { isPublic: boolean; publishedAt?: Date | nl } = {
+    const publishBody: { isPublic: boolean; publishedAt?: Date | null } = {
       ...body,
     };
     if (publishBody.isPublic && !inventory.isPublic) {

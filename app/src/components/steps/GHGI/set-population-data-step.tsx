@@ -229,7 +229,7 @@ export default function SetPopulationDataStep({
               fontWeight="bold"
               lineHeight="24px"
             >
-              {t("Country")}
+              {t("country-population-title")}
             </Text>
           </Box>
           <Box display="flex" gap="16px" alignItems="start">

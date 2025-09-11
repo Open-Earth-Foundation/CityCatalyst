@@ -244,3 +244,25 @@ export async function navigateToGHGIModule(page: Page) {
   await page.getByLabel("Assess and Analyze").getByText("Launch").click();
   
 }
+
+/** Navigates to GHGI module for the default city.
+ * If the city does not exist, it creates it through onboarding. */
+export async function navigateToGHGIModule(
+  page: Page,
+  cityName: string = "Chicago",
+) {
+  await page.goto("/en/cities/");
+
+  // Check if we were redirected to onboarding page (no cities exist)
+  const currentUrl = page.url();
+  if (currentUrl.includes("/onboarding/")) {
+    // Complete the full onboarding flow
+    await createInventoryThroughOnboarding(page, cityName);
+
+    // Now navigate to dashboard
+    await page.goto("/en/cities/");
+  }
+  // Open the GHGI module
+  await page.getByRole("button", { name: "Assess and Analyze" }).click();
+  await page.getByLabel("Assess and Analyze").getByText("Launch").click();
+}

@@ -16,19 +16,25 @@ import {
 import { CircleFlag } from "react-circle-flags";
 import { MdGroup, MdInfoOutline, MdOutlineAspectRatio } from "react-icons/md";
 import { Tooltip } from "@/components/ui/tooltip";
-import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
+import {
+  formatEmissions,
+  getShortenNumberUnit,
+  shortenNumber,
+} from "@/util/helpers";
 import Link from "next/link";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { CityWithProjectDataResponse } from "@/util/types";
+import { CityWithProjectDataResponse, InventoryResponse } from "@/util/types";
 import { TitleMedium } from "@/components/Texts/Title";
 import { DisplayMedium } from "@/components/Texts/Display";
 import { HeadlineSmall } from "@/components/Texts/Headline";
 import { BodyMedium } from "@/components/Texts/Body";
+import { FiArrowUpRight } from "react-icons/fi";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 interface HeroProps {
   city: CityWithProjectDataResponse;
+  ghgiCityData?: InventoryResponse;
   year: number;
   isPublic: boolean;
   isLoading: boolean;
@@ -38,6 +44,7 @@ interface HeroProps {
 
 export function Hero({
   city,
+  ghgiCityData,
   year,
   isLoading: isInventoryLoading,
   isPublic,
@@ -47,6 +54,10 @@ export function Hero({
   const { data: cityData } = useGetOCCityDataQuery(city?.locode!, {
     skip: !city?.locode,
   });
+
+  const formattedEmissions = ghgiCityData?.totalEmissions
+    ? formatEmissions(ghgiCityData.totalEmissions)
+    : { value: t("n-a"), unit: "" };
 
   const popWithDS = useMemo(
     () =>
@@ -94,6 +105,57 @@ export function Hero({
 
             {/* Statistics */}
             <HStack gap={8} align="start">
+              {/* Total co2 emissions */}
+              <VStack align="start" gap={2}>
+                <HStack gap={2} align="baseline">
+                  <Icon
+                    as={FiArrowUpRight}
+                    boxSize={6}
+                    color="sentiment.negativeDefault"
+                  />
+                  <HeadlineSmall
+                    fontSize="2xl"
+                    fontWeight="bold"
+                    color="content.primary"
+                    fontFamily="heading"
+                  >
+                    {formattedEmissions.value ? (
+                      <>
+                        {formattedEmissions.value}
+                        <HeadlineSmall
+                          as="span"
+                          fontSize="lg"
+                          fontWeight="bold"
+                          fontFamily="heading"
+                        >
+                          {formattedEmissions.unit}
+                        </HeadlineSmall>
+                      </>
+                    ) : (
+                      t("n-a")
+                    )}
+                  </HeadlineSmall>
+                  <Tooltip
+                    content={
+                      <>
+                        {t("total-emissions-in-year", {
+                          year: ghgiCityData?.year,
+                        })}
+                      </>
+                    }
+                  >
+                    <Icon
+                      as={MdInfoOutline}
+                      boxSize={4}
+                      color="content.secondary"
+                      cursor="pointer"
+                    />
+                  </Tooltip>
+                </HStack>
+                <BodyMedium color="content.tertiary">
+                  {t("total-emissions-in-year", { year: ghgiCityData?.year })}
+                </BodyMedium>
+              </VStack>
               {/* Land Area */}
               <VStack align="start" gap={2}>
                 <HStack gap={2} align="baseline">
@@ -106,6 +168,7 @@ export function Hero({
                     fontSize="2xl"
                     fontWeight="bold"
                     color="content.primary"
+                    fontFamily="heading"
                   >
                     {city.area && city.area > 0 ? (
                       <>
@@ -113,7 +176,8 @@ export function Hero({
                         <HeadlineSmall
                           as="span"
                           fontSize="lg"
-                          fontWeight="normal"
+                          fontWeight="bold"
+                          fontFamily="heading"
                         >
                           {t("km2")}
                         </HeadlineSmall>

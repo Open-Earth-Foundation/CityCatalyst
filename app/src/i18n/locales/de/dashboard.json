@@ -3,6 +3,7 @@
   "welcome": "Willkommen",
   "in-progress": "In Bearbeitung",
   "total-emissions-in": "Gesamtemissionen im Jahr {{year}}",
+  "total-emissions-in-year": "Gesamtemissionen pro Jahr {{year}}",
   "sector-emissions-in": "Sektor-Emissionen im Jahr {{year}}",
   "total-population": "Gesamtbevölkerung",
   "total-land-area": "Gesamtlandfläche",

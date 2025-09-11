@@ -4,7 +4,7 @@ import {
 } from "./helpers";
 
 test("Inventory Onboarding", async ({ page }) => {
-  const cityId = await createCityThroughOnboarding(page, "Chicago");
+  const cityId = await createCityThroughOnboarding(page);
   await page.goto(`/en/cities/${cityId}/GHGI/onboarding`);
   /** "should display the inventory onboarding start page" */
   {
@@ -58,11 +58,15 @@ test("Inventory Onboarding", async ({ page }) => {
     // Verify that the select element is visible
     await expect(year).toBeVisible();
 
-    // Select the desired year
-    await year.selectOption("2023");
+    // Select a year that will always be available (current year - 1)
+    // The years array contains current year and previous 19 years
+    const currentYear = new Date().getFullYear();
+    const testYear = (currentYear - 1).toString();
+    
+    await year.selectOption(testYear);
 
     // Verify that the selection was successful
-    await expect(year).toHaveValue("2023");
+    await expect(year).toHaveValue(testYear);
 
     // Select inventory goal
     const inventoryGoalOption = page.getByTestId("inventory-goal-gpc_basic");

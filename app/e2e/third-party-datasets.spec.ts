@@ -25,8 +25,8 @@ test.describe("Third Party Datasets", () => {
   test("should complete third-party datasets workflow", async ({ page }) => {
     test.setTimeout(120000);
 
+    // Step 1: Navigate to GHGI module
     await navigateToGHGIModule(page);
-
     // Verify Dashboard
     await page.waitForLoadState("networkidle");
     // Verify page title

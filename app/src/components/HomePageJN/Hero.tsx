@@ -57,7 +57,7 @@ export function Hero({
 
   const formattedEmissions = ghgiCityData?.totalEmissions
     ? formatEmissions(ghgiCityData.totalEmissions)
-    : { value: t("N/A"), unit: "" };
+    : { value: t("n-a"), unit: "" };
 
   const popWithDS = useMemo(
     () =>

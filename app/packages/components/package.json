@@ -1,0 +1,57 @@
+{
+  "name": "@oef/components",
+  "version": "1.0.3",
+  "description": "CityCatalyst components package - Text components and module components for consistent UI",
+  "private": false,
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "peerDependencies": {
+    "@chakra-ui/react": "^3.8.0",
+    "@emotion/react": "^11.14.0",
+    "i18next": "^23.13.0",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "npm run clean && npm run copy-components && tsc -p tsconfig.json && npm run build:fix-structure",
+    "copy-components": "mkdir -p src/components/Texts",
+    "build:fix-structure": "mkdir -p dist && cp -r dist/packages/components/src/* dist/ && rm -rf dist/packages dist/src",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "clean": "rimraf dist src/components",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "rimraf": "^5.0.10",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.8.3"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "chakra-ui",
+    "typography",
+    "components",
+    "module-components",
+    "citycatalyst"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Open-Earth-Foundation/CityCatalyst.git",
+    "directory": "app/packages/components"
+  },
+  "author": "OpenEarth Foundation"
+}

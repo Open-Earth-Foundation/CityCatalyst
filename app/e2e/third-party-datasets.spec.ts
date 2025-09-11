@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { indexPageRegex, regexForPath } from "./utils";
-import { createInventoryThroughOnboarding } from "./helpers";
+import { navigateToGHGIModule } from "./helpers";
 
 const testIds = {
   addDataToInventoryNavButton: "add-data-to-inventory-card",
@@ -25,8 +25,7 @@ test.describe("Third Party Datasets", () => {
   test("should complete third-party datasets workflow", async ({ page }) => {
     test.setTimeout(120000);
 
-    // Step 1: Create inventory through onboarding flow
-    await createInventoryThroughOnboarding(page);
+    await navigateToGHGIModule(page);
 
     // Verify Dashboard
     await page.waitForLoadState("networkidle");
@@ -36,8 +35,8 @@ test.describe("Third Party Datasets", () => {
     // Step 2: Navigate to add data page
     const navButton = page.getByTestId(testIds.addDataToInventoryNavButton);
     await navButton.click();
-    await page.waitForURL(regexForPath("/data/"));
-    await expect(page).toHaveURL(regexForPath("/data/"));
+    await page.waitForURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/$/);
+    await expect(page).toHaveURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/$/);
 
     // Verify page header
     const pageHeader = page.getByTestId(testIds.addDataStepHeading);
@@ -62,8 +61,8 @@ test.describe("Third Party Datasets", () => {
     await sectorButton.click();
 
     // Wait for navigation to sector page
-    await page.waitForURL(regexForPath("/data/1/"));
-    await expect(page).toHaveURL(regexForPath("/data/1/"));
+    await page.waitForURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/1\/$/);
+    await expect(page).toHaveURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/1\/$/);
 
     // Wait for subsectors to load
     await page.waitForSelector(`[data-testid="${testIds.subsectorCard}"]`);
@@ -190,14 +189,14 @@ test.describe("Third Party Datasets", () => {
 
         // Navigate to another sector that might not have data sources (Waste)
         await page.goto("./data/");
-        await page.waitForURL(regexForPath("/data/"));
+        await page.waitForURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/$/);
 
         const wasteCard = page.getByTestId(testIds.wasteSectorCard);
         const wasteSectorButton = wasteCard.getByTestId(
           testIds.sectorCardButton,
         );
         await wasteSectorButton.click();
-        await page.waitForURL(regexForPath("/data/3/"));
+        await page.waitForURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/3\/$/);
 
         // Click on a subsector if available
         const subsectorCards = page.getByTestId(testIds.subsectorCard);

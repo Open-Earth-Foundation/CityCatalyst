@@ -1,3 +1,5 @@
+"use client";
+
 import { Heading, HeadingProps, Box } from "@chakra-ui/react";
 
 interface HeadlineProps extends HeadingProps {

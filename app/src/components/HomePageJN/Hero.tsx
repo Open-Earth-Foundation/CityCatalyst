@@ -34,7 +34,7 @@ const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 interface HeroProps {
   city: CityWithProjectDataResponse;
-  ghgiCityData: InventoryResponse | undefined;
+  ghgiCityData?: InventoryResponse;
   year: number;
   isPublic: boolean;
   isLoading: boolean;

@@ -52,3 +52,18 @@ export function getBoundingBox(
   }
   return result;
 }
+
+export function stretchBoundingBox(
+  boundingBox: BoundingBox,
+  factor = 0.1,
+): BoundingBox {
+  const [west, south, east, north] = boundingBox;
+  const latStretch = (north - south) * factor;
+  const lngStretch = (east - west) * factor;
+  return [
+    west - lngStretch,
+    south - latStretch,
+    east + lngStretch,
+    north + latStretch,
+  ];
+}

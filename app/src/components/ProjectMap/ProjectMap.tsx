@@ -116,12 +116,15 @@ export const ProjectMap: FC<ProjectMapProps> = ({
       >
         {cityLocations?.map(
           (cityLocation: CityLocationResponse, index: number) =>
+            cityLocation.locode &&
             cityLocation.latitude &&
             cityLocation.longitude && (
               <Marker
                 key={cityLocation.locode + "-" + index}
                 color={
-                  selectedCity === cityLocation ? highlightColor : defaultColor
+                  selectedCity?.locode === cityLocation.locode
+                    ? highlightColor
+                    : defaultColor
                 }
                 anchor={[cityLocation.latitude, cityLocation.longitude]}
                 onClick={() => setSelectedCity(cityLocation)}

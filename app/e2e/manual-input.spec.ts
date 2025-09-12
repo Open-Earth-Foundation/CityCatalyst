@@ -1,5 +1,6 @@
 import { APIRequestContext, expect, Page, test } from "@playwright/test";
 import { indexPageRegex, regexForPath } from "./utils";
+import { navigateToGHGIModule } from "./helpers";
 
 // inventory creation data
 // call the endpoint to create an inventory
@@ -129,14 +130,11 @@ const EmissionFactors = {
 test.describe.serial("Manual Input", () => {
   test.skip();
   let page: Page;
-  let id: string;
 
   test.beforeAll(async ({ browser, request }) => {
     page = await browser.newPage();
-    id = await createInventory(request);
-    await page.goto(`/en/${id}/`);
+    await navigateToGHGIModule(page);
     await expect(page).toHaveURL(indexPageRegex);
-    // wait for page to load
   });
 
   test.afterAll(async () => {
@@ -144,6 +142,7 @@ test.describe.serial("Manual Input", () => {
   });
 
   test("should render sector list page", async () => {
+    await navigateToGHGIModule(page);
     const navButton = page.getByTestId(testIds.addDataToInventoryNavButton);
     await navButton.click();
     await page.waitForURL(regexForPath("/data/"));
@@ -171,7 +170,7 @@ test.describe.serial("Manual Input", () => {
   sectorData.forEach((sector) => {
     test.describe.serial(() => {
       test(`should navigate to ${sector.sectorName} sector page`, async () => {
-        await page.goto(`/en/${id}/data/`);
+        await navigateToGHGIModule(page);
         await page.waitForURL(regexForPath("/data/"));
         await expect(page).toHaveURL(regexForPath("/data/"));
         // wait for sector card to load

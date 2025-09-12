@@ -6,7 +6,7 @@ import {
 } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
-import { Map, GeoJson, GeoJsonFeature, Marker } from "pigeon-maps";
+import { Map, Marker } from "pigeon-maps";
 import { getBoundingBoxCenter } from "./geo_utils";
 import { CityLocationResponse } from "@/util/types";
 
@@ -114,30 +114,6 @@ export const ProjectMap: FC<ProjectMapProps> = ({
         onBoundsChanged={onBoundsChanged}
         attributionPrefix={false}
       >
-        {/*
-        <GeoJson
-          svgAttributes={{
-            fill: "#648bff99",
-            strokeWidth: "3",
-            stroke: defaultColor,
-          }}
-        >
-          {cityLocations?.map(
-            (boundary: any) =>
-              boundary.data && (
-                <GeoJsonFeature
-                  key={boundary.city.id}
-                  feature={{
-                    type: "Feature",
-                    geometry: boundary.data,
-                  }}
-                  onClick={() => setSelectedCity(boundary.city)}
-                />
-              ),
-          )}
-        </GeoJson
-        */}
-
         {cityLocations?.map(
           (cityLocation: CityLocationResponse, index: number) =>
             cityLocation.latitude &&

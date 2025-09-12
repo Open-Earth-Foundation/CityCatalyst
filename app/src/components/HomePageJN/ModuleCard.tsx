@@ -33,6 +33,7 @@ export function ModuleCard({
   };
   return (
     <Card.Root
+      data-testid={`module-card-${module.id}`}
       width="320px"
       opacity={enabled ? 1 : 0.5}
       pointerEvents={enabled ? "auto" : "none"}
@@ -86,6 +87,7 @@ export function ModuleCard({
       </Card.Body>
       <Card.Footer justifyContent="flex-end">
         <Button
+          data-testid={`module-launch-${module.id}`}
           as="div"
           onClick={() => {
             window.location.href = `${baseUrl}${url}`;

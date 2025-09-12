@@ -10,9 +10,6 @@ test.describe("CSV Download", () => {
     // Create inventory through onboarding
     await navigateToGHGIModule(page);
 
-    // Navigate to Dashboard
-    await page.waitForLoadState("networkidle");
-
     // Verify we're on the dashboard
     await expect(page.getByTestId("hero-city-name")).toHaveText("Chicago");
 

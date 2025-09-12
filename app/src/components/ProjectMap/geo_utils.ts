@@ -9,7 +9,7 @@ export function getCombinedBoundingBox(
 ): BoundingBox {
   const result = [...boundingBoxes[0]] as BoundingBox;
   for (let i = 1; i < boundingBoxes.length; i++) {
-    let box = boundingBoxes[i];
+    const box = boundingBoxes[i];
     result[0] = Math.min(result[0], box[0]);
     result[1] = Math.max(result[1], box[1]);
     result[2] = Math.max(result[2], box[2]);

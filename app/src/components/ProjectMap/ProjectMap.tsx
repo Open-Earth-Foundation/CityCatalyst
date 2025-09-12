@@ -61,9 +61,20 @@ export const ProjectMap: FC<ProjectMapProps> = ({
     setZoom(newZoom);
   };
 
+  // automatically center and zoom map to frame all cities
   useEffect(() => {
     if (cityLocations && cityLocations.length > 0) {
-      const combinedBoundingBox = getBoundingBox(cityLocations);
+      const cityCoords = cityLocations
+        .filter(
+          (location) => location.longitude != null && location.latitude != null,
+        )
+        .map((location) => ({
+          latitude: location.latitude,
+          longitude: location.longitude,
+        }));
+      console.dir(cityCoords);
+      const combinedBoundingBox = getBoundingBox(cityCoords);
+      console.dir(combinedBoundingBox);
       if (combinedBoundingBox && !combinedBoundingBox.some(isNaN)) {
         const newZoom = getBoundsZoomLevel(combinedBoundingBox, {
           width,
@@ -75,6 +86,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
         ];
         setCenter(newCenter);
         setZoom(newZoom);
+        console.log("center/zoom", newCenter, newZoom);
       }
     }
   }, [cityLocations, height, width]);
@@ -138,9 +150,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
                 }
                 anchor={[cityLocation.latitude, cityLocation.longitude]}
                 onClick={() => setSelectedCity(cityLocation)}
-              >
-                {console.log("city", cityLocation)}
-              </Marker>
+              />
             ),
         )}
       </Map>

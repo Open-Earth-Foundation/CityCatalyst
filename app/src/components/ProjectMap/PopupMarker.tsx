@@ -1,16 +1,28 @@
-import { useState } from "react";
-import { Marker, Overlay } from "pigeon-maps";
+import { useState, useEffect } from "react";
+import { Marker, Overlay, Point } from "pigeon-maps";
 
-export function PopupMarker({
-  popupText,
-  anchor,
-  onClick,
-}: {
+type PopupMarkerProps = {
   popupText: string;
   anchor: [number, number];
-  onClick: any;
-}) {
+  onClick: ({
+    event,
+    anchor,
+    payload,
+  }: {
+    event: React.MouseEvent<HTMLDivElement>;
+    anchor: Point;
+    payload: any;
+  }) => void;
+};
+
+export function PopupMarker({ popupText, anchor, onClick }: PopupMarkerProps) {
   const [hovered, setHovered] = useState(false);
+
+  // clean up hover state on unmount
+  useEffect(() => {
+    return () => setHovered(false);
+  }, []);
+
   return (
     <>
       <Marker

@@ -229,7 +229,7 @@ export async function createProject(
  */
 export async function navigateToGHGIModule(page: Page) {
   await page.goto("/en/cities/");
-  
+  await page.waitForLoadState("networkidle");
   // Check if we were redirected to onboarding page (no cities exist)
   const currentUrl = page.url();
   if (currentUrl.includes("/onboarding/")) {
@@ -238,9 +238,14 @@ export async function navigateToGHGIModule(page: Page) {
     
     // Now try to navigate to cities again
     await page.goto("/en/cities/");
+    await page.waitForLoadState("networkidle");
   }
   
   await page.getByRole("button", { name: "Assess and Analyze" }).click();
-  await page.getByLabel("Assess and Analyze").getByText("Launch").click();
+  
+  // Click the specific module's Launch button by test id
+  await page.getByTestId('module-launch-077690c6-6fa3-44e1-84b7-6d758a6a4d88').click();
+
+  await page.waitForLoadState("networkidle");
 }
 

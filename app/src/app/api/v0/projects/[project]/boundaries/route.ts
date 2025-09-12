@@ -54,11 +54,13 @@ import CityBoundaryService, {
 } from "@/backend/CityBoundaryService";
 import type { Inventory } from "@/models/Inventory";
 import { logger } from "@/services/logger";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 
 // TODO cache the results of this route
 export const GET = apiHandler(async (req, { params, session }) => {
   const { project: projectId } = params;
-  // TODO perform access control by checking if the user is part of the organization/ project
+  await PermissionService.canAccessProject(session, projectId);
+
   const project = await Project.findByPk(projectId as string, {
     include: [
       {

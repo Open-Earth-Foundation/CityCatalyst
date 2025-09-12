@@ -1,5 +1,9 @@
 import { Tooltip } from "@/components/ui/tooltip";
-import type { OrganizationResponse, ProjectWithCities } from "@/util/types";
+import type {
+  CityLocationResponse,
+  OrganizationResponse,
+  ProjectWithCities,
+} from "@/util/types";
 import { Box, Icon, Spinner, Text, Flex } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { MdGridView, MdInfoOutline, MdLocationCity } from "react-icons/md";
@@ -8,6 +12,7 @@ import { BodyLarge, BodyMedium } from "../Texts/Body";
 import { DisplayMedium } from "../Texts/Display";
 import { HeadlineSmall } from "../Texts/Headline";
 import ProjectMap from "../ProjectMap/ProjectMap";
+import { useState } from "react";
 
 interface OrganizationHeroProps {
   organization?: OrganizationResponse;
@@ -33,6 +38,10 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
     organization?.name === "cc_organization_default"
       ? t("default-organization")
       : organization?.name;
+
+  const [selectedCity, setSelectedCity] = useState<
+    CityLocationResponse | undefined
+  >(undefined);
 
   return (
     <Box bg="content.alternative" w="full" px="56px" py="56px">
@@ -150,6 +159,8 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
             projectId={projectId}
             width={422}
             height={317}
+            setSelectedCity={setSelectedCity}
+            selectedCity={selectedCity}
           />
         </Box>
       </Flex>

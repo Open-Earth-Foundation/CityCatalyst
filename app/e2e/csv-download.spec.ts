@@ -43,11 +43,12 @@ test.describe("CSV Download", () => {
     expect(filename).toContain(".csv");
 
     // Save the downloaded file to a temporary location for verification
-    const downloadPath = await download.path();
-    expect(downloadPath).toBeTruthy();
+    const downloadPath = 'temp-download.csv';
+    await download.saveAs(downloadPath);
+    expect(fs.existsSync(downloadPath)).toBeTruthy();
 
     // Read and verify the CSV content
-    const csvContent = fs.readFileSync(downloadPath!, "utf-8");
+    const csvContent = fs.readFileSync(downloadPath, "utf-8");
     expect(csvContent).toBeTruthy();
     expect(csvContent.length).toBeGreaterThan(0);
 
@@ -74,6 +75,7 @@ test.describe("CSV Download", () => {
     }
 
     // Clean up - delete the downloaded file
+    fs.unlinkSync(downloadPath);
     await download.delete();
   });
 
@@ -101,10 +103,11 @@ test.describe("CSV Download", () => {
     await csvDownloadButton.click();
 
     const download = await downloadPromise;
-    const downloadPath = await download.path();
+    const downloadPath = 'temp-download-2.csv';
+    await download.saveAs(downloadPath);
 
     // Parse and validate CSV content
-    const csvContent = fs.readFileSync(downloadPath!, "utf-8");
+    const csvContent = fs.readFileSync(downloadPath, "utf-8");
     const records = parse(csvContent, {
       columns: true,
       skip_empty_lines: true,
@@ -166,6 +169,7 @@ test.describe("CSV Download", () => {
     }
 
     // Clean up
+    fs.unlinkSync(downloadPath);
     await download.delete();
   });
 
@@ -231,8 +235,9 @@ test.describe("CSV Download", () => {
     expect(csvDownload.suggestedFilename()).toContain(".csv");
 
     // Verify CSV content
-    const csvPath = await csvDownload.path();
-    const csvContent = fs.readFileSync(csvPath!, "utf-8");
+    const csvPath = 'temp-csv-download.csv';
+    await csvDownload.saveAs(csvPath);
+    const csvContent = fs.readFileSync(csvPath, "utf-8");
     expect(csvContent).toContain("GPC Reference Number");
 
     // Test eCRF download (if available)
@@ -249,6 +254,7 @@ test.describe("CSV Download", () => {
     }
 
     // Clean up CSV download
+    fs.unlinkSync(csvPath);
     await csvDownload.delete();
   });
 
@@ -276,10 +282,11 @@ test.describe("CSV Download", () => {
     await csvDownloadButton.click();
 
     const download = await downloadPromise;
-    const downloadPath = await download.path();
+    const downloadPath = 'temp-download-3.csv';
+    await download.saveAs(downloadPath);
 
     // Read raw CSV content to check formatting
-    const csvContent = fs.readFileSync(downloadPath!, "utf-8");
+    const csvContent = fs.readFileSync(downloadPath, "utf-8");
 
     // Verify CSV is properly quoted (all fields should be quoted as per the service)
     expect(csvContent).toMatch(/"[^"]*"/); // Check for quoted fields
@@ -308,6 +315,7 @@ test.describe("CSV Download", () => {
     }
 
     // Clean up
+    fs.unlinkSync(downloadPath);
     await download.delete();
   });
 
@@ -464,16 +472,15 @@ test.describe("CSV Download", () => {
     await csvDownloadButton.click();
 
     const download = await downloadPromise;
-    const downloadPath = await download.path();
+    const downloadPath = 'temp-download-4.csv';
+    await download.saveAs(downloadPath);
 
     // Parse and validate CSV contains our test data
-    const csvContent = fs.readFileSync(downloadPath!, "utf-8");
+    const csvContent = fs.readFileSync(downloadPath, "utf-8");
     const records = parse(csvContent, {
       columns: true,
       skip_empty_lines: true,
     });
-
-    console.log(records);
 
     // Verify we have data records (not just headers)
     expect(records.length).toBeGreaterThan(0);
@@ -491,6 +498,7 @@ test.describe("CSV Download", () => {
     expect(testDataRecord["Data source name"]).toBe("test-value");
 
     // Clean up
+    fs.unlinkSync(downloadPath);
     await download.delete();
   });
 });

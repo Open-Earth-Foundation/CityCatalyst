@@ -28,6 +28,7 @@ export interface ProjectMapProps {
 
 const defaultColor = "#648bff";
 const highlightColor = "#ffc363";
+const DEFAULT_MAP_CENTER: [number, number] = [34.0, -37.0]; // Center of South Atlantic Ocean
 
 export const ProjectMap: FC<ProjectMapProps> = ({
   projectId,
@@ -37,14 +38,6 @@ export const ProjectMap: FC<ProjectMapProps> = ({
   setSelectedCity,
   selectedCity,
 }) => {
-  /*const {
-    data: projectBoundaries,
-    isLoading,
-    error,
-  } = api.useGetProjectBoundariesQuery(projectId!, {
-    skip: !projectId,
-  });*/
-
   const { data: cityLocations, isLoading } = api.useGetBulkCityLocationsQuery(
     { projectId, organizationId },
     {
@@ -52,7 +45,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
     },
   );
 
-  const [center, setCenter] = useState<[number, number]>([34.0, -37.0]);
+  const [center, setCenter] = useState<[number, number]>(DEFAULT_MAP_CENTER);
   const [zoom, setZoom] = useState(9);
   const onBoundsChanged = ({
     center: newCenter,

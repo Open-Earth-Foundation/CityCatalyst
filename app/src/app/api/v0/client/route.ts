@@ -1,3 +1,110 @@
+/**
+ * @swagger
+ * /api/v0/client:
+ *   get:
+ *     tags:
+ *       - OAuth Clients
+ *     summary: List registered OAuth clients with localized names.
+ *     description: Returns all OAuth clients configured on the server, merging i18n name/description records per language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in { data: Client[] }.
+ *     responses:
+ *       200:
+ *         description: Clients array wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       clientId:
+ *                         type: string
+ *                       redirectUri:
+ *                         type: string
+ *                         format: uri
+ *                       name:
+ *                         type: object
+ *                         additionalProperties:
+ *                           type: string
+ *                       description:
+ *                         type: object
+ *                         additionalProperties:
+ *                           type: string
+ *             examples:
+ *               example:
+ *                 value:
+ *                   data:
+ *                     - clientId: "abc123"
+ *                       redirectUri: "https://app.example.com/callback"
+ *                       name: { en: "Example App" }
+ *                       description: { en: "Demo client" }
+ *       401:
+ *         description: Must be logged in.
+ *       500:
+ *         description: OAuth not enabled or server error.
+ *   post:
+ *     tags:
+ *       - OAuth Clients
+ *     summary: Create a new OAuth client with localized metadata.
+ *     description: Creates a client id with redirect URI and localized name/description entries. Requires a signed‑in session and OAUTH_ENABLED. Returns the created client in { data } and sets a Location header to the new resource.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [redirectUri, name, description]
+ *             properties:
+ *               redirectUri:
+ *                 type: string
+ *                 format: uri
+ *               name:
+ *                 type: object
+ *                 additionalProperties:
+ *                   type: string
+ *               description:
+ *                 type: object
+ *                 additionalProperties:
+ *                   type: string
+ *     responses:
+ *       201:
+ *         description: Created client wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     clientId:
+ *                       type: string
+ *                     redirectUri:
+ *                       type: string
+ *                       format: uri
+ *                     name:
+ *                       type: object
+ *                       additionalProperties:
+ *                         type: string
+ *                     description:
+ *                       type: object
+ *                       additionalProperties:
+ *                         type: string
+ *             examples:
+ *               example:
+ *                 value:
+ *                   data:
+ *                     clientId: "def456"
+ *                     redirectUri: "https://app.example.com/callback"
+ *                     name: { en: "New App" }
+ *                     description: { en: "Client description" }
+ *       401:
+ *         description: Must be logged in.
+ *       500:
+ *         description: OAuth not enabled or server error.
+ */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";

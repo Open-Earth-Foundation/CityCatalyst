@@ -1,3 +1,61 @@
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}/invitations:
+ *   get:
+ *     tags:
+ *       - Organization Invitations
+ *     summary: List organization invitations
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Invitations returned.
+ *       404:
+ *         description: Invitations not found.
+ *   post:
+ *     tags:
+ *       - Organization Invitations
+ *     summary: Invite users to an organization
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [organizationId, inviteeEmails, role]
+ *             properties:
+ *               organizationId:
+ *                 type: string
+ *                 format: uuid
+ *               inviteeEmails:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: email
+ *               role:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Invitations sent.
+ *       400:
+ *         description: Organization ID mismatch or invalid input.
+ *       404:
+ *         description: Organization not found.
+ *       500:
+ *         description: Failed to send some invitations.
+ */
 import { OrganizationInvite } from "@/models/OrganizationInvite";
 import { Organization } from "@/models/Organization";
 import { Op } from "sequelize";

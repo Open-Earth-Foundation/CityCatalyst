@@ -1,3 +1,38 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/hiap:
+ *   get:
+ *     tags:
+ *       - Inventory HIAP
+ *     summary: Get HIAP ranking or related data for an inventory.
+ *     description: Returns HIAP insights for the selected actionType and language. Requires a signed‑in user with access to the inventory. Response is wrapped in { data } (actionType‑dependent shape).
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: actionType
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: lng
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: HIAP result wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data: { type: object, additionalProperties: true }
+ */
 import { apiHandler } from "@/util/api";
 import { LANGUAGES } from "@/util/types";
 import { ACTION_TYPES } from "@/util/types";

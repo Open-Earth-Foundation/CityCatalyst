@@ -1,3 +1,16 @@
+/**
+ * @swagger
+ * /api/v0/user/projects:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: List projects the current user belongs to
+ *     responses:
+ *       200:
+ *         description: Projects returned.
+ *       401:
+ *         description: Unauthorized.
+ */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { ProjectService } from "@/backend/ProjectsService";

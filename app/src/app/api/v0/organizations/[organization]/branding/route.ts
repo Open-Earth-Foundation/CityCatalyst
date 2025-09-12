@@ -1,3 +1,41 @@
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}/branding:
+ *   patch:
+ *     tags:
+ *       - Organizations
+ *     summary: Update organization branding (theme and logos)
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [themeId]
+ *             properties:
+ *               themeId:
+ *                 type: string
+ *               logoUrl:
+ *                 type: string
+ *                 format: uri
+ *                 nullable: true
+ *               clearLogoUrl:
+ *                 type: string
+ *                 format: uri
+ *                 nullable: true
+ *     responses:
+ *       200:
+ *         description: Branding updated.
+ *       404:
+ *         description: Organization not found.
+ */
 import { whiteLabelSchema } from "@/util/validation";
 import { FileUploadService } from "@/backend/FileUploadService";
 import { S3FileStorageProvider } from "@/backend/S3FileUploadService";

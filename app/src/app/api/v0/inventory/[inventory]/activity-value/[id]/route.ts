@@ -1,3 +1,97 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/activity-value/{id}:
+ *   get:
+ *     tags:
+ *       - Inventory Activity
+ *     summary: Get a single activity value by ID (edit access).
+ *     description: Fetches the activity value with nested inventory/gas values for the inventory. Requires a signed‑in user with edit access to the inventory. Response is wrapped in { data }.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Activity value wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data: { type: object, additionalProperties: true }
+   *   patch:
+   *     tags:
+   *       - Inventory Activity
+ *     summary: Update an activity value by ID (edit access).
+ *     description: Updates the activity value and related gas/emissions factors as needed. Requires a signed‑in user with edit access. Returns a success flag with the updated value.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Success flag and updated value.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data: { type: object, additionalProperties: true }
+ *       400:
+ *         description: Invalid request (e.g., values too large).
+   *   delete:
+   *     tags:
+   *       - Inventory Activity
+ *     summary: Delete an activity value by ID (edit access).
+ *     description: Removes the activity value row. Requires a signed‑in user with edit access. Returns a success flag.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Success flag.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ */
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

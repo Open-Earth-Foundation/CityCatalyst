@@ -1,3 +1,58 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}/population:
+ *   get:
+ *     tags:
+ *       - City Population
+ *     summary: Get most recent population data for a city
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Population data returned.
+ *   post:
+ *     tags:
+ *       - City Population
+ *     summary: Upsert population values for a city
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               [cityPopulation, cityPopulationYear, regionPopulation, regionPopulationYear, countryPopulation, countryPopulationYear]
+ *             properties:
+ *               cityPopulation:
+ *                 type: number
+ *               cityPopulationYear:
+ *                 type: number
+ *               regionPopulation:
+ *                 type: number
+ *               regionPopulationYear:
+ *                 type: number
+ *               countryPopulation:
+ *                 type: number
+ *               countryPopulationYear:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Population values updated.
+ *       404:
+ *         description: City not found.
+ */
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

@@ -1,3 +1,48 @@
+/**
+ * @swagger
+ * /api/v0/assistants/threads/export:
+ *   post:
+ *     tags:
+ *       - Assistants Threads
+ *     summary: Save an assistant thread reference in the database.
+ *     description: Persists the external Assistant thread ID associated with the configured Assistant. Requires a signed-in user (standard user is sufficient). Use this to keep a record of threads created via the Assistant API.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [threadId]
+ *             properties:
+ *               threadId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Created database row wrapped in a data object.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     assistantThreadId:
+ *                       type: string
+ *                     assistantId:
+ *                       type: string
+ *                   additionalProperties: true
+ *             examples:
+ *               example:
+ *                 value:
+ *                   data:
+ *                     assistantThreadId: "thread_abc123"
+ *                     assistantId: "asst_123"
+ *       400:
+ *         description: Invalid threadId provided.
+ *       500:
+ *         description: Server error.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

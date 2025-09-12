@@ -1,3 +1,46 @@
+/**
+ * @swagger
+ * /api/v0/auth/role:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Update a user’s role (admin only).
+ *     description: Sets the role for the target user to either admin or user. Requires an admin session; non‑admins receive 403. Returns a simple success flag on completion.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, role]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               role:
+ *                 type: string
+ *                 enum: [user, admin]
+ *     responses:
+ *       200:
+ *         description: Success flag.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *             examples:
+ *               example:
+ *                 value:
+ *                   success: true
+ *       400:
+ *         description: User already has the specified role.
+ *       403:
+ *         description: Only admins can change roles.
+ *       404:
+ *         description: User not found.
+ */
 import { Roles } from "@/util/types";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

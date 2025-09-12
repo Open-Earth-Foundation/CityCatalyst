@@ -1,3 +1,38 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}/organization:
+ *   get:
+ *     tags:
+ *       - City Organization
+ *     summary: Get organization branding and status for a city.
+ *     description: Returns the organization identifier, name, logo URL, active flag, and theme info for the city’s project. Requires a signed‑in user with access to the city. Response is a plain object (not wrapped in data).
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Organization details.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 organizationId: { type: string, format: uuid }
+ *                 organizationName: { type: string }
+ *                 logoUrl: { type: string }
+ *                 active: { type: boolean }
+ *                 theme:
+ *                   type: object
+ *                   properties:
+ *                     themeId: { type: string }
+ *                     themeKey: { type: string }
+ *       404:
+ *         description: City or organization not found.
+ */
 import { apiHandler } from "@/util/api";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";

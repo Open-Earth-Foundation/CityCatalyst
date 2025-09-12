@@ -1,3 +1,36 @@
+/**
+ * @swagger
+ * /api/v0/public/city/{cityId}:
+ *   get:
+ *     tags:
+ *       - Public
+ *     summary: Get public city information by ID.
+ *     description: Public endpoint that returns city details only if the city has at least one public inventory. No authentication is required. Response is wrapped in { data } and includes basic project/organization branding fields.
+ *     parameters:
+ *       - in: path
+ *         name: cityId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: City details wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   additionalProperties: true
+ *       400:
+ *         description: Invalid city ID.
+ *       401:
+ *         description: No public data available for this city.
+ *       404:
+ *         description: City not found.
+ */
 import { NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

@@ -1,3 +1,28 @@
+/**
+ * @swagger
+ * /api/v0/projects/{project}/bulk-download:
+ *   get:
+ *     tags:
+ *       - Projects
+ *     summary: Bulk download inventories for a project (CSV)
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: lng
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: CSV file attachment.
+ *       400:
+ *         description: Invalid project ID format.
+ */
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 

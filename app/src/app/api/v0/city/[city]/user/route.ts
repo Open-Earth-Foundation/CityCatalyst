@@ -1,3 +1,68 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}/user:
+ *   get:
+ *     tags:
+ *       - City Users
+ *     summary: List users for a city
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Users returned.
+ *       404:
+ *         description: Users not found.
+ *   post:
+ *     tags:
+ *       - City Users
+ *     summary: Look up a user by email
+ *     description: Returns an existing user if found; otherwise returns a message.
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: User found or message returned.
+ *   delete:
+ *     tags:
+ *       - City Users
+ *     summary: Remove a user from a city by email
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: email
+ *     responses:
+ *       200:
+ *         description: User removed.
+ */
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

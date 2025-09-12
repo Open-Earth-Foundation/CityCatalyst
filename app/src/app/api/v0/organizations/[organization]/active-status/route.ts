@@ -1,3 +1,33 @@
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}/active-status:
+ *   patch:
+ *     tags:
+ *       - Organizations
+ *     summary: Update organization active status
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [active]
+ *             properties:
+ *               active:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Active status updated.
+ *       404:
+ *         description: Organization not found.
+ */
 import EmailService from "@/backend/EmailService";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";

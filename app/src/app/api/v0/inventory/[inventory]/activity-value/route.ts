@@ -1,3 +1,132 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/activity-value:
+ *   get:
+ *     tags:
+ *       - Inventory Activity
+ *     summary: List activity values for an inventory (edit access).
+ *     description: Returns activity values filtered by subCategoryIds or subSectorId, optionally by methodology. Requires a signed‑in user with edit access to the inventory. Response is wrapped in { data: ActivityValue[] }.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: subCategoryIds
+ *         required: false
+ *         description: Comma-separated subcategory IDs
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: subSectorId
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: methodologyId
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Activity values wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items: { type: object, additionalProperties: true }
+ *       400:
+ *         description: Missing required query parameter.
+   *   post:
+   *     tags:
+   *       - Inventory Activity
+ *     summary: Create an activity value (edit access).
+ *     description: Creates an activity and associated inventory/gas values as needed. Requires a signed‑in user with edit access to the inventory. Returns a success flag and the created value in { success, data }.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               activityData:
+ *                 type: object
+ *               metadata:
+ *                 type: object
+ *               inventoryValueId:
+ *                 type: string
+ *                 format: uuid
+ *               inventoryValue:
+ *                 type: object
+ *               gasValues:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *     responses:
+ *       200:
+ *         description: Success flag and created value.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data: { type: object, additionalProperties: true }
+ *       400:
+ *         description: Invalid data.
+   *   delete:
+   *     tags:
+   *       - Inventory Activity
+ *     summary: Delete activities by subsector or reference number (edit access).
+ *     description: Deletes activity rows within a subsector or by GPC reference number. Requires a signed‑in user with edit access. Returns a success flag and deletedCount in { success, data }.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: subSectorId
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: gpcReferenceNumber
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Success flag and deleted count.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     deletedCount: { type: integer }
+ *       400:
+ *         description: Invalid query combination.
+ */
 import ActivityService from "@/backend/ActivityService";
 import { PermissionService } from "@/backend/permissions";
 import UserService from "@/backend/UserService";

@@ -1,3 +1,18 @@
+/**
+ * @swagger
+ * /api/v0/user/clients:
+ *   get:
+ *     tags:
+ *       - User Clients
+ *     summary: List OAuth client authorizations for current user
+ *     responses:
+ *       200:
+ *         description: Client authorizations returned.
+ *       401:
+ *         description: Not signed in.
+ *       500:
+ *         description: OAuth not enabled.
+ */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";

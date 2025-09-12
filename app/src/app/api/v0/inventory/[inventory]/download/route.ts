@@ -1,3 +1,33 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/download:
+ *   get:
+ *     tags:
+ *       - Inventory Download
+ *     summary: Download inventory data
+ *     description: Downloads inventory data in various formats. If `format` is omitted or `json`, returns JSON. Other formats stream binary.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: format
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [json, csv, xls, ecrf]
+ *       - in: query
+ *         name: lng
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Inventory data content.
+ */
 import { apiHandler } from "@/util/api";
 import Excel from "exceljs";
 import createHttpError from "http-errors";

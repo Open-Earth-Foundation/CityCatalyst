@@ -1,3 +1,28 @@
+/**
+ * @swagger
+ * /api/v0/auth/delete:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Delete the authenticated user’s account.
+ *     description: Removes the user record for the currently signed‑in session. Requires a signed‑in user; requests without a session return 401. Use with caution as this operation is irreversible.
+ *     responses:
+ *       200:
+ *         description: Deletion result.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *             examples:
+ *               example:
+ *                 value:
+ *                   success: true
+ *       401:
+ *         description: Must be logged in.
+ */
 import { authOptions } from "@/lib/auth";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

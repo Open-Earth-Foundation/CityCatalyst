@@ -1,3 +1,27 @@
+/**
+ * @swagger
+ * /api/v0/user/access-status:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Get the current user’s access status across resources.
+ *     description: Returns a summary of the user’s access and roles across organizations/projects/cities. Requires a signed‑in session. Response is wrapped in { data } with access metadata.
+ *     responses:
+ *       200:
+ *         description: Access status wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   additionalProperties: true
+ *       401:
+ *         description: Unauthorized.
+ *       404:
+ *         description: User not found.
+ */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { db } from "@/models";

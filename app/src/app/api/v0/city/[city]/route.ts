@@ -1,3 +1,104 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}:
+ *   get:
+ *     tags:
+ *       - City
+ *     summary: Get a single city by ID for the current user.
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: City wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     cityId: { type: string, format: uuid }
+ *                     name: { type: string }
+ *                     locode: { type: string }
+ *                   additionalProperties: true
+ *   delete:
+ *     tags:
+ *       - City
+ *     summary: Delete a city by ID for the current user.
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Deleted city wrapped in data and deleted flag.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                 deleted:
+ *                   type: boolean
+ *             examples:
+ *               example:
+ *                 value:
+ *                   data: { cityId: "..." }
+ *                   deleted: true
+ *   patch:
+ *     tags:
+ *       - City
+ *     summary: Update city fields by ID.
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               locode:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               shape:
+ *                 type: object
+ *                 nullable: true
+ *               area:
+ *                 type: integer
+ *                 nullable: true
+ *               projectId:
+ *                 type: string
+ *                 format: uuid
+ *                 nullable: true
+ *     responses:
+ *       200:
+ *         description: Updated city wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   additionalProperties: true
+ */
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
 import { createCityRequest } from "@/util/validation";

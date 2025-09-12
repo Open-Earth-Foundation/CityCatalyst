@@ -1,3 +1,49 @@
+/**
+ * @swagger
+ * /api/v0/projects/{project}/boundaries:
+ *   get:
+ *     tags:
+ *       - Projects
+ *     summary: Get boundary center points and latest inventory IDs for a project’s cities.
+ *     description: Returns boundary info for each city (with center coordinates) plus the latest inventory ID per city, aggregating any errors for missing data. No explicit authentication is enforced in this handler; adjust upstream middleware if needed. Response is { result: CityBoundaryWithCity[], errors: {locode,error}[] }.
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Boundary data and errors per city.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       boundingBox: { type: array, items: { type: number } }
+ *                       city:
+ *                         type: object
+ *                         properties:
+ *                           id: { type: string, format: uuid }
+ *                           name: { type: string }
+ *                           locode: { type: string }
+ *                           latestInventoryId: { type: string, format: uuid }
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       locode: { type: string }
+ *                       error: { type: string }
+ *       404:
+ *         description: Project not found.
+ */
 import { apiHandler } from "@/util/api";
 import { Project } from "@/models/Project";
 import createHttpError from "http-errors";

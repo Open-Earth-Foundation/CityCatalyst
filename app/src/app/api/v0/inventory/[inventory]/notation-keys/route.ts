@@ -1,3 +1,72 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/notation-keys:
+ *   get:
+ *     tags:
+ *       - Inventory Notation Keys
+ *     summary: List notation key candidates grouped by sector reference number.
+ *     description: Returns unfilled or notation-key-filled subcategory entries grouped by sector ref number to help populate notation keys. Requires a signed‑in user with read access to the inventory. Response is { success, result }.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Candidates grouped by sector reference number.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 result: { type: object, additionalProperties: true }
+ *   post:
+ *     tags:
+ *       - Inventory Notation Keys
+ *     summary: Set notation keys for subcategories in an inventory.
+ *     description: Saves notation keys for the inventory’s subcategories, creating inventory values where necessary. Requires a signed‑in user with access to the inventory. Returns { success, result } listing affected values.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               notationKeys:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required: [subCategoryId, unavailableReason, unavailableExplanation]
+ *                   properties:
+ *                     subCategoryId:
+ *                       type: string
+ *                       format: uuid
+ *                     unavailableReason:
+ *                       type: string
+ *                       enum: [no-occurrance, not-estimated, confidential-information, included-elsewhere]
+ *                     unavailableExplanation:
+ *                       type: string
+ *     responses:
+ *       200:
+ *         description: Save result.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 result: { type: array, items: { type: object, additionalProperties: true } }
+ */
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";

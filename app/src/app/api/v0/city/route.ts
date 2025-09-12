@@ -1,3 +1,103 @@
+/**
+ * @swagger
+ * /api/v0/city:
+ *   get:
+ *     tags:
+ *       - City
+ *     summary: List cities that the current user is a member of.
+ *     description: Returns all cities linked to the authenticated user via CityUser membership. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in { data: City[] }.
+ *     responses:
+ *       200:
+ *         description: Cities wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       cityId: { type: string, format: uuid }
+ *                       name: { type: string }
+ *                       locode: { type: string }
+ *                     additionalProperties: true
+ *             examples:
+ *               example:
+ *                 value:
+ *                   data:
+ *                     - cityId: "11111111-1111-1111-1111-111111111111"
+ *                       name: "Sample City"
+ *                       locode: "US-XXX"
+ *       401:
+ *         description: Unauthorized.
+ *   post:
+ *     tags:
+ *       - City
+ *     summary: Create a new city within a permitted project.
+ *     description: Creates a city associated to a project the user can manage, adds the current user to it, and triggers admin notifications. Requires a signed‑in session and project‑level permission. Returns the created (or existing) city in { data }.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [locode, name]
+ *             properties:
+ *               locode:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               shape:
+ *                 type: object
+ *                 nullable: true
+ *               country:
+ *                 type: string
+ *                 nullable: true
+ *               region:
+ *                 type: string
+ *                 nullable: true
+ *               countryLocode:
+ *                 type: string
+ *                 nullable: true
+ *               regionLocode:
+ *                 type: string
+ *                 nullable: true
+ *               area:
+ *                 type: integer
+ *                 nullable: true
+ *               projectId:
+ *                 type: string
+ *                 format: uuid
+ *                 nullable: true
+ *     responses:
+ *       200:
+ *         description: City wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     cityId: { type: string, format: uuid }
+ *                     name: { type: string }
+ *                     locode: { type: string }
+ *                   additionalProperties: true
+ *             examples:
+ *               example:
+ *                 value:
+ *                   data:
+ *                     cityId: "22222222-2222-2222-2222-222222222222"
+ *                     name: "New City"
+ *                     locode: "US-YYY"
+ *       401:
+ *         description: Unauthorized.
+ *       404:
+ *         description: Project not found.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { createCityRequest } from "@/util/validation";

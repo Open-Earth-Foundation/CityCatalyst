@@ -1,3 +1,36 @@
+/**
+ * @swagger
+ * /api/v0/user/invites/accept:
+ *   patch:
+ *     tags:
+ *       - User Invites
+ *     summary: Accept invites to join cities
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, token, cityIds]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               token:
+ *                 type: string
+ *               cityIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: uuid
+ *     responses:
+ *       200:
+ *         description: Invites accepted and membership created.
+ *       401:
+ *         description: Unauthorized or invalid token.
+ *       500:
+ *         description: Server or configuration error.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { AcceptInvite } from "@/util/validation";

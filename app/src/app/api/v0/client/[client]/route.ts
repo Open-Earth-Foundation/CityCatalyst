@@ -1,3 +1,76 @@
+/**
+ * @swagger
+ * /api/v0/client/{client}:
+ *   get:
+ *     tags:
+ *       - OAuth Clients
+ *     summary: Get a single OAuth client by ID with localized metadata.
+ *     description: Fetches a client and merges its i18n name/description entries by language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in { data }.
+ *     parameters:
+ *       - in: path
+ *         name: client
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Client wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     clientId:
+ *                       type: string
+ *                     redirectUri:
+ *                       type: string
+ *                       format: uri
+ *                     name:
+ *                       type: object
+ *                       additionalProperties:
+ *                         type: string
+ *                     description:
+ *                       type: object
+ *                       additionalProperties:
+ *                         type: string
+ *             examples:
+ *               example:
+ *                 value:
+ *                   data:
+ *                     clientId: "abc123"
+ *                     redirectUri: "https://app.example.com/callback"
+ *                     name: { en: "Example App" }
+ *                     description: { en: "Demo client" }
+ *       401:
+ *         description: Must be logged in.
+ *       404:
+ *         description: Client not found.
+ *       500:
+ *         description: OAuth not enabled or server error.
+ *   delete:
+ *     tags:
+ *       - OAuth Clients
+ *     summary: Delete an OAuth client by ID.
+ *     description: Permanently removes a client record. Requires a signed‑in session and OAUTH_ENABLED. Returns 204 with no body on success.
+ *     parameters:
+ *       - in: path
+ *         name: client
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Client deleted.
+ *       401:
+ *         description: Must be logged in.
+ *       404:
+ *         description: Client not found.
+ *       500:
+ *         description: OAuth not enabled or server error.
+ */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";

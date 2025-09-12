@@ -1,3 +1,42 @@
+/**
+ * @swagger
+ * /api/v0/auth/update-password:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Change the current user’s password.
+ *     description: Validates the current password and sets a new one for the authenticated user. Requires a signed‑in session; non‑authenticated requests fail with 401/404. Returns a success flag indicating if the update persisted.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [currentPassword, confirmPassword]
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *               confirmPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Success flag.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *             examples:
+ *               example:
+ *                 value:
+ *                   success: true
+ *       400:
+ *         description: Current password is incorrect.
+ *       404:
+ *         description: User not found or session expired.
+ */
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
 import { updatePasswordRequest } from "@/util/validation";

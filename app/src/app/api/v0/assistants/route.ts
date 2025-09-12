@@ -1,3 +1,17 @@
+/**
+ * @swagger
+ * /api/v0/assistants:
+ *   post:
+ *     tags:
+ *       - Assistants
+ *     summary: Create a configured Assistant instance for the application.
+ *     description: Placeholder for Assistant provisioning that will initialize a named Assistant and attach file search resources. Requires an admin session; the current implementation returns 501 Not Implemented. Once implemented, it will return an Assistant ID.
+ *     responses:
+ *       501:
+ *         description: Not implemented.
+ *       405:
+ *         description: Method not allowed.
+ */
 import { apiHandler } from "@/util/api";
 import { setupOpenAI } from "@/util/openai";
 import { NextResponse } from "next/server";

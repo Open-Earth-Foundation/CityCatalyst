@@ -1,3 +1,64 @@
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}/projects:
+ *   get:
+ *     tags:
+ *       - Organization Projects
+ *     summary: List projects for an organization visible to the current user.
+ *     description: Returns the projects in the organization filtered by the user’s access (admin, org admin, project admin, or city membership). Requires a signed‑in session. Response is a JSON array or context object (not wrapped).
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Projects visible to the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items: { type: object, additionalProperties: true }
+ *   post:
+ *     tags:
+ *       - Organization Projects
+ *     summary: Create a new project in the organization (admin only).
+ *     description: Creates a project with a name and cityCountLimit and notifies organization admins. Requires an admin session. Response is the created project (not wrapped).
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, cityCountLimit]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               cityCountLimit:
+ *                 type: integer
+ *                 minimum: 1
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Project object.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: true
+ *       404:
+ *         description: Organization not found.
+ */
 // creates a new project and lists all projects belonging to an organization
 
 import { Project } from "@/models/Project";

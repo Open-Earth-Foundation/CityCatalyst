@@ -1,3 +1,43 @@
+/**
+ * @swagger
+ * /api/v0/user:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Get current user info
+ *     responses:
+ *       200:
+ *         description: User info returned.
+ *       401:
+ *         description: Unauthorized.
+ *       404:
+ *         description: User not found.
+ *   patch:
+ *     tags:
+ *       - User
+ *     summary: Update default inventory and city for current user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [defaultInventoryId, defaultCityId]
+ *             properties:
+ *               defaultInventoryId:
+ *                 type: string
+ *                 format: uuid
+ *               defaultCityId:
+ *                 type: string
+ *                 format: uuid
+ *     responses:
+ *       200:
+ *         description: Defaults updated.
+ *       401:
+ *         description: Unauthorized.
+ *       404:
+ *         description: User not found.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

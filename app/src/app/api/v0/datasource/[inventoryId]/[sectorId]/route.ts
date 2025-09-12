@@ -1,3 +1,44 @@
+/**
+ * @swagger
+ * /api/v0/datasource/{inventoryId}/{sectorId}:
+ *   get:
+ *     tags:
+ *       - Data Sources
+ *     summary: List applicable data sources and data for a specific sector.
+ *     description: Retrieves the sector with its data sources, filters them by applicability to the inventory, and fetches data. No explicit authentication is enforced in this handler. Returns { data: successfulSources[], removedSources, failedSources }.
+ *     parameters:
+ *       - in: path
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: sectorId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Applicable sources and fetch results.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items: { type: object, additionalProperties: true }
+ *                 removedSources:
+ *                   type: array
+ *                   items: { type: object, additionalProperties: true }
+ *                 failedSources:
+ *                   type: array
+ *                   items: { type: object, additionalProperties: true }
+ *       404:
+ *         description: Inventory or sector not found.
+ */
 import DataSourceService from "@/backend/DataSourceService";
 import { db } from "@/models";
 import { City } from "@/models/City";

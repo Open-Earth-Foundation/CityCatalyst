@@ -4,7 +4,8 @@
  *   get:
  *     tags:
  *       - Public
- *     summary: List public inventories for a city
+ *     summary: List public inventories for a city by ID.
+ *     description: Public endpoint that returns the city’s public inventories (newest first). No authentication is required. Response is wrapped in { data: Inventory[] } and includes basic fields like inventoryId, inventoryName, year, publishedAt, lastUpdated, and totalEmissions.
  *     parameters:
  *       - in: path
  *         name: cityId
@@ -14,7 +15,24 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: Public inventories returned.
+ *         description: Public inventories wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       inventoryId: { type: string, format: uuid }
+ *                       inventoryName: { type: string }
+ *                       year: { type: integer }
+ *                       isPublic: { type: boolean }
+ *                       publishedAt: { type: string, format: date-time }
+ *                       lastUpdated: { type: string, format: date-time }
+ *                       totalEmissions: { type: number }
  *       400:
  *         description: Invalid city ID.
  *       404:

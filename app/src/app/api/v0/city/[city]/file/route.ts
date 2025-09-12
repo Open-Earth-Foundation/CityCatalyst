@@ -4,7 +4,8 @@
  *   get:
  *     tags:
  *       - City Files
- *     summary: List files for a city
+ *     summary: List uploaded files for a city.
+ *     description: Returns metadata for files users have uploaded to the specified city, including derived size/type info. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in { data: File[] }.
  *     parameters:
  *       - in: path
  *         name: city
@@ -14,14 +15,25 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: List of files returned.
- *       401:
- *         description: Unauthorized.
+ *         description: Files wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id: { type: string }
+ *                       file: { type: object, properties: { fileName: {type: string}, size: {type: integer}, fileType: {type: string} } }
+ *                     additionalProperties: true
  *   post:
  *     tags:
  *       - City Files
- *     summary: Upload a file for a city
- *     description: Accepts multipart form data to upload and register a file for the city.
+ *     summary: Upload a file for a city to attach to inventory data.
+ *     description: Accepts multipart/form-data to upload and register a file with sector/scopes metadata. Requires a signed‑in session and the UPLOAD_OWN_DATA_ENABLED feature flag. Returns the normalized file metadata in { data }.
  *     parameters:
  *       - in: path
  *         name: city
@@ -59,7 +71,19 @@
  *                 type: string
  *     responses:
  *       200:
- *         description: File uploaded and metadata returned.
+ *         description: Uploaded file metadata wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id: { type: string }
+ *                     sector: { type: string }
+ *                     file: { type: object, properties: { fileName: {type: string}, size: {type: integer}, fileType: {type: string} } }
+ *                   additionalProperties: true
  *       400:
  *         description: Invalid file or payload.
  *       503:

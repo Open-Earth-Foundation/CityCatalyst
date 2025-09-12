@@ -4,7 +4,8 @@
  *   get:
  *     tags:
  *       - Inventory Results
- *     summary: Get emissions breakdown for a sector
+ *     summary: Get emissions breakdown for a specific sector.
+ *     description: Computes the breakdown for the chosen sector (by name) within the inventory. Requires a signed‑in user with access to the inventory. Response is wrapped in { data } (shape depends on sector).
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -19,7 +20,13 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Emissions breakdown returned.
+ *         description: Breakdown wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data: { type: object, additionalProperties: true }
  */
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";

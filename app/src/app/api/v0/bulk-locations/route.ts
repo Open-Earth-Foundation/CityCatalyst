@@ -4,22 +4,63 @@
  *   get:
  *     tags:
  *       - Bulk Locations
- *     summary: Get bulk city locations
- *     description: Returns location data (latitude and longitude) for cities filtered by organization or project access.
+ *     summary: List approximate lat/lng for accessible cities by organization or project.
+ *     description: Returns a list of city location center points computed from boundary data. Requires a signed‑in user with access to the specified organization or project; otherwise 401 is returned. Items can be either a location record or an error for cities missing data.
  *     parameters:
  *       - in: query
  *         name: organizationId
  *         required: false
  *         schema:
  *           type: string
+ *           format: uuid
  *       - in: query
  *         name: projectId
  *         required: false
  *         schema:
  *           type: string
+ *           format: uuid
  *     responses:
  *       200:
- *         description: List of city locations.
+ *         description: Array of results wrapped in data; each item is either a location or an error entry.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     oneOf:
+ *                       - type: object
+ *                         properties:
+ *                           locode:
+ *                             type: string
+ *                           name:
+ *                             type: string
+ *                           country:
+ *                             type: string
+ *                           latitude:
+ *                             type: number
+ *                           longitude:
+ *                             type: number
+ *                       - type: object
+ *                         properties:
+ *                           error:
+ *                             type: string
+ *                           cityId:
+ *                             type: string
+ *                             format: uuid
+ *             examples:
+ *               example:
+ *                 value:
+ *                   data:
+ *                     - locode: "US-NYC"
+ *                       name: "New York"
+ *                       country: "United States"
+ *                       latitude: 40.7128
+ *                       longitude: -74.006
+ *                     - error: "FAILED_TO_LOAD_CITY_BOUNDARY"
+ *                       cityId: "e1f2a3b4-0000-0000-0000-000000000000"
  *       400:
  *         description: Missing organizationId or projectId.
  *       401:

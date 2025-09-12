@@ -4,14 +4,15 @@
  *   post:
  *     tags:
  *       - Chat
- *     summary: Stream chat completion for an inventory
- *     description: Generates a streamed chat response using either OpenAI or HuggingFace models with inventory context.
+ *     summary: Stream chat responses grounded in a specific inventory context.
+ *     description: Uses either OpenAI or HuggingFace models to generate a streamed response, prepending inventory context derived from the city and its population data. Requires a signed‑in user with access to the target inventory; unauthorized users receive 401/404. The response is a text/event-stream of incremental tokens/events, not a JSON object.
  *     parameters:
  *       - in: path
  *         name: inventory
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *     requestBody:
  *       required: true
  *       content:
@@ -32,7 +33,16 @@
  *                       type: string
  *     responses:
  *       200:
- *         description: Streamed chat response.
+ *         description: Server-sent stream of chat tokens/events.
+ *         content:
+ *           text/event-stream:
+ *             schema:
+ *               type: string
+ *             examples:
+ *               example:
+ *                 value: |
+ *                   event: completion.delta
+ *                   data: {"delta":"Hello"}
  *       401:
  *         description: Unauthorized or no access to inventory.
  *       404:

@@ -4,7 +4,8 @@
  *   post:
  *     tags:
  *       - Auth
- *     summary: Register a new user
+ *     summary: Create a new user account and send a welcome email.
+ *     description: Registers a user with name, email, password, and preferred language and optionally associates them to an inventory’s city. Public endpoint; no prior authentication required. Returns a minimal user object on success.
  *     requestBody:
  *       required: true
  *       content:
@@ -32,7 +33,36 @@
  *                 type: string
  *     responses:
  *       200:
- *         description: User registered successfully.
+ *         description: Minimal user object wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     userId:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                     role:
+ *                       type: string
+ *                     preferredLanguage:
+ *                       type: string
+ *             examples:
+ *               example:
+ *                 value:
+ *                   user:
+ *                     userId: "7c0c4b9a-7b60-4f63-b4cc-7b4bcae6a111"
+ *                     name: "Jane Doe"
+ *                     email: "jane@example.com"
+ *                     role: "user"
+ *                     preferredLanguage: "en"
  *       400:
  *         description: Email could not be sent or invalid input.
  */

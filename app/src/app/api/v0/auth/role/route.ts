@@ -4,8 +4,8 @@
  *   post:
  *     tags:
  *       - Auth
- *     summary: Change a user's role
- *     description: Changes the role of a user. Only admins may call this endpoint.
+ *     summary: Update a user’s role (admin only).
+ *     description: Sets the role for the target user to either admin or user. Requires an admin session; non‑admins receive 403. Returns a simple success flag on completion.
  *     requestBody:
  *       required: true
  *       content:
@@ -22,7 +22,18 @@
  *                 enum: [user, admin]
  *     responses:
  *       200:
- *         description: Role updated successfully.
+ *         description: Success flag.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *             examples:
+ *               example:
+ *                 value:
+ *                   success: true
  *       400:
  *         description: User already has the specified role.
  *       403:

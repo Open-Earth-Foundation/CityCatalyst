@@ -4,7 +4,8 @@
  *   get:
  *     tags:
  *       - Projects
- *     summary: Get summary metrics for a project
+ *     summary: Get totals for cities, emissions, population, and data sources in a project.
+ *     description: Computes high‑level aggregates for the project, including city count, emissions sum, total population (based on most recent inventory years per city), and total data sources. No explicit authentication is enforced in this handler currently. Response is a plain object (not wrapped).
  *     parameters:
  *       - in: path
  *         name: project
@@ -14,7 +15,16 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: Summary returned (totals for cities, emissions, population, data sources).
+ *         description: Summary object.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalCities: { type: integer }
+ *                 totalEmissions: { type: number }
+ *                 totalPopulation: { type: number }
+ *                 totalDataSources: { type: integer }
  *       404:
  *         description: Project not found.
  */

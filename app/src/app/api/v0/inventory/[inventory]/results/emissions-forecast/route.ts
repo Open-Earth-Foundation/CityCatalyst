@@ -4,7 +4,8 @@
  *   get:
  *     tags:
  *       - Inventory Results
- *     summary: Get emissions forecast for an inventory
+ *     summary: Get an emissions forecast derived from the inventory.
+ *     description: Returns a forecast model output for the given inventory. Requires a signed‑in user with access to the inventory. Response is wrapped in { data } (model-dependent shape).
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -14,7 +15,13 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: Forecast data returned.
+ *         description: Forecast wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data: { type: object, additionalProperties: true }
  */
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";

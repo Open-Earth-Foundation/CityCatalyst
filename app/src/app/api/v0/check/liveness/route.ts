@@ -4,11 +4,25 @@
  *   get:
  *     tags:
  *       - Check
- *     summary: Liveness probe
- *     description: Returns a simple alive status and app version.
+ *     summary: Report liveness status and version.
+ *     description: Public endpoint that reports if the service process is responsive and includes the version string. Does not require authentication. Use it for container/process liveness checks.
  *     responses:
  *       200:
- *         description: Service is alive.
+ *         description: Alive status and version.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 version:
+ *                   type: string
+ *             examples:
+ *               example:
+ *                 value:
+ *                   message: "alive"
+ *                   version: "0.99.0-dev.0"
  */
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";

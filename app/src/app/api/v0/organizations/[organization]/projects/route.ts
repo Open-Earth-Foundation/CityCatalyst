@@ -4,7 +4,8 @@
  *   get:
  *     tags:
  *       - Organization Projects
- *     summary: List projects for an organization (context-aware)
+ *     summary: List projects for an organization visible to the current user.
+ *     description: Returns the projects in the organization filtered by the user’s access (admin, org admin, project admin, or city membership). Requires a signed‑in session. Response is a JSON array or context object (not wrapped).
  *     parameters:
  *       - in: path
  *         name: organization
@@ -14,11 +15,17 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: Projects returned.
+ *         description: Projects visible to the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items: { type: object, additionalProperties: true }
  *   post:
  *     tags:
  *       - Organization Projects
- *     summary: Create a project in an organization
+ *     summary: Create a new project in the organization (admin only).
+ *     description: Creates a project with a name and cityCountLimit and notifies organization admins. Requires an admin session. Response is the created project (not wrapped).
  *     parameters:
  *       - in: path
  *         name: organization
@@ -43,7 +50,12 @@
  *                 type: string
  *     responses:
  *       200:
- *         description: Project created.
+ *         description: Project object.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: true
  *       404:
  *         description: Organization not found.
  */

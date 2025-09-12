@@ -4,14 +4,15 @@
  *   post:
  *     tags:
  *       - Assistants Threads
- *     summary: Retrieve a thread by ID
- *     description: Retrieves an assistant thread using its identifier.
+ *     summary: Retrieve details for an existing assistant thread.
+ *     description: Looks up a thread by ID using the Assistant API. Requires a signed-in user with access to the referenced inventory. Use this to restore a thread session on page reload.
  *     parameters:
  *       - in: path
  *         name: inventory
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *     requestBody:
  *       required: true
  *       content:
@@ -24,7 +25,21 @@
  *                 type: string
  *     responses:
  *       200:
- *         description: Thread retrieved successfully.
+ *         description: Thread payload from provider.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 thread:
+ *                   type: object
+ *                   additionalProperties: true
+ *             examples:
+ *               example:
+ *                 value:
+ *                   thread:
+ *                     id: "thread_abc123"
+ *                     object: "thread"
  *       500:
  *         description: Failed to retrieve thread.
  */

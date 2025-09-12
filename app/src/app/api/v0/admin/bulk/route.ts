@@ -4,8 +4,8 @@
  *   post:
  *     tags:
  *       - Admin
- *     summary: Create bulk inventories (admin)
- *     description: Creates inventories in bulk for given city locodes and years, invites users, and assigns to a project. Admin only.
+ *     summary: Create inventories in bulk for multiple cities and years.
+ *     description: Creates city records (if needed) and inventories for each provided LOCODE and year, and adds the specified users to those cities. Requires an admin session; non-admins receive an authorization error. Use this to seed projects quickly across many locations.
  *     requestBody:
  *       required: true
  *       content:
@@ -38,7 +38,51 @@
  *                 format: uuid
  *     responses:
  *       200:
- *         description: Bulk inventories created.
+ *         description: Operation result with created inventory IDs and any errors.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       locode:
+ *                         type: string
+ *                       error:
+ *                         oneOf:
+ *                           - type: string
+ *                           - type: object
+ *                             additionalProperties: true
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       locode:
+ *                         type: string
+ *                       result:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                           format: uuid
+ *             examples:
+ *               example:
+ *                 value:
+ *                   errors:
+ *                     - locode: "US-AAA"
+ *                       error: "Population data incomplete for city US-AAA and inventory year 2022"
+ *                   results:
+ *                     - locode: "US-BBB"
+ *                       result:
+ *                         - "a1111111-1111-1111-1111-111111111111"
+ *                         - "b2222222-2222-2222-2222-222222222222"
+ *       400:
+ *         description: Invalid request or users not found for invitation.
+ *       404:
+ *         description: City name lookup failed or related entity missing.
  */
 import AdminService from "@/backend/AdminService";
 import { apiHandler } from "@/util/api";

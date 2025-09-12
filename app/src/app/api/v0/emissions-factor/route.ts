@@ -4,8 +4,8 @@
  *   post:
  *     tags:
  *       - Emissions Factors
- *     summary: Fetch emissions factors
- *     description: Returns emissions factors filtered by inventory, region, methodology, reference number, and optional metadata. Do not send both inventoryId and regionLocode in the same request.
+ *     summary: Query emissions factors filtered by location, methodology, and metadata.
+ *     description: Looks up emissions factors by reference number, methodology, and optional metadata, deriving location context from either an inventoryId or a regionLocode. Public endpoint (no authentication enforced) in current implementation. Returns results wrapped in { data: EmissionsFactor[] }.
  *     requestBody:
  *       required: true
  *       content:
@@ -28,7 +28,17 @@
  *                 additionalProperties: true
  *     responses:
  *       200:
- *         description: Matching emissions factors returned.
+ *         description: Matching factors wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     additionalProperties: true
  *       400:
  *         description: Invalid parameters (e.g., both inventoryId and regionLocode provided).
  */

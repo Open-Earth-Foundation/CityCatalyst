@@ -4,8 +4,8 @@
  *   post:
  *     tags:
  *       - Assistants Threads
- *     summary: Send a message to a thread and stream results
- *     description: Adds a user message to the thread and streams the assistant run output.
+ *     summary: Append a user message to a thread and stream the run output.
+ *     description: Adds a message to an existing thread and starts a run that streams incremental events (tool calls, deltas, completions). Requires a signed-in user who owns or can access the thread’s inventory context. The response is a streamed sequence of events, not a JSON object.
  *     requestBody:
  *       required: true
  *       content:
@@ -20,7 +20,16 @@
  *                 type: string
  *     responses:
  *       200:
- *         description: Stream of run events.
+ *         description: Server-sent stream of Assistant events.
+ *         content:
+ *           text/event-stream:
+ *             schema:
+ *               type: string
+ *             examples:
+ *               example:
+ *                 value: |
+ *                   event: message.delta
+ *                   data: {"delta":"Hello"}
  */
 import { apiHandler } from "@/util/api";
 import { setupOpenAI } from "@/util/openai";

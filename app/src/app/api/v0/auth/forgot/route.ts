@@ -4,7 +4,8 @@
  *   post:
  *     tags:
  *       - Auth
- *     summary: Send password reset email
+ *     summary: Request a password reset email for a user account.
+ *     description: Generates a short‑lived reset token and emails the reset link if the user exists. No authentication is required, and responses are always 200 to avoid revealing account existence. Requires server email and secret configuration.
  *     requestBody:
  *       required: true
  *       content:
@@ -18,7 +19,14 @@
  *                 format: email
  *     responses:
  *       200:
- *         description: Reset email sent (or silently ignored).
+ *         description: Empty body to acknowledge request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *             examples:
+ *               example:
+ *                 value: {}
  *       500:
  *         description: Configuration error.
  */

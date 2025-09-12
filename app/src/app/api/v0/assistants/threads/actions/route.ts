@@ -4,8 +4,8 @@
  *   post:
  *     tags:
  *       - Assistants Threads
- *     summary: Submit tool call outputs for a run
- *     description: Submits tool outputs to an existing assistant thread run and streams events.
+ *     summary: Submit tool outputs for an in‑flight run and stream updated events.
+ *     description: Provides tool call outputs to a running thread and resumes streaming of events. Requires a signed-in user with access to the underlying inventory/thread. The response is a streamed sequence of events, not a JSON object.
  *     requestBody:
  *       required: true
  *       content:
@@ -24,7 +24,16 @@
  *                   type: object
  *     responses:
  *       200:
- *         description: Stream of run events.
+ *         description: Server-sent stream of Assistant events.
+ *         content:
+ *           text/event-stream:
+ *             schema:
+ *               type: string
+ *             examples:
+ *               example:
+ *                 value: |
+ *                   event: tool.outputs.submitted
+ *                   data: {"status":"ok"}
  */
 import { apiHandler } from "@/util/api";
 import { setupOpenAI } from "@/util/openai";

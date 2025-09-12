@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - User
- *     summary: Get year-over-year emission results for a city
+ *     summary: Get year‑over‑year emissions results for a user’s city.
  *     parameters:
  *       - in: path
  *         name: id
@@ -14,7 +14,13 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: Emission results returned.
+ *         description: Results wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data: { type: object, additionalProperties: true }
  *       404:
  *         description: City not found.
  */

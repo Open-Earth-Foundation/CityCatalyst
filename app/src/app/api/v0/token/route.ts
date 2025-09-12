@@ -4,8 +4,8 @@
  *   post:
  *     tags:
  *       - Auth
- *     summary: Exchange authorization code for tokens (OAuth 2.0 PKCE)
- *     description: Accepts an authorization code and returns an access token and refresh token. Requires application/x-www-form-urlencoded.
+ *     summary: Exchange an authorization code for access and refresh tokens (OAuth 2.0 PKCE).
+ *     description: Accepts a short‑lived authorization code issued by the server and returns a bearer access token plus a refresh token. Requires the OAUTH_ENABLED feature flag and the content type application/x-www-form-urlencoded; no user session is required for this exchange. Validates client_id/redirect_uri, token issuer/audience, single‑use code, and PKCE S256 challenge.
  *     requestBody:
  *       required: true
  *       content:
@@ -44,8 +44,16 @@
  *                   type: string
  *                 scope:
  *                   type: string
+ *             examples:
+ *               example:
+ *                 value:
+ *                   access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                   token_type: "Bearer"
+ *                   expires_in: 604800
+ *                   refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                   scope: "read write"
  *       400:
- *         description: Invalid request parameters or verification failed.
+ *         description: Invalid request parameters or verification failed (e.g., client/redirect mismatch, expired/invalid code, PKCE failure, reused code).
  *       415:
  *         description: Unsupported content type.
  *       500:

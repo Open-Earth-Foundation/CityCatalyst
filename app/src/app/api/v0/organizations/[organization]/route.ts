@@ -4,7 +4,8 @@
  *   get:
  *     tags:
  *       - Organizations
- *     summary: Get organization by ID
+ *     summary: Get a single organization with projects and theme (admin only).
+ *     description: Returns the organization record with related projects and theme fields. Requires an admin session. Response is an object (not wrapped).
  *     parameters:
  *       - in: path
  *         name: organization
@@ -14,13 +15,19 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: Organization returned.
+ *         description: Organization object.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: true
  *       404:
  *         description: Organization not found.
  *   patch:
  *     tags:
  *       - Organizations
- *     summary: Update organization
+ *     summary: Update organization properties (admin only).
+ *     description: Updates organization fields such as name and contactEmail. Requires an admin session. Response is the updated organization object (not wrapped).
  *     parameters:
  *       - in: path
  *         name: organization
@@ -43,6 +50,11 @@
  *     responses:
  *       200:
  *         description: Organization updated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: true
  *       400:
  *         description: Cannot update default organization.
  *       404:
@@ -50,7 +62,8 @@
  *   delete:
  *     tags:
  *       - Organizations
- *     summary: Delete organization
+ *     summary: Delete an organization (admin only).
+ *     description: Deletes an organization unless it is the default. Requires an admin session. Response is { deleted: true } on success.
  *     parameters:
  *       - in: path
  *         name: organization
@@ -60,7 +73,13 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: Organization deleted.
+ *         description: Deletion flag.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 deleted: { type: boolean }
  *       400:
  *         description: Cannot delete default organization.
  *       404:

@@ -4,10 +4,24 @@
  *   get:
  *     tags:
  *       - User
- *     summary: Get current session's user data
+ *     summary: Get the current session user object.
+ *     description: Returns the session’s user payload (id, email, name, image, role). Requires a signed‑in session. Response is wrapped in { data }.
  *     responses:
  *       200:
- *         description: Session user returned.
+ *         description: User wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id: { type: string }
+ *                     email: { type: string }
+ *                     name: { type: string }
+ *                     image: { type: string }
+ *                     role: { type: string }
  *       401:
  *         description: Not signed in.
  */

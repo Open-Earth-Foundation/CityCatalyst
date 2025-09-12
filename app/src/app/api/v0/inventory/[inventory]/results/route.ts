@@ -4,7 +4,8 @@
  *   get:
  *     tags:
  *       - Inventory Results
- *     summary: Get emissions results summary for an inventory
+ *     summary: Get emissions totals by sector and top emitters for an inventory.
+ *     description: Computes the inventory’s total emissions and top sub-sector emitters. Requires a signed‑in user with access to the inventory. Response is wrapped in { data: { totalEmissions, topEmissions } }.
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -14,7 +15,24 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: Emissions totals and top emitters returned.
+ *         description: Results wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     totalEmissions:
+ *                       type: object
+ *                       properties:
+ *                         bySector: { type: array, items: { type: object, additionalProperties: true } }
+ *                         total: { type: number }
+ *                     topEmissions:
+ *                       type: object
+ *                       properties:
+ *                         bySubSector: { type: array, items: { type: object, additionalProperties: true } }
  */
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";

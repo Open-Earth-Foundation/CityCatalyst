@@ -4,7 +4,8 @@
  *   get:
  *     tags:
  *       - City
- *     summary: Get inventory years for a city
+ *     summary: List inventory identifiers and years for a city.
+ *     description: Returns the basic city info plus a list of inventory IDs with years and last update timestamps. Requires a signed‑in user (future: public if inventory is public). Response is wrapped in { data: { city, years[] } }.
  *     parameters:
  *       - in: path
  *         name: city
@@ -14,7 +15,24 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: City metadata and inventory years returned.
+ *         description: City and years wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     city: { type: object, additionalProperties: true }
+ *                     years:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           year: { type: integer }
+ *                           inventoryId: { type: string, format: uuid }
+ *                           lastUpdate: { type: string, format: date-time }
  *       404:
  *         description: City not found.
  */

@@ -4,7 +4,8 @@
  *   delete:
  *     tags:
  *       - Organization Users
- *     summary: Remove a user from an organization
+ *     summary: Remove a user from an organization (admin/org-admin).
+ *     description: Removes the given email from the organization’s owners/admins. Requires an admin or org_admin session for the organization. Returns an empty body on success.
  *     parameters:
  *       - in: path
  *         name: organization
@@ -20,7 +21,11 @@
  *           format: email
  *     responses:
  *       200:
- *         description: User removed.
+ *         description: Empty body.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
  *       400:
  *         description: user-not-found query param missing.
  */

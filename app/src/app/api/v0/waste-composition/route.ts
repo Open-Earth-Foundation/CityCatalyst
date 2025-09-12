@@ -4,8 +4,8 @@
  *   get:
  *     tags:
  *       - Waste Composition
- *     summary: Get waste composition formula inputs
- *     description: Returns formula input values (WCF_*) for the specified inventory and methodology, filtered by the city’s country LOCODE when available.
+ *     summary: Get waste composition formula inputs for an inventory and methodology.
+ *     description: Returns formula input values (WCF_*) used by waste composition calculations for the specified methodology, using the inventory’s city country LOCODE when available. Requires a signed‑in session with access to the inventory. Response is wrapped in { data: FormulaInput[] }.
  *     parameters:
  *       - in: query
  *         name: inventoryId
@@ -20,7 +20,28 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Formula input values returned.
+ *         description: Formula inputs wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       parameterCode: { type: string }
+ *                       parameterName: { type: string }
+ *                       gpcRefno: { type: string }
+ *                       formulaInputValue: { type: number }
+ *                       formulaInputUnits: { type: string }
+ *                       formulaName: { type: string }
+ *                       region: { type: string }
+ *                       actorId: { type: string }
+ *                       datasource: { type: string }
+ *                       rnk: { type: integer }
+ *                       methodologyName: { type: string }
  *       400:
  *         description: Missing inventoryId or methodologyName.
  *       401:

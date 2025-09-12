@@ -4,8 +4,8 @@
  *   post:
  *     tags:
  *       - Auth
- *     summary: Update password for logged-in user
- *     description: Validates current password and updates to a new one.
+ *     summary: Change the current user’s password.
+ *     description: Validates the current password and sets a new one for the authenticated user. Requires a signed‑in session; non‑authenticated requests fail with 401/404. Returns a success flag indicating if the update persisted.
  *     requestBody:
  *       required: true
  *       content:
@@ -20,7 +20,18 @@
  *                 type: string
  *     responses:
  *       200:
- *         description: Password updated.
+ *         description: Success flag.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *             examples:
+ *               example:
+ *                 value:
+ *                   success: true
  *       400:
  *         description: Current password is incorrect.
  *       404:

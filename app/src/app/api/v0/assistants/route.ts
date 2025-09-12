@@ -4,8 +4,8 @@
  *   post:
  *     tags:
  *       - Assistants
- *     summary: Create a new assistant (not implemented)
- *     description: Reserved endpoint for creating an assistant. Currently returns 501.
+ *     summary: Create a configured Assistant instance for the application.
+ *     description: Placeholder for Assistant provisioning that will initialize a named Assistant and attach file search resources. Requires an admin session; the current implementation returns 501 Not Implemented. Once implemented, it will return an Assistant ID.
  *     responses:
  *       501:
  *         description: Not implemented.

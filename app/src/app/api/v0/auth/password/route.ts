@@ -4,8 +4,8 @@
  *   post:
  *     tags:
  *       - Auth
- *     summary: Reset password with token
- *     description: Verifies a reset token and updates the user's password.
+ *     summary: Set a new password using a valid reset token.
+ *     description: Verifies the provided reset token and updates the user’s password. No authentication is required for this flow, only a valid token. Returns 200 with an empty object on success.
  *     requestBody:
  *       required: true
  *       content:
@@ -20,7 +20,14 @@
  *                 type: string
  *     responses:
  *       200:
- *         description: Password updated successfully.
+ *         description: Empty body on success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *             examples:
+ *               example:
+ *                 value: {}
  *       401:
  *         description: Invalid or expired token.
  *       404:

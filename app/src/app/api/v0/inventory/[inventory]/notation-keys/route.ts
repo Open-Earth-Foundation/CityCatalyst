@@ -4,7 +4,8 @@
  *   get:
  *     tags:
  *       - Inventory Notation Keys
- *     summary: List notation key candidates grouped by sector reference number
+ *     summary: List notation key candidates grouped by sector reference number.
+ *     description: Returns unfilled or notation-key-filled subcategory entries grouped by sector ref number to help populate notation keys. Requires a signed‑in user with read access to the inventory. Response is { success, result }.
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -14,11 +15,19 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: Notation key candidates returned.
+ *         description: Candidates grouped by sector reference number.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 result: { type: object, additionalProperties: true }
  *   post:
  *     tags:
  *       - Inventory Notation Keys
- *     summary: Save notation keys for an inventory
+ *     summary: Set notation keys for subcategories in an inventory.
+ *     description: Saves notation keys for the inventory’s subcategories, creating inventory values where necessary. Requires a signed‑in user with access to the inventory. Returns { success, result } listing affected values.
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -49,7 +58,14 @@
  *                       type: string
  *     responses:
  *       200:
- *         description: Notation keys saved.
+ *         description: Save result.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 result: { type: array, items: { type: object, additionalProperties: true } }
  */
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import UserService from "@/backend/UserService";

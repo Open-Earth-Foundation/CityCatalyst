@@ -4,8 +4,8 @@
  *   post:
  *     tags:
  *       - Admin
- *     summary: Connect bulk data sources (admin)
- *     description: Connects data sources for inventories identified by user email, cities, and years. Admin only.
+ *     summary: Connect prioritized data sources to many inventories.
+ *     description: Finds inventories for the given user and cities/years and attempts to connect the best available data source per GPC reference number. Requires an admin session; non-admins receive an authorization error. Use this to auto-populate inventories with external datasets.
  *     requestBody:
  *       required: true
  *       content:
@@ -27,7 +27,31 @@
  *                   type: integer
  *     responses:
  *       200:
- *         description: Data sources connected.
+ *         description: Operation result with any connection errors.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       locode:
+ *                         type: string
+ *                       error:
+ *                         type: string
+ *             examples:
+ *               example:
+ *                 value:
+ *                   errors:
+ *                     - locode: "US-CCC"
+ *                       error: "no-data-source-available-for-gpc-reference-number"
+ *       400:
+ *         description: Request validation failed.
+ *       404:
+ *         description: Related inventory or city not found.
  */
 import AdminService from "@/backend/AdminService";
 import { apiHandler } from "@/util/api";

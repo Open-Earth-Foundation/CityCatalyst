@@ -4,8 +4,8 @@
  *   post:
  *     tags:
  *       - Admin
- *     summary: Bulk update inventories (admin)
- *     description: Updates inventories for a user's cities and years, and assigns to a project. Admin only.
+ *     summary: Update inventories’ population context for many cities/years.
+ *     description: Regenerates population and location context for inventories that match the provided cities and years, and optionally reassigns them to a project. Requires an admin session; non-admins receive an authorization error. Use this to refresh inventory context data in bulk.
  *     requestBody:
  *       required: true
  *       content:
@@ -30,7 +30,27 @@
  *                 format: uuid
  *     responses:
  *       200:
- *         description: Inventories updated.
+ *         description: Array of errors (empty if all updates succeeded).
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   locode:
+ *                     type: string
+ *                   error:
+ *                     type: string
+ *             examples:
+ *               example:
+ *                 value:
+ *                   - locode: "US-DDD"
+ *                     error: "Population data incomplete for city US-DDD and inventory year 2021"
+ *       400:
+ *         description: Request validation failed.
+ *       404:
+ *         description: City or inventory not found.
  */
 import AdminService from "@/backend/AdminService";
 import { apiHandler } from "@/util/api";

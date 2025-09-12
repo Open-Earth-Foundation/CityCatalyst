@@ -4,7 +4,8 @@
  *   get:
  *     tags:
  *       - Data Sources
- *     summary: List applicable data sources with data for an inventory
+ *     summary: List applicable data sources and fetched data for an inventory.
+ *     description: Finds candidate sources for the inventory, filters by applicability, and fetches data (including population scaling). No explicit authentication is enforced here in code; adjust middleware if needed. Returns { data: successfulSources[], removedSources, failedSources }.
  *     parameters:
  *       - in: path
  *         name: inventoryId
@@ -14,13 +15,28 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: Applicable sources with data, plus removed and failed sources.
+ *         description: Applicable sources and fetch results.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items: { type: object, additionalProperties: true }
+ *                 removedSources:
+ *                   type: array
+ *                   items: { type: object, additionalProperties: true }
+ *                 failedSources:
+ *                   type: array
+ *                   items: { type: object, additionalProperties: true }
  *       404:
  *         description: Inventory not found.
  *   post:
  *     tags:
  *       - Data Sources
- *     summary: Apply selected data sources to an inventory
+ *     summary: Apply selected data sources to an inventory and persist values.
+ *     description: Downloads and applies the specified data sources to the inventory (creating/updating inventory values). No explicit authentication is enforced in this handler in code. Returns { data: { successful[], failed[], invalid[], issues{}, removedSources[] } }.
  *     parameters:
  *       - in: path
  *         name: inventoryId
@@ -43,7 +59,30 @@
  *                   format: uuid
  *     responses:
  *       200:
- *         description: Apply results with successful, failed, invalid, issues, and removedSources.
+ *         description: Apply results summary.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     successful:
+ *                       type: array
+ *                       items: { type: string }
+ *                     failed:
+ *                       type: array
+ *                       items: { type: string }
+ *                     invalid:
+ *                       type: array
+ *                       items: { type: string }
+ *                     issues:
+ *                       type: object
+ *                       additionalProperties: { type: string }
+ *                     removedSources:
+ *                       type: array
+ *                       items: { type: object, additionalProperties: true }
  *       404:
  *         description: Inventory or sources not found.
  */

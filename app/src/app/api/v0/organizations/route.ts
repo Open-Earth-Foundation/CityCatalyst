@@ -4,14 +4,21 @@
  *   get:
  *     tags:
  *       - Organizations
- *     summary: List organizations
+ *     summary: List organizations with projects and pending admin invites (admin only).
+ *     description: Returns all organizations including selected project fields and pending org_admin invites. Requires an admin session; non‑admins receive 401/403 via middleware handlers. Response is a JSON array (not wrapped).
  *     responses:
  *       200:
- *         description: Organizations returned.
+ *         description: Array of organizations.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items: { type: object, additionalProperties: true }
  *   post:
  *     tags:
  *       - Organizations
- *     summary: Create an organization
+ *     summary: Create a new organization (admin only).
+ *     description: Creates an active organization with name and contactEmail. Requires an admin session. Response is the created organization object (not wrapped).
  *     requestBody:
  *       required: true
  *       content:
@@ -28,6 +35,11 @@
  *     responses:
  *       201:
  *         description: Organization created.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: true
  */
 import { Organization } from "@/models/Organization";
 import { randomUUID } from "node:crypto";

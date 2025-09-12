@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - Data Sources
- *     summary: Get a specific data source with scaled data
+ *     summary: Get a single data source with scaled data for an inventory (edit access).
  *     parameters:
  *       - in: path
  *         name: inventoryId
@@ -20,13 +20,18 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: Data source with data returned.
+ *         description: Data source with data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: true
  *       404:
  *         description: Inventory or data source not found.
  *   delete:
  *     tags:
  *       - Data Sources
- *     summary: Disconnect a data source from an inventory
+ *     summary: Disconnect a data source and remove related inventory values (edit access).
  *     parameters:
  *       - in: path
  *         name: inventoryId
@@ -42,7 +47,17 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: Inventory values deleted for the data source.
+ *         description: Deleted values and deleted flag.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items: { type: object, additionalProperties: true }
+ *                 deleted:
+ *                   type: boolean
  *       404:
  *         description: Inventory value not found.
  */

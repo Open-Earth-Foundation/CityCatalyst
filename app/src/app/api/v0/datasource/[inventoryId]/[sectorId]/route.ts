@@ -4,7 +4,8 @@
  *   get:
  *     tags:
  *       - Data Sources
- *     summary: List applicable data sources with data for a sector
+ *     summary: List applicable data sources and data for a specific sector.
+ *     description: Retrieves the sector with its data sources, filters them by applicability to the inventory, and fetches data. No explicit authentication is enforced in this handler. Returns { data: successfulSources[], removedSources, failedSources }.
  *     parameters:
  *       - in: path
  *         name: inventoryId
@@ -20,7 +21,21 @@
  *           format: uuid
  *     responses:
  *       200:
- *         description: Applicable sources with data, plus removed and failed sources.
+ *         description: Applicable sources and fetch results.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items: { type: object, additionalProperties: true }
+ *                 removedSources:
+ *                   type: array
+ *                   items: { type: object, additionalProperties: true }
+ *                 failedSources:
+ *                   type: array
+ *                   items: { type: object, additionalProperties: true }
  *       404:
  *         description: Inventory or sector not found.
  */

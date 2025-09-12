@@ -4,8 +4,8 @@
  *   post:
  *     tags:
  *       - Auth
- *     summary: Issue OAuth authorization code
- *     description: Returns a short-lived authorization code for a logged-in user and registered OAuth client.
+ *     summary: Issue a short‑lived OAuth authorization code for the current user.
+ *     description: Validates the client and CSRF token, then generates a signed authorization code (PKCE) for the authenticated user. Requires a signed‑in session and OAUTH_ENABLED; non‑authenticated requests fail with 401. Use this before exchanging the code for tokens at `/api/v0/token`.
  *     requestBody:
  *       required: true
  *       content:
@@ -27,9 +27,24 @@
  *                 type: string
  *     responses:
  *       200:
- *         description: Authorization code issued.
+ *         description: Code wrapped in a data object.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     code:
+ *                       type: string
+ *             examples:
+ *               example:
+ *                 value:
+ *                   data:
+ *                     code: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
  *       400:
- *         description: Invalid client or redirect URI / CSRF mismatch.
+ *         description: Invalid client/redirect URI or CSRF mismatch.
  *       401:
  *         description: Not authenticated.
  *       500:

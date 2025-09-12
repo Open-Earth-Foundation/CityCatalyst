@@ -7,7 +7,7 @@ import { ModulesIcon } from "../icons";
 import { BodyLarge, BodyMedium } from "../Texts/Body";
 import { DisplayMedium } from "../Texts/Display";
 import { HeadlineSmall } from "../Texts/Headline";
-import ProjectMap from "../ProjectMap";
+import ProjectMap from "../ProjectMap/ProjectMap";
 
 interface OrganizationHeroProps {
   organization?: OrganizationResponse;

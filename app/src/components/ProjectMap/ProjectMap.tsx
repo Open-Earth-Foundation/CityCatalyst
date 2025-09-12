@@ -1,9 +1,10 @@
 import { api } from "@/services/api";
-import { getBoundsZoomLevel } from "@/util/geojson";
+import { getBoundingBox, getBoundsZoomLevel } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
 import { Map, GeoJson, GeoJsonFeature, Marker } from "pigeon-maps";
-import { getBoundingBoxCenter, getCombinedBoundingBox } from "./geo_utils";
+import { getBoundingBoxCenter } from "./geo_utils";
+import { CityLocationResponse } from "@/util/types";
 
 export interface CityMetadata {
   id: string;
@@ -17,8 +18,8 @@ export interface ProjectMapProps {
   organizationId?: string;
   width: number;
   height: number;
-  setSelectedCity: (city: CityMetadata) => void;
-  selectedCity?: CityMetadata;
+  setSelectedCity: (city: CityLocationResponse) => void;
+  selectedCity?: CityLocationResponse;
 }
 
 const defaultColor = "#648bff";
@@ -62,7 +63,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
 
   useEffect(() => {
     if (cityLocations && cityLocations.length > 0) {
-      const combinedBoundingBox = getCombinedBoundingBox(boundingBoxes);
+      const combinedBoundingBox = getBoundingBox(cityLocations);
       if (combinedBoundingBox && !combinedBoundingBox.some(isNaN)) {
         const newZoom = getBoundsZoomLevel(combinedBoundingBox, {
           width,
@@ -76,7 +77,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
         setZoom(newZoom);
       }
     }
-  }, [projectBoundaries, height, width]);
+  }, [cityLocations, height, width]);
 
   return (
     <Box w={width} h={height} position="relative">
@@ -102,6 +103,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
         onBoundsChanged={onBoundsChanged}
         attributionPrefix={false}
       >
+        {/*
         <GeoJson
           svgAttributes={{
             fill: "#648bff99",
@@ -109,7 +111,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
             stroke: defaultColor,
           }}
         >
-          {projectBoundaries?.map(
+          {cityLocations?.map(
             (boundary: any) =>
               boundary.data && (
                 <GeoJsonFeature
@@ -122,21 +124,23 @@ export const ProjectMap: FC<ProjectMapProps> = ({
                 />
               ),
           )}
-        </GeoJson>
+        </GeoJson
+        */}
 
-        {projectBoundaries?.map(
-          (boundary: any) =>
-            boundary.boundingBox && (
+        {cityLocations?.map(
+          (cityLocation: CityLocationResponse, index: number) =>
+            cityLocation.latitude &&
+            cityLocation.longitude && (
               <Marker
-                key={boundary.city.id}
+                key={cityLocation.locode + "-" + index}
                 color={
-                  selectedCity?.id === boundary.city.id
-                    ? highlightColor
-                    : defaultColor
+                  selectedCity === cityLocation ? highlightColor : defaultColor
                 }
-                anchor={getBoundingBoxCenter(boundary.boundingBox)}
-                onClick={() => setSelectedCity(boundary.city)}
-              />
+                anchor={[cityLocation.latitude, cityLocation.longitude]}
+                onClick={() => setSelectedCity(cityLocation)}
+              >
+                {console.log("city", cityLocation)}
+              </Marker>
             ),
         )}
       </Map>

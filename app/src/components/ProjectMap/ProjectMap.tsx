@@ -1,5 +1,9 @@
 import { api } from "@/services/api";
-import { getBoundingBox, getBoundsZoomLevel } from "@/util/geojson";
+import {
+  getBoundingBox,
+  getBoundsZoomLevel,
+  stretchBoundingBox,
+} from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
 import { Map, GeoJson, GeoJsonFeature, Marker } from "pigeon-maps";
@@ -72,21 +76,16 @@ export const ProjectMap: FC<ProjectMapProps> = ({
           latitude: location.latitude,
           longitude: location.longitude,
         }));
-      console.dir(cityCoords);
       const combinedBoundingBox = getBoundingBox(cityCoords);
-      console.dir(combinedBoundingBox);
       if (combinedBoundingBox && !combinedBoundingBox.some(isNaN)) {
-        const newZoom = getBoundsZoomLevel(combinedBoundingBox, {
+        const boundingBox = stretchBoundingBox(combinedBoundingBox, 0.02);
+        const newZoom = getBoundsZoomLevel(boundingBox, {
           width,
           height,
         });
-        const newCenter: [number, number] = [
-          (combinedBoundingBox[1] + combinedBoundingBox[3]) / 2,
-          (combinedBoundingBox[0] + combinedBoundingBox[2]) / 2,
-        ];
+        const newCenter = getBoundingBoxCenter(boundingBox);
         setCenter(newCenter);
         setZoom(newZoom);
-        console.log("center/zoom", newCenter, newZoom);
       }
     }
   }, [cityLocations, height, width]);

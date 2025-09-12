@@ -59,8 +59,18 @@ export function getBoundingBoxCenter(
   boundingBox: [number, number, number, number],
 ): [number, number] {
   const [west, south, east, north] = boundingBox;
+  const center: [number, number] = [(south + north) / 2, (west + east) / 2];
+  return center;
+}
+
+// TODO this should be more accurate but fails on edge cases
+/* export function getBoundingBoxCenter(
+  boundingBox: [number, number, number, number],
+): [number, number] {
+  const [west, south, east, north] = boundingBox;
+
   return findGeoCenter([
     [west, south] as [number, number],
     [east, north] as [number, number],
   ]);
-}
+} */

@@ -9,16 +9,18 @@ import DataTable from "@/components/ui/data-table";
 import { useTranslation } from "@/i18n/client";
 import { useGetOrganizationQuery, useGetProjectsQuery } from "@/services/api";
 import { ProjectWithCities } from "@/util/types";
-import { Card, Icon, Table, VStack } from "@chakra-ui/react";
+import { Button, Card, Icon, Table, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
+import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
-import { MdArrowForward, MdNavigateNext } from "react-icons/md";
+import { MdArrowBack, MdArrowForward, MdNavigateNext } from "react-icons/md";
 
 export default function ProjectPage(props: {
   params: Promise<{ lng: string; id: string; project: string }>;
 }) {
   const { lng, id: organizationId, project: projectId } = use(props.params);
   const { t } = useTranslation(lng, "organization");
+  const router = useRouter();
 
   const {
     data: organization,
@@ -71,6 +73,18 @@ export default function ProjectPage(props: {
         justifyContent="stretch"
       >
         <VStack spaceY="24px" alignItems="start" justifyContent="start">
+          <Button
+            variant="ghost"
+            alignSelf="flex-start"
+            color="content.primary"
+            onClick={() =>
+              router.push(`/${lng}/organization/${organizationId}/project/`)
+            }
+            textTransform="unset"
+          >
+            <Icon as={MdArrowBack} boxSize={4} />
+            {t("all-projects")}
+          </Button>
           <HeadlineLarge>
             {project?.name === "cc_project_default"
               ? t("default-project")

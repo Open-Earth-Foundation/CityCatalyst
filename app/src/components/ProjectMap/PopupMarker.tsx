@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Marker, Overlay, Point } from "pigeon-maps";
+import { Box } from "@chakra-ui/react";
 
 type PopupMarkerProps = {
   popupText: string;
@@ -36,20 +37,18 @@ export function PopupMarker({ popupText, anchor, onClick }: PopupMarkerProps) {
 
       {hovered && (
         <Overlay anchor={anchor}>
-          <div
-            style={{
-              position: "absolute",
-              transform: "translate(-50%, -100%)",
-              backgroundColor: "white",
-              border: "1px solid black",
-              padding: "5px",
-              borderRadius: "5px",
-              zIndex: 1000, // Ensures the popup is above other map elements
-              pointerEvents: "none", // Prevents the popup from blocking interactions with the map
-            }}
+          <Box
+            position="absolute"
+            transform="translate(-50%, -100%)"
+            backgroundColor="white"
+            border="1px solid black"
+            padding="5px"
+            borderRadius="5px"
+            zIndex={1000} // Ensures the popup is above other map elements
+            pointerEvents="none" // Prevents the popup from blocking interactions with the map
           >
             {popupText}
-          </div>
+          </Box>
         </Overlay>
       )}
     </>

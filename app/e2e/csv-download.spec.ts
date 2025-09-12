@@ -13,6 +13,9 @@ test.describe("CSV Download", () => {
     // Verify we're on the dashboard
     await expect(page.getByTestId("hero-city-name")).toHaveText("Chicago");
 
+    // Wait for the ActionCards component to render (indicates inventory data is loaded)
+    await expect(page.getByTestId("add-data-to-inventory-card")).toBeVisible();
+
     // Find and click the Download button
     // Looking for the download action card
     const downloadActionCard = page.getByTestId("download-action-card");
@@ -80,6 +83,9 @@ test.describe("CSV Download", () => {
 
     // Navigate to Dashboard
     await page.waitForLoadState("networkidle");
+
+    // Wait for the ActionCards component to render (indicates inventory data is loaded)
+    await expect(page.getByTestId("add-data-to-inventory-card")).toBeVisible();
 
     // Open download modal
     const downloadActionCard = page.getByTestId("download-action-card");
@@ -170,6 +176,9 @@ test.describe("CSV Download", () => {
     // Navigate to Dashboard
     await page.waitForLoadState("networkidle");
 
+    // Wait for the ActionCards component to render (indicates inventory data is loaded)
+    await expect(page.getByTestId("add-data-to-inventory-card")).toBeVisible();
+
     // Open download modal
     const downloadActionCard = page.getByTestId("download-action-card");
     await downloadActionCard.click();
@@ -202,6 +211,9 @@ test.describe("CSV Download", () => {
 
     // Navigate to Dashboard
     await page.waitForLoadState("networkidle");
+
+    // Wait for the ActionCards component to render (indicates inventory data is loaded)
+    await expect(page.getByTestId("add-data-to-inventory-card")).toBeVisible();
 
     // Open download modal
     const downloadActionCard = page.getByTestId("download-action-card");
@@ -248,6 +260,9 @@ test.describe("CSV Download", () => {
 
     // Navigate to Dashboard
     await page.waitForLoadState("networkidle");
+
+    // Wait for the ActionCards component to render (indicates inventory data is loaded)
+    await expect(page.getByTestId("add-data-to-inventory-card")).toBeVisible();
 
     // Open download modal and download CSV
     const downloadActionCard = page.getByTestId("download-action-card");

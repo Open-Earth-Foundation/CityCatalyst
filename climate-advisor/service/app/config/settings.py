@@ -1,7 +1,7 @@
 import os
 from typing import List
 from pydantic import BaseModel
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 
 class Settings(BaseModel):
@@ -14,6 +14,7 @@ class Settings(BaseModel):
     openrouter_api_key: str | None = os.getenv("OPENROUTER_API_KEY")
     openrouter_base_url: str = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
     openrouter_model: str | None = os.getenv("OPENROUTER_MODEL")
+    request_timeout_ms: int = int(os.getenv("REQUEST_TIMEOUT_MS", "30000"))
 
     cc_base_url: str | None = os.getenv("CC_BASE_URL")
     cc_oauth_client_id: str | None = os.getenv("CC_OAUTH_CLIENT_ID")
@@ -34,9 +35,9 @@ def _parse_cors_origins(env_value: str | None) -> List[str]:
 def get_settings() -> Settings:
     global _settings
     if _settings is None:
-        load_dotenv()  # load .env if present
+        # Load env from nearest .env (supports climate-advisor/.env when running in service/)
+        load_dotenv(find_dotenv(usecwd=True))
         settings = Settings()
         settings.cors_origins = _parse_cors_origins(os.getenv("CA_CORS_ORIGINS"))
         _settings = settings
     return _settings
-

@@ -38,20 +38,20 @@ Establish the foundation for the Climate Advisor Service microservice and begin 
 **Story Points:** 8  
 **Description:** Create the initial Climate Advisor Service Python microservice with FastAPI framework, aligned with climate-advisor/architecture.md (Target Architecture, Service Responsibilities, and API Contract). Establish a clean, versioned API surface and operational foundations (config, logging, errors, health, CORS) without integrating OpenRouter or CC yet.
 
-**Acceptance Criteria:**
+-**Acceptance Criteria:**
 
-- [ ] Project structure: create `app/` package with modules for `routes/`, `models/`, `services/`, `config/`, `middleware/`, `utils/` consistent with architecture.md and API versioning (`/v1/*`).
-- [ ] Health endpoints: `GET /health` (liveness) and `GET /ready` (readiness; returns `{"ready": true}` when app boot completes; no external checks yet).
-- [ ] API surface (stubs only):
-  - [ ] `POST /v1/threads` returns `201` with `{ thread_id }` (UUIDv4 generated server-side) and echoes received context metadata (not persisted).
-  - [ ] `POST /v1/messages` streams SSE events that echo the input content in 2–3 chunks, ending with a terminal event; content-type `text/event-stream`, compatible with CC streaming.
-- [ ] Pydantic models (v2): request/response schemas for threads and messages; enforce basic validation (required fields: `user_id`, `content`; optional `inventory_id`, `thread_id`, `context`, `options`).
-- [ ] Error handling: central exception handlers returning JSON Problem Details shape `{ type, title, status, detail, instance, request_id }`; map 422/400/404/500 appropriately.
-- [ ] Observability: structured logging (request start/stop, path/method, status, duration, request_id) and request ID propagation (accept `x-request-id` or generate and return it).
-- [ ] CORS: allow-list via env (`CA_CORS_ORIGINS`, default `*` for dev) and expose necessary headers for SSE.
-- [ ] Settings: centralized config using environment variables loaded via a settings module; include placeholders for OpenRouter and CC but unused in this ticket.
-- [ ] Docker: Dockerfile builds and runs the service on port `8080`; production command with `uvicorn` and graceful shutdown.
-- [ ] Docs: FastAPI auto-docs enabled at `/docs` and `/openapi.json`; README section with local run instructions.
+- [x] Project structure: create `app/` package with modules for `routes/`, `models/`, `services/`, `config/`, `middleware/`, `utils/` consistent with architecture.md and API versioning (`/v1/*`).
+- [x] Health endpoints: `GET /health` (liveness) and `GET /ready` (readiness; returns `{"ready": true}` when app boot completes; no external checks yet).
+- [x] API surface (stubs only):
+  - [x] `POST /v1/threads` returns `201` with `{ thread_id }` (UUIDv4 generated server-side) and echoes received context metadata (not persisted).
+  - [x] `POST /v1/messages` streams SSE events that echo the input content in 2–3 chunks, ending with a terminal event; content-type `text/event-stream`, compatible with CC streaming.
+- [x] Pydantic models (v2): request/response schemas for threads and messages; enforce basic validation (required fields: `user_id`, `content`; optional `inventory_id`, `thread_id`, `context`, `options`).
+- [x] Error handling: central exception handlers returning JSON Problem Details shape `{ type, title, status, detail, instance, request_id }`; map 422/400/404/500 appropriately.
+- [x] Observability: structured logging (request start/stop, path/method, status, duration, request_id) and request ID propagation (accept `x-request-id` or generate and return it).
+- [x] CORS: allow-list via env (`CA_CORS_ORIGINS`, default `*` for dev) and expose necessary headers for SSE.
+- [x] Settings: centralized config using environment variables loaded via a settings module; include placeholders for OpenRouter and CC but unused in this ticket.
+- [x] Docker: Dockerfile builds and runs the service on port `8080`; production command with `uvicorn` and graceful shutdown.
+- [x] Docs: FastAPI auto-docs enabled at `/docs` and `/openapi.json`; README section with local run instructions.
 
 **Files to Create:**
 
@@ -287,28 +287,142 @@ Replace stubbed responses with real LLM responses via OpenRouter, preserving str
 
 #### TICKET-006: OpenRouter Client and Config
 
-- [ ] Implement OpenRouter client (HTTPX) with API key and base URL from env
-- [ ] Support model selection via env (default and override per request)
-- [ ] Add request/response logging with redaction
+- [x] Implement OpenRouter client (HTTPX) with API key and base URL from env
+- [x] Support model selection via env (default and override per request)
+- [x] Add request/response logging with redaction
 - [ ] Add retry/backoff and timeouts
+
+Files to Create/Modify
+- `climate-advisor/service/app/services/openrouter_client.py`
+- `climate-advisor/service/app/config/openrouter_config.py` (optional; or extend existing settings)
+- `climate-advisor/service/app/main.py` (wire client via dependency/container)
+- `climate-advisor/service/app/routes/messages.py` (switch from echo to streaming OpenRouter)
+
+Implementation Notes
+- Use `httpx.AsyncClient` with connection pool, `timeout` from env, and `stream=True` for token streaming.
+- Prefer OpenAI-compatible endpoint via OpenRouter for portability (e.g., `POST /v1/chat/completions` with `stream: true`).
+- Redact secrets in logs; log request metadata only (model, temperature, request_id, duration, token counts when available).
+- Retry policy: exponential backoff on 429/5xx with jitter and max attempts; respect `Retry-After` when present.
+- Propagate `X-Request-Id` to OpenRouter as `headers["X-Request-Id"]` for traceability.
 
 #### TICKET-007: Streaming Responses
 
-- [ ] Implement token streaming from OpenRouter and forward as SSE/chunked stream
-- [ ] Backpressure-safe generator for FastAPI Response/StreamingResponse
-- [ ] Error path streams meaningful terminal events to client
+- [x] Implement token streaming from OpenRouter and forward as SSE/chunked stream
+- [x] Backpressure-safe generator for FastAPI Response/StreamingResponse
+- [x] Error path streams meaningful terminal events to client
+
+Files to Create/Modify
+- `climate-advisor/service/app/utils/sse.py` (extend with helper for error terminal event)
+- `climate-advisor/service/app/routes/messages.py` (consume OpenRouter stream and forward SSE chunks)
+
+Implementation Notes
+- Transform OpenRouter streaming deltas into SSE events `{ event: "message", data: { index, content } }` and finish with `{ event: "done", data: { ok: true } }`.
+- Add backpressure-aware async generator yielding bytes; ensure headers include `X-Accel-Buffering: no` and `Cache-Control: no-cache`.
+- On error mid-stream, emit `{ event: "error", data: { message, code? } }` then a `{ event: "done" }` terminal for client consistency.
 
 #### TICKET-008: Message Handling Pipeline
 
-- [ ] Validate request payload (thread_id, user_id, content)
+- [x] Validate request payload (thread_id, user_id, content)
 - [ ] Shape prompt with provided context; (no CC fetch yet)
 - [ ] Return assistant message chunks; finalize message summary
 
+Files to Create/Modify
+- `climate-advisor/service/app/routes/messages.py` (validate payload, shape prompt blocks, pass options to OpenRouter)
+- `climate-advisor/service/app/models/requests.py` (extend `options` to include `model`, `temperature`, `max_tokens`, etc.)
+- `climate-advisor/service/app/models/responses.py` (optional: define typed stream event envelopes for docs/tests)
+
+Implementation Notes
+- Validate `user_id`, `content` (already present); accept optional `thread_id`, `inventory_id`, `context`, `options`.
+- Prompt shaping: include lightweight system prompt and any provided context; no CC fetch in this sprint.
+- Summarize final answer chunk text to a short `message_summary` (non-persistent) if needed for logs.
+
 ### Definition of Done
 
-- [ ] `/v1/messages` streams real LLM output end-to-end
-- [ ] Basic observability in place (request IDs; timing logs)
-- [ ] Configurable model and temperature via env
+- [x] `/v1/messages` streams real LLM output end-to-end
+- [x] Basic observability in place (request IDs; timing logs)
+- [x] Configurable model and temperature via env
+
+---
+
+### Sprint 2 — Implementation Notes and Examples
+
+Environment
+- Required env vars: `OPENROUTER_API_KEY`, optional `OPENROUTER_BASE_URL` (default `https://openrouter.ai/api/v1`), `OPENROUTER_MODEL`, `REQUEST_TIMEOUT_MS`.
+- Requests may override `model`, `temperature` via `options` field; server falls back to env defaults.
+- Developer utility: `climate-advisor/scripts/test_service_stream.py` streams from `/v1/messages` and prints SSE lines.
+
+Example: call `/v1/messages` with model overrides
+```bash
+curl -N -X POST http://localhost:8080/v1/messages \
+  -H 'Content-Type: application/json' \
+  -H 'X-Request-Id: demo-req-002' \
+  -d '{
+        "user_id": "u_123",
+        "thread_id": "t_abc",
+        "content": "Summarize key climate risks for urban flooding.",
+        "options": {
+          "model": "openrouter/auto",
+          "temperature": 0.2,
+          "max_tokens": 512
+        }
+      }'
+```
+
+Expected stream shape (SSE)
+```
+event: message
+id: 0
+data: {"index":0,"content":"Urban areas face increasing risk..."}
+
+event: message
+id: 1
+data: {"index":1,"content":"Mitigations include green infrastructure..."}
+
+event: done
+data: {"ok": true, "request_id": "demo-req-002"}
+```
+
+Next.js/Fetch streaming client example
+```ts
+// In a Next.js route or client component using fetch + ReadableStream
+const res = await fetch("/api/ca/messages", {
+  method: "POST",
+  headers: { "Content-Type": "application/json", "X-Request-Id": crypto.randomUUID() },
+  body: JSON.stringify({ user_id: "u_123", content: "Hello", options: { model: "openrouter/auto" } })
+});
+
+const reader = res.body!.getReader();
+const decoder = new TextDecoder();
+let buffer = "";
+while (true) {
+  const { value, done } = await reader.read();
+  if (done) break;
+  buffer += decoder.decode(value, { stream: true });
+  // Parse SSE events (split by double newlines)
+  const events = buffer.split("\n\n");
+  buffer = events.pop() || "";
+  for (const e of events) {
+    if (e.startsWith("data:")) {
+      const lines = e.split("\n").filter(Boolean).map(l => l.replace(/^data:\s?/, ""));
+      const payload = JSON.parse(lines.join("\n"));
+      // handle payload.content chunks or terminal ok
+    }
+  }
+}
+```
+
+Error streaming example
+```
+event: error
+data: {"message":"Upstream 429: rate limited","retry_after_ms": 2000}
+
+event: done
+data: {"ok": false, "request_id": "<uuid>"}
+```
+
+Logging and redaction
+- Log request/response metadata only (model, status, latencies); redact API keys and message content in production logs.
+- Include `request_id` in all logs; propagate to OpenRouter and include in terminal SSE event.
 
 ---
 

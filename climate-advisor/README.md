@@ -55,3 +55,23 @@ Environment variables (initial set):
 - `CC_BASE_URL`, `CC_OAUTH_CLIENT_ID`, `CC_OAUTH_CLIENT_SECRET`, `CC_OAUTH_TOKEN_URL` (placeholders)
 
 Create a `.env` file in `climate-advisor/service` if desired; variables are loaded automatically.
+
+Example `.env` (recommended in `climate-advisor/.env`):
+
+```
+OPENROUTER_API_KEY=sk-or-...
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+OPENROUTER_MODEL=openrouter/auto
+REQUEST_TIMEOUT_MS=30000
+CA_CORS_ORIGINS=*
+```
+
+## Quick Test (streaming)
+
+Run the service, then in another terminal:
+
+```
+python climate-advisor/scripts/test_service_stream.py http://localhost:8080
+```
+
+You should see SSE lines with `event: message` chunks followed by a terminal `event: done`.

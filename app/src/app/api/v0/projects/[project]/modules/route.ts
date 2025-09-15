@@ -9,7 +9,6 @@ const paramsSchema = z.object({
 
 export const GET = apiHandler(async (_req: Request, context) => {
   const { project: projectId } = paramsSchema.parse(context.params);
-  console.log(projectId);
   const projectModules = await db.models.ProjectModules.findAll({
     where: { projectId: projectId },
     include: [{ model: db.models.Module, as: "module" }],

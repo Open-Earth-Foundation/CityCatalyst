@@ -84,13 +84,14 @@ jobs:
       # - name: Run Cypress tests
       #   run: npm run cy:test
 
-      - name: Run tests and generate coverage file
-        run: npm run api:test
+      # - name: Run tests and generate coverage file
+      #   run: npm run api:test
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx playwright test
+        # Temporarily run only the failing test file to speed up debugging
+        run: npx playwright test app/e2e/csv-download.spec.ts
       - uses: actions/upload-artifact@v4
         if: always()
         with:

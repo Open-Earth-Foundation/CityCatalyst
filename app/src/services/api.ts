@@ -1351,11 +1351,13 @@ export const api = createApi({
         query: () => "modules",
         transformResponse: (response: { data: ModuleAttributes[] }) =>
           response.data,
+        providesTags: ["Modules"],
       }),
       getProjectModules: builder.query<ModuleAttributes[], string>({
         query: (projectId: string) => `projects/${projectId}/modules`,
         transformResponse: (response: { data: ModuleAttributes[] }) =>
           response.data,
+        providesTags: ["ProjectModules"],
       }),
       getCityModuleAccess: builder.query<
         { hasAccess: boolean },
@@ -1502,6 +1504,15 @@ export const api = createApi({
         transformResponse: (response: { data: ProjectModulesAttributes }) =>
           response.data,
       }),
+      disableProjectModuleAccess: builder.mutation({
+        query: (data: { projectId: string; moduleId: string }) => ({
+          method: "DELETE",
+          url: `/projects/${data.projectId}/modules/${data.moduleId}/access`,
+        }),
+        invalidatesTags: ["Modules", "ProjectModules"],
+        transformResponse: (response: { data: ProjectModulesAttributes }) =>
+          response.data,
+      }),
     };
   },
 });
@@ -1624,5 +1635,6 @@ export const {
   useAddClientMutation,
   useDeleteClientMutation,
   useEnableProjectModuleAccessMutation,
+  useDisableProjectModuleAccessMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

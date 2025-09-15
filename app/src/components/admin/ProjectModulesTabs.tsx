@@ -3,10 +3,12 @@
 import { Box, Table, Tabs, Text } from "@chakra-ui/react";
 import { Switch } from "@/components/ui/switch";
 import { useTranslation } from "@/i18n/client";
+import { toaster } from "@/components/ui/toaster";
 import {
   useGetModulesQuery,
   useGetProjectModulesQuery,
   useEnableProjectModuleAccessMutation,
+  useDisableProjectModuleAccessMutation,
 } from "@/services/api";
 import { useState, useMemo } from "react";
 
@@ -74,7 +76,56 @@ const ProjectModulesTabs = ({
     { isLoading: isEnableProjectModuleAccessLoading },
   ] = useEnableProjectModuleAccessMutation();
 
-  console.log(isEnableProjectModuleAccessLoading);
+  // disable project module access
+  const [
+    disableProjectModuleAccess,
+    { isLoading: isDisableProjectModuleAccessLoading },
+  ] = useDisableProjectModuleAccessMutation();
+
+  const handleModuleToggle = async (
+    e: React.FormEvent<HTMLLabelElement>,
+    projectId: string,
+    moduleId: string,
+  ) => {
+    const isChecked = (e.target as HTMLInputElement).checked;
+    const module = modulesWithAccess.find((m) => m.id === moduleId);
+    const moduleName = module?.name?.en || "Module";
+
+    try {
+      if (isChecked) {
+        await enableProjectModuleAccess({
+          projectId: projectId,
+          moduleId: moduleId,
+        }).unwrap();
+
+        toaster.success({
+          title: t("module-access-enabled"),
+          description: t("module-access-enabled-description", { moduleName }),
+          duration: 3000,
+        });
+      } else {
+        await disableProjectModuleAccess({
+          projectId: projectId,
+          moduleId: moduleId,
+        }).unwrap();
+
+        toaster.create({
+          type: "info",
+          title: t("module-access-disabled"),
+          description: t("module-access-disabled-description", { moduleName }),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to toggle module access:", error);
+
+      toaster.error({
+        title: t("module-access-error"),
+        description: t("module-access-error-description"),
+        duration: 5000,
+      });
+    }
+  };
 
   return (
     <Box py="48px">
@@ -109,7 +160,6 @@ const ProjectModulesTabs = ({
                   borderRadius: "8px",
                 }}
                 onClick={() => {
-                  console.log(projectId);
                   setSelectedProjectId(projectId);
                 }}
               >
@@ -197,11 +247,11 @@ const ProjectModulesTabs = ({
                           <Table.Cell textAlign="end">
                             <Switch
                               checked={module.hasAccess}
-                              onChange={(e) => {
-                                enableProjectModuleAccess({
-                                  projectId: projectId,
-                                  moduleId: module.id,
-                                });
+                              onChange={(
+                                e: React.FormEvent<HTMLLabelElement>,
+                              ) => {
+                                // move to a function
+                                handleModuleToggle(e, projectId, module.id);
                               }}
                             />
                           </Table.Cell>

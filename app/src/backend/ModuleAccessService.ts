@@ -56,4 +56,23 @@ export class ModuleAccessService {
 
     return projectModule;
   }
+
+  public static async disableModuleAccess(
+    projectId: string,
+    moduleId: string,
+  ): Promise<void> {
+    logger.info(
+      `Disabling module access for project ${projectId} and module ${moduleId}`,
+    );
+
+    await db.models.ProjectModules.destroy({
+      where: { projectId: projectId, moduleId: moduleId },
+    });
+
+    logger.info(
+      `Module access disabled for project ${projectId} and module ${moduleId}`,
+    );
+
+    return;
+  }
 }

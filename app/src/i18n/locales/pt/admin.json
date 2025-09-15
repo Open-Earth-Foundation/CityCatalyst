@@ -180,5 +180,11 @@
   "oauth-clients-delete": "Excluir este cliente OAuth?",
   "oauth-client-id": "ID do Cliente",
   "oauth-clients-error-deleting-client": "Erro ao excluir o aplicativo cliente",
-  "oauth-clients-success-deleting-client": "Aplicativo cliente excluído"
+  "oauth-clients-success-deleting-client": "Aplicativo cliente excluído",
+  "module-access-enabled": "Acesso ao Módulo Habilitado",
+  "module-access-enabled-description": "{{moduleName}} foi habilitado para este projeto",
+  "module-access-disabled": "Acesso ao Módulo Desabilitado",
+  "module-access-disabled-description": "{{moduleName}} foi desabilitado para este projeto",
+  "module-access-error": "Erro de Acesso ao Módulo",
+  "module-access-error-description": "Falha ao atualizar o acesso ao módulo. Por favor, tente novamente."
 }

@@ -1,5 +1,27 @@
 ---
 
+# Climate Advisor Service – Implementation Plan (Revised)
+
+This plan reflects the decision to implement Climate Advisor as a standalone Python microservice (FastAPI) within `climate-advisor/service`. We will not modify CityCatalyst (Next.js) in this phase. CC will continue to handle the UI and will later proxy requests to this service without changing user-facing behavior.
+
+## Scope and Principles
+
+- Build a separate FastAPI service under `climate-advisor/service`.
+- Define and implement v1 endpoints: `/v1/threads`, `/v1/messages` (streaming), optional `/v1/actions`, `/v1/files`.
+- Keep CityCatalyst (CC) unchanged for Sprint 1; provide a clear integration guide for later.
+- Migrate OpenAI usage to OpenRouter in the microservice.
+- Add OAuth client for calling CC where needed (context fetch); CC authenticates user requests to CA separately via shared secret or gateway in later phase.
+- Maintain compatibility with existing CC chat UX (SSE/streaming).
+
+## High-Level Phases
+
+1) Service foundation and endpoint scaffolding (no LLM calls yet).
+2) OpenRouter integration with streaming responses.
+3) OAuth + CityCatalyst client for contextual data fetches.
+4) Integration handoff: CC routes proxy to CA (no code changes in this plan; document only).
+
+---
+
 ## Sprint 1: Climate Advisor Service Foundation
 
 ### Sprint Goal
@@ -14,23 +36,132 @@ Establish the foundation for the Climate Advisor Service microservice and begin 
 
 **Priority:** High  
 **Story Points:** 8  
-**Description:** Create the initial Climate Advisor Service Python microservice with FastAPI framework.
+**Description:** Create the initial Climate Advisor Service Python microservice with FastAPI framework, aligned with climate-advisor/architecture.md (Target Architecture, Service Responsibilities, and API Contract). Establish a clean, versioned API surface and operational foundations (config, logging, errors, health, CORS) without integrating OpenRouter or CC yet.
 
 **Acceptance Criteria:**
 
-- [ ] Set up FastAPI project structure following the project layout guidelines
-- [ ] Create basic health check endpoint (`/health`)
-- [ ] Implement Docker containerization with Dockerfile
-- [ ] Add basic logging and error handling
-- [ ] Create requirements.txt with FastAPI, uvicorn, and other dependencies
-- [ ] Add environment configuration for service discovery
+- [ ] Project structure: create `app/` package with modules for `routes/`, `models/`, `services/`, `config/`, `middleware/`, `utils/` consistent with architecture.md and API versioning (`/v1/*`).
+- [ ] Health endpoints: `GET /health` (liveness) and `GET /ready` (readiness; returns `{"ready": true}` when app boot completes; no external checks yet).
+- [ ] API surface (stubs only):
+  - [ ] `POST /v1/threads` returns `201` with `{ thread_id }` (UUIDv4 generated server-side) and echoes received context metadata (not persisted).
+  - [ ] `POST /v1/messages` streams SSE events that echo the input content in 2–3 chunks, ending with a terminal event; content-type `text/event-stream`, compatible with CC streaming.
+- [ ] Pydantic models (v2): request/response schemas for threads and messages; enforce basic validation (required fields: `user_id`, `content`; optional `inventory_id`, `thread_id`, `context`, `options`).
+- [ ] Error handling: central exception handlers returning JSON Problem Details shape `{ type, title, status, detail, instance, request_id }`; map 422/400/404/500 appropriately.
+- [ ] Observability: structured logging (request start/stop, path/method, status, duration, request_id) and request ID propagation (accept `x-request-id` or generate and return it).
+- [ ] CORS: allow-list via env (`CA_CORS_ORIGINS`, default `*` for dev) and expose necessary headers for SSE.
+- [ ] Settings: centralized config using environment variables loaded via a settings module; include placeholders for OpenRouter and CC but unused in this ticket.
+- [ ] Docker: Dockerfile builds and runs the service on port `8080`; production command with `uvicorn` and graceful shutdown.
+- [ ] Docs: FastAPI auto-docs enabled at `/docs` and `/openapi.json`; README section with local run instructions.
 
 **Files to Create:**
 
-- `global-api/app/main.py` (Climate Advisor Service entry point)
-- `global-api/requirements.txt` (Climate Advisor Service dependencies)
-- `global-api/Dockerfile`
-- `global-api/app/services/` (service layer structure)
+- `climate-advisor/service/app/main.py` (Climate Advisor Service entry point)
+- `climate-advisor/service/requirements.txt` (Climate Advisor Service dependencies)
+- `climate-advisor/service/Dockerfile`
+- `climate-advisor/service/app/services/` (service layer structure)
+- `climate-advisor/service/app/routes/` with `health.py`, `threads.py`, `messages.py`
+- `climate-advisor/service/app/models/` with `requests.py`, `responses.py`
+- `climate-advisor/service/app/config/settings.py` (env loading, CORS, app meta)
+- `climate-advisor/service/app/middleware/request_context.py` (request_id, logging)
+- `climate-advisor/service/app/utils/sse.py` (SSE helpers for streaming)
+
+##### TICKET-001 — Implementation Notes and Examples (Completed)
+
+Status: Implemented as a standalone FastAPI app under `climate-advisor/service/app` with health checks, v1 stubs, middleware, settings, and SSE utilities. No OpenRouter/CC integration yet.
+
+What was implemented
+- Structure created: `routes/`, `models/`, `services/`, `config/`, `middleware/`, `utils/` under `app/`.
+- Health endpoints: `GET /health`, `GET /ready` (ready flips true on startup event).
+- v1 endpoints (stubs):
+  - `POST /v1/threads` → 201 Created, returns `{ thread_id }` and echoes `inventory_id`, `context`; `Location: /v1/threads/{id}` header set.
+  - `POST /v1/messages` → streams SSE events echoing the input `content` in 2–3 chunks and ends with a `done` event.
+- Pydantic v2 models: request/response schemas; required `user_id`, `content` validated.
+- Error handling: JSON Problem Details returned for 400/404/422/500 with `request_id` and `instance` URL.
+- Middleware: Request context middleware captures/propagates `X-Request-Id`, logs start/stop with duration; CORS via FastAPI `CORSMiddleware` using `CA_CORS_ORIGINS`.
+- SSE utils: helpers to format events and chunk text; response disables buffering and sets `text/event-stream`.
+- Settings: `.env` loading, `CA_PORT`, `CA_LOG_LEVEL`, `CA_CORS_ORIGINS` supported; placeholders for OpenRouter/CC kept for later tickets.
+
+How it was implemented
+- Entry point `app/main.py` builds the FastAPI app with middleware, routers, and exception handlers; sets `app.state.ready` on startup.
+- `app/middleware/request_context.py` uses a contextvar to store a per-request UUID or incoming `x-request-id` header; adds `X-Request-Id` to responses.
+- `app/routes/messages.py` returns `StreamingResponse` with SSE-formatted chunks from `app/utils/sse.py` and terminal `event: done`.
+- Problem Details factory ensures consistent error envelopes; 422/HTTPException/ValueError/500 paths covered.
+
+Examples
+- Health checks
+  - Liveness: `curl -s http://localhost:8080/health`
+    - Response: `{ "status": "ok" }`
+  - Readiness: `curl -s http://localhost:8080/ready`
+    - Response: `{ "ready": true }` (after startup)
+
+- Create thread (v1)
+  - Request:
+    ```bash
+    curl -i -X POST http://localhost:8080/v1/threads \
+      -H 'Content-Type: application/json' \
+      -H 'X-Request-Id: demo-req-001' \
+      -d '{
+            "user_id": "u_123",
+            "inventory_id": "inv_456",
+            "context": {"foo": "bar"}
+          }'
+    ```
+  - Expected response (201):
+    ```http
+    HTTP/1.1 201 Created
+    Location: /v1/threads/<uuid>
+    X-Request-Id: demo-req-001
+    Content-Type: application/json
+
+    {"thread_id":"<uuid>","inventory_id":"inv_456","context":{"foo":"bar"}}
+    ```
+
+- Stream message (v1)
+  - Request (SSE, chunked echo):
+    ```bash
+    curl -N -X POST http://localhost:8080/v1/messages \
+      -H 'Content-Type: application/json' \
+      -d '{
+            "user_id": "u_123",
+            "thread_id": "<optional-uuid>",
+            "content": "Hello Climate Advisor, streaming test."
+          }'
+    ```
+  - Example stream (server output shape):
+    ```
+    event: message
+    id: 0
+    data: {"index": 0, "content": "Hello Climate Advisor, "}
+
+    event: message
+    id: 1
+    data: {"index": 1, "content": "streaming test."}
+
+    event: done
+    data: {"ok": true, "request_id": "<uuid-or-x-request-id>"}
+    ```
+
+- Error envelope (Problem Details example)
+  - Trigger (missing required fields):
+    ```bash
+    curl -s -X POST http://localhost:8080/v1/messages -H 'Content-Type: application/json' -d '{}'
+    ```
+  - Response (422):
+    ```json
+    {
+      "type": "https://datatracker.ietf.org/doc/html/rfc4918#section-11.2",
+      "title": "Unprocessable Entity",
+      "status": 422,
+      "detail": "1 validation error for MessageCreateRequest ...",
+      "instance": "http://localhost:8080/v1/messages",
+      "request_id": "<uuid>"
+    }
+    ```
+
+Client notes
+- SSE: clients should use streaming fetch (e.g., `EventSource`/`ReadableStream` or `curl -N`). Server emits `text/event-stream` with `X-Accel-Buffering: no` and `Cache-Control: no-cache` headers to support real-time streaming.
+- Request IDs: pass `X-Request-Id` for traceability; the service returns the same in responses and terminal SSE event.
+- CORS: configure allowed origins via `CA_CORS_ORIGINS` (CSV). Default is `*` in dev.
 
 ---
 
@@ -47,12 +178,14 @@ Establish the foundation for the Climate Advisor Service microservice and begin 
 - [ ] Add token refresh mechanism
 - [ ] Create secure token storage (environment variables or secure config)
 - [ ] Add token validation and error handling
+- [ ] Secure outbound requests from CA to CC using OAuth bearer tokens
+- [ ] (Inbound auth to CA from CC to be addressed in a later phase or via gateway)
 
 **Files to Create/Modify:**
 
-- `global-api/app/services/oauth_service.py`
-- `global-api/app/config/oauth_config.py`
-- `global-api/.env.example` (OAuth configuration)
+- `climate-advisor/service/app/services/oauth_service.py`
+- `climate-advisor/service/app/config/oauth_config.py`
+- `climate-advisor/service/.env.example` (OAuth configuration)
 
 ---
 
@@ -69,13 +202,14 @@ Establish the foundation for the Climate Advisor Service microservice and begin 
 - [ ] Add basic request/response models with Pydantic
 - [ ] Implement proper HTTP status codes and error responses
 - [ ] Add API documentation with FastAPI auto-generated docs
+- [ ] Ensure response streaming is SSE- or chunk-compatible with CC
 
 **Files to Create:**
 
-- `global-api/app/routes/threads.py`
-- `global-api/app/routes/messages.py`
-- `global-api/app/models/requests.py`
-- `global-api/app/models/responses.py`
+- `climate-advisor/service/app/routes/threads.py`
+- `climate-advisor/service/app/routes/messages.py`
+- `climate-advisor/service/app/models/requests.py`
+- `climate-advisor/service/app/models/responses.py`
 
 ---
 
@@ -92,11 +226,12 @@ Establish the foundation for the Climate Advisor Service microservice and begin 
 - [ ] Create methods for context data retrieval from CityCatalyst
 - [ ] Add proper error handling for API failures
 - [ ] Implement request/response logging
+- [ ] Pluggable base URL configured via env
 
 **Files to Create:**
 
-- `global-api/app/services/citycatalyst_client.py`
-- `global-api/app/models/citycatalyst_models.py`
+- `climate-advisor/service/app/services/citycatalyst_client.py`
+- `climate-advisor/service/app/models/citycatalyst_models.py`
 
 ---
 
@@ -113,12 +248,13 @@ Establish the foundation for the Climate Advisor Service microservice and begin 
 - [ ] Add Docker Compose configuration for local development
 - [ ] Document API endpoints and integration points
 - [ ] Add troubleshooting guide
+- [ ] Include example of CC -> CA wiring (env + curl examples)
 
 **Files to Create/Modify:**
 
-- `global-api/.env.example`
-- `global-api/README.md`
-- `global-api/docker-compose.yml`
+- `climate-advisor/service/.env.example`
+- `climate-advisor/README.md`
+- `climate-advisor/docker-compose.yml`
 - `docs/climate-advisor-service.md`
 
 ---
@@ -138,3 +274,111 @@ Establish the foundation for the Climate Advisor Service microservice and begin 
 - OAuth Provider credentials and configuration
 - CityCatalyst API documentation for context data endpoints
 - OpenRouter API credentials and configuration
+
+---
+
+## Sprint 2: OpenRouter Integration and Streaming
+
+### Sprint Goal
+
+Replace stubbed responses with real LLM responses via OpenRouter, preserving streaming behavior compatible with CC.
+
+### Tickets
+
+#### TICKET-006: OpenRouter Client and Config
+
+- [ ] Implement OpenRouter client (HTTPX) with API key and base URL from env
+- [ ] Support model selection via env (default and override per request)
+- [ ] Add request/response logging with redaction
+- [ ] Add retry/backoff and timeouts
+
+#### TICKET-007: Streaming Responses
+
+- [ ] Implement token streaming from OpenRouter and forward as SSE/chunked stream
+- [ ] Backpressure-safe generator for FastAPI Response/StreamingResponse
+- [ ] Error path streams meaningful terminal events to client
+
+#### TICKET-008: Message Handling Pipeline
+
+- [ ] Validate request payload (thread_id, user_id, content)
+- [ ] Shape prompt with provided context; (no CC fetch yet)
+- [ ] Return assistant message chunks; finalize message summary
+
+### Definition of Done
+
+- [ ] `/v1/messages` streams real LLM output end-to-end
+- [ ] Basic observability in place (request IDs; timing logs)
+- [ ] Configurable model and temperature via env
+
+---
+
+## Sprint 3: OAuth + CC Context Fetch
+
+### Sprint Goal
+
+Enable CA to fetch contextual data from CC using OAuth, to enrich prompts.
+
+### Tickets
+
+#### TICKET-009: OAuth Flow Hardening
+
+- [ ] Token acquisition and refresh; cache with expiry
+- [ ] Circuit breaker for CC outages
+
+#### TICKET-010: CC Context Endpoints
+
+- [ ] Implement calls to CC APIs to fetch inventory/user context as needed
+- [ ] Map CC responses to internal prompt blocks
+- [ ] Feature flag to toggle CC context fetch
+
+### Definition of Done
+
+- [ ] With a valid token, CA can fetch and incorporate CC context
+- [ ] Failure to fetch context degrades gracefully
+
+---
+
+## Integration Plan with CC (No code changes here)
+
+- CC proxies existing chat routes to CA endpoints:
+  - `POST /api/v0/chat/threads/{inventory}` → `POST CA /v1/threads`
+  - `POST /api/v0/chat/threads/messages` → `POST CA /v1/messages` (stream)
+  - `POST /api/v0/chat/threads/actions` → `POST CA /v1/actions` (optional)
+- CA returns thread_id and streams responses; CC forwards to browser unchanged.
+- Configuration: CC gets `CLIMATE_ADVISOR_BASE_URL` to target CA.
+
+---
+
+## API Contract (v1, summarized)
+
+- `POST /v1/threads`
+  - Input: `{ user_id, inventory_id?, context?: object|string }`
+  - Output: `{ thread_id }`
+- `POST /v1/messages` (stream)
+  - Input: `{ thread_id, user_id, content, options?: {model?, temperature?} }`
+  - Output: SSE/chunked stream of assistant tokens and terminal event
+- `GET /v1/threads/{thread_id}` (optional later)
+  - Output: `{ messages: [...]} `
+- `POST /v1/actions` (optional)
+- `POST /v1/files` (optional)
+
+---
+
+## Environment Variables (initial set)
+
+- `CA_PORT` – default 8080
+- `CA_LOG_LEVEL` – info|debug
+- `OPENROUTER_API_KEY`
+- `OPENROUTER_BASE_URL` – default `https://openrouter.ai/api/v1`
+- `OPENROUTER_MODEL` – default model id
+- `CC_BASE_URL` – base URL for CityCatalyst API
+- `CC_OAUTH_CLIENT_ID`, `CC_OAUTH_CLIENT_SECRET`, `CC_OAUTH_TOKEN_URL`
+- `REQUEST_TIMEOUT_MS`
+
+---
+
+## Non-Goals (for now)
+
+- Persisting threads/messages in CA (persistence remains in CC as per architecture; CA stays stateless)
+- Vector DB ingestion and file handling beyond API surface stubs
+- Frontend (CC) code changes (will be handled in a separate PR)

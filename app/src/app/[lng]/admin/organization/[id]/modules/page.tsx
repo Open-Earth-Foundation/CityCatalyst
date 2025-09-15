@@ -30,8 +30,6 @@ const AdminOrganizationModulesPage = (props: {
     return <ProgressLoader />;
   }
 
-  //  TODO: get modules from backend
-
   const handleModuleToggle = (
     projectId: string,
     moduleName: string,
@@ -88,7 +86,7 @@ const AdminOrganizationModulesPage = (props: {
       </Box>
 
       {!isProjectDataLoading && projects && projects.length > 0 && (
-        <ProjectModulesTabs projects={projects} modules={[]} lng={lng} />
+        <ProjectModulesTabs projects={projects} lng={lng} />
       )}
     </Box>
   );

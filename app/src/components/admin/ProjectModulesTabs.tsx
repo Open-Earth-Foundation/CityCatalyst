@@ -25,15 +25,10 @@ interface Project {
 
 interface ProjectModulesTabsProps {
   projects: Project[];
-  modules: Module[];
   lng: string;
 }
 
-const ProjectModulesTabs = ({
-  projects,
-  modules,
-  lng,
-}: ProjectModulesTabsProps) => {
+const ProjectModulesTabs = ({ projects, lng }: ProjectModulesTabsProps) => {
   const { t } = useTranslation(lng, "admin");
 
   const [selectedProjectId, setSelectedProjectId] = useState<string>(

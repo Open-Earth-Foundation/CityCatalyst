@@ -6,18 +6,15 @@ import * as fs from "fs";
 test.describe("CSV Download", () => {
   test.setTimeout(180000); // Set 60 second timeout for all tests in this describe block
 
-  test("User can download inventory as CSV", async ({ page }) => {
-    // Create inventory through onboarding
+  test.beforeEach(async ({ page }) => {
     await navigateToGHGIModule(page);
-
     // Debug: Check where we are after navigation
     console.log("Current URL after navigateToGHGIModule:", page.url());
-    
     // Debug: Check if hero city name is visible
     const heroCityName = page.getByTestId("hero-city-name");
     const heroCityNameCount = await heroCityName.count();
     console.log("Hero city name element count:", heroCityNameCount);
-    
+
     if (heroCityNameCount > 0) {
       const heroCityNameText = await heroCityName.textContent();
       console.log("Hero city name text:", heroCityNameText);
@@ -25,7 +22,9 @@ test.describe("CSV Download", () => {
 
     // Verify we're on the dashboard
     await expect(page.getByTestId("hero-city-name")).toHaveText("Chicago");
+  });
 
+  test("User can download inventory as CSV", async ({ page }) => {
     // Debug: Check what elements are available
     const addDataCard = page.getByTestId("add-data-to-inventory-card");
     const addDataCardCount = await addDataCard.count();
@@ -102,12 +101,6 @@ test.describe("CSV Download", () => {
   });
 
   test("CSV download contains valid data structure", async ({ page }) => {
-    // Create inventory through onboarding
-    await navigateToGHGIModule(page);
-
-    // Navigate to Dashboard
-    await page.waitForLoadState("networkidle");
-
     // Wait for the ActionCards component to render (indicates inventory data is loaded)
     await expect(page.getByTestId("add-data-to-inventory-card")).toBeVisible();
 

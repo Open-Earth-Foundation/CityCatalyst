@@ -48,9 +48,7 @@ export async function createInventory(
   return await result.json();
 }
 
-export async function createCityThroughOnboarding(
-  page: Page,
-): Promise<string> {
+export async function createCityThroughOnboarding(page: Page): Promise<string> {
   // Step 1: Start the city onboarding process
   await page.goto("/en/cities/onboarding/");
 
@@ -83,7 +81,7 @@ export async function createCityThroughOnboarding(
     const continueButton = page.getByRole("button", { name: /Continue/i });
     await expect(continueButton).toBeEnabled({ timeout: 30000 });
     await continueButton.click();
-}
+  }
   // Click Continue to confirm
   {
     const continueButton = page.getByRole("button", { name: /Continue/i });
@@ -117,7 +115,7 @@ export async function createInventoryThroughOnboarding(
     cityId = cityIdMatch[1];
   }
   const lng = "en";
-  await page.goto(`/${lng}/cities/${cityId}/GHGI/onboarding`)
+  await page.goto(`/${lng}/cities/${cityId}/GHGI/onboarding`);
 
   // Step 3: Click "Start Inventory" button
   const startButton = page.getByTestId("start-inventory-button");
@@ -201,10 +199,11 @@ export async function createCityAndInventoryThroughOnboarding(
 ): Promise<{ page: Page; cityId: string; inventoryId: string }> {
   // Create the city first
   const cityId = await createCityThroughOnboarding(page);
-  
+
   // Then create the inventory
-  const { page: inventoryPage, inventoryId } = await createInventoryThroughOnboarding(page, cityId);
-  
+  const { page: inventoryPage, inventoryId } =
+    await createInventoryThroughOnboarding(page, cityId);
+
   // Return both IDs and the page
   return { page: inventoryPage, cityId, inventoryId };
 }
@@ -229,21 +228,21 @@ export async function createProject(
  */
 export async function navigateToGHGIModule(page: Page) {
   console.log("Starting navigateToGHGIModule...");
-  
+
   await page.goto("/en/cities/");
   console.log("Navigated to /en/cities/, current URL:", page.url());
-  
+
   await page.waitForLoadState("networkidle");
-  
+
   // Check if we were redirected to onboarding page (no cities exist)
   const currentUrl = page.url();
   console.log("Current URL after waiting for network idle:", currentUrl);
-  
+
   if (currentUrl.includes("/onboarding/")) {
     console.log("Redirected to onboarding, creating city and inventory...");
     // Complete the full onboarding flow
     await createCityAndInventoryThroughOnboarding(page);
-    
+    await page.waitForLoadState("networkidle");
     // Now try to navigate to cities again
     await page.goto("/en/cities/");
     await page.waitForLoadState("networkidle");
@@ -258,22 +257,43 @@ export async function navigateToGHGIModule(page: Page) {
     console.log(`GHGI navigation attempt ${attempt}...`);
 
     console.log("Looking for 'Assess and Analyze' button...");
-    const assessButton = page.getByRole("button", { name: "Assess and Analyze" });
-    const assessButtonCount = await assessButton.count();
+    const assessButton = page.getByRole("button", {
+      name: "Assess and Analyze",
+    });
+    let assessButtonCount = await assessButton.count();
     console.log("Found 'Assess and Analyze' button count:", assessButtonCount);
     if (assessButtonCount === 0) {
-      console.log("ERROR: 'Assess and Analyze' button not found!");
-      throw new Error("'Assess and Analyze' button not found on cities page");
+      // Fallback: if the button doesn't exist, ensure a city + inventory exist via onboarding
+      console.log(
+        "'Assess and Analyze' not present. Navigating to onboarding to create city + inventory...",
+      );
+      try {
+        const { cityId, inventoryId } =
+          await createCityAndInventoryThroughOnboarding(page);
+        await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
+        await page.waitForLoadState("networkidle");
+        console.log("Created city + inventory via fallback. At:", page.url());
+        return;
+      } catch (err) {
+        console.log(
+          "Fallback onboarding from cities failed:",
+          (err as Error).message,
+        );
+        throw new Error(
+          "Could not find 'Assess and Analyze' and fallback onboarding failed",
+        );
+      }
     }
 
-    await Promise.all([
-      page.waitForLoadState("networkidle").catch(() => {}),
-      assessButton.click(),
-    ]);
+    await page.waitForLoadState("networkidle").catch(() => {});
+    await assessButton.click();
+
     console.log("Clicked 'Assess and Analyze' button, URL:", page.url());
 
     console.log("Looking for GHGI module launch button...");
-    const moduleButton = page.getByTestId('module-launch-077690c6-6fa3-44e1-84b7-6d758a6a4d88');
+    const moduleButton = page.getByTestId(
+      "module-launch-077690c6-6fa3-44e1-84b7-6d758a6a4d88",
+    );
     const moduleButtonCount = await moduleButton.count();
     console.log("Found GHGI module launch button count:", moduleButtonCount);
     if (moduleButtonCount === 0) {
@@ -281,14 +301,12 @@ export async function navigateToGHGIModule(page: Page) {
       throw new Error("GHGI module launch button not found");
     }
 
-    await Promise.all([
-      // Wait for either a URL change or network idle after clicking
-      page.waitForLoadState("networkidle").catch(() => {}),
-      page.waitForURL(/\/cities\//, { timeout: 15000 }).catch(() => {}),
-      moduleButton.click(),
-    ]);
+    // Wait for either a URL change or network idle after clicking
+    await page.waitForLoadState("networkidle").catch(() => {});
+    await page.waitForURL(/\/cities\//, { timeout: 15000 }).catch(() => {});
+    await moduleButton.click();
     console.log("URL after module launch click:", page.url());
-
+    await page.waitForLoadState("networkidle").catch(() => {});
     // If we reached an inventory page -> success
     if (inventoryUrlRegex.test(page.url())) {
       console.log("Reached GHGI inventory URL:", page.url());
@@ -297,11 +315,16 @@ export async function navigateToGHGIModule(page: Page) {
 
     // If we are at GHGI root -> wait for client redirect
     if (ghgiRootRegex.test(page.url())) {
-      console.log("At GHGI root without inventoryId. Waiting for redirect to inventory or onboarding...");
+      console.log(
+        "At GHGI root without inventoryId. Waiting for redirect to inventory or onboarding...",
+      );
       const redirectStart = Date.now();
       let redirected = false;
       while (Date.now() - redirectStart < 30000) {
-        console.log("Waiting for redirect from GHGI root. Current URL:", page.url());
+        console.log(
+          "Waiting for redirect from GHGI root. Current URL:",
+          page.url(),
+        );
         await page.waitForLoadState("networkidle");
         const u = page.url();
         if (inventoryUrlRegex.test(u)) {
@@ -311,12 +334,44 @@ export async function navigateToGHGIModule(page: Page) {
         }
         if (u.includes("/GHGI/onboarding")) {
           console.log("Redirected to GHGI onboarding:", u);
+          // Extract cityId from the onboarding URL and create an inventory
+          const match = u.match(/\/cities\/([^/]+)\/GHGI\/onboarding/);
+          if (match) {
+            const cityIdFromUrl = match[1];
+            try {
+              const { inventoryId } = await createInventoryThroughOnboarding(
+                page,
+                cityIdFromUrl,
+              );
+              // Navigate to the newly created inventory dashboard
+              await page.goto(
+                `/en/cities/${cityIdFromUrl}/GHGI/${inventoryId}/`,
+              );
+              await page.waitForLoadState("networkidle");
+              console.log(
+                "Completed GHGI onboarding and navigated to inventory:",
+                page.url(),
+              );
+              redirected = true;
+              return;
+            } catch (err) {
+              console.log(
+                "Error while completing GHGI onboarding:",
+                (err as Error).message,
+              );
+              // fall through to retry loop
+            }
+          }
+          // If we couldn't parse cityId for some reason, break out to retry
           redirected = true;
           return;
         }
         await page.waitForTimeout(500);
       }
-      console.log("Timed out waiting for redirect from GHGI root. Current URL:", page.url());
+      console.log(
+        "Timed out waiting for redirect from GHGI root. Current URL:",
+        page.url(),
+      );
       // fallthrough to retry
     }
 
@@ -326,8 +381,32 @@ export async function navigateToGHGIModule(page: Page) {
     await page.waitForLoadState("networkidle");
   }
 
-  // Final log if all attempts failed
-  console.log("Failed to navigate to GHGI inventory after retries. Final URL:", page.url());
+  // Final log if all attempts failed. If we ended on onboarding, try once to complete it.
+  if (page.url().includes("/GHGI/onboarding")) {
+    const match = page.url().match(/\/cities\/([^/]+)\/GHGI\/onboarding/);
+    if (match) {
+      const fallbackCityId = match[1];
+      try {
+        const { inventoryId } = await createInventoryThroughOnboarding(
+          page,
+          fallbackCityId,
+        );
+        await page.goto(`/en/cities/${fallbackCityId}/GHGI/${inventoryId}/`);
+        await page.waitForLoadState("networkidle");
+        console.log(
+          "Fallback onboarding completed, navigated to inventory:",
+          page.url(),
+        );
+        return;
+      } catch (err) {
+        console.log("Fallback onboarding failed:", (err as Error).message);
+      }
+    }
+  }
+
+  console.log(
+    "Failed to navigate to GHGI inventory after retries. Final URL:",
+    page.url(),
+  );
   throw new Error("Failed to navigate to GHGI inventory page");
 }
-

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Table, Tabs, Text } from "@chakra-ui/react";
+import { Box, Spinner, Table, Tabs, Text } from "@chakra-ui/react";
 import { Switch } from "@/components/ui/switch";
 import { useTranslation } from "@/i18n/client";
 import { toaster } from "@/components/ui/toaster";
@@ -27,18 +27,12 @@ interface ProjectModulesTabsProps {
   projects: Project[];
   modules: Module[];
   lng: string;
-  onModuleToggle?: (
-    projectId: string,
-    moduleId: string,
-    hasAccess: boolean,
-  ) => void;
 }
 
 const ProjectModulesTabs = ({
   projects,
   modules,
   lng,
-  onModuleToggle,
 }: ProjectModulesTabsProps) => {
   const { t } = useTranslation(lng, "admin");
 
@@ -67,6 +61,10 @@ const ProjectModulesTabs = ({
       hasAccess: projectModuleIds.has(module.id),
     }));
   }, [allModules, selectedProjectModules, selectedProjectId]);
+
+  // Loading state
+  const isLoading =
+    isAllModulesLoading || (selectedProjectId && isProjectModulesLoading);
 
   if (!projects || projects.length === 0) {
     return null;
@@ -239,24 +237,53 @@ const ProjectModulesTabs = ({
                   </Table.Header>
 
                   <Table.Body>
-                    {projectId === selectedProjectId &&
-                      modulesWithAccess.map((module) => (
-                        <Table.Row key={module.id} fontSize="body.md">
-                          <Table.Cell>{module.name.en}</Table.Cell>
-                          <Table.Cell>{module.author}</Table.Cell>
-                          <Table.Cell textAlign="end">
-                            <Switch
-                              checked={module.hasAccess}
-                              onChange={(
-                                e: React.FormEvent<HTMLLabelElement>,
-                              ) => {
-                                // move to a function
-                                handleModuleToggle(e, projectId, module.id);
-                              }}
-                            />
-                          </Table.Cell>
-                        </Table.Row>
-                      ))}
+                    {projectId === selectedProjectId && (
+                      <>
+                        {isLoading ? (
+                          <Table.Row>
+                            <Table.Cell
+                              colSpan={3}
+                              textAlign="center"
+                              py="32px"
+                            >
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                gap="12px"
+                              >
+                                {/* small spinner for micro loading states*/}
+                                <Spinner size="sm" color="content.secondary" />
+                                <Text
+                                  color="content.secondary"
+                                  fontSize="body.md"
+                                >
+                                  {t("laoding")}
+                                </Text>
+                              </Box>
+                            </Table.Cell>
+                          </Table.Row>
+                        ) : (
+                          modulesWithAccess.map((module) => (
+                            <Table.Row key={module.id} fontSize="body.md">
+                              <Table.Cell>{module.name.en}</Table.Cell>
+                              <Table.Cell>{module.author}</Table.Cell>
+                              <Table.Cell textAlign="end">
+                                <Switch
+                                  checked={module.hasAccess}
+                                  onChange={(
+                                    e: React.FormEvent<HTMLLabelElement>,
+                                  ) => {
+                                    // move to a function
+                                    handleModuleToggle(e, projectId, module.id);
+                                  }}
+                                />
+                              </Table.Cell>
+                            </Table.Row>
+                          ))
+                        )}
+                      </>
+                    )}
                   </Table.Body>
                 </Table.Root>
               </Table.ScrollArea>

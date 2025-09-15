@@ -101,11 +101,18 @@ export const POST = apiHandler(async (_req: Request, context) => {
   } catch (error) {
     throw new createHttpError.Forbidden("Access denied");
   }
+  let projectModule;
 
-  const projectModule = await ModuleAccessService.enableModuleAccess(
-    projectId,
-    moduleId,
-  );
+  try {
+    projectModule = await ModuleAccessService.enableModuleAccess(
+      projectId,
+      moduleId,
+    );
+  } catch (error) {
+    throw new createHttpError.InternalServerError(
+      "Failed to enable module access",
+    );
+  }
 
   return NextResponse.json({
     data: projectModule,

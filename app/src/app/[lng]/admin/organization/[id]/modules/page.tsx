@@ -26,8 +26,6 @@ const AdminOrganizationModulesPage = (props: {
       organizationId: id,
     });
 
-  console.log(projects);
-
   if (isOrganizationLoading) {
     return <ProgressLoader />;
   }
@@ -90,12 +88,7 @@ const AdminOrganizationModulesPage = (props: {
       </Box>
 
       {!isProjectDataLoading && projects && projects.length > 0 && (
-        <ProjectModulesTabs
-          projects={projects}
-          modules={[]}
-          lng={lng}
-          onModuleToggle={handleModuleToggle}
-        />
+        <ProjectModulesTabs projects={projects} modules={[]} lng={lng} />
       )}
     </Box>
   );

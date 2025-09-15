@@ -62,13 +62,7 @@ const ProjectModulesTabs = ({
     }));
   }, [allModules, selectedProjectModules, selectedProjectId]);
 
-  // Loading state
-  const isLoading =
-    isAllModulesLoading || (selectedProjectId && isProjectModulesLoading);
-
-  if (!projects || projects.length === 0) {
-    return null;
-  }
+  // Hooks must be called before any early returns
   const [
     enableProjectModuleAccess,
     { isLoading: isEnableProjectModuleAccessLoading },
@@ -80,14 +74,22 @@ const ProjectModulesTabs = ({
     { isLoading: isDisableProjectModuleAccessLoading },
   ] = useDisableProjectModuleAccessMutation();
 
+  // Loading state
+  const isLoading =
+    isAllModulesLoading || (selectedProjectId && isProjectModulesLoading);
+
+  if (!projects || projects.length === 0) {
+    return null;
+  }
+
   const handleModuleToggle = async (
     e: React.FormEvent<HTMLLabelElement>,
     projectId: string,
     moduleId: string,
   ) => {
     const isChecked = (e.target as HTMLInputElement).checked;
-    const module = modulesWithAccess.find((m) => m.id === moduleId);
-    const moduleName = module?.name?.en || "Module";
+    const moduleData = modulesWithAccess.find((m) => m.id === moduleId);
+    const moduleName = moduleData?.name?.en || "Module";
 
     try {
       if (isChecked) {

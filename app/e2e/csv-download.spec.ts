@@ -10,8 +10,30 @@ test.describe("CSV Download", () => {
     // Create inventory through onboarding
     await navigateToGHGIModule(page);
 
+    // Debug: Check where we are after navigation
+    console.log("Current URL after navigateToGHGIModule:", page.url());
+    
+    // Debug: Check if hero city name is visible
+    const heroCityName = page.getByTestId("hero-city-name");
+    const heroCityNameCount = await heroCityName.count();
+    console.log("Hero city name element count:", heroCityNameCount);
+    
+    if (heroCityNameCount > 0) {
+      const heroCityNameText = await heroCityName.textContent();
+      console.log("Hero city name text:", heroCityNameText);
+    }
+
     // Verify we're on the dashboard
     await expect(page.getByTestId("hero-city-name")).toHaveText("Chicago");
+
+    // Debug: Check what elements are available
+    const addDataCard = page.getByTestId("add-data-to-inventory-card");
+    const addDataCardCount = await addDataCard.count();
+    console.log("Add data card count:", addDataCardCount);
+    
+    const downloadCard = page.getByTestId("download-action-card");
+    const downloadCardCount = await downloadCard.count();
+    console.log("Download card count:", downloadCardCount);
 
     // Wait for the ActionCards component to render (indicates inventory data is loaded)
     await expect(page.getByTestId("add-data-to-inventory-card")).toBeVisible();

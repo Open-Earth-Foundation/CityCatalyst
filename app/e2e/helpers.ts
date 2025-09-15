@@ -228,24 +228,106 @@ export async function createProject(
  * @param page - The page object
  */
 export async function navigateToGHGIModule(page: Page) {
+  console.log("Starting navigateToGHGIModule...");
+  
   await page.goto("/en/cities/");
+  console.log("Navigated to /en/cities/, current URL:", page.url());
+  
   await page.waitForLoadState("networkidle");
+  
   // Check if we were redirected to onboarding page (no cities exist)
   const currentUrl = page.url();
+  console.log("Current URL after waiting for network idle:", currentUrl);
+  
   if (currentUrl.includes("/onboarding/")) {
+    console.log("Redirected to onboarding, creating city and inventory...");
     // Complete the full onboarding flow
     await createCityAndInventoryThroughOnboarding(page);
     
     // Now try to navigate to cities again
     await page.goto("/en/cities/");
     await page.waitForLoadState("networkidle");
+    console.log("After onboarding, navigated back to cities, URL:", page.url());
   }
-  
-  await page.getByRole("button", { name: "Assess and Analyze" }).click();
-  
-  // Click the specific module's Launch button by test id
-  await page.getByTestId('module-launch-077690c6-6fa3-44e1-84b7-6d758a6a4d88').click();
 
-  await page.waitForLoadState("networkidle");
+  const inventoryUrlRegex = /\/cities\/[^/]+\/GHGI\/[^/]+\/?$/;
+  const ghgiRootRegex = /\/cities\/[^/]+\/GHGI\/?$/;
+
+  // Attempt up to 3 times in case the click doesn't navigate
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    console.log(`GHGI navigation attempt ${attempt}...`);
+
+    console.log("Looking for 'Assess and Analyze' button...");
+    const assessButton = page.getByRole("button", { name: "Assess and Analyze" });
+    const assessButtonCount = await assessButton.count();
+    console.log("Found 'Assess and Analyze' button count:", assessButtonCount);
+    if (assessButtonCount === 0) {
+      console.log("ERROR: 'Assess and Analyze' button not found!");
+      throw new Error("'Assess and Analyze' button not found on cities page");
+    }
+
+    await Promise.all([
+      page.waitForLoadState("networkidle").catch(() => {}),
+      assessButton.click(),
+    ]);
+    console.log("Clicked 'Assess and Analyze' button, URL:", page.url());
+
+    console.log("Looking for GHGI module launch button...");
+    const moduleButton = page.getByTestId('module-launch-077690c6-6fa3-44e1-84b7-6d758a6a4d88');
+    const moduleButtonCount = await moduleButton.count();
+    console.log("Found GHGI module launch button count:", moduleButtonCount);
+    if (moduleButtonCount === 0) {
+      console.log("ERROR: GHGI module launch button not found!");
+      throw new Error("GHGI module launch button not found");
+    }
+
+    await Promise.all([
+      // Wait for either a URL change or network idle after clicking
+      page.waitForLoadState("networkidle").catch(() => {}),
+      page.waitForURL(/\/cities\//, { timeout: 15000 }).catch(() => {}),
+      moduleButton.click(),
+    ]);
+    console.log("URL after module launch click:", page.url());
+
+    // If we reached an inventory page -> success
+    if (inventoryUrlRegex.test(page.url())) {
+      console.log("Reached GHGI inventory URL:", page.url());
+      return;
+    }
+
+    // If we are at GHGI root -> wait for client redirect
+    if (ghgiRootRegex.test(page.url())) {
+      console.log("At GHGI root without inventoryId. Waiting for redirect to inventory or onboarding...");
+      const redirectStart = Date.now();
+      let redirected = false;
+      while (Date.now() - redirectStart < 30000) {
+        console.log("Waiting for redirect from GHGI root. Current URL:", page.url());
+        await page.waitForLoadState("networkidle");
+        const u = page.url();
+        if (inventoryUrlRegex.test(u)) {
+          console.log("Redirected to inventory URL:", u);
+          redirected = true;
+          return;
+        }
+        if (u.includes("/GHGI/onboarding")) {
+          console.log("Redirected to GHGI onboarding:", u);
+          redirected = true;
+          return;
+        }
+        await page.waitForTimeout(500);
+      }
+      console.log("Timed out waiting for redirect from GHGI root. Current URL:", page.url());
+      // fallthrough to retry
+    }
+
+    // If we are back on /en/cities/ or elsewhere, retry
+    console.log("Not on GHGI page yet. Current URL:", page.url());
+    await page.goto("/en/cities/");
+    await page.waitForLoadState("networkidle");
+  }
+
+  // Final log if all attempts failed
+  console.log("Failed to navigate to GHGI inventory after retries. Final URL:", page.url());
+  throw new Error("Failed to navigate to GHGI inventory page");
 }
 

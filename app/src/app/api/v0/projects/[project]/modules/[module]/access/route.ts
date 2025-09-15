@@ -33,6 +33,7 @@ import { db } from "@/models";
 import UserService from "@/backend/UserService";
 import createHttpError from "http-errors";
 import { z } from "zod";
+import { ProjectModulesAttributes } from "@/models/ProjectModules";
 
 const paramsSchema = z.object({
   project: z.string().uuid("Project ID must be a valid UUID"),
@@ -101,5 +102,86 @@ export const GET = apiHandler(async (_req: Request, context) => {
 
   return NextResponse.json({
     data: hasAccess,
+  });
+});
+
+// enable admin to grant project access to the module
+export const POST = apiHandler(async (_req: Request, context) => {
+  const { project: projectId, module: moduleId } = paramsSchema.parse(
+    context.params,
+  );
+  const { session } = context;
+
+  if (!moduleId) {
+    throw new createHttpError.BadRequest("ModuleId is missing");
+  }
+
+  // Find the project to get its organization
+  const project = await db.models.Project.findByPk(projectId);
+  if (!project) {
+    throw new createHttpError.NotFound("Project not found");
+  }
+
+  // Validate that the user has access to this project
+  // They must be either an admin or have access to the organization/project
+  try {
+    UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
+  } catch (error) {
+    throw new createHttpError.Forbidden("Access denied");
+  }
+  let projectModule;
+
+  try {
+    projectModule = await ModuleAccessService.enableModuleAccess(
+      projectId,
+      moduleId,
+    );
+  } catch (error) {
+    throw new createHttpError.InternalServerError(
+      "Failed to enable module access",
+    );
+  }
+
+  return NextResponse.json({
+    data: projectModule,
+  });
+});
+
+// disable admin to revoke project access to the module
+export const DELETE = apiHandler(async (_req: Request, context) => {
+  const { project: projectId, module: moduleId } = paramsSchema.parse(
+    context.params,
+  );
+  const { session } = context;
+  if (!moduleId) {
+    throw new createHttpError.BadRequest("ModuleId is missing");
+  }
+
+  // Find the project to get its organization
+  const project = await db.models.Project.findByPk(projectId);
+  if (!project) {
+    throw new createHttpError.NotFound("Project not found");
+  }
+  try {
+    UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
+  } catch (error) {
+    throw new createHttpError.Forbidden("Access denied");
+  }
+
+  let projectModule;
+
+  try {
+    projectModule = await ModuleAccessService.disableModuleAccess(
+      projectId,
+      moduleId,
+    );
+  } catch (error) {
+    throw new createHttpError.InternalServerError(
+      "Failed to disable module access",
+    );
+  }
+
+  return NextResponse.json({
+    data: projectModule,
   });
 });

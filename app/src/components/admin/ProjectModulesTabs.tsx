@@ -1,7 +1,16 @@
 "use client";
 
-import { Box, Switch, Table, Tabs, Text } from "@chakra-ui/react";
+import { Box, Spinner, Table, Tabs, Text } from "@chakra-ui/react";
+import { Switch } from "@/components/ui/switch";
 import { useTranslation } from "@/i18n/client";
+import { toaster } from "@/components/ui/toaster";
+import {
+  useGetModulesQuery,
+  useGetProjectModulesQuery,
+  useEnableProjectModuleAccessMutation,
+  useDisableProjectModuleAccessMutation,
+} from "@/services/api";
+import { useState, useMemo } from "react";
 
 interface Module {
   name: string;
@@ -16,26 +25,102 @@ interface Project {
 
 interface ProjectModulesTabsProps {
   projects: Project[];
-  modules: Module[];
   lng: string;
-  onModuleToggle?: (
-    projectId: string,
-    moduleName: string,
-    hasAccess: boolean,
-  ) => void;
 }
 
-const ProjectModulesTabs = ({
-  projects,
-  modules,
-  lng,
-  onModuleToggle,
-}: ProjectModulesTabsProps) => {
+const ProjectModulesTabs = ({ projects, lng }: ProjectModulesTabsProps) => {
   const { t } = useTranslation(lng, "admin");
+
+  const [selectedProjectId, setSelectedProjectId] = useState<string>(
+    projects[0]?.projectId || "",
+  );
+
+  // Fetch all modules
+  const { data: allModules, isLoading: isAllModulesLoading } =
+    useGetModulesQuery();
+
+  // Fetch project modules for the selected project only
+  const { data: selectedProjectModules, isLoading: isProjectModulesLoading } =
+    useGetProjectModulesQuery(selectedProjectId, { skip: !selectedProjectId });
+
+  // Memoized function to get modules with access for the selected project
+  const modulesWithAccess = useMemo(() => {
+    if (!allModules || !selectedProjectId) return [];
+
+    const projectModuleIds = new Set(
+      selectedProjectModules?.map((mod) => mod.id) || [],
+    );
+
+    return allModules.map((module) => ({
+      ...module,
+      hasAccess: projectModuleIds.has(module.id),
+    }));
+  }, [allModules, selectedProjectModules, selectedProjectId]);
+
+  // Hooks must be called before any early returns
+  const [
+    enableProjectModuleAccess,
+    { isLoading: isEnableProjectModuleAccessLoading },
+  ] = useEnableProjectModuleAccessMutation();
+
+  // disable project module access
+  const [
+    disableProjectModuleAccess,
+    { isLoading: isDisableProjectModuleAccessLoading },
+  ] = useDisableProjectModuleAccessMutation();
+
+  // Loading state
+  const isLoading =
+    isAllModulesLoading || (selectedProjectId && isProjectModulesLoading);
 
   if (!projects || projects.length === 0) {
     return null;
   }
+
+  const handleModuleToggle = async (
+    e: React.FormEvent<HTMLLabelElement>,
+    projectId: string,
+    moduleId: string,
+  ) => {
+    const isChecked = (e.target as HTMLInputElement).checked;
+    const moduleData = modulesWithAccess.find((m) => m.id === moduleId);
+    const moduleName = moduleData?.name?.en || "Module";
+
+    try {
+      if (isChecked) {
+        await enableProjectModuleAccess({
+          projectId: projectId,
+          moduleId: moduleId,
+        }).unwrap();
+
+        toaster.success({
+          title: t("module-access-enabled"),
+          description: t("module-access-enabled-description", { moduleName }),
+          duration: 3000,
+        });
+      } else {
+        await disableProjectModuleAccess({
+          projectId: projectId,
+          moduleId: moduleId,
+        }).unwrap();
+
+        toaster.create({
+          type: "info",
+          title: t("module-access-disabled"),
+          description: t("module-access-disabled-description", { moduleName }),
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to toggle module access:", error);
+
+      toaster.error({
+        title: t("module-access-error"),
+        description: t("module-access-error-description"),
+        duration: 5000,
+      });
+    }
+  };
 
   return (
     <Box py="48px">
@@ -68,6 +153,9 @@ const ProjectModulesTabs = ({
                 _selected={{
                   color: "content.link",
                   borderRadius: "8px",
+                }}
+                onClick={() => {
+                  setSelectedProjectId(projectId);
                 }}
               >
                 {name}
@@ -146,28 +234,53 @@ const ProjectModulesTabs = ({
                   </Table.Header>
 
                   <Table.Body>
-                    {modules.map((module) => (
-                      <Table.Row key={module.name} fontSize="body.md">
-                        <Table.Cell>{module.name}</Table.Cell>
-                        <Table.Cell>{module.provider}</Table.Cell>
-                        <Table.Cell textAlign="end">
-                          <Switch.Root
-                            checked={module.hasAccess}
-                            onCheckedChange={(checked) => {
-                              onModuleToggle?.(
-                                projectId,
-                                module.name,
-                                checked.checked,
-                              );
-                            }}
-                          >
-                            <Switch.HiddenInput />
-                            <Switch.Control borderRadius="16px" />
-                            <Switch.Label />
-                          </Switch.Root>
-                        </Table.Cell>
-                      </Table.Row>
-                    ))}
+                    {projectId === selectedProjectId && (
+                      <>
+                        {isLoading ? (
+                          <Table.Row>
+                            <Table.Cell
+                              colSpan={3}
+                              textAlign="center"
+                              py="32px"
+                            >
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                gap="12px"
+                              >
+                                {/* small spinner for micro loading states*/}
+                                <Spinner size="sm" color="content.secondary" />
+                                <Text
+                                  color="content.secondary"
+                                  fontSize="body.md"
+                                >
+                                  {t("laoding")}
+                                </Text>
+                              </Box>
+                            </Table.Cell>
+                          </Table.Row>
+                        ) : (
+                          modulesWithAccess.map((module) => (
+                            <Table.Row key={module.id} fontSize="body.md">
+                              <Table.Cell>{module.name.en}</Table.Cell>
+                              <Table.Cell>{module.author}</Table.Cell>
+                              <Table.Cell textAlign="end">
+                                <Switch
+                                  checked={module.hasAccess}
+                                  onChange={(
+                                    e: React.FormEvent<HTMLLabelElement>,
+                                  ) => {
+                                    // move to a function
+                                    handleModuleToggle(e, projectId, module.id);
+                                  }}
+                                />
+                              </Table.Cell>
+                            </Table.Row>
+                          ))
+                        )}
+                      </>
+                    )}
                   </Table.Body>
                 </Table.Root>
               </Table.ScrollArea>

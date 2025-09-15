@@ -8,6 +8,9 @@ import { Toaster } from "@/components/ui/toaster";
 import ClientRootLayout from "@/components/ClientRootLayout";
 import CookieConsent from "@/components/CookieConsent";
 import { use } from "react";
+import { HighlightInit } from "@highlight-run/next/client";
+import HighlightIdentifier from "@/components/HighlightIdentifier";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 export const metadata: Metadata = {
   title: "CityCatalyst",
@@ -23,21 +26,39 @@ export default function RootLayout(props: {
   params: Promise<{ lng: string }>;
 }) {
   const { lng } = use(props.params);
+  const isHighlightEnabled =
+    process.env.NODE_ENV !== "test" &&
+    hasFeatureFlag(FeatureFlags.HIGHLIGHT_ENABLED);
 
   return (
-    <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
-      <head>
-        <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
-        <link rel="icon" type="image/png" href="/assets/icon.png" />
-        <PublicEnvScript />
-      </head>
-      <body>
-        <Providers>
-          <Toaster />
-          <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
-          <CookieConsent lng={lng} />
-        </Providers>
-      </body>
-    </html>
+    <>
+      {isHighlightEnabled && (
+        <HighlightInit
+          projectId={process.env.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID}
+          serviceName="citycatalyst"
+          tracingOrigins
+          backendUrl={process.env.NEXT_PUBLIC_HIGHLIGHT_BACKEND_URL}
+          networkRecording={{
+            enabled: true,
+            recordHeadersAndBody: true,
+            urlBlocklist: [],
+          }}
+        />
+      )}
+      <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
+        <head>
+          <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
+          <link rel="icon" type="image/png" href="/assets/icon.png" />
+          <PublicEnvScript />
+        </head>
+        <body>
+          <Providers>
+            {isHighlightEnabled && <HighlightIdentifier />}
+            <Toaster />
+            <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
+          </Providers>
+        </body>
+      </html>
+    </>
   );
 }

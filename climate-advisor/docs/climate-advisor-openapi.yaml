@@ -1,0 +1,129 @@
+openapi: 3.0.3
+info:
+  title: Climate Advisor Service API
+  version: 0.1.0
+  description: |
+    API for the Climate Advisor microservice. Provides health checks and chat endpoints.
+servers:
+  - url: http://localhost:8080
+paths:
+  /health:
+    get:
+      summary: Liveness probe
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+  /ready:
+    get:
+      summary: Readiness probe
+      responses:
+        '200':
+          description: Ready state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ready:
+                    type: boolean
+  /v1/threads:
+    post:
+      summary: Create thread
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThreadCreateRequest'
+      responses:
+        '201':
+          description: Thread created
+          headers:
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadCreateResponse'
+        '422':
+          description: Validation error
+  /v1/messages:
+    post:
+      summary: Send a message (streams SSE)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageCreateRequest'
+      responses:
+        '200':
+          description: SSE stream of assistant tokens
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '422':
+          description: Validation error
+components:
+  schemas:
+    ThreadCreateRequest:
+      type: object
+      required: [user_id]
+      properties:
+        user_id:
+          type: string
+        inventory_id:
+          type: string
+          nullable: true
+        context:
+          nullable: true
+          oneOf:
+            - type: object
+            - type: string
+    ThreadCreateResponse:
+      type: object
+      required: [thread_id]
+      properties:
+        thread_id:
+          type: string
+        inventory_id:
+          type: string
+          nullable: true
+        context:
+          nullable: true
+    MessageCreateRequest:
+      type: object
+      required: [user_id, content]
+      properties:
+        user_id:
+          type: string
+        content:
+          type: string
+        thread_id:
+          type: string
+          nullable: true
+        inventory_id:
+          type: string
+          nullable: true
+        context:
+          nullable: true
+        options:
+          type: object
+          nullable: true
+          properties:
+            model:
+              type: string
+            temperature:
+              type: number
+            max_tokens:
+              type: integer
+

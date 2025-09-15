@@ -23,6 +23,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8080
 
 - Swagger UI: http://localhost:8080/docs
 - OpenAPI JSON: http://localhost:8080/openapi.json
+ - Playground: http://localhost:8080/playground (simple HTML tester)
 
 ## Health Endpoints
 
@@ -75,3 +76,8 @@ python climate-advisor/scripts/test_service_stream.py http://localhost:8080
 ```
 
 You should see SSE lines with `event: message` chunks followed by a terminal `event: done`.
+
+## Swagger/OpenAPI
+
+- Built-in Swagger UI is available at `/docs` and ReDoc at `/redoc`.
+- A static OpenAPI spec is provided at `climate-advisor/docs/climate-advisor-openapi.yaml` for external tooling.

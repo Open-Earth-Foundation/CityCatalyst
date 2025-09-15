@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware import Middleware
 from starlette.responses import Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.staticfiles import StaticFiles
 from typing import Any, Dict
 import time
 
@@ -69,6 +70,9 @@ def get_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(threads_router, prefix="/v1")
     app.include_router(messages_router, prefix="/v1")
+
+    # Static playground for manual testing
+    app.mount("/playground", StaticFiles(directory="app/static", html=True), name="playground")
 
     # Exception handlers -> Problem Details
     @app.exception_handler(RequestValidationError)

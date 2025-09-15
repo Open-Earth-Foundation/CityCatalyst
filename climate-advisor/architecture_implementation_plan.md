@@ -80,6 +80,8 @@ What was implemented
 - Middleware: Request context middleware captures/propagates `X-Request-Id`, logs start/stop with duration; CORS via FastAPI `CORSMiddleware` using `CA_CORS_ORIGINS`.
 - SSE utils: helpers to format events and chunk text; response disables buffering and sets `text/event-stream`.
 - Settings: `.env` loading, `CA_PORT`, `CA_LOG_LEVEL`, `CA_CORS_ORIGINS` supported; placeholders for OpenRouter/CC kept for later tickets.
+- Playground: Static HTML tester mounted at `/playground` to manually exercise endpoints (`/health`, `/ready`, `/v1/threads`, `/v1/messages`).
+- Swagger: Built-in Swagger UI at `/docs` and ReDoc at `/redoc`. Static OpenAPI spec at `climate-advisor/docs/climate-advisor-openapi.yaml`.
 
 How it was implemented
 - Entry point `app/main.py` builds the FastAPI app with middleware, routers, and exception handlers; sets `app.state.ready` on startup.

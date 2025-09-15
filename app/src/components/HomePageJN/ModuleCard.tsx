@@ -23,6 +23,7 @@ export function ModuleCard({
   language: string;
 }) {
   const { name, author, description, tagline, url, logo } = module;
+  
   const getTranslationInLanguage = (
     obj: { [lng: string]: string } | undefined,
   ) => {
@@ -30,6 +31,14 @@ export function ModuleCard({
     // try to use the user's language, then fallback to English, then fallback to the first language
     if (!obj) return "";
     return obj[language] || obj.en || Object.keys(obj)[0] || "";
+  };
+
+  const handleModuleLaunch = () => {
+    if (url.startsWith("http")) {
+      window.open(url, "_blank", "noopener,noreferrer");
+    } else {
+      window.location.href = `${baseUrl}${url}`;
+    }
   };
   return (
     <Card.Root
@@ -50,7 +59,7 @@ export function ModuleCard({
             <Image 
               src={logo || "/assets/icon_inverted.svg"} 
               boxSize={8} 
-              alt="" 
+              alt={`${name} module logo`} 
             />
 
             <Tooltip
@@ -91,13 +100,7 @@ export function ModuleCard({
       <Card.Footer justifyContent="flex-end">
         <Button
           as="div"
-          onClick={() => {
-            if (url.startsWith("http")) {
-              window.open(url, "_blank");
-            } else {
-              window.location.href = `${baseUrl}${url}`;
-            }
-          }}
+          onClick={handleModuleLaunch}
           variant="outline"
           w="fit-content"
           borderRadius="rounded-xxl"

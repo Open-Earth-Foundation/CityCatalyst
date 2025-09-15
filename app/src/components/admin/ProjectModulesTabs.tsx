@@ -1,7 +1,14 @@
 "use client";
 
-import { Box, Switch, Table, Tabs, Text } from "@chakra-ui/react";
+import { Box, Table, Tabs, Text } from "@chakra-ui/react";
+import { Switch } from "@/components/ui/switch";
 import { useTranslation } from "@/i18n/client";
+import {
+  useGetModulesQuery,
+  useGetProjectModulesQuery,
+  useEnableProjectModuleAccessMutation,
+} from "@/services/api";
+import { useState, useMemo } from "react";
 
 interface Module {
   name: string;
@@ -20,7 +27,7 @@ interface ProjectModulesTabsProps {
   lng: string;
   onModuleToggle?: (
     projectId: string,
-    moduleName: string,
+    moduleId: string,
     hasAccess: boolean,
   ) => void;
 }
@@ -33,9 +40,41 @@ const ProjectModulesTabs = ({
 }: ProjectModulesTabsProps) => {
   const { t } = useTranslation(lng, "admin");
 
+  const [selectedProjectId, setSelectedProjectId] = useState<string>(
+    projects[0]?.projectId || "",
+  );
+
+  // Fetch all modules
+  const { data: allModules, isLoading: isAllModulesLoading } =
+    useGetModulesQuery();
+
+  // Fetch project modules for the selected project only
+  const { data: selectedProjectModules, isLoading: isProjectModulesLoading } =
+    useGetProjectModulesQuery(selectedProjectId, { skip: !selectedProjectId });
+
+  // Memoized function to get modules with access for the selected project
+  const modulesWithAccess = useMemo(() => {
+    if (!allModules || !selectedProjectId) return [];
+
+    const projectModuleIds = new Set(
+      selectedProjectModules?.map((mod) => mod.id) || [],
+    );
+
+    return allModules.map((module) => ({
+      ...module,
+      hasAccess: projectModuleIds.has(module.id),
+    }));
+  }, [allModules, selectedProjectModules, selectedProjectId]);
+
   if (!projects || projects.length === 0) {
     return null;
   }
+  const [
+    enableProjectModuleAccess,
+    { isLoading: isEnableProjectModuleAccessLoading },
+  ] = useEnableProjectModuleAccessMutation();
+
+  console.log(isEnableProjectModuleAccessLoading);
 
   return (
     <Box py="48px">
@@ -68,6 +107,10 @@ const ProjectModulesTabs = ({
                 _selected={{
                   color: "content.link",
                   borderRadius: "8px",
+                }}
+                onClick={() => {
+                  console.log(projectId);
+                  setSelectedProjectId(projectId);
                 }}
               >
                 {name}
@@ -146,28 +189,24 @@ const ProjectModulesTabs = ({
                   </Table.Header>
 
                   <Table.Body>
-                    {modules.map((module) => (
-                      <Table.Row key={module.name} fontSize="body.md">
-                        <Table.Cell>{module.name}</Table.Cell>
-                        <Table.Cell>{module.provider}</Table.Cell>
-                        <Table.Cell textAlign="end">
-                          <Switch.Root
-                            checked={module.hasAccess}
-                            onCheckedChange={(checked) => {
-                              onModuleToggle?.(
-                                projectId,
-                                module.name,
-                                checked.checked,
-                              );
-                            }}
-                          >
-                            <Switch.HiddenInput />
-                            <Switch.Control borderRadius="16px" />
-                            <Switch.Label />
-                          </Switch.Root>
-                        </Table.Cell>
-                      </Table.Row>
-                    ))}
+                    {projectId === selectedProjectId &&
+                      modulesWithAccess.map((module) => (
+                        <Table.Row key={module.id} fontSize="body.md">
+                          <Table.Cell>{module.name.en}</Table.Cell>
+                          <Table.Cell>{module.author}</Table.Cell>
+                          <Table.Cell textAlign="end">
+                            <Switch
+                              checked={module.hasAccess}
+                              onChange={(e) => {
+                                enableProjectModuleAccess({
+                                  projectId: projectId,
+                                  moduleId: module.id,
+                                });
+                              }}
+                            />
+                          </Table.Cell>
+                        </Table.Row>
+                      ))}
                   </Table.Body>
                 </Table.Root>
               </Table.ScrollArea>

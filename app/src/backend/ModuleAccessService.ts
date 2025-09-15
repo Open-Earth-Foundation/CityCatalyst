@@ -1,4 +1,5 @@
 import { db } from "@/models";
+import type { ProjectModulesAttributes } from "@/models/ProjectModules";
 import { logger } from "@/services/logger";
 
 export class ModuleAccessService {
@@ -34,5 +35,25 @@ export class ModuleAccessService {
     );
 
     return result;
+  }
+
+  public static async enableModuleAccess(
+    projectId: string,
+    moduleId: string,
+  ): Promise<ProjectModulesAttributes> {
+    logger.info(
+      `Enabling module access for project ${projectId} and module ${moduleId}`,
+    );
+
+    const projectModule = await db.models.ProjectModules.create({
+      projectId: projectId,
+      moduleId: moduleId,
+    });
+
+    logger.info(
+      `Module access enabled for project ${projectId} and module ${moduleId}`,
+    );
+
+    return projectModule;
   }
 }

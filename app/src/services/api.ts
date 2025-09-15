@@ -5,6 +5,7 @@ import {
   type PopulationAttributes,
   type UserAttributes,
   type ModuleAttributes,
+  ProjectModulesAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import {
@@ -106,6 +107,8 @@ export const api = createApi({
     "HiapDashboard",
     "Authz",
     "CCRADashboard",
+    "ProjectModules",
+    "Modules",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1490,6 +1493,15 @@ export const api = createApi({
         }),
         invalidatesTags: ["Authz"],
       }),
+      enableProjectModuleAccess: builder.mutation({
+        query: (data: { projectId: string; moduleId: string }) => ({
+          method: "POST",
+          url: `/projects/${data.projectId}/modules/${data.moduleId}/access`,
+        }),
+        invalidatesTags: ["Modules", "ProjectModules"],
+        transformResponse: (response: { data: ProjectModulesAttributes }) =>
+          response.data,
+      }),
     };
   },
 });
@@ -1611,5 +1623,6 @@ export const {
   useGetClientsQuery,
   useAddClientMutation,
   useDeleteClientMutation,
+  useEnableProjectModuleAccessMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

@@ -1,3 +1,16 @@
+"""
+Prompt for translating a plan.
+Translate plan prompt constant.
+This constant defines a system prompt used to translate a climate action plan into a target language,
+preserving keys and only translating values. It uses placeholders {input_plan}, {input_language}, and {output_language} which are replaced at runtime.
+Do not add text outside the returned structure.
+
+Placeholders:
+- {input_plan}: The plan to translate.
+- {input_language}: The input language of the plan response (ISO 639-1 code).
+- {output_language}: The output language to translate the plan into (ISO 639-1 code).
+"""
+
 translate_plan_system_prompt = """
 You are a translator specializing in climate action implementation plans.
 Your task is to translate the given climate action implementation plan into the specified language. Translate all text content but do not translate the keys, keeping the same structure and formatting. If you cannot translate a specific word or phrase (e.g., a proper noun or scientific term), leave it in English.
@@ -8,7 +21,7 @@ Translate the following plan into the specified language:
 The input language is (ISO 639-1 code): {input_language}
 The target language is (ISO 639-1 code): {output_language}
 
-From the meta data, make only changes to the values: actionName and language
+From the metadata, make only changes to the values: actionName and language
 - Translate the actionName into the target language.
 - Update the language to the target language.
 Leave all other metadata values as is.

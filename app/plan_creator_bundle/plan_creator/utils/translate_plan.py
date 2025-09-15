@@ -14,7 +14,7 @@ from plan_creator_bundle.plan_creator.prompts.translate_plan_prompt import (
 setup_logger()
 logger = logging.getLogger(__name__)
 
-# Initialize OpenAI and OpenRouter clients
+# Initialize OpenAI and environment variables
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY is not set")
@@ -23,7 +23,7 @@ OPENAI_MODEL_NAME_PLAN_TRANSLATION = os.getenv("OPENAI_MODEL_NAME_PLAN_TRANSLATI
 if not OPENAI_MODEL_NAME_PLAN_TRANSLATION:
     raise ValueError("OPENAI_MODEL_NAME_PLAN_TRANSLATION is not set")
 
-# Get LangSmith project name
+# Get LangSmith project name for tracing
 LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION = os.getenv(
     "LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION"
 )
@@ -31,7 +31,7 @@ if not LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION:
     raise ValueError("LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION is not set")
 
 
-# Use OpenAI client
+# Use OpenAI client and wrap it with LangSmith
 openai_client = wrap_openai(OpenAI(api_key=OPENAI_API_KEY))
 
 
@@ -57,7 +57,7 @@ def translate_plan(
 
     try:
         completion = openai_client.beta.chat.completions.parse(
-            model=OPENAI_MODEL_NAME_PLAN_TRANSLATION,  # type: ignore
+            model=OPENAI_MODEL_NAME_PLAN_TRANSLATION,
             messages=[
                 {
                     "role": "system",
@@ -78,7 +78,7 @@ def translate_plan(
         # Update the language in the metadata
         plan_response_obj.metadata.language = output_language
 
-        # Return the explanation object
+        # Return the translated plan object
         return plan_response_obj
 
     except Exception as e:

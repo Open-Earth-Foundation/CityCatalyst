@@ -64,10 +64,13 @@ async def _stream_openrouter(
             message_service = MessageService(session)
             thread_service = ThreadService(session)
             try:
-                thread = await thread_service.get_thread(thread_id)
-                if thread is None:
-                    raise RuntimeError("Thread not found while persisting assistant message")
+                thread = await thread_service.get_thread_for_user(thread_id, user_id)
+            except LookupError as exc:
+                raise RuntimeError("Thread not found while persisting assistant message") from exc
+            except PermissionError as exc:
+                raise RuntimeError("Thread does not belong to user") from exc
 
+            try:
                 await message_service.create_assistant_message(
                     thread_id=thread.thread_id,
                     user_id=user_id,
@@ -96,10 +99,11 @@ async def post_message(
         raise HTTPException(status_code=400, detail="thread_id is required")
 
     thread_service = ThreadService(session)
-    thread = await thread_service.get_thread(payload.thread_id)
-    if thread is None:
+    try:
+        thread = await thread_service.get_thread_for_user(payload.thread_id, payload.user_id)
+    except LookupError:
         raise HTTPException(status_code=404, detail="Thread not found")
-    if thread.user_id != payload.user_id:
+    except PermissionError:
         raise HTTPException(status_code=403, detail="Thread does not belong to user")
 
     message_service = MessageService(session)
@@ -128,8 +132,3 @@ async def post_message(
         session_factory=get_session_factory(),
     )
     return StreamingResponse(stream, media_type="text/event-stream", headers=headers)
-
-
-
-
-

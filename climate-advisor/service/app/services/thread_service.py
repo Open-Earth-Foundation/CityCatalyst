@@ -37,3 +37,17 @@ class ThreadService:
     async def touch_thread(self, thread: Thread) -> None:
         thread.updated_at = datetime.now(timezone.utc)
         await self.session.flush()
+
+    async def get_thread_for_user(self, thread_id: str, user_id: str) -> Thread:
+        """Return the thread if it is owned by ``user_id``.
+
+        Raises:
+            LookupError: if the thread does not exist.
+            PermissionError: if the thread belongs to a different user.
+        """
+        thread = await self.get_thread(thread_id)
+        if thread is None:
+            raise LookupError(f"Thread {thread_id} not found")
+        if thread.user_id != user_id:
+            raise PermissionError("thread_owner_mismatch")
+        return thread

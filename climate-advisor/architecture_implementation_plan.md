@@ -223,7 +223,7 @@ Client notes
 - `climate-advisor/scripts/setup_local_db.py` (schema bootstrapper, replaces Alembic for now)
 - `climate-advisor/service/.env.example`
 
-##### TICKET-003 — Implementation Notes and Examples (Completed)
+##### TICKET-003 - Implementation Notes and Examples (Completed)
 
 What changed
 - Added SQLAlchemy async engine/session wiring in `climate-advisor/service/app/db/session.py`, including helpers to normalise Postgres URLs and expose `get_engine`/`get_session` for FastAPI dependencies and tooling.
@@ -231,6 +231,7 @@ What changed
 - Introduced `ThreadService` and `MessageService` and updated `/v1/threads` + `/v1/messages` to persist user and assistant messages while refreshing thread metadata.
 - Added `climate-advisor/scripts/setup_local_db.py` for idempotent schema create/drop and documented the workflow (plus sample env values) in the README.
 - Updated environment defaults to use `postgresql://postgres:admin@host.docker.internal:5432/climate_advisor` so both host and containerised service share the same Postgres instance.
+- Captured the historical inventory-context flow from CityCatalyst so the persistence layer is ready for OAuth-backed context retrieval (e.g. `UserService.findUserInventory`, population lookups).
 
 ---
 
@@ -246,6 +247,7 @@ What changed
 - [ ] Implement an OAuth service that requests access tokens, caches them with expiry awareness, and refreshes proactively.
 - [ ] Provide a reusable HTTP client wrapper that injects bearer tokens on CC requests and surfaces structured errors without persisting credentials.
 - [ ] Add basic resilience (timeouts, retry with backoff, circuit breaker toggles) for outbound CC calls.
+- [ ] Ship internal FastAPI endpoints (e.g. `/internal/oauth/token`, `/internal/context/inventory`) that exercise the OAuth flow end-to-end and proxy to CC inventory search APIs once authenticated.
 - [ ] Emit structured logs and metrics for token lifecycle and CC calls to aid debugging.
 - [ ] Document operational steps for rotating credentials and testing against staging providers.
 
@@ -267,11 +269,11 @@ What changed
 
 -**Acceptance Criteria:**
 
-- [ ] Confirm `/v1/messages` payloads require `user_id` and include validation/error handling when absent.
-- [ ] Thread creation persists `user_id` as defined in the Postgres schema (links users to threads).
-- [ ] Message persistence writes role, content, `user_id`, and timestamps so the conversation history can be reconstructed per user.
-- [ ] Add service-layer tests covering mixed user/thread scenarios and ensuring cross-user access is rejected.
-- [ ] Document how CityCatalyst must pass `user_id` and how the Climate Advisor tables can be queried/audited by user.
+- [x] Confirm `/v1/messages` payloads require `user_id` and include validation/error handling when absent.
+- [x] Thread creation persists `user_id` as defined in the Postgres schema (links users to threads).
+- [x] Message persistence writes role, content, `user_id`, and timestamps so the conversation history can be reconstructed per user.
+- [x] Add service-layer tests covering mixed user/thread scenarios and ensuring cross-user access is rejected.
+- [x] Document how CityCatalyst must pass `user_id` and how the Climate Advisor tables can be queried/audited by user.
 
 **Files to Create/Modify:**
 
@@ -280,7 +282,15 @@ What changed
 - `climate-advisor/service/app/services/message_service.py`
 - `climate-advisor/service/app/routes/threads.py`
 - `climate-advisor/service/app/routes/messages.py`
-- `climate-advisor/service/docs/persistence.md` (new) or equivalent doc section
+- `climate-advisor/service/tests/test_user_identity.py`
+- `climate-advisor/service/docs/persistence.md`
+##### TICKET-005 - Implementation Notes and Examples (Completed)
+
+What changed
+- Centralised thread ownership checks inside `ThreadService.get_thread_for_user` and wired `/v1/messages` to use it, ensuring cross-user access is rejected consistently.
+- Kept `user_id` required in both thread/message payload schemas and verified the values are persisted on every insert.
+- Added async service-layer tests in `climate-advisor/service/tests/test_user_identity.py` covering ownership, role recording, and mismatch failures.
+- Documented caller responsibilities and query patterns in `climate-advisor/service/docs/persistence.md`.
 
 ---
 #### **TICKET-006: Environment Configuration and Documentation**
@@ -306,6 +316,21 @@ What changed
 - `docs/climate-advisor-service.md`
 
 ---
+
+#### Completed Work (Sprint 1 So Far)
+- TICKET-001: Service scaffolding, health checks, request middleware, SSE echo stubs.
+- TICKET-002: OpenRouter integration, real streaming pipeline, request option overrides.
+- TICKET-003: Postgres persistence foundation (FastAPI + SQLAlchemy + setup script).
+- TICKET-005: User identity propagation, ownership enforcement, persistence docs/tests.
+
+#### Legacy CityCatalyst Assistant Capabilities to Port
+- `POST /api/v0/assistants/threads/[inventory]` (context builder via `UserService.findUserInventory`, population lookups, initial assistant message seeding).
+- `POST /api/v0/assistants/threads/messages` (user message append + OpenAI run streaming).
+- `POST /api/v0/assistants/threads/actions` (tool output callback pipeline for long-running actions).
+- `GET /api/v0/assistants/threads/[inventory]/retrieve` (thread metadata fetch for resuming sessions).
+- `POST /api/v0/assistants/threads/export` (persist thread mapping to `AssistantThread`).
+- Legacy prompt builders like `createPromptTemplate`/`createContext` (inventory, population, city metadata enrichment).
+- Shared utilities: `setupOpenAI`, `UserService.findUserInventory`, and Sequelize-backed inventory search helpers that assemble emissions factors, gas values, and data sources.
 
 ### Sprint 1 Definition of Done
 
@@ -557,4 +582,6 @@ Enable CA to fetch contextual data from CC using OAuth, to enrich prompts.
 - Persisting threads/messages in CA (persistence remains in CC as per architecture; CA stays stateless)
 - Vector DB ingestion and file handling beyond API surface stubs
 - Frontend (CC) code changes (will be handled in a separate PR)
+
+
 

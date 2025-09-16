@@ -8,8 +8,8 @@ on:
     branches:
       - develop
     paths:
-      - "**" # Since your project is not in a backend folder, watch all changes
-      - ".github/workflows/backend.yml"
+      - "**"
+      - ".github/workflows/develop.yml"
   pull_request:
     branches:
       - develop

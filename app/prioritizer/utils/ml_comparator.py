@@ -118,7 +118,6 @@ logger.debug(
 # Configure inference threads to prevent oversubscription in bulk mode
 try:
     xgb_threads = int(os.getenv("XGBOOST_NUM_THREADS", "1"))
-    print(f"XGBOOST_NUM_THREADS: {xgb_threads}")
 except ValueError:
     xgb_threads = 1
 loaded_model.set_params(n_jobs=xgb_threads)

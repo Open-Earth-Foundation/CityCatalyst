@@ -334,11 +334,11 @@ What changed
 
 ### Sprint 1 Definition of Done
 
-- [ ] TICKET-001 and TICKET-002 merged and verified locally.
-- [ ] Docker image builds and runs via the service Dockerfile with `/health` and `/ready` returning success.
-- [ ] `/v1/threads` and `/v1/messages` respond successfully; `/v1/messages` streams OpenRouter output end-to-end.
-- [ ] Structured request logging shows propagated request IDs and correct SSE headers.
-- [ ] Developer docs and helper scripts cover local run, streaming test harness, and environment configuration.
+- [x] TICKET-001 and TICKET-002 merged and verified locally. (Service runs with latest threads/messages + OpenRouter changes.)
+- [x] Docker image builds and runs via the service Dockerfile with `/health` and `/ready` returning success. (Validated via `docker run climate-advisor:dev` with health probes.)
+- [x] `/v1/threads` and `/v1/messages` respond successfully; `/v1/messages` streams OpenRouter output end-to-end. (cURL + Postman checks against running container.)
+- [x] Structured request logging shows propagated request IDs and correct SSE headers. (Log samples from running container include request IDs & SSE headers.)
+- [x] Developer docs and helper scripts cover local run, streaming test harness, and environment configuration. (README + `scripts/setup_local_db.py` + `scripts/test_service_stream.py`.)
 
 ### Dependencies for Sprint 2
 
@@ -582,6 +582,8 @@ Enable CA to fetch contextual data from CC using OAuth, to enrich prompts.
 - Persisting threads/messages in CA (persistence remains in CC as per architecture; CA stays stateless)
 - Vector DB ingestion and file handling beyond API surface stubs
 - Frontend (CC) code changes (will be handled in a separate PR)
+
+
 
 
 

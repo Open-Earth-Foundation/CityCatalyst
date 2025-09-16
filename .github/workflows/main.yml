@@ -1,4 +1,6 @@
 name: HIAP Deployment Prod
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:
@@ -12,6 +14,10 @@ on:
     branches:
       - main
     types: [opened, synchronize, reopened, closed]
+
+concurrency:
+  group: hiap-main
+  cancel-in-progress: true
 
 jobs:
   test:
@@ -57,6 +63,9 @@ jobs:
           pytest -m "not slow"
 
   build:
+    permissions:
+      contents: read
+      packages: write
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'

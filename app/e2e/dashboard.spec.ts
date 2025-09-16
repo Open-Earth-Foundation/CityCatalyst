@@ -1,15 +1,14 @@
 import { test, expect } from "@playwright/test";
-import { createInventoryThroughOnboarding } from "./helpers";
+import { createCityAndInventoryThroughOnboarding } from "./helpers";
 
 test.describe("Dashboard", () => {
   test.describe("Dashboard with Inventory", () => {
     test("User can complete onboarding and access dashboard", async ({
       page,
     }) => {
-      test.setTimeout(60000);
       // Create inventory through onboarding
-      await createInventoryThroughOnboarding(page, "Chicago");
-
+      const {cityId} = await createCityAndInventoryThroughOnboarding(page, "Chicago");
+      await page.goto(`/en/cities/${cityId}/GHGI`);
       // Verify Dashboard
       await page.waitForLoadState("networkidle");
       // Verify page title

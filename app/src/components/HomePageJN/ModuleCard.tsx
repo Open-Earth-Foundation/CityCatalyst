@@ -22,7 +22,8 @@ export function ModuleCard({
   baseUrl: string;
   language: string;
 }) {
-  const { name, author, description, tagline, url } = module;
+  const { name, author, description, tagline, url, logo } = module;
+  
   const getTranslationInLanguage = (
     obj: { [lng: string]: string } | undefined,
   ) => {
@@ -30,6 +31,14 @@ export function ModuleCard({
     // try to use the user's language, then fallback to English, then fallback to the first language
     if (!obj) return "";
     return obj[language] || obj.en || Object.keys(obj)[0] || "";
+  };
+
+  const handleModuleLaunch = () => {
+    if (url.startsWith("http")) {
+      window.open(url, "_blank", "noopener,noreferrer");
+    } else {
+      window.location.href = `${baseUrl}${url}`;
+    }
   };
   return (
     <Card.Root
@@ -47,7 +56,11 @@ export function ModuleCard({
       <Card.Body gap={2}>
         <VStack w="full" align="start" gap={2}>
           <HStack justify="space-between" w="full">
-            <Image src="/assets/icon_inverted.svg" boxSize={8} alt="" />
+            <Image 
+              src={logo || "/assets/icon_inverted.svg"} 
+              boxSize={8} 
+              alt={`${name} module logo`} 
+            />
 
             <Tooltip
               content={getTranslationInLanguage(description)}
@@ -71,7 +84,7 @@ export function ModuleCard({
           </HStack>
           <HStack align="start" gap={4} justify="space-between">
             <HStack align="start" gap={4}>
-              <Card.Title mt={2} as="div">
+              <Card.Title mt={2} as="div" minH="60px" display="flex" alignItems="flex-start">
                 <TitleLarge>{getTranslationInLanguage(name)}</TitleLarge>
               </Card.Title>
             </HStack>
@@ -87,9 +100,7 @@ export function ModuleCard({
       <Card.Footer justifyContent="flex-end">
         <Button
           as="div"
-          onClick={() => {
-            window.location.href = `${baseUrl}${url}`;
-          }}
+          onClick={handleModuleLaunch}
           variant="outline"
           w="fit-content"
           borderRadius="rounded-xxl"

@@ -3,7 +3,11 @@ import { Box, Heading, Text } from "@chakra-ui/react";
 
 import { use } from "react";
 import { useTranslation } from "@/i18n/client";
-import { useGetOrganizationQuery, useGetProjectsQuery } from "@/services/api";
+import {
+  useGetOrganizationQuery,
+  useGetProjectsQuery,
+  useGetProjectModulesQuery,
+} from "@/services/api";
 
 import ProgressLoader from "@/components/ProgressLoader";
 import ProjectModulesTabs from "@/components/admin/ProjectModulesTabs";
@@ -25,30 +29,6 @@ const AdminOrganizationModulesPage = (props: {
   if (isOrganizationLoading) {
     return <ProgressLoader />;
   }
-
-  //  TODO: get modules from backend
-  const modules = [
-    {
-      name: t("ghg-inventories"),
-      provider: "Open Earth Foundation",
-      hasAccess: true,
-    },
-    {
-      name: t("climate-risks"),
-      provider: "Open Earth Foundation",
-      hasAccess: true,
-    },
-    {
-      name: t("actions-and-plans"),
-      provider: "Open Earth Foundation",
-      hasAccess: false,
-    },
-    {
-      name: t("finance-readiness"),
-      provider: "Open Earth Foundation",
-      hasAccess: false,
-    },
-  ];
 
   const handleModuleToggle = (
     projectId: string,
@@ -106,12 +86,7 @@ const AdminOrganizationModulesPage = (props: {
       </Box>
 
       {!isProjectDataLoading && projects && projects.length > 0 && (
-        <ProjectModulesTabs
-          projects={projects}
-          modules={modules}
-          lng={lng}
-          onModuleToggle={handleModuleToggle}
-        />
+        <ProjectModulesTabs projects={projects} lng={lng} />
       )}
     </Box>
   );

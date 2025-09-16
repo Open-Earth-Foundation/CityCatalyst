@@ -5,6 +5,7 @@ import {
   type PopulationAttributes,
   type UserAttributes,
   type ModuleAttributes,
+  ProjectModulesAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import {
@@ -106,6 +107,8 @@ export const api = createApi({
     "HiapDashboard",
     "Authz",
     "CCRADashboard",
+    "ProjectModules",
+    "Modules",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1348,11 +1351,13 @@ export const api = createApi({
         query: () => "modules",
         transformResponse: (response: { data: ModuleAttributes[] }) =>
           response.data,
+        providesTags: ["Modules"],
       }),
       getProjectModules: builder.query<ModuleAttributes[], string>({
         query: (projectId: string) => `projects/${projectId}/modules`,
         transformResponse: (response: { data: ModuleAttributes[] }) =>
           response.data,
+        providesTags: ["ProjectModules"],
       }),
       getCityModuleAccess: builder.query<
         { hasAccess: boolean },
@@ -1490,6 +1495,24 @@ export const api = createApi({
         }),
         invalidatesTags: ["Authz"],
       }),
+      enableProjectModuleAccess: builder.mutation({
+        query: (data: { projectId: string; moduleId: string }) => ({
+          method: "POST",
+          url: `/projects/${data.projectId}/modules/${data.moduleId}/access`,
+        }),
+        invalidatesTags: ["Modules", "ProjectModules"],
+        transformResponse: (response: { data: ProjectModulesAttributes }) =>
+          response.data,
+      }),
+      disableProjectModuleAccess: builder.mutation({
+        query: (data: { projectId: string; moduleId: string }) => ({
+          method: "DELETE",
+          url: `/projects/${data.projectId}/modules/${data.moduleId}/access`,
+        }),
+        invalidatesTags: ["Modules", "ProjectModules"],
+        transformResponse: (response: { data: ProjectModulesAttributes }) =>
+          response.data,
+      }),
     };
   },
 });
@@ -1611,5 +1634,7 @@ export const {
   useGetClientsQuery,
   useAddClientMutation,
   useDeleteClientMutation,
+  useEnableProjectModuleAccessMutation,
+  useDisableProjectModuleAccessMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

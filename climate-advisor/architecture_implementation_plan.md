@@ -17,8 +17,9 @@ This plan reflects the decision to implement Climate Advisor as a standalone Pyt
 
 1) Service foundation and endpoint scaffolding (no LLM calls yet).
 2) OpenRouter integration with streaming responses.
-3) OAuth + CityCatalyst client for contextual data fetches.
-4) Integration handoff: CC routes proxy to CA (no code changes in this plan; document only).
+3) Persistence foundation: dedicated PostgreSQL (future PGVector) storage for threads/messages.
+4) OAuth + CityCatalyst client for contextual data fetches.
+5) Integration handoff: CC routes proxy to CA (no code changes in this plan; document only).
 
 ---
 
@@ -167,77 +168,122 @@ Client notes
 
 ---
 
-#### **TICKET-002: OAuth Integration for Climate Advisor Service**
+#### **TICKET-002: OpenRouter Integration and Streaming**
+
+**Priority:** High  
+**Story Points:** 8  
+**Description:** Replace the echo stubs with real OpenRouter connectivity and streaming responses while maintaining compatibility with CityCatalyst.
+
+-**Acceptance Criteria:**
+
+- [x] Implement `OpenRouterClient` using `httpx.AsyncClient` configurable via env (`OPENROUTER_API_KEY`, base URL, timeout).
+- [x] Allow per-request overrides (`model`, `temperature`, `max_tokens`) while enforcing service defaults.
+- [x] Convert OpenRouter delta streams into SSE `message`/`error`/`done` events with correct headers and a backpressure-safe generator.
+- [x] Extend `/v1/messages` pipeline to validate payloads, assemble prompt blocks from provided context, and hand off to OpenRouter.
+- [x] Ensure structured logging and request ID propagation across outbound calls and terminal SSE events.
+- [x] Provide a developer script (`climate-advisor/scripts/test_service_stream.py`) to exercise streaming end-to-end.
+
+**Files Created/Modified:**
+
+- `climate-advisor/service/app/services/openrouter_client.py`
+- `climate-advisor/service/app/routes/messages.py`
+- `climate-advisor/service/app/utils/sse.py`
+- `climate-advisor/service/app/models/requests.py`
+- `climate-advisor/service/app/main.py`
+- `climate-advisor/scripts/test_service_stream.py`
+
+---
+
+#### **TICKET-003: Postgres Persistence Foundation**
 
 **Priority:** High  
 **Story Points:** 5  
-**Description:** Implement OAuth token management for the Climate Advisor Service to authenticate with CityCatalyst.
+**Description:** Introduce a dedicated PostgreSQL database for Climate Advisor so we can persist threads and messages as outlined in architecture.md. PGVector remains a follow-on; this ticket focuses solely on relational storage.
 
-**Acceptance Criteria:**
+-**Acceptance Criteria:**
 
-- [ ] Create OAuth client configuration
-- [ ] Implement token acquisition from OAuth Provider
-- [ ] Add token refresh mechanism
-- [ ] Create secure token storage (environment variables or secure config)
-- [ ] Add token validation and error handling
-- [ ] Secure outbound requests from CA to CC using OAuth bearer tokens
-- [ ] (Inbound auth to CA from CC to be addressed in a later phase or via gateway)
+- [x] Add database configuration in settings (`CA_DATABASE_URL`, pool sizing, echo toggle) and expose a SQLAlchemy session dependency (async preferred) without adding any auth requirements.
+- [x] Define ORM models for `Thread` and `Message` matching the schema in architecture.md (UUID primary keys, foreign keys, created_at/updated_at, role enum, tools_used JSONB).
+- [x] Create a repository/service layer that `/v1/threads` and `/v1/messages` use to insert and query records; unit tests cover happy path and basic error handling.
+- [x] Ship Alembic migrations (or an equivalent idempotent schema module) that build the initial tables.
+- [x] Provide a reproducible setup script (`climate-advisor/scripts/setup_local_db.py`) that can create/drop the dev database and run migrations regardless of where Postgres is hosted.
+- [x] Update developer docs with local workflow for provisioning Postgres, running the setup script repeatedly, and cleaning data between iterations.
+
+**Files to Create/Modify:**
+
+- `climate-advisor/service/app/db/__init__.py`
+- `climate-advisor/service/app/db/session.py`
+- `climate-advisor/service/app/models/db/thread.py`
+- `climate-advisor/service/app/models/db/message.py`
+- `climate-advisor/service/app/services/thread_service.py`
+- `climate-advisor/service/app/services/message_service.py`
+- `climate-advisor/service/app/routes/threads.py`
+- `climate-advisor/service/app/routes/messages.py`
+- `climate-advisor/service/app/config/settings.py`
+- `climate-advisor/scripts/setup_local_db.py` (schema bootstrapper, replaces Alembic for now)
+- `climate-advisor/service/.env.example`
+
+##### TICKET-003 — Implementation Notes and Examples (Completed)
+
+What changed
+- Added SQLAlchemy async engine/session wiring in `climate-advisor/service/app/db/session.py`, including helpers to normalise Postgres URLs and expose `get_engine`/`get_session` for FastAPI dependencies and tooling.
+- Created ORM models for `Thread` and `Message` under `app/models/db/` with relationships, enums, timestamps, and JSONB payloads that match the architecture plan.
+- Introduced `ThreadService` and `MessageService` and updated `/v1/threads` + `/v1/messages` to persist user and assistant messages while refreshing thread metadata.
+- Added `climate-advisor/scripts/setup_local_db.py` for idempotent schema create/drop and documented the workflow (plus sample env values) in the README.
+- Updated environment defaults to use `postgresql://postgres:admin@host.docker.internal:5432/climate_advisor` so both host and containerised service share the same Postgres instance.
+
+---
+
+#### **TICKET-004: OAuth Integration for CityCatalyst Context Fetch**
+
+**Priority:** Medium  
+**Story Points:** 5  
+**Description:** Layer in OAuth client capabilities so the service can fetch contextual data from CityCatalyst after the persistence work lands. This ticket only covers outbound auth and resilience; inbound auth remains out of scope.
+
+-**Acceptance Criteria:**
+
+- [ ] Extend settings and `.env.example` with OAuth client metadata (`CC_OAUTH_CLIENT_ID`, `CC_OAUTH_CLIENT_SECRET`, `CC_OAUTH_TOKEN_URL`, scopes, cache TTL).
+- [ ] Implement an OAuth service that requests access tokens, caches them with expiry awareness, and refreshes proactively.
+- [ ] Provide a reusable HTTP client wrapper that injects bearer tokens on CC requests and surfaces structured errors without persisting credentials.
+- [ ] Add basic resilience (timeouts, retry with backoff, circuit breaker toggles) for outbound CC calls.
+- [ ] Emit structured logs and metrics for token lifecycle and CC calls to aid debugging.
+- [ ] Document operational steps for rotating credentials and testing against staging providers.
 
 **Files to Create/Modify:**
 
 - `climate-advisor/service/app/services/oauth_service.py`
-- `climate-advisor/service/app/config/oauth_config.py`
-- `climate-advisor/service/.env.example` (OAuth configuration)
+- `climate-advisor/service/app/services/citycatalyst_client.py`
+- `climate-advisor/service/app/config/settings.py`
+- `climate-advisor/service/.env.example`
+- `docs/climate-advisor-service.md`
 
 ---
 
-#### **TICKET-003: Basic API Endpoints Structure**
+#### **TICKET-005: User Identity Propagation**
 
 **Priority:** Medium  
 **Story Points:** 3  
-**Description:** Create the basic API endpoint structure for the Climate Advisor Service following the proposed v1 contract.
+**Description:** Ensure the service consistently receives, validates, and persists the caller `user_id` so downstream analytics and privacy requirements are met when saving chat history.
 
-**Acceptance Criteria:**
+-**Acceptance Criteria:**
 
-- [ ] Implement `/v1/threads` endpoint (POST)
-- [ ] Implement `/v1/messages` endpoint (POST with streaming support)
-- [ ] Add basic request/response models with Pydantic
-- [ ] Implement proper HTTP status codes and error responses
-- [ ] Add API documentation with FastAPI auto-generated docs
-- [ ] Ensure response streaming is SSE- or chunk-compatible with CC
+- [ ] Confirm `/v1/messages` payloads require `user_id` and include validation/error handling when absent.
+- [ ] Thread creation persists `user_id` as defined in the Postgres schema (links users to threads).
+- [ ] Message persistence writes role, content, `user_id`, and timestamps so the conversation history can be reconstructed per user.
+- [ ] Add service-layer tests covering mixed user/thread scenarios and ensuring cross-user access is rejected.
+- [ ] Document how CityCatalyst must pass `user_id` and how the Climate Advisor tables can be queried/audited by user.
 
-**Files to Create:**
+**Files to Create/Modify:**
 
+- `climate-advisor/service/app/models/requests.py`
+- `climate-advisor/service/app/services/thread_service.py`
+- `climate-advisor/service/app/services/message_service.py`
 - `climate-advisor/service/app/routes/threads.py`
 - `climate-advisor/service/app/routes/messages.py`
-- `climate-advisor/service/app/models/requests.py`
-- `climate-advisor/service/app/models/responses.py`
+- `climate-advisor/service/docs/persistence.md` (new) or equivalent doc section
 
 ---
-
-#### **TICKET-004: CityCatalyst API Client**
-
-**Priority:** Medium  
-**Story Points:** 5  
-**Description:** Create HTTP client for Climate Advisor Service to communicate with CityCatalyst API.
-
-**Acceptance Criteria:**
-
-- [ ] Implement HTTP client with OAuth token authentication
-- [ ] Add retry logic and timeout handling
-- [ ] Create methods for context data retrieval from CityCatalyst
-- [ ] Add proper error handling for API failures
-- [ ] Implement request/response logging
-- [ ] Pluggable base URL configured via env
-
-**Files to Create:**
-
-- `climate-advisor/service/app/services/citycatalyst_client.py`
-- `climate-advisor/service/app/models/citycatalyst_models.py`
-
----
-
-#### **TICKET-005: Environment Configuration and Documentation**
+#### **TICKET-006: Environment Configuration and Documentation**
 
 **Priority:** Low  
 **Story Points:** 2  
@@ -263,86 +309,99 @@ Client notes
 
 ### Sprint 1 Definition of Done
 
-- [ ] All tickets completed and tested locally
-- [ ] Docker containers build and run successfully
-- [ ] Basic API endpoints respond correctly
-- [ ] OAuth integration works with test credentials
-- [ ] Documentation is complete and up-to-date
-- [ ] Code review completed
-- [ ] No critical security vulnerabilities
+- [ ] TICKET-001 and TICKET-002 merged and verified locally.
+- [ ] Docker image builds and runs via the service Dockerfile with `/health` and `/ready` returning success.
+- [ ] `/v1/threads` and `/v1/messages` respond successfully; `/v1/messages` streams OpenRouter output end-to-end.
+- [ ] Structured request logging shows propagated request IDs and correct SSE headers.
+- [ ] Developer docs and helper scripts cover local run, streaming test harness, and environment configuration.
 
 ### Dependencies for Sprint 2
 
-- OAuth Provider credentials and configuration
-- CityCatalyst API documentation for context data endpoints
-- OpenRouter API credentials and configuration
+- Decision on local vs. remote PostgreSQL instance for development (connection string, credentials, managed vs. container).
+- Agreement on database naming conventions and schema ownership for Climate Advisor tables.
+- Confirmation of connection pool sizing/timeouts for the chosen Postgres deployment.
 
 ---
 
-## Sprint 2: OpenRouter Integration and Streaming
+##### TICKET-002 — Implementation Notes and Examples (Completed)
 
-### Sprint Goal
+Environment
+- Required env vars: `OPENROUTER_API_KEY`, optional `OPENROUTER_BASE_URL` (default `https://openrouter.ai/api/v1`), `OPENROUTER_MODEL`, `REQUEST_TIMEOUT_MS`.
+- Requests may override `model` and `temperature` via the `options` field; the service falls back to env defaults.
+- Developer utility: `climate-advisor/scripts/test_service_stream.py` streams from `/v1/messages` and prints SSE lines for smoke tests.
 
-Replace stubbed responses with real LLM responses via OpenRouter, preserving streaming behavior compatible with CC.
+Example: call `/v1/messages` with model overrides
+```bash
+curl -N -X POST http://localhost:8080/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "X-Request-Id: demo-req-002" \
+  -d '{
+        "user_id": "u_123",
+        "thread_id": "t_abc",
+        "content": "Summarize key climate risks for urban flooding.",
+        "options": {
+          "model": "openrouter/auto",
+          "temperature": 0.2,
+          "max_tokens": 512
+        }
+      }'
+```
 
-### Tickets
+Expected stream shape (SSE)
+```
+event: message
+id: 0
+data: {"index":0,"content":"Urban areas face increasing risk..."}
 
-#### TICKET-006: OpenRouter Client and Config
+event: message
+id: 1
+data: {"index":1,"content":"Mitigations include green infrastructure..."}
 
-- [x] Implement OpenRouter client (HTTPX) with API key and base URL from env
-- [x] Support model selection via env (default and override per request)
-- [x] Add request/response logging with redaction
-- [ ] Add retry/backoff and timeouts
+event: done
+data: {"ok": true, "request_id": "demo-req-002"}
+```
 
-Files to Create/Modify
-- `climate-advisor/service/app/services/openrouter_client.py`
-- `climate-advisor/service/app/config/openrouter_config.py` (optional; or extend existing settings)
-- `climate-advisor/service/app/main.py` (wire client via dependency/container)
-- `climate-advisor/service/app/routes/messages.py` (switch from echo to streaming OpenRouter)
+Next.js/Fetch streaming client example
+```ts
+// In a Next.js route or client component using fetch + ReadableStream
+const res = await fetch("/api/ca/messages", {
+  method: "POST",
+  headers: { "Content-Type": "application/json", "X-Request-Id": crypto.randomUUID() },
+  body: JSON.stringify({ user_id: "u_123", content: "Hello", options: { model: "openrouter/auto" } })
+});
 
-Implementation Notes
-- Use `httpx.AsyncClient` with connection pool, `timeout` from env, and `stream=True` for token streaming.
-- Prefer OpenAI-compatible endpoint via OpenRouter for portability (e.g., `POST /v1/chat/completions` with `stream: true`).
-- Redact secrets in logs; log request metadata only (model, temperature, request_id, duration, token counts when available).
-- Retry policy: exponential backoff on 429/5xx with jitter and max attempts; respect `Retry-After` when present.
-- Propagate `X-Request-Id` to OpenRouter as `headers["X-Request-Id"]` for traceability.
+const reader = res.body!.getReader();
+const decoder = new TextDecoder();
+let buffer = "";
+while (true) {
+  const { value, done } = await reader.read();
+  if (done) break;
+  buffer += decoder.decode(value, { stream: true });
+  // Parse SSE events (split by double newlines)
+  const events = buffer.split("\n\n");
+  buffer = events.pop() || "";
+  for (const e of events) {
+    if (e.startsWith("data:")) {
+      const lines = e.split("\n").filter(Boolean).map(l => l.replace(/^data:\s?/, ""));
+      const payload = JSON.parse(lines.join("\n"));
+      // handle payload.content chunks or terminal ok
+    }
+  }
+}
+```
 
-#### TICKET-007: Streaming Responses
+Error streaming example
+```
+event: error
+data: {"message":"Upstream 429: rate limited","retry_after_ms": 2000}
 
-- [x] Implement token streaming from OpenRouter and forward as SSE/chunked stream
-- [x] Backpressure-safe generator for FastAPI Response/StreamingResponse
-- [x] Error path streams meaningful terminal events to client
+event: done
+data: {"ok": false, "request_id": "<uuid>"}
+```
 
-Files to Create/Modify
-- `climate-advisor/service/app/utils/sse.py` (extend with helper for error terminal event)
-- `climate-advisor/service/app/routes/messages.py` (consume OpenRouter stream and forward SSE chunks)
-
-Implementation Notes
-- Transform OpenRouter streaming deltas into SSE events `{ event: "message", data: { index, content } }` and finish with `{ event: "done", data: { ok: true } }`.
-- Add backpressure-aware async generator yielding bytes; ensure headers include `X-Accel-Buffering: no` and `Cache-Control: no-cache`.
-- On error mid-stream, emit `{ event: "error", data: { message, code? } }` then a `{ event: "done" }` terminal for client consistency.
-
-#### TICKET-008: Message Handling Pipeline
-
-- [x] Validate request payload (thread_id, user_id, content)
-- [ ] Shape prompt with provided context; (no CC fetch yet)
-- [ ] Return assistant message chunks; finalize message summary
-
-Files to Create/Modify
-- `climate-advisor/service/app/routes/messages.py` (validate payload, shape prompt blocks, pass options to OpenRouter)
-- `climate-advisor/service/app/models/requests.py` (extend `options` to include `model`, `temperature`, `max_tokens`, etc.)
-- `climate-advisor/service/app/models/responses.py` (optional: define typed stream event envelopes for docs/tests)
-
-Implementation Notes
-- Validate `user_id`, `content` (already present); accept optional `thread_id`, `inventory_id`, `context`, `options`.
-- Prompt shaping: include lightweight system prompt and any provided context; no CC fetch in this sprint.
-- Summarize final answer chunk text to a short `message_summary` (non-persistent) if needed for logs.
-
-### Definition of Done
-
-- [x] `/v1/messages` streams real LLM output end-to-end
-- [x] Basic observability in place (request IDs; timing logs)
-- [x] Configurable model and temperature via env
+Logging and redaction
+- Log request/response metadata only (model, status, latencies); redact API keys and message content in production logs.
+- Include `request_id` in all logs; propagate to OpenRouter and include in terminal SSE event.
 
 ---
 
@@ -436,12 +495,12 @@ Enable CA to fetch contextual data from CC using OAuth, to enrich prompts.
 
 ### Tickets
 
-#### TICKET-009: OAuth Flow Hardening
+#### TICKET-007: OAuth Flow Hardening
 
 - [ ] Token acquisition and refresh; cache with expiry
 - [ ] Circuit breaker for CC outages
 
-#### TICKET-010: CC Context Endpoints
+#### TICKET-008: CC Context Endpoints
 
 - [ ] Implement calls to CC APIs to fetch inventory/user context as needed
 - [ ] Map CC responses to internal prompt blocks
@@ -498,3 +557,4 @@ Enable CA to fetch contextual data from CC using OAuth, to enrich prompts.
 - Persisting threads/messages in CA (persistence remains in CC as per architecture; CA stays stateless)
 - Vector DB ingestion and file handling beyond API surface stubs
 - Frontend (CC) code changes (will be handled in a separate PR)
+

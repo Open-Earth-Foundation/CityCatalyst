@@ -1,8 +1,12 @@
-from fastapi import APIRouter, status, Response
-from uuid import uuid4
+from __future__ import annotations
 
+from fastapi import APIRouter, Depends, Response, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..db.session import get_session
 from ..models.requests import ThreadCreateRequest
 from ..models.responses import ThreadCreateResponse
+from ..services.thread_service import ThreadService
 
 
 router = APIRouter()
@@ -13,13 +17,23 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
     response_model=ThreadCreateResponse,
 )
-async def create_thread(payload: ThreadCreateRequest, response: Response):
-    thread_id = str(uuid4())
-    # Optional Location header to newly created resource
-    response.headers["Location"] = f"/v1/threads/{thread_id}"
+async def create_thread(
+    payload: ThreadCreateRequest,
+    response: Response,
+    session: AsyncSession = Depends(get_session),
+):
+    service = ThreadService(session)
+    try:
+        thread = await service.create_thread(payload)
+        await session.commit()
+    except Exception:
+        await session.rollback()
+        raise
+
+    response.headers["Location"] = f"/v1/threads/{thread.thread_id}"
     return ThreadCreateResponse(
-        thread_id=thread_id,
-        inventory_id=payload.inventory_id,
-        context=payload.context,
+        thread_id=thread.thread_id,
+        inventory_id=thread.inventory_id,
+        context=thread.context,
     )
 

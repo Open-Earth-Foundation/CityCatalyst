@@ -1,18 +1,31 @@
-from fastapi import APIRouter, Request
-from fastapi.responses import StreamingResponse
-from typing import AsyncIterator
+from __future__ import annotations
 
-from ..models.requests import MessageCreateRequest
-from ..middleware import get_request_id
-from ..utils.sse import format_sse
+from typing import AsyncIterator, List
+
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from ..config import get_settings
+from ..db.session import get_session, get_session_factory
+from ..middleware import get_request_id
+from ..models.requests import MessageCreateRequest
+from ..services.message_service import MessageService
 from ..services.openrouter_client import OpenRouterClient
+from ..services.thread_service import ThreadService
+from ..utils.sse import format_sse
 
 
 router = APIRouter()
 
 
-async def _stream_openrouter(payload: MessageCreateRequest) -> AsyncIterator[bytes]:
+async def _stream_openrouter(
+    payload: MessageCreateRequest,
+    *,
+    thread_id: str,
+    user_id: str,
+    session_factory: async_sessionmaker[AsyncSession],
+) -> AsyncIterator[bytes]:
     req_id = get_request_id()
     settings = get_settings()
 
@@ -23,16 +36,14 @@ async def _stream_openrouter(payload: MessageCreateRequest) -> AsyncIterator[byt
         default_model=settings.openrouter_model,
     )
 
-    # Build OpenAI-style messages
-    system_prompt = (
-        "You are Climate Advisor. Answer concisely and accurately."
-    )
+    system_prompt = "You are Climate Advisor. Answer concisely and accurately."
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": payload.content},
     ]
 
     idx = 0
+    assistant_chunks: List[str] = []
     try:
         async for token in client.stream_chat(
             messages=messages,
@@ -42,14 +53,34 @@ async def _stream_openrouter(payload: MessageCreateRequest) -> AsyncIterator[byt
             request_id=req_id,
         ):
             if token:
-                yield format_sse({"index": idx, "content": token}, event="message", id=str(idx)).encode(
-                    "utf-8"
-                )
+                assistant_chunks.append(token)
+                yield format_sse(
+                    {"index": idx, "content": token}, event="message", id=str(idx)
+                ).encode("utf-8")
                 idx += 1
-        # terminal event
+
+        assistant_content = "".join(assistant_chunks)
+        async with session_factory() as session:
+            message_service = MessageService(session)
+            thread_service = ThreadService(session)
+            try:
+                thread = await thread_service.get_thread(thread_id)
+                if thread is None:
+                    raise RuntimeError("Thread not found while persisting assistant message")
+
+                await message_service.create_assistant_message(
+                    thread_id=thread.thread_id,
+                    user_id=user_id,
+                    content=assistant_content,
+                )
+                await thread_service.touch_thread(thread)
+                await session.commit()
+            except Exception:
+                await session.rollback()
+                raise
+
         yield format_sse({"ok": True, "request_id": req_id}, event="done").encode("utf-8")
     except Exception as exc:
-        # stream error then done
         yield format_sse({"message": str(exc)}, event="error").encode("utf-8")
         yield format_sse({"ok": False, "request_id": req_id}, event="done").encode("utf-8")
     finally:
@@ -57,10 +88,48 @@ async def _stream_openrouter(payload: MessageCreateRequest) -> AsyncIterator[byt
 
 
 @router.post("/messages")
-async def post_message(payload: MessageCreateRequest, request: Request):
+async def post_message(
+    payload: MessageCreateRequest,
+    session: AsyncSession = Depends(get_session),
+):
+    if not payload.thread_id:
+        raise HTTPException(status_code=400, detail="thread_id is required")
+
+    thread_service = ThreadService(session)
+    thread = await thread_service.get_thread(payload.thread_id)
+    if thread is None:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    if thread.user_id != payload.user_id:
+        raise HTTPException(status_code=403, detail="Thread does not belong to user")
+
+    message_service = MessageService(session)
+    try:
+        await message_service.create_user_message(
+            thread_id=thread.thread_id,
+            user_id=payload.user_id,
+            content=payload.content,
+        )
+        await thread_service.touch_thread(thread)
+        await session.commit()
+    except Exception:
+        await session.rollback()
+        raise
+
     headers = {
         "Cache-Control": "no-cache",
         "Connection": "keep-alive",
         "X-Accel-Buffering": "no",
     }
-    return StreamingResponse(_stream_openrouter(payload), media_type="text/event-stream", headers=headers)
+
+    stream = _stream_openrouter(
+        payload,
+        thread_id=thread.thread_id,
+        user_id=thread.user_id,
+        session_factory=get_session_factory(),
+    )
+    return StreamingResponse(stream, media_type="text/event-stream", headers=headers)
+
+
+
+
+

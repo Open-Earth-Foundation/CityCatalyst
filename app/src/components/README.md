@@ -106,3 +106,72 @@ npm run clean
 ## License
 
 LGPL
+
+## Using the package locally (without publishing)
+
+### Option A: npm pack (recommended)
+
+Create a tarball from the package and install it in the consumer:
+
+```bash
+# From the package folder
+cd CityCatalyst/app/src/components
+npm run build
+npm pack            # → produces something like oef-components-1.0.4.tgz
+
+# In the consuming app
+cd ../../../demo-oef-components
+npm install ../CityCatalyst/app/src/components/@oef/components-*.tgz
+```
+
+This mimics a real npm install (no nested node_modules in the package), and is closest to what you'll publish.
+
+### Option B: file: path
+
+```bash
+cd demo-oef-components
+npm pkg set dependencies.@oef/components="file:../CityCatalyst/app/src/components"
+npm install
+```
+
+## Publishing to npm
+
+1. Log in with an account belonging to the oef organization.
+
+```bash
+npm login
+```
+
+2. Ensure a clean build and bump version:
+
+```bash
+cd CityCatalyst/app/src/components
+npm ci
+npm run clean && npm run build
+npm version patch   # or minor/major
+```
+
+3. Publish (requires npm account with access):
+
+```bash
+npm publish --access public
+```
+
+Notes:
+- This package ships compiled JS and type declarations from `dist/`.
+- Verify `name` and `version` in `package.json` before publishing.
+
+## Next.js + Chakra setup (in consumer)
+
+Wrap your app with Chakra’s provider and pass a theme value:
+
+```tsx
+// app/providers.tsx
+"use client";
+import { ReactNode } from 'react';
+import { ChakraProvider, createSystem, defaultConfig } from '@chakra-ui/react';
+const appTheme = createSystem(defaultConfig, {});
+export function Providers({ children }: { children: ReactNode }) {
+  return <ChakraProvider value={appTheme}>{children}</ChakraProvider>;
+}
+```

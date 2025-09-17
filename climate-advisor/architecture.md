@@ -163,7 +163,6 @@ erDiagram
 
   User {
     string user_id PK
-    string email
   }
 
   Thread {

@@ -438,9 +438,7 @@ export function HiapTab({
           fontWeight="normal"
           fontFamily="body"
         >
-          {isSelectionMode
-            ? "Select the actions you want to work with. Click checkboxes to select individual actions, or use the buttons above for bulk selection."
-            : t("ranked-and-unranked-actions-description")}
+          {t("ranked-and-unranked-actions-description")}
         </BodyLarge>
       </Box>
       <ChakraTable.Root w="full" borderRadius="md" borderWidth="1px">

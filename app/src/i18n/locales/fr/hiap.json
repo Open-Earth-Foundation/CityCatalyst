@@ -103,5 +103,11 @@
   "climate-actions-title": "Actions climatiques",
   "actions": "Actions",
   "open-cc-actions": "Actions CC Ouvertes",
-  "top-climate-actions": "Principales Actions à Impact Élevé"
+  "top-climate-actions": "Principales Actions à Impact Élevé",
+  "ranked-and-unranked-actions": "Actions classées et non classées",
+  "pick-actions": "Sélectionner les principales actions",
+  "clear-selection": "Effacer la sélection",
+  "select-all": "Sélectionner tout",
+  "actions-selected": "actions sélectionnées",
+  "ranked-and-unranked-actions-description": "Voici les initiatives climatiques que notre modèle d'IA a identifiées comme ayant le plus grand impact potentiel pour votre ville. Vous pouvez sélectionner jusqu'à trois actions pour créer des plans détaillés dans la section supérieure. De plus, n'hésitez pas à télécharger ce tableau pour le partager avec les parties prenantes."
 }

@@ -17,7 +17,16 @@ import {
   HStack,
   Button,
   IconButton,
+  Table,
+  Icon,
 } from "@chakra-ui/react";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  MenuRoot,
+  MenuTrigger,
+  MenuContent,
+  MenuItem,
+} from "@/components/ui/menu";
 import { Tooltip } from "@/components/ui/tooltip";
 import { RiExpandDiagonalFill } from "react-icons/ri";
 import {
@@ -26,6 +35,7 @@ import {
   flexRender,
   ColumnDef,
   Row,
+  RowSelectionState,
 } from "@tanstack/react-table";
 import { ActionDrawer } from "@/components/ActionDrawer";
 import { useGetHiapQuery } from "@/services/api";
@@ -33,6 +43,12 @@ import { logger } from "@/services/logger";
 import { HighImpactActionRankingStatus } from "@/util/types";
 import ClimateActionsEmptyState from "./ClimateActionsEmptyState";
 import ActionPlanSection from "./ActionPlanSection";
+import { DownloadIcon } from "@/components/icons";
+import { FaCaretDown } from "react-icons/fa";
+import { MdCheckBox } from "react-icons/md";
+import { TitleLarge } from "@/components/Texts/Title";
+import { BodyLarge } from "@/components/Texts/Body";
+import { IoMdCheckboxOutline } from "react-icons/io";
 
 const BarVisualization = ({
   value,
@@ -49,9 +65,9 @@ const BarVisualization = ({
         <Box
           key={index}
           w={width}
-          h="4px"
-          bg={index < value ? "blue.500" : "gray.200"}
-          borderRadius="sm"
+          h="8px"
+          bg={index < value ? "content.link" : "background.neutral"}
+          borderRadius="md"
         />
       ))}
     </HStack>
@@ -68,6 +84,8 @@ export function HiapTab({
   const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "hiap");
   const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [selectedActions, setSelectedActions] = useState<HIAction[]>([]);
 
   const {
     data: hiapData,
@@ -87,21 +105,37 @@ export function HiapTab({
 
   const columns: ColumnDef<HIAction>[] = [
     {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllRowsSelected()}
+          // indeterminate={table.getIsSomeRowsSelected()}
+          onChange={table.getToggleAllRowsSelectedHandler()}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          disabled={!row.getCanSelect()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
       accessorKey: "rank",
-      header: t("ranking"),
+      header: t("rank"),
       cell: ({ row }: { row: Row<HIAction> }) => (
-        <Badge colorScheme="blue">{row.original.rank}</Badge>
+        <Text color="content.secondary">{"#" + row.original.rank}</Text>
       ),
     },
     {
       accessorKey: "name",
-      header: t("action-name"),
+      header: t("action"),
       cell: ({ row }: { row: Row<HIAction> }) => (
-        <VStack alignItems="flex-start" gap={1}>
-          <Text fontWeight="bold">{row.original.name}</Text>
-          <Text fontSize="sm" color="gray.600">
-            {row.original.description}
-          </Text>
+        <VStack alignItems="flex-start" gap={1} maxW={"367px"}>
+          <Text color="content.secondary">{row.original.name}</Text>
         </VStack>
       ),
     },
@@ -145,9 +179,9 @@ export function HiapTab({
               return (
                 <HStack gap={1} flexWrap="wrap">
                   {action.sectors.map((sector) => (
-                    <Badge key={sector} colorScheme="blue">
+                    <Text key={sector} color="content.secondary">
                       {t(`sector.${sector}`)}
-                    </Badge>
+                    </Text>
                   ))}
                 </HStack>
               );
@@ -172,7 +206,9 @@ export function HiapTab({
                 })
                 .reduce((sum, value) => sum + value, 0);
               const blueBars = Math.min(Math.ceil(totalReduction / 20), 5);
-              return <BarVisualization value={blueBars} total={5} />;
+              return (
+                <BarVisualization value={blueBars} total={5} width="60px" />
+              );
             },
           },
         ]),
@@ -189,7 +225,7 @@ export function HiapTab({
             logger.info("Open drawer for action:", row.original);
           }}
         >
-          <RiExpandDiagonalFill color="black" />
+          <Icon as={RiExpandDiagonalFill} color="interactive.control" />
         </IconButton>
       ),
     },
@@ -199,7 +235,33 @@ export function HiapTab({
     data: actions,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    state: {
+      rowSelection,
+    },
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: true,
+    getRowId: (row) => row.id, // Use the action ID as row ID
   });
+
+  // Update selected actions when row selection changes
+  useEffect(() => {
+    const selectedRows = table.getSelectedRowModel().rows;
+    const newSelectedActions = selectedRows.map((row) => row.original);
+    setSelectedActions(newSelectedActions);
+  }, [rowSelection, table]);
+
+  const handleClearSelection = () => {
+    setRowSelection({});
+    setSelectedActions([]);
+  };
+
+  const handleSelectAll = () => {
+    const allRowIds = actions.reduce((acc, action) => {
+      acc[action.id] = true;
+      return acc;
+    }, {} as RowSelectionState);
+    setRowSelection(allRowIds);
+  };
 
   if (isLoading) {
     return <Box p={4}>{t("loading")}</Box>;
@@ -243,46 +305,117 @@ export function HiapTab({
       )}
       {/* Top action widgets / mitigation */}
       <ActionPlanSection t={t} rankedActions={actions || []} />
-      <table style={{ width: "100%" }}>
-        <thead>
+      <Box display="flex" flexDirection="column" gap="18px" py="24px">
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <TitleLarge
+            color="content.secondary"
+            fontWeight="bold"
+            fontFamily="heading"
+          >
+            {t("ranked-and-unranked-actions")}
+          </TitleLarge>
+          <Box display="flex" gap="16px">
+            <MenuRoot>
+              <MenuTrigger asChild>
+                <Button variant="ghost" color="interactive.control" p="4px">
+                  <Icon
+                    as={
+                      selectedActions.length > 0
+                        ? MdCheckBox
+                        : IoMdCheckboxOutline
+                    }
+                  />
+                  <Text>
+                    {selectedActions.length > 0
+                      ? `${t("pick-actions")} (${selectedActions.length})`
+                      : t("pick-actions")}
+                  </Text>
+                  <Icon as={FaCaretDown} color="interactive.control" />
+                </Button>
+              </MenuTrigger>
+              <MenuContent>
+                <MenuItem
+                  value="select-all"
+                  onClick={handleSelectAll}
+                  disabled={actions.length === 0}
+                >
+                  {t("select-all")}
+                </MenuItem>
+                <MenuItem
+                  value="clear-selection"
+                  onClick={handleClearSelection}
+                  disabled={selectedActions.length === 0}
+                >
+                  {t("clear-selection")}
+                </MenuItem>
+                {selectedActions.length > 0 && (
+                  <MenuItem
+                    value="use-selected"
+                    onClick={() => {
+                      logger.info("Selected actions:", selectedActions);
+                      // TODO: Handle selected actions (e.g., add to action plan)
+                    }}
+                  >
+                    Use {selectedActions.length} {t("actions-selected")}
+                  </MenuItem>
+                )}
+              </MenuContent>
+            </MenuRoot>
+            <Button variant="ghost" color="interactive.control" p="4px">
+              <Icon as={DownloadIcon} />
+              <Text>{t("download-action-plan")}</Text>
+              <Icon as={FaCaretDown} color="interactive.control" />
+            </Button>
+          </Box>
+        </Box>
+        <BodyLarge
+          color="content.tertiary"
+          fontWeight="normal"
+          fontFamily="body"
+        >
+          {t("ranked-and-unranked-actions-description")}
+        </BodyLarge>
+      </Box>
+      <Table.Root w="full" borderRadius="md" borderWidth="1px">
+        <Table.Header bg="header.overlay">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <Table.Row key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th
+                <Table.ColumnHeader
                   key={header.id}
-                  style={{
-                    padding: "8px",
-                    textAlign: "left",
-                    borderBottom: "1px solid #e2e8f0",
-                  }}
+                  textAlign="left"
+                  fontWeight="bold"
+                  fontFamily="heading"
+                  textTransform="uppercase"
+                  fontSize="body.sm"
+                  color="content.secondary"
+                  bg="background.neutral"
                 >
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext(),
                   )}
-                </th>
+                </Table.ColumnHeader>
               ))}
-            </tr>
+            </Table.Row>
           ))}
-        </thead>
-        <tbody>
+        </Table.Header>
+        <Table.Body>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
+            <Table.Row key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td
+                <Table.Cell
                   key={cell.id}
-                  style={{
-                    padding: "8px",
-                    borderBottom: "1px solid #e2e8f0",
-                  }}
+                  borderBottom="1px solid #e2e8f0"
+                  p={4}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                </Table.Cell>
               ))}
-            </tr>
+            </Table.Row>
           ))}
-        </tbody>
-      </table>
+        </Table.Body>
+      </Table.Root>
     </Box>
   );
 }

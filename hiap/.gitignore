@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# vscode
+.vscode/
+
+# global
+.env
+.venv
+app/runtime_data/
+app/files/
+
+# Plan creator
+app/plan_creator/data/output/
+
+# Plan creator legacy
+app/plan_creator_legacy/data/output/
+
+# Prioritizer
+app/prioritizer/data/prioritized_local_testing/
+
+# Cap off app
+app/cap_off_app/data/frontend/

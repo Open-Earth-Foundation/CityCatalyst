@@ -57,10 +57,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
   const type = searchParams.get("actionType") as ACTION_TYPES;
   const lng = searchParams.get("lng") as LANGUAGES;
   const ignoreExistingValue = searchParams.get("ignoreExisting");
-  const ignoreExisting: boolean =
-    ignoreExistingValue != null &&
-    ignoreExistingValue.length > 0 &&
-    ignoreExistingValue !== "false";
+  const ignoreExisting: boolean = ignoreExistingValue === "true";
 
   const inventory = await UserService.findUserInventory(
     params.inventory,

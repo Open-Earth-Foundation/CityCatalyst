@@ -186,5 +186,7 @@
   "module-access-disabled": "Modulzugriff Deaktiviert",
   "module-access-disabled-description": "{{moduleName}} wurde für dieses Projekt deaktiviert",
   "module-access-error": "Modulzugriff Fehler",
-  "module-access-error-description": "Fehler beim Aktualisieren des Modulzugriffs. Bitte versuchen Sie es erneut."
+  "module-access-error-description": "Fehler beim Aktualisieren des Modulzugriffs. Bitte versuchen Sie es erneut.",
+  "organization-name-already-exists": "Organisationsname existiert bereits",
+  "error-organization": "Fehler in der Organisation"
 }

@@ -186,5 +186,7 @@
   "module-access-disabled": "Acceso al Módulo Deshabilitado",
   "module-access-disabled-description": "{{moduleName}} ha sido deshabilitado para este proyecto",
   "module-access-error": "Error de Acceso al Módulo",
-  "module-access-error-description": "No se pudo actualizar el acceso al módulo. Por favor, inténtalo de nuevo."
+  "module-access-error-description": "No se pudo actualizar el acceso al módulo. Por favor, inténtalo de nuevo.",
+  "organization-name-already-exists": "El nombre de la organización ya existe",
+  "error-organization": "Error de organización"
 }

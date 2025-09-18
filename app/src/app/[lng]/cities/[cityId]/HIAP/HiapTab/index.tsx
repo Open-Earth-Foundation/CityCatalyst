@@ -6,7 +6,7 @@ import {
   MitigationAction,
   AdaptationAction,
 } from "@/util/types";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import i18next from "i18next";
 import {
@@ -101,29 +101,18 @@ export function HiapTab({
   const [updateHiapSelection, { isLoading: isUpdatingSelection }] =
     useUpdateHiapSelectionMutation();
 
-  const rawActions = hiapData?.rankedActions || [];
+  const actions = hiapData?.rankedActions || [];
   const isAdaptation = type === ACTION_TYPES.Adaptation;
-
-  // Memoize sorted actions to prevent infinite re-renders
-  const actions = useMemo(() => {
-    return [...rawActions].sort((a, b) => {
-      // First, sort by selection status (selected items first)
-      if (a.isSelected && !b.isSelected) return -1;
-      if (!a.isSelected && b.isSelected) return 1;
-      // If both have same selection status, sort by original rank
-      return a.rank - b.rank;
-    });
-  }, [rawActions]);
 
   const isPending = hiapData?.status === HighImpactActionRankingStatus.PENDING;
 
   // Initialize selection state from database
   useEffect(() => {
-    if (rawActions.length > 0) {
+    if (actions.length > 0) {
       const initialSelection: RowSelectionState = {};
       const initialSelectedActions: HIAction[] = [];
 
-      rawActions.forEach((action) => {
+      actions.forEach((action) => {
         if (action.isSelected) {
           initialSelection[action.id] = true;
           initialSelectedActions.push(action);
@@ -133,7 +122,7 @@ export function HiapTab({
       setRowSelection(initialSelection);
       setSelectedActions(initialSelectedActions);
     }
-  }, [rawActions]);
+  }, [actions]);
 
   const columns: ColumnDef<HIAction>[] = [
     ...(isSelectionMode
@@ -143,7 +132,6 @@ export function HiapTab({
             header: ({ table }: { table: TanStackTable<HIAction> }) => (
               <Checkbox
                 checked={table.getIsAllRowsSelected()}
-                // indeterminate={table.getIsSomeRowsSelected()}
                 onChange={table.getToggleAllRowsSelectedHandler()}
               />
             ),
@@ -330,26 +318,6 @@ export function HiapTab({
       logger.info("Cleared all action selections");
     } catch (error) {
       logger.error("Failed to clear selection:", error);
-    }
-  };
-
-  const handleSelectAll = async () => {
-    try {
-      const allActionIds = actions.map((action) => action.id);
-      await updateHiapSelection({
-        inventoryId: inventory.inventoryId,
-        selectedActionIds: allActionIds,
-      }).unwrap();
-
-      const allRowIds = actions.reduce((acc, action) => {
-        acc[action.id] = true;
-        return acc;
-      }, {} as RowSelectionState);
-      setRowSelection(allRowIds);
-      setSelectedActions([...actions]);
-      logger.info("Selected all actions");
-    } catch (error) {
-      logger.error("Failed to select all:", error);
     }
   };
 

@@ -187,5 +187,7 @@
   "module-access-disabled": "Module Access Disabled",
   "module-access-disabled-description": "{{moduleName}} has been disabled for this project",
   "module-access-error": "Module Access Error",
-  "module-access-error-description": "Failed to update module access. Please try again."
+  "module-access-error-description": "Failed to update module access. Please try again.",
+  "organization-name-already-exists": "Organization name already exists",
+  "error-organization": "Organization error"
 }

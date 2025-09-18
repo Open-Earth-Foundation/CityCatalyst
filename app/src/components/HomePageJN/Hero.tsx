@@ -40,6 +40,7 @@ interface HeroProps {
   isLoading: boolean;
   t: TFunction;
   population?: PopulationAttributes;
+  hideMap?: boolean;
 }
 
 export function Hero({
@@ -50,6 +51,7 @@ export function Hero({
   isPublic,
   population,
   t,
+  hideMap = false,
 }: HeroProps) {
   const { data: cityData } = useGetOCCityDataQuery(city?.locode!, {
     skip: !city?.locode,
@@ -76,20 +78,22 @@ export function Hero({
           {/* Left Panel - Text Information */}
           <VStack align="start" flex={1} gap={6}>
             {/* Project Title */}
-            <TitleMedium color="base.dark">
-              {!isPublic &&
-              hasFeatureFlag(FeatureFlags.PROJECT_OVERVIEW_ENABLED) ? (
-                <Link href={`/public/project/${city?.projectId}`}>
-                  {city?.project?.name === "cc_project_default"
-                    ? t("default-project")
-                    : city?.project?.name}
-                </Link>
-              ) : city?.project?.name === "cc_project_default" ? (
-                t("default-project")
-              ) : (
-                city?.project?.name
-              )}
-            </TitleMedium>
+            {!hideMap && (
+              <TitleMedium color="base.dark">
+                {!isPublic &&
+                hasFeatureFlag(FeatureFlags.PROJECT_OVERVIEW_ENABLED) ? (
+                  <Link href={`/public/project/${city?.projectId}`}>
+                    {city?.project?.name === "cc_project_default"
+                      ? t("default-project")
+                      : city?.project?.name}
+                  </Link>
+                ) : city?.project?.name === "cc_project_default" ? (
+                  t("default-project")
+                ) : (
+                  city?.project?.name
+                )}
+              </TitleMedium>
+            )}
 
             {/* City Name with Flag */}
             <HStack align="center" gap={3}>
@@ -211,15 +215,21 @@ export function Hero({
           </VStack>
 
           {/* Right Panel - Map */}
-          <Box h="317px">
-            {city ? (
-              <CityMap locode={city?.locode ?? null} width={422} height={317} />
-            ) : (
-              isInventoryLoading && (
-                <Spinner size="lg" color="content.primary" />
-              )
-            )}
-          </Box>
+          {!hideMap && (
+            <Box h="317px">
+              {city ? (
+                <CityMap
+                  locode={city?.locode ?? null}
+                  width={422}
+                  height={317}
+                />
+              ) : (
+                isInventoryLoading && (
+                  <Spinner size="lg" color="content.primary" />
+                )
+              )}
+            </Box>
+          )}
         </HStack>
       </Box>
     </Box>

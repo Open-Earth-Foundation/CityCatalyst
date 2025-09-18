@@ -161,7 +161,6 @@ export default function CitiesDashboardPage({
               lng={lng}
               t={t}
               isPublic={isPublic}
-              inventoryId={latestInventory?.inventoryId}
             />
           </Box>
         </>

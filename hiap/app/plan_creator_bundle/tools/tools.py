@@ -100,7 +100,7 @@ def retriever_sub_action_tool(
     - Start with broad queries and progressively narrow down
     """
 
-    print("retriever_sub_action_tool")
+    logger.info("retriever_sub_action_tool")
 
     vector_store = get_vectorstore(collection_name="all_docs_db_small_chunks")
 
@@ -109,8 +109,8 @@ def retriever_sub_action_tool(
 
     metadata_filter = {"sub_actions": {"$eq": True}}
 
-    print("search_query", search_query)
-    print("metadata_filter", metadata_filter)
+    logger.info("search_query: %s", search_query)
+    logger.info("metadata_filter: %s", metadata_filter)
 
     docs_and_scores = vector_store.similarity_search_with_relevance_scores(
         query=search_query,
@@ -148,7 +148,7 @@ def retriever_indicators_tool(
     - Start with broad queries and progressively narrow down
     """
 
-    print("retriever_indicators_tool")
+    logger.info("retriever_indicators_tool")
 
     vector_store = get_vectorstore(collection_name="all_docs_db_small_chunks")
     if not vector_store:
@@ -159,8 +159,8 @@ def retriever_indicators_tool(
 
     metadata_filter = {"indicators": {"$eq": True}}
 
-    print("search_query", search_query)
-    print("metadata_filter", metadata_filter)
+    logger.info("search_query: %s", search_query)
+    logger.info("metadata_filter: %s", metadata_filter)
 
     docs_and_scores = vector_store.similarity_search_with_relevance_scores(
         query=search_query,
@@ -276,7 +276,7 @@ def inspect_retrieved_results(search_query: str, chunk: str):
     - result (str) - The result of the inspection of returned chunks.
     """
 
-    print("inspect_retrieved_results")
+    logger.info("inspect_retrieved_results")
 
     prompt_str = f"""
     You are given a user query:

@@ -30,7 +30,7 @@ def custom_agent_translate(state: AgentState) -> AgentState:
     # Get the language from the state
     language = state["language"]
 
-    if not language == "en":
+    if language != "en":
         print(f"Translating into '{language}'...")
 
         # Get the response from the combine agent

@@ -267,7 +267,6 @@ dict_icare_0145 = {
         "Number of healthcare facilities upgraded for climate-related emergencies.",
         "Increase in healthcare staff trained in climate emergency response (%).",
         "Number of climate-related injuries treated successfully.",
-        ".",
     ],
     "PowersAndMandates": ["national"],
     "AdaptationEffectivenessPerHazard": {

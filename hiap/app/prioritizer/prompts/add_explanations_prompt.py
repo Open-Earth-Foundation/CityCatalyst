@@ -11,7 +11,7 @@ Follow these guidelines carefully to complete the task:
 3. Understand the action and its rank you are given.
 4. Create a concise explanation for the action in the requested languages containing the following information:
     - A brief explanation of why the climate action is a priority for the city.
-    - Inlcude a brief explanation of how the climate action is related to the national strategy. Mention the action_code of the national strategy and the target of the action of the national strategy.
+    - Include a brief explanation of how the climate action is related to the national strategy. Mention the action_code of the national strategy and the target of the action of the national strategy.
     - Note: If no national strategy is relevant or given, do not mention the national strategy at all.
 </task>
 

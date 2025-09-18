@@ -1,25 +1,19 @@
-name: Push HIAP to GHCR and deploy to EKS
+name: Push tagged HIAP to GHCR and deploy to EKS
 permissions:
   contents: read
 
 on:
   workflow_dispatch:
+
   push:
-    branches:
-      - develop
     paths:
       - "hiap/**"
-      - ".github/workflows/hiap-develop.yml"
-  pull_request:
-    branches:
-      - develop
-    paths:
-      - "hiap/**"
-      - ".github/workflows/hiap-develop.yml"
-    types: [opened, synchronize, reopened, closed]
+      - ".github/workflows/hiap-tag.yml"
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 concurrency:
-  group: hiap-develop
+  group: hiap-main
   cancel-in-progress: true
 
 jobs:
@@ -27,13 +21,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      LANGCHAIN_PROJECT: hiap-dev
-      LANGCHAIN_PROJECT_NAME_PRIORITIZER: hiap-dev-prioritizer
-      LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION: hiap-dev-plan-translation
+      LANGCHAIN_PROJECT: hiap-prod
+      LANGCHAIN_PROJECT_NAME_PRIORITIZER: hiap-prod-prioritizer
+      LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION: hiap-prod-plan-translation
       LANGCHAIN_ENDPOINT: https://api.smith.langchain.com
       LANGCHAIN_TRACING_V2: false
-      OPENAI_MODEL_NAME_EXPLANATIONS: gpt-4.1-mini
       OPENAI_MODEL_NAME_PLAN_CREATOR: gpt-4.1
+      OPENAI_MODEL_NAME_EXPLANATIONS: gpt-4.1-mini
       OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY: gpt-4.1
       OPENAI_MODEL_NAME_PLAN_TRANSLATION: gpt-4.1-mini
       EXPLANATIONS_ENABLED: false
@@ -71,7 +65,7 @@ jobs:
       packages: write
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
+    if: ${{ !contains(github.ref, '-') }}
     env:
       REGISTRY: ghcr.io
       REPOSITORY: open-earth-foundation/hiap
@@ -79,6 +73,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "full_version=$VERSION" >> $GITHUB_OUTPUT
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          echo "major_version=$MAJOR" >> $GITHUB_OUTPUT
+          MINOR=$(echo $VERSION | cut -d. -f1-2)
+          echo "minor_version=$MINOR" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -90,50 +94,60 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get Git commit hash
-        id: vars
-        run: echo "commit_hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: Build and push image
         uses: docker/build-push-action@v2
         with:
           context: hiap
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ steps.vars.outputs.commit_hash }}
-            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:latest
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:stable
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ steps.version.outputs.major_version }}
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ steps.version.outputs.minor_version }}
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ steps.version.outputs.full_version }}
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
+    if: ${{ !contains(github.ref, '-') }}
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
-      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_PROD_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_PROD_USER }}
+      EKS_PROD_NAME: ${{ secrets.EKS_PROD_NAME }}
+      REF: ${{ github.ref }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Creating kubeconfig file
-        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_PROD_NAME}} --region us-east-1
 
       - name: Testing connection to EKS
         run: kubectl get pods -n default
 
-      - name: Deploying development service
+      - name: Deploying production service
         run: |
-          kubectl apply -f hiap/k8s/deployment-dev.yml
-          kubectl apply -f hiap/k8s/service-dev.yml
-          kubectl apply -f hiap/k8s/persistent-volume-dev.yml
+          export VERSION=${REF#refs/tags/v}
+          export IMAGE=ghcr.io/open-earth-foundation/hiap
 
-          kubectl set env deployment/hiap-dev \
+          # Apply production Kubernetes manifests
+          kubectl apply -f hiap/k8s/persistent-volume-prod.yml
+          kubectl apply -f hiap/k8s/deployment-prod.yml
+          kubectl apply -f hiap/k8s/service-prod.yml
+
+          # Update image to the semver tag
+          kubectl set image deployment/hiap-prod \
+            hiap-prod=$IMAGE:$VERSION \
+            -n default
+
+          # Set production environment variables
+          kubectl set env deployment/hiap-prod \
             OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-mini \
-            OPENAI_MODEL_NAME_PLAN_CREATOR=gpt-4.1 \
             OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY=gpt-4.1 \
+            OPENAI_MODEL_NAME_PLAN_CREATOR=gpt-4.1 \
             OPENAI_MODEL_NAME_PLAN_TRANSLATION=gpt-4.1-mini \
-            LANGCHAIN_PROJECT=hiap-dev \
-            LANGCHAIN_PROJECT_NAME_PRIORITIZER=hiap-dev-prioritizer \
-            LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION=hiap-dev-plan-translation \
+            LANGCHAIN_PROJECT=hiap-prod \
+            LANGCHAIN_PROJECT_NAME_PRIORITIZER=hiap-prod-prioritizer \
+            LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION=hiap-prod-plan-translation \
             LANGCHAIN_ENDPOINT=https://api.smith.langchain.com \
             LANGCHAIN_TRACING_V2=true \
             S3_BUCKET_NAME=openearth.cap \
@@ -145,5 +159,5 @@ jobs:
             AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} \
             AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
 
-          kubectl rollout restart deployment hiap-dev -n default
-          kubectl rollout status deployment/hiap-dev -n default
+          kubectl rollout restart deployment hiap-prod -n default
+          kubectl rollout status deployment/hiap-prod -n default

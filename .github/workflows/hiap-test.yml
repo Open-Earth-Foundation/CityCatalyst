@@ -1,4 +1,4 @@
-name: HIAP Deployment Prod
+name: Push HIAP to GHCR and deploy to EKS
 permissions:
   contents: read
 
@@ -9,17 +9,10 @@ on:
       - main
     paths:
       - "hiap/**"
-      - ".github/workflows/hiap-main.yml"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "hiap/**"
-      - ".github/workflows/hiap-main.yml"
-    types: [opened, synchronize, reopened, closed]
+      - ".github/workflows/hiap-test.yml"
 
 concurrency:
-  group: hiap-main
+  group: hiap-test
   cancel-in-progress: true
 
 jobs:
@@ -27,9 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      LANGCHAIN_PROJECT: hiap-prod
-      LANGCHAIN_PROJECT_NAME_PRIORITIZER: hiap-prod-prioritizer
-      LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION: hiap-prod-plan-translation
+      LANGCHAIN_PROJECT: hiap-test
+      LANGCHAIN_PROJECT_NAME_PRIORITIZER: hiap-test-prioritizer
+      LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION: hiap-test-plan-translation
       LANGCHAIN_ENDPOINT: https://api.smith.langchain.com
       LANGCHAIN_TRACING_V2: false
       OPENAI_MODEL_NAME_PLAN_CREATOR: gpt-4.1
@@ -120,20 +113,20 @@ jobs:
       - name: Testing connection to EKS
         run: kubectl get pods -n default
 
-      - name: Deploying production service
+      - name: Deploying test service
         run: |
-          kubectl apply -f hiap/k8s/deployment.yml
-          kubectl apply -f hiap/k8s/service.yml
-          kubectl apply -f hiap/k8s/persistent-volume.yml
+          kubectl apply -f hiap/k8s/deployment-test.yml
+          kubectl apply -f hiap/k8s/service-test.yml
+          kubectl apply -f hiap/k8s/persistent-volume-test.yml
 
-          kubectl set env deployment/hiap \
+          kubectl set env deployment/hiap-test \
             OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-mini \
             OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY=gpt-4.1 \
             OPENAI_MODEL_NAME_PLAN_CREATOR=gpt-4.1 \
             OPENAI_MODEL_NAME_PLAN_TRANSLATION=gpt-4.1-mini \
-            LANGCHAIN_PROJECT=hiap-prod \
-            LANGCHAIN_PROJECT_NAME_PRIORITIZER=hiap-prod-prioritizer \
-            LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION=hiap-prod-plan-translation \
+            LANGCHAIN_PROJECT=hiap-test \
+            LANGCHAIN_PROJECT_NAME_PRIORITIZER=hiap-test-prioritizer \
+            LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION=hiap-test-plan-translation \
             LANGCHAIN_ENDPOINT=https://api.smith.langchain.com \
             LANGCHAIN_TRACING_V2=true \
             S3_BUCKET_NAME=openearth.cap \
@@ -145,5 +138,5 @@ jobs:
             AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} \
             AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
 
-          kubectl rollout restart deployment hiap -n default
-          kubectl rollout status deployment/hiap -n default
+          kubectl rollout restart deployment hiap-test -n default
+          kubectl rollout status deployment/hiap-test -n default

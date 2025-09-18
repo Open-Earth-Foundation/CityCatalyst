@@ -468,7 +468,9 @@ const ProjectFilterSection = ({
             <Button
               variant="ghost"
               onClick={() => {
-                router.push(`/onboarding/setup?project=${selectedProject}`);
+                router.push(
+                  `/cities/onboarding/setup?project=${selectedProject}`,
+                );
               }}
               rounded={0}
               w="full"

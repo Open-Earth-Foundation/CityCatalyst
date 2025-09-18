@@ -92,6 +92,7 @@ const AddCollaboratorsDialog = ({
 
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
 
+
   const projectCollection = useMemo(() => {
     return createListCollection({
       items:
@@ -101,6 +102,7 @@ const AddCollaboratorsDialog = ({
         })) ?? [],
     });
   }, [projectsData, organizationProjectsData]);
+
 
   const [inviteUsers, { isLoading: isInviteUsersLoading }] =
     useInviteUsersMutation();
@@ -142,10 +144,11 @@ const AddCollaboratorsDialog = ({
     });
     if (data?.success && !error) {
       // Get city names for the selected cities
-      const selectedCityNames = cityData
-        ?.filter(city => selectedCities.includes(city.cityId))
-        ?.map(city => city.name) || [];
-      
+      const selectedCityNames =
+        cityData
+          ?.filter((city) => selectedCities.includes(city.cityId))
+          ?.map((city) => city.name) || [];
+
       // Track collaborator invitation
       trackEvent("collaborator_invited", {
         num_invitees: emails.length,
@@ -154,7 +157,7 @@ const AddCollaboratorsDialog = ({
         city_names: selectedCityNames,
         role: "collaborator",
       });
-      
+
       showSuccessToast();
       setEmails([]);
       setSelectedCities([]);
@@ -177,7 +180,7 @@ const AddCollaboratorsDialog = ({
         organization_id: organizationId,
         role: "admin",
       });
-      
+
       showSuccessToast();
       onClose();
     } else {
@@ -200,7 +203,8 @@ const AddCollaboratorsDialog = ({
   >(() => {
     if (!selectedProject || selectedProject.length === 0) return [];
 
-    const project = projectsData?.find(
+    const projectsToUse = organizationProjectsData ?? projectsData;
+    const project = projectsToUse?.find(
       (project) => project.projectId === selectedProject[0],
     );
     return (
@@ -209,7 +213,7 @@ const AddCollaboratorsDialog = ({
         name: city.name,
       })) ?? []
     );
-  }, [projectsData, selectedProject]);
+  }, [projectsData, organizationProjectsData, selectedProject]);
 
   return (
     <DialogRoot

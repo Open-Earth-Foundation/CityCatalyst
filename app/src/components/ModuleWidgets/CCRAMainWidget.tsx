@@ -14,19 +14,20 @@ interface CCRAWidgetProps {
   cityId: string;
   lng: string;
   onVisibilityChange?: (hasContent: boolean) => void;
+  isPublic?: boolean;
 }
 
 export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
   cityId,
   lng,
+  isPublic = false,
   onVisibilityChange,
 }) => {
   const { t } = useTranslation(lng, "ccra");
 
-  // Get latest inventory for the city
   const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
     cityId,
-    isPublic: false, // CCRA might not have public mode based on the original code
+    isPublic,
   });
 
   // Fetch CCRA dashboard data
@@ -34,9 +35,12 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
     data: ccraData,
     isLoading: isCcraLoading,
     error,
-  } = useGetCityCCRADashboardQuery({ cityId, inventoryId: inventoryId! }, {
-    skip: !inventoryId,
-  });
+  } = useGetCityCCRADashboardQuery(
+    { cityId, inventoryId: inventoryId! },
+    {
+      skip: !inventoryId,
+    },
+  );
 
   const isLoading = isInventoryLoading || isCcraLoading;
 

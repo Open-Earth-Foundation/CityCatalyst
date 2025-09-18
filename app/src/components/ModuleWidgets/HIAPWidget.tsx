@@ -34,7 +34,6 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
   );
   const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
 
-  // Get latest inventory for the city
   const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
     cityId,
     isPublic,
@@ -45,9 +44,12 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
     data: hiapData,
     isLoading: isHiapLoading,
     error,
-  } = useGetCityHIAPDashboardQuery({ cityId, inventoryId: inventoryId!, lng }, {
-    skip: !inventoryId,
-  });
+  } = useGetCityHIAPDashboardQuery(
+    { cityId, inventoryId: inventoryId!, lng },
+    {
+      skip: !inventoryId,
+    },
+  );
 
   const isLoading = isInventoryLoading || isHiapLoading;
 

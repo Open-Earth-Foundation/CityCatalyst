@@ -74,6 +74,7 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
         cityId={cityId}
         lng={lng}
         onVisibilityChange={handleCCRAVisibility}
+        isPublic={isPublic}
       />
     </VStack>
   );

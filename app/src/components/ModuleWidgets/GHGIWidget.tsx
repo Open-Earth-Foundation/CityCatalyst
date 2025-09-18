@@ -30,7 +30,6 @@ export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
   const { t } = useTranslation(lng, "dashboard");
   const router = useRouter();
 
-  // Get latest inventory for the city
   const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
     cityId,
     isPublic,

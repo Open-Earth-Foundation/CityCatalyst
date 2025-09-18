@@ -52,7 +52,7 @@ const paramsSchema = z.object({
 const querySchema = z.object({
   inventoryId: z.string().uuid("Inventory ID must be a valid UUID"),
   lng: z.string().optional(),
-  ignoreExisting: z.boolean().optional().default(false),
+  ignoreExisting: z.coerce.boolean().optional().default(false),
 });
 
 export const GET = apiHandler(async (req: Request, context) => {

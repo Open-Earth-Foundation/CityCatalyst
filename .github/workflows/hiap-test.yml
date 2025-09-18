@@ -19,7 +19,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY_HIAP_TEST }}
       LANGCHAIN_PROJECT: hiap-test
       LANGCHAIN_PROJECT_NAME_PRIORITIZER: hiap-test-prioritizer
       LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION: hiap-test-plan-translation
@@ -133,10 +133,10 @@ jobs:
             EXPLANATIONS_ENABLED=true \
             XGBOOST_NUM_THREADS=1 \
             BULK_CONCURRENCY=10 \
-            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
+            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_HIAP_TEST}} \
             LANGCHAIN_API_KEY=${{secrets.LANGCHAIN_API_KEY}} \
-            AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} \
-            AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
+            AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_HIAP}} \
+            AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_HIAP}}
 
           kubectl rollout restart deployment hiap-test -n default
           kubectl rollout status deployment/hiap-test -n default

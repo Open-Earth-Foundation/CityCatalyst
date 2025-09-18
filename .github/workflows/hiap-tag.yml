@@ -56,8 +56,9 @@ jobs:
           pip install -r hiap/requirements.txt
 
       - name: Run all tests
+        working-directory: hiap
         run: |
-          pytest -c hiap/pytest.ini -m "not slow" hiap
+          pytest -c pytest.ini -m "not slow"
 
   build:
     permissions:

@@ -8,12 +8,16 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-# Add the app directory to the Python path so we can import from it
-app_dir = Path(__file__).parent.parent / "app"
-sys.path.insert(0, str(app_dir))
+# Add project root (hiap/) and app directory (hiap/app) to sys.path so
+# unqualified imports in main.py (e.g., `prioritizer`, `utils`) resolve
+project_root = Path(__file__).resolve().parents[1]
+app_dir = project_root / "app"
+if str(app_dir) not in sys.path:
+    sys.path.insert(0, str(app_dir))
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
-# Import the FastAPI app from the main module
-# Note: This import works at runtime even if linter shows an error
+# Import the FastAPI app from main (unqualified), matching production layout
 import main  # type: ignore
 
 app = main.app
@@ -199,3 +203,27 @@ def sample_prioritizer_response():
         rankedActionsMitigation=[ranked_action],
         rankedActionsAdaptation=[ranked_action],
     )
+
+
+# Silence background logging from app threads after pytest finalizes capture
+# to prevent "I/O operation on closed file" errors without changing app code.
+@pytest.fixture(autouse=True, scope="session")
+def silence_background_logging():
+    import logging
+
+    root_logger = logging.getLogger()
+    # Detach and close any existing handlers that may write to closed streams later
+    for handler in list(root_logger.handlers):
+        try:
+            handler.flush()
+            handler.close()
+        except Exception:
+            pass
+        root_logger.removeHandler(handler)
+
+    # Add a NullHandler so logging calls are safely dropped
+    root_logger.addHandler(logging.NullHandler())
+
+    # Optionally quiet noisy namespaces
+    logging.getLogger("app").setLevel(logging.ERROR)
+    logging.getLogger("plan_creator_bundle").setLevel(logging.ERROR)

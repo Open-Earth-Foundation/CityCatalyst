@@ -109,5 +109,6 @@
   "clear-selection": "Limpar seleção",
   "select-all": "Selecionar tudo",
   "actions-selected": "ações selecionadas",
-  "ranked-and-unranked-actions-description": "Aqui estão as iniciativas climáticas que nosso modelo de IA identificou como tendo o maior impacto potencial para sua cidade. Você pode selecionar até três ações para criar planos detalhados na seção superior. Além disso, sinta-se à vontade para baixar esta tabela para compartilhar com as partes interessadas."
+  "ranked-and-unranked-actions-description": "Aqui estão as iniciativas climáticas que nosso modelo de IA identificou como tendo o maior impacto potencial para sua cidade. Você pode selecionar até três ações para criar planos detalhados na seção superior. Além disso, sinta-se à vontade para baixar esta tabela para compartilhar com as partes interessadas.",
+  "exit-selection": "Sair da seleção"
 }

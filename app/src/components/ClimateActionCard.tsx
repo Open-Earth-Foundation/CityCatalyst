@@ -101,7 +101,7 @@ export const ClimateActionCard = ({
         >
           {action.name}
         </TitleLarge>
-        <BodySmall color="content.tertiary" mt="8px">
+        <BodySmall color="content.tertiary" mt="8px" lineClamp={2}>
           {action.description}
         </BodySmall>
 

@@ -110,5 +110,6 @@
   "clear-selection": "Auswahl löschen",
   "select-all": "Alle auswählen",
   "actions-selected": "Maßnahmen ausgewählt",
-  "ranked-and-unranked-actions-description": "Hier sind die Klimainitiativen, die unser KI-Modell als die mit dem größten Potenzial für Ihre Stadt identifiziert hat. Sie können bis zu drei Maßnahmen auswählen, um detaillierte Pläne im oberen Bereich zu erstellen. Darüber hinaus können Sie diese Tabelle gerne herunterladen, um sie mit Interessengruppen zu teilen."
+  "ranked-and-unranked-actions-description": "Hier sind die Klimainitiativen, die unser KI-Modell als die mit dem größten Potenzial für Ihre Stadt identifiziert hat. Sie können bis zu drei Maßnahmen auswählen, um detaillierte Pläne im oberen Bereich zu erstellen. Darüber hinaus können Sie diese Tabelle gerne herunterladen, um sie mit Interessengruppen zu teilen.",
+  "exit-selection": "Auswahl verlassen"
 }

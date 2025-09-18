@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hiap
+  name: hiap-test
   namespace: default
   labels:
-    app: hiap
+    app: hiap-test
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: hiap
+      app: hiap-test
   template:
     metadata:
       labels:
-        app: hiap
+        app: hiap-test
     spec:
       containers:
-        - name: hiap
+        - name: hiap-test
           image: ghcr.io/open-earth-foundation/hiap:latest
           imagePullPolicy: Always
           ports:
@@ -37,7 +37,7 @@ spec:
               memory: "1Gi"
               cpu: "500m"
           volumeMounts:
-            - name: output-storage
+            - name: output-storage-test
               mountPath: /app/plan_creator_legacy/data/output
           livenessProbe:
             httpGet:
@@ -52,6 +52,6 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
       volumes:
-        - name: output-storage
+        - name: output-storage-test
           persistentVolumeClaim:
-            claimName: hiap-plan-output-pvc
+            claimName: hiap-plan-output-pvc-test

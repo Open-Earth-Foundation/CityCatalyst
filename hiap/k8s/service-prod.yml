@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hiap-service
+  name: hiap-service-prod
   namespace: default
   labels:
-    app: hiap
+    app: hiap-prod
 spec:
   selector:
-    app: hiap
+    app: hiap-prod
   ports:
   - protocol: TCP
     port: 80

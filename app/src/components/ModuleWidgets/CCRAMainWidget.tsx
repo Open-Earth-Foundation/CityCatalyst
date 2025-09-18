@@ -3,35 +3,42 @@ import { Text, HStack, Box, Heading } from "@chakra-ui/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/i18n/client";
 import { useGetCityCCRADashboardQuery } from "@/services/api";
+import { useLatestInventory } from "@/hooks/use-latest-inventory";
 import { MdOpenInNew } from "react-icons/md";
 import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
 import TopRisksWidget from "./CCRAWidget";
 import { HeadlineLarge, HeadlineSmall } from "../Texts/Headline";
 import { BodyLarge } from "../Texts/Body";
 
 interface CCRAWidgetProps {
   cityId: string;
-  inventoryId: string;
   lng: string;
   onVisibilityChange?: (hasContent: boolean) => void;
 }
 
 export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
   cityId,
-  inventoryId,
   lng,
   onVisibilityChange,
 }) => {
   const { t } = useTranslation(lng, "ccra");
-  const router = useRouter();
+
+  // Get latest inventory for the city
+  const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
+    cityId,
+    isPublic: false, // CCRA might not have public mode based on the original code
+  });
 
   // Fetch CCRA dashboard data
   const {
     data: ccraData,
-    isLoading,
+    isLoading: isCcraLoading,
     error,
-  } = useGetCityCCRADashboardQuery({ cityId, inventoryId });
+  } = useGetCityCCRADashboardQuery({ cityId, inventoryId: inventoryId! }, {
+    skip: !inventoryId,
+  });
+
+  const isLoading = isInventoryLoading || isCcraLoading;
 
   const hasContent =
     ccraData && ccraData.topRisks && ccraData.topRisks.length > 0;

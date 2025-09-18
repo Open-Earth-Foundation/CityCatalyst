@@ -12,11 +12,11 @@ import { useRouter } from "next/navigation";
 import { AdaptationTabIcon, MitigationTabIcon } from "../icons";
 import { useGetCityHIAPDashboardQuery } from "@/services/api";
 import { getTopPickActions } from "@/util/helpers";
+import { useLatestInventory } from "@/hooks/use-latest-inventory";
 
 interface HIAPWidgetProps {
   cityId: string;
   lng: string;
-  inventoryId: string;
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
 }
@@ -24,7 +24,6 @@ interface HIAPWidgetProps {
 export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
   cityId,
   lng,
-  inventoryId,
   onVisibilityChange,
   isPublic = false,
 }) => {
@@ -35,12 +34,22 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
   );
   const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
 
+  // Get latest inventory for the city
+  const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
+    cityId,
+    isPublic,
+  });
+
   // Fetch HIAP dashboard data
   const {
     data: hiapData,
-    isLoading,
+    isLoading: isHiapLoading,
     error,
-  } = useGetCityHIAPDashboardQuery({ cityId, inventoryId, lng });
+  } = useGetCityHIAPDashboardQuery({ cityId, inventoryId: inventoryId!, lng }, {
+    skip: !inventoryId,
+  });
+
+  const isLoading = isInventoryLoading || isHiapLoading;
 
   // Calculate topPickActions whenever actionType or data changes
   const topPickActions = useMemo(() => {

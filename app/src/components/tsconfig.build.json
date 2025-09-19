@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "noEmit": false,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "module": "esnext",
+    "target": "es2019",
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "isolatedModules": false
+  },
+  "include": [
+    "./index.ts",
+    "./Texts/**/*.ts",
+    "./Texts/**/*.tsx"
+  ]
+}
+
+

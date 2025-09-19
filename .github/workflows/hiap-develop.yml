@@ -70,7 +70,7 @@ jobs:
     # if: github.ref == 'refs/heads/develop'
     env:
       REGISTRY: ghcr.io
-      REPOSITORY: open-earth-foundation/hiap
+      REPOSITORY: open-earth-foundation/citycatalyst-hiap
 
     steps:
       - name: Checkout repository

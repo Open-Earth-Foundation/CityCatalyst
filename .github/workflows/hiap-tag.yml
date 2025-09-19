@@ -1,6 +1,7 @@
 name: Push tagged HIAP to GHCR and deploy to EKS Prod
 permissions:
   contents: read
+  packages: write
 
 on:
   workflow_dispatch:
@@ -61,19 +62,16 @@ jobs:
           pytest -c pytest.ini -m "not slow"
 
   build:
-    permissions:
-      contents: read
-      packages: write
     needs: test
     runs-on: ubuntu-latest
     if: ${{ !contains(github.ref, '-') }}
     env:
       REGISTRY: ghcr.io
-      REPOSITORY: open-earth-foundation/hiap
+      REPOSITORY: open-earth-foundation/citycatalyst-hiap
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Extract version from tag
         id: version
@@ -86,17 +84,17 @@ jobs:
           echo "minor_version=$MINOR" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: hiap
           push: true
@@ -128,7 +126,7 @@ jobs:
       - name: Deploying production service
         run: |
           export VERSION=${REF#refs/tags/v}
-          export IMAGE=ghcr.io/open-earth-foundation/hiap
+          export IMAGE=ghcr.io/open-earth-foundation/citycatalyst-hiap
 
           # Apply production Kubernetes manifests
           kubectl apply -f hiap/k8s/persistent-volume-prod.yml

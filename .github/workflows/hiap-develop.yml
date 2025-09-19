@@ -2,7 +2,6 @@ name: Push HIAP to GHCR and deploy to EKS Develop
 permissions:
   contents: read
   packages: write
-  checks: write
 
 on:
   workflow_dispatch:
@@ -67,7 +66,7 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
-    # if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/develop'
     env:
       REGISTRY: ghcr.io
       REPOSITORY: open-earth-foundation/citycatalyst-hiap

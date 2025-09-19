@@ -1,6 +1,7 @@
 name: Push HIAP to GHCR and deploy to EKS Test
 permissions:
   contents: read
+  packages: write
 
 on:
   workflow_dispatch:
@@ -42,7 +43,7 @@ jobs:
           python-version: 3.12
 
       - name: Cache pip dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-v2-${{ hashFiles('hiap/**/requirements*.txt') }}
@@ -60,9 +61,6 @@ jobs:
           pytest -c pytest.ini -m "not slow"
 
   build:
-    permissions:
-      contents: read
-      packages: write
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'

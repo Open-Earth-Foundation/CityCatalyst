@@ -1,3 +1,10 @@
+import { apiHandler } from "@/util/api";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import { db } from "@/models";
+import { NextResponse } from "next/server";
+import createHttpError from "http-errors";
+import { markCitiesPublicRequest } from "@/util/validation";
+
 /**
  * @swagger
  * /api/v0/admin/mark-cities-public:
@@ -40,12 +47,6 @@
  *       403:
  *         description: Forbidden - requires admin or OEF admin permissions.
  */
-import { apiHandler } from "@/util/api";
-import { PermissionService } from "@/backend/permissions/PermissionService";
-import { db } from "@/models";
-import { NextResponse } from "next/server";
-import createHttpError from "http-errors";
-import { markCitiesPublicRequest } from "@/util/validation";
 
 export const PUT = apiHandler(async (req, { session }) => {
   const body = markCitiesPublicRequest.parse(await req.json());
@@ -57,12 +58,12 @@ export const PUT = apiHandler(async (req, { session }) => {
   // Get all cities in this project
   const citiesInProject = await db.models.City.findAll({
     where: {
-      projectId: projectId
+      projectId: projectId,
     },
-    attributes: ['cityId']
+    attributes: ["cityId"],
   });
 
-  const cityIds = citiesInProject.map(city => city.cityId);
+  const cityIds = citiesInProject.map((city) => city.cityId);
 
   if (cityIds.length === 0) {
     throw new createHttpError.NotFound("No cities found in this project");
@@ -71,19 +72,19 @@ export const PUT = apiHandler(async (req, { session }) => {
   // Update all inventories to be public for cities in this project
   // Set publishedAt to current date for inventories being made public for the first time
   await db.models.Inventory.update(
-    { 
+    {
       isPublic: true,
-      publishedAt: new Date()
+      publishedAt: new Date(),
     },
-    { 
+    {
       where: {
         cityId: cityIds,
-        isPublic: false // Only update inventories that aren't already public
-      }
-    }
+        isPublic: false, // Only update inventories that aren't already public
+      },
+    },
   );
 
-  return NextResponse.json({ 
-    message: "Successfully marked all cities in project as public"
+  return NextResponse.json({
+    message: "Successfully marked all cities in project as public",
   });
 });

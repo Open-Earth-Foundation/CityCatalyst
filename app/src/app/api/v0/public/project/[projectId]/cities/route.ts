@@ -1,3 +1,9 @@
+import { NextResponse } from "next/server";
+import { apiHandler } from "@/util/api";
+import createHttpError from "http-errors";
+import { validate } from "uuid";
+import { db } from "@/models";
+
 /**
  * @swagger
  * /api/v0/public/project/{projectId}/cities:
@@ -61,11 +67,6 @@
  *       404:
  *         description: Project not found or no public cities available.
  */
-import { NextResponse } from "next/server";
-import { apiHandler } from "@/util/api";
-import createHttpError from "http-errors";
-import { validate } from "uuid";
-import { db } from "@/models";
 
 export const GET = apiHandler(async (req, { params }) => {
   const { projectId } = params;
@@ -98,14 +99,7 @@ export const GET = apiHandler(async (req, { params }) => {
         attributes: [], // We don't need inventory details, just checking existence
       },
     ],
-    attributes: [
-      "cityId",
-      "name", 
-      "locode",
-      "country",
-      "region",
-      "area"
-    ],
+    attributes: ["cityId", "name", "locode", "country", "region", "area"],
   });
 
   if (publicCities.length === 0) {

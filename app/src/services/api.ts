@@ -1130,6 +1130,14 @@ export const api = createApi({
         }),
         transformResponse: (response: any) => response,
       }),
+      markCitiesPublic: builder.mutation({
+        query: (data: { projectId: string }) => ({
+          url: `/admin/mark-cities-public`,
+          method: "PUT",
+          body: data,
+        }),
+        transformResponse: (response: { message: string }) => response,
+      }),
       getProjectUsers: builder.query({
         query: (projectId: string) => ({
           method: "GET",
@@ -1624,6 +1632,7 @@ export const {
   useDeleteProjectMutation,
   useCreateBulkInventoriesMutation,
   useConnectDataSourcesMutation,
+  useMarkCitiesPublicMutation,
   useGetProjectUsersQuery,
   useGetUserAccessStatusQuery,
   useGetAllCitiesInSystemQuery,

@@ -188,5 +188,9 @@
   "module-access-error": "Erreur d'Accès au Module",
   "module-access-error-description": "Échec de la mise à jour de l'accès au module. Veuillez réessayer.",
   "organization-name-already-exists": "Le nom de l'organisation existe déjà",
-  "error-organization": "Erreur d'organisation"
+  "error-organization": "Erreur d'organisation",
+  "publish-project": "Publier le projet",
+  "publishing-project": "Projet de publication...",
+  "publish-project-success": "Projet publié avec succès",
+  "publish-project-error": "Erreur lors de la publication du projet"
 }

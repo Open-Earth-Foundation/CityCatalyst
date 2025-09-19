@@ -1,0 +1,26 @@
+# HIAP gitignore
+# gitignore for hiap/ subfolder
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# vscode
+.vscode/
+
+# HIAP global
+.env
+.venv
+app/runtime_data/
+app/files/
+
+# HIAP Plan creator
+app/plan_creator/data/output/
+
+# HIAP Plan creator legacy
+app/plan_creator_legacy/data/output/
+
+# HIAP Prioritizer
+app/prioritizer/data/prioritized_local_testing/
+
+# HIAP Cap off app
+app/cap_off_app/data/frontend/

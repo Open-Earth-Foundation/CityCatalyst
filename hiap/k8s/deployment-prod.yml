@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hiap-prod
+  namespace: default
+  labels:
+    app: hiap-prod
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hiap-prod
+  template:
+    metadata:
+      labels:
+        app: hiap-prod
+    spec:
+      containers:
+        - name: hiap-prod
+          image: ghcr.io/open-earth-foundation/hiap:stable
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: API_HOST
+              value: "0.0.0.0"
+            - name: API_PORT
+              value: "8000"
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          volumeMounts:
+            - name: output-storage-prod
+              mountPath: /app/plan_creator_legacy/data/output
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: output-storage-prod
+          persistentVolumeClaim:
+            claimName: hiap-plan-output-pvc-prod
+

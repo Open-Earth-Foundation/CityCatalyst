@@ -8,8 +8,8 @@
 - Run all tests: `npm run test` (Jest + Playwright)
 - Run unit/API tests: `npm run jest`
 - Run E2E tests: `npm run e2e:test`
-- Run a single Jest test: `npx jest path/to/testfile`
-- Run Playwright test: `npx playwright test path/to/testfile`
+- Run a single Jest test: `npx jest --testPathPattern=path/to/testfile.test.js`
+- Run a single Playwright test: `npx playwright test tests/path/to/testfile.spec.ts`
 
 ## Code Style Guidelines
 

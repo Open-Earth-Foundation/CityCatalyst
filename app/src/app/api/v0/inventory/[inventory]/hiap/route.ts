@@ -23,6 +23,11 @@
  *         required: true
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: ignoreExisting
+ *         required: false
+ *         schema:
+ *           type: boolean
  *     responses:
  *       200:
  *         description: HIAP result wrapped in data.
@@ -51,6 +56,9 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
   const searchParams = req.nextUrl.searchParams;
   const type = searchParams.get("actionType") as ACTION_TYPES;
   const lng = searchParams.get("lng") as LANGUAGES;
+  const ignoreExistingValue = searchParams.get("ignoreExisting");
+  const ignoreExisting: boolean = ignoreExistingValue === "true";
+
   const inventory = await UserService.findUserInventory(
     params.inventory,
     session,
@@ -61,7 +69,13 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
   }
 
   try {
-    const data = await fetchRanking(params.inventory, type, lng, session);
+    const data = await fetchRanking(
+      params.inventory,
+      type,
+      lng,
+      session,
+      ignoreExisting,
+    );
     return Response.json({ data });
   } catch (error) {
     logger.error("Error fetching HIAP data:", {

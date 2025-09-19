@@ -500,17 +500,25 @@ export const fetchRanking = async (
   type: ACTION_TYPES,
   lang: LANGUAGES,
   session?: AppSession,
+  ignoreExisting: boolean = false,
 ) => {
   try {
     const user = await db.models.User.findByPk(session?.user.id);
     const locode = await InventoryService.getLocode(inventoryId);
     const ranking = await findOrSelectRanking(inventoryId, locode, lang);
     if (ranking) {
-      // Return if already have ranked actions for this language
-      const existingRanked = await getRankedActionsForLang(ranking, lang, type);
-      if (existingRanked.length > 0) {
-        return { ...ranking.toJSON(), rankedActions: existingRanked };
+      if (!ignoreExisting) {
+        // Return if already have ranked actions for this language
+        const existingRanked = await getRankedActionsForLang(
+          ranking,
+          lang,
+          type,
+        );
+        if (existingRanked.length > 0) {
+          return { ...ranking.toJSON(), rankedActions: existingRanked };
+        }
       }
+
       // If ranking is pending, trigger job in background and return empty actions
       if (ranking.status === HighImpactActionRankingStatus.PENDING) {
         logger.info("Ranking is pending, triggering background job");

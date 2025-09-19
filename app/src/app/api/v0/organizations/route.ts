@@ -40,6 +40,15 @@
  *             schema:
  *               type: object
  *               additionalProperties: true
+ *       409:
+ *         description: Organization name already exists.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  */
 import { Organization } from "@/models/Organization";
 import { randomUUID } from "node:crypto";
@@ -48,10 +57,48 @@ import { NextResponse } from "next/server";
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
 import { db } from "@/models";
+import { CustomOrganizationError, OrganizationErrorCodes } from "@/lib/custom-errors/organization-error";
+import { User } from "@/models/User";
+import { OrganizationAdmin } from "@/models/OrganizationAdmin";
 
 export const POST = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
   const orgData = createOrganizationRequest.parse(await req.json());
+
+  // Check if organization name already exists
+  const existingOrg = await Organization.findOne({
+    where: { name: orgData.name },
+  });
+
+  if (existingOrg) {
+    throw new CustomOrganizationError({
+      errorKey: OrganizationErrorCodes.NAME_ALREADY_EXISTS,
+      organizationName: orgData.name,
+      message: "organization-name-already-exists"
+    });
+  }
+
+  // Check if contact email is already an org admin for another organization
+  const existingOrgAdmin = await OrganizationAdmin.findOne({
+    include: [
+      {
+        model: User,
+        as: "user",
+        where: {
+          email: orgData.contactEmail,
+        },
+      },
+    ],
+  });
+
+  if (existingOrgAdmin) {
+    throw new CustomOrganizationError({
+      errorKey: OrganizationErrorCodes.CREATION_FAILED,
+      organizationName: orgData.name,
+      message: "user-already-org-admin"
+    });
+  }
+
   const newOrg = await Organization.create({
     organizationId: randomUUID(),
     active: true,

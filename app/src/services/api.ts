@@ -1226,6 +1226,23 @@ export const api = createApi({
         },
         providesTags: ["Hiap"],
       }),
+      updateHiapSelection: builder.mutation<
+        { success: boolean; updated: number },
+        { inventoryId: string; selectedActionIds: string[] }
+      >({
+        query: ({ inventoryId, selectedActionIds }) => ({
+          url: `inventory/${inventoryId}/hiap`,
+          method: "PATCH",
+          body: { selectedActionIds },
+        }),
+        transformResponse: (response: {
+          success: boolean;
+          updated: number;
+        }) => {
+          return response;
+        },
+        invalidatesTags: ["Hiap"],
+      }),
       setOrgWhiteLabel: builder.mutation({
         query: (data: {
           organizationId: string;
@@ -1613,6 +1630,7 @@ export const {
   useGetUserProjectsQuery,
   useTransferCitiesMutation,
   useGetHiapQuery,
+  useUpdateHiapSelectionMutation,
   useGetThemesQuery,
   useSetOrgWhiteLabelMutation,
   useGetOrganizationForInventoryQuery,

@@ -69,6 +69,7 @@ python -m app.prioritizer.utils.ml_comparator
 import pandas as pd
 import xgboost as xgb
 from pathlib import Path
+from typing import Optional
 
 import logging
 import os
@@ -123,6 +124,37 @@ except ValueError:
 loaded_model.set_params(n_jobs=xgb_threads)
 
 
+# Anchor action used for inducing a consistent scalar score per action
+# without changing the underlying model. This enables antisymmetry and
+# transitivity by comparing actions via their anchor-based scores.
+ANCHOR_ACTION: dict = {
+    "ActionID": "__anchor__",
+    "ActionType": ["mitigation", "adaptation"],
+    "Hazard": [],
+    "CoBenefits": {
+        "air_quality": 0,
+        "water_quality": 0,
+        "habitat": 0,
+        "cost_of_living": 0,
+        "housing": 0,
+        "mobility": 0,
+        "stakeholder_engagement": 0,
+    },
+    "GHGReductionPotential": {
+        "stationary_energy": 0,
+        "transportation": 0,
+        "waste": 0,
+        "ippu": 0,
+        "afolu": 0,
+    },
+    # Dropped later, but kept for completeness
+    "AdaptationEffectiveness": 0,
+    "AdaptationEffectivenessPerHazard": {},
+    "CostInvestmentNeeded": "medium",
+    "TimelineForImplementation": "5-10 years",
+}
+
+
 def create_shap_waterfall(df: pd.DataFrame, model: xgb.XGBClassifier) -> None:
     """
     Create a SHAP waterfall plot for the given dataframe.
@@ -146,7 +178,401 @@ def create_shap_waterfall(df: pd.DataFrame, model: xgb.XGBClassifier) -> None:
     shap.plots.waterfall(shap_values[0], max_display=30)
 
 
-def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
+def build_transformed_features_for_pair(
+    city: dict, action_A: dict, action_B: dict
+) -> pd.DataFrame:
+    """
+    Build and return the transformed feature DataFrame for a given city and two actions.
+    This mirrors the transformation pipeline used by the comparator without making a prediction.
+    Raises ValueError if the transformed row becomes empty due to missing values.
+    """
+
+    def build_df(city_local, a_local, b_local):
+        data = {}
+        data["ActionA"] = a_local.get("ActionID")
+        data["ActionB"] = b_local.get("ActionID")
+        city_keys = [
+            "populationSize",
+            "populationDensity",
+            "elevation",
+            "biome",
+            "stationaryEnergyEmissions",
+            "transportationEmissions",
+            "wasteEmissions",
+            "ippuEmissions",
+            "afoluEmissions",
+            "ccra",
+        ]
+        for key in city_keys:
+            data[f"city_{key}"] = city_local.get(key)
+        action_keys = [
+            "ActionType",
+            "Hazard",
+            "CoBenefits",
+            "GHGReductionPotential",
+            "AdaptationEffectiveness",
+            "CostInvestmentNeeded",
+            "TimelineForImplementation",
+            "AdaptationEffectivenessPerHazard",
+        ]
+        for key in action_keys:
+            data[f"actionA_{key}"] = a_local.get(key)
+        for key in action_keys:
+            data[f"actionB_{key}"] = b_local.get(key)
+        return pd.DataFrame([data])
+
+    def prepare_emission_reduction_data_single_diff(df: pd.DataFrame) -> pd.DataFrame:
+        sector_mapping = {
+            "stationary_energy": "city_stationaryEnergyEmissions",
+            "transportation": "city_transportationEmissions",
+            "waste": "city_wasteEmissions",
+            "ippu": "city_ippuEmissions",
+            "afolu": "city_afoluEmissions",
+        }
+
+        def extract_ghg_value(ghg_dict, sector):
+            if isinstance(ghg_dict, dict) and sector in ghg_dict:
+                value = ghg_dict[sector]
+                if isinstance(value, str) and "-" in value:
+                    low, high = map(float, value.split("-"))
+                    return (low + high) / 2
+                elif isinstance(value, (int, float)):
+                    return value
+            return 0
+
+        df["total_city_emissions"] = df[list(sector_mapping.values())].sum(axis=1)
+        if (df["total_city_emissions"] == 0).any():
+            logger.debug(
+                "City has zero total emissions - emission reduction percentages will be set to 0"
+            )
+        for action in ["actionA", "actionB"]:
+            ghg_column = f"{action}_GHGReductionPotential"
+            total_abs_reduction_col = f"{action}_Total_Reduction"
+            df[total_abs_reduction_col] = 0
+            for sector, city_col in sector_mapping.items():
+                if city_col in df.columns:
+                    reduction_pct_col = f"{action}_GHGReduction_{sector}"
+                    df[reduction_pct_col] = df[ghg_column].apply(
+                        lambda x: extract_ghg_value(x, sector)
+                    )
+                    abs_reduction_col = f"{action}_EmissionReduction_{sector}"
+                    df[abs_reduction_col] = df[reduction_pct_col] * df[city_col] / 100
+                    df[total_abs_reduction_col] += df[abs_reduction_col]
+            percentage_reduction_col = f"{action}_Percentage_Reduction"
+            df[percentage_reduction_col] = df.apply(
+                lambda row: (
+                    (row[total_abs_reduction_col] / row["total_city_emissions"]) * 100
+                    if row["total_city_emissions"] > 0
+                    else 0.0
+                ),
+                axis=1,
+            )
+        df["EmissionReduction_Percentage_Diff"] = (
+            df["actionA_Percentage_Reduction"] - df["actionB_Percentage_Reduction"]
+        )
+        intermediate_cols = []
+        for action in ["actionA", "actionB"]:
+            for sector in sector_mapping.keys():
+                intermediate_cols.append(f"{action}_GHGReduction_{sector}")
+                intermediate_cols.append(f"{action}_EmissionReduction_{sector}")
+            intermediate_cols.append(f"{action}_Total_Reduction")
+        intermediate_cols += [
+            "actionA_GHGReductionPotential",
+            "actionB_GHGReductionPotential",
+            "total_city_emissions",
+            "actionA_Percentage_Reduction",
+            "actionB_Percentage_Reduction",
+        ] + list(sector_mapping.values())
+        df.drop(columns=intermediate_cols, inplace=True)
+        return df
+
+    def prepare_action_type_data(df: pd.DataFrame) -> pd.DataFrame:
+        allowed_types = {"mitigation", "adaptation"}
+
+        def encode(action_list, category):
+            if not isinstance(action_list, list) or not action_list:
+                raise ValueError("ActionType must be a non-empty list")
+            if any(item not in allowed_types for item in action_list):
+                raise ValueError(f"Invalid action types: {action_list}")
+            return 1 if category in action_list else 0
+
+        for action in ["actionA", "actionB"]:
+            df[f"{action}_mitigation"] = df[f"{action}_ActionType"].apply(
+                lambda x: encode(x, "mitigation")
+            )
+            df[f"{action}_adaptation"] = df[f"{action}_ActionType"].apply(
+                lambda x: encode(x, "adaptation")
+            )
+            df.drop(columns=[f"{action}_ActionType"], inplace=True)
+        return df
+
+    def prepare_cost_investment_needed_data(df: pd.DataFrame) -> pd.DataFrame:
+        cost_mapping = {"low": 2, "medium": 1, "high": 0}
+        df["actionA_CostInvestmentNeeded"] = df["actionA_CostInvestmentNeeded"].map(
+            cost_mapping
+        )
+        df["actionB_CostInvestmentNeeded"] = df["actionB_CostInvestmentNeeded"].map(
+            cost_mapping
+        )
+        df["CostInvestmentNeeded_Diff"] = (
+            df["actionA_CostInvestmentNeeded"] - df["actionB_CostInvestmentNeeded"]
+        )
+        df.drop(
+            columns=["actionA_CostInvestmentNeeded", "actionB_CostInvestmentNeeded"],
+            inplace=True,
+        )
+        return df
+
+    def prepare_timeline_data(df: pd.DataFrame) -> pd.DataFrame:
+        timeline_mapping = {"<5 years": 2, "5-10 years": 1, ">10 years": 0}
+        df["actionA_TimelineForImplementation"] = df[
+            "actionA_TimelineForImplementation"
+        ].map(timeline_mapping)
+        df["actionB_TimelineForImplementation"] = df[
+            "actionB_TimelineForImplementation"
+        ].map(timeline_mapping)
+        df["TimelineForImplementation_Diff"] = (
+            df["actionA_TimelineForImplementation"]
+            - df["actionB_TimelineForImplementation"]
+        )
+        df.drop(
+            columns=[
+                "actionA_TimelineForImplementation",
+                "actionB_TimelineForImplementation",
+            ],
+            inplace=True,
+        )
+        return df
+
+    def prepare_city_risk_profile_per_hazard(df: pd.DataFrame) -> pd.DataFrame:
+        def extract_risk_profile(ccra_data):
+            risk_profile = {}
+            if isinstance(ccra_data, list):
+                for entry in ccra_data:
+                    hazard = entry.get("hazard")
+                    score = entry.get("normalised_risk_score")
+                    if hazard is None or score is None:
+                        continue
+                    risk_profile[hazard] = max(risk_profile.get(hazard, 0), score)
+            return risk_profile
+
+        if "city_ccra" in df.columns:
+            df["city_risk_profile"] = df["city_ccra"].apply(extract_risk_profile)
+        return df
+
+    def match_action_hazards_with_city_risks_per_hazard(
+        df: pd.DataFrame,
+    ) -> pd.DataFrame:
+        def get_matching_hazards(action_hazards, city_risk_profile):
+            if not isinstance(action_hazards, list) or not isinstance(
+                city_risk_profile, dict
+            ):
+                return {}
+            return {
+                hazard: city_risk_profile[hazard]
+                for hazard in action_hazards
+                if hazard in city_risk_profile
+            }
+
+        if "actionA_Hazard" in df.columns:
+            df["actionA_matched_hazards"] = df.apply(
+                lambda row: get_matching_hazards(
+                    row.get("actionA_Hazard", []), row.get("city_risk_profile", {})
+                ),
+                axis=1,
+            )
+        if "actionB_Hazard" in df.columns:
+            df["actionB_matched_hazards"] = df.apply(
+                lambda row: get_matching_hazards(
+                    row.get("actionB_Hazard", []), row.get("city_risk_profile", {})
+                ),
+                axis=1,
+            )
+        return df
+
+    def create_weighted_comparative_feature_per_hazard(
+        df: pd.DataFrame,
+    ) -> pd.DataFrame:
+        def compute_weighted_total(matched_hazards, adaptation_dict):
+            total = 0
+            if isinstance(matched_hazards, dict) and isinstance(adaptation_dict, dict):
+                for hazard, risk in matched_hazards.items():
+                    effectiveness = adaptation_dict.get(hazard, 0)
+                    total += risk * effectiveness
+            return total
+
+        df["weighted_actionA_risk_total"] = df.apply(
+            lambda row: compute_weighted_total(
+                row.get("actionA_matched_hazards", {}),
+                row.get("actionA_AdaptationEffectivenessPerHazard", {}),
+            ),
+            axis=1,
+        )
+        df["weighted_actionB_risk_total"] = df.apply(
+            lambda row: compute_weighted_total(
+                row.get("actionB_matched_hazards", {}),
+                row.get("actionB_AdaptationEffectivenessPerHazard", {}),
+            ),
+            axis=1,
+        )
+        df["weighted_risk_score_Diff"] = (
+            df["weighted_actionA_risk_total"] - df["weighted_actionB_risk_total"]
+        )
+        return df
+
+    def process_ccra_hazards_adaptation_effectiveness_per_hazard(
+        df: pd.DataFrame,
+    ) -> pd.DataFrame:
+        df = prepare_city_risk_profile_per_hazard(df)
+        df = match_action_hazards_with_city_risks_per_hazard(df)
+        df = create_weighted_comparative_feature_per_hazard(df)
+        columns_to_drop = [
+            "actionA_AdaptationEffectivenessPerHazard",
+            "actionB_AdaptationEffectivenessPerHazard",
+            "actionA_matched_hazards",
+            "actionB_matched_hazards",
+            "city_risk_profile",
+            "city_ccra",
+            "actionA_Hazard",
+            "actionB_Hazard",
+            "weighted_actionA_risk_total",
+            "weighted_actionB_risk_total",
+        ]
+        df.drop(columns=columns_to_drop, inplace=True)
+        return df
+
+    def prepare_co_benefits_data_single_diff(df: pd.DataFrame) -> pd.DataFrame:
+        co_benefits_keys = [
+            "air_quality",
+            "water_quality",
+            "habitat",
+            "cost_of_living",
+            "housing",
+            "mobility",
+            "stakeholder_engagement",
+        ]
+
+        def compare_total_benefit(row):
+            if isinstance(row["actionA_CoBenefits"], dict) and isinstance(
+                row["actionB_CoBenefits"], dict
+            ):
+                a_total = sum(
+                    row["actionA_CoBenefits"].get(k, 0) for k in co_benefits_keys
+                )
+                b_total = sum(
+                    row["actionB_CoBenefits"].get(k, 0) for k in co_benefits_keys
+                )
+                return a_total - b_total
+            else:
+                return
+
+        df["CoBenefits_Diff_total"] = df.apply(compare_total_benefit, axis=1)
+        df.drop(columns=["actionA_CoBenefits", "actionB_CoBenefits"], inplace=True)
+        return df
+
+    def prepare_biome_data(df: pd.DataFrame) -> pd.DataFrame:
+        biome_categories = [
+            "tropical_rainforest",
+            "temperate_forest",
+            "desert",
+            "grassland_savanna",
+            "tundra",
+            "wetlands",
+            "mountains",
+            "boreal_forest_taiga",
+            "coastal_marine",
+        ]
+        for biome in biome_categories[1:]:
+            df[f"biome_{biome}"] = (df["city_biome"] == biome).astype(int)
+        df.drop(columns=["city_biome"], inplace=True)
+        return df
+
+    def prepare_final_features(df: pd.DataFrame) -> pd.DataFrame:
+        df.drop(
+            columns=[
+                "city_populationSize",
+                "city_populationDensity",
+                "city_elevation",
+                "ActionA",
+                "ActionB",
+                "actionA_mitigation",
+                "actionB_mitigation",
+                "actionA_adaptation",
+                "actionB_adaptation",
+                "biome_desert",
+                "biome_grassland_savanna",
+                "biome_tundra",
+                "biome_wetlands",
+                "biome_mountains",
+                "biome_boreal_forest_taiga",
+                "biome_coastal_marine",
+                "biome_temperate_forest",
+                "actionA_AdaptationEffectiveness",
+                "actionB_AdaptationEffectiveness",
+            ],
+            inplace=True,
+        )
+        return df
+
+    # Build
+    df_local = build_df(city, action_A, action_B)
+    df_t = df_local.copy()
+    # Transform
+    df_t = prepare_emission_reduction_data_single_diff(df_t)
+    df_t = prepare_action_type_data(df_t)
+    df_t = prepare_cost_investment_needed_data(df_t)
+    df_t = prepare_timeline_data(df_t)
+
+    # Map adaptation effectiveness per hazard to numeric scale first
+    def _prepare_adaptation_effectiveness_data_per_hazard(
+        df_inner: pd.DataFrame,
+    ) -> pd.DataFrame:
+        adaptation_mapping = {"low": 1, "medium": 2, "high": 3}
+
+        def map_effectiveness_dict(eff_dict):
+            if isinstance(eff_dict, dict):
+                return {k: adaptation_mapping.get(v, 0) for k, v in eff_dict.items()}
+            return {}
+
+        if "actionA_AdaptationEffectivenessPerHazard" in df_inner.columns:
+            df_inner["actionA_AdaptationEffectivenessPerHazard"] = df_inner[
+                "actionA_AdaptationEffectivenessPerHazard"
+            ].apply(map_effectiveness_dict)
+        if "actionB_AdaptationEffectivenessPerHazard" in df_inner.columns:
+            df_inner["actionB_AdaptationEffectivenessPerHazard"] = df_inner[
+                "actionB_AdaptationEffectivenessPerHazard"
+            ].apply(map_effectiveness_dict)
+        return df_inner
+
+    df_t = _prepare_adaptation_effectiveness_data_per_hazard(df_t)
+    df_t = process_ccra_hazards_adaptation_effectiveness_per_hazard(df_t)
+    df_t = prepare_co_benefits_data_single_diff(df_t)
+    df_t = prepare_biome_data(df_t)
+    df_t = prepare_final_features(df_t)
+
+    missing_columns_local = df_t.columns[df_t.isna().any()].tolist()
+    df_t.dropna(inplace=True)
+    if df_t.empty:
+        error_message = (
+            f"ml_comparator.py:\n"
+            f"Empty dataframe due to missing values!\n"
+            f"City: {city.get('locode')}\n"
+            f"Action A: {action_A.get('ActionID')}\n"
+            f"Action B: {action_B.get('ActionID')}\n"
+            f"Columns with missing values: {missing_columns_local}"
+        )
+        logger.error(error_message)
+        raise ValueError(error_message)
+
+    return df_t
+
+
+def ml_compare(
+    city: dict,
+    action_A: dict,
+    action_B: dict,
+    strategy: Optional[str] = None,
+) -> int:
     """
     Compare two actions based on the given city data and action details.
 
@@ -728,58 +1154,85 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         else:
             return -1
 
-    # Build the DataFrame for comparison consisting of the city and the two actions
-    df = build_df(city, action_A, action_B)
+    def transform_and_validate(city_local, a_local, b_local) -> pd.DataFrame:
+        """
+        Build DataFrame, apply all feature transformations, validate and return.
+        Raises ValueError if transformed row is empty due to missing values.
+        """
+        df_local = build_df(city_local, a_local, b_local)
+        df_transformed_local = df_local.copy()
 
-    # Create a copy of the DataFrame to avoid modifying the original
-    df_transformed = df.copy()
-
-    # Prepare the data for ML comparison (feature engineering)
-    df_transformed = prepare_emission_reduction_data_single_diff(df_transformed)
-    df_transformed = prepare_action_type_data(df_transformed)
-    df_transformed = prepare_cost_investment_needed_data(df_transformed)
-    df_transformed = prepare_timeline_data(df_transformed)
-    df_transformed = prepare_adaptation_effectiveness_data_per_hazard(df_transformed)
-    df_transformed = process_ccra_hazards_adaptation_effectiveness_per_hazard(
-        df_transformed
-    )
-    df_transformed = prepare_co_benefits_data_single_diff(df_transformed)
-    df_transformed = prepare_biome_data(df_transformed)
-
-    # Final feature cleanup, removing all columns that are not used in the model
-    df_transformed = prepare_final_features(df_transformed)
-
-    # Before dropping rows, check which columns have missing values
-    missing_columns = df_transformed.columns[df_transformed.isna().any()].tolist()
-    # Dropping empty rows
-    # If after transformation a row has missing values, it will be dropped
-    # Since we only pass in one pair at a time, the df will be empty if there are missing values
-    df_transformed.dropna(inplace=True)
-
-    if df_transformed.empty:
-        error_message = (
-            f"ml_comparator.py:\n"
-            f"Empty dataframe due to missing values!\n"
-            f"City: {city['locode']}\n"
-            f"Action A: {action_A['ActionID']}\n"
-            f"Action B: {action_B['ActionID']}\n"
-            f"Columns with missing values: {missing_columns}"
+        df_transformed_local = prepare_emission_reduction_data_single_diff(
+            df_transformed_local
         )
-        logger.error(error_message)
-        raise ValueError(error_message)
+        df_transformed_local = prepare_action_type_data(df_transformed_local)
+        df_transformed_local = prepare_cost_investment_needed_data(df_transformed_local)
+        df_transformed_local = prepare_timeline_data(df_transformed_local)
+        df_transformed_local = prepare_adaptation_effectiveness_data_per_hazard(
+            df_transformed_local
+        )
+        df_transformed_local = process_ccra_hazards_adaptation_effectiveness_per_hazard(
+            df_transformed_local
+        )
+        df_transformed_local = prepare_co_benefits_data_single_diff(
+            df_transformed_local
+        )
+        df_transformed_local = prepare_biome_data(df_transformed_local)
+        df_transformed_local = prepare_final_features(df_transformed_local)
 
-    logger.debug("DataFrame input for model: \n%s", df_transformed.T)
+        missing_columns_local = df_transformed_local.columns[
+            df_transformed_local.isna().any()
+        ].tolist()
+        df_transformed_local.dropna(inplace=True)
+        if df_transformed_local.empty:
+            error_message = (
+                f"ml_comparator.py:\n"
+                f"Empty dataframe due to missing values!\n"
+                f"City: {city_local.get('locode')}\n"
+                f"Action A: {a_local.get('ActionID')}\n"
+                f"Action B: {b_local.get('ActionID')}\n"
+                f"Columns with missing values: {missing_columns_local}"
+            )
+            logger.error(error_message)
+            raise ValueError(error_message)
 
-    # Make a prediction with the model
-    # You can customize threshold and margin here with e.g. threshold=0.5 and margin=0.025
-    # Only use for multi-class (e.g. 1, 0, -1) setting
-    # If used, predict_xgb return values need to be adjusted.
-    prediction = predict_xgb(df_transformed)
+        logger.debug("DataFrame input for model: \n%s", df_transformed_local.T)
+        return df_transformed_local
 
-    # (Optional for explanation) Create a SHAP waterfall plot
-    # create_shap_waterfall(df_transformed, loaded_model)
+    def prob_first_wins(city_local, a_local, b_local) -> float:
+        """Return P(class=1) i.e., probability that the first action (a_local) wins."""
+        df_features = transform_and_validate(city_local, a_local, b_local)
+        probabilities = loaded_model.predict_proba(df_features)
+        return float(probabilities[0][1])
 
-    return prediction
+    effective_strategy = (
+        strategy or os.getenv("ML_COMPARE_STRATEGY", "anchor")
+    ).lower()
+
+    if effective_strategy == "pairwise":
+        # Original behaviour: single pass (A,B)
+        df_transformed = transform_and_validate(city, action_A, action_B)
+        return predict_xgb(df_transformed)
+
+    # Anchor-based scoring: score(action) = 0.5 * (P(action, R) - P(R, action))
+    # Compare actions by their scores to enforce antisymmetry and transitivity.
+    ref_action = ANCHOR_ACTION
+
+    score_a = 0.5 * (
+        prob_first_wins(city, action_A, ref_action)
+        - prob_first_wins(city, ref_action, action_A)
+    )
+    score_b = 0.5 * (
+        prob_first_wins(city, action_B, ref_action)
+        - prob_first_wins(city, ref_action, action_B)
+    )
+
+    if abs(score_a - score_b) < 1e-12:
+        # Deterministic tie-breaker
+        return (
+            1 if str(action_A.get("ActionID")) < str(action_B.get("ActionID")) else -1
+        )
+    return 1 if score_a > score_b else -1
 
 
 if __name__ == "__main__":
@@ -795,3 +1248,51 @@ if __name__ == "__main__":
     # result = ml_compare(dict_brcci, dict_icare_0141, dict_icare_0142)
     result = ml_compare(dict_brcci, dict_ipcc_0005, dict_c40_0054)
     print("Test completed. Preferred Action: %s", result)
+
+
+def audit_compare_strategies(
+    city: dict,
+    actions: list,
+    num_pairs: int = 100,
+    seed: int = 42,
+) -> dict:
+    """
+    Compare outputs of original pairwise strategy vs anchor strategy over random pairs.
+
+    Returns a summary dict with disagreement statistics and a small sample.
+    """
+    import random
+
+    rng = random.Random(seed)
+    total = 0
+    disagreements = []
+
+    # Sample pairs (with replacement allowed for simplicity)
+    for _ in range(num_pairs):
+        a, b = rng.sample(actions, 2)
+        total += 1
+        res_pairwise = ml_compare(city, a, b, strategy="pairwise")
+        res_anchor = ml_compare(city, a, b, strategy="anchor")
+        if res_pairwise != res_anchor:
+            disagreements.append(
+                {
+                    "action_a": a.get("ActionID"),
+                    "action_b": b.get("ActionID"),
+                    "pairwise": res_pairwise,
+                    "anchor": res_anchor,
+                }
+            )
+
+    summary = {
+        "total_pairs": total,
+        "disagreements_count": len(disagreements),
+        "disagreement_rate": (len(disagreements) / total) if total else 0.0,
+        "sample": disagreements[:20],
+    }
+    logger.info(
+        "Audit compare strategies: %s disagreements out of %s pairs (rate=%.3f)",
+        summary["disagreements_count"],
+        summary["total_pairs"],
+        summary["disagreement_rate"],
+    )
+    return summary

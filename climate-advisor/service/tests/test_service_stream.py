@@ -31,7 +31,9 @@ Note:
     It sends a test message with temperature parameter and streams the response.
     The output shows the raw SSE format which can be used for debugging streaming issues.
 """
-
+import sys
+import asyncio
+import httpx
 
 async def main(base_url: str = "http://localhost:8080") -> None:
     url = f"{base_url.rstrip('/')}/v1/messages"

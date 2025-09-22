@@ -29,6 +29,7 @@ export const POST = apiHandler(
       cityLocode: body.cityLocode,
       lng: lng as LANGUAGES,
       inventoryId: body.inventoryId,
+      createdBy: session?.user?.id,
     });
 
     return NextResponse.json({ data: result });

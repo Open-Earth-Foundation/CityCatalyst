@@ -9,6 +9,7 @@ import { PrioritizerResponse } from "./types";
 import { db } from "@/models";
 import { getCityContextAndEmissionsData } from "./HiapService";
 import ActionPlanService from "@/backend/ActionPlanService";
+import ActionPlanEmailService from "@/backend/ActionPlanEmailService";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 
@@ -277,6 +278,26 @@ export const startActionPlanJob = async ({
         `Action plan ${created ? "created" : "updated"} in database:`,
         actionPlan.id,
       );
+
+      // Send email notification if action plan was successfully created
+      if (created && createdBy) {
+        try {
+          const user = await db.models.User.findByPk(createdBy);
+          if (user) {
+            await ActionPlanEmailService.sendActionPlanReadyEmailWithUrl(
+              user,
+              action.name,
+              planData.metadata?.cityName || cityLocode,
+              inventoryId,
+              action.actionId,
+              lng,
+            );
+          }
+        } catch (emailError) {
+          console.error("Failed to send action plan email:", emailError);
+          // Continue execution - email failure shouldn't break the API response
+        }
+      }
     } catch (dbError) {
       console.error("Failed to save action plan to database:", dbError);
       // Continue execution - don't fail the API response due to DB issues

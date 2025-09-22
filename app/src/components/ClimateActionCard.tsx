@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -9,10 +9,12 @@ import {
   Text,
   HStack,
   VStack,
+  Spinner,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { TopPickIcon, GeneratePlanIcon } from "@/components/icons";
 import { HIAction } from "@/util/types";
+import { useGenerateActionPlanMutation } from "@/services/api";
 import { RiFile3Line } from "react-icons/ri";
 import { GoLocation } from "react-icons/go";
 import { LevelBadge } from "@/components/LevelBadge";
@@ -26,11 +28,17 @@ export const ClimateActionCard = ({
   viewOnly = false,
   t,
   onSeeMoreClick,
+  inventoryId,
+  cityLocode,
+  cityId,
 }: {
   action: HIAction;
   viewOnly?: boolean;
   t: TFunction;
   onSeeMoreClick?: () => void;
+  inventoryId?: string;
+  cityLocode?: string;
+  cityId?: string;
 }) => {
   const getReductionColor = (level: string) => {
     switch (level) {
@@ -196,7 +204,13 @@ export const ClimateActionCard = ({
           )}
           {!viewOnly && (
             <>
-              <GeneratePlanDialog t={t} />
+              <GeneratePlanDialog
+                t={t}
+                action={action}
+                inventoryId={inventoryId}
+                cityLocode={cityLocode}
+                cityId={cityId}
+              />
             </>
           )}
         </Box>
@@ -205,7 +219,55 @@ export const ClimateActionCard = ({
   );
 };
 
-const GeneratePlanDialog = ({ t }: { t: TFunction }) => {
+const GeneratePlanDialog = ({
+  t,
+  action,
+  inventoryId,
+  cityLocode,
+  cityId,
+}: {
+  t: TFunction;
+  action: HIAction;
+  inventoryId?: string;
+  cityLocode?: string;
+  cityId?: string;
+}) => {
+  const [generateActionPlan, { isLoading, error }] =
+    useGenerateActionPlanMutation();
+  const [generatedPlan, setGeneratedPlan] = useState<any | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleGeneratePlan = async () => {
+    if (!inventoryId || !cityLocode) {
+      console.error("Missing required data for plan generation:", {
+        inventoryId,
+        cityLocode,
+      });
+      return;
+    }
+
+    console.log("Generating plan for action:", action);
+    console.log("Inventory ID:", inventoryId);
+    console.log("City:", cityId);
+
+    try {
+      const result = await generateActionPlan({
+        action: action,
+        inventoryId: inventoryId,
+        cityLocode: cityLocode,
+        cityId: cityId!,
+        lng: action.lang,
+        rankingId: action.hiaRankingId,
+      }).unwrap();
+
+      // Parse the plan JSON string
+      const planData = JSON.parse(result.plan);
+      setGeneratedPlan(planData);
+    } catch (error) {
+      console.error("Failed to generate plan:", error);
+    }
+  };
+
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
@@ -225,7 +287,7 @@ const GeneratePlanDialog = ({ t }: { t: TFunction }) => {
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
-          <Dialog.Content minW="768px" maxH="618px" p="24px">
+          <Dialog.Content h="80vh" minW="768px" maxH="80vh" p="24px">
             <Dialog.Header>
               <HStack
                 justifyContent="space-between"
@@ -253,70 +315,198 @@ const GeneratePlanDialog = ({ t }: { t: TFunction }) => {
                 </Button>
               </HStack>
             </Dialog.Header>
-            <Dialog.Body>
+            <Dialog.Body overflow="scroll" maxH="70vh">
               <VStack alignItems="flex-start" gap="24px" w="full">
-                <HeadlineMedium fontWeight="bold" color="content.primary">
-                  {t("generated-action-plan-title")}
-                </HeadlineMedium>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  gap="8px"
-                  py="24px"
-                  borderBottom="1px solid"
-                  borderColor="border.overlay"
-                  w="full"
-                >
-                  <Icon as={GoLocation} boxSize="24px" color="content.link" />
-                  <TitleLarge fontWeight="bold" color="content.primary">
-                    {t("generated-action-plan-location")}
-                  </TitleLarge>
-                </Box>
-                <Box display="flex" alignItems="center" w="full">
-                  <BodyLarge fontWeight="normal" color="content.tertiary">
-                    {t("generated-action-plan-location-description")}
-                  </BodyLarge>
-                </Box>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  gap="8px"
-                  py="24px"
-                  borderBottom="1px solid"
-                  borderColor="border.overlay"
-                  w="full"
-                >
-                  <TitleLarge fontWeight="bold" color="content.link">
-                    {t("subactions")}
-                  </TitleLarge>
-                </Box>
-                <Box display="flex" alignItems="center" w="full">
-                  <BodyLarge fontWeight="normal" color="content.tertiary">
-                    {t("subactions-description")}
-                  </BodyLarge>
-                </Box>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  gap="8px"
-                  py="24px"
-                  borderBottom="1px solid"
-                  borderColor="border.overlay"
-                  w="full"
-                >
-                  <TitleLarge
-                    fontWeight="bold"
-                    color="content.link"
-                    textTransform="capitalize"
+                {!generatedPlan && !isLoading && (
+                  <>
+                    <HeadlineMedium fontWeight="bold" color="content.primary">
+                      Generate Implementation Plan for "{action.name}"
+                    </HeadlineMedium>
+                    <BodyLarge fontWeight="normal" color="content.tertiary">
+                      Click the button below to generate a detailed
+                      implementation plan for this climate action.
+                    </BodyLarge>
+                    <Button
+                      colorScheme="blue"
+                      w="full"
+                      onClick={handleGeneratePlan}
+                      disabled={isLoading || !inventoryId || !cityLocode}
+                    >
+                      <Icon as={GeneratePlanIcon} />
+                      {!inventoryId || !cityLocode
+                        ? "Missing data for plan generation"
+                        : "Generate Implementation Plan"}
+                    </Button>
+                  </>
+                )}
+
+                {isLoading && (
+                  <VStack gap="16px" w="full" alignItems="center" py="40px">
+                    <Spinner size="lg" color="content.link" />
+                    <Text color="content.secondary">
+                      Generating your implementation plan...
+                    </Text>
+                    <Text fontSize="sm" color="content.tertiary">
+                      This may take a few minutes
+                    </Text>
+                  </VStack>
+                )}
+
+                {error && (
+                  <Box
+                    w="full"
+                    p="16px"
+                    bg="sentiment.negativeSubtle"
+                    borderRadius="md"
                   >
-                    {t("municipal-institutions-involved")}
-                  </TitleLarge>
-                </Box>
-                <Box display="flex" alignItems="center" w="full">
-                  <BodyLarge fontWeight="normal" color="content.tertiary">
-                    {t("municipal-institutions-involved-description")}
-                  </BodyLarge>
-                </Box>
+                    <Text color="sentiment.negativeDefault" fontWeight="bold">
+                      Error generating plan
+                    </Text>
+                    <Text color="sentiment.negativeDefault" fontSize="sm">
+                      {error.toString()}
+                    </Text>
+                  </Box>
+                )}
+
+                {generatedPlan && (
+                  <>
+                    <HeadlineMedium
+                      fontWeight="bold"
+                      color="content.primary"
+                      pb="12px"
+                    >
+                      {generatedPlan.metadata?.actionName || action.name} -{" "}
+                      {t("implementation-plan")}
+                    </HeadlineMedium>
+
+                    {/* Introduction */}
+                    <Box w="full">
+                      <Box
+                        w="full"
+                        display="flex"
+                        alignItems="center"
+                        gap="8px"
+                        pb="24px"
+                        mb="24px"
+                        borderBottom="1px solid"
+                        borderColor="border.overlay"
+                      >
+                        <Icon
+                          as={GoLocation}
+                          color="content.link"
+                          boxSize="24px"
+                        />
+                        <TitleLarge fontWeight="bold" color="content.secondary">
+                          {generatedPlan.metadata?.cityName}
+                        </TitleLarge>
+                      </Box>
+
+                      <BodyLarge color="content.secondary" mb="16px">
+                        {
+                          generatedPlan.content?.introduction
+                            ?.action_description
+                        }
+                      </BodyLarge>
+                    </Box>
+
+                    {/* Subactions */}
+                    {generatedPlan.content?.subactions?.items && (
+                      <Box w="full">
+                        <TitleLarge
+                          fontWeight="bold"
+                          color="content.link"
+                          mb="8px"
+                          borderBottom="1px solid"
+                          borderColor="border.overlay"
+                          pb="12px"
+                        >
+                          {t("subactions")} (
+                          {generatedPlan.content.subactions.items.length})
+                        </TitleLarge>
+                        <VStack gap="12px" alignItems="flex-start" w="full">
+                          {generatedPlan.content.subactions.items.map(
+                            (subaction: any, index: number) => (
+                              <Box
+                                key={index}
+                                display="flex"
+                                gap="4px"
+                                alignItems="baseline"
+                              >
+                                <BodyLarge color="content.primary" mb="4px">
+                                  {subaction.number}.
+                                </BodyLarge>
+                                <Box
+                                  p="12px"
+                                  bg="background.muted"
+                                  borderRadius="md"
+                                  w="full"
+                                >
+                                  <BodyLarge color="content.primary" mb="4px">
+                                    {subaction.title}
+                                  </BodyLarge>
+                                  <BodyLarge color="content.secondary">
+                                    {subaction.description}
+                                  </BodyLarge>
+                                </Box>
+                              </Box>
+                            ),
+                          )}
+                        </VStack>
+                      </Box>
+                    )}
+
+                    {/* Municipal Institutions */}
+                    {generatedPlan.content?.institutions?.items && (
+                      <Box w="full">
+                        <TitleLarge
+                          fontWeight="bold"
+                          color="content.link"
+                          mb="8px"
+                          borderBottom="1px solid"
+                          borderColor="border.overlay"
+                          pb="12px"
+                        >
+                          {t("municipal-institutions-involved")} (
+                          {generatedPlan.content.institutions.items.length})
+                        </TitleLarge>
+                        <VStack gap="8px" alignItems="flex-start" w="full">
+                          {generatedPlan.content.institutions.items.map(
+                            (institution: any, index: number) => (
+                              <Box
+                                key={index}
+                                p="12px"
+                                bg="background.muted"
+                                borderRadius="md"
+                                w="full"
+                              >
+                                <BodyLarge
+                                  color="content.primary"
+                                  mb="4px"
+                                  fontWeight="bold"
+                                >
+                                  &bull; {institution.name}
+                                </BodyLarge>
+                                <BodyLarge color="content.secondary">
+                                  {institution.description}
+                                </BodyLarge>
+                              </Box>
+                            ),
+                          )}
+                        </VStack>
+                      </Box>
+                    )}
+
+                    <Button
+                      variant="outline"
+                      w="full"
+                      onClick={() => {
+                        setGeneratedPlan(null);
+                      }}
+                    >
+                      Generate New Plan
+                    </Button>
+                  </>
+                )}
               </VStack>
             </Dialog.Body>
           </Dialog.Content>

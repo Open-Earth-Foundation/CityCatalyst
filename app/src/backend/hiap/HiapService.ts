@@ -375,7 +375,7 @@ function getSectorEmissions(
   return isNaN(num) ? null : num;
 }
 
-async function getCityContextAndEmissionsData(
+export async function getCityContextAndEmissionsData(
   inventoryId: string,
 ): Promise<PrioritizerCityData> {
   // Get inventory to access city information

@@ -24,13 +24,19 @@ const getTopPickActions = (actions: HIAction[]): HIAction[] => {
 const ActionPlanSection = ({
   t,
   rankedActions = [],
+  inventoryId,
+  cityLocode,
+  cityId,
 }: {
   t: TFunction;
   rankedActions?: HIAction[];
+  inventoryId?: string;
+  cityLocode?: string;
+  cityId?: string;
 }) => {
   const topPickActions = getTopPickActions(rankedActions);
   const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
-  
+
   return (
     <>
       {selectedAction && (
@@ -80,11 +86,14 @@ const ActionPlanSection = ({
           justifyItems="start"
         >
           {topPickActions.map((action) => (
-            <ClimateActionCard 
-              key={action.id} 
-              action={action} 
+            <ClimateActionCard
+              key={action.id}
+              action={action}
               t={t}
               onSeeMoreClick={() => setSelectedAction(action)}
+              inventoryId={inventoryId}
+              cityLocode={cityLocode}
+              cityId={cityId}
             />
           ))}
         </Box>

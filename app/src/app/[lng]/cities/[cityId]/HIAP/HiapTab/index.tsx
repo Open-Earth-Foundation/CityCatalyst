@@ -366,7 +366,13 @@ export function HiapTab({
         />
       )}
       {/* Top action widgets / mitigation */}
-      <ActionPlanSection t={t} rankedActions={actions || []} />
+      <ActionPlanSection
+        t={t}
+        rankedActions={actions || []}
+        inventoryId={inventory.inventoryId}
+        cityLocode={inventory.city.locode}
+        cityId={inventory.city.cityId}
+      />
       <Box display="flex" flexDirection="column" gap="18px" py="24px">
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <TitleLarge

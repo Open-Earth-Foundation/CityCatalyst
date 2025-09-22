@@ -1,0 +1,5815 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "CityCatalyst API",
+    "version": "0.1.0"
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [],
+  "paths": {
+    "/api/v0/admin/all-cities": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "List all cities with project and organization context.",
+        "description": "Returns all cities in the system including basic project and organization fields. Requires an admin session to succeed; non-admin users receive an authorization error. Use this to audit cities and their parent project/organization mapping.",
+        "responses": {
+          "200": {
+            "description": "List of cities wrapped in a data object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "cityId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "locode": {
+                            "type": "string"
+                          },
+                          "project": {
+                            "type": "object",
+                            "properties": {
+                              "organizationId": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "cityCountLimit": {
+                                "type": "integer"
+                              },
+                              "organization": {
+                                "type": "object",
+                                "properties": {
+                                  "organizationId": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "contactEmail": {
+                                    "type": "string",
+                                    "format": "email"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "data": [
+                        {
+                          "cityId": "c9d8a3c2-1234-4c1a-9de1-6f3f25a2b111",
+                          "name": "Sample City",
+                          "locode": "US-XXX",
+                          "project": {
+                            "organizationId": "b1c2d3e4-5678-4f90-aaaa-bbbbccccdddd",
+                            "name": "Project Alpha",
+                            "cityCountLimit": 25,
+                            "organization": {
+                              "organizationId": "0b6b1f1e-2222-4c33-9999-eeeeffff0000",
+                              "name": "Org Name",
+                              "contactEmail": "admin@example.org"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        }
+      }
+    },
+    "/api/v0/admin/bulk": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Create inventories in bulk for multiple cities and years.",
+        "description": "Creates city records (if needed) and inventories for each provided LOCODE and year, and adds the specified users to those cities. Requires an admin session; non-admins receive an authorization error. Use this to seed projects quickly across many locations.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "cityLocodes",
+                  "emails",
+                  "years",
+                  "scope",
+                  "gwp",
+                  "projectId"
+                ],
+                "properties": {
+                  "cityLocodes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "emails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "email"
+                    }
+                  },
+                  "years": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "scope": {
+                    "type": "string",
+                    "enum": [
+                      "gpc_basic",
+                      "gpc_basic_plus"
+                    ]
+                  },
+                  "gwp": {
+                    "type": "string",
+                    "enum": [
+                      "AR5",
+                      "AR6"
+                    ]
+                  },
+                  "projectId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation result with created inventory IDs and any errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "locode": {
+                            "type": "string"
+                          },
+                          "error": {
+                            "oneOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": true
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "locode": {
+                            "type": "string"
+                          },
+                          "result": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "format": "uuid"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "errors": [
+                        {
+                          "locode": "US-AAA",
+                          "error": "Population data incomplete for city US-AAA and inventory year 2022"
+                        }
+                      ],
+                      "results": [
+                        {
+                          "locode": "US-BBB",
+                          "result": [
+                            "a1111111-1111-1111-1111-111111111111",
+                            "b2222222-2222-2222-2222-222222222222"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or users not found for invitation."
+          },
+          "404": {
+            "description": "City name lookup failed or related entity missing."
+          }
+        }
+      }
+    },
+    "/api/v0/admin/connect-sources": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Connect prioritized data sources to many inventories.",
+        "description": "Finds inventories for the given user and cities/years and attempts to connect the best available data source per GPC reference number. Requires an admin session; non-admins receive an authorization error. Use this to auto-populate inventories with external datasets.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "userEmail",
+                  "cityLocodes",
+                  "years"
+                ],
+                "properties": {
+                  "userEmail": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "cityLocodes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "years": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation result with any connection errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "locode": {
+                            "type": "string"
+                          },
+                          "error": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "errors": [
+                        {
+                          "locode": "US-CCC",
+                          "error": "no-data-source-available-for-gpc-reference-number"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validation failed."
+          },
+          "404": {
+            "description": "Related inventory or city not found."
+          }
+        }
+      }
+    },
+    "/api/v0/admin/mark-cities-public": {
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Mark cities as public by making their inventories public for a specific project.",
+        "description": "Updates all inventories for cities in a specific project to have isPublic=true, effectively making those cities public. Requires admin or OEF admin session and projectId in request body. Cities are considered public when they have at least one public inventory.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "projectId"
+                ],
+                "properties": {
+                  "projectId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "The project ID for which to mark cities as public"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully marked cities in the project as public.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success message"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "message": "Successfully marked all cities in project as public"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project ID or project not found."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden - requires admin or OEF admin permissions."
+          }
+        }
+      }
+    },
+    "/api/v0/admin/update-inventories": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Update inventories’ population context for many cities/years.",
+        "description": "Regenerates population and location context for inventories that match the provided cities and years, and optionally reassigns them to a project. Requires an admin session; non-admins receive an authorization error. Use this to refresh inventory context data in bulk.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "userEmail",
+                  "cityLocodes",
+                  "years",
+                  "projectId"
+                ],
+                "properties": {
+                  "userEmail": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "cityLocodes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "years": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "projectId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Array of errors (empty if all updates succeeded).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "locode": {
+                        "type": "string"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": [
+                      {
+                        "locode": "US-DDD",
+                        "error": "Population data incomplete for city US-DDD and inventory year 2021"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validation failed."
+          },
+          "404": {
+            "description": "City or inventory not found."
+          }
+        }
+      }
+    },
+    "/api/v0/assistants/files/{fileId}": {
+      "get": {
+        "tags": [
+          "Assistants Files"
+        ],
+        "summary": "Retrieve metadata for an Assistant file by ID.",
+        "description": "Fetches an OpenAI File object by its ID using the Assistant client. Requires a signed-in user; no elevated role is needed. Use this to inspect file metadata referenced by a thread.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "fileId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "filename": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "file": {
+                        "id": "file_abc123",
+                        "filename": "document.pdf"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/assistants": {
+      "post": {
+        "tags": [
+          "Assistants"
+        ],
+        "summary": "Create a configured Assistant instance for the application.",
+        "description": "Placeholder for Assistant provisioning that will initialize a named Assistant and attach file search resources. Requires an admin session; the current implementation returns 501 Not Implemented. Once implemented, it will return an Assistant ID.",
+        "responses": {
+          "405": {
+            "description": "Method not allowed."
+          },
+          "501": {
+            "description": "Not implemented."
+          }
+        }
+      }
+    },
+    "/api/v0/assistants/threads/{inventory}/retrieve": {
+      "post": {
+        "tags": [
+          "Assistants Threads"
+        ],
+        "summary": "Retrieve details for an existing assistant thread.",
+        "description": "Looks up a thread by ID using the Assistant API. Requires a signed-in user with access to the referenced inventory. Use this to restore a thread session on page reload.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "threadId"
+                ],
+                "properties": {
+                  "threadId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Thread payload from provider.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "thread": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "thread": {
+                        "id": "thread_abc123",
+                        "object": "thread"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to retrieve thread."
+          }
+        }
+      }
+    },
+    "/api/v0/assistants/threads/{inventory}": {
+      "post": {
+        "tags": [
+          "Assistants Threads"
+        ],
+        "summary": "Create a new assistant thread for a specific inventory.",
+        "description": "Creates a thread and seeds it with inventory context plus an initial message. Requires a signed-in user with access to the target inventory; access is enforced via inventory permissions. Use this to start a chat session tied to a given inventory.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "content"
+                ],
+                "properties": {
+                  "content": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Thread identifier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "threadId": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "threadId": "thread_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/assistants/threads/actions": {
+      "post": {
+        "tags": [
+          "Assistants Threads"
+        ],
+        "summary": "Submit tool outputs for an in‑flight run and stream updated events.",
+        "description": "Provides tool call outputs to a running thread and resumes streaming of events. Requires a signed-in user with access to the underlying inventory/thread. The response is a streamed sequence of events, not a JSON object.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "threadId",
+                  "runId",
+                  "toolCallOutputs"
+                ],
+                "properties": {
+                  "threadId": {
+                    "type": "string"
+                  },
+                  "runId": {
+                    "type": "string"
+                  },
+                  "toolCallOutputs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Server-sent stream of Assistant events.",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "example": {
+                    "value": "event: tool.outputs.submitted\ndata: {\"status\":\"ok\"}\n"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/assistants/threads/export": {
+      "post": {
+        "tags": [
+          "Assistants Threads"
+        ],
+        "summary": "Save an assistant thread reference in the database.",
+        "description": "Persists the external Assistant thread ID associated with the configured Assistant. Requires a signed-in user (standard user is sufficient). Use this to keep a record of threads created via the Assistant API.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "threadId"
+                ],
+                "properties": {
+                  "threadId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created database row wrapped in a data object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "assistantThreadId": {
+                          "type": "string"
+                        },
+                        "assistantId": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "data": {
+                        "assistantThreadId": "thread_abc123",
+                        "assistantId": "asst_123"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid threadId provided."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/api/v0/assistants/threads/messages": {
+      "post": {
+        "tags": [
+          "Assistants Threads"
+        ],
+        "summary": "Append a user message to a thread and stream the run output.",
+        "description": "Adds a message to an existing thread and starts a run that streams incremental events (tool calls, deltas, completions). Requires a signed-in user who owns or can access the thread’s inventory context. The response is a streamed sequence of events, not a JSON object.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "threadId",
+                  "content"
+                ],
+                "properties": {
+                  "threadId": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Server-sent stream of Assistant events.",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "example": {
+                    "value": "event: message.delta\ndata: {\"delta\":\"Hello\"}\n"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/auth/code": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Issue a short‑lived OAuth authorization code for the current user.",
+        "description": "Validates the client and CSRF token, then generates a signed authorization code (PKCE) for the authenticated user. Requires a signed‑in session and OAUTH_ENABLED; non‑authenticated requests fail with 401. Use this before exchanging the code for tokens at `/api/v0/token`.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "clientId",
+                  "redirectUri",
+                  "codeChallenge",
+                  "scope",
+                  "csrfToken"
+                ],
+                "properties": {
+                  "clientId": {
+                    "type": "string"
+                  },
+                  "redirectUri": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "codeChallenge": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "type": "string"
+                  },
+                  "csrfToken": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Code wrapped in a data object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "data": {
+                        "code": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid client/redirect URI or CSRF mismatch."
+          },
+          "401": {
+            "description": "Not authenticated."
+          },
+          "500": {
+            "description": "OAuth not enabled or configuration error."
+          }
+        }
+      }
+    },
+    "/api/v0/auth/delete": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Delete the authenticated user’s account.",
+        "description": "Removes the user record for the currently signed‑in session. Requires a signed‑in user; requests without a session return 401. Use with caution as this operation is irreversible.",
+        "responses": {
+          "200": {
+            "description": "Deletion result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "success": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Must be logged in."
+          }
+        }
+      }
+    },
+    "/api/v0/auth/forgot": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Request a password reset email for a user account.",
+        "description": "Generates a short‑lived reset token and emails the reset link if the user exists. No authentication is required, and responses are always 200 to avoid revealing account existence. Requires server email and secret configuration.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Empty body to acknowledge request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "example": {
+                    "value": {}
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Configuration error."
+          }
+        }
+      }
+    },
+    "/api/v0/auth/password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Set a new password using a valid reset token.",
+        "description": "Verifies the provided reset token and updates the user’s password. No authentication is required for this flow, only a valid token. Returns 200 with an empty object on success.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "newPassword",
+                  "resetToken"
+                ],
+                "properties": {
+                  "newPassword": {
+                    "type": "string"
+                  },
+                  "resetToken": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Empty body on success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "example": {
+                    "value": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired token."
+          },
+          "404": {
+            "description": "User not found."
+          },
+          "500": {
+            "description": "Configuration error."
+          }
+        }
+      }
+    },
+    "/api/v0/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Create a new user account and send a welcome email.",
+        "description": "Registers a user with name, email, password, and preferred language and optionally associates them to an inventory’s city. Public endpoint; no prior authentication required. Returns a minimal user object on success.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "password",
+                  "confirmPassword",
+                  "acceptTerms",
+                  "preferredLanguage"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "confirmPassword": {
+                    "type": "string"
+                  },
+                  "acceptTerms": {
+                    "type": "boolean"
+                  },
+                  "inventory": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  },
+                  "preferredLanguage": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Minimal user object wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "userId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        "role": {
+                          "type": "string"
+                        },
+                        "preferredLanguage": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "user": {
+                        "userId": "7c0c4b9a-7b60-4f63-b4cc-7b4bcae6a111",
+                        "name": "Jane Doe",
+                        "email": "jane@example.com",
+                        "role": "user",
+                        "preferredLanguage": "en"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email could not be sent or invalid input."
+          }
+        }
+      }
+    },
+    "/api/v0/auth/role": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Update a user’s role (admin only).",
+        "description": "Sets the role for the target user to either admin or user. Requires an admin session; non‑admins receive 403. Returns a simple success flag on completion.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "role"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "user",
+                      "admin"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success flag.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "success": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User already has the specified role."
+          },
+          "403": {
+            "description": "Only admins can change roles."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      }
+    },
+    "/api/v0/auth/update-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Change the current user’s password.",
+        "description": "Validates the current password and sets a new one for the authenticated user. Requires a signed‑in session; non‑authenticated requests fail with 401/404. Returns a success flag indicating if the update persisted.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "currentPassword",
+                  "confirmPassword"
+                ],
+                "properties": {
+                  "currentPassword": {
+                    "type": "string"
+                  },
+                  "confirmPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success flag.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "success": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Current password is incorrect."
+          },
+          "404": {
+            "description": "User not found or session expired."
+          }
+        }
+      }
+    },
+    "/api/v0/auth/verify": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Create a verification token for the current user.",
+        "description": "Issues a short‑lived verification token for the authenticated user. Requires a signed‑in session; missing email or configuration produces errors. Use this token to validate the user’s password via the POST route.",
+        "responses": {
+          "200": {
+            "description": "Token wrapped in a JSON object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "verificationToken": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "verificationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User email missing in session."
+          },
+          "404": {
+            "description": "User not found."
+          },
+          "500": {
+            "description": "Configuration error."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Check if a password matches the user referenced by a token.",
+        "description": "Verifies the supplied password against the user identified by the verification token. No authentication is required; the token binds the identity. Returns a boolean result.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "password",
+                  "token"
+                ],
+                "properties": {
+                  "password": {
+                    "type": "string"
+                  },
+                  "token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comparison result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "comparePassword": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "comparePassword": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Configuration error."
+          }
+        }
+      }
+    },
+    "/api/v0/bulk-locations": {
+      "get": {
+        "tags": [
+          "Bulk Locations"
+        ],
+        "summary": "List approximate lat/lng for accessible cities by organization or project.",
+        "description": "Returns a list of city location center points computed from boundary data. Requires a signed‑in user with access to the specified organization or project; otherwise 401 is returned. Items can be either a location record or an error for cities missing data.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "organizationId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of results wrapped in data; each item is either a location or an error entry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "locode": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "country": {
+                                "type": "string"
+                              },
+                              "latitude": {
+                                "type": "number"
+                              },
+                              "longitude": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "error": {
+                                "type": "string"
+                              },
+                              "cityId": {
+                                "type": "string",
+                                "format": "uuid"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "data": [
+                        {
+                          "locode": "US-NYC",
+                          "name": "New York",
+                          "country": "United States",
+                          "latitude": 40.7128,
+                          "longitude": -74.006
+                        },
+                        {
+                          "error": "FAILED_TO_LOAD_CITY_BOUNDARY",
+                          "cityId": "e1f2a3b4-0000-0000-0000-000000000000"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing organizationId or projectId."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Cities not found."
+          }
+        }
+      }
+    },
+    "/api/v0/chat/{inventory}": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Stream chat responses grounded in a specific inventory context.",
+        "description": "Uses either OpenAI or HuggingFace models to generate a streamed response, prepending inventory context derived from the city and its population data. Requires a signed‑in user with access to the target inventory; unauthorized users receive 401/404. The response is a text/event-stream of incremental tokens/events, not a JSON object.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "messages"
+                ],
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "function",
+                            "data",
+                            "system",
+                            "user",
+                            "assistant",
+                            "tool"
+                          ]
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Server-sent stream of chat tokens/events.",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "example": {
+                    "value": "event: completion.delta\ndata: {\"delta\":\"Hello\"}\n"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized or no access to inventory."
+          },
+          "404": {
+            "description": "Inventory not found."
+          }
+        }
+      }
+    },
+    "/api/v0/check/health": {
+      "get": {
+        "tags": [
+          "Check"
+        ],
+        "summary": "Report service health and database connectivity.",
+        "description": "Public endpoint that validates database connectivity and returns the service version. Does not require authentication. Use it for readiness/health probes in deployments.",
+        "responses": {
+          "200": {
+            "description": "Healthy status and version.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "message": "healthy",
+                      "version": "0.99.0-dev.0"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database connection failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "message": "database-connection-failed",
+                      "version": "0.99.0-dev.0"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/check/liveness": {
+      "get": {
+        "tags": [
+          "Check"
+        ],
+        "summary": "Report liveness status and version.",
+        "description": "Public endpoint that reports if the service process is responsive and includes the version string. Does not require authentication. Use it for container/process liveness checks.",
+        "responses": {
+          "200": {
+            "description": "Alive status and version.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "message": "alive",
+                      "version": "0.99.0-dev.0"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/city/{city}/boundary": {
+      "get": {
+        "tags": [
+          "City"
+        ],
+        "summary": "Get city boundary data",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "City boundary returned."
+          },
+          "500": {
+            "description": "Failed to fetch boundary."
+          }
+        }
+      }
+    },
+    "/api/v0/city/{city}/file/{file}/download-file": {
+      "get": {
+        "tags": [
+          "City Files"
+        ],
+        "summary": "Download a city file by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "file",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Binary file stream."
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        }
+      }
+    },
+    "/api/v0/city/{city}/file/{file}": {
+      "get": {
+        "tags": [
+          "City Files"
+        ],
+        "summary": "Get a single uploaded city file by ID.",
+        "description": "Returns the stored file metadata for the given city and file ID. Requires a signed‑in user with access to the city. Response is wrapped in { data }.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "file",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File metadata wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "City Files"
+        ],
+        "summary": "Delete an uploaded city file by ID.",
+        "description": "Removes the file metadata record. Requires a signed‑in user with access to the city. Returns the deleted record in { data } and a deleted flag.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "file",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted file wrapped in data with deleted flag.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    },
+                    "deleted": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/city/{city}/modules/{module}/access": {
+      "get": {
+        "tags": [
+          "City Modules"
+        ],
+        "summary": "Check module access for a city",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "module",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Access flag returned."
+          }
+        }
+      }
+    },
+    "/api/v0/city/{city}/modules/ccra/dashboard": {
+      "get": {
+        "tags": [
+          "City Modules"
+        ],
+        "summary": "Get CCRA dashboard data for a city inventory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "inventoryId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CCRA dashboard data returned."
+          },
+          "400": {
+            "description": "Inventory does not belong to city."
+          },
+          "404": {
+            "description": "Inventory not found."
+          }
+        }
+      }
+    },
+    "/api/v0/city/{city}/modules/ghgi/dashboard": {
+      "get": {
+        "tags": [
+          "City Modules"
+        ],
+        "summary": "Get GHGI dashboard data for a city inventory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "inventoryId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GHGI dashboard data returned."
+          },
+          "400": {
+            "description": "Inventory does not belong to city."
+          },
+          "404": {
+            "description": "Inventory not found."
+          }
+        }
+      }
+    },
+    "/api/v0/city/{city}/modules/hiap/dashboard": {
+      "get": {
+        "tags": [
+          "City Modules"
+        ],
+        "summary": "Get HIAP dashboard data for a city inventory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "inventoryId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lng",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ignoreExisting",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "HIAP dashboard data returned."
+          },
+          "400": {
+            "description": "Inventory does not belong to city."
+          },
+          "404": {
+            "description": "Inventory not found."
+          }
+        }
+      }
+    },
+    "/api/v0/city/{city}/organization": {
+      "get": {
+        "tags": [
+          "City Organization"
+        ],
+        "summary": "Get organization branding and status for a city.",
+        "description": "Returns the organization identifier, name, logo URL, active flag, and theme info for the city’s project. Requires a signed‑in user with access to the city. Response is a plain object (not wrapped in data).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "organizationId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "organizationName": {
+                      "type": "string"
+                    },
+                    "logoUrl": {
+                      "type": "string"
+                    },
+                    "active": {
+                      "type": "boolean"
+                    },
+                    "theme": {
+                      "type": "object",
+                      "properties": {
+                        "themeId": {
+                          "type": "string"
+                        },
+                        "themeKey": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "City or organization not found."
+          }
+        }
+      }
+    },
+    "/api/v0/city/{city}/population/{year}": {
+      "get": {
+        "tags": [
+          "City Population"
+        ],
+        "summary": "Get population data for city and year",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Population data returned."
+          }
+        }
+      }
+    },
+    "/api/v0/city/{city}/population": {
+      "get": {
+        "tags": [
+          "City Population"
+        ],
+        "summary": "Get most recent population data for a city",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Population data returned."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "City Population"
+        ],
+        "summary": "Upsert population values for a city",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "cityPopulation",
+                  "cityPopulationYear",
+                  "regionPopulation",
+                  "regionPopulationYear",
+                  "countryPopulation",
+                  "countryPopulationYear"
+                ],
+                "properties": {
+                  "cityPopulation": {
+                    "type": "number"
+                  },
+                  "cityPopulationYear": {
+                    "type": "number"
+                  },
+                  "regionPopulation": {
+                    "type": "number"
+                  },
+                  "regionPopulationYear": {
+                    "type": "number"
+                  },
+                  "countryPopulation": {
+                    "type": "number"
+                  },
+                  "countryPopulationYear": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Population values updated."
+          },
+          "404": {
+            "description": "City not found."
+          }
+        }
+      }
+    },
+    "/api/v0/city/{city}": {
+      "get": {
+        "tags": [
+          "City"
+        ],
+        "summary": "Get a single city by ID for the current user.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "City wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "cityId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "locode": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "City"
+        ],
+        "summary": "Delete a city by ID for the current user.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted city wrapped in data and deleted flag.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    },
+                    "deleted": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "data": {
+                        "cityId": "..."
+                      },
+                      "deleted": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "City"
+        ],
+        "summary": "Update city fields by ID.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "locode": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "shape": {
+                    "type": "object",
+                    "nullable": true
+                  },
+                  "area": {
+                    "type": "integer",
+                    "nullable": true
+                  },
+                  "projectId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated city wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/city/{city}/user/{user}": {
+      "get": {
+        "tags": [
+          "City Users"
+        ],
+        "summary": "Get a user in a city",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "user",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User returned."
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "City Users"
+        ],
+        "summary": "Update a user in a city",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "user",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "role"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "user",
+                      "admin"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "City Users"
+        ],
+        "summary": "Delete a user in a city",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "user",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted."
+          }
+        }
+      }
+    },
+    "/api/v0/city/{city}/user": {
+      "get": {
+        "tags": [
+          "City Users"
+        ],
+        "summary": "List users for a city",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users returned."
+          },
+          "404": {
+            "description": "Users not found."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "City Users"
+        ],
+        "summary": "Look up a user by email",
+        "description": "Returns an existing user if found; otherwise returns a message.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User found or message returned."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "City Users"
+        ],
+        "summary": "Remove a user from a city by email",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "email",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User removed."
+          }
+        }
+      }
+    },
+    "/api/v0/city/invite/{invite}": {
+      "get": {
+        "tags": [
+          "City Invites"
+        ],
+        "summary": "Accept a city invite",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invite",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "email",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          {
+            "in": "query",
+            "name": "inventoryId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to inventory on success."
+          },
+          "400": {
+            "description": "Invalid token."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        }
+      }
+    },
+    "/api/v0/city/invite": {
+      "post": {
+        "tags": [
+          "City Invites"
+        ],
+        "summary": "Invite a user to a city",
+        "description": "Sends an email invite to the specified user to join the city.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "invitingUserId",
+                  "inventoryId",
+                  "email",
+                  "name",
+                  "cityId"
+                ],
+                "properties": {
+                  "invitingUserId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "inventoryId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "cityId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invite created and email sent."
+          },
+          "400": {
+            "description": "Email could not be sent or invalid input."
+          },
+          "401": {
+            "description": "Not authenticated."
+          },
+          "404": {
+            "description": "City not found."
+          }
+        }
+      }
+    },
+    "/api/v0/city/transfer": {
+      "patch": {
+        "tags": [
+          "City Transfer"
+        ],
+        "summary": "Transfer multiple cities to a target project (admin only).",
+        "description": "Moves the specified cities into a different project after validating limits and existence, and notifies organization admins. Requires an admin session; non‑admins receive an authorization error. Returns a success flag when the transfer completes.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "cityIds",
+                  "projectId"
+                ],
+                "properties": {
+                  "cityIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  },
+                  "projectId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success flag.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "success": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Project city-count limit exceeded."
+          },
+          "404": {
+            "description": "Cities or project not found."
+          }
+        }
+      }
+    },
+    "/api/v0/client/{client}": {
+      "get": {
+        "tags": [
+          "OAuth Clients"
+        ],
+        "summary": "Get a single OAuth client by ID with localized metadata.",
+        "description": "Fetches a client and merges its i18n name/description entries by language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in { data }.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "clientId": {
+                          "type": "string"
+                        },
+                        "redirectUri": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "name": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        },
+                        "description": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "data": {
+                        "clientId": "abc123",
+                        "redirectUri": "https://app.example.com/callback",
+                        "name": {
+                          "en": "Example App"
+                        },
+                        "description": {
+                          "en": "Demo client"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Must be logged in."
+          },
+          "404": {
+            "description": "Client not found."
+          },
+          "500": {
+            "description": "OAuth not enabled or server error."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "OAuth Clients"
+        ],
+        "summary": "Delete an OAuth client by ID.",
+        "description": "Permanently removes a client record. Requires a signed‑in session and OAUTH_ENABLED. Returns 204 with no body on success.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Client deleted."
+          },
+          "401": {
+            "description": "Must be logged in."
+          },
+          "404": {
+            "description": "Client not found."
+          },
+          "500": {
+            "description": "OAuth not enabled or server error."
+          }
+        }
+      }
+    },
+    "/api/v0/datasource/{inventoryId}/datasource/{datasourceId}": {
+      "get": {
+        "tags": [
+          "Data Sources"
+        ],
+        "summary": "Get a single data source with scaled data for an inventory (edit access).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventoryId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "datasourceId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data source with data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Inventory or data source not found."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Data Sources"
+        ],
+        "summary": "Disconnect a data source and remove related inventory values (edit access).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventoryId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "datasourceId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted values and deleted flag.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                      }
+                    },
+                    "deleted": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Inventory value not found."
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}/activity-value/{id}": {
+      "get": {
+        "tags": [
+          "Inventory Activity"
+        ],
+        "summary": "Get a single activity value by ID (edit access).",
+        "description": "Fetches the activity value with nested inventory/gas values for the inventory. Requires a signed‑in user with edit access to the inventory. Response is wrapped in { data }.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Activity value wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Inventory Activity"
+        ],
+        "summary": "Update an activity value by ID (edit access).",
+        "description": "Updates the activity value and related gas/emissions factors as needed. Requires a signed‑in user with edit access. Returns a success flag with the updated value.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success flag and updated value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request (e.g., values too large)."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Inventory Activity"
+        ],
+        "summary": "Delete an activity value by ID (edit access).",
+        "description": "Removes the activity value row. Requires a signed‑in user with edit access. Returns a success flag.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success flag.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}/cdp": {
+      "post": {
+        "tags": [
+          "Inventory CDP"
+        ],
+        "summary": "Submit inventory emissions to CDP questionnaire",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Submission success status returned."
+          },
+          "424": {
+            "description": "CDP API response error."
+          },
+          "500": {
+            "description": "CDP service disabled."
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}/download": {
+      "get": {
+        "tags": [
+          "Inventory Download"
+        ],
+        "summary": "Download inventory data",
+        "description": "Downloads inventory data in various formats. If `format` is omitted or `json`, returns JSON. Other formats stream binary.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "csv",
+                "xls",
+                "ecrf"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "lng",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inventory data content."
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}/hiap": {
+      "get": {
+        "tags": [
+          "Inventory HIAP"
+        ],
+        "summary": "Get HIAP ranking or related data for an inventory.",
+        "description": "Returns HIAP insights for the selected actionType and language. Requires a signed‑in user with access to the inventory. Response is wrapped in { data } (actionType‑dependent shape).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "actionType",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lng",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ignoreExisting",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "HIAP result wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Inventory HIAP"
+        ],
+        "summary": "Update selection status of ranked actions.",
+        "description": "Updates the isSelected field for ranked actions. All actions not in the selectedActionIds array will be set to false.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "selectedActionIds"
+                ],
+                "properties": {
+                  "selectedActionIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Selection updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "updated": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}/notation-keys": {
+      "get": {
+        "tags": [
+          "Inventory Notation Keys"
+        ],
+        "summary": "List notation key candidates grouped by sector reference number.",
+        "description": "Returns unfilled or notation-key-filled subcategory entries grouped by sector ref number to help populate notation keys. Requires a signed‑in user with read access to the inventory. Response is { success, result }.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Candidates grouped by sector reference number.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Inventory Notation Keys"
+        ],
+        "summary": "Set notation keys for subcategories in an inventory.",
+        "description": "Saves notation keys for the inventory’s subcategories, creating inventory values where necessary. Requires a signed‑in user with access to the inventory. Returns { success, result } listing affected values.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "notationKeys": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "subCategoryId",
+                        "unavailableReason",
+                        "unavailableExplanation"
+                      ],
+                      "properties": {
+                        "subCategoryId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "unavailableReason": {
+                          "type": "string",
+                          "enum": [
+                            "no-occurrance",
+                            "not-estimated",
+                            "confidential-information",
+                            "included-elsewhere"
+                          ]
+                        },
+                        "unavailableExplanation": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Save result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}/organization": {
+      "get": {
+        "tags": [
+          "Inventory Organization"
+        ],
+        "summary": "Get organization details for an inventory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization details returned."
+          },
+          "404": {
+            "description": "Inventory or organization not found."
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}/populations": {
+      "get": {
+        "tags": [
+          "Inventory Populations"
+        ],
+        "summary": "Get population values used by the inventory’s city and year.",
+        "description": "Returns city/region/country population values aligned to the inventory’s year (nearest within thresholds). Requires a signed‑in user with access to the inventory. Response is wrapped in { data } with population fields.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Population data wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "cityId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "population": {
+                          "type": "number"
+                        },
+                        "year": {
+                          "type": "number"
+                        },
+                        "countryPopulation": {
+                          "type": "number"
+                        },
+                        "countryPopulationYear": {
+                          "type": "number"
+                        },
+                        "regionPopulation": {
+                          "type": "number"
+                        },
+                        "regionPopulationYear": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Inventory not found."
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}/progress": {
+      "get": {
+        "tags": [
+          "Inventory Progress"
+        ],
+        "summary": "Get data entry progress for an inventory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Progress data returned."
+          },
+          "404": {
+            "description": "Inventory not found."
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}/results/{sectorName}": {
+      "get": {
+        "tags": [
+          "Inventory Results"
+        ],
+        "summary": "Get emissions breakdown for a specific sector.",
+        "description": "Computes the breakdown for the chosen sector (by name) within the inventory. Requires a signed‑in user with access to the inventory. Response is wrapped in { data } (shape depends on sector).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "sectorName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Breakdown wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}/results/emissions-forecast": {
+      "get": {
+        "tags": [
+          "Inventory Results"
+        ],
+        "summary": "Get an emissions forecast derived from the inventory.",
+        "description": "Returns a forecast model output for the given inventory. Requires a signed‑in user with access to the inventory. Response is wrapped in { data } (model-dependent shape).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Forecast wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}": {
+      "get": {
+        "summary": "Get inventory details by ID",
+        "description": "Returns inventory details including total emissions for the specified inventory ID. If 'default' is provided, returns the user's default inventory.",
+        "tags": [
+          "Inventory"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Inventory UUID or 'default'"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inventory details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Inventory"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid inventory ID"
+          },
+          "404": {
+            "description": "Inventory not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an inventory by ID",
+        "description": "Deletes the specified inventory. Only users with ORG_ADMIN permission can delete inventories.",
+        "tags": [
+          "Inventory"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Inventory UUID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inventory deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Inventory"
+                    },
+                    "deleted": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - insufficient permissions"
+          },
+          "404": {
+            "description": "Inventory not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update inventory details",
+        "description": "Updates the specified inventory. Only users with edit permission can update inventories.",
+        "tags": [
+          "Inventory"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Inventory UUID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertInventoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inventory updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Inventory"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body"
+          },
+          "403": {
+            "description": "Forbidden - insufficient permissions"
+          },
+          "404": {
+            "description": "Inventory not found"
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}/value/{subcategory}": {
+      "get": {
+        "tags": [
+          "Inventory Values"
+        ],
+        "summary": "Get inventory value for a subcategory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "subcategory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inventory value returned."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Inventory Values"
+        ],
+        "summary": "Upsert inventory value for a subcategory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "subcategory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inventory value updated or created."
+          },
+          "400": {
+            "description": "Invalid request."
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}/value": {
+      "get": {
+        "tags": [
+          "Inventory Values"
+        ],
+        "summary": "List inventory values by subcategories",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "subCategoryIds",
+            "required": true,
+            "description": "Comma-separated subcategory IDs",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inventory values returned."
+          },
+          "400": {
+            "description": "Missing subCategoryIds."
+          }
+        }
+      }
+    },
+    "/api/v0/inventory/{inventory}/value/subsector/{subsector}": {
+      "get": {
+        "tags": [
+          "Inventory Values"
+        ],
+        "summary": "List inventory values for a subsector",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "subsector",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inventory values returned."
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Inventory Values"
+        ],
+        "summary": "Upsert inventory value in a subsector by GPC reference number",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "subsector",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "gpcReferenceNumber"
+                ],
+                "properties": {
+                  "gpcReferenceNumber": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inventory value updated or created."
+          },
+          "400": {
+            "description": "Invalid request."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Inventory Values"
+        ],
+        "summary": "Delete inventory value for a subsector",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "inventory",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "subsector",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inventory value deleted."
+          },
+          "404": {
+            "description": "Inventory value not found."
+          }
+        }
+      }
+    },
+    "/api/v0/oauth/metadata": {
+      "get": {
+        "tags": [
+          "OAuth"
+        ],
+        "summary": "Advertise OAuth 2.0 Authorization Server metadata (RFC 8414).",
+        "description": "Public endpoint that returns the discovery document for OAuth clients, including issuer, authorization endpoint, token endpoint, supported scopes, response types, grant types, and PKCE methods. Requires the OAUTH_ENABLED feature flag; otherwise returns a 500 configuration error. Useful for dynamic client configuration and interoperability.",
+        "responses": {
+          "200": {
+            "description": "Metadata document with required fields.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "issuer": {
+                      "type": "string"
+                    },
+                    "authorization_endpoint": {
+                      "type": "string"
+                    },
+                    "token_endpoint": {
+                      "type": "string"
+                    },
+                    "scopes_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "response_types_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "grant_types_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "service_documentation": {
+                      "type": "string"
+                    },
+                    "ui_locales_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "code_challenge_methods_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "issuer": "https://api.citycatalyst.example",
+                      "authorization_endpoint": "https://api.citycatalyst.example/authorize/",
+                      "token_endpoint": "https://api.citycatalyst.example/api/v0/token/",
+                      "scopes_supported": [
+                        "read",
+                        "write"
+                      ],
+                      "response_types_supported": [
+                        "code"
+                      ],
+                      "grant_types_supported": [
+                        "authorization_code",
+                        "refresh_token"
+                      ],
+                      "service_documentation": "https://github.com/Open-Earth-Foundation/CityCatalyst/wiki/CityCatalyst-Backend-API",
+                      "ui_locales_supported": [
+                        "en",
+                        "de",
+                        "es",
+                        "pt"
+                      ],
+                      "code_challenge_methods_supported": [
+                        "S256"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "OAuth not enabled or configuration error."
+          }
+        }
+      }
+    },
+    "/api/v0/organizations/{organization}/active-status": {
+      "patch": {
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "Update organization active status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "active"
+                ],
+                "properties": {
+                  "active": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Active status updated."
+          },
+          "404": {
+            "description": "Organization not found."
+          }
+        }
+      }
+    },
+    "/api/v0/organizations/{organization}/branding": {
+      "patch": {
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "Update organization branding (theme and logos)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "themeId"
+                ],
+                "properties": {
+                  "themeId": {
+                    "type": "string"
+                  },
+                  "logoUrl": {
+                    "type": "string",
+                    "format": "uri",
+                    "nullable": true
+                  },
+                  "clearLogoUrl": {
+                    "type": "string",
+                    "format": "uri",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Branding updated."
+          },
+          "404": {
+            "description": "Organization not found."
+          }
+        }
+      }
+    },
+    "/api/v0/organizations/{organization}/invitations/accept": {
+      "patch": {
+        "tags": [
+          "Organization Invitations"
+        ],
+        "summary": "Accept organization admin invitation",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "token",
+                  "organizationId"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "token": {
+                    "type": "string"
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invitation accepted."
+          },
+          "401": {
+            "description": "Unauthorized or token mismatch."
+          },
+          "500": {
+            "description": "Configuration or server error."
+          }
+        }
+      }
+    },
+    "/api/v0/organizations/{organization}/invitations": {
+      "get": {
+        "tags": [
+          "Organization Invitations"
+        ],
+        "summary": "List organization invitations",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invitations returned."
+          },
+          "404": {
+            "description": "Invitations not found."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Organization Invitations"
+        ],
+        "summary": "Invite users to an organization",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "organizationId",
+                  "inviteeEmails",
+                  "role"
+                ],
+                "properties": {
+                  "organizationId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "inviteeEmails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "email"
+                    }
+                  },
+                  "role": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invitations sent."
+          },
+          "400": {
+            "description": "Organization ID mismatch or invalid input."
+          },
+          "404": {
+            "description": "Organization not found."
+          },
+          "500": {
+            "description": "Failed to send some invitations."
+          }
+        }
+      }
+    },
+    "/api/v0/organizations/{organization}/projects": {
+      "get": {
+        "tags": [
+          "Organization Projects"
+        ],
+        "summary": "List projects for an organization visible to the current user.",
+        "description": "Returns the projects in the organization filtered by the user’s access (admin, org admin, project admin, or city membership). Requires a signed‑in session. Response is a JSON array or context object (not wrapped).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Projects visible to the user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Organization Projects"
+        ],
+        "summary": "Create a new project in the organization (admin only).",
+        "description": "Creates a project with a name and cityCountLimit and notifies organization admins. Requires an admin session. Response is the created project (not wrapped).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "cityCountLimit"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "cityCountLimit": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Project object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Organization not found."
+          }
+        }
+      }
+    },
+    "/api/v0/organizations/{organization}/role": {
+      "patch": {
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "Promote a user to organization admin or invite by email",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "contactEmail"
+                ],
+                "properties": {
+                  "contactEmail": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role updated or invite sent."
+          },
+          "404": {
+            "description": "Organization not found."
+          }
+        }
+      }
+    },
+    "/api/v0/organizations/{organization}/users": {
+      "delete": {
+        "tags": [
+          "Organization Users"
+        ],
+        "summary": "Remove a user from an organization (admin/org-admin).",
+        "description": "Removes the given email from the organization’s owners/admins. Requires an admin or org_admin session for the organization. Returns an empty body on success.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "email",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empty body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "user-not-found query param missing."
+          }
+        }
+      }
+    },
+    "/api/v0/organizations": {
+      "get": {
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "List organizations with projects and pending admin invites (admin only).",
+        "description": "Returns all organizations including selected project fields and pending org_admin invites. Requires an admin session; non‑admins receive 401/403 via middleware handlers. Response is a JSON array (not wrapped).",
+        "responses": {
+          "200": {
+            "description": "Array of organizations.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "Create a new organization (admin only).",
+        "description": "Creates an active organization with name and contactEmail. Requires an admin session. Response is the created organization object (not wrapped).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "contactEmail"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "contactEmail": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Organization created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Organization name already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/organizations/themes": {
+      "get": {
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "List available branding themes.",
+        "description": "Returns the list of themes that can be assigned to organizations. Requires a signed‑in session. Response is an array of theme objects (not wrapped).",
+        "responses": {
+          "200": {
+            "description": "Array of themes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "themeId": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "themeKey": {
+                        "type": "string"
+                      },
+                      "primaryColor": {
+                        "type": "string"
+                      },
+                      "created": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "lastUpdated": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/projects/{project}/bulk-download": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Bulk download inventories for a project (CSV)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lng",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CSV file attachment."
+          },
+          "400": {
+            "description": "Invalid project ID format."
+          }
+        }
+      }
+    },
+    "/api/v0/projects/{project}/modules/{module}/access": {
+      "get": {
+        "tags": [
+          "Project Modules"
+        ],
+        "summary": "Check if a project has access to a module",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "module",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Access flag returned."
+          },
+          "403": {
+            "description": "Access denied."
+          },
+          "404": {
+            "description": "Project not found."
+          }
+        }
+      }
+    },
+    "/api/v0/projects/{project}/modules": {
+      "get": {
+        "tags": [
+          "Project Modules"
+        ],
+        "summary": "List modules enabled for a project",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Modules returned."
+          }
+        }
+      }
+    },
+    "/api/v0/projects/{project}/summary": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Get totals for cities, emissions, population, and data sources in a project.",
+        "description": "Computes high‑level aggregates for the project, including city count, emissions sum, total population (based on most recent inventory years per city), and total data sources. No explicit authentication is enforced in this handler currently. Response is a plain object (not wrapped).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Summary object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalCities": {
+                      "type": "integer"
+                    },
+                    "totalEmissions": {
+                      "type": "number"
+                    },
+                    "totalPopulation": {
+                      "type": "number"
+                    },
+                    "totalDataSources": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found."
+          }
+        }
+      }
+    },
+    "/api/v0/projects/{project}/users": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "List users who belong to a project (admin/org-admin).",
+        "description": "Returns users for the project after validating that the caller is an admin or org_admin for the owning organization. Requires a signed‑in session with appropriate role. Response is an array of users (not wrapped).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of users.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Remove a user from a project (admin/org-admin).",
+        "description": "Removes the user with the given email from the project. Requires a signed‑in admin or org_admin for the project’s organization. Returns an empty body on success.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "email",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empty body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "user-not-found query param missing."
+          },
+          "404": {
+            "description": "Project not found."
+          }
+        }
+      }
+    },
+    "/api/v0/public/city/{cityId}": {
+      "get": {
+        "tags": [
+          "Public"
+        ],
+        "summary": "Get public city information by ID.",
+        "description": "Public endpoint that returns city details only if the city has at least one public inventory. No authentication is required. Response is wrapped in { data } and includes basic project/organization branding fields.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cityId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "City details wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid city ID."
+          },
+          "401": {
+            "description": "No public data available for this city."
+          },
+          "404": {
+            "description": "City not found."
+          }
+        }
+      }
+    },
+    "/api/v0/public/project/{projectId}/cities": {
+      "get": {
+        "tags": [
+          "Public"
+        ],
+        "summary": "Get all public cities within a project by project ID.",
+        "description": "Public endpoint that returns all cities within a project that have at least one public inventory. No authentication is required. Response is wrapped in { data } and includes basic city information.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "projectId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The project ID to fetch public cities for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of public cities in the project wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "cityId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "locode": {
+                            "type": "string"
+                          },
+                          "country": {
+                            "type": "string"
+                          },
+                          "region": {
+                            "type": "string"
+                          },
+                          "area": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "data": [
+                        {
+                          "cityId": "11111111-1111-1111-1111-111111111111",
+                          "name": "Sample City",
+                          "locode": "US-XXX",
+                          "country": "United States",
+                          "region": "California",
+                          "area": 500000
+                        },
+                        {
+                          "cityId": "22222222-2222-2222-2222-222222222222",
+                          "name": "Another City",
+                          "locode": "US-YYY",
+                          "country": "United States",
+                          "region": "Texas",
+                          "area": 750000
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project ID."
+          },
+          "404": {
+            "description": "Project not found or no public cities available."
+          }
+        }
+      }
+    },
+    "/api/v0": {
+      "get": {
+        "tags": [
+          "Root"
+        ],
+        "summary": "API root endpoint with a welcome banner.",
+        "description": "Public endpoint that returns a simple welcome message indicating the API is reachable. No authentication is required. The response is a plain object with a message field.",
+        "responses": {
+          "200": {
+            "description": "Welcome message object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/subsector/{subsectorId}": {
+      "get": {
+        "tags": [
+          "Subsector"
+        ],
+        "summary": "Get a subsector record by ID.",
+        "description": "Public endpoint that fetches a subsector by its identifier. No authentication is enforced. Response is wrapped in { data } containing the subsector fields.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subsectorId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subsector wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "subsectorId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "subsectorName": {
+                          "type": "string"
+                        },
+                        "sectorId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "referenceNumber": {
+                          "type": "string"
+                        },
+                        "scopeId": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Subsector not found."
+          }
+        }
+      }
+    },
+    "/api/v0/token": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Exchange an authorization code for access and refresh tokens (OAuth 2.0 PKCE).",
+        "description": "Accepts a short‑lived authorization code issued by the server and returns a bearer access token plus a refresh token. Requires the OAUTH_ENABLED feature flag and the content type application/x-www-form-urlencoded; no user session is required for this exchange. Validates client_id/redirect_uri, token issuer/audience, single‑use code, and PKCE S256 challenge.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "grant_type",
+                  "code",
+                  "redirect_uri",
+                  "client_id",
+                  "code_verifier"
+                ],
+                "properties": {
+                  "grant_type": {
+                    "type": "string",
+                    "enum": [
+                      "authorization_code"
+                    ]
+                  },
+                  "code": {
+                    "type": "string"
+                  },
+                  "redirect_uri": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "client_id": {
+                    "type": "string"
+                  },
+                  "code_verifier": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tokens issued successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "token_type": {
+                      "type": "string"
+                    },
+                    "expires_in": {
+                      "type": "integer"
+                    },
+                    "refresh_token": {
+                      "type": "string"
+                    },
+                    "scope": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                      "token_type": "Bearer",
+                      "expires_in": 604800,
+                      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                      "scope": "read write"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters or verification failed (e.g., client/redirect mismatch, expired/invalid code, PKCE failure, reused code)."
+          },
+          "415": {
+            "description": "Unsupported content type."
+          },
+          "500": {
+            "description": "OAuth not enabled or configuration error."
+          }
+        }
+      }
+    },
+    "/api/v0/user/{userId}": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Update a user's profile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "preferredLanguage"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "preferredLanguage": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      }
+    },
+    "/api/v0/user/access-status": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get the current user’s access status across resources.",
+        "description": "Returns a summary of the user’s access and roles across organizations/projects/cities. Requires a signed‑in session. Response is wrapped in { data } with access metadata.",
+        "responses": {
+          "200": {
+            "description": "Access status wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      }
+    },
+    "/api/v0/user/cities/{id}/results": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get year‑over‑year emissions results for a user’s city.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Results wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "City not found."
+          }
+        }
+      }
+    },
+    "/api/v0/user/clients/{client}": {
+      "get": {
+        "tags": [
+          "User Clients"
+        ],
+        "summary": "Get OAuth client authorization for current user",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client authorization returned."
+          },
+          "401": {
+            "description": "Not signed in."
+          },
+          "404": {
+            "description": "Authorization not found."
+          },
+          "500": {
+            "description": "OAuth not enabled."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "User Clients"
+        ],
+        "summary": "Revoke OAuth client authorization for current user",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Authorization revoked."
+          },
+          "401": {
+            "description": "Not signed in."
+          },
+          "404": {
+            "description": "Authorization not found."
+          },
+          "500": {
+            "description": "OAuth not enabled."
+          }
+        }
+      }
+    },
+    "/api/v0/user/clients": {
+      "get": {
+        "tags": [
+          "User Clients"
+        ],
+        "summary": "List OAuth client authorizations for current user",
+        "responses": {
+          "200": {
+            "description": "Client authorizations returned."
+          },
+          "401": {
+            "description": "Not signed in."
+          },
+          "500": {
+            "description": "OAuth not enabled."
+          }
+        }
+      }
+    },
+    "/api/v0/user/invites/{cityInviteId}": {
+      "delete": {
+        "tags": [
+          "User Invites"
+        ],
+        "summary": "Cancel a city invite",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cityInviteId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invite canceled."
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "User Invites"
+        ],
+        "summary": "Re-send a city invite (reset to pending)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cityInviteId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invite status updated to pending."
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        }
+      }
+    },
+    "/api/v0/user/invites/accept": {
+      "patch": {
+        "tags": [
+          "User Invites"
+        ],
+        "summary": "Accept invites to join cities",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "token",
+                  "cityIds"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "token": {
+                    "type": "string"
+                  },
+                  "cityIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invites accepted and membership created."
+          },
+          "401": {
+            "description": "Unauthorized or invalid token."
+          },
+          "500": {
+            "description": "Server or configuration error."
+          }
+        }
+      }
+    },
+    "/api/v0/user/invites": {
+      "get": {
+        "tags": [
+          "User Invites"
+        ],
+        "summary": "List city invites sent by current user",
+        "responses": {
+          "200": {
+            "description": "Invites returned with status updates."
+          },
+          "401": {
+            "description": "Not signed in."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "User Invites"
+        ],
+        "summary": "Invite users to multiple cities",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "emails",
+                  "cityIds"
+                ],
+                "properties": {
+                  "emails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "email"
+                    }
+                  },
+                  "cityIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invites created and emails sent where possible."
+          },
+          "401": {
+            "description": "Not signed in."
+          },
+          "500": {
+            "description": "Something went wrong."
+          }
+        }
+      }
+    },
+    "/api/v0/user/permissions": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Check user's access for a resource context",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "organizationId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cityId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "inventoryId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Access status returned for provided context."
+          },
+          "400": {
+            "description": "No resource ID provided."
+          },
+          "401": {
+            "description": "Authentication required."
+          }
+        }
+      }
+    },
+    "/api/v0/user/projects": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "List projects the current user belongs to",
+        "responses": {
+          "200": {
+            "description": "Projects returned."
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        }
+      }
+    },
+    "/api/v0/user": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get current user info",
+        "responses": {
+          "200": {
+            "description": "User info returned."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Update default inventory and city for current user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "defaultInventoryId",
+                  "defaultCityId"
+                ],
+                "properties": {
+                  "defaultInventoryId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "defaultCityId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Defaults updated."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      }
+    },
+    "/api/v0/user/whoami": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get the current session user object.",
+        "description": "Returns the session’s user payload (id, email, name, image, role). Requires a signed‑in session. Response is wrapped in { data }.",
+        "responses": {
+          "200": {
+            "description": "User wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "image": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in."
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}

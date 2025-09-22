@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import AsyncIterator, List
-
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -84,7 +84,8 @@ async def _stream_openrouter(
 
         yield format_sse({"ok": True, "request_id": req_id}, event="done").encode("utf-8")
     except Exception as exc:
-        yield format_sse({"message": str(exc)}, event="error").encode("utf-8")
+        logging.exception("Unhandled exception in _stream_openrouter")
+        yield format_sse({"message": "An internal error has occurred."}, event="error").encode("utf-8")
         yield format_sse({"ok": False, "request_id": req_id}, event="done").encode("utf-8")
     finally:
         await client.aclose()

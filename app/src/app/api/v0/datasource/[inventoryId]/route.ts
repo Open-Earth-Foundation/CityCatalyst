@@ -32,59 +32,6 @@
  *                   items: { type: object, additionalProperties: true }
  *       404:
  *         description: Inventory not found.
- *   post:
- *     tags:
- *       - Data Sources
- *     summary: Apply selected data sources to an inventory and persist values.
- *     description: Downloads and applies the specified data sources to the inventory (creating/updating inventory values). No explicit authentication is enforced in this handler in code. Returns { data: { successful[], failed[], invalid[], issues{}, removedSources[] } }.
- *     parameters:
- *       - in: path
- *         name: inventoryId
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [dataSourceIds]
- *             properties:
- *               dataSourceIds:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: uuid
- *     responses:
- *       200:
- *         description: Apply results summary.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: object
- *                   properties:
- *                     successful:
- *                       type: array
- *                       items: { type: string }
- *                     failed:
- *                       type: array
- *                       items: { type: string }
- *                     invalid:
- *                       type: array
- *                       items: { type: string }
- *                     issues:
- *                       type: object
- *                       additionalProperties: { type: string }
- *                     removedSources:
- *                       type: array
- *                       items: { type: object, additionalProperties: true }
- *       404:
- *         description: Inventory or sources not found.
  */
 import DataSourceService from "@/backend/DataSourceService";
 import { db } from "@/models";
@@ -151,6 +98,63 @@ const applySourcesRequest = z.object({
   dataSourceIds: z.array(z.string().uuid()),
 });
 
+/**
+ * @swagger
+ * /api/v0/datasource/{inventoryId}:
+ *   post:
+ *     tags:
+ *       - Data Sources
+ *     summary: Apply selected data sources to an inventory and persist values.
+ *     description: Downloads and applies the specified data sources to the inventory (creating/updating inventory values). No explicit authentication is enforced in this handler in code. Returns { data: { successful[], failed[], invalid[], issues{}, removedSources[] } }.
+ *     parameters:
+ *       - in: path
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [dataSourceIds]
+ *             properties:
+ *               dataSourceIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: uuid
+ *     responses:
+ *       200:
+ *         description: Apply results summary.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     successful:
+ *                       type: array
+ *                       items: { type: string }
+ *                     failed:
+ *                       type: array
+ *                       items: { type: string }
+ *                     invalid:
+ *                       type: array
+ *                       items: { type: string }
+ *                     issues:
+ *                       type: object
+ *                       additionalProperties: { type: string }
+ *                     removedSources:
+ *                       type: array
+ *                       items: { type: object, additionalProperties: true }
+ *       404:
+ *         description: Inventory or sources not found.
+ */
 export const POST = apiHandler(async (req: NextRequest, { params }) => {
   const body = applySourcesRequest.parse(await req.json());
   const inventory = await db.models.Inventory.findOne({

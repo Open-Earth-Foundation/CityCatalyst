@@ -27,6 +27,65 @@
  *         description: Invalid inventory ID
  *       404:
  *         description: Inventory not found
+ */
+import { NextResponse } from "next/server";
+
+import { apiHandler } from "@/util/api";
+import createHttpError from "http-errors";
+import UserService from "@/backend/UserService";
+import { upsertInventoryRequest } from "@/util/validation";
+import { validate } from "uuid";
+import { InventoryService } from "@/backend/InventoryService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import { Inventory } from "@/models/Inventory";
+
+function hasIsPublicProperty(
+  inventory:
+    | {
+        inventoryName: string;
+        year: number;
+        totalEmissions?: number;
+        totalCountryEmissions?: number;
+      }
+    | { isPublic?: boolean },
+): inventory is { isPublic: boolean } {
+  return (inventory as { isPublic: boolean }).isPublic !== undefined;
+}
+
+export const GET = apiHandler(async (req, { session, params }) => {
+  let inventoryId = params.inventory;
+
+  if (inventoryId === "null") {
+    throw new createHttpError.BadRequest("'null' is an invalid inventory id");
+  }
+
+  if ("default" === inventoryId) {
+    // TODO: Add getUserDefaultInventory method to PermissionService
+    inventoryId = await UserService.findUserDefaultInventory(session);
+    if (!inventoryId) {
+      throw new createHttpError.NotFound("user has no default inventory");
+    }
+  }
+
+  if (!validate(inventoryId)) {
+    throw new createHttpError.BadRequest(
+      `'${inventoryId}' is not a valid inventory id (uuid)`,
+    );
+  }
+
+  // Use PermissionService for access check only
+  await PermissionService.canAccessInventory(session, inventoryId);
+
+  const inventory = await InventoryService.getInventoryWithTotalEmissions(
+    inventoryId,
+    session,
+  );
+  return NextResponse.json({ data: inventory });
+});
+
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}:
  *   delete:
  *     summary: Delete an inventory by ID
  *     description: Deletes the specified inventory. Only users with ORG_ADMIN permission can delete inventories.
@@ -55,6 +114,23 @@
  *         description: Forbidden - insufficient permissions
  *       404:
  *         description: Inventory not found
+ */
+export const DELETE = apiHandler(async (_req, { params, session }) => {
+  // Use PermissionService for delete permission (ORG_ADMIN only)
+  const { resource } = await PermissionService.canDeleteInventory(
+    session,
+    params.inventory,
+  );
+
+  const inventory = resource as Inventory;
+
+  await inventory.destroy();
+  return NextResponse.json({ data: inventory, deleted: true });
+});
+
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}:
  *   patch:
  *     summary: Update inventory details
  *     description: Updates the specified inventory. Only users with edit permission can update inventories.
@@ -90,82 +166,13 @@
  *       404:
  *         description: Inventory not found
  */
-import { NextResponse } from "next/server";
-
-import { apiHandler } from "@/util/api";
-import createHttpError from "http-errors";
-import UserService from "@/backend/UserService";
-import { upsertInventoryRequest } from "@/util/validation";
-import { validate } from "uuid";
-import { InventoryService } from "@/backend/InventoryService";
-import { PermissionService } from "@/backend/permissions/PermissionService";
-import { Inventory } from "@/models/Inventory";
-
-function hasIsPublicProperty(
-  inventory:
-    | {
-        inventoryName: string;
-        year: number;
-        totalEmissions?: number;
-        totalCountryEmissions?: number;
-      }
-    | { isPublic?: boolean },
-): inventory is { isPublic: boolean } {
-  return (inventory as { isPublic: boolean }).isPublic !== undefined;
-}
-
-export const GET = apiHandler(async (req, { session, params }) => {
-  let inventoryId = params.inventory;
-
-  if (inventoryId === 'null') {
-    throw new createHttpError.BadRequest("'null' is an invalid inventory id");
-  }
-
-  if ("default" === inventoryId) {
-    // TODO: Add getUserDefaultInventory method to PermissionService
-    inventoryId = await UserService.findUserDefaultInventory(session);
-    if (!inventoryId) {
-      throw new createHttpError.NotFound("user has no default inventory");
-    }
-  }
-
-  if (!validate(inventoryId)) {
-    throw new createHttpError.BadRequest(
-      `'${inventoryId}' is not a valid inventory id (uuid)`,
-    );
-  }
-
-  // Use PermissionService for access check only
-  await PermissionService.canAccessInventory(session, inventoryId);
-
-  const inventory = await InventoryService.getInventoryWithTotalEmissions(
-    inventoryId,
-    session,
-  );
-  return NextResponse.json({ data: inventory });
-});
-
-export const DELETE = apiHandler(async (_req, { params, session }) => {
-  // Use PermissionService for delete permission (ORG_ADMIN only)
-  const { resource } = await PermissionService.canDeleteInventory(
-    session,
-    params.inventory
-  );
-
-
-  const inventory = resource as Inventory;
-
-  await inventory.destroy();
-  return NextResponse.json({ data: inventory, deleted: true });
-});
-
 export const PATCH = apiHandler(async (req, context) => {
   const { params, session } = context;
   const body = upsertInventoryRequest.parse(await req.json());
   // Use PermissionService for edit permission
-  const { resource} = await PermissionService.canEditInventory(
+  const { resource } = await PermissionService.canEditInventory(
     session,
-    params.inventory
+    params.inventory,
   );
 
   const inventory = resource as Inventory;

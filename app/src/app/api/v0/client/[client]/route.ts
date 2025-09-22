@@ -50,26 +50,6 @@
  *         description: Client not found.
  *       500:
  *         description: OAuth not enabled or server error.
- *   delete:
- *     tags:
- *       - OAuth Clients
- *     summary: Delete an OAuth client by ID.
- *     description: Permanently removes a client record. Requires a signed‑in session and OAUTH_ENABLED. Returns 204 with no body on success.
- *     parameters:
- *       - in: path
- *         name: client
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       204:
- *         description: Client deleted.
- *       401:
- *         description: Must be logged in.
- *       404:
- *         description: Client not found.
- *       500:
- *         description: OAuth not enabled or server error.
  */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
@@ -118,6 +98,30 @@ export const GET = apiHandler(async (_req, { params, session }) => {
   return NextResponse.json({ data: results });
 });
 
+/**
+ * @swagger
+ * /api/v0/client/{client}:
+ *   delete:
+ *     tags:
+ *       - OAuth Clients
+ *     summary: Delete an OAuth client by ID.
+ *     description: Permanently removes a client record. Requires a signed‑in session and OAUTH_ENABLED. Returns 204 with no body on success.
+ *     parameters:
+ *       - in: path
+ *         name: client
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Client deleted.
+ *       401:
+ *         description: Must be logged in.
+ *       404:
+ *         description: Client not found.
+ *       500:
+ *         description: OAuth not enabled or server error.
+ */
 /** deletes a client */
 export const DELETE = apiHandler(async (_req, { params, session }) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {

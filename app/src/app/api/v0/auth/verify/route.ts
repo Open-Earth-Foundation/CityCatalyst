@@ -26,39 +26,6 @@
  *         description: User not found.
  *       500:
  *         description: Configuration error.
- *   post:
- *     tags:
- *       - Auth
- *     summary: Check if a password matches the user referenced by a token.
- *     description: Verifies the supplied password against the user identified by the verification token. No authentication is required; the token binds the identity. Returns a boolean result.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [password, token]
- *             properties:
- *               password:
- *                 type: string
- *               token:
- *                 type: string
- *     responses:
- *       200:
- *         description: Comparison result.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 comparePassword:
- *                   type: boolean
- *             examples:
- *               example:
- *                 value:
- *                   comparePassword: true
- *       500:
- *         description: Configuration error.
  */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
@@ -107,6 +74,43 @@ export const GET = apiHandler(async (_req, { session }) => {
   });
 });
 
+/**
+ * @swagger
+ * /api/v0/auth/verify:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Check if a password matches the user referenced by a token.
+ *     description: Verifies the supplied password against the user identified by the verification token. No authentication is required; the token binds the identity. Returns a boolean result.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [password, token]
+ *             properties:
+ *               password:
+ *                 type: string
+ *               token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Comparison result.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 comparePassword:
+ *                   type: boolean
+ *             examples:
+ *               example:
+ *                 value:
+ *                   comparePassword: true
+ *       500:
+ *         description: Configuration error.
+ */
 export const POST = apiHandler(async (req: Request) => {
   const body = requestVerification.parse(await req.json());
 

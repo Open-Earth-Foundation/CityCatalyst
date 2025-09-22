@@ -44,9 +44,9 @@
  *                   items: { type: object, additionalProperties: true }
  *       400:
  *         description: Missing required query parameter.
-   *   post:
-   *     tags:
-   *       - Inventory Activity
+ *   post:
+ *     tags:
+ *       - Inventory Activity
  *     summary: Create an activity value (edit access).
  *     description: Creates an activity and associated inventory/gas values as needed. Requires a signed‑in user with edit access to the inventory. Returns a success flag and the created value in { success, data }.
  *     parameters:
@@ -88,9 +88,9 @@
  *                 data: { type: object, additionalProperties: true }
  *       400:
  *         description: Invalid data.
-   *   delete:
-   *     tags:
-   *       - Inventory Activity
+ *   delete:
+ *     tags:
+ *       - Inventory Activity
  *     summary: Delete activities by subsector or reference number (edit access).
  *     description: Deletes activity rows within a subsector or by GPC reference number. Requires a signed‑in user with edit access. Returns a success flag and deletedCount in { success, data }.
  *     parameters:

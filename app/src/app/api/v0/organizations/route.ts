@@ -14,6 +14,25 @@
  *             schema:
  *               type: array
  *               items: { type: object, additionalProperties: true }
+ */
+import { Organization } from "@/models/Organization";
+import { randomUUID } from "node:crypto";
+import { createOrganizationRequest } from "@/util/validation";
+import { NextResponse } from "next/server";
+import UserService from "@/backend/UserService";
+import { apiHandler } from "@/util/api";
+import { db } from "@/models";
+import {
+  CustomOrganizationError,
+  OrganizationErrorCodes,
+} from "@/lib/custom-errors/organization-error";
+import { User } from "@/models/User";
+import { OrganizationAdmin } from "@/models/OrganizationAdmin";
+import { Op } from "sequelize";
+
+/**
+ * @swagger
+ * /api/v0/organizations:
  *   post:
  *     tags:
  *       - Organizations
@@ -50,18 +69,6 @@
  *                 error:
  *                   type: string
  */
-import { Organization } from "@/models/Organization";
-import { randomUUID } from "node:crypto";
-import { createOrganizationRequest } from "@/util/validation";
-import { NextResponse } from "next/server";
-import UserService from "@/backend/UserService";
-import { apiHandler } from "@/util/api";
-import { db } from "@/models";
-import { CustomOrganizationError, OrganizationErrorCodes } from "@/lib/custom-errors/organization-error";
-import { User } from "@/models/User";
-import { OrganizationAdmin } from "@/models/OrganizationAdmin";
-import { Op } from "sequelize";
-
 export const POST = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
   const orgData = createOrganizationRequest.parse(await req.json());
@@ -75,7 +82,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
     throw new CustomOrganizationError({
       errorKey: OrganizationErrorCodes.NAME_ALREADY_EXISTS,
       organizationName: orgData.name,
-      message: "organization-name-already-exists"
+      message: "organization-name-already-exists",
     });
   }
 
@@ -96,7 +103,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
     throw new CustomOrganizationError({
       errorKey: OrganizationErrorCodes.CREATION_FAILED,
       organizationName: orgData.name,
-      message: "user-already-org-admin"
+      message: "user-already-org-admin",
     });
   }
 

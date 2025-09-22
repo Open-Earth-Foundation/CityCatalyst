@@ -10,35 +10,6 @@
  *         description: Invites returned with status updates.
  *       401:
  *         description: Not signed in.
- *   post:
- *     tags:
- *       - User Invites
- *     summary: Invite users to multiple cities
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [emails, cityIds]
- *             properties:
- *               emails:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: email
- *               cityIds:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: uuid
- *     responses:
- *       200:
- *         description: Invites created and emails sent where possible.
- *       401:
- *         description: Not signed in.
- *       500:
- *         description: Something went wrong.
  */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
@@ -97,6 +68,39 @@ export const GET = apiHandler(async (req, { params, session }) => {
   return NextResponse.json({ data: invites });
 });
 
+/**
+ * @swagger
+ * /api/v0/user/invites:
+ *   post:
+ *     tags:
+ *       - User Invites
+ *     summary: Invite users to multiple cities
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [emails, cityIds]
+ *             properties:
+ *               emails:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: email
+ *               cityIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: uuid
+ *     responses:
+ *       200:
+ *         description: Invites created and emails sent where possible.
+ *       401:
+ *         description: Not signed in.
+ *       500:
+ *         description: Something went wrong.
+ */
 export const POST = apiHandler(async (req, { params, session }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Not signed in");

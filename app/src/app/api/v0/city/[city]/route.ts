@@ -27,6 +27,26 @@
  *                     name: { type: string }
  *                     locode: { type: string }
  *                   additionalProperties: true
+ */
+import UserService from "@/backend/UserService";
+import { apiHandler } from "@/util/api";
+import { createCityRequest } from "@/util/validation";
+import { NextResponse } from "next/server";
+import { Inventory } from "@/models/Inventory";
+import { User } from "@/models/User";
+import { db } from "@/models";
+import { QueryTypes } from "sequelize";
+import { logger } from "@/services/logger";
+import { DEFAULT_PROJECT_ID } from "@/util/constants";
+
+export const GET = apiHandler(async (_req, { params, session }) => {
+  const city = await UserService.findUserCity(params.city, session, true);
+  return NextResponse.json({ data: city });
+});
+
+/**
+ * @swagger
+ * /api/v0/city/{city}:
  *   delete:
  *     tags:
  *       - City
@@ -55,66 +75,7 @@
  *                 value:
  *                   data: { cityId: "..." }
  *                   deleted: true
- *   patch:
- *     tags:
- *       - City
- *     summary: Update city fields by ID.
- *     parameters:
- *       - in: path
- *         name: city
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               locode:
- *                 type: string
- *               name:
- *                 type: string
- *               shape:
- *                 type: object
- *                 nullable: true
- *               area:
- *                 type: integer
- *                 nullable: true
- *               projectId:
- *                 type: string
- *                 format: uuid
- *                 nullable: true
- *     responses:
- *       200:
- *         description: Updated city wrapped in data.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: object
- *                   additionalProperties: true
  */
-import UserService from "@/backend/UserService";
-import { apiHandler } from "@/util/api";
-import { createCityRequest } from "@/util/validation";
-import { NextResponse } from "next/server";
-import { Inventory } from "@/models/Inventory";
-import { User } from "@/models/User";
-import { db } from "@/models";
-import { QueryTypes } from "sequelize";
-import { logger } from "@/services/logger";
-import { DEFAULT_PROJECT_ID } from "@/util/constants";
-
-export const GET = apiHandler(async (_req, { params, session }) => {
-  const city = await UserService.findUserCity(params.city, session, true);
-  return NextResponse.json({ data: city });
-});
-
 export const DELETE = apiHandler(async (_req, { params, session }) => {
   const city = await UserService.findUserCity(params.city, session);
   const userId = session!.user.id;
@@ -169,6 +130,53 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
   return NextResponse.json({ data: city, deleted: true });
 });
 
+/**
+ * @swagger
+ * /api/v0/city/{city}:
+ *   patch:
+ *     tags:
+ *       - City
+ *     summary: Update city fields by ID.
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               locode:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               shape:
+ *                 type: object
+ *                 nullable: true
+ *               area:
+ *                 type: integer
+ *                 nullable: true
+ *               projectId:
+ *                 type: string
+ *                 format: uuid
+ *                 nullable: true
+ *     responses:
+ *       200:
+ *         description: Updated city wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   additionalProperties: true
+ */
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const body = createCityRequest.parse(await req.json());
   const projectId = body.projectId;

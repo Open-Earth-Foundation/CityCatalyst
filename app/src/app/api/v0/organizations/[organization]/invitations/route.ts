@@ -75,6 +75,7 @@ import { User } from "@/models/User";
 import EmailService from "@/backend/EmailService";
 import { logger } from "@/services/logger";
 import { OrganizationAdmin } from "@/models/OrganizationAdmin";
+import { CustomInviteError, InviteErrorCodes } from "@/lib/custom-errors/custom-invite-error";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
   const { organization: organizationId } = params;
@@ -118,17 +119,11 @@ export const POST = apiHandler(async (req, { params, session }) => {
   });
 
   if (existingOrgAdmins.length > 0) {
-    const error = new createHttpError.BadRequest(
-      `The following users are already admins for another organization: ${existingOrgAdmins
-        .map((admin) => admin.user.email)
-        .join(", ")}`,
-    );
-    (error as any).code = "USER_ALREADY_ORG_ADMIN";
-    (error as any).data = {
-      emails: existingOrgAdmins.map((admin) => admin.user.email),
-      errorKey: "user-already-org-admin",
-    };
-    throw error;
+    throw new CustomInviteError({
+      errorKey: InviteErrorCodes.USER_ALREADY_ORG_ADMIN,
+      emails: existingOrgAdmins.map((admin) => admin.user.email).filter((email): email is string => !!email),
+      message: "user-already-org-admin",
+    });
   }
 
   const failedInvites: { email: string }[] = [];

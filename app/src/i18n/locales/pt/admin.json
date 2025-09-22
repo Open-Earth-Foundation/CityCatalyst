@@ -186,5 +186,11 @@
   "module-access-disabled": "Acesso ao Módulo Desabilitado",
   "module-access-disabled-description": "{{moduleName}} foi desabilitado para este projeto",
   "module-access-error": "Erro de Acesso ao Módulo",
-  "module-access-error-description": "Falha ao atualizar o acesso ao módulo. Por favor, tente novamente."
+  "module-access-error-description": "Falha ao atualizar o acesso ao módulo. Por favor, tente novamente.",
+  "organization-name-already-exists": "O nome da organização já existe",
+  "error-organization": "Erro de organização",
+  "publish-project": "Publicar projeto",
+  "publishing-project": "Publicando projeto...",
+  "publish-project-success": "Projeto publicado com sucesso",
+  "publish-project-error": "Erro ao publicar o projeto"
 }

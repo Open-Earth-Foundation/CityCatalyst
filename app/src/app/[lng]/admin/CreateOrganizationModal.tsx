@@ -20,6 +20,9 @@ import { api } from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { OrganizationRole } from "@/util/types";
 import { CustomInviteError } from "@/lib/custom-errors/custom-invite-error";
+import { CustomOrganizationError } from "@/lib/custom-errors/organization-error";
+
+type CustomError = CustomInviteError | CustomOrganizationError;
 
 interface CreateOrganizationModalProps {
   isOpen: boolean;
@@ -74,7 +77,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     duration: 1200,
   });
 
-  const [createOrganization, { isLoading }] =
+  const [createOrganization, { isLoading, error: orgError }] =
     api.useCreateOrganizationMutation();
 
   const [createProject, { isLoading: isProjectLoading }] =
@@ -96,6 +99,27 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     setStep(1);
     onClose();
     reset();
+  };
+
+  const handleCustomError = (error: any, fallbackTitle: string) => {
+    const errorBody = error?.data?.error;
+    const errorData = errorBody?.data;
+    const errorKey = errorData?.errorKey || "unknown-error";
+    const message = errorData?.message || errorKey;
+
+    // Handle specific error data based on error type
+    let description = t(message);
+    if (errorData && "emails" in errorData && errorData.emails) {
+      const safeEmails = errorData.emails.map((email: string) =>
+        email.replace(/[<>"'&]/g, ""),
+      );
+      description += " " + safeEmails.join(", ");
+    }
+
+    showErrorToast({
+      title: t(fallbackTitle),
+      description,
+    });
   };
 
   const handleFormSubmit = async (data: Schema) => {
@@ -123,18 +147,10 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
         showSuccessToast();
         closeFunction();
       } else if (inviteError) {
-        let error = inviteError as CustomInviteError;
-        const safeErrorKey =
-          error?.data?.error?.data?.errorKey || "unknown-error";
-        const safeEmails = (error?.data?.error?.data?.emails || []).map(
-          (email) => email.replace(/[<>"'&]/g, ""),
-        );
-
-        showErrorToast({
-          title: t("error-invite"),
-          description: t(safeErrorKey) + " " + safeEmails.join(", "),
-        });
+        handleCustomError(inviteError as CustomError, "error-invite");
       }
+    } else if (orgError) {
+      handleCustomError(orgError as CustomError, "error-organization");
     } else {
       showErrorToast();
     }

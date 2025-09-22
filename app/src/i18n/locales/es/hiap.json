@@ -112,7 +112,7 @@
   "actions-selected": "acciones seleccionadas",
   "ranked-and-unranked-actions-description": "Aquí están las iniciativas climáticas que nuestro modelo de IA ha identificado como las que tienen el mayor impacto potencial para tu ciudad. Puedes seleccionar hasta tres acciones para crear planes detallados en la sección superior. Además, siéntete libre de descargar esta tabla para compartir con las partes interesadas.",
   "view-generated-plan": "Ver Plan Generado",
-  "loading": "Cargando...",
   "generating-plan": "Generando Plan...",
-  "missing-data": "Datos Faltantes"
+  "missing-data": "Datos Faltantes",
+  "exit-selection": "Salir de la selección"
 }

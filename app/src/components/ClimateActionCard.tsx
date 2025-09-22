@@ -22,6 +22,7 @@ import { TitleLarge, TitleMedium, TitleSmall } from "./Texts/Title";
 import { BodyLarge, BodySmall } from "./Texts/Body";
 import { LabelMedium } from "./Texts/Label";
 import { HeadlineMedium } from "./Texts/Headline";
+import { useActionPlan } from "@/hooks/use-action-plan";
 
 export const ClimateActionCard = ({
   action,
@@ -237,6 +238,23 @@ const GeneratePlanDialog = ({
   const [generatedPlan, setGeneratedPlan] = useState<any | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
+  const [shouldOpenDialogAfterGeneration, setShouldOpenDialogAfterGeneration] =
+    useState(false);
+
+  // Check if an action plan already exists
+  const {
+    data: existingPlan,
+    isLoading: isPlanLoading,
+    refetch: refetchPlan,
+  } = useActionPlan({
+    actionId: action.actionId,
+    inventoryId: inventoryId || "",
+    language: action.lang || "en",
+  });
+
+  // Use existing plan data if available, otherwise use generated plan
+  const planToDisplay = existingPlan?.planData || generatedPlan;
+  const hasExistingPlan = !!existingPlan;
 
   const handleGeneratePlan = async () => {
     if (!inventoryId || !cityLocode) {
@@ -264,13 +282,18 @@ const GeneratePlanDialog = ({
       // Parse the plan JSON string
       const planData = JSON.parse(result.plan);
       setGeneratedPlan(planData);
+
+      // Refetch the plan data to get the latest from the database
+      await refetchPlan();
+
+      // Plan generated successfully - user can now click "View Generated Plan" to see it
     } catch (error) {
       console.error("Failed to generate plan:", error);
     }
   };
 
   const handleExportPDF = async () => {
-    if (!generatedPlan) {
+    if (!planToDisplay) {
       console.error("No plan data available for PDF export");
       return;
     }
@@ -287,7 +310,7 @@ const GeneratePlanDialog = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          planData: generatedPlan,
+          planData: planToDisplay,
           cityName: cityName,
           actionTitle: action.name,
           lng: action.lang || "en",
@@ -318,6 +341,63 @@ const GeneratePlanDialog = ({
     }
   };
 
+  // Show loading spinner while checking for existing plan
+  if (isPlanLoading) {
+    return (
+      <Button
+        color="content.link"
+        w="full"
+        borderWidth="1px"
+        borderColor="content.link"
+        borderRadius="sm"
+        bg="transparent"
+        disabled
+      >
+        <Spinner size="sm" color="content.link" />
+        {t("loading")}
+      </Button>
+    );
+  }
+
+  // If plan is being generated, show loading state
+  if (isLoading) {
+    return (
+      <Button
+        color="content.link"
+        w="full"
+        borderWidth="1px"
+        borderColor="content.link"
+        borderRadius="sm"
+        bg="transparent"
+        disabled
+      >
+        <Spinner size="sm" color="content.link" />
+        {t("generating-plan")}
+      </Button>
+    );
+  }
+
+  // If no existing plan, show generate button that starts generation immediately
+  if (!hasExistingPlan) {
+    return (
+      <Button
+        color="content.link"
+        w="full"
+        borderWidth="1px"
+        borderColor="content.link"
+        borderRadius="sm"
+        className="group"
+        bg="transparent"
+        onClick={handleGeneratePlan}
+        disabled={!inventoryId || !cityLocode}
+      >
+        <Icon as={GeneratePlanIcon} color="content.link" />
+        {!inventoryId || !cityLocode ? t("missing-data") : t("generate-plan")}
+      </Button>
+    );
+  }
+
+  // If existing plan, show view button that opens dialog
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
@@ -331,7 +411,7 @@ const GeneratePlanDialog = ({
           bg="transparent"
         >
           <Icon as={GeneratePlanIcon} color="content.link" />
-          {t("generate-plan")}
+          {t("view-generated-plan")}
         </Button>
       </Dialog.Trigger>
       <Portal>
@@ -360,7 +440,7 @@ const GeneratePlanDialog = ({
                   px="4px"
                   h="48px"
                   onClick={handleExportPDF}
-                  disabled={!generatedPlan || isPdfGenerating}
+                  disabled={!planToDisplay || isPdfGenerating}
                   loading={isPdfGenerating}
                 >
                   <Icon as={RiFile3Line} boxSize="24px" />
@@ -370,65 +450,14 @@ const GeneratePlanDialog = ({
             </Dialog.Header>
             <Dialog.Body overflow="scroll" maxH="70vh">
               <VStack alignItems="flex-start" gap="24px" w="full">
-                {!generatedPlan && !isLoading && (
-                  <>
-                    <HeadlineMedium fontWeight="bold" color="content.primary">
-                      Generate Implementation Plan for "{action.name}"
-                    </HeadlineMedium>
-                    <BodyLarge fontWeight="normal" color="content.tertiary">
-                      Click the button below to generate a detailed
-                      implementation plan for this climate action.
-                    </BodyLarge>
-                    <Button
-                      colorScheme="blue"
-                      w="full"
-                      onClick={handleGeneratePlan}
-                      disabled={isLoading || !inventoryId || !cityLocode}
-                    >
-                      <Icon as={GeneratePlanIcon} />
-                      {!inventoryId || !cityLocode
-                        ? "Missing data for plan generation"
-                        : "Generate Implementation Plan"}
-                    </Button>
-                  </>
-                )}
-
-                {isLoading && (
-                  <VStack gap="16px" w="full" alignItems="center" py="40px">
-                    <Spinner size="lg" color="content.link" />
-                    <Text color="content.secondary">
-                      Generating your implementation plan...
-                    </Text>
-                    <Text fontSize="sm" color="content.tertiary">
-                      This may take a few minutes
-                    </Text>
-                  </VStack>
-                )}
-
-                {error && (
-                  <Box
-                    w="full"
-                    p="16px"
-                    bg="sentiment.negativeSubtle"
-                    borderRadius="md"
-                  >
-                    <Text color="sentiment.negativeDefault" fontWeight="bold">
-                      Error generating plan
-                    </Text>
-                    <Text color="sentiment.negativeDefault" fontSize="sm">
-                      {error.toString()}
-                    </Text>
-                  </Box>
-                )}
-
-                {generatedPlan && (
+                {planToDisplay && (
                   <>
                     <HeadlineMedium
                       fontWeight="bold"
                       color="content.primary"
                       pb="12px"
                     >
-                      {generatedPlan.metadata?.actionName || action.name} -{" "}
+                      {planToDisplay.metadata?.actionName || action.name} -{" "}
                       {t("implementation-plan")}
                     </HeadlineMedium>
 
@@ -450,20 +479,20 @@ const GeneratePlanDialog = ({
                           boxSize="24px"
                         />
                         <TitleLarge fontWeight="bold" color="content.secondary">
-                          {generatedPlan.metadata?.cityName}
+                          {planToDisplay.metadata?.cityName}
                         </TitleLarge>
                       </Box>
 
                       <BodyLarge color="content.secondary" mb="16px">
                         {
-                          generatedPlan.content?.introduction
+                          planToDisplay.content?.introduction
                             ?.action_description
                         }
                       </BodyLarge>
                     </Box>
 
                     {/* Subactions */}
-                    {generatedPlan.content?.subactions?.items && (
+                    {planToDisplay.content?.subactions?.items && (
                       <Box w="full">
                         <TitleLarge
                           fontWeight="bold"
@@ -474,10 +503,10 @@ const GeneratePlanDialog = ({
                           pb="12px"
                         >
                           {t("subactions")} (
-                          {generatedPlan.content.subactions.items.length})
+                          {planToDisplay.content.subactions.items.length})
                         </TitleLarge>
                         <VStack gap="12px" alignItems="flex-start" w="full">
-                          {generatedPlan.content.subactions.items.map(
+                          {planToDisplay.content.subactions.items.map(
                             (subaction: any, index: number) => (
                               <Box
                                 key={index}
@@ -509,7 +538,7 @@ const GeneratePlanDialog = ({
                     )}
 
                     {/* Municipal Institutions */}
-                    {generatedPlan.content?.institutions?.items && (
+                    {planToDisplay.content?.institutions?.items && (
                       <Box w="full">
                         <TitleLarge
                           fontWeight="bold"
@@ -520,10 +549,10 @@ const GeneratePlanDialog = ({
                           pb="12px"
                         >
                           {t("municipal-institutions-involved")} (
-                          {generatedPlan.content.institutions.items.length})
+                          {planToDisplay.content.institutions.items.length})
                         </TitleLarge>
                         <VStack gap="8px" alignItems="flex-start" w="full">
-                          {generatedPlan.content.institutions.items.map(
+                          {planToDisplay.content.institutions.items.map(
                             (institution: any, index: number) => (
                               <Box
                                 key={index}

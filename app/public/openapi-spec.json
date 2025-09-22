@@ -15,6 +15,243 @@
   },
   "security": [],
   "paths": {
+    "/api/v0/action-plans/{id}": {
+      "get": {
+        "summary": "Get action plan by ID",
+        "description": "Retrieve a specific action plan by its ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Action plan ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Action plan details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Action plan not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update action plan",
+        "description": "Update an existing action plan with new data",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Action plan ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "planData": {
+                    "type": "object"
+                  },
+                  "actionName": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Action plan updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Action plan not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete action plan",
+        "description": "Delete an action plan by its ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Action plan ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Action plan deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Action plan not found"
+          }
+        }
+      }
+    },
+    "/api/v0/action-plans": {
+      "get": {
+        "summary": "Get action plans",
+        "description": "Retrieve action plans with optional filtering by inventory ID and language",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "inventoryId",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Filter by inventory ID"
+          },
+          {
+            "in": "query",
+            "name": "language",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by language"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of action plans",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new action plan",
+        "description": "Create a new action plan with the provided data",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "actionId",
+                  "inventoryId",
+                  "cityLocode",
+                  "actionName",
+                  "language",
+                  "planData"
+                ],
+                "properties": {
+                  "actionId": {
+                    "type": "string"
+                  },
+                  "inventoryId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "hiActionRankingId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "cityLocode": {
+                    "type": "string"
+                  },
+                  "actionName": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string"
+                  },
+                  "planData": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action plan created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v0/admin/all-cities": {
       "get": {
         "tags": [

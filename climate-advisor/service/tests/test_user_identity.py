@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.pool import StaticPool
 
 from app.db import Base
+from app.exceptions import ThreadAccessDeniedException
 from app.models.db.message import Message, MessageRole
 from app.models.requests import MessageCreateRequest, ThreadCreateRequest
 from app.services.message_service import MessageService
@@ -95,7 +96,7 @@ class UserIdentityPersistenceTests(unittest.IsolatedAsyncioTestCase):
 
         async with self.session_factory() as session:
             service = ThreadService(session)
-            with self.assertRaises(PermissionError):
+            with self.assertRaises(ThreadAccessDeniedException):
                 await service.get_thread_for_user(thread_id, "user-99")
 
 

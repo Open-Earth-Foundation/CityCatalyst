@@ -7,6 +7,7 @@ from uuid import uuid4
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..exceptions import ThreadNotFoundException, ThreadAccessDeniedException
 from ..models.db.thread import Thread
 from ..models.requests import ThreadCreateRequest
 
@@ -42,12 +43,12 @@ class ThreadService:
         """Return the thread if it is owned by ``user_id``.
 
         Raises:
-            LookupError: if the thread does not exist.
-            PermissionError: if the thread belongs to a different user.
+            ThreadNotFoundException: if the thread does not exist.
+            ThreadAccessDeniedException: if the thread belongs to a different user.
         """
         thread = await self.get_thread(thread_id)
         if thread is None:
-            raise LookupError(f"Thread {thread_id} not found")
+            raise ThreadNotFoundException(thread_id)
         if thread.user_id != user_id:
-            raise PermissionError("thread_owner_mismatch")
+            raise ThreadAccessDeniedException()
         return thread

@@ -20,9 +20,6 @@ export const POST = apiHandler(
     await PermissionService.canAccessInventory(session, body.inventoryId);
 
     const lng = body.lng || languages[0];
-    console.log("Actionx:", body.action);
-    console.log("Cityx:", body.cityLocode);
-    console.log("Lngx:", lng);
 
     const result = await startActionPlanJob({
       action: body.action as HIAction,

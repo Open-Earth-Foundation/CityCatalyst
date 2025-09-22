@@ -56,11 +56,10 @@ def get_app() -> FastAPI:
         middleware=middleware,
     )
 
-    # Lifespan: mark ready after startup
+    # Lifespan: log service lifecycle
     @app.on_event("startup")
     async def _startup() -> None:
-        app.state.ready = True
-        logger.info("service_started", service="climate-advisor", ready=app.state.ready)
+        logger.info("service_started", service="climate-advisor")
 
     @app.on_event("shutdown")
     async def _shutdown() -> None:

@@ -42,12 +42,6 @@
         <button id="btnHealth">Check Health</button>
         <pre id="outHealth" class="status"></pre>
       </div>
-
-      <div class="card">
-        <div class="endpoint">GET /ready</div>
-        <button id="btnReady">Check Ready</button>
-        <pre id="outReady" class="status"></pre>
-      </div>
     </div>
 
     <div class="row">
@@ -94,7 +88,6 @@
       <div class="endpoint">Endpoints Map</div>
       <ul>
         <li><code>GET /health</code> – liveness</li>
-        <li><code>GET /ready</code> – readiness</li>
         <li><code>POST /v1/threads</code> – create thread, returns <code>{ thread_id }</code></li>
         <li><code>POST /v1/messages</code> – streams SSE <code>event: message</code> chunks and terminal <code>event: done</code></li>
       </ul>
@@ -120,7 +113,6 @@
       }
 
       document.getElementById('btnHealth').onclick = () => doGet('/health', document.getElementById('outHealth'));
-      document.getElementById('btnReady').onclick = () => doGet('/ready', document.getElementById('outReady'));
 
       document.getElementById('btnCreateThread').onclick = async () => {
         const out = document.getElementById('outThreads');

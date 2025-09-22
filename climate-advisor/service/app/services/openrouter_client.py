@@ -6,19 +6,32 @@ from typing import AsyncIterator, Dict, List, Optional
 import httpx
 from loguru import logger
 
+from ..config.settings import LLMConfig
+
 
 class OpenRouterClient:
     def __init__(
         self,
         api_key: str,
-        base_url: str = "https://openrouter.ai/api/v1",
-        timeout_ms: int = 30000,
+        llm_config: Optional[LLMConfig] = None,
+        base_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
         default_model: Optional[str] = None,
     ) -> None:
         self.api_key = api_key
-        self.base_url = base_url.rstrip("/")
-        self.timeout = httpx.Timeout(timeout_ms / 1000)
-        self.default_model = default_model
+        self.llm_config = llm_config
+        
+        # Use LLM config values as defaults, allow overrides
+        if llm_config:
+            self.base_url = (base_url or llm_config.api.openrouter.base_url).rstrip("/")
+            self.timeout = httpx.Timeout((timeout_ms or llm_config.api.openrouter.timeout_ms) / 1000)
+            self.default_model = default_model or llm_config.models.get("default", "openrouter/auto")
+        else:
+            # Fallback to original behavior if no LLM config
+            self.base_url = (base_url or "https://openrouter.ai/api/v1").rstrip("/")
+            self.timeout = httpx.Timeout((timeout_ms or 30000) / 1000)
+            self.default_model = default_model
+            
         self._client: Optional[httpx.AsyncClient] = None
 
     def _headers(self, request_id: Optional[str] = None) -> Dict[str, str]:
@@ -49,16 +62,27 @@ class OpenRouterClient:
         request_id: Optional[str] = None,
     ) -> AsyncIterator[str]:
         """Yield content tokens from OpenRouter (OpenAI-compatible stream)."""
+        
+        # Use LLM config defaults when parameters are not provided
+        effective_model = model or self.default_model or "openrouter/auto"
+        
+        if self.llm_config:
+            effective_temperature = temperature if temperature is not None else self.llm_config.generation.defaults.temperature
+            effective_max_tokens = max_tokens if max_tokens is not None else self.llm_config.generation.defaults.max_tokens
+        else:
+            effective_temperature = temperature
+            effective_max_tokens = max_tokens
 
         payload: Dict[str, object] = {
-            "model": model or self.default_model or "openrouter/auto",
+            "model": effective_model,
             "messages": messages,
             "stream": True,
         }
-        if temperature is not None:
-            payload["temperature"] = temperature
-        if max_tokens is not None:
-            payload["max_tokens"] = max_tokens
+        
+        if effective_temperature is not None:
+            payload["temperature"] = effective_temperature
+        if effective_max_tokens is not None:
+            payload["max_tokens"] = effective_max_tokens
 
         url = f"{self.base_url}/chat/completions"
 

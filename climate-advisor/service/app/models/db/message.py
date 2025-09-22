@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum as PyEnum
 from typing import Optional
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 try:
@@ -15,7 +15,7 @@ except ImportError:  # pragma: no cover
 from ...db import Base
 
 
-class MessageRole(str, Enum):
+class MessageRole(str, PyEnum):
     USER = "user"
     ASSISTANT = "assistant"
     SYSTEM = "system"
@@ -28,10 +28,13 @@ class Message(Base):
     thread_id: Mapped[str] = mapped_column(
         ForeignKey("threads.thread_id", ondelete="CASCADE"), nullable=False, index=True
     )
-    user_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
-    role: Mapped[str] = mapped_column(String(32), default=MessageRole.USER.value, nullable=False)
-    content: Mapped[str] = mapped_column(Text, nullable=False)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
     tools_used: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
+    role: Mapped[MessageRole] = mapped_column(
+        Enum(MessageRole, name="message_role"), 
+        nullable=False, 
+        default=MessageRole.USER
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

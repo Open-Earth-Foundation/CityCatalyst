@@ -35,7 +35,7 @@ class ThreadService:
         return result.scalar_one_or_none()
 
     async def touch_thread(self, thread: Thread) -> None:
-        thread.updated_at = datetime.now(timezone.utc)
+        thread.last_updated = datetime.now(timezone.utc)
         await self.session.flush()
 
     async def get_thread_for_user(self, thread_id: str, user_id: str) -> Thread:

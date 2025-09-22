@@ -31,12 +31,13 @@ async def _stream_openrouter(
 
     client = OpenRouterClient(
         api_key=settings.openrouter_api_key or "",
-        base_url=settings.openrouter_base_url,
-        timeout_ms=settings.request_timeout_ms,
-        default_model=settings.openrouter_model,
+        llm_config=settings.llm,
     )
 
-    system_prompt = "You are Climate Advisor. Answer concisely and accurately."
+    # Use the appropriate system prompt from LLM config
+    # TODO: Add inventory context injection when available
+    system_prompt = settings.llm.prompts.default
+    
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": payload.content},
@@ -73,8 +74,7 @@ async def _stream_openrouter(
             try:
                 await message_service.create_assistant_message(
                     thread_id=thread.thread_id,
-                    user_id=user_id,
-                    content=assistant_content,
+                    text=assistant_content,
                 )
                 await thread_service.touch_thread(thread)
                 await session.commit()
@@ -110,8 +110,7 @@ async def post_message(
     try:
         await message_service.create_user_message(
             thread_id=thread.thread_id,
-            user_id=payload.user_id,
-            content=payload.content,
+            text=payload.content,
         )
         await thread_service.touch_thread(thread)
         await session.commit()

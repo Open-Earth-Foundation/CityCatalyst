@@ -10,7 +10,7 @@ class ThreadCreateRequest(BaseModel):
 
 class MessageCreateRequest(BaseModel):
     user_id: str = Field(..., min_length=1)
-    content: str = Field(..., min_length=1)
+    content: str = Field(..., min_length=1)  # Keep 'content' for API compatibility
     thread_id: Optional[str] = None
     inventory_id: Optional[str] = None
     context: Optional[Any] = None

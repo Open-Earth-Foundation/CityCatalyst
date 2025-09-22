@@ -16,17 +16,15 @@ class MessageService:
         self,
         *,
         thread_id: str,
-        user_id: str,
-        content: str,
+        text: str,
         role: MessageRole,
         tools_used: Optional[dict] = None,
     ) -> Message:
         message = Message(
             message_id=str(uuid4()),
             thread_id=thread_id,
-            user_id=user_id,
-            role=role.value,
-            content=content,
+            role=role,
+            text=text,
             tools_used=tools_used,
         )
         self.session.add(message)
@@ -37,14 +35,12 @@ class MessageService:
         self,
         *,
         thread_id: str,
-        user_id: str,
-        content: str,
+        text: str,
         tools_used: Optional[dict] = None,
     ) -> Message:
         return await self.create_message(
             thread_id=thread_id,
-            user_id=user_id,
-            content=content,
+            text=text,
             role=MessageRole.USER,
             tools_used=tools_used,
         )
@@ -53,14 +49,12 @@ class MessageService:
         self,
         *,
         thread_id: str,
-        user_id: str,
-        content: str,
+        text: str,
         tools_used: Optional[dict] = None,
     ) -> Message:
         return await self.create_message(
             thread_id=thread_id,
-            user_id=user_id,
-            content=content,
+            text=text,
             role=MessageRole.ASSISTANT,
             tools_used=tools_used,
         )

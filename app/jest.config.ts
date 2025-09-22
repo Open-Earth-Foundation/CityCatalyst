@@ -1,4 +1,4 @@
-/**
+/**w
  * For a detailed explanation regarding each configuration property, visit:
  * https://jestjs.io/docs/configuration
  */
@@ -56,7 +56,29 @@ const config: JestConfigWithTsJest = {
   collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  // collectCoverageFrom: undefined,
+  collectCoverageFrom: [
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/*.stories.tsx",
+    "!src/app/**/layout.tsx",
+    "!src/app/**/loading.tsx",
+    "!src/app/**/error.tsx",
+    "!src/app/**/not-found.tsx",
+    "!src/app/[lng]/**",
+    "!src/app/[...not_found]/**",
+    "!src/app/api/auth/[...nextauth]/**",
+    "!src/app/api/openapi/**",
+    "!src/components/**",
+    "!src/config/**",
+    "!src/data/**",
+    "!src/lib/emails/**",
+    "!src/i18n/**",
+    "!**/node_modules/**",
+    "!**/*.config.{ts,js}",
+    "!**/coverage/**",
+    "!**/dist/**",
+    "!**/build/**"
+  ],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: "coverage",
@@ -70,15 +92,22 @@ const config: JestConfigWithTsJest = {
   coverageProvider: "v8",
 
   // A list of reporter names that Jest uses when writing coverage reports
-  // coverageReporters: [
-  //   "json",
-  //   "text",
-  //   "lcov",
-  //   "clover"
-  // ],
+  coverageReporters: [
+    "text",
+    "lcov",
+    "html",
+    "json-summary"
+  ],
 
   // An object that configures minimum threshold enforcement for coverage results
-  // coverageThreshold: undefined,
+  coverageThreshold: {
+    global: {
+      branches: 50,
+      functions: 50,
+      lines: 50,
+      statements: 50
+    }
+  },
 
   // A path to a custom dependency extractor
   // dependencyExtractor: undefined,

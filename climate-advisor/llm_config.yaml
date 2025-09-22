@@ -1,0 +1,136 @@
+# Climate Advisor LLM Configuration
+# This file contains all LLM-related configuration for the Climate Advisor service
+
+# Model Configuration
+models:
+  # Default model to use when none is specified
+  default: "openai/gpt-4.1"
+  
+  # Available models with their capabilities and default parameters
+  available:
+      
+    "openai/gpt-4.1":
+      name: "GPT-4.1"
+      description: "OpenAI's flagship model"
+      max_tokens: 4096
+      supports_streaming: true
+      default_temperature: 0.7
+      
+    "openai/gpt-4.1-mini":
+      name: "GPT-4.1 Mini"
+      description: "Faster, more cost-effective version of GPT-4o"
+      max_tokens: 4096
+      supports_streaming: true
+      default_temperature: 0.7
+
+# Generation Parameters
+generation:
+  # Default parameters for text generation
+  defaults:
+    temperature: 0.7
+    max_tokens: 2048
+    top_p: 1.0
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    
+  # Parameter limits/ranges
+  limits:
+    temperature:
+      min: 0.0
+      max: 1.0
+    max_tokens:
+      min: 1
+      max: 24000
+    top_p:
+      min: 0.0
+      max: 1.0
+    frequency_penalty:
+      min: -2.0
+      max: 2.0
+    presence_penalty:
+      min: -2.0
+      max: 2.0
+
+# System Prompts
+prompts:
+  # Default system prompt for general climate advice
+  default: |
+    You are Climate Advisor, an AI assistant specialized in climate science, carbon emissions, and sustainability.
+    
+    You help users understand:
+    - Climate data and emissions calculations
+    - Sustainability best practices
+    - Carbon footprint analysis
+    - Climate mitigation strategies
+    - Environmental regulations and standards
+    
+    Provide accurate, concise, and actionable advice. When discussing data or calculations,
+    explain your reasoning clearly. If you're uncertain about specific facts or figures,
+    acknowledge this and suggest where users might find authoritative information.
+    
+    Always prioritize scientifically accurate information and cite relevant standards
+    (GPC, IPCC, etc.) when applicable.
+  
+  # Prompt for inventory-specific context
+  inventory_context: |
+    You are Climate Advisor helping with a specific emissions inventory.
+    
+    Context: {inventory_context}
+    
+    Focus your responses on this inventory's specific needs, sectors, and data.
+    Reference the provided context when relevant to give targeted, actionable advice.
+  
+  # Prompt for data analysis tasks
+  data_analysis: |
+    You are Climate Advisor specialized in emissions data analysis.
+    
+    Help users understand and analyze their emissions data by:
+    - Identifying trends and patterns
+    - Suggesting data quality improvements
+    - Recommending calculation methodologies
+    - Highlighting areas for emissions reduction
+    
+    Be precise with calculations and explain methodologies clearly.
+
+# API Configuration
+api:
+  # OpenRouter configuration
+  openrouter:
+    base_url: "https://openrouter.ai/api/v1"
+    # API key should be set via environment variable OPENROUTER_API_KEY
+    timeout_ms: 30000
+    retry_attempts: 3
+    retry_delay_ms: 1000
+    
+  # Request configuration
+  requests:
+    # Maximum time to wait for a response
+    timeout_ms: 30000
+    # Maximum number of retries for failed requests
+    max_retries: 3
+    # Delay between retries (exponential backoff)
+    retry_delay_ms: 1000
+    # Maximum tokens per request (safety limit)
+    max_tokens_per_request: 92000
+
+# Feature Flags
+features:
+  # Enable/disable streaming responses
+  streaming_enabled: true
+  # Enable/disable model switching per request
+  dynamic_model_selection: true
+  # Enable/disable custom temperature per request
+  dynamic_parameters: true
+  # Enable/disable context injection for inventories
+  inventory_context_injection: true
+
+# Logging Configuration
+logging:
+  # Log LLM requests and responses (be careful with sensitive data)
+  log_requests: false
+  log_responses: false
+  # Log performance metrics
+  log_performance: true
+  # Log model usage statistics
+  log_usage_stats: true
+

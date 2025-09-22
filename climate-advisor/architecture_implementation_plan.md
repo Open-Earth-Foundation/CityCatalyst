@@ -42,7 +42,7 @@ Establish the foundation for the Climate Advisor Service microservice and begin 
 -**Acceptance Criteria:**
 
 - [x] Project structure: create `app/` package with modules for `routes/`, `models/`, `services/`, `config/`, `middleware/`, `utils/` consistent with architecture.md and API versioning (`/v1/*`).
-- [x] Health endpoints: `GET /health` (liveness) and `GET /ready` (readiness; returns `{"ready": true}` when app boot completes; no external checks yet).
+- [x] Health endpoint: `GET /health` (liveness).
 - [x] API surface (stubs only):
   - [x] `POST /v1/threads` returns `201` with `{ thread_id }` (UUIDv4 generated server-side) and echoes received context metadata (not persisted).
   - [x] `POST /v1/messages` streams SSE events that echo the input content in 2–3 chunks, ending with a terminal event; content-type `text/event-stream`, compatible with CC streaming.
@@ -72,7 +72,7 @@ Status: Implemented as a standalone FastAPI app under `climate-advisor/service/a
 
 What was implemented
 - Structure created: `routes/`, `models/`, `services/`, `config/`, `middleware/`, `utils/` under `app/`.
-- Health endpoints: `GET /health`, `GET /ready` (ready flips true on startup event).
+- Health endpoint: `GET /health`.
 - v1 endpoints (stubs):
   - `POST /v1/threads` → 201 Created, returns `{ thread_id }` and echoes `inventory_id`, `context`; `Location: /v1/threads/{id}` header set.
   - `POST /v1/messages` → streams SSE events echoing the input `content` in 2–3 chunks and ends with a `done` event.
@@ -81,11 +81,11 @@ What was implemented
 - Middleware: Request context middleware captures/propagates `X-Request-Id`, logs start/stop with duration; CORS via FastAPI `CORSMiddleware` using `CA_CORS_ORIGINS`.
 - SSE utils: helpers to format events and chunk text; response disables buffering and sets `text/event-stream`.
 - Settings: `.env` loading, `CA_PORT`, `CA_LOG_LEVEL`, `CA_CORS_ORIGINS` supported; placeholders for OpenRouter/CC kept for later tickets.
-- Playground: Static HTML tester mounted at `/playground` to manually exercise endpoints (`/health`, `/ready`, `/v1/threads`, `/v1/messages`).
+- Playground: Static HTML tester mounted at `/playground` to manually exercise endpoints (`/health`, `/v1/threads`, `/v1/messages`).
 - Swagger: Built-in Swagger UI at `/docs` and ReDoc at `/redoc`. Static OpenAPI spec at `climate-advisor/docs/climate-advisor-openapi.yaml`.
 
 How it was implemented
-- Entry point `app/main.py` builds the FastAPI app with middleware, routers, and exception handlers; sets `app.state.ready` on startup.
+- Entry point `app/main.py` builds the FastAPI app with middleware, routers, and exception handlers; logs lifecycle events on startup/shutdown.
 - `app/middleware/request_context.py` uses a contextvar to store a per-request UUID or incoming `x-request-id` header; adds `X-Request-Id` to responses.
 - `app/routes/messages.py` returns `StreamingResponse` with SSE-formatted chunks from `app/utils/sse.py` and terminal `event: done`.
 - Problem Details factory ensures consistent error envelopes; 422/HTTPException/ValueError/500 paths covered.
@@ -94,8 +94,6 @@ Examples
 - Health checks
   - Liveness: `curl -s http://localhost:8080/health`
     - Response: `{ "status": "ok" }`
-  - Readiness: `curl -s http://localhost:8080/ready`
-    - Response: `{ "ready": true }` (after startup)
 
 - Create thread (v1)
   - Request:
@@ -335,7 +333,7 @@ What changed
 ### Sprint 1 Definition of Done
 
 - [x] TICKET-001 and TICKET-002 merged and verified locally. (Service runs with latest threads/messages + OpenRouter changes.)
-- [x] Docker image builds and runs via the service Dockerfile with `/health` and `/ready` returning success. (Validated via `docker run climate-advisor:dev` with health probes.)
+- [x] Docker image builds and runs via the service Dockerfile with `/health` returning success. (Validated via `docker run climate-advisor:dev` with health probes.)
 - [x] `/v1/threads` and `/v1/messages` respond successfully; `/v1/messages` streams OpenRouter output end-to-end. (cURL + Postman checks against running container.)
 - [x] Structured request logging shows propagated request IDs and correct SSE headers. (Log samples from running container include request IDs & SSE headers.)
 - [x] Developer docs and helper scripts cover local run, streaming test harness, and environment configuration. (README + `scripts/setup_local_db.py` + `scripts/test_service_stream.py`.)
@@ -348,7 +346,7 @@ What changed
 
 ---
 
-##### TICKET-002 � Implementation Notes and Examples (Completed)
+##### TICKET-002 � Implementation Notes and Examples (Completed)
 
 Environment
 - Required env vars: `OPENROUTER_API_KEY`, optional `OPENROUTER_BASE_URL` (default `https://openrouter.ai/api/v1`), `OPENROUTER_MODEL`, `REQUEST_TIMEOUT_MS`.
@@ -564,16 +562,33 @@ Enable CA to fetch contextual data from CC using OAuth, to enrich prompts.
 
 ---
 
-## Environment Variables (initial set)
+## Configuration (updated)
+
+### Environment Variables
 
 - `CA_PORT` – default 8080
 - `CA_LOG_LEVEL` – info|debug
-- `OPENROUTER_API_KEY`
-- `OPENROUTER_BASE_URL` – default `https://openrouter.ai/api/v1`
-- `OPENROUTER_MODEL` – default model id
+- `OPENROUTER_API_KEY` – required for OpenRouter access
 - `CC_BASE_URL` – base URL for CityCatalyst API
 - `CC_OAUTH_CLIENT_ID`, `CC_OAUTH_CLIENT_SECRET`, `CC_OAUTH_TOKEN_URL`
-- `REQUEST_TIMEOUT_MS`
+
+### LLM Configuration (YAML)
+
+All LLM-related configuration has been centralized in `climate-advisor/llm_config.yaml`:
+
+- **Models**: Default model selection, available models with capabilities
+- **Generation**: Default temperature, max_tokens, and parameter limits
+- **Prompts**: System prompts for different contexts (general, inventory-specific, data analysis)
+- **API**: OpenRouter settings, timeouts, retry configuration
+- **Features**: Toggles for streaming, dynamic model selection, parameter overrides
+- **Logging**: Control request/response logging and performance metrics
+
+This centralized approach provides:
+- Easy configuration management without code changes
+- Environment-specific overrides via environment variables
+- Validation of parameters and limits
+- Support for multiple models and providers
+- Flexible prompt management
 
 ---
 

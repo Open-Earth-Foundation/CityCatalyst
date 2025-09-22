@@ -28,6 +28,7 @@ class Message(Base):
     thread_id: Mapped[str] = mapped_column(
         ForeignKey("threads.thread_id", ondelete="CASCADE"), nullable=False, index=True
     )
+    user_id: Mapped[str] = mapped_column(String(255), nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
     tools_used: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     role: Mapped[MessageRole] = mapped_column(

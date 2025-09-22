@@ -69,6 +69,7 @@ async def _stream_openrouter(
             try:
                 await message_service.create_assistant_message(
                     thread_id=thread.thread_id,
+                    user_id=user_id,
                     text=assistant_content,
                 )
                 await thread_service.touch_thread(thread)
@@ -101,6 +102,7 @@ async def post_message(
     try:
         await message_service.create_user_message(
             thread_id=thread.thread_id,
+            user_id=payload.user_id,
             text=payload.content,
         )
         await thread_service.touch_thread(thread)

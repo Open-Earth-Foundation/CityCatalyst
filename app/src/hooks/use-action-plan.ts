@@ -1,4 +1,7 @@
-import { useState, useEffect } from "react";
+import {
+  useGetActionPlansQuery,
+  useGetActionPlanByIdQuery,
+} from "@/services/api";
 import { HIAction } from "@/util/types";
 
 interface ActionPlan {
@@ -29,50 +32,20 @@ export const useActionPlan = ({
   inventoryId,
   language,
 }: UseActionPlanProps) => {
-  const [data, setData] = useState<ActionPlan | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: response,
+    isLoading,
+    error,
+    refetch,
+  } = useGetActionPlansQuery(
+    { inventoryId, language, actionId },
+    {
+      skip: !actionId || !inventoryId || !language || inventoryId === "",
+    },
+  );
 
-  const fetchActionPlan = async () => {
-    if (!actionId || !inventoryId || !language) {
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(
-        `/api/v0/action-plans?inventoryId=${inventoryId}&language=${language}&actionId=${actionId}`,
-      );
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          setData(null); // No plan exists
-          return;
-        }
-        throw new Error(`Failed to fetch action plan: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      // Return the first matching plan if any exist
-      setData(result.actionPlans?.[0] || null);
-    } catch (err) {
-      console.error("Error fetching action plan:", err);
-      setError(err instanceof Error ? err.message : "Unknown error");
-      setData(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchActionPlan();
-  }, [actionId, inventoryId, language]);
-
-  const refetch = () => {
-    fetchActionPlan();
-  };
+  // Extract the first action plan from the response
+  const data = response?.actionPlans?.[0] || null;
 
   return {
     data,
@@ -86,43 +59,10 @@ export const useActionPlan = ({
  * Hook to fetch a specific action plan by ID
  */
 export const useActionPlanById = (planId: string | null) => {
-  const [data, setData] = useState<ActionPlan | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchActionPlanById = async () => {
-    if (!planId) {
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(`/api/v0/action-plans/${planId}`);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch action plan: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      setData(result);
-    } catch (err) {
-      console.error("Error fetching action plan:", err);
-      setError(err instanceof Error ? err.message : "Unknown error");
-      setData(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchActionPlanById();
-  }, [planId]);
-
-  const refetch = () => {
-    fetchActionPlanById();
-  };
+  const { data, isLoading, error, refetch } = useGetActionPlanByIdQuery(
+    planId!,
+    { skip: !planId || planId === "" },
+  );
 
   return {
     data,

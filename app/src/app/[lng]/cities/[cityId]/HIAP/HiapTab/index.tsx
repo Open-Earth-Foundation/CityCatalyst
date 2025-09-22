@@ -92,11 +92,14 @@ export function HiapTab({
     isLoading,
     error,
     refetch,
-  } = useGetHiapQuery({
-    inventoryId: inventory.inventoryId,
-    lng: lng,
-    actionType: type,
-  });
+  } = useGetHiapQuery(
+    {
+      inventoryId: inventory.inventoryId || "",
+      lng: lng,
+      actionType: type,
+    },
+    { skip: !inventory.inventoryId },
+  );
 
   const [updateHiapSelection, { isLoading: isUpdatingSelection }] =
     useUpdateHiapSelectionMutation();

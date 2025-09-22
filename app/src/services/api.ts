@@ -110,6 +110,7 @@ export const api = createApi({
     "CCRADashboard",
     "ProjectModules",
     "Modules",
+    "ActionPlan",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1279,6 +1280,27 @@ export const api = createApi({
         }) => {
           return response.data;
         },
+        invalidatesTags: ["ActionPlan"],
+      }),
+      getActionPlans: builder.query<
+        { actionPlans: any[] },
+        { inventoryId: string; language?: string; actionId?: string }
+      >({
+        query: ({ inventoryId, language, actionId }) => {
+          const params = new URLSearchParams({ inventoryId });
+          if (language) params.append("language", language);
+          if (actionId) params.append("actionId", actionId);
+          return `action-plans?${params.toString()}`;
+        },
+        transformResponse: (response: { data: any[] }) => ({
+          actionPlans: response.data,
+        }),
+        providesTags: ["ActionPlan"],
+      }),
+      getActionPlanById: builder.query<any, string>({
+        query: (id) => `action-plans/${id}`,
+        transformResponse: (response: { data: any }) => response.data,
+        providesTags: (result, error, id) => [{ type: "ActionPlan", id }],
       }),
       setOrgWhiteLabel: builder.mutation({
         query: (data: {
@@ -1669,6 +1691,8 @@ export const {
   useGetHiapQuery,
   useUpdateHiapSelectionMutation,
   useGenerateActionPlanMutation,
+  useGetActionPlansQuery,
+  useGetActionPlanByIdQuery,
   useGetThemesQuery,
   useSetOrgWhiteLabelMutation,
   useGetOrganizationForInventoryQuery,

@@ -256,6 +256,16 @@ const GeneratePlanDialog = ({
   const planToDisplay = existingPlan?.planData || generatedPlan;
   const hasExistingPlan = !!existingPlan;
 
+  // Debug logging to verify the plan fetching logic
+  React.useEffect(() => {
+    console.log("Action Plan Debug:", {
+      actionId: action.actionId,
+      existingPlan,
+      hasExistingPlan,
+      isPlanLoading,
+    });
+  }, [action.actionId, existingPlan, hasExistingPlan, isPlanLoading]);
+
   const handleGeneratePlan = async () => {
     if (!inventoryId || !cityLocode) {
       console.error("Missing required data for plan generation:", {

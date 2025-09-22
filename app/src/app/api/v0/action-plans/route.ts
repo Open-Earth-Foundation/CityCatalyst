@@ -7,6 +7,7 @@ import createHttpError from "http-errors";
 const getActionPlansSchema = z.object({
   inventoryId: z.string().uuid().optional(),
   language: z.string().optional(),
+  actionId: z.string().optional(),
 });
 
 const createActionPlanSchema = z.object({
@@ -24,7 +25,7 @@ const createActionPlanSchema = z.object({
  * /api/v0/action-plans:
  *   get:
  *     summary: Get action plans
- *     description: Retrieve action plans with optional filtering by inventory ID and language
+ *     description: Retrieve action plans with optional filtering by inventory ID, language, and action ID
  *     parameters:
  *       - in: query
  *         name: inventoryId
@@ -37,6 +38,11 @@ const createActionPlanSchema = z.object({
  *         schema:
  *           type: string
  *         description: Filter by language
+ *       - in: query
+ *         name: actionId
+ *         schema:
+ *           type: string
+ *         description: Filter by specific action ID
  *     responses:
  *       200:
  *         description: List of action plans
@@ -55,7 +61,8 @@ export const GET = apiHandler(async (req: NextRequest) => {
   const queryParams = Object.fromEntries(url.searchParams.entries());
 
   try {
-    const { inventoryId, language } = getActionPlansSchema.parse(queryParams);
+    const { inventoryId, language, actionId } =
+      getActionPlansSchema.parse(queryParams);
 
     if (!inventoryId) {
       throw createHttpError.BadRequest("inventoryId is required");
@@ -64,6 +71,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
     const actionPlans = await ActionPlanService.getActionPlansByInventoryId(
       inventoryId,
       language,
+      actionId,
     );
 
     return NextResponse.json({ data: actionPlans });
@@ -132,6 +140,7 @@ export const POST = apiHandler(async (req: NextRequest, { session }) => {
     const actionPlan = await ActionPlanService.createActionPlan({
       ...validatedData,
       createdBy: session?.user?.id,
+      planData: validatedData.planData || {},
     });
 
     return NextResponse.json({ data: actionPlan }, { status: 201 });

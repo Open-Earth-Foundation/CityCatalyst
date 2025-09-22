@@ -39,11 +39,14 @@ export default function HIAPPage(props: {
     isLoading,
     error,
     refetch,
-  } = useGetHiapQuery({
-    inventoryId: inventory?.inventoryId!,
-    lng: lang,
-    actionType: ACTION_TYPES.Mitigation,
-  });
+  } = useGetHiapQuery(
+    {
+      inventoryId: inventory?.inventoryId || "",
+      lng: lang,
+      actionType: ACTION_TYPES.Mitigation,
+    },
+    { skip: !inventory?.inventoryId },
+  );
 
   const formattedEmissions = inventory?.totalEmissions
     ? formatEmissions(inventory.totalEmissions)

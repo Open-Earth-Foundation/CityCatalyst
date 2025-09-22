@@ -112,7 +112,6 @@ export default class ActionPlanService {
     try {
       const actionPlan = await db.models.ActionPlan.findByPk(id, {
         include: [
-          { model: db.models.User, as: "createdByUser" },
           { model: db.models.Inventory, as: "inventory" },
           { model: db.models.HighImpactActionRanking, as: "hiActionRanking" },
         ],
@@ -133,17 +132,20 @@ export default class ActionPlanService {
   public static async getActionPlansByInventoryId(
     inventoryId: string,
     language?: string,
+    actionId?: string,
   ): Promise<ActionPlan[]> {
     try {
       const whereClause: any = { inventoryId };
       if (language) {
         whereClause.language = language;
       }
+      if (actionId) {
+        whereClause.actionId = actionId;
+      }
 
       const actionPlans = await db.models.ActionPlan.findAll({
         where: whereClause,
         include: [
-          { model: db.models.User, as: "createdByUser" },
           { model: db.models.HighImpactActionRanking, as: "hiActionRanking" },
         ],
         order: [["created", "DESC"]],
@@ -177,7 +179,6 @@ export default class ActionPlanService {
           language,
         },
         include: [
-          { model: db.models.User, as: "createdByUser" },
           { model: db.models.Inventory, as: "inventory" },
           { model: db.models.HighImpactActionRanking, as: "hiActionRanking" },
         ],

@@ -443,10 +443,7 @@ export function initModels(sequelize: Sequelize) {
   const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
 
   // ActionPlan associations
-  ActionPlan.belongsTo(User, {
-    foreignKey: "createdBy",
-    as: "createdByUser",
-  });
+  // Note: createdBy is just a string field, no User association for now
   ActionPlan.belongsTo(Inventory, {
     foreignKey: "inventoryId",
     as: "inventory",

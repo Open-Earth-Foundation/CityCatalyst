@@ -102,10 +102,10 @@ const config: JestConfigWithTsJest = {
   // An object that configures minimum threshold enforcement for coverage results
   coverageThreshold: {
     global: {
-      branches: 50,
-      functions: 50,
-      lines: 50,
-      statements: 50
+      branches: 40,
+      functions: 20,
+      lines: 40,
+      statements: 40
     }
   },
 

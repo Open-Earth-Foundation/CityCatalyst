@@ -680,6 +680,10 @@ const ActivityModalBody = ({
                   invalid={!!resolve(prefix + "emissionFactorType", errors)}
                   maxWidth="250px"
                   flex="1"
+                  labelProps={{
+                    isTruncated: true,
+                    maxWidth: "100%",
+                  }}
                 >
                   <Controller
                     name="activity.emissionFactorType"

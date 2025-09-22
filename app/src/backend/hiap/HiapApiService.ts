@@ -8,6 +8,7 @@ import { logger } from "@/services/logger";
 import { PrioritizerResponse } from "./types";
 import { db } from "@/models";
 import { getCityContextAndEmissionsData } from "./HiapService";
+import ActionPlanService from "@/backend/ActionPlanService";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 
@@ -95,11 +96,13 @@ export const startActionPlanJob = async ({
   cityLocode,
   lng,
   inventoryId,
+  createdBy,
 }: {
   action: HIAction;
   cityLocode: string;
   lng: LANGUAGES;
   inventoryId: string;
+  createdBy?: string;
 }): Promise<{ plan: string; timestamp: string; actionName: string }> => {
   try {
     // Get city context and emissions data
@@ -247,6 +250,37 @@ export const startActionPlanJob = async ({
 
     const plan = await planResponse.text();
     console.log("Successfully retrieved plan");
+
+    // Parse the plan data to extract metadata
+    let planData;
+    try {
+      planData = JSON.parse(plan);
+    } catch (parseError) {
+      console.error("Failed to parse plan JSON:", parseError);
+      throw new Error("Invalid plan data format");
+    }
+
+    // Save action plan to database
+    try {
+      const { actionPlan, created } = await ActionPlanService.upsertActionPlan({
+        actionId: action.actionId,
+        inventoryId,
+        hiActionRankingId: action.hiaRankingId,
+        cityLocode,
+        actionName: action.name,
+        language: lng,
+        planData,
+        createdBy,
+      });
+
+      console.log(
+        `Action plan ${created ? "created" : "updated"} in database:`,
+        actionPlan.id,
+      );
+    } catch (dbError) {
+      console.error("Failed to save action plan to database:", dbError);
+      // Continue execution - don't fail the API response due to DB issues
+    }
 
     // Update state with the generated plan
     return {

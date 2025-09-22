@@ -38,6 +38,7 @@
   "re-prioritize-actions": "Reprioriser les actions",
   "generated-action-plan": "générer plan d'action",
   "export-as-pdf": "exporter en PDF",
+  "generating-pdf": "génération du PDF...",
   "subactions": "Sous-actions",
   "municipal-institutions-involved": "institutions municipales impliquées",
   "transport": "Transport",

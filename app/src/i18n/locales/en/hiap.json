@@ -54,6 +54,7 @@
   "re-prioritize-actions": "Re-prioritize actions",
   "generated-action-plan": "generate action plan",
   "export-as-pdf": "export as pdf",
+  "generating-pdf": "generating pdf...",
   "subactions": "Subactions",
   "municipal-institutions-involved": "municipal institutions involved",
   "click-action-description": "Click the button below to start listing your top climate actions.",

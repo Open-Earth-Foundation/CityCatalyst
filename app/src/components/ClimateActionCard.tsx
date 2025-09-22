@@ -236,6 +236,7 @@ const GeneratePlanDialog = ({
     useGenerateActionPlanMutation();
   const [generatedPlan, setGeneratedPlan] = useState<any | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPdfGenerating, setIsPdfGenerating] = useState(false);
 
   const handleGeneratePlan = async () => {
     if (!inventoryId || !cityLocode) {
@@ -265,6 +266,55 @@ const GeneratePlanDialog = ({
       setGeneratedPlan(planData);
     } catch (error) {
       console.error("Failed to generate plan:", error);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    if (!generatedPlan) {
+      console.error("No plan data available for PDF export");
+      return;
+    }
+
+    setIsPdfGenerating(true);
+
+    try {
+      // Get city name from cityLocode or use a default
+      const cityName = cityLocode || "Unknown City";
+
+      const response = await fetch(`/api/v0/action-plan/${action.id}/pdf`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          planData: generatedPlan,
+          cityName: cityName,
+          actionTitle: action.name,
+          lng: action.lang || "en",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate PDF");
+      }
+
+      // Create download link
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `action-plan-${action.name.replace(/[^a-zA-Z0-9]/g, "-")}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Failed to export PDF:", error);
+      // You could add a toast notification here for better UX
+    } finally {
+      setIsPdfGenerating(false);
     }
   };
 
@@ -309,9 +359,12 @@ const GeneratePlanDialog = ({
                   color="content.tertiary"
                   px="4px"
                   h="48px"
+                  onClick={handleExportPDF}
+                  disabled={!generatedPlan || isPdfGenerating}
+                  loading={isPdfGenerating}
                 >
                   <Icon as={RiFile3Line} boxSize="24px" />
-                  {t("export-as-pdf")}
+                  {isPdfGenerating ? t("generating-pdf") : t("export-as-pdf")}
                 </Button>
               </HStack>
             </Dialog.Header>
@@ -495,16 +548,6 @@ const GeneratePlanDialog = ({
                         </VStack>
                       </Box>
                     )}
-
-                    <Button
-                      variant="outline"
-                      w="full"
-                      onClick={() => {
-                        setGeneratedPlan(null);
-                      }}
-                    >
-                      Generate New Plan
-                    </Button>
                   </>
                 )}
               </VStack>

@@ -1,5 +1,35 @@
 #!/usr/bin/env python3
-"""Utility to (re)create the Climate Advisor Postgres schema locally."""
+"""
+Climate Advisor Database Setup Utility
+
+This script creates or recreates the PostgreSQL database schema for the Climate Advisor service.
+It is designed to be run during local development to set up or reset the database.
+
+Inputs:
+    --drop: Optional flag to drop existing tables before recreating them (destructive operation)
+
+Outputs:
+    Creates or recreates the database schema with all required tables, indexes, and relationships
+    Prints success message or error details to stdout/stderr
+
+Usage:
+    python scripts/setup_local_db.py [--drop]
+
+    # Create database schema
+    python scripts/setup_local_db.py
+
+    # Reset database schema (drops existing tables first)
+    python scripts/setup_local_db.py --drop
+
+Prerequisites:
+    - PostgreSQL database must be running and accessible
+    - CA_DATABASE_URL environment variable must be set
+    - .env file should be present in the project root
+
+Note:
+    This script is idempotent and can be run multiple times safely.
+    The --drop flag will permanently delete all existing data.
+"""
 
 from __future__ import annotations
 

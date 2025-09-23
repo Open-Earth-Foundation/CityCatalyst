@@ -142,16 +142,8 @@ export const startActionPlanJob = async ({
       },
     );
 
-    console.log("Start plan creation response status:", startResponse.status);
-    console.log("Start plan creation response:", startResponse);
-    console.log(
-      "Start plan creation response headers:",
-      Object.fromEntries(startResponse.headers.entries()),
-    );
-
     // Log the raw response for debugging
     const responseText = await startResponse.text();
-    console.log("Raw API Response:", responseText);
 
     if (!startResponse.ok) {
       throw new Error(`Failed to start plan generation: ${responseText}`);
@@ -160,21 +152,20 @@ export const startActionPlanJob = async ({
     let responseData;
     try {
       responseData = JSON.parse(responseText);
-      console.log("Response data:", responseData);
     } catch (e) {
       console.error("Failed to parse JSON response:", e);
       throw new Error(`Invalid JSON response: ${responseText}`);
     }
 
     const task_id = responseData.taskId;
-    console.log("Task ID:", task_id);
+    logger.info("Task ID:", task_id);
     if (!task_id) {
       throw new Error(
         `No task_id in response: ${JSON.stringify(responseData)}`,
       );
     }
 
-    console.log("Successfully started plan creation with task_id:", task_id);
+    logger.info("Successfully started plan creation with task_id:", task_id);
 
     // Step 2: Poll for completion
     let status = "pending";
@@ -183,7 +174,7 @@ export const startActionPlanJob = async ({
     const pollInterval = 10000; // 10 seconds between attempts
 
     while (status === "pending" || status === "running") {
-      console.log(
+      logger.info(
         `Checking progress for task ${task_id}, attempt ${
           attempts + 1
         } of ${maxAttempts}`,
@@ -198,16 +189,16 @@ export const startActionPlanJob = async ({
         },
       );
 
-      console.log("Check progress response status:", statusResponse.status);
+      logger.info("Check progress response status:", statusResponse.status);
 
       if (!statusResponse.ok) {
         const errorText = await statusResponse.text();
-        console.error("Check progress error:", errorText);
+        logger.error("Check progress error:", errorText);
         throw new Error(`Failed to check progress: ${errorText}`);
       }
 
       const statusData = await statusResponse.json();
-      console.log("Check progress response:", statusData);
+      logger.info("Check progress response:", statusData);
 
       status = statusData.status;
 
@@ -219,7 +210,7 @@ export const startActionPlanJob = async ({
         if (attempts >= maxAttempts) {
           throw new Error("Plan generation timed out after 5 minutes");
         }
-        console.log(
+        logger.info(
           `Waiting ${pollInterval / 1000} seconds before next check...`,
         );
         await new Promise((resolve) => setTimeout(resolve, pollInterval)); // Poll every 10 seconds
@@ -227,10 +218,10 @@ export const startActionPlanJob = async ({
       }
     }
 
-    console.log(`Plan generation completed with status: ${status}`);
+    logger.info(`Plan generation completed with status: ${status}`);
 
     // Step 3: Get the generated plan
-    console.log(`Fetching plan for task ${task_id}`);
+    logger.info(`Fetching plan for task ${task_id}`);
 
     const planResponse = await fetch(
       `${HIAP_API_URL}/plan-creator/v1/get_plan/${task_id}`,
@@ -241,16 +232,16 @@ export const startActionPlanJob = async ({
       },
     );
 
-    console.log("Get plan response status:", planResponse.status);
+    logger.info("Get plan response status:", planResponse.status);
 
     if (!planResponse.ok) {
       const errorText = await planResponse.text();
-      console.error("Get plan error:", errorText);
+      logger.error("Get plan error:", errorText);
       throw new Error(`Failed to retrieve plan: ${errorText}`);
     }
 
     const plan = await planResponse.text();
-    console.log("Successfully retrieved plan");
+    logger.info("Successfully retrieved plan");
 
     // Parse the plan data to extract metadata
     let planData;

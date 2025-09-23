@@ -115,5 +115,9 @@
   "view-generated-plan": "Generierten Plan Anzeigen",
   "generating-plan": "Plan Wird Generiert...",
   "missing-data": "Fehlende Daten",
+  "plan-generation-started": "Plan-Generierung Gestartet",
+  "plan-generation-started-description": "Ihr Aktionsplan wird generiert. Sie erhalten eine E-Mail-Benachrichtigung, wenn er fertig ist.",
+  "plan-generation-failed": "Generierung Fehlgeschlagen",
+  "plan-generation-failed-description": "Fehler beim Starten der Plan-Generierung. Bitte versuchen Sie es erneut.",
   "exit-selection": "Auswahl verlassen"
 }

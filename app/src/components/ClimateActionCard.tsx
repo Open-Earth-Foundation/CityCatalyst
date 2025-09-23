@@ -24,6 +24,7 @@ import { LabelMedium } from "./Texts/Label";
 import { HeadlineMedium } from "./Texts/Headline";
 import { useActionPlan } from "@/hooks/use-action-plan";
 import { PDFExportService } from "@/services/PDFExportService";
+import { toaster } from "@/components/ui/toaster";
 
 export const ClimateActionCard = ({
   action,
@@ -269,25 +270,34 @@ const GeneratePlanDialog = ({
     }
 
     try {
-      const result = await generateActionPlan({
+      // Start the plan generation process
+      generateActionPlan({
         action: action,
         cityId: cityData?.cityId || "",
         inventoryId: inventoryId || "",
         cityLocode: cityLocode,
         lng: action.lang,
         rankingId: action.hiaRankingId,
-      }).unwrap();
+      });
 
-      // Parse the plan JSON string
-      const planData = JSON.parse(result.plan);
-      setGeneratedPlan(planData);
+      // Show immediate toast notification that generation has started
+      toaster.create({
+        title: t("plan-generation-started"),
+        description: t("plan-generation-started-description"),
+        type: "info",
+        duration: 5000,
+      });
 
-      // Refetch the plan data to get the latest from the database
-      await refetchPlan();
-
-      // Plan generated successfully - user can now click "View Generated Plan" to see it
+      // Note: Plan generation happens in the background
+      // User will be notified via email when it's complete
     } catch (error) {
-      console.error("Failed to generate plan:", error);
+      console.error("Failed to start plan generation:", error);
+      toaster.create({
+        title: t("plan-generation-failed"),
+        description: t("plan-generation-failed-description"),
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 

@@ -115,5 +115,9 @@
   "view-generated-plan": "View Generated Plan",
   "loading": "Loading...",
   "generating-plan": "Generating Plan...",
-  "missing-data": "Missing Data"
+  "missing-data": "Missing Data",
+  "plan-generation-started": "Plan Generation Started",
+  "plan-generation-started-description": "Your action plan is being generated. You'll receive an email notification when it's ready.",
+  "plan-generation-failed": "Generation Failed",
+  "plan-generation-failed-description": "Failed to start plan generation. Please try again."
 }

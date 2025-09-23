@@ -1312,7 +1312,7 @@ export const api = createApi({
       >({
         query: ({ cityId, id }) => `city/${cityId}/hiap/action-plans/${id}`,
         transformResponse: (response: { data: ActionPlan }) => response.data,
-        providesTags: (result, error, id) => [{ type: "ActionPlan", id }],
+        providesTags: ["ActionPlan"],
       }),
       setOrgWhiteLabel: builder.mutation({
         query: (data: {

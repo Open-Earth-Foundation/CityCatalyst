@@ -5,7 +5,7 @@ import { z } from "zod";
 import createHttpError from "http-errors";
 
 const getActionPlansSchema = z.object({
-  inventoryId: z.string().uuid().optional(),
+  cityId: z.string().optional(),
   language: z.string().optional(),
   actionId: z.string().optional(),
 });
@@ -61,13 +61,11 @@ export const GET = apiHandler(async (req: NextRequest) => {
   const queryParams = Object.fromEntries(url.searchParams.entries());
 
   try {
-    const { inventoryId, language, actionId } =
+    const { cityId, language, actionId } =
       getActionPlansSchema.parse(queryParams);
 
-    // inventoryId is kept for backwards compatibility but not required anymore
-
-    const actionPlans = await ActionPlanService.getActionPlansByInventoryId(
-      "", // No inventory filtering since we removed inventory_id
+    const actionPlans = await ActionPlanService.getActionPlansByCityId(
+      cityId,
       language,
       actionId,
     );

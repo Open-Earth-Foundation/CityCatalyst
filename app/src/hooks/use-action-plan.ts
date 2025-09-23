@@ -20,7 +20,7 @@ interface ActionPlan {
 
 interface UseActionPlanProps {
   actionId: string;
-  inventoryId: string;
+  cityId: string;
   language: string;
 }
 
@@ -29,7 +29,7 @@ interface UseActionPlanProps {
  */
 export const useActionPlan = ({
   actionId,
-  inventoryId,
+  cityId,
   language,
 }: UseActionPlanProps) => {
   const {
@@ -38,9 +38,9 @@ export const useActionPlan = ({
     error,
     refetch,
   } = useGetActionPlansQuery(
-    { inventoryId, language, actionId },
+    { cityId, language, actionId },
     {
-      skip: !actionId || !inventoryId || !language || inventoryId === "",
+      skip: !actionId || !cityId || !language || cityId === "",
     },
   );
 

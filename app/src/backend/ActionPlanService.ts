@@ -208,10 +208,10 @@ export default class ActionPlanService {
   }
 
   /**
-   * Get action plans by criteria
+   * Get action plans by city ID
    */
-  public static async getActionPlansByInventoryId(
-    inventoryId: string,
+  public static async getActionPlansByCityId(
+    cityId?: string,
     language?: string,
     actionId?: string,
   ): Promise<ActionPlan[]> {
@@ -318,8 +318,8 @@ export default class ActionPlanService {
       const transformedData = this.transformPlanData(input.planData);
 
       // Check if action plan already exists
-      const existingPlans = await this.getActionPlansByInventoryId(
-        "", // No inventory filter since we removed inventory_id
+      const existingPlans = await this.getActionPlansByCityId(
+        undefined, // No city filter for upsert
         input.language,
         input.actionId,
       );
@@ -367,8 +367,8 @@ export default class ActionPlanService {
     language: string,
   ): Promise<{ planData: any } | null> {
     try {
-      const actionPlans = await this.getActionPlansByInventoryId(
-        "", // No inventory filter
+      const actionPlans = await this.getActionPlansByCityId(
+        undefined, // No city filter
         language,
         actionId,
       );

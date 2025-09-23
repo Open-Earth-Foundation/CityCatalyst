@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { TopPickIcon, GeneratePlanIcon } from "@/components/icons";
-import { HIAction } from "@/util/types";
+import { CityWithProjectDataResponse, HIAction } from "@/util/types";
 import { useGenerateActionPlanMutation } from "@/services/api";
 import { RiFile3Line } from "react-icons/ri";
 import { GoLocation } from "react-icons/go";
@@ -29,17 +29,19 @@ export const ClimateActionCard = ({
   viewOnly = false,
   t,
   onSeeMoreClick,
-  inventoryId,
+  cityData,
   cityLocode,
   cityId,
+  inventoryId,
 }: {
   action: HIAction;
   viewOnly?: boolean;
   t: TFunction;
   onSeeMoreClick?: () => void;
-  inventoryId?: string;
+  cityData?: CityWithProjectDataResponse;
   cityLocode?: string;
   cityId?: string;
+  inventoryId?: string;
 }) => {
   const getReductionColor = (level: string) => {
     switch (level) {
@@ -208,9 +210,10 @@ export const ClimateActionCard = ({
               <GeneratePlanDialog
                 t={t}
                 action={action}
-                inventoryId={inventoryId}
+                cityData={cityData}
                 cityLocode={cityLocode}
                 cityId={cityId}
+                inventoryId={inventoryId}
               />
             </>
           )}
@@ -223,15 +226,17 @@ export const ClimateActionCard = ({
 const GeneratePlanDialog = ({
   t,
   action,
-  inventoryId,
+  cityData,
   cityLocode,
   cityId,
+  inventoryId,
 }: {
   t: TFunction;
   action: HIAction;
-  inventoryId?: string;
+  cityData?: CityWithProjectDataResponse;
   cityLocode?: string;
   cityId?: string;
+  inventoryId?: string;
 }) => {
   const [generateActionPlan, { isLoading, error }] =
     useGenerateActionPlanMutation();
@@ -248,7 +253,7 @@ const GeneratePlanDialog = ({
     refetch: refetchPlan,
   } = useActionPlan({
     actionId: action.actionId,
-    inventoryId: inventoryId || "",
+    cityId: cityData?.cityId || "",
     language: action.lang || "en",
   });
 
@@ -257,20 +262,17 @@ const GeneratePlanDialog = ({
   const hasExistingPlan = !!existingPlan;
 
   const handleGeneratePlan = async () => {
-    if (!inventoryId || !cityLocode) {
-      console.error("Missing required data for plan generation:", {
-        inventoryId,
-        cityLocode,
-      });
+    if (!cityData?.cityId || !cityLocode) {
+      console.error("Missing required data for plan generation:");
       return;
     }
 
     try {
       const result = await generateActionPlan({
         action: action,
-        inventoryId: inventoryId,
+        cityId: cityData?.cityId || "",
+        inventoryId: inventoryId || "",
         cityLocode: cityLocode,
-        cityId: cityId!,
         lng: action.lang,
         rankingId: action.hiaRankingId,
       }).unwrap();
@@ -385,10 +387,12 @@ const GeneratePlanDialog = ({
         className="group"
         bg="transparent"
         onClick={handleGeneratePlan}
-        disabled={!inventoryId || !cityLocode}
+        disabled={!cityData?.cityId || !cityLocode}
       >
         <Icon as={GeneratePlanIcon} color="content.link" />
-        {!inventoryId || !cityLocode ? t("missing-data") : t("generate-plan")}
+        {!cityData?.cityId || !cityLocode
+          ? t("missing-data")
+          : t("generate-plan")}
       </Button>
     );
   }

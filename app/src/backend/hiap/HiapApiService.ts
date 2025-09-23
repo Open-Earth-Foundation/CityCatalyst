@@ -110,10 +110,6 @@ export const startActionPlanJob = async ({
     const { cityContextData, cityEmissionsData } =
       await getCityContextAndEmissionsData(inventoryId);
 
-    console.log("City:", cityLocode);
-    console.log("action:", action);
-    console.log("actionId:", action.actionId);
-
     const payload = {
       cityData: {
         cityContextData,

@@ -50,6 +50,15 @@ import { IoMdCheckboxOutline } from "react-icons/io";
 import { TopPickIcon } from "@/components/icons";
 import { pdf } from "@react-pdf/renderer";
 import PrintableActionPlanPDF from "@/components/HIAP/PrintableActionPlanPDF";
+import {
+  MenuContent,
+  MenuItem,
+  MenuRoot,
+  MenuTrigger,
+} from "@/components/ui/menu";
+import { MdArrowDropDown } from "react-icons/md";
+import { ButtonMedium } from "@/components/Texts/Button";
+import { ButtonSmall } from "@/components/Texts/Button";
 
 const BarVisualization = ({
   value,
@@ -183,6 +192,7 @@ export function HiapTab({
             header: t("hazards-covered"),
             cell: ({ row }: { row: Row<HIAction> }) => {
               const action = row.original as AdaptationAction;
+              logger.info("action", action);
               const hazardCount = action.hazards?.length || 0;
               return (
                 <Badge colorScheme="orange">
@@ -353,6 +363,82 @@ export function HiapTab({
     URL.revokeObjectURL(link.href);
   };
 
+  const handleDownloadCSV = () => {
+    const toExport = selectedActions.length > 0 ? selectedActions : actions;
+    if (!toExport || toExport.length === 0) return;
+
+    // Create CSV headers
+    const headers = [
+      t("ranking"),
+      t("action-name"),
+      t("action-type-label"),
+      t("action-description"),
+      t("cost"),
+      t("timeline-label"),
+    ];
+
+    // Add type-specific headers
+    if (type === ACTION_TYPES.Mitigation) {
+      headers.push(t("sector-label"), t("ghg-reduction"));
+    } else {
+      headers.push(t("hazards-covered"), t("adaptation-effectiveness"));
+    }
+
+    // Create CSV rows
+    const rows = toExport.map((action) => {
+      const baseRow = [
+        action.rank,
+        `"${action.name}"`,
+        t(`action-type.${action.type}`),
+        `"${action.description || ""}"`,
+        t(`cost-level.${action.costInvestmentNeeded}`),
+        t(`timeline.${action.timelineForImplementation}`),
+      ];
+
+      if (action.type === ACTION_TYPES.Mitigation) {
+        const mitigationAction = action as MitigationAction;
+        const sectors = mitigationAction.sectors
+          .map((s) => t(`sector.${s}`))
+          .join(", ");
+        const ghgReduction = Object.entries(
+          mitigationAction.GHGReductionPotential,
+        )
+          .filter(([, v]) => v !== null)
+          .map(([sector, val]) => `${t(`sector.${sector}`)}: ${val}%`)
+          .join("; ");
+
+        baseRow.push(`"${sectors}"`, `"${ghgReduction}"`);
+      } else {
+        const adaptationAction = action as AdaptationAction;
+        const hazards =
+          adaptationAction.hazards?.map((h) => t(`hazard.${h}`)).join(", ") ||
+          "";
+        const effectiveness = adaptationAction.adaptationEffectiveness
+          ? t(`effectiveness-level.${adaptationAction.adaptationEffectiveness}`)
+          : "";
+
+        baseRow.push(`"${hazards}"`, effectiveness);
+      }
+
+      return baseRow;
+    });
+
+    // Combine headers and rows
+    const csvContent = [headers, ...rows]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    // Create and download CSV
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    const typePart =
+      type === ACTION_TYPES.Adaptation ? "Adaptation" : "Mitigation";
+    link.download = `${(cityData?.name || cityData?.locode || "actions").replace(/\s+/g, "_")}_${typePart}_actions.csv`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
   if (isLoading) {
     return <Box p={4}>{t("loading")}</Box>;
   }
@@ -429,15 +515,27 @@ export function HiapTab({
                   : t("pick-actions")}
               </Text>
             </Button>
-            <Button
-              variant="ghost"
-              color="interactive.control"
-              p="4px"
-              onClick={handleDownloadPDF}
-            >
-              <Icon as={DownloadIcon} />
-              <Text>{t("download-action-plan")}</Text>
-            </Button>
+            <MenuRoot>
+              <MenuTrigger asChild>
+                <Button variant="ghost" color="interactive.control" p="4px">
+                  <Icon as={DownloadIcon} />
+                  <Text>{t("download-action-plan")}</Text>
+                  <Icon as={MdArrowDropDown} color="interactive.control" />
+                </Button>
+              </MenuTrigger>
+              <MenuContent minW="180px" zIndex={2000}>
+                <MenuItem onClick={handleDownloadPDF} value="pdf">
+                  <ButtonMedium color="interactive.control">
+                    {t("export-as-pdf")}
+                  </ButtonMedium>
+                </MenuItem>
+                <MenuItem onClick={handleDownloadCSV} value="csv">
+                  <ButtonMedium color="interactive.control">
+                    {t("export-as-csv")}
+                  </ButtonMedium>
+                </MenuItem>
+              </MenuContent>
+            </MenuRoot>
           </Box>
         </Box>
         <BodyLarge

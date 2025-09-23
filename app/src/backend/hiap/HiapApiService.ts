@@ -256,7 +256,7 @@ export const startActionPlanJob = async ({
     try {
       const { actionPlan, created } = await ActionPlanService.upsertActionPlan({
         actionId: action.actionId,
-        highImpactActionRankedId: action.hiaRankingId,
+        highImpactActionRankedId: action.hiaRankingId, // This should be the ranked ID, not ranking ID
         cityLocode,
         actionName: action.name,
         language: lng,

@@ -19,12 +19,6 @@ module.exports = {
       high_impact_action_ranked_id: {
         type: Sequelize.UUID,
         allowNull: true,
-        references: {
-          model: "HighImpactActionRanked",
-          key: "id",
-        },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
         comment: "Reference to the high impact action ranked",
       },
       city_locode: {

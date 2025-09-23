@@ -43,12 +43,13 @@ import { HighImpactActionRankingStatus } from "@/util/types";
 import ClimateActionsEmptyState from "./ClimateActionsEmptyState";
 import ActionPlanSection from "./ActionPlanSection";
 import { DownloadIcon } from "@/components/icons";
-import { FaCaretDown } from "react-icons/fa";
 import { MdCheckBox } from "react-icons/md";
 import { TitleLarge } from "@/components/Texts/Title";
 import { BodyLarge } from "@/components/Texts/Body";
 import { IoMdCheckboxOutline } from "react-icons/io";
 import { TopPickIcon } from "@/components/icons";
+import { pdf } from "@react-pdf/renderer";
+import PrintableActionPlanPDF from "@/components/HIAP/PrintableActionPlanPDF";
 
 const BarVisualization = ({
   value,
@@ -331,6 +332,27 @@ export function HiapTab({
     setIsSelectionMode(!isSelectionMode);
   };
 
+  const handleDownloadPDF = async () => {
+    const toExport = selectedActions.length > 0 ? selectedActions : actions;
+    if (!toExport || toExport.length === 0) return;
+
+    const blob = await pdf(
+      <PrintableActionPlanPDF
+        actions={toExport}
+        t={t}
+        cityName={cityData?.name || cityData?.locode}
+      />,
+    ).toBlob();
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    const typePart =
+      type === ACTION_TYPES.Adaptation ? "Adaptation" : "Mitigation";
+    link.download = `${(cityData?.name || cityData?.locode || "actions").replace(/\s+/g, "_")}_${typePart}_actions.pdf`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
   if (isLoading) {
     return <Box p={4}>{t("loading")}</Box>;
   }
@@ -407,10 +429,14 @@ export function HiapTab({
                   : t("pick-actions")}
               </Text>
             </Button>
-            <Button variant="ghost" color="interactive.control" p="4px">
+            <Button
+              variant="ghost"
+              color="interactive.control"
+              p="4px"
+              onClick={handleDownloadPDF}
+            >
               <Icon as={DownloadIcon} />
               <Text>{t("download-action-plan")}</Text>
-              <Icon as={FaCaretDown} color="interactive.control" />
             </Button>
           </Box>
         </Box>

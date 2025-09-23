@@ -53,6 +53,7 @@
     "@nivo/line": "^0.88.0",
     "@nivo/tooltip": "^0.88.0",
     "@react-email/components": "^0.0.41",
+    "@react-pdf/renderer": "^4.3.0",
     "@reduxjs/toolkit": "^2.2.7",
     "@tanstack/react-table": "^8.21.2",
     "@types/puppeteer": "^7.0.4",

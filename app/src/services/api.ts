@@ -6,6 +6,7 @@ import {
   type UserAttributes,
   type ModuleAttributes,
   ProjectModulesAttributes,
+  ActionPlan,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import {
@@ -1256,7 +1257,7 @@ export const api = createApi({
       generateActionPlan: builder.mutation<
         { plan: string; timestamp: string; actionName: string },
         {
-          action: any;
+          action: HIAction;
           inventoryId: string;
           cityLocode: string;
           lng?: string;
@@ -1291,7 +1292,7 @@ export const api = createApi({
         invalidatesTags: ["ActionPlan"],
       }),
       getActionPlans: builder.query<
-        { actionPlans: any[] },
+        { actionPlans: ActionPlan[] },
         { inventoryId: string; language?: string; actionId?: string }
       >({
         query: ({ inventoryId, language, actionId }) => {
@@ -1300,14 +1301,14 @@ export const api = createApi({
           if (actionId) params.append("actionId", actionId);
           return `action-plans?${params.toString()}`;
         },
-        transformResponse: (response: { data: any[] }) => ({
+        transformResponse: (response: { data: ActionPlan[] }) => ({
           actionPlans: response.data,
         }),
         providesTags: ["ActionPlan"],
       }),
-      getActionPlanById: builder.query<any, string>({
+      getActionPlanById: builder.query<ActionPlan, string>({
         query: (id) => `action-plans/${id}`,
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: ActionPlan }) => response.data,
         providesTags: (result, error, id) => [{ type: "ActionPlan", id }],
       }),
       setOrgWhiteLabel: builder.mutation({

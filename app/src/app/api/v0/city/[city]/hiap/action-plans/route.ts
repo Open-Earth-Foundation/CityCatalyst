@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
-import ActionPlanService from "@/backend/ActionPlanService";
+import ActionPlanService from "@/backend/hiap/ActionPlanService";
 import { z } from "zod";
 import createHttpError from "http-errors";
 

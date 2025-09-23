@@ -8,7 +8,7 @@ import { logger } from "@/services/logger";
 import { PrioritizerResponse } from "./types";
 import { db } from "@/models";
 import { getCityContextAndEmissionsData } from "./HiapService";
-import ActionPlanService from "@/backend/ActionPlanService";
+import ActionPlanService from "@/backend/hiap/ActionPlanService";
 import ActionPlanEmailService from "@/backend/ActionPlanEmailService";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";

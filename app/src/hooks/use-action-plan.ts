@@ -90,10 +90,10 @@ export const useActionPlan = ({
 /**
  * Hook to fetch a specific action plan by ID
  */
-export const useActionPlanById = (planId: string | null) => {
+export const useActionPlanById = (planId: string | null, cityId: string) => {
   const { data, isLoading, error, refetch } = useGetActionPlanByIdQuery(
-    planId!,
-    { skip: !planId || planId === "" },
+    { cityId, id: planId! },
+    { skip: !planId || planId === "" || !cityId },
   );
 
   return {

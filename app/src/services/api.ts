@@ -1293,21 +1293,24 @@ export const api = createApi({
       }),
       getActionPlans: builder.query<
         { actionPlans: ActionPlan[] },
-        { inventoryId: string; language?: string; actionId?: string }
+        { cityId: string; language?: string; actionId?: string }
       >({
-        query: ({ inventoryId, language, actionId }) => {
-          const params = new URLSearchParams({ inventoryId });
+        query: ({ cityId, language, actionId }) => {
+          const params = new URLSearchParams();
           if (language) params.append("language", language);
           if (actionId) params.append("actionId", actionId);
-          return `action-plans?${params.toString()}`;
+          return `city/${cityId}/hiap/action-plans?${params.toString()}`;
         },
         transformResponse: (response: { data: ActionPlan[] }) => ({
           actionPlans: response.data,
         }),
         providesTags: ["ActionPlan"],
       }),
-      getActionPlanById: builder.query<ActionPlan, string>({
-        query: (id) => `action-plans/${id}`,
+      getActionPlanById: builder.query<
+        ActionPlan,
+        { cityId: string; id: string }
+      >({
+        query: ({ cityId, id }) => `city/${cityId}/hiap/action-plans/${id}`,
         transformResponse: (response: { data: ActionPlan }) => response.data,
         providesTags: (result, error, id) => [{ type: "ActionPlan", id }],
       }),

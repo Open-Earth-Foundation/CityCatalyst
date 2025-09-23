@@ -12,12 +12,21 @@ import {
   Box,
   createListCollection,
   Heading,
+  HStack,
   Icon,
   Text,
 } from "@chakra-ui/react";
 import FormattedThousandsNumber from "../../../app/[lng]/cities/[cityId]/GHGI/onboarding/FormattedThousandsNumberInput";
 import { MdCheck, MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
+import {
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+} from "@/components/ui/select";
 import { InputGroup } from "../../ui/input-group";
 import { logger } from "@/services/logger";
 
@@ -70,6 +79,18 @@ export default function SetPopulationDataStep({
 }) {
   const yearInput = watch("year");
   const year: number | null = yearInput ? parseInt(yearInput) : null;
+
+  // Watch population values
+  const cityPopulation = watch("cityPopulation");
+  const cityPopulationYear = watch("cityPopulationYear");
+  const regionPopulation = watch("regionPopulation");
+  const regionPopulationYear = watch("regionPopulationYear");
+  const countryPopulation = watch("countryPopulation");
+  const countryPopulationYear = watch("countryPopulationYear");
+
+  const yearsCollection = createListCollection({
+    items: years.map((year) => ({ label: year.toString(), value: year })),
+  });
 
   const locode = ocCityData?.actor_id;
   const { data: cityData } = useGetOCCityDataQuery(locode!, {
@@ -164,13 +185,6 @@ export default function SetPopulationDataStep({
     }
   }, [year, ocCityData, setData]);
 
-  const yearsCollection = createListCollection({
-    items: years.map((year) => ({
-      label: year.toString(),
-      value: year.toString(),
-    })),
-  });
-
   return (
     <Box w="full">
       <Box
@@ -181,7 +195,7 @@ export default function SetPopulationDataStep({
         gap="24px"
         mb="48px"
       >
-        <Heading data-testid="population-data-heading" size="xl">
+        <Heading data-testid="add-population-data-heading" size="xl">
           {t("setup-population-data-heading")}
         </Heading>
         <Text
@@ -195,7 +209,6 @@ export default function SetPopulationDataStep({
           {t("setup-population-data-description")}
         </Text>
       </Box>
-      {/* City Population */}
       <Box
         w="full"
         py="36px"
@@ -208,145 +221,7 @@ export default function SetPopulationDataStep({
           alignItems="center"
           justifyContent="space-between"
         >
-          <Box display="flex" flexDir="column" gap="16px">
-            <Text
-              fontFamily="heading"
-              fontSize="title.md"
-              fontStyle="normal"
-              fontWeight="bold"
-              lineHeight="24px"
-            >
-              {t("city-population-title")}
-            </Text>
-          </Box>
           <Box>
-            <Field
-              invalid={!!errors.cityPopulation}
-              errorText={
-                <Box gap="6px">
-                  <Icon as={MdErrorOutline} boxSize={6} />
-                  <Text
-                    fontSize="body.md"
-                    color="content.tertiary"
-                    fontStyle="normal"
-                  >
-                    {errors.cityPopulation && errors.cityPopulation.message}
-                  </Text>
-                </Box>
-              }
-            >
-              <InputGroup
-                endElement={
-                  !!watch("cityPopulation") && (
-                    <Icon
-                      as={MdCheck}
-                      color="semantic.success"
-                      boxSize={4}
-                      mt={2}
-                      mr={10}
-                    />
-                  )
-                }
-              >
-                <FormattedThousandsNumber
-                  control={control}
-                  name="cityPopulation"
-                  size="lg"
-                  w="400px"
-                  placeholder={t("city-population-placeholder")}
-                  data-testid="city-population-input"
-                  rules={{
-                    required: t("city-population-required"),
-                  }}
-                />
-              </InputGroup>
-            </Field>
-          </Box>
-        </Box>
-      </Box>
-      {/* Region Population */}
-      <Box
-        w="full"
-        py="36px"
-        borderBottomWidth="2px"
-        borderColor="border.overlay"
-      >
-        <Box
-          display="flex"
-          w="full"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Box display="flex" flexDir="column" gap="16px">
-            <Text
-              fontFamily="heading"
-              fontSize="title.md"
-              fontStyle="normal"
-              fontWeight="bold"
-              lineHeight="24px"
-            >
-              {t("region-population-title")}
-            </Text>
-          </Box>
-          <Box>
-            <Field
-              invalid={!!errors.regionPopulation}
-              errorText={
-                <Box gap="6px">
-                  <Icon as={MdErrorOutline} boxSize={6} />
-                  <Text
-                    fontSize="body.md"
-                    color="content.tertiary"
-                    fontStyle="normal"
-                  >
-                    {errors.regionPopulation && errors.regionPopulation.message}
-                  </Text>
-                </Box>
-              }
-            >
-              <InputGroup
-                endElement={
-                  !!watch("regionPopulation") && (
-                    <Icon
-                      as={MdCheck}
-                      color="semantic.success"
-                      boxSize={4}
-                      mt={2}
-                      mr={10}
-                    />
-                  )
-                }
-              >
-                <FormattedThousandsNumber
-                  control={control}
-                  name="regionPopulation"
-                  size="lg"
-                  w="400px"
-                  placeholder={t("region-population-placeholder")}
-                  data-testid="region-population-input"
-                  rules={{
-                    required: t("region-population-required"),
-                  }}
-                />
-              </InputGroup>
-            </Field>
-          </Box>
-        </Box>
-      </Box>
-      {/* Country Population */}
-      <Box
-        w="full"
-        py="36px"
-        borderBottomWidth="2px"
-        borderColor="border.overlay"
-      >
-        <Box
-          display="flex"
-          w="full"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Box display="flex" flexDir="column" gap="16px">
             <Text
               fontFamily="heading"
               fontSize="title.md"
@@ -357,33 +232,15 @@ export default function SetPopulationDataStep({
               {t("country-population-title")}
             </Text>
           </Box>
-          <Box>
-            <Field
-              invalid={!!errors.countryPopulation}
-              errorText={
-                <Box gap="6px">
-                  <Icon as={MdErrorOutline} boxSize={6} />
-                  <Text
-                    fontSize="body.md"
-                    color="content.tertiary"
-                    fontStyle="normal"
-                  >
-                    {errors.countryPopulation &&
-                      errors.countryPopulation.message}
-                  </Text>
-                </Box>
-              }
-            >
-              <InputGroup
-                endElement={
-                  !!watch("countryPopulation") && (
-                    <Icon
-                      as={MdCheck}
-                      color="semantic.success"
-                      boxSize={4}
-                      mt={2}
-                      mr={10}
-                    />
+          <Box display="flex" gap="16px" alignItems="start">
+            <HStack spaceX={6} spaceY={6} align="start">
+              <Field
+                errorText={
+                  errors.countryPopulation?.message && (
+                    <Text color="content.tertiary" letterSpacing="0.5px">
+                      <MdErrorOutline />
+                      {errors.countryPopulation?.message}
+                    </Text>
                   )
                 }
               >
@@ -395,13 +252,279 @@ export default function SetPopulationDataStep({
                   placeholder={t("country-population-placeholder")}
                   data-testid="country-population-input"
                   rules={{
-                    required: t("country-population-required"),
+                    required: t("population-required"),
+                    validate: (value) => {
+                      return (
+                        !isNaN(Number(value)) || t("population-must-be-number")
+                      );
+                    },
                   }}
                 />
+                <Box display="flex" gap="6px" alignItems="center" py="8px">
+                  <Icon as={MdInfoOutline} color="interactive.control" />
+                  <Text
+                    color="content.tertiary"
+                    fontSize="body.md"
+                    letterSpacing="wide"
+                    lineHeight="20px"
+                  >
+                    {t("source")}: {countryPopulationSourceName}
+                  </Text>
+                </Box>
+              </Field>
+            </HStack>
+            <Field mt={-2}>
+              <InputGroup
+                endElement={
+                  !!countryPopulationYear &&
+                  !!countryPopulation && (
+                    <Icon
+                      as={MdCheck}
+                      color="semantic.success"
+                      boxSize={4}
+                      mt={2}
+                      mr={8}
+                    />
+                  )
+                }
+              >
+                <SelectRoot
+                  collection={yearsCollection}
+                  size="lg"
+                  w="217px"
+                  _placeholder={{ color: "content.tertiary" }}
+                  {...register("countryPopulationYear", {
+                    required: t("inventory-year-required"),
+                    valueAsNumber: true,
+                  })}
+                  value={[countryPopulationYear]}
+                  onValueChange={(e) =>
+                    setValue("countryPopulationYear", e.value[0])
+                  }
+                >
+                  <SelectLabel />
+                  <SelectTrigger shadow="1dp">
+                    <SelectValueText
+                      placeholder={t("inventory-year-placeholder")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearsCollection.items.map(
+                      (year: { label: string; value: number }, i: number) => (
+                        <SelectItem item={year} key={i}>
+                          {year.label}
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </SelectRoot>
               </InputGroup>
             </Field>
           </Box>
         </Box>
+      </Box>
+      <Box
+        w="full"
+        py="36px"
+        borderBottomWidth="2px"
+        borderColor="border.overlay"
+      >
+        <Box
+          display="flex"
+          w="full"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Box>
+            <Text
+              fontFamily="heading"
+              fontSize="title.md"
+              fontStyle="normal"
+              fontWeight="bold"
+              lineHeight="24px"
+            >
+              {t("region-or-province")}
+            </Text>
+          </Box>
+          <Box display="flex" gap="16px" alignItems="start">
+            <HStack spaceX={6} spaceY={6} align="start">
+              <Field
+                errorText={
+                  <Text color="content.tertiary" letterSpacing="0.5px">
+                    <MdErrorOutline />
+                    {errors.regionPopulation?.message}
+                  </Text>
+                }
+              >
+                <FormattedThousandsNumber
+                  control={control}
+                  name="regionPopulation"
+                  size="lg"
+                  w="400px"
+                  placeholder={t("region-or-province-population-placeholder")}
+                  data-testid="region-population-input"
+                  rules={{
+                    required: t("population-required"),
+                    validate: (value) => {
+                      return (
+                        !isNaN(Number(value)) || t("population-must-be-number")
+                      );
+                    },
+                  }}
+                />
+              </Field>
+            </HStack>
+            <Field mt={-2}>
+              <InputGroup
+                endElement={
+                  !!regionPopulationYear &&
+                  !!regionPopulation && (
+                    <Icon
+                      as={MdCheck}
+                      color="semantic.success"
+                      boxSize={4}
+                      mt={2}
+                      mr={8}
+                    />
+                  )
+                }
+              >
+                <SelectRoot
+                  collection={yearsCollection}
+                  size="lg"
+                  w="217px"
+                  _placeholder={{ color: "content.tertiary" }}
+                  {...register("regionPopulationYear", {
+                    required: t("inventory-year-required"),
+                    valueAsNumber: true,
+                  })}
+                  value={[regionPopulationYear]}
+                  onValueChange={(e) =>
+                    setValue("regionPopulationYear", e.value[0])
+                  }
+                >
+                  <SelectLabel />
+                  <SelectTrigger shadow="1dp">
+                    <SelectValueText
+                      placeholder={t("inventory-year-placeholder")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearsCollection.items.map(
+                      (year: { label: string; value: number }, i: number) => (
+                        <SelectItem item={year} key={i}>
+                          {year.label}
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </SelectRoot>
+              </InputGroup>
+            </Field>
+          </Box>
+        </Box>
+      </Box>
+      <Box
+        w="full"
+        py="36px"
+        borderBottomWidth="2px"
+        borderColor="border.overlay"
+      >
+        <HStack
+          w="full"
+          alignItems="flex-start"
+          justifyContent="space-between"
+          align="start"
+        >
+          <Box>
+            <Text
+              fontFamily="heading"
+              fontSize="title.md"
+              fontStyle="normal"
+              fontWeight="bold"
+              lineHeight="24px"
+            >
+              {t("city")}
+            </Text>
+          </Box>
+          <Box display="flex" gap="16px" alignItems="start">
+            <HStack spaceX={6} spaceY={6} align="start">
+              <Field
+                errorText={
+                  errors.cityPopulation?.message && (
+                    <Text color="content.tertiary" letterSpacing="0.5px">
+                      <MdErrorOutline />
+                      {errors.cityPopulation.message}
+                    </Text>
+                  )
+                }
+              >
+                <FormattedThousandsNumber
+                  control={control}
+                  name="cityPopulation"
+                  size="lg"
+                  w="400px"
+                  placeholder={t("city-population-placeholder")}
+                  data-testid="city-population-input"
+                  rules={{
+                    required: t("population-required"),
+                    validate: (value) => {
+                      return (
+                        !isNaN(Number(value)) || t("population-must-be-number")
+                      );
+                    },
+                  }}
+                />
+              </Field>
+            </HStack>
+            <InputGroup
+              mt={-2}
+              endElement={
+                !!cityPopulationYear &&
+                !!cityPopulation && (
+                  <Icon
+                    as={MdCheck}
+                    color="semantic.success"
+                    boxSize={4}
+                    mt={2}
+                    mr={8}
+                  />
+                )
+              }
+            >
+              <SelectRoot
+                collection={yearsCollection}
+                size="lg"
+                w="217px"
+                _placeholder={{ color: "content.tertiary" }}
+                {...register("cityPopulationYear", {
+                  required: t("inventory-year-required"),
+                  valueAsNumber: true,
+                })}
+                value={[cityPopulationYear]}
+                onValueChange={(e) =>
+                  setValue("cityPopulationYear", e.value[0])
+                }
+              >
+                <SelectLabel />
+                <SelectTrigger shadow="1dp">
+                  <SelectValueText
+                    placeholder={t("inventory-year-placeholder")}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {yearsCollection.items.map(
+                    (year: { label: string; value: number }, i: number) => (
+                      <SelectItem item={year} key={i}>
+                        {year.label}
+                      </SelectItem>
+                    ),
+                  )}
+                </SelectContent>
+              </SelectRoot>
+            </InputGroup>
+          </Box>
+        </HStack>
       </Box>
     </Box>
   );

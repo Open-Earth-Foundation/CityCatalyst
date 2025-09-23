@@ -1,3 +1,37 @@
+/**
+ * @swagger
+ * /api/v0/user/{userId}:
+ *   patch:
+ *     tags:
+ *       - User
+ *     summary: Update a user's profile
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, preferredLanguage]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               title:
+ *                 type: string
+ *               preferredLanguage:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User updated.
+ *       404:
+ *         description: User not found.
+ */
 import { db } from "@/models";
 import { LANGUAGES } from "@/util/types";
 import { apiHandler } from "@/util/api";

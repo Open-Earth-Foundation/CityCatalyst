@@ -1,3 +1,46 @@
+/**
+ * @swagger
+ * /api/v0/city/transfer:
+ *   patch:
+ *     tags:
+ *       - City Transfer
+ *     summary: Transfer multiple cities to a target project (admin only).
+ *     description: Moves the specified cities into a different project after validating limits and existence, and notifies organization admins. Requires an admin session; non‑admins receive an authorization error. Returns a success flag when the transfer completes.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [cityIds, projectId]
+ *             properties:
+ *               cityIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: uuid
+ *               projectId:
+ *                 type: string
+ *                 format: uuid
+ *     responses:
+ *       200:
+ *         description: Success flag.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *             examples:
+ *               example:
+ *                 value:
+ *                   success: true
+ *       404:
+ *         description: Cities or project not found.
+ *       400:
+ *         description: Project city-count limit exceeded.
+ */
 // patch route to move cities to different projects
 import { apiHandler } from "@/util/api";
 

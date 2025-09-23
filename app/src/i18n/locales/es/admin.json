@@ -180,5 +180,17 @@
   "oauth-clients-delete": "¿Eliminar este cliente OAuth?",
   "oauth-client-id": "ID del Cliente",
   "oauth-clients-error-deleting-client": "Error al eliminar la aplicación cliente",
-  "oauth-clients-success-deleting-client": "Aplicación cliente eliminada"
+  "oauth-clients-success-deleting-client": "Aplicación cliente eliminada",
+  "module-access-enabled": "Acceso al Módulo Habilitado",
+  "module-access-enabled-description": "{{moduleName}} ha sido habilitado para este proyecto",
+  "module-access-disabled": "Acceso al Módulo Deshabilitado",
+  "module-access-disabled-description": "{{moduleName}} ha sido deshabilitado para este proyecto",
+  "module-access-error": "Error de Acceso al Módulo",
+  "module-access-error-description": "No se pudo actualizar el acceso al módulo. Por favor, inténtalo de nuevo.",
+  "organization-name-already-exists": "El nombre de la organización ya existe",
+  "error-organization": "Error de organización",
+  "publish-project": "Publicar proyecto",
+  "publishing-project": "Proyecto de publicación...",
+  "publish-project-success": "Proyecto publicado con éxito",
+  "publish-project-error": "Error al publicar el proyecto"
 }

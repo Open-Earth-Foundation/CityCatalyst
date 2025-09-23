@@ -1,3 +1,40 @@
+/**
+ * @swagger
+ * /api/v0/auth/password:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Set a new password using a valid reset token.
+ *     description: Verifies the provided reset token and updates the user’s password. No authentication is required for this flow, only a valid token. Returns 200 with an empty object on success.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [newPassword, resetToken]
+ *             properties:
+ *               newPassword:
+ *                 type: string
+ *               resetToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Empty body on success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *             examples:
+ *               example:
+ *                 value: {}
+ *       401:
+ *         description: Invalid or expired token.
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Configuration error.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { resetPasswordRequest } from "@/util/validation";

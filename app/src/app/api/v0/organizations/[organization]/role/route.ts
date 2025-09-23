@@ -1,3 +1,34 @@
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}/role:
+ *   patch:
+ *     tags:
+ *       - Organizations
+ *     summary: Promote a user to organization admin or invite by email
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [contactEmail]
+ *             properties:
+ *               contactEmail:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Role updated or invite sent.
+ *       404:
+ *         description: Organization not found.
+ */
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

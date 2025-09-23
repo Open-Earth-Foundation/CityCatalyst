@@ -1,3 +1,5 @@
+"use client";
+
 import { Text, TextProps } from "@chakra-ui/react";
 
 export const ButtonSmall = (props: TextProps) => (

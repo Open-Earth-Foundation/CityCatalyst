@@ -180,5 +180,17 @@
   "oauth-clients-delete": "Supprimer ce client OAuth ?",
   "oauth-client-id": "ID du client",
   "oauth-clients-error-deleting-client": "Erreur lors de la suppression de l'application client",
-  "oauth-clients-success-deleting-client": "Application client supprimée"
+  "oauth-clients-success-deleting-client": "Application client supprimée",
+  "module-access-enabled": "Accès au Module Activé",
+  "module-access-enabled-description": "{{moduleName}} a été activé pour ce projet",
+  "module-access-disabled": "Accès au Module Désactivé",
+  "module-access-disabled-description": "{{moduleName}} a été désactivé pour ce projet",
+  "module-access-error": "Erreur d'Accès au Module",
+  "module-access-error-description": "Échec de la mise à jour de l'accès au module. Veuillez réessayer.",
+  "organization-name-already-exists": "Le nom de l'organisation existe déjà",
+  "error-organization": "Erreur d'organisation",
+  "publish-project": "Publier le projet",
+  "publishing-project": "Projet de publication...",
+  "publish-project-success": "Projet publié avec succès",
+  "publish-project-error": "Erreur lors de la publication du projet"
 }

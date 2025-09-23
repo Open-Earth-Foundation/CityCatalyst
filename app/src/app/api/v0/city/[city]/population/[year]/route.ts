@@ -1,3 +1,26 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}/population/{year}:
+ *   get:
+ *     tags:
+ *       - City Population
+ *     summary: Get population data for city and year
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: year
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Population data returned.
+ */
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";

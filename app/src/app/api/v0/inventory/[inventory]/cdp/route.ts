@@ -1,3 +1,25 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/cdp:
+ *   post:
+ *     tags:
+ *       - Inventory CDP
+ *     summary: Submit inventory emissions to CDP questionnaire
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Submission success status returned.
+ *       424:
+ *         description: CDP API response error.
+ *       500:
+ *         description: CDP service disabled.
+ */
 import UserService from "@/backend/UserService";
 import CDPService from "@/backend/CDPService";
 

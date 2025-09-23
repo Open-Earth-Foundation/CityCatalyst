@@ -9,6 +9,7 @@ export interface ModuleAttributes {
   type: string;
   author: string;
   url: string;
+  logo?: string;
   created?: Date;
   last_updated?: Date;
 }
@@ -27,6 +28,7 @@ export class Module
   public type!: string;
   public url!: string;
   public author!: string;
+  public logo?: string;
 
   static initModel(sequelize: Sequelize): typeof Module {
     Module.init(
@@ -63,6 +65,10 @@ export class Module
         url: {
           type: DataTypes.TEXT,
           allowNull: false,
+        },
+        logo: {
+          type: DataTypes.TEXT,
+          allowNull: true,
         },
       },
       {

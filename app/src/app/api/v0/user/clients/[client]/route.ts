@@ -1,3 +1,45 @@
+/**
+ * @swagger
+ * /api/v0/user/clients/{client}:
+ *   get:
+ *     tags:
+ *       - User Clients
+ *     summary: Get OAuth client authorization for current user
+ *     parameters:
+ *       - in: path
+ *         name: client
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Client authorization returned.
+ *       401:
+ *         description: Not signed in.
+ *       404:
+ *         description: Authorization not found.
+ *       500:
+ *         description: OAuth not enabled.
+ *   delete:
+ *     tags:
+ *       - User Clients
+ *     summary: Revoke OAuth client authorization for current user
+ *     parameters:
+ *       - in: path
+ *         name: client
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Authorization revoked.
+ *       401:
+ *         description: Not signed in.
+ *       404:
+ *         description: Authorization not found.
+ *       500:
+ *         description: OAuth not enabled.
+ */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";

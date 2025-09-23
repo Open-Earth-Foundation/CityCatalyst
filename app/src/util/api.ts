@@ -11,6 +11,8 @@ import OpenAI from "openai";
 import { db } from "@/models";
 import { ValidationError } from "sequelize";
 import { ManualInputValidationError } from "@/lib/custom-errors/manual-input-error";
+import { CustomOrganizationError } from "@/lib/custom-errors/organization-error";
+import { CustomInviteError } from "@/lib/custom-errors/custom-invite-error";
 import { logger } from "@/services/logger";
 import { Organization } from "@/models/Organization";
 import { Roles } from "@/util/types";
@@ -217,12 +219,12 @@ export function apiHandler(handler: NextHandler) {
           throw new createHttpError.Unauthorized("Invalid client");
         }
         const scopes = token.scope.split(" ");
-        if (req.method in ["GET", "HEAD"] && !("read" in scopes)) {
+        if (["GET", "HEAD"].includes(req.method) && !(scopes.includes("read"))) {
           throw new createHttpError.Unauthorized("No read scope available");
         }
         if (
-          req.method in ["PUT", "PATCH", "POST", "DELETE"] &&
-          !("write" in scopes)
+          ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
+          !(scopes.includes("write"))
         ) {
           throw new createHttpError.Unauthorized("No write scope available");
         }
@@ -299,6 +301,8 @@ function errorHandler(err: unknown, _req: NextRequest) {
       },
       { status: 400 },
     );
+  } else if (err instanceof CustomOrganizationError || err instanceof CustomInviteError) {
+    return NextResponse.json(err.data, { status: 409 });
   } else if (createHttpError.isHttpError(err) && err.expose) {
     return NextResponse.json(
       {

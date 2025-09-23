@@ -1,5 +1,10 @@
 import type { Sequelize } from "sequelize";
 import type {
+  ActionPlanAttributes,
+  ActionPlanCreationAttributes,
+} from "./ActionPlan";
+import { ActionPlan as _ActionPlan } from "./ActionPlan";
+import type {
   ActivityValueAttributes,
   ActivityValueCreationAttributes,
 } from "./ActivityValue";
@@ -223,6 +228,7 @@ import {
 } from "./OAuthClientAuthz";
 
 export {
+  _ActionPlan as ActionPlan,
   _ActivityData as ActivityData,
   _ActivityValue as ActivityValue,
   _Catalogue as Catalogue,
@@ -276,6 +282,8 @@ export {
 };
 
 export type {
+  ActionPlanAttributes,
+  ActionPlanCreationAttributes,
   ActivityDataAttributes,
   ActivityDataCreationAttributes,
   ActivityValueAttributes,
@@ -378,6 +386,7 @@ export type {
 };
 
 export function initModels(sequelize: Sequelize) {
+  const ActionPlan = _ActionPlan.initModel(sequelize);
   const ActivityData = _ActivityData.initModel(sequelize);
   const ActivityValue = _ActivityValue.initModel(sequelize);
   const Catalogue = _Catalogue.initModel(sequelize);
@@ -432,6 +441,11 @@ export function initModels(sequelize: Sequelize) {
   const OAuthClient = _OAuthClient.initModel(sequelize);
   const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
   const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
+
+  ActionPlan.belongsTo(HighImpactActionRankedModel, {
+    foreignKey: "highImpactActionRankedId",
+    as: "highImpactActionRanked",
+  });
 
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
@@ -1050,6 +1064,7 @@ export function initModels(sequelize: Sequelize) {
   });
 
   return {
+    ActionPlan: ActionPlan,
     ActivityData: ActivityData,
     ActivityValue: ActivityValue,
     Catalogue: Catalogue,

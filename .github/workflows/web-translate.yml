@@ -69,13 +69,16 @@ jobs:
           done
 
       - name: Commit and push changes
+        id: commit_changes
         run: |
           git add app/src/i18n/locales/
           if git diff --staged --quiet; then
             echo "No translation changes to commit"
+            echo "changes_exist=false" >> $GITHUB_OUTPUT
           else
             git commit -m "i18n: Update translations for all languages"
             git push --set-upstream origin i18n
+            echo "changes_exist=true" >> $GITHUB_OUTPUT
           fi
 
       - name: Check if PR exists
@@ -90,7 +93,7 @@ jobs:
           fi
 
       - name: Create PR if it doesn't exist
-        if: steps.check_pr.outputs.pr_exists == 'false'
+        if: steps.commit_changes.outputs.changes_exist == 'true' && steps.check_pr.outputs.pr_exists == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

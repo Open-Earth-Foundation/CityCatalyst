@@ -1,3 +1,28 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}/file/{file}/download-file:
+ *   get:
+ *     tags:
+ *       - City Files
+ *     summary: Download a city file by ID
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: file
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Binary file stream.
+ *       401:
+ *         description: Unauthorized.
+ */
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
 import { fileEndingToMIMEType } from "@/util/helpers";

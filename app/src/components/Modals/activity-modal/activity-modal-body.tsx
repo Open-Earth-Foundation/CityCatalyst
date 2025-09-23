@@ -680,6 +680,7 @@ const ActivityModalBody = ({
                   invalid={!!resolve(prefix + "emissionFactorType", errors)}
                   maxWidth="250px"
                   flex="1"
+                  truncateLabel
                 >
                   <Controller
                     name="activity.emissionFactorType"

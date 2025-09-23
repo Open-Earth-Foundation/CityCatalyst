@@ -1,3 +1,5 @@
+"use client";
+
 import { TFunction } from "i18next";
 import { Text } from "@chakra-ui/react";
 

@@ -9,6 +9,7 @@ import {
   useGetCityPopulationQuery,
   useGetCityGHGIDashboardQuery,
 } from "@/services/api";
+import { useLatestInventory } from "@/hooks/use-latest-inventory";
 import { MdOpenInNew } from "react-icons/md";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
@@ -16,7 +17,6 @@ import { useRouter } from "next/navigation";
 interface GHGIWidgetProps {
   cityId: string;
   lng: string;
-  inventoryId: string;
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
 }
@@ -24,19 +24,27 @@ interface GHGIWidgetProps {
 export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
   cityId,
   lng,
-  inventoryId,
   onVisibilityChange,
   isPublic = false,
 }) => {
   const { t } = useTranslation(lng, "dashboard");
   const router = useRouter();
 
+  const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
+    cityId,
+    isPublic,
+  });
+
   // Fetch GHGI dashboard data
   const {
     data: ghgiData,
-    isLoading,
+    isLoading: isGhgiLoading,
     error,
-  } = useGetCityGHGIDashboardQuery({ cityId, inventoryId });
+  } = useGetCityGHGIDashboardQuery({ cityId, inventoryId: inventoryId! }, {
+    skip: !inventoryId,
+  });
+
+  const isLoading = isInventoryLoading || isGhgiLoading;
   const { data: population } = useGetCityPopulationQuery(
     { cityId: cityId, year: ghgiData?.year as number },
     { skip: !cityId || !ghgiData?.year },

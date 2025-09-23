@@ -1,3 +1,23 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/organization:
+ *   get:
+ *     tags:
+ *       - Inventory Organization
+ *     summary: Get organization details for an inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Organization details returned.
+ *       404:
+ *         description: Inventory or organization not found.
+ */
 import { apiHandler } from "@/util/api";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";

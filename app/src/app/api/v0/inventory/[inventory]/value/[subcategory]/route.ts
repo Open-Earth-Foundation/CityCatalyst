@@ -1,3 +1,57 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/value/{subcategory}:
+ *   get:
+ *     tags:
+ *       - Inventory Values
+ *     summary: Get inventory value for a subcategory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: subcategory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Inventory value returned.
+ *       404:
+ *         description: Not found.
+ *   patch:
+ *     tags:
+ *       - Inventory Values
+ *     summary: Upsert inventory value for a subcategory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: subcategory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Inventory value updated or created.
+ *       400:
+ *         description: Invalid request.
+ */
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { db } from "@/models";
 import { Inventory } from "@/models/Inventory";

@@ -192,7 +192,6 @@ export function HiapTab({
             header: t("hazards-covered"),
             cell: ({ row }: { row: Row<HIAction> }) => {
               const action = row.original as AdaptationAction;
-              logger.info("action", action);
               const hazardCount = action.hazards?.length || 0;
               return (
                 <Badge colorScheme="orange">

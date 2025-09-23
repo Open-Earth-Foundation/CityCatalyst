@@ -131,5 +131,6 @@
   "plan-generation-started": "Plan Generation Started",
   "plan-generation-started-description": "Your action plan is being generated. You'll receive an email notification when it's ready.",
   "plan-generation-failed": "Generation Failed",
-  "plan-generation-failed-description": "Failed to start plan generation. Please try again."
+  "plan-generation-failed-description": "Failed to start plan generation. Please try again.",
+  "unknown": "Unknown"
 }

@@ -390,8 +390,8 @@ export function HiapTab({
         `"${action.name}"`,
         t(`action-type.${action.type}`),
         `"${action.description || ""}"`,
-        t(`cost-level.${action.costInvestmentNeeded}`),
-        t(`timeline.${action.timelineForImplementation}`),
+        t(`cost-level.${action.costInvestmentNeeded ?? "unknown"}`),
+        t(`timeline.${action.timelineForImplementation ?? "unknown"}`),
       ];
 
       if (action.type === ACTION_TYPES.Mitigation) {

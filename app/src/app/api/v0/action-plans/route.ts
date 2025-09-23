@@ -129,27 +129,18 @@ export const GET = apiHandler(async (req: NextRequest) => {
  *                   type: object
  */
 export const POST = apiHandler(async (req: NextRequest, { session }) => {
-  try {
-    const body = await req.json();
-    const validatedData = createActionPlanSchema.parse(body);
+  const body = await req.json();
+  const validatedData = createActionPlanSchema.parse(body);
 
-    const { actionPlan } = await ActionPlanService.upsertActionPlan({
-      actionId: validatedData.actionId,
-      highImpactActionRankedId: validatedData.hiActionRankingId,
-      cityLocode: validatedData.cityLocode,
-      actionName: validatedData.actionName,
-      language: validatedData.language,
-      planData: validatedData.planData,
-      createdBy: session?.user?.id,
-    });
+  const { actionPlan } = await ActionPlanService.upsertActionPlan({
+    actionId: validatedData.actionId,
+    highImpactActionRankedId: validatedData.hiActionRankingId,
+    cityLocode: validatedData.cityLocode,
+    actionName: validatedData.actionName,
+    language: validatedData.language,
+    planData: validatedData.planData,
+    createdBy: session?.user?.id,
+  });
 
-    return NextResponse.json({ data: actionPlan }, { status: 201 });
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      throw createHttpError.BadRequest(
-        `Invalid request body: ${error.message}`,
-      );
-    }
-    throw error;
-  }
+  return NextResponse.json({ data: actionPlan }, { status: 201 });
 });

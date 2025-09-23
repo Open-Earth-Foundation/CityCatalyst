@@ -108,12 +108,11 @@ export default class ActionPlanEmailService {
    * Build the URL to view the action plan
    */
   public static buildActionPlanUrl(
-    inventoryId: string,
     actionId: string,
     language: string = "en",
   ): string {
     const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    return `${baseUrl}/${language}/cities/inventory/${inventoryId}/hiap?action=${actionId}`;
+    return `${baseUrl}/${language}/cities/`;
   }
 
   /**
@@ -123,15 +122,10 @@ export default class ActionPlanEmailService {
     user: User,
     actionName: string,
     cityName: string,
-    inventoryId: string,
     actionId: string,
     language?: string,
   ): Promise<void> {
-    const actionPlanUrl = this.buildActionPlanUrl(
-      inventoryId,
-      actionId,
-      language || "en",
-    );
+    const actionPlanUrl = this.buildActionPlanUrl(actionId, language || "en");
 
     await this.sendActionPlanReadyEmail({
       user,

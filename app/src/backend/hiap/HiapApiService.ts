@@ -269,7 +269,6 @@ export const startActionPlanJob = async ({
               user,
               action.name,
               planData.metadata?.cityName || cityLocode,
-              inventoryId,
               action.actionId,
               lng,
             );

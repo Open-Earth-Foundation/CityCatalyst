@@ -442,8 +442,6 @@ export function initModels(sequelize: Sequelize) {
   const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
   const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
 
-  // ActionPlan associations
-  // Note: createdBy is just a string field, no User association for now
   ActionPlan.belongsTo(HighImpactActionRankedModel, {
     foreignKey: "highImpactActionRankedId",
     as: "highImpactActionRanked",

@@ -64,12 +64,10 @@ export const GET = apiHandler(async (req: NextRequest) => {
     const { inventoryId, language, actionId } =
       getActionPlansSchema.parse(queryParams);
 
-    if (!inventoryId) {
-      throw createHttpError.BadRequest("inventoryId is required");
-    }
+    // inventoryId is kept for backwards compatibility but not required anymore
 
     const actionPlans = await ActionPlanService.getActionPlansByInventoryId(
-      inventoryId,
+      "", // No inventory filtering since we removed inventory_id
       language,
       actionId,
     );
@@ -137,10 +135,14 @@ export const POST = apiHandler(async (req: NextRequest, { session }) => {
     const body = await req.json();
     const validatedData = createActionPlanSchema.parse(body);
 
-    const actionPlan = await ActionPlanService.createActionPlan({
-      ...validatedData,
+    const { actionPlan } = await ActionPlanService.upsertActionPlan({
+      actionId: validatedData.actionId,
+      highImpactActionRankedId: validatedData.hiActionRankingId,
+      cityLocode: validatedData.cityLocode,
+      actionName: validatedData.actionName,
+      language: validatedData.language,
+      planData: validatedData.planData,
       createdBy: session?.user?.id,
-      planData: validatedData.planData || {},
     });
 
     return NextResponse.json({ data: actionPlan }, { status: 201 });

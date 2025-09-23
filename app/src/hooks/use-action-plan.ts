@@ -44,8 +44,40 @@ export const useActionPlan = ({
     },
   );
 
-  // Extract the first action plan from the response
-  const data = response?.actionPlans?.[0] || null;
+  // Extract the first action plan from the response and transform to legacy format
+  const actionPlan = response?.actionPlans?.[0] || null;
+  const data = actionPlan
+    ? {
+        ...actionPlan,
+        planData: {
+          metadata: {
+            cityName: actionPlan.cityName,
+            createdAt: actionPlan.createdAtTimestamp,
+            locode: actionPlan.cityLocode,
+            actionId: actionPlan.actionId,
+            actionName: actionPlan.actionName,
+            language: actionPlan.language,
+          },
+          content: {
+            introduction: {
+              city_description: actionPlan.cityDescription,
+              action_description: actionPlan.actionDescription,
+              national_strategy_explanation:
+                actionPlan.nationalStrategyExplanation,
+            },
+            subactions: actionPlan.subactions,
+            institutions: actionPlan.institutions,
+            milestones: actionPlan.milestones,
+            timeline: actionPlan.timeline,
+            costBudget: actionPlan.costBudget,
+            merIndicators: actionPlan.merIndicators,
+            mitigations: actionPlan.mitigations,
+            adaptations: actionPlan.adaptations,
+            sdgs: actionPlan.sdgs,
+          },
+        },
+      }
+    : null;
 
   return {
     data,

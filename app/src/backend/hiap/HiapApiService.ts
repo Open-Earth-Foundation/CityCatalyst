@@ -256,8 +256,7 @@ export const startActionPlanJob = async ({
     try {
       const { actionPlan, created } = await ActionPlanService.upsertActionPlan({
         actionId: action.actionId,
-        inventoryId,
-        hiActionRankingId: action.hiaRankingId,
+        highImpactActionRankedId: action.hiaRankingId,
         cityLocode,
         actionName: action.name,
         language: lng,

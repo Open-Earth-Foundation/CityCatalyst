@@ -444,13 +444,9 @@ export function initModels(sequelize: Sequelize) {
 
   // ActionPlan associations
   // Note: createdBy is just a string field, no User association for now
-  ActionPlan.belongsTo(Inventory, {
-    foreignKey: "inventoryId",
-    as: "inventory",
-  });
-  ActionPlan.belongsTo(HighImpactActionRankingModel, {
-    foreignKey: "hiActionRankingId",
-    as: "hiActionRanking",
+  ActionPlan.belongsTo(HighImpactActionRankedModel, {
+    foreignKey: "highImpactActionRankedId",
+    as: "highImpactActionRanked",
   });
 
   ActivityData.belongsToMany(DataSource, {

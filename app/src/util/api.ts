@@ -219,7 +219,7 @@ export function apiHandler(handler: NextHandler) {
           throw new createHttpError.Unauthorized("Invalid client");
         }
         const scopes = token.scope.split(" ");
-        if (["GET", "HEAD"].includes(req.method)  && !(scopes.includes("read"))) {
+        if (["GET", "HEAD"].includes(req.method) && !(scopes.includes("read"))) {
           throw new createHttpError.Unauthorized("No read scope available");
         }
         if (

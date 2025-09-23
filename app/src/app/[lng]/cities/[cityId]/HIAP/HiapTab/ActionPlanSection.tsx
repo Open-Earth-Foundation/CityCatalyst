@@ -2,7 +2,7 @@ import { Box, Button, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { DownloadIcon } from "@/components/icons";
 import { FaCaretDown } from "react-icons/fa";
-import { HIAction } from "@/util/types";
+import { HIAction, CityWithProjectDataResponse } from "@/util/types";
 import { ClimateActionCard } from "@/components/ClimateActionCard";
 import { ActionDrawer } from "@/components/ActionDrawer";
 import { useState } from "react";
@@ -24,13 +24,21 @@ const getTopPickActions = (actions: HIAction[]): HIAction[] => {
 const ActionPlanSection = ({
   t,
   rankedActions = [],
+  cityLocode,
+  cityId,
+  cityData,
+  inventoryId,
 }: {
   t: TFunction;
   rankedActions?: HIAction[];
+  cityLocode?: string;
+  cityId?: string;
+  cityData?: CityWithProjectDataResponse;
+  inventoryId?: string;
 }) => {
   const topPickActions = getTopPickActions(rankedActions);
   const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
-  
+
   return (
     <>
       {selectedAction && (
@@ -80,11 +88,15 @@ const ActionPlanSection = ({
           justifyItems="start"
         >
           {topPickActions.map((action) => (
-            <ClimateActionCard 
-              key={action.id} 
-              action={action} 
+            <ClimateActionCard
+              key={action.id}
+              action={action}
               t={t}
               onSeeMoreClick={() => setSelectedAction(action)}
+              cityData={cityData}
+              cityLocode={cityLocode}
+              cityId={cityId}
+              inventoryId={inventoryId}
             />
           ))}
         </Box>

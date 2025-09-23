@@ -23,6 +23,7 @@ import { BodyLarge, BodySmall } from "./Texts/Body";
 import { LabelMedium } from "./Texts/Label";
 import { HeadlineMedium } from "./Texts/Headline";
 import { useActionPlan } from "@/hooks/use-action-plan";
+import { PDFExportService } from "@/services/PDFExportService";
 
 export const ClimateActionCard = ({
   action,
@@ -299,38 +300,16 @@ const GeneratePlanDialog = ({
     setIsPdfGenerating(true);
 
     try {
-      // Get city name from cityLocode or use a default
-      const cityName = cityLocode || "Unknown City";
+      const cityName =
+        planToDisplay.metadata?.cityName || cityLocode || "Unknown City";
+      const actionTitle = planToDisplay.metadata?.actionName || action.name;
 
-      const response = await fetch(`/api/v0/action-plan/${action.id}/pdf`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          planData: planToDisplay,
-          cityName: cityName,
-          actionTitle: action.name,
-          lng: action.lang || "en",
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to generate PDF");
-      }
-
-      // Create download link
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `action-plan-${action.name.replace(/[^a-zA-Z0-9]/g, "-")}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-
-      // Cleanup
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(link);
+      // Generate PDF using frontend jsPDF service
+      PDFExportService.generateActionPlanPDF(
+        planToDisplay,
+        actionTitle,
+        cityName,
+      );
     } catch (error) {
       console.error("Failed to export PDF:", error);
       // You could add a toast notification here for better UX

@@ -120,11 +120,6 @@ export const startActionPlanJob = async ({
       language: lng,
     };
 
-    console.log("Sending request to start plan creation:", {
-      url: `${HIAP_API_URL}/plan-creator/v1/start_plan_creation`,
-      payload,
-    });
-
     // Step 1: Start plan creation and get task ID
     const startResponse = await fetch(
       `${HIAP_API_URL}/plan-creator/v1/start_plan_creation`,

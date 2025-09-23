@@ -1,3 +1,82 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}/user/{user}:
+ *   get:
+ *     tags:
+ *       - City Users
+ *     summary: Get a user in a city
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: user
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: User returned.
+ *   patch:
+ *     tags:
+ *       - City Users
+ *     summary: Update a user in a city
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: user
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, role]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [user, admin]
+ *     responses:
+ *       200:
+ *         description: User updated.
+ *       404:
+ *         description: User not found.
+ *   delete:
+ *     tags:
+ *       - City Users
+ *     summary: Delete a user in a city
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: user
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: User deleted.
+ */
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

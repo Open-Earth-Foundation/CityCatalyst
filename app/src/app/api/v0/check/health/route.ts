@@ -1,3 +1,45 @@
+/**
+ * @swagger
+ * /api/v0/check/health:
+ *   get:
+ *     tags:
+ *       - Check
+ *     summary: Report service health and database connectivity.
+ *     description: Public endpoint that validates database connectivity and returns the service version. Does not require authentication. Use it for readiness/health probes in deployments.
+ *     responses:
+ *       200:
+ *         description: Healthy status and version.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 version:
+ *                   type: string
+ *             examples:
+ *               example:
+ *                 value:
+ *                   message: "healthy"
+ *                   version: "0.99.0-dev.0"
+ *       500:
+ *         description: Database connection failed.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 version:
+ *                   type: string
+ *             examples:
+ *               example:
+ *                 value:
+ *                   message: "database-connection-failed"
+ *                   version: "0.99.0-dev.0"
+ */
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import pkg from "../../../../../../package.json";

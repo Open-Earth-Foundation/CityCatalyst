@@ -181,5 +181,17 @@
   "oauth-clients-delete": "Delete this OAuth client?",
   "oauth-client-id": "Client ID",
   "oauth-clients-error-deleting-client": "Error deleting client app",
-  "oauth-clients-success-deleting-client": "Client app deleted"
+  "oauth-clients-success-deleting-client": "Client app deleted",
+  "module-access-enabled": "Module Access Enabled",
+  "module-access-enabled-description": "{{moduleName}} has been enabled for this project",
+  "module-access-disabled": "Module Access Disabled",
+  "module-access-disabled-description": "{{moduleName}} has been disabled for this project",
+  "module-access-error": "Module Access Error",
+  "module-access-error-description": "Failed to update module access. Please try again.",
+  "organization-name-already-exists": "Organization name already exists",
+  "error-organization": "Organization error",
+  "publish-project": "Publish project",
+  "publishing-project": "Publishing project...",
+  "publish-project-success": "Project published successfully",
+  "publish-project-error": "Error publishing project"
 }

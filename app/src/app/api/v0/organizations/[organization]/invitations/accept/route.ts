@@ -1,3 +1,41 @@
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}/invitations/accept:
+ *   patch:
+ *     tags:
+ *       - Organization Invitations
+ *     summary: Accept organization admin invitation
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, token, organizationId]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               token:
+ *                 type: string
+ *               organizationId:
+ *                 type: string
+ *                 format: uuid
+ *     responses:
+ *       200:
+ *         description: Invitation accepted.
+ *       401:
+ *         description: Unauthorized or token mismatch.
+ *       500:
+ *         description: Configuration or server error.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { AcceptInvite, AcceptOrganizationInvite } from "@/util/validation";

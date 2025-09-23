@@ -152,3 +152,6 @@ lcov.info
 api-demo/public/config.js
 
 
+# openapi-spec.json is generated at build time
+app/public/openapi-spec.json
+

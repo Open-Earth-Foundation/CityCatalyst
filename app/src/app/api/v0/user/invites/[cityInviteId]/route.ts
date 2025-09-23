@@ -1,3 +1,39 @@
+/**
+ * @swagger
+ * /api/v0/user/invites/{cityInviteId}:
+ *   delete:
+ *     tags:
+ *       - User Invites
+ *     summary: Cancel a city invite
+ *     parameters:
+ *       - in: path
+ *         name: cityInviteId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Invite canceled.
+ *       401:
+ *         description: Unauthorized.
+ *   patch:
+ *     tags:
+ *       - User Invites
+ *     summary: Re-send a city invite (reset to pending)
+ *     parameters:
+ *       - in: path
+ *         name: cityInviteId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Invite status updated to pending.
+ *       401:
+ *         description: Unauthorized.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

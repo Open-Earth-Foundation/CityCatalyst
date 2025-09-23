@@ -1,3 +1,35 @@
+/**
+ * @swagger
+ * /api/v0/auth/forgot:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Request a password reset email for a user account.
+ *     description: Generates a short‑lived reset token and emails the reset link if the user exists. No authentication is required, and responses are always 200 to avoid revealing account existence. Requires server email and secret configuration.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Empty body to acknowledge request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *             examples:
+ *               example:
+ *                 value: {}
+ *       500:
+ *         description: Configuration error.
+ */
 import { sendEmail } from "@/lib/email";
 import ForgotPasswordTemplate from "@/lib/emails/ForgotPasswordTemplate";
 import { apiHandler } from "@/util/api";

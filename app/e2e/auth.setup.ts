@@ -14,24 +14,20 @@ setup("authenticate", async ({ page, request }) => {
   await expectText(page, "Log In");
 
 
-    // Handle cookie consent banner if it appears
-  const cookieDeclineButton = page.getByTestId("cookie-decline-button");
-  await cookieDeclineButton.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
-  if (await cookieDeclineButton.isVisible().catch(() => false)) {
-    await cookieDeclineButton.click();
-    // Wait for cookie banner to disappear
-    await cookieDeclineButton.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
-  }
-
+  // Fill the login form
   await page.locator('input[name="email"]').fill(TEST_ADMIN_EMAIL);
   await page.locator('input[name="password"]').fill(TEST_ADMIN_PASSWORD);
   
+  // Verify the form is filled
+  await page.waitForTimeout(500);
   
-  // Click login and wait for navigation
+  // Click login and wait for navigation to cities page
   await Promise.all([
-    page.waitForURL((url) => !url.pathname.includes('/auth/login'), { timeout: 30000 }),
+    page.waitForURL((url) => url.pathname.includes('/cities'), { timeout: 30000 }),
     page.locator('button[type="submit"]').click()
   ]);
+
+  await page.waitForLoadState("networkidle");
 
   await page.context().storageState({ path: authFile });
 });

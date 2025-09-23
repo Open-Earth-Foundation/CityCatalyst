@@ -1,3 +1,47 @@
+/**
+ * @swagger
+ * /api/v0/emissions-factor:
+ *   post:
+ *     tags:
+ *       - Emissions Factors
+ *     summary: Query emissions factors filtered by location, methodology, and metadata.
+ *     description: Looks up emissions factors by reference number, methodology, and optional metadata, deriving location context from either an inventoryId or a regionLocode. Public endpoint (no authentication enforced) in current implementation. Returns results wrapped in { data: EmissionsFactor[] }.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               inventoryId:
+ *                 type: string
+ *                 description: Inventory ID to infer location context
+ *               regionLocode:
+ *                 type: string
+ *                 description: Region LOCODE to infer location context
+ *               referenceNumber:
+ *                 type: string
+ *               methodologyId:
+ *                 type: string
+ *               metadata:
+ *                 type: object
+ *                 additionalProperties: true
+ *     responses:
+ *       200:
+ *         description: Matching factors wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     additionalProperties: true
+ *       400:
+ *         description: Invalid parameters (e.g., both inventoryId and regionLocode provided).
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

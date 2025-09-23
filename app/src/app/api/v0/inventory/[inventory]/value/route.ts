@@ -1,3 +1,29 @@
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/value:
+ *   get:
+ *     tags:
+ *       - Inventory Values
+ *     summary: List inventory values by subcategories
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: subCategoryIds
+ *         required: true
+ *         description: Comma-separated subcategory IDs
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Inventory values returned.
+ *       400:
+ *         description: Missing subCategoryIds.
+ */
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { db } from "@/models";
 import { Inventory } from "@/models/Inventory";

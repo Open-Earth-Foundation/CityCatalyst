@@ -1,3 +1,34 @@
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}/users:
+ *   delete:
+ *     tags:
+ *       - Organization Users
+ *     summary: Remove a user from an organization (admin/org-admin).
+ *     description: Removes the given email from the organization’s owners/admins. Requires an admin or org_admin session for the organization. Returns an empty body on success.
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: email
+ *     responses:
+ *       200:
+ *         description: Empty body.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: user-not-found query param missing.
+ */
 import { apiHandler } from "@/util/api";
 import UserService from "@/backend/UserService";
 import createHttpError from "http-errors";

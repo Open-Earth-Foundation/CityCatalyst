@@ -38,6 +38,7 @@
   "re-prioritize-actions": "Reprioriser les actions",
   "generated-action-plan": "générer plan d'action",
   "export-as-pdf": "exporter en PDF",
+  "generating-pdf": "génération du PDF...",
   "subactions": "Sous-actions",
   "municipal-institutions-involved": "institutions municipales impliquées",
   "transport": "Transport",
@@ -103,5 +104,19 @@
   "climate-actions-title": "Actions climatiques",
   "actions": "Actions",
   "open-cc-actions": "Actions CC Ouvertes",
-  "top-climate-actions": "Principales Actions à Impact Élevé"
+  "top-climate-actions": "Principales Actions à Impact Élevé",
+  "ranked-and-unranked-actions": "Actions classées et non classées",
+  "pick-actions": "Sélectionner les principales actions",
+  "clear-selection": "Effacer la sélection",
+  "select-all": "Sélectionner tout",
+  "actions-selected": "actions sélectionnées",
+  "ranked-and-unranked-actions-description": "Voici les initiatives climatiques que notre modèle d'IA a identifiées comme ayant le plus grand impact potentiel pour votre ville. Vous pouvez sélectionner jusqu'à trois actions pour créer des plans détaillés dans la section supérieure. De plus, n'hésitez pas à télécharger ce tableau pour le partager avec les parties prenantes.",
+  "view-generated-plan": "Voir le Plan Généré",
+  "generating-plan": "Génération du Plan...",
+  "missing-data": "Données Manquantes",
+  "plan-generation-started": "Génération du Plan Commencée",
+  "plan-generation-started-description": "Votre plan d'action est en cours de génération. Vous recevrez une notification par email quand il sera prêt.",
+  "plan-generation-failed": "Échec de la Génération",
+  "plan-generation-failed-description": "Échec du démarrage de la génération du plan. Veuillez réessayer.",
+  "exit-selection": "Sélection de sortie"
 }

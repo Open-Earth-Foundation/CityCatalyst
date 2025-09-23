@@ -1,5 +1,6 @@
 # Climate Advisor
 
+
 Climate Advisor (CA) is a standalone FastAPI microservice that powers the conversational experience for CityCatalyst (CC). The service lives under `climate-advisor/service` and exposes versioned APIs under `/v1/*`.
 
 ## Local Development
@@ -153,5 +154,4 @@ You should see SSE lines with `event: message` chunks followed by a terminal `ev
 
 - Built-in Swagger UI is available at `/docs` and ReDoc at `/redoc`.
 - A static OpenAPI spec lives at `climate-advisor/docs/climate-advisor-openapi.yaml` for external tooling.
-
 

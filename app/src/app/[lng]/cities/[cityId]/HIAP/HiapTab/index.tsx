@@ -1,10 +1,11 @@
-import { InventoryResponse } from "@/util/types";
+import { CityWithProjectDataResponse, InventoryResponse } from "@/util/types";
 import {
   LANGUAGES,
   ACTION_TYPES,
   HIAction,
   MitigationAction,
   AdaptationAction,
+  CityResponse,
 } from "@/util/types";
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/i18n/client";
@@ -17,7 +18,10 @@ import {
   HStack,
   Button,
   IconButton,
+  Table as ChakraTable,
+  Icon,
 } from "@chakra-ui/react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip } from "@/components/ui/tooltip";
 import { RiExpandDiagonalFill } from "react-icons/ri";
 import {
@@ -26,13 +30,25 @@ import {
   flexRender,
   ColumnDef,
   Row,
+  RowSelectionState,
+  Table as TanStackTable,
 } from "@tanstack/react-table";
 import { ActionDrawer } from "@/components/ActionDrawer";
-import { useGetHiapQuery } from "@/services/api";
+import {
+  useGetHiapQuery,
+  useUpdateHiapSelectionMutation,
+} from "@/services/api";
 import { logger } from "@/services/logger";
 import { HighImpactActionRankingStatus } from "@/util/types";
 import ClimateActionsEmptyState from "./ClimateActionsEmptyState";
 import ActionPlanSection from "./ActionPlanSection";
+import { DownloadIcon } from "@/components/icons";
+import { FaCaretDown } from "react-icons/fa";
+import { MdCheckBox } from "react-icons/md";
+import { TitleLarge } from "@/components/Texts/Title";
+import { BodyLarge } from "@/components/Texts/Body";
+import { IoMdCheckboxOutline } from "react-icons/io";
+import { TopPickIcon } from "@/components/icons";
 
 const BarVisualization = ({
   value,
@@ -49,9 +65,9 @@ const BarVisualization = ({
         <Box
           key={index}
           w={width}
-          h="4px"
-          bg={index < value ? "blue.500" : "gray.200"}
-          borderRadius="sm"
+          h="8px"
+          bg={index < value ? "content.link" : "background.neutral"}
+          borderRadius="md"
         />
       ))}
     </HStack>
@@ -61,48 +77,102 @@ const BarVisualization = ({
 export function HiapTab({
   type,
   inventory,
+  cityData,
 }: {
   type: ACTION_TYPES;
   inventory: InventoryResponse;
+  cityData: CityWithProjectDataResponse;
 }) {
   const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "hiap");
   const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [selectedActions, setSelectedActions] = useState<HIAction[]>([]);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
 
   const {
     data: hiapData,
     isLoading,
     error,
     refetch,
-  } = useGetHiapQuery({
-    inventoryId: inventory.inventoryId,
-    lng: lng,
-    actionType: type,
-  });
+  } = useGetHiapQuery(
+    {
+      inventoryId: inventory.inventoryId || "",
+      lng: lng,
+      actionType: type,
+    },
+    { skip: !inventory.inventoryId },
+  );
+
+  const [updateHiapSelection, { isLoading: isUpdatingSelection }] =
+    useUpdateHiapSelectionMutation();
 
   const actions = hiapData?.rankedActions || [];
   const isAdaptation = type === ACTION_TYPES.Adaptation;
 
   const isPending = hiapData?.status === HighImpactActionRankingStatus.PENDING;
 
+  // Initialize selection state from database
+  useEffect(() => {
+    if (actions.length > 0) {
+      const initialSelection: RowSelectionState = {};
+      const initialSelectedActions: HIAction[] = [];
+
+      actions.forEach((action) => {
+        if (action.isSelected) {
+          initialSelection[action.id] = true;
+          initialSelectedActions.push(action);
+        }
+      });
+
+      setRowSelection(initialSelection);
+      setSelectedActions(initialSelectedActions);
+    }
+  }, [actions]);
+
   const columns: ColumnDef<HIAction>[] = [
+    ...(isSelectionMode
+      ? [
+          {
+            id: "select",
+            header: ({ table }: { table: TanStackTable<HIAction> }) => (
+              <Checkbox
+                checked={table.getIsAllRowsSelected()}
+                onChange={table.getToggleAllRowsSelectedHandler()}
+              />
+            ),
+            cell: ({ row }: { row: Row<HIAction> }) => (
+              <Checkbox
+                checked={row.getIsSelected()}
+                disabled={!row.getCanSelect()}
+                onChange={row.getToggleSelectedHandler()}
+              />
+            ),
+            enableSorting: false,
+            enableHiding: false,
+          },
+        ]
+      : []),
     {
       accessorKey: "rank",
-      header: t("ranking"),
+      header: t("rank"),
       cell: ({ row }: { row: Row<HIAction> }) => (
-        <Badge colorScheme="blue">{row.original.rank}</Badge>
+        <Text color="content.secondary">{"#" + row.original.rank}</Text>
       ),
     },
     {
       accessorKey: "name",
-      header: t("action-name"),
+      header: t("action"),
       cell: ({ row }: { row: Row<HIAction> }) => (
-        <VStack alignItems="flex-start" gap={1}>
-          <Text fontWeight="bold">{row.original.name}</Text>
-          <Text fontSize="sm" color="gray.600">
-            {row.original.description}
-          </Text>
-        </VStack>
+        <HStack alignItems="center" gap={1} maxW={"367px"} position="relative">
+          <Box>
+            {row.original.isSelected && (
+              <Icon as={TopPickIcon} color="content.link" boxSize={6} />
+            )}
+          </Box>
+
+          <Text color="content.secondary">{row.original.name}</Text>
+        </HStack>
       ),
     },
     ...(isAdaptation
@@ -145,9 +215,9 @@ export function HiapTab({
               return (
                 <HStack gap={1} flexWrap="wrap">
                   {action.sectors.map((sector) => (
-                    <Badge key={sector} colorScheme="blue">
+                    <Text key={sector} color="content.secondary">
                       {t(`sector.${sector}`)}
-                    </Badge>
+                    </Text>
                   ))}
                 </HStack>
               );
@@ -172,7 +242,9 @@ export function HiapTab({
                 })
                 .reduce((sum, value) => sum + value, 0);
               const blueBars = Math.min(Math.ceil(totalReduction / 20), 5);
-              return <BarVisualization value={blueBars} total={5} />;
+              return (
+                <BarVisualization value={blueBars} total={5} width="60px" />
+              );
             },
           },
         ]),
@@ -189,17 +261,75 @@ export function HiapTab({
             logger.info("Open drawer for action:", row.original);
           }}
         >
-          <RiExpandDiagonalFill color="black" />
+          <Icon as={RiExpandDiagonalFill} color="interactive.control" />
         </IconButton>
       ),
     },
   ];
 
+  const handleRowSelectionChange = async (
+    updaterOrValue:
+      | RowSelectionState
+      | ((old: RowSelectionState) => RowSelectionState),
+  ) => {
+    const newRowSelection =
+      typeof updaterOrValue === "function"
+        ? updaterOrValue(rowSelection)
+        : updaterOrValue;
+
+    try {
+      const selectedActionIds = Object.keys(newRowSelection).filter(
+        (id) => newRowSelection[id],
+      );
+      await updateHiapSelection({
+        inventoryId: inventory.inventoryId,
+        selectedActionIds,
+      }).unwrap();
+
+      setRowSelection(newRowSelection);
+      logger.info("Updated selection:", selectedActionIds);
+    } catch (error) {
+      logger.error("Failed to update selection:", error);
+    }
+  };
+
   const table = useReactTable({
     data: actions,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    state: {
+      rowSelection,
+    },
+    onRowSelectionChange: handleRowSelectionChange,
+    enableRowSelection: true,
+    getRowId: (row) => row.id, // Use the action ID as row ID
   });
+
+  // Update selected actions when row selection changes
+  useEffect(() => {
+    const selectedRows = table.getSelectedRowModel().rows;
+    const newSelectedActions = selectedRows.map((row) => row.original);
+    setSelectedActions(newSelectedActions);
+  }, [rowSelection, table]);
+
+  const handleClearSelection = async () => {
+    try {
+      await updateHiapSelection({
+        inventoryId: inventory.inventoryId,
+        selectedActionIds: [],
+      }).unwrap();
+
+      setRowSelection({});
+      setSelectedActions([]);
+      logger.info("Cleared all action selections");
+    } catch (error) {
+      logger.error("Failed to clear selection:", error);
+    }
+  };
+
+  const toggleSelectionMode = () => {
+    setIsSelectionMode(!isSelectionMode);
+  };
 
   if (isLoading) {
     return <Box p={4}>{t("loading")}</Box>;
@@ -242,47 +372,96 @@ export function HiapTab({
         />
       )}
       {/* Top action widgets / mitigation */}
-      <ActionPlanSection t={t} rankedActions={actions || []} />
-      <table style={{ width: "100%" }}>
-        <thead>
+      <ActionPlanSection
+        t={t}
+        rankedActions={actions || []}
+        cityLocode={cityData.locode}
+        cityId={cityData.cityId}
+        cityData={cityData}
+        inventoryId={inventory.inventoryId}
+      />
+      <Box display="flex" flexDirection="column" gap="18px" py="24px">
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <TitleLarge
+            color="content.secondary"
+            fontWeight="bold"
+            fontFamily="heading"
+          >
+            {t("ranked-and-unranked-actions")}
+          </TitleLarge>
+          <Box display="flex" gap="16px">
+            <Button
+              variant="ghost"
+              color="interactive.control"
+              p="4px"
+              onClick={toggleSelectionMode}
+              disabled={isUpdatingSelection}
+              bg={isSelectionMode ? "background.muted" : "transparent"}
+            >
+              <Icon as={isSelectionMode ? MdCheckBox : IoMdCheckboxOutline} />
+              <Text>
+                {isSelectionMode
+                  ? selectedActions.length > 0
+                    ? `${selectedActions.length} ${t("actions-selected")}`
+                    : t("pick-actions")
+                  : t("pick-actions")}
+              </Text>
+            </Button>
+            <Button variant="ghost" color="interactive.control" p="4px">
+              <Icon as={DownloadIcon} />
+              <Text>{t("download-action-plan")}</Text>
+              <Icon as={FaCaretDown} color="interactive.control" />
+            </Button>
+          </Box>
+        </Box>
+        <BodyLarge
+          color="content.tertiary"
+          fontWeight="normal"
+          fontFamily="body"
+        >
+          {t("ranked-and-unranked-actions-description")}
+        </BodyLarge>
+      </Box>
+      <ChakraTable.Root w="full" borderRadius="md" borderWidth="1px">
+        <ChakraTable.Header bg="header.overlay">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <ChakraTable.Row key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th
+                <ChakraTable.ColumnHeader
                   key={header.id}
-                  style={{
-                    padding: "8px",
-                    textAlign: "left",
-                    borderBottom: "1px solid #e2e8f0",
-                  }}
+                  textAlign="left"
+                  fontWeight="bold"
+                  fontFamily="heading"
+                  textTransform="uppercase"
+                  fontSize="body.sm"
+                  color="content.secondary"
+                  bg="background.neutral"
                 >
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext(),
                   )}
-                </th>
+                </ChakraTable.ColumnHeader>
               ))}
-            </tr>
+            </ChakraTable.Row>
           ))}
-        </thead>
-        <tbody>
+        </ChakraTable.Header>
+        <ChakraTable.Body>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
+            <ChakraTable.Row key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td
+                <ChakraTable.Cell
                   key={cell.id}
-                  style={{
-                    padding: "8px",
-                    borderBottom: "1px solid #e2e8f0",
-                  }}
+                  borderBottom="1px solid #e2e8f0"
+                  p={4}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                </ChakraTable.Cell>
               ))}
-            </tr>
+            </ChakraTable.Row>
           ))}
-        </tbody>
-      </table>
+        </ChakraTable.Body>
+      </ChakraTable.Root>
     </Box>
   );
 }

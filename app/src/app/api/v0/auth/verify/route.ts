@@ -1,3 +1,65 @@
+/**
+ * @swagger
+ * /api/v0/auth/verify:
+ *   get:
+ *     tags:
+ *       - Auth
+ *     summary: Create a verification token for the current user.
+ *     description: Issues a short‑lived verification token for the authenticated user. Requires a signed‑in session; missing email or configuration produces errors. Use this token to validate the user’s password via the POST route.
+ *     responses:
+ *       200:
+ *         description: Token wrapped in a JSON object.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 verificationToken:
+ *                   type: string
+ *             examples:
+ *               example:
+ *                 value:
+ *                   verificationToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *       400:
+ *         description: User email missing in session.
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Configuration error.
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Check if a password matches the user referenced by a token.
+ *     description: Verifies the supplied password against the user identified by the verification token. No authentication is required; the token binds the identity. Returns a boolean result.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [password, token]
+ *             properties:
+ *               password:
+ *                 type: string
+ *               token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Comparison result.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 comparePassword:
+ *                   type: boolean
+ *             examples:
+ *               example:
+ *                 value:
+ *                   comparePassword: true
+ *       500:
+ *         description: Configuration error.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { passwordRegex } from "@/util/validation";

@@ -1,20 +1,29 @@
 import { test, expect } from "@playwright/test";
-import { createInventoryThroughOnboarding } from "./helpers";
 import { parse } from "csv-parse/sync";
+import { navigateToGHGIModule } from "./helpers";
 import * as fs from "fs";
 
 test.describe("CSV Download", () => {
   test.setTimeout(180000); // Set 60 second timeout for all tests in this describe block
 
-  test("User can download inventory as CSV", async ({ page }) => {
-    // Create inventory through onboarding
-    await createInventoryThroughOnboarding(page, "Chicago");
-
-    // Navigate to Dashboard
+  test.beforeEach(async ({ page }) => {
+    await navigateToGHGIModule(page);
+    
+    // Wait for the page to be fully loaded and rendered
     await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(1000); // Additional wait for React rendering
+    
+    // Verify we're on the dashboard with more robust waiting
+    const heroCityName = page.getByTestId("hero-city-name");
+    await expect(heroCityName).toBeVisible({ timeout: 10000 });
+    await expect(heroCityName).toHaveText("Chicago", { timeout: 5000 });
+    
+    // Wait for the ActionCards component to render (indicates inventory data is loaded)
+    const addDataCard = page.getByTestId("add-data-to-inventory-card");
+    await expect(addDataCard).toBeVisible({ timeout: 10000 });
+  });
 
-    // Verify we're on the dashboard
-    await expect(page.getByTestId("hero-city-name")).toHaveText("Chicago");
+  test("User can download inventory as CSV", async ({ page }) => {
 
     // Find and click the Download button
     // Looking for the download action card
@@ -43,11 +52,12 @@ test.describe("CSV Download", () => {
     expect(filename).toContain(".csv");
 
     // Save the downloaded file to a temporary location for verification
-    const downloadPath = await download.path();
-    expect(downloadPath).toBeTruthy();
+    const downloadPath = 'temp-download.csv';
+    await download.saveAs(downloadPath);
+    expect(fs.existsSync(downloadPath)).toBeTruthy();
 
     // Read and verify the CSV content
-    const csvContent = fs.readFileSync(downloadPath!, "utf-8");
+    const csvContent = fs.readFileSync(downloadPath, "utf-8");
     expect(csvContent).toBeTruthy();
     expect(csvContent.length).toBeGreaterThan(0);
 
@@ -74,16 +84,11 @@ test.describe("CSV Download", () => {
     }
 
     // Clean up - delete the downloaded file
+    fs.unlinkSync(downloadPath);
     await download.delete();
   });
 
   test("CSV download contains valid data structure", async ({ page }) => {
-    // Create inventory through onboarding
-    await createInventoryThroughOnboarding(page, "Chicago");
-
-    // Navigate to Dashboard
-    await page.waitForLoadState("networkidle");
-
     // Open download modal
     const downloadActionCard = page.getByTestId("download-action-card");
     await downloadActionCard.click();
@@ -98,10 +103,11 @@ test.describe("CSV Download", () => {
     await csvDownloadButton.click();
 
     const download = await downloadPromise;
-    const downloadPath = await download.path();
+    const downloadPath = 'temp-download-2.csv';
+    await download.saveAs(downloadPath);
 
     // Parse and validate CSV content
-    const csvContent = fs.readFileSync(downloadPath!, "utf-8");
+    const csvContent = fs.readFileSync(downloadPath, "utf-8");
     const records = parse(csvContent, {
       columns: true,
       skip_empty_lines: true,
@@ -163,15 +169,11 @@ test.describe("CSV Download", () => {
     }
 
     // Clean up
+    fs.unlinkSync(downloadPath);
     await download.delete();
   });
 
   test("CSV download handles errors gracefully", async ({ page }) => {
-    // Create inventory through onboarding
-    await createInventoryThroughOnboarding(page, "Chicago");
-
-    // Navigate to Dashboard
-    await page.waitForLoadState("networkidle");
 
     // Open download modal
     const downloadActionCard = page.getByTestId("download-action-card");
@@ -200,11 +202,6 @@ test.describe("CSV Download", () => {
   });
 
   test("Multiple format downloads work correctly", async ({ page }) => {
-    // Create inventory through onboarding
-    await createInventoryThroughOnboarding(page, "Chicago");
-
-    // Navigate to Dashboard
-    await page.waitForLoadState("networkidle");
 
     // Open download modal
     const downloadActionCard = page.getByTestId("download-action-card");
@@ -222,8 +219,9 @@ test.describe("CSV Download", () => {
     expect(csvDownload.suggestedFilename()).toContain(".csv");
 
     // Verify CSV content
-    const csvPath = await csvDownload.path();
-    const csvContent = fs.readFileSync(csvPath!, "utf-8");
+    const csvPath = 'temp-csv-download.csv';
+    await csvDownload.saveAs(csvPath);
+    const csvContent = fs.readFileSync(csvPath, "utf-8");
     expect(csvContent).toContain("GPC Reference Number");
 
     // Test eCRF download (if available)
@@ -240,17 +238,13 @@ test.describe("CSV Download", () => {
     }
 
     // Clean up CSV download
+    fs.unlinkSync(csvPath);
     await csvDownload.delete();
   });
 
   test("CSV download preserves special characters and formatting", async ({
     page,
   }) => {
-    // Create inventory through onboarding
-    await createInventoryThroughOnboarding(page, "Chicago");
-
-    // Navigate to Dashboard
-    await page.waitForLoadState("networkidle");
 
     // Open download modal and download CSV
     const downloadActionCard = page.getByTestId("download-action-card");
@@ -264,10 +258,11 @@ test.describe("CSV Download", () => {
     await csvDownloadButton.click();
 
     const download = await downloadPromise;
-    const downloadPath = await download.path();
+    const downloadPath = 'temp-download-3.csv';
+    await download.saveAs(downloadPath);
 
     // Read raw CSV content to check formatting
-    const csvContent = fs.readFileSync(downloadPath!, "utf-8");
+    const csvContent = fs.readFileSync(downloadPath, "utf-8");
 
     // Verify CSV is properly quoted (all fields should be quoted as per the service)
     expect(csvContent).toMatch(/"[^"]*"/); // Check for quoted fields
@@ -296,16 +291,17 @@ test.describe("CSV Download", () => {
     }
 
     // Clean up
+    fs.unlinkSync(downloadPath);
     await download.delete();
   });
 
   test("CSV download contains actual inventory data", async ({ page }) => {
     // Create inventory through onboarding
-    await createInventoryThroughOnboarding(page, "Chicago");
+    await navigateToGHGIModule(page);
 
     // Navigate to Dashboard
     await page.waitForLoadState("networkidle");
-
+    console.log("URL:",page.url())
     // Navigate to Add Data section
     const addDataButton = page.getByTestId("add-data-to-inventory-card");
     await expect(addDataButton).toBeVisible({ timeout: 15000 });
@@ -437,29 +433,7 @@ test.describe("CSV Download", () => {
     await page.waitForTimeout(3000);
 
     // Navigate back to dashboard to download CSV
-    {
-      const urlObj = new URL(page.url());
-      // Try to extract from inventory routes like /<lng>/<inventoryId>/... (including /data/...)
-      let match = urlObj.pathname.match(
-        /^\/(\w{2})\/([0-9a-f-]{36})(?:\/.*)?$/,
-      );
-      // Or from onboarding done: /<lng>/onboarding/done/<city>/<year>/<inventoryId>
-      if (!match) {
-        match = urlObj.pathname.match(
-          /^\/(\w{2})\/onboarding\/done\/[^/]+\/[^/]+\/([0-9a-f-]{36})\/?/,
-        );
-      }
-      if (match) {
-        const targetRoot = `/${match[1]}/${match[2]}/`;
-        await page.goto(targetRoot);
-      } else {
-        console.log(
-          "⚠️ Could not derive inventory root from:",
-          urlObj.pathname,
-          "— staying on current page",
-        );
-      }
-    }
+    await navigateToGHGIModule(page);
     await page.waitForLoadState("networkidle");
 
     // Download CSV with the added data
@@ -474,16 +448,15 @@ test.describe("CSV Download", () => {
     await csvDownloadButton.click();
 
     const download = await downloadPromise;
-    const downloadPath = await download.path();
+    const downloadPath = 'temp-download-4.csv';
+    await download.saveAs(downloadPath);
 
     // Parse and validate CSV contains our test data
-    const csvContent = fs.readFileSync(downloadPath!, "utf-8");
+    const csvContent = fs.readFileSync(downloadPath, "utf-8");
     const records = parse(csvContent, {
       columns: true,
       skip_empty_lines: true,
     });
-
-    console.log(records);
 
     // Verify we have data records (not just headers)
     expect(records.length).toBeGreaterThan(0);
@@ -501,6 +474,7 @@ test.describe("CSV Download", () => {
     expect(testDataRecord["Data source name"]).toBe("test-value");
 
     // Clean up
+    fs.unlinkSync(downloadPath);
     await download.delete();
   });
 });

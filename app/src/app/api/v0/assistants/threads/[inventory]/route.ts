@@ -1,3 +1,43 @@
+/**
+ * @swagger
+ * /api/v0/assistants/threads/{inventory}:
+ *   post:
+ *     tags:
+ *       - Assistants Threads
+ *     summary: Create a new assistant thread for a specific inventory.
+ *     description: Creates a thread and seeds it with inventory context plus an initial message. Requires a signed-in user with access to the target inventory; access is enforced via inventory permissions. Use this to start a chat session tied to a given inventory.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [content]
+ *             properties:
+ *               content:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Thread identifier.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 threadId:
+ *                   type: string
+ *             examples:
+ *               example:
+ *                 value:
+ *                   threadId: "thread_abc123"
+ */
 import { apiHandler } from "@/util/api";
 import { setupOpenAI } from "@/util/openai";
 import { NextResponse } from "next/server";

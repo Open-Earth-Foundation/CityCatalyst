@@ -270,6 +270,7 @@ export default function OnboardingSetup(props: {
                   h={16}
                   w="auto"
                   loading={isConfirming}
+                  disabled={isConfirming}
                   px="24px"
                   onClick={onConfirm}
                 >

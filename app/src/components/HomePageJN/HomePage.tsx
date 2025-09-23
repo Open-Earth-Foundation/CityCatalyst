@@ -87,6 +87,14 @@ export default function HomePage({
     skip: !cityIdFromParam,
   });
 
+  // get ghgi city data
+  const { data: ghgiCityData } = api.useGetInventoryByCityIdQuery(
+    cityIdFromParam!,
+    {
+      skip: !cityIdFromParam,
+    },
+  );
+
   const { data: population } = useGetMostRecentCityPopulationQuery(
     { cityId: cityIdFromParam! },
     { skip: !cityIdFromParam },
@@ -161,6 +169,7 @@ export default function HomePage({
         <>
           <Hero
             city={city}
+            ghgiCityData={ghgiCityData}
             year={parsedYear}
             isPublic={isPublic}
             isLoading={isOrgDataLoading || isCityLoading}
@@ -198,7 +207,10 @@ export default function HomePage({
                 {stageOrder.map((stage) => {
                   const modules = projectModules.filter((mod) => {
                     // Filter out CCRA module unless feature flag is enabled
-                    if (mod.id === Modules.CCRA.id && !hasFeatureFlag(FeatureFlags.CCRA_MODULE)) {
+                    if (
+                      mod.id === Modules.CCRA.id &&
+                      !hasFeatureFlag(FeatureFlags.CCRA_MODULE)
+                    ) {
                       return false;
                     }
                     return mod.stage === stage;

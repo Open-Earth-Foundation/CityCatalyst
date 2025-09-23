@@ -42,6 +42,7 @@
   "modules": "Module",
   "generated-action-plan": "Aktionsplan generieren",
   "export-as-pdf": "als PDF exportieren",
+  "generating-pdf": "PDF wird generiert...",
   "subactions": "Unteraktionen",
   "municipal-institutions-involved": "beteiligte städtische Institutionen",
   "see-more-details": "Mehr Details anzeigen",
@@ -104,5 +105,19 @@
   "climate-actions-title": "Klimaschutzmaßnahmen",
   "actions": "Maßnahmen",
   "open-cc-actions": "Öffne CC-Aktionen",
-  "top-climate-actions": "Top Hochwirksame Maßnahmen"
+  "top-climate-actions": "Top Hochwirksame Maßnahmen",
+  "ranked-and-unranked-actions": "Bewertete und unbewertete Maßnahmen",
+  "pick-actions": "Top-Maßnahmen auswählen",
+  "clear-selection": "Auswahl löschen",
+  "select-all": "Alle auswählen",
+  "actions-selected": "Maßnahmen ausgewählt",
+  "ranked-and-unranked-actions-description": "Hier sind die Klimainitiativen, die unser KI-Modell als die mit dem größten Potenzial für Ihre Stadt identifiziert hat. Sie können bis zu drei Maßnahmen auswählen, um detaillierte Pläne im oberen Bereich zu erstellen. Darüber hinaus können Sie diese Tabelle gerne herunterladen, um sie mit Interessengruppen zu teilen.",
+  "view-generated-plan": "Generierten Plan Anzeigen",
+  "generating-plan": "Plan Wird Generiert...",
+  "missing-data": "Fehlende Daten",
+  "plan-generation-started": "Plan-Generierung Gestartet",
+  "plan-generation-started-description": "Ihr Aktionsplan wird generiert. Sie erhalten eine E-Mail-Benachrichtigung, wenn er fertig ist.",
+  "plan-generation-failed": "Generierung Fehlgeschlagen",
+  "plan-generation-failed-description": "Fehler beim Starten der Plan-Generierung. Bitte versuchen Sie es erneut.",
+  "exit-selection": "Auswahl verlassen"
 }

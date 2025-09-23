@@ -1,3 +1,21 @@
+/**
+ * @swagger
+ * /api/v0/projects/{project}/modules:
+ *   get:
+ *     tags:
+ *       - Project Modules
+ *     summary: List modules enabled for a project
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Modules returned.
+ */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";

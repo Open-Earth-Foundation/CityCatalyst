@@ -17,6 +17,7 @@ import { Trans } from "react-i18next/TransWithoutContext";
 // import { AddIcon } from "@chakra-ui/icons";
 import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
 import { BsPlus } from "react-icons/bs";
+import { usePathname } from "next/navigation";
 
 import {
   AccordionItem,
@@ -36,6 +37,7 @@ export function SectorCard({
   t: TFunction;
   inventory: InventoryResponse;
 }) {
+  const pathname = usePathname();
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);
 
@@ -115,9 +117,7 @@ export function SectorCard({
               </Heading>
             </Box>
             <Box>
-              <NextLink
-                href={`/${inventory.inventoryId}/data/${sector.number}`}
-              >
+              <NextLink href={`${pathname}/data/${sector.number}`}>
                 <Button
                   variant="outline"
                   borderWidth={2}
@@ -169,16 +169,18 @@ export function SectorCard({
                 {sectorProgress?.subSectors?.map((subSector, i) => (
                   <NextLink
                     key={i}
-                    href={`/${inventory.inventoryId}/data/${convertSectorReferenceNumberToNumber(sector.referenceNumber)}/${subSector.subsectorId}`}
+                    href={`${pathname}/data/${convertSectorReferenceNumberToNumber(sector.referenceNumber)}/${subSector.subsectorId}`}
                   >
                     <SubSectorCard
                       t={t}
                       title={t(subSector.subsectorName ?? "unnamed-sector")}
                       scopes={(sectorScopes || []).join(", ")}
                       isCompleted={subSector.completed}
-                      percentageCompletion={
-                        (subSector.completedCount / subSector.totalCount) * 100
-                      }
+                      percentageCompletion={clamp(
+                        (subSector.completedCount / subSector.totalCount) * 100,
+                        0,
+                        100,
+                      )}
                     />
                   </NextLink>
                 ))}

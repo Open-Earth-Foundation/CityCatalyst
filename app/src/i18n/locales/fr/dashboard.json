@@ -3,6 +3,7 @@
   "welcome": "Bienvenue",
   "in-progress": "En cours",
   "total-emissions-in": "Émissions totales en {{year}}",
+  "total-emissions-in-year": "Émissions totales par année {{year}}",
   "sector-emissions-in": "Émissions par secteur en {{year}}",
   "total-population": "Population Totale",
   "total-land-area": "Superficie totale des terres",
@@ -261,5 +262,6 @@
   "publish-error-description": "Il y a eu une erreur lors de la publication de votre inventaire. Veuillez réessayer.",
   "unpublish-error-title": "Échec de la dépublication",
   "unpublish-error-description": "Une erreur s'est produite lors de la dépublication de votre inventaire. Veuillez réessayer.",
-  "link-copied-to-clipboard": "Lien copié dans le presse-papiers"
+  "link-copied-to-clipboard": "Lien copié dans le presse-papiers",
+  "publish": "Publier"
 }

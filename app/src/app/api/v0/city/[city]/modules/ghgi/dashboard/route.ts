@@ -1,3 +1,31 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}/modules/ghgi/dashboard:
+ *   get:
+ *     tags:
+ *       - City Modules
+ *     summary: Get GHGI dashboard data for a city inventory
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: GHGI dashboard data returned.
+ *       400:
+ *         description: Inventory does not belong to city.
+ *       404:
+ *         description: Inventory not found.
+ */
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { ModuleDashboardService } from "@/backend/ModuleDashboardService";
 import { apiHandler } from "@/util/api";

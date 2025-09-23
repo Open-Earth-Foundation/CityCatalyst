@@ -10,7 +10,9 @@ async function bulkUpsert(
   debug = false,
 ) {
   for (const entry of entries) {
-    if (debug) { console.info("Upserting entry", entry); }
+    if (debug) {
+      console.info("Upserting entry", entry);
+    }
 
     const id = entry[idColumnName];
     const item = await queryInterface.sequelize.query(
@@ -35,9 +37,7 @@ async function bulkUpsert(
 async function parseFile(folder, filename) {
   const records = [];
   const parser = fs
-    .createReadStream(
-      `${__dirname}/../../seed-data/${folder}/${filename}.csv`,
-    )
+    .createReadStream(`${__dirname}/../../seed-data/${folder}/${filename}.csv`)
     .pipe(parse({ delimiter: ",", columns: true }));
 
   for await (const record of parser) {
@@ -47,4 +47,11 @@ async function parseFile(folder, filename) {
   return records;
 }
 
-module.exports = { bulkUpsert, parseFile };
+async function parseJsonFile(folder, filename) {
+  const filePath = `${__dirname}/../../seed-data/${folder}/${filename}.json`;
+  const data = await fs.promises.readFile(filePath, "utf8");
+  const records = JSON.parse(data);
+  return Array.isArray(records) ? records : [records];
+}
+
+module.exports = { bulkUpsert, parseFile, parseJsonFile };

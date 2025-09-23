@@ -97,24 +97,15 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
     throw createHttpError.BadRequest("Invalid action plan ID");
   }
 
-  try {
-    const body = await req.json();
-    const validatedData = updateActionPlanSchema.parse(body);
+  const body = await req.json();
+  const validatedData = updateActionPlanSchema.parse(body);
 
-    const actionPlan = await ActionPlanService.updateActionPlan({
-      id,
-      ...validatedData,
-    });
+  const actionPlan = await ActionPlanService.updateActionPlan({
+    id,
+    ...validatedData,
+  });
 
-    return NextResponse.json({ data: actionPlan });
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      throw createHttpError.BadRequest(
-        `Invalid request body: ${error.message}`,
-      );
-    }
-    throw error;
-  }
+  return NextResponse.json({ data: actionPlan });
 });
 
 /**

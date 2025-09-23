@@ -78,6 +78,25 @@ class PromptsConfig(BaseModel):
     inventory_context: Optional[str] = None
     data_analysis: Optional[str] = None
 
+    def get_prompt(self, prompt_type: str) -> str:
+        """Load prompt content from file."""
+        from pathlib import Path
+
+        # Get the prompt file path from config
+        prompt_path = getattr(self, prompt_type)
+        if not prompt_path:
+            raise ValueError(f"Prompt type '{prompt_type}' not configured")
+
+        # Construct full path relative to climate-advisor root
+        config_dir = Path(__file__).parent.parent.parent.parent.parent
+        full_path = config_dir / prompt_path
+
+        if not full_path.exists():
+            raise FileNotFoundError(f"Prompt file not found: {full_path}")
+
+        with open(full_path, 'r', encoding='utf-8') as f:
+            return f.read().strip()
+
 
 class OpenRouterConfig(BaseModel):
     base_url: str
@@ -181,7 +200,7 @@ _settings: Settings | None = None
 
 def _parse_cors_origins(env_value: str | None) -> List[str]:
     if not env_value:
-        return ["*"]  # dev default
+        return ["http://localhost:8000"]  # dev default
     return [origin.strip() for origin in env_value.split(",") if origin.strip()]
 
 

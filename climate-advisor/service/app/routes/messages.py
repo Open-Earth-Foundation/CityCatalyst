@@ -36,7 +36,7 @@ async def _stream_openrouter(
 
     # Use the appropriate system prompt from LLM config
     # TODO: Add inventory context injection when available
-    system_prompt = settings.llm.prompts.default
+    system_prompt = settings.llm.prompts.get_prompt("default")
     
     messages = [
         {"role": "system", "content": system_prompt},

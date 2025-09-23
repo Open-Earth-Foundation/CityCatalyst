@@ -4,9 +4,12 @@ import json
 from typing import AsyncIterator, Dict, List, Optional
 
 import httpx
-from loguru import logger
+import logging
 
 from ..config.settings import LLMConfig
+
+# Set up logger
+logger = logging.getLogger(__name__)
 
 
 class OpenRouterClient:
@@ -58,7 +61,6 @@ class OpenRouterClient:
         messages: List[Dict[str, str]],
         model: Optional[str] = None,
         temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None,
         request_id: Optional[str] = None,
     ) -> AsyncIterator[str]:
         """Yield content tokens from OpenRouter (OpenAI-compatible stream)."""
@@ -68,10 +70,8 @@ class OpenRouterClient:
         
         if self.llm_config:
             effective_temperature = temperature if temperature is not None else self.llm_config.generation.defaults.temperature
-            effective_max_tokens = max_tokens if max_tokens is not None else self.llm_config.generation.defaults.max_tokens
         else:
             effective_temperature = temperature
-            effective_max_tokens = max_tokens
 
         payload: Dict[str, object] = {
             "model": effective_model,
@@ -81,8 +81,6 @@ class OpenRouterClient:
         
         if effective_temperature is not None:
             payload["temperature"] = effective_temperature
-        if effective_max_tokens is not None:
-            payload["max_tokens"] = effective_max_tokens
 
         url = f"{self.base_url}/chat/completions"
 
@@ -102,7 +100,7 @@ class OpenRouterClient:
                         try:
                             obj = json.loads(data)
                         except json.JSONDecodeError:
-                            logger.debug("openrouter_stream_nonjson", data=data[:200])
+                            logger.debug("OpenRouter stream received non-JSON data: %s", data[:200])
                             continue
                         # choices[0].delta.content (OpenAI-style)
                         try:
@@ -124,9 +122,9 @@ class OpenRouterClient:
                 text = e.response.text
             except Exception:
                 pass
-            logger.error("openrouter_http_error", status=status, body=(text[:200] if text else None))
+            logger.error("OpenRouter HTTP error: status=%s, body=%s", status, text[:200] if text else None)
             raise
         except Exception:
-            logger.exception("openrouter_stream_error")
+            logger.exception("OpenRouter stream error occurred")
             raise
 

@@ -14,7 +14,17 @@ from .routes.health import router as health_router
 from .routes.threads import router as threads_router
 from .routes.messages import router as messages_router
 from .middleware.request_context import RequestContextMiddleware, get_request_id
-from loguru import logger
+import logging
+
+# Configure basic logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler()]
+)
+
+# Set up logger
+logger = logging.getLogger(__name__)
 
 
 def create_problem_details(
@@ -59,11 +69,11 @@ def get_app() -> FastAPI:
     # Lifespan: log service lifecycle
     @app.on_event("startup")
     async def _startup() -> None:
-        logger.info("service_started", service="climate-advisor")
+        logger.info("Service started", extra={"service": "climate-advisor"})
 
     @app.on_event("shutdown")
     async def _shutdown() -> None:
-        logger.info("service_stopping", service="climate-advisor")
+        logger.info("Service stopping", extra={"service": "climate-advisor"})
 
     # Routers
     app.include_router(health_router)
@@ -108,7 +118,7 @@ def get_app() -> FastAPI:
 
     @app.exception_handler(Exception)
     async def generic_exception_handler(request: Request, exc: Exception):
-        logger.exception("unhandled_exception")
+        logger.exception("Unhandled exception occurred", exc_info=exc)
         problem = create_problem_details(
             request,
             status=500,

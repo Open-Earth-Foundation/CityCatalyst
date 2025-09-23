@@ -20,19 +20,6 @@ paths:
                 properties:
                   status:
                     type: string
-  /ready:
-    get:
-      summary: Readiness probe
-      responses:
-        '200':
-          description: Ready state
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  ready:
-                    type: boolean
   /v1/threads:
     post:
       summary: Create thread
@@ -126,4 +113,3 @@ components:
               type: number
             max_tokens:
               type: integer
-

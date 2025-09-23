@@ -3,7 +3,6 @@ uvicorn[standard]==0.29.0
 httpx==0.27.0
 pydantic==2.7.1
 python-dotenv==1.0.1
-loguru==0.7.2
 SQLAlchemy[asyncio]==2.0.30
 asyncpg==0.29.0
 alembic==1.13.1

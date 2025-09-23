@@ -11,45 +11,15 @@ models:
       
     "openai/gpt-4.1":
       name: "GPT-4.1"
-      description: "OpenAI's flagship model"
-      max_tokens: 4096
-      supports_streaming: true
       default_temperature: 0.7
       
-    "openai/gpt-4.1-mini":
-      name: "GPT-4.1 Mini"
-      description: "Faster, more cost-effective version of GPT-4o"
-      max_tokens: 4096
-      supports_streaming: true
-      default_temperature: 0.7
+
 
 # Generation Parameters
 generation:
   # Default parameters for text generation
   defaults:
     temperature: 0.1
-    max_tokens: 2048
-    top_p: 1.0
-    frequency_penalty: 0.0
-    presence_penalty: 0.0
-    
-  # Parameter limits/ranges
-  limits:
-    temperature:
-      min: 0.0
-      max: 1.0
-    max_tokens:
-      min: 1
-      max: 24000
-    top_p:
-      min: 0.0
-      max: 1.0
-    frequency_penalty:
-      min: -2.0
-      max: 2.0
-    presence_penalty:
-      min: -2.0
-      max: 2.0
 
 # System Prompts
 prompts:
@@ -117,20 +87,11 @@ api:
 features:
   # Enable/disable streaming responses
   streaming_enabled: true
-  # Enable/disable model switching per request
-  dynamic_model_selection: true
-  # Enable/disable custom temperature per request
-  dynamic_parameters: true
-  # Enable/disable context injection for inventories
-  inventory_context_injection: true
+
 
 # Logging Configuration
 logging:
-  # Log LLM requests and responses (be careful with sensitive data)
   log_requests: false
   log_responses: false
-  # Log performance metrics
   log_performance: true
-  # Log model usage statistics
-  log_usage_stats: true
 

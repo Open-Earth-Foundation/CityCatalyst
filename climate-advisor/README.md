@@ -6,31 +6,37 @@ Climate Advisor (CA) is a standalone FastAPI microservice that powers the conver
 
 Prerequisites: Python 3.11+, pip, and Docker (for local Postgres).
 
-1. Copy the example environment file and adjust values as needed:
+1. Create and activate a Python virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+2. Copy the example environment file and adjust values as needed:
    ```bash
    cp climate-advisor/.env.example climate-advisor/.env
    ```
 
-2. Start a local Postgres instance (see [Postgres Quickstart](#postgres-quickstart)). Leave it running while you develop.
+3. Start a local Postgres instance (see [Postgres Quickstart](#postgres-quickstart)). Leave it running while you develop.
 
-3. Install dependencies:
+4. Install dependencies:
    ```bash
    cd climate-advisor/service
    pip install -r requirements.txt
    ```
 
-4. Create or reset the database schema (idempotent):
+5. Create or reset the database schema (idempotent):
    ```bash
    python ../scripts/setup_local_db.py
    ```
    Add `--drop` to wipe and recreate the schema.
 
-5. Run the service:
+6. Run the service:
    ```bash
    uvicorn app.main:app --host 0.0.0.0 --port 8080
    ```
 
-6. Explore the API docs:
+7. Explore the API docs:
    - Swagger UI: http://localhost:8080/docs
    - OpenAPI JSON: http://localhost:8080/openapi.json
    - Playground: http://localhost:8080/playground (simple HTML tester)

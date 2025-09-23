@@ -49,26 +49,23 @@ def _parse_int(value: Optional[str], default: Optional[int]) -> Optional[int]:
 
 class ModelConfig(BaseModel):
     name: str
-    description: str
-    max_tokens: int
-    supports_streaming: bool
+    description: Optional[str] = None
+    supports_streaming: Optional[bool] = None
     default_temperature: float
 
 
 class GenerationDefaults(BaseModel):
     temperature: float
-    max_tokens: int
-    top_p: float
-    frequency_penalty: float
-    presence_penalty: float
+    top_p: Optional[float] = None
+    frequency_penalty: Optional[float] = None
+    presence_penalty: Optional[float] = None
 
 
 class GenerationLimits(BaseModel):
-    temperature: Dict[str, float]
-    max_tokens: Dict[str, int]
-    top_p: Dict[str, float]
-    frequency_penalty: Dict[str, float]
-    presence_penalty: Dict[str, float]
+    temperature: Optional[Dict[str, float]] = None
+    top_p: Optional[Dict[str, float]] = None
+    frequency_penalty: Optional[Dict[str, float]] = None
+    presence_penalty: Optional[Dict[str, float]] = None
 
 
 class GenerationConfig(BaseModel):
@@ -78,40 +75,40 @@ class GenerationConfig(BaseModel):
 
 class PromptsConfig(BaseModel):
     default: str
-    inventory_context: str
-    data_analysis: str
+    inventory_context: Optional[str] = None
+    data_analysis: Optional[str] = None
 
 
 class OpenRouterConfig(BaseModel):
     base_url: str
-    timeout_ms: int
-    retry_attempts: int
-    retry_delay_ms: int
+    timeout_ms: Optional[int] = None
+    retry_attempts: Optional[int] = None
+    retry_delay_ms: Optional[int] = None
 
 
 class APIConfig(BaseModel):
     openrouter: OpenRouterConfig
-    requests: Dict[str, Any]
+    requests: Optional[Dict[str, Any]] = None
 
 
 class FeaturesConfig(BaseModel):
-    streaming_enabled: bool
-    dynamic_model_selection: bool
-    dynamic_parameters: bool
-    inventory_context_injection: bool
+    streaming_enabled: Optional[bool] = None
+    dynamic_model_selection: Optional[bool] = None
+    dynamic_parameters: Optional[bool] = None
+    inventory_context_injection: Optional[bool] = None
 
 
 class LoggingConfig(BaseModel):
-    log_requests: bool
-    log_responses: bool
-    log_performance: bool
-    log_usage_stats: bool
+    log_requests: Optional[bool] = None
+    log_responses: Optional[bool] = None
+    log_performance: Optional[bool] = None
+    log_usage_stats: Optional[bool] = None
 
 
 class CacheConfig(BaseModel):
-    enabled: bool
-    ttl_seconds: int
-    max_size_mb: int
+    enabled: Optional[bool] = None
+    ttl_seconds: Optional[int] = None
+    max_size_mb: Optional[int] = None
 
 
 class LLMConfig(BaseModel):

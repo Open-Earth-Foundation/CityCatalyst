@@ -151,9 +151,4 @@ lcov.info
 
 api-demo/public/config.js
 
-# climate advisor
-# Python cache files
-__pycache__/
-*.py[cod]
-*$py.class
 

@@ -1,10 +1,13 @@
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
-from loguru import logger
+import logging
 import time
 import uuid
 import contextvars
+
+# Set up logger
+logger = logging.getLogger(__name__)
 
 
 _request_id_ctx: contextvars.ContextVar[str] = contextvars.ContextVar("request_id", default="")
@@ -23,7 +26,7 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
 
         start = time.perf_counter()
         logger.info(
-            "request_start",
+            "Request started",
             extra={
                 "request_id": req_id,
                 "method": request.method,
@@ -35,13 +38,14 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         except Exception as exc:
             duration_ms = (time.perf_counter() - start) * 1000
             logger.exception(
-                "request_error",
+                "Request error occurred",
                 extra={
                     "request_id": req_id,
                     "method": request.method,
                     "path": request.url.path,
                     "duration_ms": round(duration_ms, 2),
                 },
+                exc_info=exc,
             )
             raise
 
@@ -50,7 +54,7 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         response.headers.setdefault("X-Request-Id", req_id)
 
         logger.info(
-            "request_complete",
+            "Request completed",
             extra={
                 "request_id": req_id,
                 "method": request.method,

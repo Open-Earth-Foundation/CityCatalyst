@@ -14,7 +14,7 @@ from app.models.requests import MessageCreateRequest, ThreadCreateRequest
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
 
-
+#TODO: filter the messages by a given test ID that is assigned earlier in the test. This way you can prevent Messages created by other tests from messing with this test or vice versa. The other tests might be running in parallel, so this prevents annoying race conditions in the tests where the CI sometimes fails
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
 
@@ -65,12 +65,12 @@ class UserIdentityPersistenceTests(unittest.IsolatedAsyncioTestCase):
             await message_service.create_user_message(
                 thread_id=thread_id,
                 user_id="user-1",
-                content="Hello",
+                text="Hello",
             )
             await message_service.create_assistant_message(
                 thread_id=thread_id,
                 user_id="user-1",
-                content="Hi there",
+                text="Hi there",
             )
             await session.commit()
 

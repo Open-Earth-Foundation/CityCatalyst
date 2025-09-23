@@ -50,7 +50,6 @@ async def _stream_openrouter(
             messages=messages,
             model=(payload.options or {}).get("model") if payload.options else None,
             temperature=(payload.options or {}).get("temperature") if payload.options else None,
-            max_tokens=(payload.options or {}).get("max_tokens") if payload.options else None,
             request_id=req_id,
         ):
             if token:

@@ -77,7 +77,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     duration: 1200,
   });
 
-  const [createOrganization, { isLoading, error: orgError }] =
+  const [createOrganization, { isLoading }] =
     api.useCreateOrganizationMutation();
 
   const [createProject, { isLoading: isProjectLoading }] =
@@ -85,7 +85,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
 
   const [
     createOrganizationInvite,
-    { isLoading: isInviteLoading, error: inviteError },
+    { isLoading: isInviteLoading },
   ] = api.useCreateOrganizationInviteMutation();
 
   const isSubmitting = isLoading || isProjectLoading || isInviteLoading;
@@ -146,11 +146,11 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
       if (projectResponse.data && inviteResponse.data) {
         showSuccessToast();
         closeFunction();
-      } else if (inviteError) {
-        handleCustomError(inviteError as CustomError, "error-invite");
+      } else if (inviteResponse.error) {
+        handleCustomError(inviteResponse.error as CustomError, "error-invite");
       }
-    } else if (orgError) {
-      handleCustomError(orgError as CustomError, "error-organization");
+    } else if (response.error) {
+      handleCustomError(response.error as CustomError, "error-organization");
     } else {
       showErrorToast();
     }

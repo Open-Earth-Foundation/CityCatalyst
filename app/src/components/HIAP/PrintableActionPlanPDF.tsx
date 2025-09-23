@@ -66,8 +66,7 @@ export function PrintableActionPlanPDF({
 
           <View>
               <Text style={styles.sectionTitle}>
-                #{action.rank} {' '}
-                 {action.name}
+                {`#${action.rank} ${action.name}`}
               </Text>
 
             <Text style={styles.text}>{action.description}</Text>

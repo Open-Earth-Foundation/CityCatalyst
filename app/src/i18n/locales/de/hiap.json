@@ -130,5 +130,8 @@
   "plan-generation-started-description": "Ihr Aktionsplan wird generiert. Sie erhalten eine E-Mail-Benachrichtigung, wenn er fertig ist.",
   "plan-generation-failed": "Generierung Fehlgeschlagen",
   "plan-generation-failed-description": "Fehler beim Starten der Plan-Generierung. Bitte versuchen Sie es erneut.",
-  "exit-selection": "Auswahl verlassen"
+  "exit-selection": "Auswahl verlassen",
+  "download-csv": "CSV",
+  "export-as-csv": "Als CSV exportieren",
+  "unknown": "Unbekannt"
 }

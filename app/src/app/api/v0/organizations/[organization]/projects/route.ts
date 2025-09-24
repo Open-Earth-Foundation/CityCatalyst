@@ -20,7 +20,20 @@
  *           application/json:
  *             schema:
  *               type: array
- *               items: { type: object, additionalProperties: true }
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   projectId:
+ *                     type: string
+ *                     format: uuid
+ *                   name:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                     nullable: true
+ *                   created:
+ *                     type: string
+ *                     format: date-time
  *   post:
  *     tags:
  *       - Organization Projects
@@ -55,7 +68,24 @@
  *           application/json:
  *             schema:
  *               type: object
- *               additionalProperties: true
+ *               properties:
+ *                 projectId:
+ *                   type: string
+ *                   format: uuid
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                   nullable: true
+ *                 organizationId:
+ *                   type: string
+ *                   format: uuid
+ *                 created:
+ *                   type: string
+ *                   format: date-time
+ *                 lastUpdated:
+ *                   type: string
+ *                   format: date-time
  *       404:
  *         description: Organization not found.
  */

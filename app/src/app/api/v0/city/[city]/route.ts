@@ -25,8 +25,11 @@
  *                   properties:
  *                     cityId: { type: string, format: uuid }
  *                     name: { type: string }
- *                     locode: { type: string }
- *                   additionalProperties: true
+ *                     region: { type: string, nullable: true }
+ *                     country: { type: string, nullable: true }
+ *                     locode: { type: string, nullable: true }
+ *                     population: { type: array, items: { type: object, properties: { year: {type: number}, population: {type: number} } } }
+ *                     boundaries: { type: array, items: { type: object, properties: { boundaryId: {type: string, format: uuid}, name: {type: string} } } }
  */
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
@@ -175,7 +178,40 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
  *               properties:
  *                 data:
  *                   type: object
- *                   additionalProperties: true
+ *                   properties:
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     region:
+ *                       type: string
+ *                       nullable: true
+ *                     country:
+ *                       type: string
+ *                       nullable: true
+ *                     locode:
+ *                       type: string
+ *                       nullable: true
+ *                     population:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           year:
+ *                             type: number
+ *                           population:
+ *                             type: number
+ *                     boundaries:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           boundaryId:
+ *                             type: string
+ *                             format: uuid
+ *                           name:
+ *                             type: string
  */
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const body = createCityRequest.parse(await req.json());

@@ -23,7 +23,30 @@
  *               properties:
  *                 data:
  *                   type: object
- *                   additionalProperties: true
+ *                   properties:
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     region:
+ *                       type: string
+ *                       nullable: true
+ *                     country:
+ *                       type: string
+ *                       nullable: true
+ *                     locode:
+ *                       type: string
+ *                       nullable: true
+ *                     population:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           year:
+ *                             type: number
+ *                           population:
+ *                             type: number
  *       400:
  *         description: Invalid city ID.
  *       401:

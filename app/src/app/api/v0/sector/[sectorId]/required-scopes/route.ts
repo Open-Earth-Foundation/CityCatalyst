@@ -26,7 +26,10 @@
  *                   properties:
  *                     requiredScopes:
  *                       type: array
- *                       items: { type: string }
+ *                       items:
+ *                         type: string
+ *                         description: GPC scope name required by the sector
+ *                         example: "Basic"
  *       404:
  *         description: Sector not found.
  */

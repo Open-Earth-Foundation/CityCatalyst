@@ -28,7 +28,19 @@
  *                     properties:
  *                       id: { type: string }
  *                       file: { type: object, properties: { fileName: {type: string}, size: {type: integer}, fileType: {type: string} } }
- *                     additionalProperties: true
+ *                     properties:
+ *                       fileId:
+ *                         type: string
+ *                         format: uuid
+ *                       fileName:
+ *                         type: string
+ *                       size:
+ *                         type: number
+ *                       fileType:
+ *                         type: string
+ *                       uploadDate:
+ *                         type: string
+ *                         format: date-time
  */
 import NotificationService from "@/backend/NotificationService";
 import UserService from "@/backend/UserService";

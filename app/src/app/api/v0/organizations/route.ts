@@ -13,7 +13,20 @@
  *           application/json:
  *             schema:
  *               type: array
- *               items: { type: object, additionalProperties: true }
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   organizationId:
+ *                     type: string
+ *                     format: uuid
+ *                   name:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                     nullable: true
+ *                   created:
+ *                     type: string
+ *                     format: date-time
  */
 import { Organization } from "@/models/Organization";
 import { randomUUID } from "node:crypto";
@@ -58,7 +71,18 @@ import { Op } from "sequelize";
  *           application/json:
  *             schema:
  *               type: object
- *               additionalProperties: true
+ *               properties:
+ *                 organizationId:
+ *                   type: string
+ *                   format: uuid
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                   nullable: true
+ *                 created:
+ *                   type: string
+ *                   format: date-time
  *       409:
  *         description: Organization name already exists.
  *         content:

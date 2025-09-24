@@ -24,7 +24,23 @@
  *                 data:
  *                   type: object
  *                   properties:
- *                     city: { type: object, additionalProperties: true }
+ *                     city:
+ *                       type: object
+ *                       properties:
+ *                         cityId:
+ *                           type: string
+ *                           format: uuid
+ *                         name:
+ *                           type: string
+ *                         region:
+ *                           type: string
+ *                           nullable: true
+ *                         country:
+ *                           type: string
+ *                           nullable: true
+ *                         locode:
+ *                           type: string
+ *                           nullable: true
  *                     years:
  *                       type: array
  *                       items:

@@ -27,7 +27,26 @@
  *                       type: string
  *                     filename:
  *                       type: string
- *                   additionalProperties: true
+ *                   properties:
+ *                     fileId:
+ *                       type: string
+ *                       description: OpenAI File ID
+ *                     filename:
+ *                       type: string
+ *                       description: Original filename
+ *                     size:
+ *                       type: number
+ *                       description: File size in bytes
+ *                     created_at:
+ *                       type: number
+ *                       description: Unix timestamp of file creation
+ *                     updated_at:
+ *                       type: number
+ *                       description: Unix timestamp of last file update
+ *                     purpose:
+ *                       type: string
+ *                       enum: ['assistants', 'vision', 'fine-tune']
+ *                       description: Purpose of the file
  *             examples:
  *               example:
  *                 value:

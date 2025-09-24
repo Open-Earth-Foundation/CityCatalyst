@@ -20,7 +20,21 @@
  *           application/json:
  *             schema:
  *               type: object
- *               additionalProperties: true
+ *               properties:
+ *                 projectId:
+ *                   type: string
+ *                   format: uuid
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                   nullable: true
+ *                 created:
+ *                   type: string
+ *                   format: date-time
+ *                 lastUpdated:
+ *                   type: string
+ *                   format: date-time
  *       404:
  *         description: Project not found.
  *   patch:
@@ -56,7 +70,21 @@
  *           application/json:
  *             schema:
  *               type: object
- *               additionalProperties: true
+ *               properties:
+ *                 projectId:
+ *                   type: string
+ *                   format: uuid
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                   nullable: true
+ *                 created:
+ *                   type: string
+ *                   format: date-time
+ *                 lastUpdated:
+ *                   type: string
+ *                   format: date-time
  *       400:
  *         description: Invalid request or default project cannot be updated.
  *       404:

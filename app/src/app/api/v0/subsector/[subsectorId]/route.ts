@@ -26,10 +26,23 @@
  *                   properties:
  *                     subsectorId: { type: string, format: uuid }
  *                     subsectorName: { type: string }
- *                     sectorId: { type: string, format: uuid }
- *                     referenceNumber: { type: string }
- *                     scopeId: { type: string, format: uuid }
- *                   additionalProperties: true
+ *                     sectorId:
+ *                       type: string
+ *                       format: uuid
+ *                     referenceNumber:
+ *                       type: string
+ *                     scopeId:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     categoryId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                     description:
+ *                       type: string
+ *                       nullable: true
  *       404:
  *         description: Subsector not found.
  */

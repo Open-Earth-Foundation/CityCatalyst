@@ -23,13 +23,64 @@
  *               properties:
  *                 data:
  *                   type: array
- *                   items: { type: object, additionalProperties: true }
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       datasourceId:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                       data:
+ *                         type: object
+ *                         additionalProperties: true
+ *                         description: Fetched data from the data source
+ *                       error:
+ *                         type: string
+ *                         nullable: true
+ *                         description: Error message if data fetch failed
+ *                     description: Data source with fetched data or error information
  *                 removedSources:
  *                   type: array
- *                   items: { type: object, additionalProperties: true }
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       datasourceId:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                       subSector:
+ *                         type: object
+ *                         properties:
+ *                           subsectorId:
+ *                             type: string
+ *                             format: uuid
+ *                           name:
+ *                             type: string
+ *                       subCategory:
+ *                         type: object
+ *                         properties:
+ *                           subcategoryId:
+ *                             type: string
+ *                             format: uuid
+ *                           name:
+ *                             type: string
+ *                     description: Data sources removed due to applicability filtering
  *                 failedSources:
  *                   type: array
- *                   items: { type: object, additionalProperties: true }
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       datasourceId:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                       error:
+ *                         type: string
+ *                         description: Error message describing why the source failed
+ *                     description: Data sources that failed to fetch data
  *       404:
  *         description: Inventory not found.
  */
@@ -139,21 +190,61 @@ const applySourcesRequest = z.object({
  *                   properties:
  *                     successful:
  *                       type: array
- *                       items: { type: string }
+ *                       items:
+ *                         type: string
+ *                         format: uuid
+ *                         description: Successfully applied datasource IDs
  *                     failed:
  *                       type: array
- *                       items: { type: string }
+ *                       items:
+ *                         type: string
+ *                         format: uuid
+ *                         description: Failed datasource IDs
  *                     invalid:
  *                       type: array
- *                       items: { type: string }
+ *                       items:
+ *                         type: string
+ *                         format: uuid
+ *                         description: Invalid datasource IDs not applicable to inventory
  *                     issues:
  *                       type: object
- *                       additionalProperties: { type: string }
+ *                       additionalProperties:
+ *                         type: string
+ *                       description: Map of datasource IDs to error messages
  *                     removedSources:
  *                       type: array
- *                       items: { type: object, additionalProperties: true }
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           datasourceId:
+ *                             type: string
+ *                             format: uuid
+ *                           name:
+ *                             type: string
+ *                           subSector:
+ *                             type: object
+ *                             properties:
+ *                               subsectorId:
+ *                                 type: string
+ *                                 format: uuid
+ *                               name:
+ *                                 type: string
+ *                           subCategory:
+ *                             type: object
+ *                             properties:
+ *                               subcategoryId:
+ *                                 type: string
+ *                                 format: uuid
+ *                               name:
+ *                                 type: string
+ *                       description: Data sources removed due to applicability filtering
  *       404:
  *         description: Inventory or sources not found.
+ *     examples:
+ *       application/json:
+ *         dataSourceIds:
+ *           - "550e8400-e29b-41d4-a716-446655440000"
+ *           - "550e8400-e29b-41d4-a716-446655440001"
  */
 export const POST = apiHandler(async (req: NextRequest, { params }) => {
   const body = applySourcesRequest.parse(await req.json());

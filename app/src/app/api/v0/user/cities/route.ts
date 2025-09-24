@@ -19,7 +19,20 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       city: { type: object, additionalProperties: true }
+ *                       city:
+ *                         type: object
+ *                         properties:
+ *                           cityId:
+ *                             type: string
+ *                             format: uuid
+ *                           name:
+ *                             type: string
+ *                           region:
+ *                             type: string
+ *                           country:
+ *                             type: string
+ *                           locode:
+ *                             type: string
  *                       years:
  *                         type: array
  *                         items:

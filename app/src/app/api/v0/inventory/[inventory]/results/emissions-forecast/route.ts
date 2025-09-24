@@ -21,7 +21,25 @@
  *             schema:
  *               type: object
  *               properties:
- *                 data: { type: object, additionalProperties: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     forecast:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           year:
+ *                             type: number
+ *                           emissions:
+ *                             type: number
+ *                           confidence:
+ *                             type: number
+ *                     methodology:
+ *                       type: string
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
  */
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";

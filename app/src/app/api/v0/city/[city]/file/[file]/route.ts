@@ -28,7 +28,22 @@
  *               properties:
  *                 data:
  *                   type: object
- *                   additionalProperties: true
+ *                   properties:
+ *                     fileId:
+ *                       type: string
+ *                       format: uuid
+ *                     fileName:
+ *                       type: string
+ *                     size:
+ *                       type: number
+ *                     fileType:
+ *                       type: string
+ *                     uploadDate:
+ *                       type: string
+ *                       format: date-time
+ *                     content:
+ *                       type: string
+ *                       description: File content as base64 or URL
  *   delete:
  *     tags:
  *       - City Files
@@ -54,8 +69,10 @@
  *             schema:
  *               type: object
  *               properties:
- *                 data: { type: object }
- *                 deleted: { type: boolean }
+ *                 data:
+ *                   type: object
+ *                 deleted:
+ *                   type: boolean
  */
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";

@@ -26,7 +26,32 @@
  *             schema:
  *               type: object
  *               properties:
- *                 data: { type: object, additionalProperties: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     sectorName:
+ *                       type: string
+ *                     year:
+ *                       type: number
+ *                     totalEmissions:
+ *                       type: number
+ *                     subsectorResults:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           subsectorId:
+ *                             type: string
+ *                             format: uuid
+ *                           subsectorName:
+ *                             type: string
+ *                           emissions:
+ *                             type: number
+ *                           percentage:
+ *                             type: number
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
  */
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";

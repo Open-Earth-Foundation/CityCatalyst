@@ -28,7 +28,19 @@
  *                     properties:
  *                       inventoryId: { type: string, format: uuid }
  *                       year: { type: integer }
- *                     additionalProperties: true
+ *                     properties:
+ *                       inventoryId:
+ *                         type: string
+ *                         format: uuid
+ *                       year:
+ *                         type: number
+ *                       cityId:
+ *                         type: string
+ *                         format: uuid
+ *                       projectId:
+ *                         type: string
+ *                         format: uuid
+ *                         nullable: true
  *   post:
  *     tags:
  *       - City Inventory
@@ -70,7 +82,8 @@
  *                   properties:
  *                     inventoryId: { type: string, format: uuid }
  *                     year: { type: integer }
- *                   additionalProperties: true
+ *                     cityId: { type: string, format: uuid }
+ *                     projectId: { type: string, format: uuid, nullable: true }
  *                 didExistAlready:
  *                   type: boolean
  *             examples:

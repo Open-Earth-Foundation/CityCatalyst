@@ -20,7 +20,21 @@
  *           application/json:
  *             schema:
  *               type: array
- *               items: { type: object, additionalProperties: true }
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   userId:
+ *                     type: string
+ *                     format: uuid
+ *                   email:
+ *                     type: string
+ *                     format: email
+ *                   role:
+ *                     type: string
+ *                     enum: ['Admin', 'User', 'Viewer']
+ *                   joinedAt:
+ *                     type: string
+ *                     format: date-time
  *       404:
  *         description: Project not found.
  *   delete:
@@ -46,7 +60,8 @@
  *         description: Empty body.
  *         content:
  *           application/json:
- *             schema: { type: object }
+ *             schema:
+ *               type: object
  *       400:
  *         description: user-not-found query param missing.
  *       404:

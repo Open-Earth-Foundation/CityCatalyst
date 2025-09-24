@@ -16,7 +16,21 @@
  *               properties:
  *                 data:
  *                   type: object
- *                   additionalProperties: true
+ *                   properties:
+ *                     userId:
+ *                       type: string
+ *                       format: uuid
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                     role:
+ *                       type: string
+ *                       enum: ['Admin', 'User', 'Viewer']
+ *                     permissions:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       description: List of user permissions
  *       401:
  *         description: Unauthorized.
  *       404:

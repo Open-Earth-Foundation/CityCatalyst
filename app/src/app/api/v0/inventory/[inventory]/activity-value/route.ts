@@ -41,7 +41,100 @@
  *               properties:
  *                 data:
  *                   type: array
- *                   items: { type: object, additionalProperties: true }
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                         description: Unique identifier for the activity value
+ *                       activityData:
+ *                         type: object
+ *                         additionalProperties: true
+ *                         description: Activity data specific to this inventory value
+ *                       co2eq:
+ *                         type: number
+ *                         description: CO2 equivalent emissions (in bigint format)
+ *                       co2eqYears:
+ *                         type: number
+ *                         description: Number of years for CO2 equivalent calculation
+ *                       inventoryValueId:
+ *                         type: string
+ *                         format: uuid
+ *                         nullable: true
+ *                         description: Associated inventory value ID
+ *                       datasourceId:
+ *                         type: string
+ *                         format: uuid
+ *                         nullable: true
+ *                         description: Associated data source ID
+ *                       metadata:
+ *                         type: object
+ *                         additionalProperties: true
+ *                         description: Additional metadata for the activity value
+ *                       created:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Creation timestamp
+ *                       lastUpdated:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Last update timestamp
+ *                       inventoryValue:
+ *                         type: object
+ *                         properties:
+ *                           inventoryValueId:
+ *                             type: string
+ *                             format: uuid
+ *                           gpcReferenceNumber:
+ *                             type: string
+ *                           inventoryId:
+ *                             type: string
+ *                             format: uuid
+ *                           value:
+ *                             type: number
+ *                           inputMethodology:
+ *                             type: string
+ *                             format: uuid
+ *                           subCategoryId:
+ *                             type: string
+ *                             format: uuid
+ *                           created:
+ *                             type: string
+ *                             format: date-time
+ *                           lastUpdated:
+ *                             type: string
+ *                             format: date-time
+ *                         description: Associated inventory value with calculation data
+ *                       gasValues:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             gasValueId:
+ *                               type: string
+ *                               format: uuid
+ *                             gas:
+ *                               type: string
+ *                             value:
+ *                               type: number
+ *                             activityValueId:
+ *                               type: string
+ *                               format: uuid
+ *                             emissionsFactor:
+ *                               type: object
+ *                               properties:
+ *                                 id:
+ *                                   type: string
+ *                                   format: uuid
+ *                                 gpcReferenceNumber:
+ *                                   type: string
+ *                                 emissionsPerActivity:
+ *                                   type: number
+ *                                 gas:
+ *                                   type: string
+ *                           description: Gas-specific values and emissions factors
+ *                     description: Activity value with associated inventory value and gas values
  *       400:
  *         description: Missing required query parameter.
  *   post:
@@ -85,9 +178,59 @@
  *               type: object
  *               properties:
  *                 success: { type: boolean }
- *                 data: { type: object, additionalProperties: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                       description: Unique identifier for the created activity value
+ *                     activityData:
+ *                       type: object
+ *                       additionalProperties: true
+ *                       description: Activity data specific to this inventory value
+ *                     co2eq:
+ *                       type: number
+ *                       description: CO2 equivalent emissions (in bigint format)
+ *                     co2eqYears:
+ *                       type: number
+ *                       description: Number of years for CO2 equivalent calculation
+ *                     inventoryValueId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                       description: Associated inventory value ID
+ *                     datasourceId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                       description: Associated data source ID
+ *                     metadata:
+ *                       type: object
+ *                       additionalProperties: true
+ *                       description: Additional metadata for the activity value
+ *                     created:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Creation timestamp
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Last update timestamp
+ *                   description: Created activity value with all properties
  *       400:
  *         description: Invalid data.
+ *     examples:
+ *       application/json:
+ *         gasValues:
+ *           - gas: "CO2"
+ *             value: 1000.5
+ *         inventoryValueId: "550e8400-e29b-41d4-a716-446655440000"
+ *         inventoryValue:
+ *           gpcReferenceNumber: "1.1.1"
+ *           value: 50000
+ *           inputMethodology: "550e8400-e29b-41d4-a716-446655440001"
+ *           subCategoryId: "550e8400-e29b-41d4-a716-446655440002"
  *   delete:
  *     tags:
  *       - Inventory Activity

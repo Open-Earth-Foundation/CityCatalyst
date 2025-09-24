@@ -36,7 +36,40 @@
  *             schema:
  *               type: object
  *               properties:
- *                 data: { type: object, additionalProperties: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     inventoryId:
+ *                       type: string
+ *                       format: uuid
+ *                     year:
+ *                       type: number
+ *                     hiapScore:
+ *                       type: number
+ *                       description: Overall HIAP score for the inventory
+ *                     categoryScores:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           category:
+ *                             type: string
+ *                           score:
+ *                             type: number
+ *                           indicators:
+ *                             type: array
+ *                             items:
+ *                               type: object
+ *                               properties:
+ *                                 indicator:
+ *                                   type: string
+ *                                 score:
+ *                                   type: number
+ *                                 description:
+ *                                   type: string
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
  */
 import { apiHandler } from "@/util/api";
 import { LANGUAGES } from "@/util/types";

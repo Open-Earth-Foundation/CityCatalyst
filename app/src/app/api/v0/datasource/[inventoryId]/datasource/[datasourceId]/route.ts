@@ -25,7 +25,17 @@
  *           application/json:
  *             schema:
  *               type: object
- *               additionalProperties: true
+ *               properties:
+ *                 datasourceId:
+ *                   type: string
+ *                   format: uuid
+ *                 name:
+ *                   type: string
+ *                 enabled:
+ *                   type: boolean
+ *                 sectorId:
+ *                   type: string
+ *                   format: uuid
  *       404:
  *         description: Inventory or data source not found.
  *   delete:
@@ -55,7 +65,22 @@
  *               properties:
  *                 data:
  *                   type: array
- *                   items: { type: object, additionalProperties: true }
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       datasourceId:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                       data:
+ *                         type: object
+ *                         additionalProperties: true
+ *                         description: Fetched data from the data source
+ *                       error:
+ *                         type: string
+ *                         nullable: true
+ *                         description: Error message if data fetch failed
  *                 deleted:
  *                   type: boolean
  *       404:

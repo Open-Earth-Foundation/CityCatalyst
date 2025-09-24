@@ -27,10 +27,103 @@
  *             schema:
  *               type: object
  *               properties:
- *                 data: { type: object, additionalProperties: true }
-   *   patch:
-   *     tags:
-   *       - Inventory Activity
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                       description: Unique identifier for the activity value
+ *                     activityData:
+ *                       type: object
+ *                       additionalProperties: true
+ *                       description: Activity data specific to this inventory value
+ *                     co2eq:
+ *                       type: number
+ *                       description: CO2 equivalent emissions (in bigint format)
+ *                     co2eqYears:
+ *                       type: number
+ *                       description: Number of years for CO2 equivalent calculation
+ *                     inventoryValueId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                       description: Associated inventory value ID
+ *                     datasourceId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                       description: Associated data source ID
+ *                     metadata:
+ *                       type: object
+ *                       additionalProperties: true
+ *                       description: Additional metadata for the activity value
+ *                     created:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Creation timestamp
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Last update timestamp
+ *                     inventoryValue:
+ *                       type: object
+ *                       properties:
+ *                         inventoryValueId:
+ *                           type: string
+ *                           format: uuid
+ *                         gpcReferenceNumber:
+ *                           type: string
+ *                         inventoryId:
+ *                           type: string
+ *                           format: uuid
+ *                         value:
+ *                           type: number
+ *                         inputMethodology:
+ *                           type: string
+ *                           format: uuid
+ *                         subCategoryId:
+ *                           type: string
+ *                           format: uuid
+ *                         created:
+ *                           type: string
+ *                           format: date-time
+ *                         lastUpdated:
+ *                           type: string
+ *                           format: date-time
+ *                       description: Associated inventory value with calculation data
+ *                     gasValues:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           gasValueId:
+ *                             type: string
+ *                             format: uuid
+ *                           gas:
+ *                             type: string
+ *                           value:
+ *                             type: number
+ *                           activityValueId:
+ *                             type: string
+ *                             format: uuid
+ *                           emissionsFactor:
+ *                             type: object
+ *                             properties:
+ *                               id:
+ *                                 type: string
+ *                                 format: uuid
+ *                               gpcReferenceNumber:
+ *                                 type: string
+ *                               emissionsPerActivity:
+ *                                 type: number
+ *                               gas:
+ *                                 type: string
+ *                         description: Gas-specific values and emissions factors
+ *                   description: Single activity value with associated inventory value and gas values
+ *   patch:
+ *     tags:
+ *       - Inventory Activity
  *     summary: Update an activity value by ID (edit access).
  *     description: Updates the activity value and related gas/emissions factors as needed. Requires a signed‑in user with edit access. Returns a success flag with the updated value.
  *     parameters:
@@ -60,13 +153,54 @@
  *             schema:
  *               type: object
  *               properties:
- *                 success: { type: boolean }
- *                 data: { type: object, additionalProperties: true }
+ *                 success:
+ *                   type: boolean
+ *                   description: Whether the update was successful
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                       description: Unique identifier for the updated activity value
+ *                     activityData:
+ *                       type: object
+ *                       additionalProperties: true
+ *                       description: Updated activity data specific to this inventory value
+ *                     co2eq:
+ *                       type: number
+ *                       description: CO2 equivalent emissions (in bigint format)
+ *                     co2eqYears:
+ *                       type: number
+ *                       description: Number of years for CO2 equivalent calculation
+ *                     inventoryValueId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                       description: Associated inventory value ID
+ *                     datasourceId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                       description: Associated data source ID
+ *                     metadata:
+ *                       type: object
+ *                       additionalProperties: true
+ *                       description: Updated metadata for the activity value
+ *                     created:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Creation timestamp
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Last update timestamp
+ *                   description: Updated activity value with all properties
  *       400:
  *         description: Invalid request (e.g., values too large).
-   *   delete:
-   *     tags:
-   *       - Inventory Activity
+ *   delete:
+ *     tags:
+ *       - Inventory Activity
  *     summary: Delete an activity value by ID (edit access).
  *     description: Removes the activity value row. Requires a signed‑in user with edit access. Returns a success flag.
  *     parameters:

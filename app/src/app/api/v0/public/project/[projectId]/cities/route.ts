@@ -50,13 +50,13 @@ import { db } from "@/models";
  *               example:
  *                 value:
  *                   data:
- *                     - cityId: "11111111-1111-1111-1111-111111111111"
+ *                     - cityId: "c9d8a3c2-1234-4c1a-9de1-6f3f25a2b111"
  *                       name: "Sample City"
  *                       locode: "US-XXX"
  *                       country: "United States"
  *                       region: "California"
  *                       area: 500000
- *                     - cityId: "22222222-2222-2222-2222-222222222222"
+ *                     - cityId: "a7b5c9d1-e8f2-4a6b-9c3d-8e1f2a5b6c7d"
  *                       name: "Another City"
  *                       locode: "US-YYY"
  *                       country: "United States"

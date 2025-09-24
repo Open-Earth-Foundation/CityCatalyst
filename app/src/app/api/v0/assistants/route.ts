@@ -5,12 +5,24 @@
  *     tags:
  *       - Assistants
  *     summary: Create a configured Assistant instance for the application.
- *     description: Placeholder for Assistant provisioning that will initialize a named Assistant and attach file search resources. Requires an admin session; the current implementation returns 501 Not Implemented. Once implemented, it will return an Assistant ID.
+ *     description: Creates a configured Assistant instance for the application with file search resources. Requires an admin session. Returns an OpenAI Assistant ID that can be used for climate-related queries and document analysis.
  *     responses:
+ *       200:
+ *         description: Assistant created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 assistantId:
+ *                   type: string
+ *                   description: OpenAI Assistant ID
  *       501:
  *         description: Not implemented.
  *       405:
  *         description: Method not allowed.
+ *       401:
+ *         description: Unauthorized - requires admin role.
  */
 import { apiHandler } from "@/util/api";
 import { setupOpenAI } from "@/util/openai";

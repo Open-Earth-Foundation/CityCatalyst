@@ -22,12 +22,26 @@
  *                       cityId: { type: string, format: uuid }
  *                       name: { type: string }
  *                       locode: { type: string }
- *                     additionalProperties: true
+ *                     properties:
+ *                       cityId:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                       region:
+ *                         type: string
+ *                         nullable: true
+ *                       country:
+ *                         type: string
+ *                         nullable: true
+ *                       locode:
+ *                         type: string
+ *                         nullable: true
  *             examples:
  *               example:
  *                 value:
  *                   data:
- *                     - cityId: "11111111-1111-1111-1111-111111111111"
+ *                     - cityId: "c9d8a3c2-1234-4c1a-9de1-6f3f25a2b111"
  *                       name: "Sample City"
  *                       locode: "US-XXX"
  *       401:
@@ -85,12 +99,14 @@
  *                     cityId: { type: string, format: uuid }
  *                     name: { type: string }
  *                     locode: { type: string }
- *                   additionalProperties: true
+ *                     region: { type: string, nullable: true }
+ *                     country: { type: string, nullable: true }
+ *                     population: { type: array, items: { type: object, properties: { year: {type: number}, population: {type: number} } } }
  *             examples:
  *               example:
  *                 value:
  *                   data:
- *                     cityId: "22222222-2222-2222-2222-222222222222"
+ *                     cityId: "a7b5c9d1-e8f2-4a6b-9c3d-8e1f2a5b6c7d"
  *                     name: "New City"
  *                     locode: "US-YYY"
  *       401:

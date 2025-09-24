@@ -22,7 +22,29 @@
  *               type: object
  *               properties:
  *                 success: { type: boolean }
- *                 result: { type: object, additionalProperties: true }
+ *                 result:
+ *                   type: object
+ *                   properties:
+ *                     notationKeys:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           key:
+ *                             type: string
+ *                           description:
+ *                             type: string
+ *                           used:
+ *                             type: boolean
+ *                     summary:
+ *                       type: object
+ *                       properties:
+ *                         total:
+ *                           type: number
+ *                         used:
+ *                           type: number
+ *                         unused:
+ *                           type: number
  *   post:
  *     tags:
  *       - Inventory Notation Keys
@@ -65,7 +87,22 @@
  *               type: object
  *               properties:
  *                 success: { type: boolean }
- *                 result: { type: array, items: { type: object, additionalProperties: true } }
+ *                 result:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       inventoryValueId:
+ *                         type: string
+ *                         format: uuid
+ *                       subCategoryId:
+ *                         type: string
+ *                         format: uuid
+ *                       notationKey:
+ *                         type: string
+ *                       value:
+ *                         type: number
+ *                         nullable: true
  */
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import UserService from "@/backend/UserService";

@@ -20,7 +20,21 @@
  *           application/json:
  *             schema:
  *               type: object
- *               additionalProperties: true
+ *               properties:
+ *                 organizationId:
+ *                   type: string
+ *                   format: uuid
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                   nullable: true
+ *                 created:
+ *                   type: string
+ *                   format: date-time
+ *                 lastUpdated:
+ *                   type: string
+ *                   format: date-time
  *       404:
  *         description: Organization not found.
  *   patch:
@@ -54,7 +68,21 @@
  *           application/json:
  *             schema:
  *               type: object
- *               additionalProperties: true
+ *               properties:
+ *                 organizationId:
+ *                   type: string
+ *                   format: uuid
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                   nullable: true
+ *                 created:
+ *                   type: string
+ *                   format: date-time
+ *                 lastUpdated:
+ *                   type: string
+ *                   format: date-time
  *       400:
  *         description: Cannot update default organization.
  *       404:

@@ -60,14 +60,15 @@ import { db } from "@/models";
 import { CustomOrganizationError, OrganizationErrorCodes } from "@/lib/custom-errors/organization-error";
 import { User } from "@/models/User";
 import { OrganizationAdmin } from "@/models/OrganizationAdmin";
+import { Op } from "sequelize";
 
 export const POST = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
   const orgData = createOrganizationRequest.parse(await req.json());
 
-  // Check if organization name already exists
+  // Check if organization name already exists (case insensitive)
   const existingOrg = await Organization.findOne({
-    where: { name: orgData.name },
+    where: { name: { [Op.iLike]: orgData.name } },
   });
 
   if (existingOrg) {

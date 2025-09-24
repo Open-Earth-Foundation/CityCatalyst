@@ -54,6 +54,7 @@
   "re-prioritize-actions": "Re-prioritize actions",
   "generated-action-plan": "generate action plan",
   "export-as-pdf": "export as pdf",
+  "generating-pdf": "generating pdf...",
   "subactions": "Subactions",
   "municipal-institutions-involved": "municipal institutions involved",
   "click-action-description": "Click the button below to start listing your top climate actions.",
@@ -110,5 +111,13 @@
   "select-all": "Select all",
   "actions-selected": "actions selected",
   "exit-selection": "Exit selection",
-  "ranked-and-unranked-actions-description": "Here are the climate initiatives that our AI model has identified as having the greatest potential impact for your city. You can select any three actions to create detailed plans in the upper section. Additionally, feel free to download this table to share with stakeholders."
+  "ranked-and-unranked-actions-description": "Here are the climate initiatives that our AI model has identified as having the greatest potential impact for your city. You can select any three actions to create detailed plans in the upper section. Additionally, feel free to download this table to share with stakeholders.",
+  "view-generated-plan": "View Generated Plan",
+  "loading": "Loading...",
+  "generating-plan": "Generating Plan...",
+  "missing-data": "Missing Data",
+  "plan-generation-started": "Plan Generation Started",
+  "plan-generation-started-description": "Your action plan is being generated. You'll receive an email notification when it's ready.",
+  "plan-generation-failed": "Generation Failed",
+  "plan-generation-failed-description": "Failed to start plan generation. Please try again."
 }

@@ -52,7 +52,7 @@
         authz.searchParams.set("client_id", client.client_id);
         authz.searchParams.set("redirect_uri", redirect_uri);
         authz.searchParams.set("response_type", "code");
-        authz.searchParams.set("scope", "read write");
+        authz.searchParams.set("scope", scope);
         authz.searchParams.set("code_challenge", code_challenge);
         authz.searchParams.set("code_challenge_method", "S256");
         authz.searchParams.set("state", state);

@@ -1,0 +1,76 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.cache
+
+# Logs
+*.log
+logs/
+
+# Documentation
+*.md
+docs/
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+k8s/
+
+# Development dependencies
+requirements-dev.txt
+
+# Scripts (not needed in container)
+scripts/
+
+# Architecture and planning docs
+architecture.md
+architecture_implementation_plan.md
+
+# LLM config (should be mounted or environment-based)
+llm_config.yaml
+
+# OpenAPI spec (for docs)
+climate-advisor-openapi.yaml

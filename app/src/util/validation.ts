@@ -323,3 +323,9 @@ export const organizationActiveStateSchema = z.object({
 export const updateUserRoleSchema = z.object({
   contactEmail: z.string().email().max(255),
 });
+
+export const markCitiesPublicRequest = z.object({
+  projectId: z.string().uuid(),
+});
+
+export type MarkCitiesPublicRequest = z.infer<typeof markCitiesPublicRequest>;

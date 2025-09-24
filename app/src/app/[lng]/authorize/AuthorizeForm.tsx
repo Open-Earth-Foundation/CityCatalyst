@@ -9,6 +9,7 @@ import {
   Heading,
   Text,
   VStack,
+  List,
 } from "@chakra-ui/react";
 import { toaster } from "@/components/ui/toaster";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -174,6 +175,14 @@ export default function AuthorizeForm(props: { lng: string, csrfToken: string}) 
         <VStack gap={4} textAlign="center">
           <Heading size="lg">{t("oauth-authorize-heading")}</Heading>
           <Text>{t("oauth-authorize-prompt", { clientName: (isClientLoading) ? t("oauth-unknown-app") : client?.name.en })}</Text>
+          <List.Root>
+            { (scope.split(" ").some(s => s === "read")) &&
+              <List.Item>{t("oauth-authorize-scope-read")}</List.Item>
+            }
+            { (scope.split(" ").some(s => s === "write")) &&
+              <List.Item>{t("oauth-authorize-scope-write")}</List.Item>
+            }
+          </List.Root>
           <ButtonGroup>
             <Button colorScheme="blue" onClick={handleAuthorize}>
               {t("oauth-ok")}

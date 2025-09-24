@@ -117,9 +117,7 @@ export function SectorCard({
               </Heading>
             </Box>
             <Box>
-              <NextLink
-                href={`${pathname}/data/${sector.number}`}
-              >
+              <NextLink href={`${pathname}/data/${sector.number}`}>
                 <Button
                   variant="outline"
                   borderWidth={2}
@@ -178,9 +176,11 @@ export function SectorCard({
                       title={t(subSector.subsectorName ?? "unnamed-sector")}
                       scopes={(sectorScopes || []).join(", ")}
                       isCompleted={subSector.completed}
-                      percentageCompletion={
-                        (subSector.completedCount / subSector.totalCount) * 100
-                      }
+                      percentageCompletion={clamp(
+                        (subSector.completedCount / subSector.totalCount) * 100,
+                        0,
+                        100,
+                      )}
                     />
                   </NextLink>
                 ))}

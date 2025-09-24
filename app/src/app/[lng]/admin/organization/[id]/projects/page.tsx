@@ -8,10 +8,10 @@ import {
   Table,
   Text,
 } from "@chakra-ui/react";
-import { MdAdd, MdMoreVert } from "react-icons/md";
+import { MdAdd, MdMoreVert, MdPublic } from "react-icons/md";
 import React, { useMemo, useState, use } from "react";
 import { useTranslation } from "@/i18n/client";
-import { useGetOrganizationQuery, useGetProjectsQuery } from "@/services/api";
+import { useGetOrganizationQuery, useGetProjectsQuery, useMarkCitiesPublicMutation } from "@/services/api";
 import {
   ProgressCircleRing,
   ProgressCircleRoot,
@@ -27,6 +27,8 @@ import CreateEditProjectModal from "@/app/[lng]/admin/organization/[id]/projects
 import { RiDeleteBin6Line, RiEditLine } from "react-icons/ri";
 import DeleteProjectModal from "@/app/[lng]/admin/organization/[id]/projects/DeleteProjectModal";
 import ProgressLoader from "@/components/ProgressLoader";
+import { UseSuccessToast, UseErrorToast } from "@/hooks/Toasts";
+import { toaster } from "@/components/ui/toaster";
 
 const AdminOrganizationProjectsPage = (props: {
   params: Promise<{ lng: string; id: string }>;
@@ -50,6 +52,33 @@ const AdminOrganizationProjectsPage = (props: {
     useGetProjectsQuery({
       organizationId: id,
     });
+
+  const [markCitiesPublic] = useMarkCitiesPublicMutation();
+
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("publish-project-success"),
+  });
+
+  const { showErrorToast } = UseErrorToast({
+    title: t("publish-project-error"),
+  });
+
+  const handlePublishProject = async (projectId: string) => {
+    toaster.loading({
+      title: t("publishing-project"),
+      type: "info",
+    });
+    
+    try {
+      await markCitiesPublic({ projectId }).unwrap();
+      toaster.dismiss();
+      showSuccessToast();
+    } catch (error) {
+      toaster.dismiss();
+      console.error("Error publishing project:", error);
+      showErrorToast();
+    }
+  };
 
   const transformedProjects = useMemo(() => {
     if (!projects) return [];
@@ -218,6 +247,38 @@ const AdminOrganizationProjectsPage = (props: {
                         color="content.primary"
                       >
                         {t("edit-project")}
+                      </Text>
+                    </MenuItem>
+                    <MenuItem
+                      value={t("publish-project")}
+                      valueText={t("publish-project")}
+                      p="16px"
+                      display="flex"
+                      alignItems="center"
+                      gap="16px"
+                      _hover={{
+                        bg: "content.link",
+                        cursor: "pointer",
+                      }}
+                      className="group"
+                      onClick={() => handlePublishProject(item.projectId)}
+                    >
+                      <Icon
+                        _groupHover={{
+                          color: "white",
+                        }}
+                        color="interactive.control"
+                        as={MdPublic}
+                        h="24px"
+                        w="24px"
+                      />
+                      <Text
+                        _groupHover={{
+                          color: "white",
+                        }}
+                        color="content.primary"
+                      >
+                        {t("publish-project")}
                       </Text>
                     </MenuItem>
                     <MenuItem

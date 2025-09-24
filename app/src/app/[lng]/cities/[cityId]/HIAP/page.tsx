@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import ClimateActionsEmptyState from "./HiapTab/ClimateActionsEmptyState";
 import { ClimateActionsSection } from "@/components/HIAP/ClimateActionsSection";
 import i18next from "i18next";
+import { api } from "@/services/api";
 
 export default function HIAPPage(props: {
   params: Promise<{ lng: string; cityId: string }>;
@@ -39,11 +40,14 @@ export default function HIAPPage(props: {
     isLoading,
     error,
     refetch,
-  } = useGetHiapQuery({
-    inventoryId: inventory?.inventoryId!,
-    lng: lang,
-    actionType: ACTION_TYPES.Mitigation,
-  });
+  } = useGetHiapQuery(
+    {
+      inventoryId: inventory?.inventoryId || "",
+      lng: lang,
+      actionType: ACTION_TYPES.Mitigation,
+    },
+    { skip: !inventory?.inventoryId },
+  );
 
   const formattedEmissions = inventory?.totalEmissions
     ? formatEmissions(inventory.totalEmissions)
@@ -53,6 +57,13 @@ export default function HIAPPage(props: {
     { cityId: inventory?.cityId!, year: inventory?.year! },
     { skip: !inventory?.cityId || !inventory?.year },
   );
+
+  // fetch city data
+  const { data: cityData } = api.useGetCityQuery(cityId, {
+    skip: !cityId,
+  });
+
+  console.log("cityData", cityData);
 
   // Show loading state while fetching
   if (isInventoryLoading) {
@@ -158,7 +169,11 @@ export default function HIAPPage(props: {
           </Tabs.List>
           {Object.values(ACTION_TYPES).map((actionType) => (
             <Tabs.Content key={actionType} value={actionType} p="0" w="full">
-              <HiapTab type={actionType} inventory={inventory} />
+              <HiapTab
+                type={actionType}
+                inventory={inventory}
+                cityData={cityData!}
+              />
             </Tabs.Content>
           ))}
         </Tabs.Root>

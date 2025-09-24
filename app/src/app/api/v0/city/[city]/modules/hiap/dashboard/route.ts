@@ -23,6 +23,11 @@
  *         required: false
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: ignoreExisting
+ *         required: false
+ *         schema:
+ *           type: boolean
  *     responses:
  *       200:
  *         description: HIAP dashboard data returned.
@@ -47,6 +52,7 @@ const paramsSchema = z.object({
 const querySchema = z.object({
   inventoryId: z.string().uuid("Inventory ID must be a valid UUID"),
   lng: z.string().optional(),
+  ignoreExisting: z.coerce.boolean().optional().default(false),
 });
 
 export const GET = apiHandler(async (req: Request, context) => {
@@ -54,9 +60,14 @@ export const GET = apiHandler(async (req: Request, context) => {
   const { session } = context;
 
   const searchParams = new URL(req.url).searchParams;
-  const { inventoryId, lng = "en" } = querySchema.parse({
+  const {
+    inventoryId,
+    lng = "en",
+    ignoreExisting,
+  } = querySchema.parse({
     inventoryId: searchParams.get("inventoryId"),
     lng: searchParams.get("lng"),
+    ignoreExisting: searchParams.get("ignoreExisting"),
   });
 
   // Check if user can access this inventory (handles public inventories automatically)
@@ -84,6 +95,8 @@ export const GET = apiHandler(async (req: Request, context) => {
     cityId,
     inventory,
     lng,
+    session ?? undefined,
+    ignoreExisting,
   );
 
   return NextResponse.json({

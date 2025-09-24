@@ -199,5 +199,17 @@
     "message2": "Vous pouvez désormais visualiser et explorer ces actions via la plateforme CityCatalyst.",
     "message3": "Cliquez sur le bouton ci-dessous pour accéder à votre tableau d'actions d'atténuation — cette page personnalisée contient des actions détaillées que votre ville peut entreprendre pour réduire les émissions et renforcer la résilience climatique.",
     "footer": "Open Earth Foundation est une organisation à but non lucratif de bienfaisance publique de Californie, USA. EIN : 85-3261449"
+  },
+  "action-plan-ready": {
+    "subject": "City Catalyst - Plan d'action prêt",
+    "preview": "CityCatalyst: Votre plan d'action climatique est prêt!",
+    "brand": "CityCatalyst",
+    "title": "Votre plan d'action climatique est prêt!",
+    "greeting": "Salut {{name}},",
+    "message": "Nous avons généré un projet de plan de mise en œuvre pour l'action climatique '{{actionName}}' comme demandé. Ces directives soutiendront votre parcours vers un avenir à faible émission de carbone.",
+    "message2": "Vous pouvez maintenant voir et explorer votre projet sur la plateforme CityCatalyst.",
+    "message3": "Cliquez sur le bouton ci-dessous pour accéder à vos plans générés et explorer chaque action en profondeur.",
+    "cta": "Voir le plan d'action",
+    "footer": "Open Earth Foundation est une organisation à but non lucratif de bienfaisance publique de Californie, USA. EIN : 85-3261449"
   }
 }

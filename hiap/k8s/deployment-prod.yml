@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: hiap-prod
-          image: ghcr.io/open-earth-foundation/hiap:stable
+          image: ghcr.io/open-earth-foundation/citycatalyst-hiap:stable
           imagePullPolicy: Always
           ports:
             - containerPort: 8000

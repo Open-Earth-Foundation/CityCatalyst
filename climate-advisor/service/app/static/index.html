@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Climate Advisor – API Playground</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 20px; }
+      h1 { margin-bottom: 0; }
+      code, pre { background: #f6f8fa; padding: 8px; border-radius: 6px; display: block; overflow: auto; }
+      .row { display: flex; gap: 24px; flex-wrap: wrap; }
+      .card { flex: 1 1 380px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+      label { display:block; font-size: 12px; color: #374151; margin-top: 8px; }
+      input, textarea, select { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit; }
+      button { margin-top: 12px; padding: 8px 12px; border: 1px solid #111827; color: white; background: #111827; border-radius: 6px; cursor: pointer; }
+      .muted { color: #6b7280; font-size: 12px; }
+      .status { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+      .endpoint { font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <h1>Climate Advisor – API Playground</h1>
+    <p class="muted">Use this page to exercise the service endpoints. See Swagger UI at <a href="/docs" target="_blank">/docs</a> and OpenAPI JSON at <a href="/openapi.json" target="_blank">/openapi.json</a>.</p>
+
+    <div class="card">
+      <div class="row">
+        <div style="flex:1">
+          <label>Base URL</label>
+          <input id="baseUrl" value="" placeholder="e.g., http://localhost:8080" />
+        </div>
+        <div style="flex:1">
+          <label>X-Request-Id</label>
+          <input id="reqId" value="" placeholder="optional (auto-generated if empty)" />
+        </div>
+      </div>
+      <p class="muted">Leave Base URL empty to use same origin.</p>
+    </div>
+
+    <div class="row">
+      <div class="card">
+        <div class="endpoint">GET /health</div>
+        <button id="btnHealth">Check Health</button>
+        <pre id="outHealth" class="status"></pre>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="card">
+        <div class="endpoint">POST /v1/threads</div>
+        <label>User ID</label>
+        <input id="threadsUserId" placeholder="u_123" />
+        <label>Inventory ID (optional)</label>
+        <input id="threadsInventoryId" placeholder="inv_456" />
+        <label>Context (JSON, optional)</label>
+        <textarea id="threadsContext" rows="4" placeholder='{"foo":"bar"}'></textarea>
+        <button id="btnCreateThread">Create Thread</button>
+        <pre id="outThreads" class="status"></pre>
+      </div>
+
+      <div class="card">
+        <div class="endpoint">POST /v1/messages (SSE)</div>
+        <label>User ID</label>
+        <input id="msgUserId" placeholder="u_123" />
+        <label>Thread ID (optional)</label>
+        <input id="msgThreadId" placeholder="<uuid>" />
+        <label>Content</label>
+        <textarea id="msgContent" rows="3" placeholder="Say hello."></textarea>
+        <div class="row">
+          <div style="flex:1">
+            <label>Model (optional)</label>
+            <input id="optModel" placeholder="openrouter/auto" />
+          </div>
+          <div style="flex:1">
+            <label>Temperature (optional)</label>
+            <input id="optTemp" placeholder="0.2" />
+          </div>
+          <div style="flex:1">
+            <label>Max Tokens (optional)</label>
+            <input id="optMaxTokens" placeholder="512" />
+          </div>
+        </div>
+        <button id="btnSendMessage">Send Message</button>
+        <pre id="outMessages" class="status"></pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="endpoint">Endpoints Map</div>
+      <ul>
+        <li><code>GET /health</code> – liveness</li>
+        <li><code>POST /v1/threads</code> – create thread, returns <code>{ thread_id }</code></li>
+        <li><code>POST /v1/messages</code> – streams SSE <code>event: message</code> chunks and terminal <code>event: done</code></li>
+      </ul>
+      <p class="muted">Docs: <a href="/docs" target="_blank">Swagger UI</a> • <a href="/redoc" target="_blank">ReDoc</a></p>
+    </div>
+
+    <script>
+      function url(path) {
+        const base = document.getElementById('baseUrl').value.trim();
+        const u = base ? base.replace(/\/$/, '') + path : path;
+        return u;
+      }
+
+      async function doGet(path, outEl) {
+        outEl.textContent = '...';
+        try {
+          const res = await fetch(url(path));
+          const txt = await res.text();
+          outEl.textContent = `${res.status} ${res.statusText}\n` + txt;
+        } catch (e) {
+          outEl.textContent = 'ERROR: ' + e;
+        }
+      }
+
+      document.getElementById('btnHealth').onclick = () => doGet('/health', document.getElementById('outHealth'));
+
+      document.getElementById('btnCreateThread').onclick = async () => {
+        const out = document.getElementById('outThreads');
+        out.textContent = '...';
+        let ctxVal = document.getElementById('threadsContext').value.trim();
+        let ctx = undefined;
+        if (ctxVal) {
+          try { ctx = JSON.parse(ctxVal); } catch { out.textContent = 'Invalid JSON in context'; return; }
+        }
+        const payload = {
+          user_id: document.getElementById('threadsUserId').value.trim() || 'demo-user',
+          inventory_id: document.getElementById('threadsInventoryId').value.trim() || undefined,
+          context: ctx
+        };
+        const headers = { 'Content-Type': 'application/json' };
+        const reqId = document.getElementById('reqId').value.trim();
+        if (reqId) headers['X-Request-Id'] = reqId;
+        try {
+          const res = await fetch(url('/v1/threads'), { method: 'POST', headers, body: JSON.stringify(payload) });
+          const json = await res.json();
+          out.textContent = JSON.stringify(json, null, 2);
+          if (json.thread_id) document.getElementById('msgThreadId').value = json.thread_id;
+        } catch (e) {
+          out.textContent = 'ERROR: ' + e;
+        }
+      };
+
+      document.getElementById('btnSendMessage').onclick = async () => {
+        const out = document.getElementById('outMessages');
+        out.textContent = '';
+        const payload = {
+          user_id: document.getElementById('msgUserId').value.trim() || 'demo-user',
+          thread_id: document.getElementById('msgThreadId').value.trim() || undefined,
+          content: document.getElementById('msgContent').value.trim() || 'Hello from the playground',
+          options: {}
+        };
+        const model = document.getElementById('optModel').value.trim();
+        const temp = document.getElementById('optTemp').value.trim();
+        const maxTok = document.getElementById('optMaxTokens').value.trim();
+        if (model) payload.options.model = model;
+        if (temp) payload.options.temperature = parseFloat(temp);
+        if (maxTok) payload.options.max_tokens = parseInt(maxTok, 10);
+
+        const headers = { 'Content-Type': 'application/json' };
+        const reqId = document.getElementById('reqId').value.trim();
+        if (reqId) headers['X-Request-Id'] = reqId;
+
+        try {
+          const res = await fetch(url('/v1/messages'), { method: 'POST', headers, body: JSON.stringify(payload) });
+          if (!res.ok) {
+            out.textContent = `HTTP ${res.status} ${res.statusText}`;
+            out.textContent += '\n' + (await res.text());
+            return;
+          }
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const events = buffer.split('\n\n');
+            buffer = events.pop() || '';
+            for (const e of events) {
+              out.textContent += e + '\n\n';
+            }
+          }
+        } catch (e) {
+          out.textContent = 'ERROR: ' + e;
+        }
+      };
+    </script>
+  </body>
+  </html>
+

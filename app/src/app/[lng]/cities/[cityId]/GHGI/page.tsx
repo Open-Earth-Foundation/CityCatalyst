@@ -30,7 +30,7 @@ export default function GHGIPage() {
     if (!inventoryIdValue) {
       // get the most recent inventory for the city
       if (cityYears?.years && cityYears.years.length > 0) {
-        const mostRecentInventory = cityYears.years.sort(
+        const mostRecentInventory = [...cityYears.years].sort(
           (a, b) => b.year - a.year,
         )[0];
 

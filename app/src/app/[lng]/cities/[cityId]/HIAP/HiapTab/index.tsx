@@ -1,10 +1,11 @@
-import { InventoryResponse } from "@/util/types";
+import { CityWithProjectDataResponse, InventoryResponse } from "@/util/types";
 import {
   LANGUAGES,
   ACTION_TYPES,
   HIAction,
   MitigationAction,
   AdaptationAction,
+  CityResponse,
 } from "@/util/types";
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/i18n/client";
@@ -76,9 +77,11 @@ const BarVisualization = ({
 export function HiapTab({
   type,
   inventory,
+  cityData,
 }: {
   type: ACTION_TYPES;
   inventory: InventoryResponse;
+  cityData: CityWithProjectDataResponse;
 }) {
   const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "hiap");
@@ -92,11 +95,14 @@ export function HiapTab({
     isLoading,
     error,
     refetch,
-  } = useGetHiapQuery({
-    inventoryId: inventory.inventoryId,
-    lng: lng,
-    actionType: type,
-  });
+  } = useGetHiapQuery(
+    {
+      inventoryId: inventory.inventoryId || "",
+      lng: lng,
+      actionType: type,
+    },
+    { skip: !inventory.inventoryId },
+  );
 
   const [updateHiapSelection, { isLoading: isUpdatingSelection }] =
     useUpdateHiapSelectionMutation();
@@ -366,7 +372,14 @@ export function HiapTab({
         />
       )}
       {/* Top action widgets / mitigation */}
-      <ActionPlanSection t={t} rankedActions={actions || []} />
+      <ActionPlanSection
+        t={t}
+        rankedActions={actions || []}
+        cityLocode={cityData.locode}
+        cityId={cityData.cityId}
+        cityData={cityData}
+        inventoryId={inventory.inventoryId}
+      />
       <Box display="flex" flexDirection="column" gap="18px" py="24px">
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <TitleLarge

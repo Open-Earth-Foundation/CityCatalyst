@@ -14,9 +14,12 @@
  *             schema:
  *               type: object
  *               properties:
- *                 issuer: { type: string }
- *                 authorization_endpoint: { type: string }
- *                 token_endpoint: { type: string }
+ *                 issuer:
+ *                   type: string
+ *                 authorization_endpoint:
+ *                   type: string
+ *                 token_endpoint:
+ *                   type: string
  *                 scopes_supported:
  *                   type: array
  *                   items:

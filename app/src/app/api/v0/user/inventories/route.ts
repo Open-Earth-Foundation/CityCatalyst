@@ -19,13 +19,18 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       inventoryId: { type: string, format: uuid }
- *                       year: { type: integer }
+ *                       inventoryId:
+ *                         type: string
+ *                         format: uuid
+ *                       year:
+ *                         type: integer
  *                       city:
  *                         type: object
  *                         properties:
- *                           name: { type: string }
- *                           locode: { type: string }
+ *                           name:
+ *                             type: string
+ *                           locode:
+ *                             type: string
  *       401:
  *         description: Unauthorized.
  *       404:

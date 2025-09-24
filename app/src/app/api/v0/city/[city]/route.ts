@@ -23,13 +23,39 @@
  *                 data:
  *                   type: object
  *                   properties:
- *                     cityId: { type: string, format: uuid }
- *                     name: { type: string }
- *                     region: { type: string, nullable: true }
- *                     country: { type: string, nullable: true }
- *                     locode: { type: string, nullable: true }
- *                     population: { type: array, items: { type: object, properties: { year: {type: number}, population: {type: number} } } }
- *                     boundaries: { type: array, items: { type: object, properties: { boundaryId: {type: string, format: uuid}, name: {type: string} } } }
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     region:
+ *                       type: string
+ *                       nullable: true
+ *                     country:
+ *                       type: string
+ *                       nullable: true
+ *                     locode:
+ *                       type: string
+ *                       nullable: true
+ *                     population:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           year:
+ *                             type: number
+ *                           population:
+ *                             type: number
+ *                     boundaries:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           boundaryId:
+ *                             type: string
+ *                             format: uuid
+ *                           name:
+ *                             type: string
  */
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";

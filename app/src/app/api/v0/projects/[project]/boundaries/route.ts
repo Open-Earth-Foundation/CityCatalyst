@@ -26,21 +26,32 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       boundingBox: { type: array, items: { type: number } }
+ *                       boundingBox:
+ *                         type: array
+ *                         items:
+ *                           type: number
  *                       city:
  *                         type: object
  *                         properties:
- *                           id: { type: string, format: uuid }
- *                           name: { type: string }
- *                           locode: { type: string }
- *                           latestInventoryId: { type: string, format: uuid }
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                           name:
+ *                             type: string
+ *                           locode:
+ *                             type: string
+ *                           latestInventoryId:
+ *                             type: string
+ *                             format: uuid
  *                 errors:
  *                   type: array
  *                   items:
  *                     type: object
  *                     properties:
- *                       locode: { type: string }
- *                       error: { type: string }
+ *                       locode:
+ *                         type: string
+ *                       error:
+ *                         type: string
  *       404:
  *         description: Project not found.
  */

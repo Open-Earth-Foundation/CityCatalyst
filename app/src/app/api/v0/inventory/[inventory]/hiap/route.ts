@@ -164,8 +164,10 @@ const updateSelectionRequest = z.object({
  *             schema:
  *               type: object
  *               properties:
- *                 success: { type: boolean }
- *                 updated: { type: number }
+ *                 success:
+ *                   type: boolean
+ *                 updated:
+ *                   type: number
  */
 export const PATCH = apiHandler(
   async (req: NextRequest, { params, session }) => {

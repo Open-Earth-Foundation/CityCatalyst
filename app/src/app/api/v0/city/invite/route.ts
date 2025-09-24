@@ -4,39 +4,58 @@
  *   post:
  *     tags:
  *       - City Invites
- *     summary: Invite a user to a city
- *     description: Sends an email invite to the specified user to join the city.
+ *     summary: Invite a user to a city with access to a specific inventory
+ *     description: Creates an invitation for a user to join a city with access to a specific inventory. The inviting user ID is automatically determined from the authenticated session. An email is sent to the specified user with an invitation link.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [invitingUserId, inventoryId, email, name, cityId]
+ *             required: [inventoryId, email, name, cityId]
  *             properties:
+ *               userId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: Optional user ID for the invited user (if already exists)
  *               invitingUserId:
  *                 type: string
  *                 format: uuid
+ *                 description: ID of the user sending the invite (automatically set from session)
  *               inventoryId:
  *                 type: string
  *                 format: uuid
+ *                 description: Inventory ID to which the user is being invited
  *               email:
  *                 type: string
  *                 format: email
+ *                 description: Email address of the user to invite
  *               name:
  *                 type: string
+ *                 description: Display name for the invited user
  *               cityId:
  *                 type: string
  *                 format: uuid
+ *                 description: City ID to which the user is being invited
  *     responses:
  *       200:
  *         description: Invite created and email sent.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   description: Created invite record
  *       400:
- *         description: Email could not be sent or invalid input.
+ *         description: Email could not be sent, invalid input, or configuration error.
  *       401:
  *         description: Not authenticated.
  *       404:
  *         description: City not found.
+ *       500:
+ *         description: Internal server error or configuration error.
  */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

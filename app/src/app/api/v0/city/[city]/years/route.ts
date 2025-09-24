@@ -46,9 +46,14 @@
  *                       items:
  *                         type: object
  *                         properties:
- *                           year: { type: integer }
- *                           inventoryId: { type: string, format: uuid }
- *                           lastUpdate: { type: string, format: date-time }
+ *                           year:
+ *                             type: integer
+ *                           inventoryId:
+ *                             type: string
+ *                             format: uuid
+ *                           lastUpdate:
+ *                             type: string
+ *                             format: date-time
  *       404:
  *         description: City not found.
  */

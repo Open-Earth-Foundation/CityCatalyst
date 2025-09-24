@@ -12,6 +12,7 @@
  *         required: true
  *         schema:
  *           type: string
+ *         description: OAuth client ID to retrieve
  *     responses:
  *       200:
  *         description: Client wrapped in data.
@@ -25,17 +26,21 @@
  *                   properties:
  *                     clientId:
  *                       type: string
+ *                       description: Unique identifier for the OAuth client
  *                     redirectUri:
  *                       type: string
  *                       format: uri
+ *                       description: Registered redirect URI for the OAuth flow
  *                     name:
  *                       type: object
  *                       additionalProperties:
  *                         type: string
+ *                       description: Localized client names by language code
  *                     description:
  *                       type: object
  *                       additionalProperties:
  *                         type: string
+ *                       description: Localized client descriptions by language code
  *             examples:
  *               example:
  *                 value:
@@ -112,6 +117,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  *         required: true
  *         schema:
  *           type: string
+ *         description: OAuth client ID to delete
  *     responses:
  *       204:
  *         description: Client deleted.

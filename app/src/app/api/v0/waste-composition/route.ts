@@ -31,17 +31,28 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       parameterCode: { type: string }
- *                       parameterName: { type: string }
- *                       gpcRefno: { type: string }
- *                       formulaInputValue: { type: number }
- *                       formulaInputUnits: { type: string }
- *                       formulaName: { type: string }
- *                       region: { type: string }
- *                       actorId: { type: string }
- *                       datasource: { type: string }
- *                       rnk: { type: integer }
- *                       methodologyName: { type: string }
+ *                       parameterCode:
+ *                         type: string
+ *                       parameterName:
+ *                         type: string
+ *                       gpcRefno:
+ *                         type: string
+ *                       formulaInputValue:
+ *                         type: number
+ *                       formulaInputUnits:
+ *                         type: string
+ *                       formulaName:
+ *                         type: string
+ *                       region:
+ *                         type: string
+ *                       actorId:
+ *                         type: string
+ *                       datasource:
+ *                         type: string
+ *                       rnk:
+ *                         type: integer
+ *                       methodologyName:
+ *                         type: string
  *       400:
  *         description: Missing inventoryId or methodologyName.
  *       401:

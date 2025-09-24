@@ -26,21 +26,38 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       id: { type: string }
- *                       file: { type: object, properties: { fileName: {type: string}, size: {type: integer}, fileType: {type: string} } }
- *                     properties:
- *                       fileId:
+ *                       id:
  *                         type: string
  *                         format: uuid
- *                       fileName:
+ *                       userId:
  *                         type: string
- *                       size:
- *                         type: number
- *                       fileType:
+ *                         format: uuid
+ *                       cityId:
  *                         type: string
- *                       uploadDate:
+ *                         format: uuid
+ *                       fileReference:
+ *                         type: string
+ *                       url:
+ *                         type: string
+ *                         format: uri
+ *                       sector:
+ *                         type: string
+ *                       status:
+ *                         type: string
+ *                       gpcRefNo:
+ *                         type: string
+ *                       lastUpdated:
  *                         type: string
  *                         format: date-time
+ *                       file:
+ *                         type: object
+ *                         properties:
+ *                           fileName:
+ *                             type: string
+ *                           size:
+ *                             type: integer
+ *                           fileType:
+ *                             type: string
  */
 import NotificationService from "@/backend/NotificationService";
 import UserService from "@/backend/UserService";
@@ -157,10 +174,48 @@ export const GET = apiHandler(async (_req: Request, context) => {
  *                 data:
  *                   type: object
  *                   properties:
- *                     id: { type: string }
- *                     sector: { type: string }
- *                     file: { type: object, properties: { fileName: {type: string}, size: {type: integer}, fileType: {type: string} } }
- *                   additionalProperties: true
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     userId:
+ *                       type: string
+ *                       format: uuid
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                     fileReference:
+ *                       type: string
+ *                     url:
+ *                       type: string
+ *                       format: uri
+ *                     sector:
+ *                       type: string
+ *                     subsectors:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     scopes:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     fileName:
+ *                       type: string
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
+ *                     status:
+ *                       type: string
+ *                     gpcRefNo:
+ *                       type: string
+ *                     file:
+ *                       type: object
+ *                       properties:
+ *                         fileName:
+ *                           type: string
+ *                         size:
+ *                           type: integer
+ *                         fileType:
+ *                           type: string
  *       400:
  *         description: Invalid file or payload.
  *       503:

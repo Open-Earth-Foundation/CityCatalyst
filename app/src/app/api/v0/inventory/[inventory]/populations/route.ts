@@ -24,13 +24,21 @@
  *                 data:
  *                   type: object
  *                   properties:
- *                     cityId: { type: string, format: uuid }
- *                     population: { type: number }
- *                     year: { type: number }
- *                     countryPopulation: { type: number }
- *                     countryPopulationYear: { type: number }
- *                     regionPopulation: { type: number }
- *                     regionPopulationYear: { type: number }
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                     population:
+ *                       type: number
+ *                     year:
+ *                       type: number
+ *                     countryPopulation:
+ *                       type: number
+ *                     countryPopulationYear:
+ *                       type: number
+ *                     regionPopulation:
+ *                       type: number
+ *                     regionPopulationYear:
+ *                       type: number
  *       404:
  *         description: Inventory not found.
  */

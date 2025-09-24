@@ -24,8 +24,11 @@
  *                 data:
  *                   type: object
  *                   properties:
- *                     subsectorId: { type: string, format: uuid }
- *                     subsectorName: { type: string }
+ *                     subsectorId:
+ *                       type: string
+ *                       format: uuid
+ *                     subsectorName:
+ *                       type: string
  *                     sectorId:
  *                       type: string
  *                       format: uuid

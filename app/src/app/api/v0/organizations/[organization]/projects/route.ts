@@ -1,39 +1,6 @@
 /**
  * @swagger
  * /api/v0/organizations/{organization}/projects:
- *   get:
- *     tags:
- *       - Organization Projects
- *     summary: List projects for an organization visible to the current user.
- *     description: Returns the projects in the organization filtered by the user’s access (admin, org admin, project admin, or city membership). Requires a signed‑in session. Response is a JSON array or context object (not wrapped).
- *     parameters:
- *       - in: path
- *         name: organization
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     responses:
- *       200:
- *         description: Projects visible to the user.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   projectId:
- *                     type: string
- *                     format: uuid
- *                   name:
- *                     type: string
- *                   description:
- *                     type: string
- *                     nullable: true
- *                   created:
- *                     type: string
- *                     format: date-time
  *   post:
  *     tags:
  *       - Organization Projects
@@ -136,7 +103,44 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
   return NextResponse.json(project);
 });
-
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}/projects:
+ *   get:
+ *     tags:
+ *       - Organization Projects
+ *     summary: List projects for an organization visible to the current user.
+ *     description: Returns the projects in the organization filtered by the user’s access (admin, org admin, project admin, or city membership). Requires a signed‑in session. Response is a JSON array or context object (not wrapped).
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Projects visible to the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   projectId:
+ *                     type: string
+ *                     format: uuid
+ *                   name:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                     nullable: true
+ *                   created:
+ *                     type: string
+ *                     format: date-time
+ *
+ */
 export const GET = apiHandler(async (req, { params, session }) => {
   // this will behave differently for different users
   const { organization: organizationId } = params;

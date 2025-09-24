@@ -5,7 +5,7 @@
  *     tags:
  *       - Auth
  *     summary: Request a password reset email for a user account.
- *     description: Generates a short‑lived reset token and emails the reset link if the user exists. No authentication is required, and responses are always 200 to avoid revealing account existence. Requires server email and secret configuration.
+ *     description: Generates a short‑lived JWT reset token (valid for 1 hour) and sends a password reset email if the user exists. For security, this endpoint always returns 200 regardless of whether the email exists to prevent account enumeration. Requires proper email configuration and RESET_TOKEN_SECRET environment variable.
  *     requestBody:
  *       required: true
  *       content:
@@ -17,9 +17,10 @@
  *               email:
  *                 type: string
  *                 format: email
+ *                 description: Email address of the account to reset password for
  *     responses:
  *       200:
- *         description: Empty body to acknowledge request.
+ *         description: Password reset request acknowledged. Check email if account exists.
  *         content:
  *           application/json:
  *             schema:
@@ -27,8 +28,10 @@
  *             examples:
  *               example:
  *                 value: {}
+ *       422:
+ *         description: Invalid email format or validation error.
  *       500:
- *         description: Configuration error.
+ *         description: Configuration error, email service unavailable, or internal server error.
  */
 import { sendEmail } from "@/lib/email";
 import ForgotPasswordTemplate from "@/lib/emails/ForgotPasswordTemplate";

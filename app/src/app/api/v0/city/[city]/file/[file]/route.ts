@@ -44,6 +44,24 @@
  *                     content:
  *                       type: string
  *                       description: File content as base64 or URL
+ */
+import UserService from "@/backend/UserService";
+import { apiHandler } from "@/util/api";
+import { NextResponse } from "next/server";
+
+export const GET = apiHandler(async (_req: Request, { session, params }) => {
+  const userFile = await UserService.findUserFile(
+    params.file,
+    params.city,
+    session,
+  );
+
+  return NextResponse.json({ data: userFile });
+});
+
+/**
+ * @swagger
+ * /api/v0/city/{city}/file/{file}:
  *   delete:
  *     tags:
  *       - City Files
@@ -74,20 +92,6 @@
  *                 deleted:
  *                   type: boolean
  */
-import UserService from "@/backend/UserService";
-import { apiHandler } from "@/util/api";
-import { NextResponse } from "next/server";
-
-export const GET = apiHandler(async (_req: Request, { session, params }) => {
-  const userFile = await UserService.findUserFile(
-    params.file,
-    params.city,
-    session,
-  );
-
-  return NextResponse.json({ data: userFile });
-});
-
 export const DELETE = apiHandler(async (_req: Request, { session, params }) => {
   const userFile = await UserService.findUserFile(
     params.file,

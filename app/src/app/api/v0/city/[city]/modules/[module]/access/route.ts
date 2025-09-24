@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - City Modules
- *     summary: Check module access for a city
+ *     summary: Check if user has access to a specific module for a city
  *     parameters:
  *       - in: path
  *         name: city
@@ -21,6 +21,17 @@
  *     responses:
  *       200:
  *         description: Access flag returned.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     hasAccess:
+ *                       type: boolean
+ *                       description: Whether the user has access to the specified module
  */
 import { ModuleAccessService } from "@/backend/ModuleAccessService";
 import { apiHandler } from "@/util/api";

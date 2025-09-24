@@ -26,13 +26,23 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       inventoryId: { type: string, format: uuid }
- *                       inventoryName: { type: string }
- *                       year: { type: integer }
- *                       isPublic: { type: boolean }
- *                       publishedAt: { type: string, format: date-time }
- *                       lastUpdated: { type: string, format: date-time }
- *                       totalEmissions: { type: number }
+ *                       inventoryId:
+ *                         type: string
+ *                         format: uuid
+ *                       inventoryName:
+ *                         type: string
+ *                       year:
+ *                         type: integer
+ *                       isPublic:
+ *                         type: boolean
+ *                       publishedAt:
+ *                         type: string
+ *                         format: date-time
+ *                       lastUpdated:
+ *                         type: string
+ *                         format: date-time
+ *                       totalEmissions:
+ *                         type: number
  *       400:
  *         description: Invalid city ID.
  *       404:

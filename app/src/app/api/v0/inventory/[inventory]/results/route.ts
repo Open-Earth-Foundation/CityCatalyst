@@ -41,7 +41,8 @@
  *                                 type: number
  *                               percentage:
  *                                 type: number
- *                         total: { type: number }
+ *                         total:
+ *                           type: number
  *                     topEmissions:
  *                       type: object
  *                       properties:

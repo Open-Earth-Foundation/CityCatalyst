@@ -19,16 +19,35 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       id: { type: string, format: uuid }
- *                       stage: { type: string }
- *                       name: { type: object, additionalProperties: { type: string } }
- *                       description: { type: object, additionalProperties: { type: string } }
- *                       tagline: { type: object, additionalProperties: { type: string } }
- *                       type: { type: string }
- *                       author: { type: string }
- *                       url: { type: string }
- *                       created: { type: string, format: date-time }
- *                       last_updated: { type: string, format: date-time }
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       stage:
+ *                         type: string
+ *                       name:
+ *                         type: object
+ *                         additionalProperties:
+ *                           type: string
+ *                       description:
+ *                         type: object
+ *                         additionalProperties:
+ *                           type: string
+ *                       tagline:
+ *                         type: object
+ *                         additionalProperties:
+ *                           type: string
+ *                       type:
+ *                         type: string
+ *                       author:
+ *                         type: string
+ *                       url:
+ *                         type: string
+ *                       created:
+ *                         type: string
+ *                         format: date-time
+ *                       last_updated:
+ *                         type: string
+ *                         format: date-time
  */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

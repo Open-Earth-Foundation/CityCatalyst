@@ -21,17 +21,21 @@
  *                     properties:
  *                       clientId:
  *                         type: string
+ *                         description: Unique identifier for the OAuth client
  *                       redirectUri:
  *                         type: string
  *                         format: uri
+ *                         description: Registered redirect URI for the OAuth flow
  *                       name:
  *                         type: object
  *                         additionalProperties:
  *                           type: string
+ *                         description: Localized client names by language code
  *                       description:
  *                         type: object
  *                         additionalProperties:
  *                           type: string
+ *                         description: Localized client descriptions by language code
  *             examples:
  *               example:
  *                 value:
@@ -122,14 +126,18 @@ const NewClientRequest = z.object({
  *               redirectUri:
  *                 type: string
  *                 format: uri
+ *                 description: Valid URL to redirect back to after OAuth flow
+ *                 maxLength: 256
  *               name:
  *                 type: object
  *                 additionalProperties:
  *                   type: string
+ *                 description: Localized names by language code (e.g., {"en": "My App"})
  *               description:
  *                 type: object
  *                 additionalProperties:
  *                   type: string
+ *                 description: Localized descriptions by language code
  *     responses:
  *       201:
  *         description: Created client wrapped in data.
@@ -143,17 +151,21 @@ const NewClientRequest = z.object({
  *                   properties:
  *                     clientId:
  *                       type: string
+ *                       description: Generated unique identifier for the OAuth client
  *                     redirectUri:
  *                       type: string
  *                       format: uri
+ *                       description: Registered redirect URI for the OAuth flow
  *                     name:
  *                       type: object
  *                       additionalProperties:
  *                         type: string
+ *                       description: Localized client names by language code
  *                     description:
  *                       type: object
  *                       additionalProperties:
  *                         type: string
+ *                       description: Localized client descriptions by language code
  *             examples:
  *               example:
  *                 value:

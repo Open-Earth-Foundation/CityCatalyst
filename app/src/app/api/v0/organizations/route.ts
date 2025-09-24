@@ -1,33 +1,3 @@
-/**
- * @swagger
- * /api/v0/organizations:
- *   get:
- *     tags:
- *       - Organizations
- *     summary: List organizations with projects and pending admin invites (admin only).
- *     description: Returns all organizations including selected project fields and pending org_admin invites. Requires an admin session; non‑admins receive 401/403 via middleware handlers. Response is a JSON array (not wrapped).
- *     responses:
- *       200:
- *         description: Array of organizations.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   organizationId:
- *                     type: string
- *                     format: uuid
- *                   name:
- *                     type: string
- *                   description:
- *                     type: string
- *                     nullable: true
- *                   created:
- *                     type: string
- *                     format: date-time
- */
 import { Organization } from "@/models/Organization";
 import { randomUUID } from "node:crypto";
 import { createOrganizationRequest } from "@/util/validation";
@@ -138,7 +108,36 @@ export const POST = apiHandler(async (req, { params, session }) => {
   });
   return NextResponse.json(newOrg, { status: 201 });
 });
-
+/**
+ * @swagger
+ * /api/v0/organizations:
+ *   get:
+ *     tags:
+ *       - Organizations
+ *     summary: List organizations with projects and pending admin invites (admin only).
+ *     description: Returns all organizations including selected project fields and pending org_admin invites. Requires an admin session; non‑admins receive 401/403 via middleware handlers. Response is a JSON array (not wrapped).
+ *     responses:
+ *       200:
+ *         description: Array of organizations.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   organizationId:
+ *                     type: string
+ *                     format: uuid
+ *                   name:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                     nullable: true
+ *                   created:
+ *                     type: string
+ *                     format: date-time
+ */
 export const GET = apiHandler(async (_req, { params, session }) => {
   UserService.validateIsAdmin(session);
 

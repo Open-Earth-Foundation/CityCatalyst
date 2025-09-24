@@ -369,76 +369,15 @@ export function HiapTab({
     const toExport = selectedActions.length > 0 ? selectedActions : actions;
     if (!toExport || toExport.length === 0) return;
 
-    // Create CSV headers
-    const headers = [
-      t("ranking"),
-      t("action-name"),
-      t("action-type-label"),
-      t("action-description"),
-      t("cost"),
-      t("timeline-label"),
-    ];
-
-    // Add type-specific headers
-    if (type === ACTION_TYPES.Mitigation) {
-      headers.push(t("sector-label"), t("ghg-reduction"));
-    } else {
-      headers.push(t("hazards-covered"), t("adaptation-effectiveness"));
-    }
-
-    // Create CSV rows
-    const rows = toExport.map((action) => {
-      const baseRow = [
-        action.rank,
-        `"${action.name}"`,
-        t(`action-type.${action.type}`),
-        `"${action.description || ""}"`,
-        t(`cost-level.${action.costInvestmentNeeded ?? "unknown"}`),
-        t(`timeline.${action.timelineForImplementation ?? "unknown"}`),
-      ];
-
-      if (action.type === ACTION_TYPES.Mitigation) {
-        const mitigationAction = action as MitigationAction;
-        const sectors = mitigationAction.sectors
-          .map((s) => t(`sector.${s}`))
-          .join(", ");
-        const ghgReduction = Object.entries(
-          mitigationAction.GHGReductionPotential,
-        )
-          .filter(([, v]) => v !== null)
-          .map(([sector, val]) => `${t(`sector.${sector}`)}: ${val}%`)
-          .join("; ");
-
-        baseRow.push(`"${sectors}"`, `"${ghgReduction}"`);
-      } else {
-        const adaptationAction = action as AdaptationAction;
-        const hazards =
-          adaptationAction.hazards?.map((h) => t(`hazard.${h}`)).join(", ") ||
-          "";
-        const effectiveness = adaptationAction.adaptationEffectiveness
-          ? t(`effectiveness-level.${adaptationAction.adaptationEffectiveness}`)
-          : "";
-
-        baseRow.push(`"${hazards}"`, effectiveness);
-      }
-
-      return baseRow;
-    });
-
-    // Combine headers and rows
-    const csvContent = [headers, ...rows]
-      .map((row) => row.join(","))
-      .join("\n");
-
-    // Create and download CSV
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    const typePart =
-      type === ACTION_TYPES.Adaptation ? "Adaptation" : "Mitigation";
-    link.download = `${(cityData?.name || cityData?.locode || "actions").replace(/\s+/g, "_")}_${typePart}_actions.csv`;
-    link.click();
-    URL.revokeObjectURL(link.href);
+    (async () => {
+      const { downloadActionPlanCsv } = await import("@/util/csv");
+      downloadActionPlanCsv({
+        actions: toExport,
+        t,
+        type,
+        cityName: cityData?.name || cityData?.locode,
+      });
+    })();
   };
 
   if (isLoading) {

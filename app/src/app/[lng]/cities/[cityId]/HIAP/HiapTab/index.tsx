@@ -48,8 +48,6 @@ import { TitleLarge } from "@/components/Texts/Title";
 import { BodyLarge } from "@/components/Texts/Body";
 import { IoMdCheckboxOutline } from "react-icons/io";
 import { TopPickIcon } from "@/components/icons";
-import { pdf } from "@react-pdf/renderer";
-import PrintableActionPlanPDF from "@/components/HIAP/PrintableActionPlanPDF";
 import {
   MenuContent,
   MenuItem,
@@ -344,6 +342,11 @@ export function HiapTab({
   const handleDownloadPDF = async () => {
     const toExport = selectedActions.length > 0 ? selectedActions : actions;
     if (!toExport || toExport.length === 0) return;
+
+    const [{ pdf }, { default: PrintableActionPlanPDF }] = await Promise.all([
+      import("@react-pdf/renderer"),
+      import("@/components/HIAP/PrintableActionPlanPDF"),
+    ]);
 
     const blob = await pdf(
       <PrintableActionPlanPDF

@@ -1,6 +1,7 @@
 "use strict";
 
 const { parseJsonFile, bulkUpsert } = require("./util/util.cjs");
+const CCRA_PROJECT_ID = "3d1a4b2c-8e7f-4d5a-9c6b-1f2e3d4c5b6a";
 
 /**
   INSERT INTO "Module" () VALUES ('9295ad69-72c6-4b1c-b29d-b71f7b8ba8e8', 'assess-and-analyze', 'GHGI', 'CC', '/GHGI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
@@ -28,11 +29,31 @@ module.exports = {
         "id",
         transaction,
       );
+
+      // Get all project IDs and create ProjectModules entries for CCRA
+      const projects = await queryInterface.sequelize.query(
+        'SELECT project_id FROM "Project"',
+        { type: queryInterface.sequelize.QueryTypes.SELECT },
+      );
+
+      const projectModulesData = projects.map((project) => ({
+        project_id: project.project_id,
+        module_id: CCRA_PROJECT_ID,
+        created: new Date(),
+        last_updated: new Date(),
+      }));
+
+      if (projectModulesData.length > 0) {
+        await queryInterface.bulkInsert("ProjectModules", projectModulesData);
+      }
     });
   },
 
   async down(queryInterface) {
     await queryInterface.sequelize.transaction(async (transaction) => {
+      await queryInterface.bulkDelete("ProjectModules", {
+        module_id: CCRA_PROJECT_ID,
+      });
       await queryInterface.bulkDelete("Module", null, { transaction });
     });
   },

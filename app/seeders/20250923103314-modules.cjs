@@ -27,14 +27,13 @@ module.exports = {
         serializedModules,
         "id",
         transaction,
-        true, // TODO disable debug
       );
     });
   },
 
   async down(queryInterface) {
     await queryInterface.sequelize.transaction(async (transaction) => {
-      await queryInterface.bulkDelete("Modules", null, { transaction });
+      await queryInterface.bulkDelete("Module", null, { transaction });
     });
   },
 };

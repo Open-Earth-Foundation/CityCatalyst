@@ -57,15 +57,15 @@ kubernetes==33.1.0
 langchain==0.3.25
 langchain-chroma==0.2.4
 langchain-community==0.3.24
-langchain-core==0.3.60
-langchain-openai==0.3.17
+langchain-core==0.3.76
+langchain-openai==0.3.33
 langchain-tavily==0.2.0
 langchain-text-splitters==0.3.8
 langgraph==0.4.5
 langgraph-checkpoint==2.0.26
 langgraph-prebuilt==0.1.8
 langgraph-sdk==0.1.69
-langsmith==0.3.42
+langsmith==0.3.45
 limits==5.4.0
 llvmlite==0.44.0
 markdown-it-py==3.0.0
@@ -81,7 +81,7 @@ numba==0.61.2
 numpy==2.2.6
 oauthlib==3.2.2
 onnxruntime==1.22.0
-openai==1.81.0
+openai==1.104.2
 opentelemetry-api==1.33.1
 opentelemetry-exporter-otlp-proto-common==1.33.1
 opentelemetry-exporter-otlp-proto-grpc==1.33.1

@@ -5,7 +5,7 @@
  *     tags:
  *       - Inventory HIAP
  *     summary: Get HIAP ranking or related data for an inventory.
- *     description: Returns HIAP insights for the selected actionType and language. Requires a signed‑in user with access to the inventory. Response is wrapped in { data } (actionType‑dependent shape).
+ *     description: Returns HIAP insights for the selected actionType and language. Requires a signed‑in user with access to the inventory. Response is wrapped in '{' data '}' (actionType‑dependent shape).
  *     parameters:
  *       - in: path
  *         name: inventory

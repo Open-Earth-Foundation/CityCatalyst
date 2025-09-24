@@ -156,7 +156,7 @@ const applySourcesRequest = z.object({
  *     tags:
  *       - Data Sources
  *     summary: Apply selected data sources to an inventory and persist values.
- *     description: Downloads and applies the specified data sources to the inventory (creating/updating inventory values). No explicit authentication is enforced in this handler in code. Returns { data: { successful[], failed[], invalid[], issues{}, removedSources[] } }.
+ *     description: Downloads and applies the specified data sources to the inventory (creating/updating inventory values). No explicit authentication is enforced in this handler in code. Returns '{' data: { successful[], failed[], invalid[], issues{}, removedSources[] } '}'.
  *     parameters:
  *       - in: path
  *         name: inventoryId

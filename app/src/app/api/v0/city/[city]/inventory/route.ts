@@ -5,7 +5,7 @@
  *     tags:
  *       - City Inventory
  *     summary: List inventories for a city the user can access.
- *     description: Returns all inventories for the given city after access is validated. Requires a signed‑in user with access to the city. Response is wrapped in { data: Inventory[] }.
+ *     description: Returns all inventories for the given city after access is validated. Requires a signed‑in user with access to the city. Response is wrapped in '{' data: Inventory[] '}'.
  *     parameters:
  *       - in: path
  *         name: city
@@ -96,7 +96,7 @@ export const POST = apiHandler(
  *     tags:
  *       - City Inventory
  *     summary: List inventories for a city the user can access.
- *     description: Returns all inventories for the given city after access is validated. Requires a signed‑in user with access to the city. Response is wrapped in { data: Inventory[] }.
+ *     description: Returns all inventories for the given city after access is validated. Requires a signed‑in user with access to the city. Response is wrapped in '{' data: Inventory[] '}'.
  *     parameters:
  *       - in: path
  *         name: city

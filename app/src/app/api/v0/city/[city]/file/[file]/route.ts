@@ -5,7 +5,7 @@
  *     tags:
  *       - City Files
  *     summary: Get a single uploaded city file by ID.
- *     description: Returns the stored file metadata for the given city and file ID. Requires a signed‑in user with access to the city. Response is wrapped in { data }.
+ *     description: Returns the stored file metadata for the given city and file ID. Requires a signed‑in user with access to the city. Response is wrapped in '{' data '}'.
  *     parameters:
  *       - in: path
  *         name: city

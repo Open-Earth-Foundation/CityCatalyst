@@ -5,7 +5,7 @@
  *     tags:
  *       - Public
  *     summary: List public inventories for a city by ID.
- *     description: Public endpoint that returns the city’s public inventories (newest first). No authentication is required. Response is wrapped in { data: Inventory[] } and includes basic fields like inventoryId, inventoryName, year, publishedAt, lastUpdated, and totalEmissions.
+ *     description: Public endpoint that returns the city’s public inventories (newest first). No authentication is required. Response is wrapped in '{' data: Inventory[] '}' and includes basic fields like inventoryId, inventoryName, year, publishedAt, lastUpdated, and totalEmissions.
  *     parameters:
  *       - in: path
  *         name: cityId

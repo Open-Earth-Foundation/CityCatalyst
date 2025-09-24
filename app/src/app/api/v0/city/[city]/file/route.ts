@@ -5,7 +5,7 @@
  *     tags:
  *       - City Files
  *     summary: List uploaded files for a city.
- *     description: Returns metadata for files users have uploaded to the specified city, including derived size/type info. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in { data: File[] }.
+ *     description: Returns metadata for files users have uploaded to the specified city, including derived size/type info. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in '{' data: File[] '}'.
  *     parameters:
  *       - in: path
  *         name: city

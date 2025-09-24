@@ -5,7 +5,7 @@
  *     tags:
  *       - OAuth Clients
  *     summary: Get a single OAuth client by ID with localized metadata.
- *     description: Fetches a client and merges its i18n name/description entries by language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in { data }.
+ *     description: Fetches a client and merges its i18n name/description entries by language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in '{' data '}'.
  *     parameters:
  *       - in: path
  *         name: client

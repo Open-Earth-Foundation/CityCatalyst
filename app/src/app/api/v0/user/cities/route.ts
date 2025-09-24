@@ -5,7 +5,7 @@
  *     tags:
  *       - User
  *     summary: List the user’s cities with inventory year metadata.
- *     description: Returns the cities the current user belongs to along with inventory IDs, years, and last updated timestamps. Requires a signed‑in session. Response is wrapped in { data: [{ city, years[] }] }.
+ *     description: Returns the cities the current user belongs to along with inventory IDs, years, and last updated timestamps. Requires a signed‑in session. Response is wrapped in '{' data: [{ city, years[] }] '}'.
  *     responses:
  *       200:
  *         description: Cities with inventory years wrapped in data.

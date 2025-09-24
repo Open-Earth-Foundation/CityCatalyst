@@ -11,7 +11,7 @@ import { db } from "@/models";
  *     tags:
  *       - Public
  *     summary: Get all public cities within a project by project ID.
- *     description: Public endpoint that returns all cities within a project that have at least one public inventory. No authentication is required. Response is wrapped in { data } and includes basic city information.
+ *     description: Public endpoint that returns all cities within a project that have at least one public inventory. No authentication is required. Response is wrapped in '{' data '}' and includes basic city information.
  *     parameters:
  *       - in: path
  *         name: projectId

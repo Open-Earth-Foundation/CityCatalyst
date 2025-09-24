@@ -203,7 +203,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
  *     tags:
  *       - Inventory Activity
  *     summary: Get a single activity value by ID (edit access).
- *     description: Fetches the activity value with nested inventory/gas values for the inventory. Requires a signed‑in user with edit access to the inventory. Response is wrapped in { data }.
+ *     description: Fetches the activity value with nested inventory/gas values for the inventory. Requires a signed‑in user with edit access to the inventory. Response is wrapped in '{' data '}'.
  *     parameters:
  *       - in: path
  *         name: inventory

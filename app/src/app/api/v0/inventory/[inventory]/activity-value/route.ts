@@ -178,7 +178,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
  *     tags:
  *       - Inventory Activity
  *     summary: List activity values for an inventory (edit access).
- *     description: Returns activity values filtered by subCategoryIds or subSectorId, optionally by methodology. Requires a signed‑in user with edit access to the inventory. Response is wrapped in { data: ActivityValue[] }.
+ *     description: Returns activity values filtered by subCategoryIds or subSectorId, optionally by methodology. Requires a signed‑in user with edit access to the inventory. Response is wrapped in '{' data: ActivityValue[] '}'.
  *     parameters:
  *       - in: path
  *         name: inventory

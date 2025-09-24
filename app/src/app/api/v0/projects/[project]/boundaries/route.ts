@@ -5,7 +5,7 @@
  *     tags:
  *       - Projects
  *     summary: Get boundary center points and latest inventory IDs for a project’s cities.
- *     description: Returns boundary info for each city (with center coordinates) plus the latest inventory ID per city, aggregating any errors for missing data. No explicit authentication is enforced in this handler; adjust upstream middleware if needed. Response is { result: CityBoundaryWithCity[], errors: {locode,error}[] }.
+ *     description: Returns boundary info for each city (with center coordinates) plus the latest inventory ID per city, aggregating any errors for missing data. No explicit authentication is enforced in this handler; adjust upstream middleware if needed. Response is '{' result: CityBoundaryWithCity[], errors: {locode,error}[] '}'.
  *     parameters:
  *       - in: path
  *         name: project

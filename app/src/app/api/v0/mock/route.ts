@@ -5,7 +5,7 @@
  *     tags:
  *       - Mock
  *     summary: Return a small authenticated mock dataset.
- *     description: Returns a static list of mock building fuel/emissions rows. Requires a signed‑in session; unauthorized requests receive 401. Response is wrapped in { data: Row[] }.
+ *     description: Returns a static list of mock building fuel/emissions rows. Requires a signed‑in session; unauthorized requests receive 401. Response is wrapped in '{' data: Row[] '}'.
  *     responses:
  *       200:
  *         description: Mock rows wrapped in data.

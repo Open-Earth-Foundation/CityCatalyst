@@ -31,7 +31,7 @@ flatbuffers==25.2.10
 fonttools==4.57.0
 frozenlist==1.6.0
 fsspec==2025.2.0
-google-auth==2.40.1
+google-auth==2.40.3
 googleapis-common-protos==1.70.0
 greenlet==3.2.2
 grpcio==1.71.0

@@ -5,31 +5,50 @@ async function bulkUpsert(
   queryInterface,
   tableName,
   entries,
-  idColumnName,
+  idColumnName, // can be array or string
   transaction,
   debug = false,
+  insertTimestampsOnCreate = false,
 ) {
   for (const entry of entries) {
     if (debug) {
       console.info("Upserting entry", entry);
     }
 
-    const id = entry[idColumnName];
+    let idColumns = [];
+    if (typeof idColumnName === "string") {
+      idColumns.push(idColumnName);
+    } else if (Array.isArray(idColumnName)) {
+      idColumns = idColumnName;
+    } else {
+      throw new Error(
+        "bulkInsert: argument idColumnName must be a string or an array",
+      );
+    }
+
+    const whereClause = idColumns
+      .map((col) => `"${col}" = '${entry[col]}'`)
+      .join(" AND ");
     const item = await queryInterface.sequelize.query(
-      `SELECT COUNT(*) FROM "${tableName}" WHERE "${idColumnName}" = '${id}';`,
+      `SELECT COUNT(*) FROM "${tableName}" WHERE ${whereClause};`,
       { transaction },
     );
     if (item[0][0].count === "0") {
-      await queryInterface.bulkInsert(tableName, [entry], { transaction });
+      let entryCopy = entry;
+      if (insertTimestampsOnCreate) {
+        entryCopy = { ...entry };
+        entryCopy.created = new Date();
+        entryCopy.last_updated = new Date();
+      }
+      await queryInterface.bulkInsert(tableName, [entryCopy], { transaction });
     } else {
-      await queryInterface.bulkUpdate(
-        tableName,
-        entry,
-        { [idColumnName]: entry[idColumnName] },
-        {
-          transaction,
-        },
-      );
+      const whereClause = idColumns.reduce((acc, idColumn) => {
+        acc[idColumn] = entry[idColumn];
+        return acc;
+      }, {});
+      await queryInterface.bulkUpdate(tableName, entry, whereClause, {
+        transaction,
+      });
     }
   }
 }

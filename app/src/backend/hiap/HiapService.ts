@@ -96,9 +96,10 @@ export const findExistingRanking = async (
   inventoryId: string,
   locode: string,
   lang: LANGUAGES,
+  type: ACTION_TYPES,
 ) => {
   const ranking = await db.models.HighImpactActionRanking.findOne({
-    where: { locode, inventoryId, langs: [lang] },
+    where: { locode, inventoryId, langs: [lang], type },
     include: [
       {
         model: db.models.HighImpactActionRanked,
@@ -418,16 +419,17 @@ export async function getCityContextAndEmissionsData(
   return cityData;
 }
 
-// Helper: Find a ranking for the requested language, or any ranking for the inventory/locode
+// Helper: Find a ranking for the requested language and action type, or any ranking for the inventory/locode/type
 async function findOrSelectRanking(
   inventoryId: string,
   locode: string,
   lang: LANGUAGES,
+  type: ACTION_TYPES,
 ) {
-  let ranking = await findExistingRanking(inventoryId, locode, lang);
+  let ranking = await findExistingRanking(inventoryId, locode, lang, type);
   if (!ranking) {
     ranking = await db.models.HighImpactActionRanking.findOne({
-      where: { inventoryId, locode },
+      where: { inventoryId, locode, type },
       order: [["created", "ASC"]],
     });
   }
@@ -505,7 +507,7 @@ export const fetchRanking = async (
   try {
     const user = await db.models.User.findByPk(session?.user.id);
     const locode = await InventoryService.getLocode(inventoryId);
-    const ranking = await findOrSelectRanking(inventoryId, locode, lang);
+    const ranking = await findOrSelectRanking(inventoryId, locode, lang, type);
     if (ranking) {
       if (!ignoreExisting) {
         // Return if already have ranked actions for this language

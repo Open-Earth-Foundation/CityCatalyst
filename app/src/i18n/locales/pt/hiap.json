@@ -25,7 +25,18 @@
   "no-actions-found-title": "Suas principais ações climáticas estão sendo processadas",
   "no-actions-found-description": "Este processo pode levar até 15 minutos. Você receberá um email e as verá aqui quando estiver pronto",
   "generate-climate-actions-widget-description": "Você pode criar planos de implementação para cada uma das ações selecionadas. Sinta-se à vontade para navegar pela lista completa de ações abaixo e escolher quais deseja exibir aqui.",
+  "action-plan": "Plano de ação",
   "download-action-plan": "baixar",
+  "additional-info": "Informações adicionais",
+  "action-type-label": "Tipo de ação",
+  "actions-of": {
+    "mitigation": "Ações de mitigação",
+    "adaptation": "Ações de adaptação"
+  },
+  "action-type": {
+    "mitigation": "Mitigação",
+    "adaptation": "Adaptação"
+  },
   "top-pick-action-title": "melhor escolha",
   "integrate-renewables-into-municipal-water-systems": "integrar energias renováveis nos sistemas de água municipais",
   "reduction-potential": "Potencial de redução",

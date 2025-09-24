@@ -64,7 +64,6 @@ import { OAuthClient } from "@/models/OAuthClient";
 import { OAuthClientI18N } from "@/models/OAuthClientI18N";
 import { Client } from "@/util/types";
 
-/** gets a client based on client ID */
 export const GET = apiHandler(async (_req, { params, session }) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");

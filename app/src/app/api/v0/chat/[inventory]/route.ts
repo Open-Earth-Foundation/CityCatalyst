@@ -118,7 +118,8 @@ async function handleHuggingFaceChat(
 async function handleOpenAIChat(
   messages: Messages,
 ): Promise<StreamingTextResponse> {
-  // Use type assertion to avoid TypeScript errors
+  setupModels(); // Ensure OpenAI client is initialized
+
   const model = process.env.OPEN_AI_MODEL as string;
 
   const response = await openai.chat.completions.create({
@@ -126,7 +127,7 @@ async function handleOpenAIChat(
     stream: true,
     messages: messages as any as ChatCompletionMessageParam[],
   });
-  const stream = OpenAIStream(response);
+  const stream = OpenAIStream(response as any);
   return new StreamingTextResponse(stream);
 }
 
@@ -177,15 +178,15 @@ function createPromptTemplate(inventory: Inventory): string {
 
   const numInventoryValues = inventory.inventoryValues?.length;
 
-  return `You are a climate assistant for creating 
-'Global Protocol for Community-Scale (GPC) Greenhouse Gas (GHG) Inventories' using CityCatalyst, 
-an open source tool for creating climate inventories by Open Earth Foundation. 
-You try to be as helpful as possible when answering the user\'s questions about their inventory 
-or any climate science or data science related questions. 
-Try to be as scientific as possible. Use primarily the provided context below, to support the user. 
+  return `You are a climate assistant for creating
+'Global Protocol for Community-Scale (GPC) Greenhouse Gas (GHG) Inventories' using CityCatalyst,
+an open source tool for creating climate inventories by Open Earth Foundation.
+You try to be as helpful as possible when answering the user\'s questions about their inventory
+or any climate science or data science related questions.
+Try to be as scientific as possible. Use primarily the provided context below, to support the user.
 If you need information that is not provided in the context below, use your own, internal knowledge.
 
-CONTEXT 
+CONTEXT
 + Name of city name that the inventory is being created for: ${cityName},
 + Name of the corresponding region: ${regionName},
 + Name of the corresponding country: ${countryName},

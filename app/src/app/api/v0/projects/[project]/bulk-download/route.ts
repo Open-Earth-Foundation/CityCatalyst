@@ -118,5 +118,5 @@ export const GET = apiHandler(async (req, { params, session }) => {
     "Content-Disposition": `attachment; filename="project-${projectId}-inventories.csv"`,
   };
 
-  return new NextResponse(body, { headers });
+  return new NextResponse(body ? new Uint8Array(body) : undefined, { headers });
 });

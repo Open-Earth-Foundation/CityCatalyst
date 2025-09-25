@@ -266,7 +266,7 @@ export function HiapTab({
           size="sm"
           onClick={() => {
             setSelectedAction(row.original);
-            logger.info("Open drawer for action:", row.original);
+            logger.info(row.original, "Open drawer for action");
           }}
         >
           <Icon as={RiExpandDiagonalFill} color="interactive.control" />
@@ -295,9 +295,9 @@ export function HiapTab({
       }).unwrap();
 
       setRowSelection(newRowSelection);
-      logger.info("Updated selection:", selectedActionIds);
+      logger.info(selectedActionIds, "Updated selection");
     } catch (error) {
-      logger.error("Failed to update selection:", error);
+      logger.error(error, "Failed to update selection");
     }
   };
 
@@ -331,7 +331,7 @@ export function HiapTab({
       setSelectedActions([]);
       logger.info("Cleared all action selections");
     } catch (error) {
-      logger.error("Failed to clear selection:", error);
+      logger.error(error, "Failed to clear selection");
     }
   };
 

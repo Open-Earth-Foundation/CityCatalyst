@@ -123,7 +123,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         });
         router.push(callbackUrl ?? getDashboardPath(lng));
       } else {
-        logger.error("Failed to login", loginResponse);
+        logger.error(loginResponse, "Failed to login");
         setError(t("invalid-email-password"));
       }
     } catch (error: any) {

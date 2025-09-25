@@ -78,12 +78,12 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
     );
     return Response.json({ data });
   } catch (error) {
-    logger.error("Error fetching HIAP data:", {
+    logger.error({
       err: error,
       inventory: params.inventory,
       type,
       lng,
-    });
+    }, "Error fetching HIAP data");
     throw new Error(
       `Failed to fetch HIAP data for city ${inventory.city.locode}: ${(error as Error).message}`,
       { cause: error },
@@ -183,19 +183,19 @@ export const PATCH = apiHandler(
         updatedCount = affectedCount;
       }
 
-      logger.info("Updated HIAP action selection:", {
+      logger.info({
         inventoryId: params.inventory,
         selectedActionIds: body.selectedActionIds,
         updatedCount,
-      });
+      }, "Updated HIAP action selection");
 
       return NextResponse.json({ success: true, updated: updatedCount });
     } catch (error) {
-      logger.error("Error updating HIAP action selection:", {
+      logger.error({
         err: error,
         inventory: params.inventory,
         selectedActionIds: body.selectedActionIds,
-      });
+      }, "Error updating HIAP action selection");
       throw new Error(
         `Failed to update action selection for city ${inventory.city.locode}: ${(error as Error).message}`,
         { cause: error },

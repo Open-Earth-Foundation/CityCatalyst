@@ -55,7 +55,7 @@ function hasIsPublicProperty(
 export const GET = apiHandler(async (req, { session, params }) => {
   let inventoryId = params.inventory;
 
-  if (inventoryId === "null") {
+  if (inventoryId === 'null') {
     throw new createHttpError.BadRequest("'null' is an invalid inventory id");
   }
 

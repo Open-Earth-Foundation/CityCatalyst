@@ -1,0 +1,240 @@
+#!/usr/bin/env python3
+"""
+PDF Upload and Embedding Script for Climate Advisor Vector Database
+
+This script processes PDF files, extracts text, splits into chunks,
+generates embeddings using OpenAI, and stores everything in a PostgreSQL
+database with pgvector support.
+
+Usage:
+    python upload_to_db.py [--directory PATH] [--chunk-size SIZE] [--chunk-overlap OVERLAP]
+
+Environment Variables Required:
+    - CA_DATABASE_URL: PostgreSQL connection string
+    - OPENAI_API_KEY: OpenAI API key for embeddings
+"""
+
+import asyncio
+import argparse
+import os
+import sys
+from pathlib import Path
+from typing import List, Dict, Any
+from uuid import uuid4
+
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
+
+# Import from local modules
+from models.document import Document, DocumentChunk, DocumentEmbedding
+from utils.text_processing import DocumentProcessor
+from services.embedding_service import EmbeddingService, EmbeddingResult
+
+# Import from local modules
+from vector_init import init_pgvector
+
+# Add the service directory to Python path for database session
+sys.path.insert(0, str(Path(__file__).parent.parent / "service"))
+from app.db.session import get_session
+
+
+async def create_database_tables(engine) -> None:
+    """Create database tables if they don't exist."""
+    async with engine.begin() as conn:
+        # Import models to ensure they are registered with SQLAlchemy
+        from app.models.document import Document, DocumentChunk, DocumentEmbedding
+
+        # Create all tables
+        await conn.run_sync(Document.metadata.create_all)
+
+
+async def store_document_with_embeddings(
+    session: AsyncSession,
+    doc_data: Dict[str, Any],
+    embedding_results: List[EmbeddingResult]
+) -> bool:
+    """
+    Store a document with its chunks and embeddings in the database.
+
+    Args:
+        session: Database session
+        doc_data: Processed document data
+        embedding_results: Results from embedding generation
+
+    Returns:
+        True if successful, False otherwise
+    """
+    try:
+        # Create document record
+        document = Document(
+            document_id=uuid4(),
+            filename=doc_data["filename"],
+            file_path=doc_data["file_path"],
+            file_type=doc_data["file_type"],
+            file_size=doc_data["file_size"],
+            content=doc_data["content"],
+            metadata=doc_data.get("metadata", {})
+        )
+
+        session.add(document)
+        await session.flush()  # Get the document ID
+
+        # Create chunks and their embeddings
+        for i, chunk_data in enumerate(doc_data["chunks"]):
+            # Find corresponding embedding result
+            embedding_result = None
+            for result in embedding_results:
+                if result.text == chunk_data["content"] and result.success:
+                    embedding_result = result
+                    break
+
+            if embedding_result is None:
+                print(f"Warning: No embedding found for chunk {i} in {doc_data['filename']}")
+                continue
+
+            # Create chunk
+            chunk = DocumentChunk(
+                chunk_id=uuid4(),
+                document_id=document.document_id,
+                chunk_index=chunk_data["chunk_index"],
+                content=chunk_data["content"],
+                metadata=chunk_data.get("metadata", {})
+            )
+
+            session.add(chunk)
+            await session.flush()  # Get the chunk ID
+
+            # Create embedding
+            embedding = DocumentEmbedding(
+                embedding_id=uuid4(),
+                chunk_id=chunk.chunk_id,
+                model_name=embedding_result.model,
+                embedding_vector=embedding_result.embedding
+            )
+
+            session.add(embedding)
+
+        await session.commit()
+        return True
+
+    except Exception as e:
+        await session.rollback()
+        print(f"Error storing document {doc_data['filename']}: {str(e)}")
+        return False
+
+
+async def process_and_store_documents(
+    directory_path: str,
+    chunk_size: int = 1000,
+    chunk_overlap: int = 200
+) -> None:
+    """
+    Process all PDFs in a directory and store them with embeddings.
+
+    Args:
+        directory_path: Path to directory containing PDF files
+        chunk_size: Size of text chunks
+        chunk_overlap: Overlap between chunks
+    """
+    # Initialize services
+    doc_processor = DocumentProcessor(chunk_size, chunk_overlap)
+    embedding_service = EmbeddingService()
+
+    # Process documents
+    print(f"Processing PDF files in {directory_path}...")
+    processed_docs = doc_processor.process_directory(directory_path)
+
+    if not processed_docs:
+        print("No documents processed.")
+        return
+
+    # Get database session
+    async for session in get_session():
+        # Initialize pgvector
+        print("Initializing pgvector...")
+        await init_pgvector(session)
+
+        total_docs = len(processed_docs)
+        success_count = 0
+
+        for i, doc_data in enumerate(processed_docs, 1):
+            print(f"\nProcessing document {i}/{total_docs}: {doc_data['filename']}")
+
+            # Extract text chunks for embedding
+            text_chunks = [chunk["content"] for chunk in doc_data["chunks"]]
+
+            if not text_chunks:
+                print(f"Warning: No text chunks found for {doc_data['filename']}")
+                continue
+
+            print(f"Generating embeddings for {len(text_chunks)} chunks...")
+
+            # Generate embeddings
+            embedding_results = await embedding_service.generate_embeddings_batch(text_chunks)
+
+            # Check for failures
+            failed_embeddings = [r for r in embedding_results if not r.success]
+            if failed_embeddings:
+                print(f"Warning: {len(failed_embeddings)} embeddings failed for {doc_data['filename']}")
+                for failure in failed_embeddings[:3]:  # Show first 3 failures
+                    print(f"  - {failure.error}")
+
+            # Store in database
+            success = await store_document_with_embeddings(session, doc_data, embedding_results)
+
+            if success:
+                success_count += 1
+                print(f"✓ Successfully stored {doc_data['filename']}")
+            else:
+                print(f"✗ Failed to store {doc_data['filename']}")
+
+        print("
+=== Summary ===")
+        print(f"Processed {total_docs} documents")
+        print(f"Successfully stored {success_count} documents")
+        print(f"Failed to store {total_docs - success_count} documents")
+
+
+async def main():
+    """Main function to run the upload script."""
+    parser = argparse.ArgumentParser(description="Upload PDFs to vector database with embeddings")
+    parser.add_argument(
+        "--directory",
+        type=str,
+        default="files",
+        help="Directory containing PDF files (default: files)"
+    )
+    parser.add_argument(
+        "--chunk-size",
+        type=int,
+        default=1000,
+        help="Size of text chunks in characters (default: 1000)"
+    )
+    parser.add_argument(
+        "--chunk-overlap",
+        type=int,
+        default=200,
+        help="Overlap between chunks in characters (default: 200)"
+    )
+
+    args = parser.parse_args()
+
+    # Check environment variables
+    if not os.getenv("CA_DATABASE_URL"):
+        print("Error: CA_DATABASE_URL environment variable is required")
+        sys.exit(1)
+
+    if not os.getenv("OPENAI_API_KEY"):
+        print("Error: OPENAI_API_KEY environment variable is required")
+        sys.exit(1)
+
+    # Process and store documents
+    await process_and_store_documents(
+        args.directory,
+        args.chunk_size,
+        args.chunk_overlap
+    )
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

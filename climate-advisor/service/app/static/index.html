@@ -48,7 +48,7 @@
       <div class="card">
         <div class="endpoint">POST /v1/threads</div>
         <label>User ID</label>
-        <input id="threadsUserId" placeholder="u_123" />
+        <input id="threadsUserId" placeholder="test-user" value="test-user" />
         <label>Inventory ID (optional)</label>
         <input id="threadsInventoryId" placeholder="inv_456" />
         <label>Context (JSON, optional)</label>
@@ -60,7 +60,7 @@
       <div class="card">
         <div class="endpoint">POST /v1/messages (SSE)</div>
         <label>User ID</label>
-        <input id="msgUserId" placeholder="u_123" />
+        <input id="msgUserId" placeholder="test-user" value="test-user" />
         <label>Thread ID (optional)</label>
         <input id="msgThreadId" placeholder="<uuid>" />
         <label>Content</label>
@@ -123,7 +123,7 @@
           try { ctx = JSON.parse(ctxVal); } catch { out.textContent = 'Invalid JSON in context'; return; }
         }
         const payload = {
-          user_id: document.getElementById('threadsUserId').value.trim() || 'demo-user',
+          user_id: document.getElementById('threadsUserId').value.trim() || 'test-user',
           inventory_id: document.getElementById('threadsInventoryId').value.trim() || undefined,
           context: ctx
         };
@@ -144,7 +144,7 @@
         const out = document.getElementById('outMessages');
         out.textContent = '';
         const payload = {
-          user_id: document.getElementById('msgUserId').value.trim() || 'demo-user',
+          user_id: document.getElementById('msgUserId').value.trim() || 'test-user',
           thread_id: document.getElementById('msgThreadId').value.trim() || undefined,
           content: document.getElementById('msgContent').value.trim() || 'Hello from the playground',
           options: {}

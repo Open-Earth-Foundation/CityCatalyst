@@ -6,10 +6,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY requirements.txt ./
+COPY service/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app ./app
+# Install PostgreSQL client for database connectivity testing
+RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+
+# Copy the llm_config.yaml from the build context (climate-advisor directory)
+COPY llm_config.yaml ./llm_config.yaml
+
+COPY service/app ./app
 
 EXPOSE 8080
 

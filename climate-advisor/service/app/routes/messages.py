@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import AsyncIterator, List
+from typing import AsyncIterator, List, Union
+from uuid import UUID
 import logging
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -22,7 +23,7 @@ router = APIRouter()
 async def _stream_openrouter(
     payload: MessageCreateRequest,
     *,
-    thread_id: str,
+    thread_id: Union[str, UUID],
     user_id: str,
     session_factory: async_sessionmaker[AsyncSession],
 ) -> AsyncIterator[bytes]:

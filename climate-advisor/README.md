@@ -42,16 +42,75 @@ Prerequisites: Python 3.11+, pip, and Docker (for local Postgres).
    - OpenAPI JSON: http://localhost:8080/openapi.json
    - Playground: http://localhost:8080/playground (simple HTML tester)
 
-## Postgres Quickstart
+## Local Database Setup
 
-Launch a disposable Postgres container that matches the defaults in `.env.example`:
+### Step 1: Start PostgreSQL Container
+
+Launch a PostgreSQL container for local development:
 
 ```bash
-docker run --name ca-postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=climate_advisor \
+docker run --name ca-postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=postgres \
   -p 5432:5432 -d postgres:15
 ```
 
-Update `CA_DATABASE_URL` if you change credentials or the port. Stop the container with `docker stop ca-postgres` (and remove with `docker rm ca-postgres`).
+### Step 2: Create Database and User
+
+Connect to PostgreSQL and set up the climate advisor database:
+
+```bash
+# Connect to PostgreSQL interactively
+docker exec -it ca-postgres psql -U postgres -d postgres
+
+# Create the climateadvisor user
+CREATE USER climateadvisor WITH PASSWORD 'climateadvisor';
+
+# Create the climateadvisor database
+CREATE DATABASE climateadvisor OWNER climateadvisor;
+
+# Grant necessary permissions
+GRANT ALL PRIVILEGES ON DATABASE climateadvisor TO climateadvisor;
+ALTER USER climateadvisor CREATEDB;
+
+# Exit PostgreSQL
+\q
+```
+
+### Alternative: Direct Commands (Non-Interactive)
+
+```bash
+# Create user
+docker exec -i ca-postgres psql -U postgres -d postgres -c "CREATE USER climateadvisor WITH PASSWORD 'climateadvisor';"
+
+# Create database
+docker exec -i ca-postgres psql -U postgres -d postgres -c "CREATE DATABASE climateadvisor OWNER climateadvisor;"
+
+# Grant permissions
+docker exec -i ca-postgres psql -U postgres -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE climateadvisor TO climateadvisor; ALTER USER climateadvisor CREATEDB;"
+```
+
+### Step 3: Verify Setup
+
+```bash
+# List databases
+docker exec -i ca-postgres psql -U postgres -d postgres -c "\l"
+
+# List users
+docker exec -i ca-postgres psql -U postgres -d postgres -c "\du"
+```
+
+### Step 4: Update Environment Configuration
+
+Update your `.env` file in the climate-advisor directory:
+
+```bash
+CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5432/climateadvisor
+```
+
+### Container Management
+
+- Stop the container: `docker stop ca-postgres`
+- Remove the container: `docker rm ca-postgres`
+- View logs: `docker logs ca-postgres`
 
 ## Health Endpoint
 
@@ -67,12 +126,14 @@ Update `CA_DATABASE_URL` if you change credentials or the port. Stop the contain
 Build and run the API container:
 
 ```bash
-cd climate-advisor/service
-docker build -t climate-advisor:dev .
-docker run --rm --env-file ../.env -p 8080:8080 climate-advisor:dev
+cd climate-advisor
+docker build -f service/Dockerfile -t climate-advisor:dev .
+docker run --rm --env-file .env -p 8080:8080 climate-advisor:dev
 ```
 
-Ensure Postgres is reachable from inside the container (e.g., use `host.docker.internal` on macOS/Windows).
+**Note for Windows users:** Ensure Docker Desktop is configured to use the correct Docker host. The container should be able to reach your local PostgreSQL instance at `localhost` or `host.docker.internal`.
+
+**Database Connection:** Make sure your PostgreSQL container is running and accessible. If using the local database setup above, ensure the `CA_DATABASE_URL` in your `.env` file points to the correct database.
 
 ## Configuration
 
@@ -144,7 +205,10 @@ python ../scripts/setup_local_db.py
 # Or run migrations directly
 python migrate.py upgrade
 ```
-
+Or do it executing commands after logging into a container
+```
+docker exec -it ca-postgres bash
+```
 **Required environment variable:**
 - `CA_DATABASE_URL` - PostgreSQL connection string (e.g., `postgresql://user:pass@localhost:5432/climate_advisor`)
 

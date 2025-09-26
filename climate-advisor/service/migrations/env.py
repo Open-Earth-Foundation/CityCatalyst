@@ -46,14 +46,12 @@ def get_database_url():
     settings = get_settings()
     if not settings.database_url:
         raise ValueError("CA_DATABASE_URL environment variable is not set")
-    
-    # Convert asyncpg URL to sync URL for Alembic
+
+    # Keep asyncpg URL for async migrations
     database_url = settings.database_url
-    if database_url.startswith("postgresql+asyncpg://"):
-        database_url = database_url.replace("postgresql+asyncpg://", "postgresql://", 1)
-    elif database_url.startswith("postgres://"):
-        database_url = database_url.replace("postgres://", "postgresql://", 1)
-    
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql+asyncpg://", 1)
+
     return database_url
 
 

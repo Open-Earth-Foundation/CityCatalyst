@@ -3,14 +3,16 @@ from __future__ import annotations
 from datetime import datetime
 from enum import Enum as PyEnum
 from typing import Optional
+from uuid import UUID
 
 from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 try:
-    from sqlalchemy.dialects.postgresql import JSONB
+    from sqlalchemy.dialects.postgresql import JSONB, UUID
 except ImportError:  # pragma: no cover
     from sqlalchemy import JSON as JSONB  # type: ignore
+    from sqlalchemy import String as UUID  # type: ignore
 
 from ...db import Base
 
@@ -24,8 +26,8 @@ class MessageRole(str, PyEnum):
 class Message(Base):
     __tablename__ = "messages"
 
-    message_id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    thread_id: Mapped[str] = mapped_column(
+    message_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True)
+    thread_id: Mapped[UUID] = mapped_column(
         ForeignKey("threads.thread_id", ondelete="CASCADE"), nullable=False, index=True
     )
     user_id: Mapped[str] = mapped_column(String(255), nullable=False)

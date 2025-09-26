@@ -70,7 +70,7 @@ class GenerationLimits(BaseModel):
 
 class GenerationConfig(BaseModel):
     defaults: GenerationDefaults
-    limits: GenerationLimits
+    limits: Optional[GenerationLimits] = None
 
 
 class PromptsConfig(BaseModel):
@@ -137,20 +137,24 @@ class LLMConfig(BaseModel):
     api: APIConfig
     features: FeaturesConfig
     logging: LoggingConfig
-    cache: CacheConfig
+    cache: Optional[CacheConfig] = None
 
 
 def _load_llm_config() -> LLMConfig:
     """Load LLM configuration from YAML file."""
-    # Look for the config file in the climate-advisor root directory
-    config_path = Path(__file__).parent.parent.parent.parent / "llm_config.yaml"
-    
+    # Look for the config file in the current working directory (container root)
+    config_path = Path.cwd() / "llm_config.yaml"
+
+    # Also try the parent directory for local development
+    if not config_path.exists():
+        config_path = Path(__file__).parent.parent.parent.parent / "llm_config.yaml"
+
     if not config_path.exists():
         raise FileNotFoundError(f"LLM config file not found at {config_path}")
-    
+
     with open(config_path, 'r', encoding='utf-8') as f:
         config_data = yaml.safe_load(f)
-    
+
     return LLMConfig(**config_data)
 
 

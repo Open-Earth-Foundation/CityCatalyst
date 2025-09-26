@@ -26,11 +26,11 @@ Prerequisites: Python 3.11+, pip, and Docker (for local Postgres).
    pip install -r requirements.txt
    ```
 
-5. Create or reset the database schema (idempotent):
+5. Set up the database schema using Alembic migrations (proper approach):
    ```bash
    python ../scripts/setup_local_db.py
    ```
-   Add `--drop` to wipe and recreate the schema.
+   Add `--drop` to wipe and recreate the schema completely.
 
 6. Run the service:
    ```bash
@@ -113,14 +113,14 @@ Environment variables are loaded automatically from the nearest `.env` when the 
 
 The service uses **Alembic** for database schema management. Migration files are located in `service/migrations/`.
 
-**Quick migration commands:**
+**Migration commands (use the setup script for initial setup):**
 ```bash
 cd climate-advisor/service
 
-# Apply all pending migrations
+# Apply all pending migrations (use setup script instead for initial setup)
 python migrate.py upgrade
 
-# Create new migration from model changes  
+# Create new migration from model changes
 python migrate.py auto "description of changes"
 
 # Check current migration status
@@ -128,6 +128,21 @@ python migrate.py current
 
 # View migration history
 python migrate.py history
+
+# Downgrade one migration
+python migrate.py downgrade
+
+# Create empty migration
+python migrate.py create "description"
+```
+
+**For local development setup:**
+```bash
+# Use the setup script (recommended)
+python ../scripts/setup_local_db.py
+
+# Or run migrations directly
+python migrate.py upgrade
 ```
 
 **Required environment variable:**
@@ -137,7 +152,7 @@ See `service/migrations/README.md` for detailed migration documentation and best
 
 ## Scripts
 
-- `climate-advisor/scripts/setup_local_db.py` - create/drop the Postgres schema
+- `climate-advisor/scripts/setup_local_db.py` - set up database using Alembic migrations (proper approach)
 - `climate-advisor/scripts/test_service_stream.py` - invoke `/v1/messages` and print SSE output
 
 ## Quick Streaming Test

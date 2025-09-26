@@ -87,9 +87,15 @@ class PromptsConfig(BaseModel):
         if not prompt_path:
             raise ValueError(f"Prompt type '{prompt_type}' not configured")
 
-        # Construct full path relative to climate-advisor root
-        config_dir = Path(__file__).parent.parent.parent.parent.parent
-        full_path = config_dir / prompt_path
+        # Construct full path - look in current working directory first (container)
+        # then fall back to relative path from this file
+        cwd_path = Path.cwd() / prompt_path
+        if cwd_path.exists():
+            full_path = cwd_path
+        else:
+            # Fallback to relative path from this file (for local development)
+            config_dir = Path(__file__).parent.parent.parent.parent.parent
+            full_path = config_dir / prompt_path
 
         if not full_path.exists():
             raise FileNotFoundError(f"Prompt file not found: {full_path}")

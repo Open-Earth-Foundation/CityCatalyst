@@ -39,9 +39,11 @@ class OpenRouterClient:
 
     def _headers(self, request_id: Optional[str] = None) -> Dict[str, str]:
         h = {
-            "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
+        # Only add Authorization header if API key is provided
+        if self.api_key and self.api_key.strip():
+            h["Authorization"] = f"Bearer {self.api_key}"
         if request_id:
             h["X-Request-Id"] = request_id
         return h

@@ -15,6 +15,9 @@ RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/ap
 # Copy the llm_config.yaml from the build context (climate-advisor directory)
 COPY llm_config.yaml ./llm_config.yaml
 
+# Copy the prompts directory from the build context
+COPY ../prompts ./prompts
+
 COPY service/app ./app
 
 EXPOSE 8080

@@ -15,8 +15,10 @@ Prerequisites: Python 3.11+, pip, and Docker (for local Postgres).
 
 2. Copy the example environment file and adjust values as needed:
    ```bash
-   cp climate-advisor/.env.example climate-advisor/.env
+   cp .env.example .env
    ```
+
+   **Important**: Update the `OPENROUTER_API_KEY` with your actual OpenRouter API key and adjust the `CA_DATABASE_URL` if needed for your setup.
 
 3. Start a local Postgres instance (see [Postgres Quickstart](#postgres-quickstart)). Leave it running while you develop.
 
@@ -26,11 +28,25 @@ Prerequisites: Python 3.11+, pip, and Docker (for local Postgres).
    pip install -r requirements.txt
    ```
 
-5. Set up the database schema using Alembic migrations (proper approach):
+5. Set up the database schema. Choose one of the following approaches:
+
+   **Option A: Using SQLAlchemy models (recommended for development):**
    ```bash
+   cd service
    python ../scripts/setup_local_db.py
    ```
    Add `--drop` to wipe and recreate the schema completely.
+
+   **Option B: Using raw SQL (alternative approach):**
+   ```bash
+   python ../scripts/init_database.py
+   ```
+
+   **Option C: Manual database setup:**
+   ```bash
+   # Connect to your PostgreSQL instance and run:
+   docker exec -i ca-postgres psql -U postgres -d climateadvisor < scripts/setup_database.sql
+   ```
 
 6. Run the service:
    ```bash
@@ -123,17 +139,27 @@ CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5432/climat
 
 ## Docker (service)
 
-Build and run the API container:
+### Prerequisites
+1. Ensure your PostgreSQL database is running and accessible
+2. Copy `.env.example` to `.env` and configure your settings
+3. Make sure the `CA_DATABASE_URL` in `.env` points to your database
 
+### Build and Run
 ```bash
 cd climate-advisor
 docker build -f service/Dockerfile -t climate-advisor:dev .
 docker run --rm --env-file .env -p 8080:8080 climate-advisor:dev
 ```
 
-**Note for Windows users:** Ensure Docker Desktop is configured to use the correct Docker host. The container should be able to reach your local PostgreSQL instance at `localhost` or `host.docker.internal`.
+### Database Connection Notes
+- **Linux/macOS**: Use `host.docker.internal` to connect to host PostgreSQL
+- **Windows**: Use the IP address of your host machine (e.g., `192.168.65.2`)
+- **Network Mode**: Alternatively, use `--network host` on Linux to share the host network
 
-**Database Connection:** Make sure your PostgreSQL container is running and accessible. If using the local database setup above, ensure the `CA_DATABASE_URL` in your `.env` file points to the correct database.
+### Troubleshooting
+- If database connection fails, verify `CA_DATABASE_URL` in your `.env` file
+- Ensure PostgreSQL is running on the specified host/port
+- Check that the database user and database exist
 
 ## Configuration
 
@@ -214,10 +240,45 @@ docker exec -it ca-postgres bash
 
 See `service/migrations/README.md` for detailed migration documentation and best practices.
 
-## Scripts
+## Quick Setup (Recommended)
 
-- `climate-advisor/scripts/setup_local_db.py` - set up database using Alembic migrations (proper approach)
-- `climate-advisor/scripts/test_service_stream.py` - invoke `/v1/messages` and print SSE output
+For a complete from-scratch setup, run the automated setup script:
+
+**Linux/macOS:**
+```bash
+cd climate-advisor
+chmod +x setup.sh
+./setup.sh
+```
+
+**Windows:**
+```powershell
+cd climate-advisor
+.\setup.bat
+```
+
+These scripts will:
+1. ✅ Validate your `.env` configuration
+2. ✅ Start PostgreSQL container (if not running)
+3. ✅ Set up database schema using SQLAlchemy models
+4. ✅ Test service health
+
+## Manual Setup
+
+If you prefer manual setup or need more control:
+
+## Setup Scripts
+
+The `scripts/` directory contains several utilities for setting up and testing the service:
+
+### Database Setup Scripts
+- **`setup_local_db.py`** - **Recommended**: Uses SQLAlchemy models to create/update database schema via Alembic migrations. Safe for development and production.
+- **`init_database.py`** - Alternative approach using raw SQL. Creates tables directly in PostgreSQL.
+- **`setup_database.sql`** - Raw SQL file with table creation statements (used by init_database.py).
+- **`setup_db_in_container.py`** - Designed to run inside the container for containerized deployments.
+
+### Testing Scripts
+- **`test_service_stream.py`** - Tests the `/v1/messages` endpoint and displays streaming SSE output for debugging.
 
 ## Quick Streaming Test
 
@@ -233,4 +294,17 @@ You should see SSE lines with `event: message` chunks followed by a terminal `ev
 
 - Built-in Swagger UI is available at `/docs` and ReDoc at `/redoc`.
 - A static OpenAPI spec lives at `climate-advisor/docs/climate-advisor-openapi.yaml` for external tooling.
+
+## 🎯 Ready to Use
+
+Once setup is complete, the Climate Advisor service provides:
+
+- **Real-time Chat**: Conversational AI powered by OpenRouter models
+- **Thread Management**: Persistent conversation threads with context
+- **Streaming Responses**: Server-sent events for real-time message streaming
+- **Database Integration**: Full PostgreSQL integration with proper schema management
+- **API Documentation**: Comprehensive OpenAPI/Swagger documentation
+- **Playground Interface**: Web-based testing interface at `/playground`
+
+The service is designed to be production-ready with proper error handling, logging, and database transactions.
 

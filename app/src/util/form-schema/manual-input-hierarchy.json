@@ -2638,11 +2638,11 @@
               "fuel-type-cng",
               "fuel-type-biofuel"
             ],
+            "activity-type-transmission-and-distribution-losses": [
+              "fuel-type-not-applicable"
+            ],
             "exclusive": "fuel-type-all"
-          },
-          "activity-type-transmission-and-distribution-losses": [
-            "fuel-type-not-applicable"
-            ]
+          }
         },
         {
           "id": "on-road-transport-electricity-source",

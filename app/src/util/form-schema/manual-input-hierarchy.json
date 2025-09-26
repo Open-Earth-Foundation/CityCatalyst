@@ -43,7 +43,8 @@
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
                   "fuel-type-liquefied-petroleum-gases",
-                  "fuel-type-firewood"
+                  "fuel-type-firewood",
+                  "fuel-type-kerosene"
                 ],
                 "emission-factor-dependency": true
               },
@@ -125,7 +126,8 @@
             "fuel-type-anthracite",
             "fuel-type-gasoline",
             "fuel-type-diesel",
-            "fuel-type-firewood"
+            "fuel-type-firewood",
+            "fuel-type-kerosene"
           ],
           "exclusive": "fuel-type-all"
         },
@@ -334,7 +336,9 @@
                   "fuel-type-anthracite",
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
-                  "fuel-type-firewood"
+                  "fuel-type-firewood",
+                  "fuel-type-kerosene",
+                  "fuel-type-charcoal"
                 ],
                 "emission-factor-dependency": true
               },
@@ -435,7 +439,9 @@
             "fuel-type-anthracite",
             "fuel-type-gasoline",
             "fuel-type-diesel",
-            "fuel-type-firewood"
+            "fuel-type-firewood",
+            "fuel-type-kerosene",
+            "fuel-type-charcoal"
           ],
           "exclusive": "fuel-type-all"
         },
@@ -693,7 +699,9 @@
                   "fuel-type-industrial-wastes",
                   "fuel-type-waste-oils",
                   "fuel-type-bitumen",
-                  "fuel-type-municipal-wastes"
+                  "fuel-type-municipal-wastes",
+                  "fuel-type-charcoal",
+                  "fuel-type-firewood"
                 ]
               },
               {
@@ -798,7 +806,9 @@
             "fuel-type-waste-oils",
             "fuel-type-bitumen",
             "fuel-type-municipal-wastes",
-            "fuel-type-liquefied-petroleum-gases"
+            "fuel-type-liquefied-petroleum-gases",
+            "fuel-type-charcoal",
+            "fuel-type-firewood"
           ],
           "exclusive": "fuel-type-all"
         },
@@ -1068,7 +1078,9 @@
                   "fuel-type-natural-gas-liquids",
                   "fuel-type-jet-kerosene",
                   "fuel-type-municipal-wastes",
-                  "fuel-type-liquefied-petroleum-gases"
+                  "fuel-type-liquefied-petroleum-gases",
+                  "fuel-type-charcoal",
+                  "fuel-type-firewood"
                 ]
               },
               {
@@ -1185,7 +1197,9 @@
             "fuel-type-natural-gas-liquids",
             "fuel-type-jet-kerosene",
             "fuel-type-municipal-wastes",
-            "fuel-type-liquefied-petroleum-gases"
+            "fuel-type-liquefied-petroleum-gases",
+            "fuel-type-charcoal",
+            "fuel-type-firewood"
           ],
           "exclusive": "fuel-type-all"
         },
@@ -1424,10 +1438,12 @@
                   "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-wood-wood-waste",
                   "fuel-type-other-primary-solid-biomass",
-                  "fuel-type-natural-charcoal",
+                  "fuel-type-charcoal",
                   "fuel-type-gas-oil",
                   "fuel-type-peat",
-                  "fuel-type-natural-gas-liquids"
+                  "fuel-type-natural-gas-liquids",
+                  "fuel-type-firewood",
+                  "fuel-type-biodiesel"
                 ]
               },
               {
@@ -1517,7 +1533,9 @@
             "fuel-type-charcoal",
             "fuel-type-gas-oil",
             "fuel-type-peat",
-            "fuel-type-natural-gas-liquids"
+            "fuel-type-natural-gas-liquids",
+            "fuel-type-firewood",
+            "fuel-type-biodiesel"
           ],
           "exclusive": "fuel-type-all"
         },
@@ -1733,8 +1751,10 @@
                   "fuel-type-wood-wood-waste",
                   "fuel-type-other-primary-solid-biomass",
                   "fuel-type-charcoal",
-                  "fuel-type-natural-gas-oil",
-                  "fuel-type-peat"
+                  "fuel-type-peat",
+                  "fuel-type-kerosene",
+                  "fuel-type-crude-petroleum",
+                  "fuel-type-fuel-oil"
                 ]
               },
               {
@@ -1822,8 +1842,10 @@
             "fuel-type-wood-wood-waste",
             "fuel-type-other-primary-solid-biomass",
             "fuel-type-charcoal",
-            "fuel-type-natural-gas-oil",
-            "fuel-type-peat"
+            "fuel-type-peat",
+            "fuel-type-kerosene",
+            "fuel-type-crude-petroleum",
+            "fuel-type-fuel-oil"
           ],
           "exclusive": "fuel-type-all"
         },
@@ -2605,6 +2627,24 @@
           ]
         },
         {
+          "id": "on-road-transportation-fuel-type",
+          "dependsOn": "on-road-transportation-outside-activity-type",
+          "dependentOptions": {
+            "activity-type-transboundary-journeys": [
+              "fuel-type-all",
+              "fuel-type-gasoline",
+              "fuel-type-diesel",
+              "fuel-type-liquefied-petroleum-gases",
+              "fuel-type-cng",
+              "fuel-type-biofuel"
+            ],
+            "exclusive": "fuel-type-all"
+          },
+          "activity-type-transmission-and-distribution-losses": [
+            "fuel-type-not-applicable"
+            ]
+        },
+        {
           "id": "on-road-transport-electricity-source",
           "type": "text"
         }
@@ -2965,6 +3005,24 @@
           ]
         },
         {
+          "id": "railway-outside-fuel-type",
+          "dependsOn": "railway-outside-activity-type",
+          "dependentOptions": {
+            "activity-type-transboundary-journeys": [
+              "fuel-type-all",
+              "fuel-type-gasoline",
+              "fuel-type-diesel",
+              "fuel-type-liquefied-petroleum-gases",
+              "fuel-type-cng",
+              "fuel-type-biofuel"
+            ],
+            "exclusive": "fuel-type-all"
+          },
+          "activity-type-transmission-and-distribution-losses": [
+            "fuel-type-not-applicable"
+            ]
+        },
+        {
           "id": "railways-electricity-source",
           "type": "text"
         }
@@ -3305,6 +3363,24 @@
             "activity-type-transmission-and-distribution-losses",
             "activity-type-transboundary-journeys"
           ]
+        },
+        {
+          "id": "water-transportation-outside-fuel-type",
+          "dependsOn": "water-transportation-outside-activity-type",
+          "dependentOptions": {
+            "activity-type-transboundary-journeys": [
+              "fuel-type-all",
+              "fuel-type-gasoline",
+              "fuel-type-diesel",
+              "fuel-type-liquefied-petroleum-gases",
+              "fuel-type-cng",
+              "fuel-type-biofuel"
+            ],
+            "exclusive": "fuel-type-all"
+          },
+          "activity-type-transmission-and-distribution-losses": [
+            "fuel-type-not-applicable"
+            ]
         },
         {
           "id": "waterborne-navigation-electricity-source",
@@ -3674,6 +3750,26 @@
             "activity-type-transmission-and-distribution-losses",
             "activity-type-transboundary-journeys"
           ]
+        },
+        {
+          "id": "aviation-outside-fuel-type",
+          "dependsOn": "aviation-o  utside-activity-type",
+          "dependentOptions": {
+            "activity-type-transboundary-journeys": [
+              "fuel-type-all",
+              "fuel-type-aviation-gasoline",
+              "fuel-type-diesel",
+              "fuel-type-jet-gasoline",
+              "fuel-type-jet-kerosene",
+              "fuel-type-liquefied-petroleum-gases",
+              "fuel-type-gasoline",
+              "fuel-type-natural-gas-liquids"
+            ],
+            "exclusive": "fuel-type-all"
+          },
+          "activity-type-transmission-and-distribution-losses": [
+            "fuel-type-not-applicable"
+            ]
         },
         {
           "id": "aviation-electricity-source",

@@ -3753,7 +3753,7 @@
         },
         {
           "id": "aviation-outside-fuel-type",
-          "dependsOn": "aviation-o  utside-activity-type",
+          "dependsOn": "aviation-outside-activity-type",
           "dependentOptions": {
             "activity-type-transboundary-journeys": [
               "fuel-type-all",

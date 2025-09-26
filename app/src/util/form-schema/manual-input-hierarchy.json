@@ -3016,11 +3016,11 @@
               "fuel-type-cng",
               "fuel-type-biofuel"
             ],
+            "activity-type-transmission-and-distribution-losses": [
+              "fuel-type-not-applicable"
+            ],
             "exclusive": "fuel-type-all"
-          },
-          "activity-type-transmission-and-distribution-losses": [
-            "fuel-type-not-applicable"
-            ]
+          }
         },
         {
           "id": "railways-electricity-source",
@@ -3376,11 +3376,11 @@
               "fuel-type-cng",
               "fuel-type-biofuel"
             ],
+            "activity-type-transmission-and-distribution-losses": [
+              "fuel-type-not-applicable"
+            ],
             "exclusive": "fuel-type-all"
-          },
-          "activity-type-transmission-and-distribution-losses": [
-            "fuel-type-not-applicable"
-            ]
+          }
         },
         {
           "id": "waterborne-navigation-electricity-source",
@@ -3765,11 +3765,11 @@
               "fuel-type-gasoline",
               "fuel-type-natural-gas-liquids"
             ],
+            "activity-type-transmission-and-distribution-losses": [
+              "fuel-type-not-applicable"
+            ],
             "exclusive": "fuel-type-all"
-          },
-          "activity-type-transmission-and-distribution-losses": [
-            "fuel-type-not-applicable"
-            ]
+          }
         },
         {
           "id": "aviation-electricity-source",

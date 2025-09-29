@@ -26,7 +26,19 @@
   "no-actions-found-title": "Your top climate actions are being processed",
   "no-actions-found-description": "This process can take up up to 15 mins. You'll get an email and see them here when done",
   "generate-climate-actions-widget-description": "You can create implementation plans for each of the selected actions. Feel free to browse the complete list of actions below and choose which ones you want to display here.",
+  "action-plan": "Action plan",
   "download-action-plan": "download",
+  "download-csv": "CSV",
+  "additional-info": "Additional info",
+  "action-type-label": "Action type",
+  "actions-of": {
+    "mitigation": "Mitigation actions",
+    "adaptation": "Adaptation actions"
+  },
+  "action-type": {
+    "mitigation": "Mitigation",
+    "adaptation": "Adaptation"
+  },
   "top-pick-action-title": "top pick",
   "integrate-renewables-into-municipal-water-systems": "Integrate renewables into municipal water systems",
   "reduction-potential": "Reduction potential",
@@ -53,7 +65,9 @@
   "citycatalyst-actions-title": "citycatalyst actions",
   "re-prioritize-actions": "Re-prioritize actions",
   "generated-action-plan": "generate action plan",
-  "export-as-pdf": "export as pdf",
+  "export-as-csv": "Export as CSV",
+  "export-as-pdf": "Export as PDF",
+  "generating-pdf": "generating pdf...",
   "subactions": "Subactions",
   "municipal-institutions-involved": "municipal institutions involved",
   "click-action-description": "Click the button below to start listing your top climate actions.",
@@ -110,5 +124,13 @@
   "select-all": "Select all",
   "actions-selected": "actions selected",
   "exit-selection": "Exit selection",
-  "ranked-and-unranked-actions-description": "Here are the climate initiatives that our AI model has identified as having the greatest potential impact for your city. You can select any three actions to create detailed plans in the upper section. Additionally, feel free to download this table to share with stakeholders."
+  "ranked-and-unranked-actions-description": "Here are the climate initiatives that our AI model has identified as having the greatest potential impact for your city. You can select any three actions to create detailed plans in the upper section. Additionally, feel free to download this table to share with stakeholders.",
+  "view-generated-plan": "View Generated Plan",
+  "generating-plan": "Generating Plan...",
+  "missing-data": "Missing Data",
+  "plan-generation-started": "Plan Generation Started",
+  "plan-generation-started-description": "Your action plan is being generated. You'll receive an email notification when it's ready.",
+  "plan-generation-failed": "Generation Failed",
+  "plan-generation-failed-description": "Failed to start plan generation. Please try again.",
+  "unknown": "Unknown"
 }

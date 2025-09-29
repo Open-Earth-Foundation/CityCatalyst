@@ -179,18 +179,16 @@ export const POST = apiHandler(async (req, { params, session }) => {
         if (!invite) {
           failedInvites.push({ email });
           logger.error(
-            `error in organization/${organizationId}/invitations/route POST: `,
-            "error creating invite",
             { email, organizationId },
+            `error in organization/${organizationId}/invitations/route POST`
           );
         }
         return invite;
       } catch (e) {
         failedInvites.push({ email });
         logger.error(
-          `error in organization/${organizationId}/invitations/route POST: `,
-          email,
-          e,
+          { err: e, email, organizationId },
+          `error in organization/${organizationId}/invitations/route POST`
         );
       }
     }),

@@ -355,7 +355,7 @@ export default class DataSourceService {
       data = await response.json();
     } catch (err) {
       const message = `Failed to query data source ${source.datasourceId} at URL ${url}:`;
-      logger.error(message, err);
+      logger.error({ err }, message);
       return message;
     }
 

@@ -197,5 +197,17 @@
     "message2": "You can now view and explore these actions through the CityCatalyst platform.",
     "message3": "Click the button below to access your mitigation actions table — this personalized page contains detailed actions your city can take to reduce emissions and build climate resilience.",
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
+  },
+  "action-plan-ready": {
+    "subject": "City Catalyst - Action Plan Ready",
+    "preview": "CityCatalyst: Your climate action plan is ready!",
+    "brand": "CityCatalyst",
+    "title": "Your climate action plan is ready!",
+    "greeting": "Hi {{name}},",
+    "message": "We've generated a draft implementation plan for the climate action '{{actionName}}' as requested. These guidelines will support your journey towards a low-carbon future.",
+    "message2": "You can now view and explore your draft at the CityCatalyst platform.",
+    "message3": "Click the button below to access your generated plans and explore each action in depth.",
+    "cta": "View Action Plan",
+    "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   }
 }

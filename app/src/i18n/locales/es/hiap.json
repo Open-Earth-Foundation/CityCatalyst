@@ -25,7 +25,18 @@
   "no-actions-found-title": "Tus principales acciones climáticas están siendo procesadas",
   "no-actions-found-description": "Este proceso puede tomar hasta 15 minutos. Recibirás un email y las verás aquí cuando esté listo",
   "generate-climate-actions-widget-description": "Puedes crear planes de implementación para cada una de las acciones seleccionadas. Siéntete libre de explorar la lista completa de acciones a continuación y elegir cuáles quieres mostrar aquí.",
+  "action-plan": "Plan de acción",
   "download-action-plan": "descargar",
+  "additional-info": "Información adicional",
+  "action-type-label": "Tipo de acción",
+  "actions-of": {
+    "mitigation": "Acciones de mitigación",
+    "adaptation": "Acciones de adaptación"
+  },
+  "action-type": {
+    "mitigation": "Mitigación",
+    "adaptation": "Adaptación"
+  },
   "top-pick-action-title": "mejor opción",
   "integrate-renewables-into-municipal-water-systems": "integrar energías renovables en los sistemas de agua municipales",
   "reduction-potential": "Potencial de reducción",
@@ -38,6 +49,7 @@
   "re-prioritize-actions": "Re-priorizar acciones",
   "generated-action-plan": "generar plan de acción",
   "export-as-pdf": "exportar como PDF",
+  "generating-pdf": "generando PDF...",
   "subactions": "Subacciones",
   "municipal-institutions-involved": "instituciones municipales involucradas",
   "transport": "Transporte",
@@ -110,5 +122,15 @@
   "select-all": "Seleccionar todo",
   "actions-selected": "acciones seleccionadas",
   "ranked-and-unranked-actions-description": "Aquí están las iniciativas climáticas que nuestro modelo de IA ha identificado como las que tienen el mayor impacto potencial para tu ciudad. Puedes seleccionar hasta tres acciones para crear planes detallados en la sección superior. Además, siéntete libre de descargar esta tabla para compartir con las partes interesadas.",
-  "exit-selection": "Salir de la selección"
+  "view-generated-plan": "Ver Plan Generado",
+  "generating-plan": "Generando Plan...",
+  "missing-data": "Datos Faltantes",
+  "plan-generation-started": "Generación de Plan Iniciada",
+  "plan-generation-started-description": "Su plan de acción se está generando. Recibirá una notificación por email cuando esté listo.",
+  "plan-generation-failed": "Falló la Generación",
+  "plan-generation-failed-description": "Falló al iniciar la generación del plan. Por favor, inténtelo de nuevo.",
+  "exit-selection": "Salir de la selección",
+  "download-csv": "CSV",
+  "export-as-csv": "Exportar como CSV",
+  "unknown": "Desconocido"
 }

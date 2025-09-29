@@ -121,7 +121,7 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
         <RadioGroupRoot>
           <RadioGroup
             value={selectedReason as string}
-            onValueChange={(e) => handleSelectedValue(e.value)}
+            onValueChange={(e) => handleSelectedValue(e.value || "")}
             colorPalette="interactive.secondary"
           >
             <Stack direction="column">

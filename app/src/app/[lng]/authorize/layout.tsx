@@ -1,4 +1,5 @@
 import "../../globals.css";
+import { NavigationBar } from "@/components/navigation-bar";
 import type { Metadata } from "next";
 import { Providers } from "../../providers";
 import { dir } from "i18next";
@@ -7,6 +8,7 @@ import { PublicEnvScript } from "next-runtime-env";
 import { Toaster } from "@/components/ui/toaster";
 import ClientRootLayout from "@/components/ClientRootLayout";
 import { use } from "react";
+import { Box } from "@chakra-ui/react";
 
 export const metadata: Metadata = {
   title: "CityCatalyst",
@@ -21,21 +23,21 @@ export default function AuthorizeRootLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lng: string }>;
 }) {
+  const { children } = props;
   const { lng } = use(props.params);
 
   return (
-    <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
-      <head>
-        <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
-        <link rel="icon" type="image/png" href="/assets/icon.png" />
-        <PublicEnvScript />
-      </head>
-      <body>
-        <Providers>
-          <Toaster />
-          <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
-        </Providers>
-      </body>
-    </html>
+    <Box
+      h="full"
+      display="flex"
+      flexDirection="column"
+      bg="background.backgroundLight"
+    >
+      <NavigationBar lng={lng} />
+      <Toaster />
+      <Box w="full" h="full">
+        {children}
+      </Box>
+    </Box>
   );
 }

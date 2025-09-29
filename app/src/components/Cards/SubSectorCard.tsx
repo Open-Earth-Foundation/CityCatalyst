@@ -7,6 +7,7 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
+import { clamp } from "@/util/helpers";
 
 interface SubSectorCardProps {
   title: string;
@@ -38,7 +39,7 @@ const SubSectorCard: FC<SubSectorCardProps> = ({
       {percentageCompletion > 0 && percentageCompletion < 100 ? (
         <ProgressCircleRoot
           size="xs"
-          value={percentageCompletion}
+          value={clamp(percentageCompletion, 0, 100)}
           color="background.neutral"
           mr={4}
         >

@@ -246,9 +246,8 @@ export const POST = apiHandler(async (req, { params, session }) => {
               if (!invite) {
                 failedInvites.push({ email, cityIds: [cityId] });
                 logger.error(
-                  "error in invites/route POST: ",
-                  "error creating invite",
                   { cityId, email },
+                  "error creating invite",
                 );
               }
               return invite;
@@ -304,16 +303,15 @@ export const POST = apiHandler(async (req, { params, session }) => {
         });
         if (!sendInvite) {
           logger.error(
-            "error in invites/route POST: ",
-            "Email could not be sent",
             { email, cityIds },
+            "Email could not be sent",
           );
-          logger.error("error in invites/route POST: ", inviteData);
+          logger.error({ inviteData }, "error in invites/route POST: ");
           failedInvites.push(inviteData);
         }
       } catch (error) {
         failedInvites.push(inviteData);
-        logger.error("error in invites/route POST: ", inviteData, error);
+        logger.error({ inviteData, error }, "error in invites/route POST: ");
       }
     }),
   );

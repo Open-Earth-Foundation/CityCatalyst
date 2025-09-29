@@ -38,9 +38,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/services/logger";
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  logger.debug("Cookies", req.cookies);
+  logger.debug(req.cookies, "Cookies");
   const token = await getToken({ req });
-  logger.debug("Token", token);
+  logger.debug(token, "Token");
   const session = await getServerSession(authOptions);
   if (!session) {
     throw new createHttpError.Unauthorized("Must be logged in!");

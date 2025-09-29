@@ -6,6 +6,7 @@ import {
   type UserAttributes,
   type ModuleAttributes,
   ProjectModulesAttributes,
+  ActionPlan,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import {
@@ -66,6 +67,7 @@ import type {
   GHGInventorySummary,
   HIAPSummary,
   CCRASummary,
+  HIAction,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -109,6 +111,7 @@ export const api = createApi({
     "CCRADashboard",
     "ProjectModules",
     "Modules",
+    "ActionPlan",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1251,6 +1254,66 @@ export const api = createApi({
         },
         invalidatesTags: ["Hiap"],
       }),
+      generateActionPlan: builder.mutation<
+        { plan: string; timestamp: string; actionName: string },
+        {
+          action: HIAction;
+          inventoryId: string;
+          cityLocode: string;
+          lng?: string;
+          cityId: string;
+          rankingId: string;
+        }
+      >({
+        query: ({
+          action,
+          inventoryId,
+          cityId,
+          lng,
+          cityLocode,
+          rankingId,
+        }: {
+          action: HIAction;
+          inventoryId: string;
+          cityId: string;
+          cityLocode?: string;
+          lng?: string;
+          rankingId: string;
+        }) => ({
+          url: `city/${cityId}/hiap/action-plan/${rankingId}`,
+          method: "POST",
+          body: { action, inventoryId, cityLocode, lng },
+        }),
+        transformResponse: (response: {
+          data: { plan: string; timestamp: string; actionName: string };
+        }) => {
+          return response.data;
+        },
+        invalidatesTags: ["ActionPlan"],
+      }),
+      getActionPlans: builder.query<
+        { actionPlans: ActionPlan[] },
+        { cityId: string; language?: string; actionId?: string }
+      >({
+        query: ({ cityId, language, actionId }) => {
+          const params = new URLSearchParams();
+          if (language) params.append("language", language);
+          if (actionId) params.append("actionId", actionId);
+          return `city/${cityId}/hiap/action-plans?${params.toString()}`;
+        },
+        transformResponse: (response: { data: ActionPlan[] }) => ({
+          actionPlans: response.data,
+        }),
+        providesTags: ["ActionPlan"],
+      }),
+      getActionPlanById: builder.query<
+        ActionPlan,
+        { cityId: string; id: string }
+      >({
+        query: ({ cityId, id }) => `city/${cityId}/hiap/action-plans/${id}`,
+        transformResponse: (response: { data: ActionPlan }) => response.data,
+        providesTags: ["ActionPlan"],
+      }),
       setOrgWhiteLabel: builder.mutation({
         query: (data: {
           organizationId: string;
@@ -1640,6 +1703,9 @@ export const {
   useTransferCitiesMutation,
   useGetHiapQuery,
   useUpdateHiapSelectionMutation,
+  useGenerateActionPlanMutation,
+  useGetActionPlansQuery,
+  useGetActionPlanByIdQuery,
   useGetThemesQuery,
   useSetOrgWhiteLabelMutation,
   useGetOrganizationForInventoryQuery,

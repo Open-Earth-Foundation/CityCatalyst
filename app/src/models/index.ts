@@ -15,6 +15,7 @@ export const db: {
 };
 
 async function initialize() {
+  const useSSL = process.env.DATABASE_USE_SSL === "true";
   const sequelize = new Sequelize({
     host: process.env.DATABASE_HOST,
     username: process.env.DATABASE_USER,
@@ -23,6 +24,14 @@ async function initialize() {
     dialect: "postgres",
     dialectModule: pg,
     logging: false,
+    dialectOptions: useSSL
+      ? {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false,
+          },
+        }
+      : {},
   });
 
   db.models = models.initModels(sequelize);

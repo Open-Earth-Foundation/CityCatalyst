@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - City Modules
- *     summary: Get CCRA dashboard data for a city inventory
+ *     summary: Get Climate Change Risk Assessment (CCRA) dashboard data for a city inventory
  *     parameters:
  *       - in: path
  *         name: city
@@ -21,6 +21,27 @@
  *     responses:
  *       200:
  *         description: CCRA dashboard data returned.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   description: CCRA dashboard data
+ *                 metadata:
+ *                   type: object
+ *                   properties:
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                     inventoryId:
+ *                       type: string
+ *                       format: uuid
+ *                     year:
+ *                       type: integer
+ *                     moduleId:
+ *                       type: string
  *       400:
  *         description: Inventory does not belong to city.
  *       404:

@@ -47,7 +47,25 @@
  *                               contactEmail:
  *                                 type: string
  *                                 format: email
- *                     additionalProperties: true
+ *                     properties:
+ *                       cityId:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                       region:
+ *                         type: string
+ *                         nullable: true
+ *                       country:
+ *                         type: string
+ *                         nullable: true
+ *                       locode:
+ *                         type: string
+ *                         nullable: true
+ *                       email:
+ *                         type: string
+ *                         format: email
+ *                         nullable: true
  *             examples:
  *               example:
  *                 value:

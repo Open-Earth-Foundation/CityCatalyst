@@ -8,7 +8,7 @@
  *     description: Removes the user record for the currently signed‑in session. Requires a signed‑in user; requests without a session return 401. Use with caution as this operation is irreversible.
  *     responses:
  *       200:
- *         description: Deletion result.
+ *         description: Account successfully deleted.
  *         content:
  *           application/json:
  *             schema:
@@ -16,12 +16,17 @@
  *               properties:
  *                 success:
  *                   type: boolean
+ *                   description: Indicates whether the account deletion was successful
  *             examples:
  *               example:
  *                 value:
  *                   success: true
  *       401:
- *         description: Must be logged in.
+ *         description: User must be authenticated to delete account.
+ *       404:
+ *         description: User email not found in session or user does not exist.
+ *       500:
+ *         description: Internal server error during account deletion.
  */
 import { authOptions } from "@/lib/auth";
 import { db } from "@/models";

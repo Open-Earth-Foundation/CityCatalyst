@@ -21,51 +21,31 @@
  *             schema:
  *               type: object
  *               properties:
- *                 success: { type: boolean }
- *                 result: { type: object, additionalProperties: true }
- *   post:
- *     tags:
- *       - Inventory Notation Keys
- *     summary: Set notation keys for subcategories in an inventory.
- *     description: Saves notation keys for the inventory’s subcategories, creating inventory values where necessary. Requires a signed‑in user with access to the inventory. Returns { success, result } listing affected values.
- *     parameters:
- *       - in: path
- *         name: inventory
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               notationKeys:
- *                 type: array
- *                 items:
+ *                 success:
+ *                   type: boolean
+ *                 result:
  *                   type: object
- *                   required: [subCategoryId, unavailableReason, unavailableExplanation]
  *                   properties:
- *                     subCategoryId:
- *                       type: string
- *                       format: uuid
- *                     unavailableReason:
- *                       type: string
- *                       enum: [no-occurrance, not-estimated, confidential-information, included-elsewhere]
- *                     unavailableExplanation:
- *                       type: string
- *     responses:
- *       200:
- *         description: Save result.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success: { type: boolean }
- *                 result: { type: array, items: { type: object, additionalProperties: true } }
+ *                     notationKeys:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           key:
+ *                             type: string
+ *                           description:
+ *                             type: string
+ *                           used:
+ *                             type: boolean
+ *                     summary:
+ *                       type: object
+ *                       properties:
+ *                         total:
+ *                           type: number
+ *                         used:
+ *                           type: number
+ *                         unused:
+ *                           type: number
  */
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import UserService from "@/backend/UserService";
@@ -163,6 +143,69 @@ const saveNotationKeysRequest = z.object({
   ),
 });
 
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/notation-keys:
+ *   post:
+ *     tags:
+ *       - Inventory Notation Keys
+ *     summary: Set notation keys for subcategories in an inventory.
+ *     description: Saves notation keys for the inventory’s subcategories, creating inventory values where necessary. Requires a signed‑in user with access to the inventory. Returns { success, result } listing affected values.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               notationKeys:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required: [subCategoryId, unavailableReason, unavailableExplanation]
+ *                   properties:
+ *                     subCategoryId:
+ *                       type: string
+ *                       format: uuid
+ *                     unavailableReason:
+ *                       type: string
+ *                       enum: [no-occurrance, not-estimated, confidential-information, included-elsewhere]
+ *                     unavailableExplanation:
+ *                       type: string
+ *     responses:
+ *       200:
+ *         description: Save result.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 result:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       inventoryValueId:
+ *                         type: string
+ *                         format: uuid
+ *                       subCategoryId:
+ *                         type: string
+ *                         format: uuid
+ *                       notationKey:
+ *                         type: string
+ *                       value:
+ *                         type: number
+ *                         nullable: true
+ */
 export const POST = apiHandler(async (req, { session, params }) => {
   const body = saveNotationKeysRequest.parse(await req.json());
   const inventoryId = z.string().uuid().parse(params.inventory);

@@ -33,7 +33,20 @@
  *               properties:
  *                 thread:
  *                   type: object
- *                   additionalProperties: true
+ *                   properties:
+ *                     threadId:
+ *                       type: string
+ *                       description: OpenAI Thread ID
+ *                     created_at:
+ *                       type: number
+ *                       description: Unix timestamp of thread creation
+ *                     updated_at:
+ *                       type: number
+ *                       description: Unix timestamp of last thread update
+ *                     metadata:
+ *                       type: object
+ *                       additionalProperties: true
+ *                       description: Thread metadata
  *             examples:
  *               example:
  *                 value:

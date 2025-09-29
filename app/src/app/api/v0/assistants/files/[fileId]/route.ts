@@ -25,15 +25,38 @@
  *                   properties:
  *                     id:
  *                       type: string
+ *                       description: OpenAI File ID
+ *                     object:
+ *                       type: string
+ *                       description: Object type, always "file"
  *                     filename:
  *                       type: string
- *                   additionalProperties: true
+ *                       description: Original filename
+ *                     bytes:
+ *                       type: number
+ *                       description: File size in bytes
+ *                     created_at:
+ *                       type: number
+ *                       description: Unix timestamp of file creation
+ *                     purpose:
+ *                       type: string
+ *                       enum: ['assistants', 'vision', 'fine-tune']
+ *                       description: Purpose of the file
+ *                     status:
+ *                       type: string
+ *                       enum: ['uploaded', 'processed', 'error']
+ *                       description: File processing status
  *             examples:
  *               example:
  *                 value:
  *                   file:
  *                     id: "file_abc123"
+ *                     object: "file"
  *                     filename: "document.pdf"
+ *                     bytes: 1024
+ *                     created_at: 1699061776
+ *                     purpose: "assistants"
+ *                     status: "processed"
  */
 import { apiHandler } from "@/util/api";
 import { setupOpenAI } from "@/util/openai";

@@ -6,12 +6,56 @@ This script processes PDF files, extracts text, splits into chunks,
 generates embeddings using OpenAI, and stores everything in a PostgreSQL
 database with pgvector support.
 
-Usage:
-    python upload_to_db.py [--directory PATH] [--chunk-size SIZE] [--chunk-overlap OVERLAP]
+USAGE:
+    python upload_to_db.py [OPTIONS]
 
-Environment Variables Required:
-    - CA_DATABASE_URL: PostgreSQL connection string
-    - OPENAI_API_KEY: OpenAI API key for embeddings
+OPTIONS:
+    --directory PATH    Directory containing PDF files (default: files)
+    --help             Show this help message and exit
+
+EXAMPLES:
+    # Process all PDFs in the default 'files' directory
+    python upload_to_db.py
+
+    # Process PDFs from a specific directory
+    python upload_to_db.py --directory /path/to/pdfs
+
+    # Show help
+    python upload_to_db.py --help
+
+PREREQUISITES:
+    1. PostgreSQL database with pgvector extension installed
+    2. Environment variables configured in ../.env:
+       - CA_DATABASE_URL: PostgreSQL connection string
+       - OPENAI_API_KEY: OpenAI API key for embeddings
+
+    3. Required Python packages installed (run in climate-advisor/service/):
+       pip install -r requirements.txt
+
+CONFIGURATION:
+    - Chunk size: 1000 characters (fixed)
+    - Chunk overlap: 200 characters (fixed)
+    - Directory: files (default, can be overridden with --directory)
+
+OUTPUT:
+    The script will:
+    1. Initialize pgvector extension in the database
+    2. Process each PDF file in the specified directory
+    3. Extract text content and split into chunks
+    4. Generate embeddings using OpenAI's text-embedding-3-small model
+    5. Store documents, chunks, and embeddings in the database
+    6. Display progress and summary statistics
+
+    Example output:
+    Processing PDF files in files/...
+    Processing document.pdf...
+    Generating embeddings for 15 chunks...
+    Successfully stored document.pdf
+    ...
+    === Summary ===
+    Processed 3 documents
+    Successfully stored 3 documents
+    Failed to store 0 documents
 """
 
 import asyncio
@@ -21,9 +65,19 @@ import sys
 from pathlib import Path
 from typing import List, Dict, Any
 from uuid import uuid4
+from dotenv import load_dotenv
+
+# Load environment variables from .env file in parent directory
+env_path = Path(__file__).parent.parent / '.env'
+load_dotenv(env_path)
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+
+# Configuration constants
+DEFAULT_CHUNK_SIZE = 1000
+DEFAULT_CHUNK_OVERLAP = 200
+DEFAULT_DIRECTORY = "files"
 
 # Import from local modules
 from models.document import Document, DocumentChunk, DocumentEmbedding
@@ -125,8 +179,8 @@ async def store_document_with_embeddings(
 
 async def process_and_store_documents(
     directory_path: str,
-    chunk_size: int = 1000,
-    chunk_overlap: int = 200
+    chunk_size: int = DEFAULT_CHUNK_SIZE,
+    chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
 ) -> None:
     """
     Process all PDFs in a directory and store them with embeddings.
@@ -184,12 +238,11 @@ async def process_and_store_documents(
 
             if success:
                 success_count += 1
-                print(f"✓ Successfully stored {doc_data['filename']}")
+                print(f"Successfully stored {doc_data['filename']}")
             else:
-                print(f"✗ Failed to store {doc_data['filename']}")
+                print(f"Failed to store {doc_data['filename']}")
 
-        print("
-=== Summary ===")
+        print("=== Summary ===")
         print(f"Processed {total_docs} documents")
         print(f"Successfully stored {success_count} documents")
         print(f"Failed to store {total_docs - success_count} documents")
@@ -201,20 +254,8 @@ async def main():
     parser.add_argument(
         "--directory",
         type=str,
-        default="files",
+        default=DEFAULT_DIRECTORY,
         help="Directory containing PDF files (default: files)"
-    )
-    parser.add_argument(
-        "--chunk-size",
-        type=int,
-        default=1000,
-        help="Size of text chunks in characters (default: 1000)"
-    )
-    parser.add_argument(
-        "--chunk-overlap",
-        type=int,
-        default=200,
-        help="Overlap between chunks in characters (default: 200)"
     )
 
     args = parser.parse_args()
@@ -231,8 +272,8 @@ async def main():
     # Process and store documents
     await process_and_store_documents(
         args.directory,
-        args.chunk_size,
-        args.chunk_overlap
+        DEFAULT_CHUNK_SIZE,
+        DEFAULT_CHUNK_OVERLAP
     )
 
 

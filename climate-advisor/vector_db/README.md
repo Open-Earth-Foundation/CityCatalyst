@@ -37,25 +37,36 @@ The vector database system provides:
 
 ## Quick Start
 
-### 1. Environment Setup
+### 1. Configuration
 
-Set these environment variables:
+The vector database uses the centralized `.env` file from the main `climate-advisor/` directory. Ensure your `.env` file contains:
+
 ```bash
-CA_DATABASE_URL="postgresql://username:password@localhost:5432/climate_advisor"
-OPENAI_API_KEY="your-openai-api-key"
+# Database Configuration
+CA_DATABASE_URL="postgresql://climateadvisor:climateadvisor@ca-postgres:5432/climateadvisor"
+
+# OpenAI Configuration for Embeddings
+OPENAI_API_KEY="your-openai-api-key-here"
+```
+
+Copy `.env.example` to `.env` and fill in your actual values:
+
+```bash
+cp ../.env.example ../.env
+# Edit .env with your actual database URL and API keys
 ```
 
 ### 2. Database Migration
 
 ```bash
-cd ../service
+cd climate-advisor/service/migrations
 python migrate.py upgrade head
 ```
 
-### 3. Process Your PDFs
+### 2. Process Your PDFs
 
 ```bash
-python upload_to_db.py --directory files --chunk-size 1000 --chunk-overlap 200
+python upload_to_db.py --directory files
 ```
 
 ## Component Details
@@ -63,6 +74,7 @@ python upload_to_db.py --directory files --chunk-size 1000 --chunk-overlap 200
 ### Models (`models/`)
 
 **document.py**: SQLAlchemy models for the vector database:
+
 - `Document`: Stores document metadata and full text content
 - `DocumentChunk`: Contains text chunks with their metadata
 - `DocumentEmbedding`: Stores vector embeddings for each chunk
@@ -70,6 +82,7 @@ python upload_to_db.py --directory files --chunk-size 1000 --chunk-overlap 200
 ### Services (`services/`)
 
 **embedding_service.py**: OpenAI embedding generation service:
+
 - Handles API rate limiting and batch processing
 - Supports both single text and batch embedding generation
 - Includes error handling and retry logic
@@ -77,6 +90,7 @@ python upload_to_db.py --directory files --chunk-size 1000 --chunk-overlap 200
 ### Utilities (`utils/`)
 
 **text_processing.py**: Document processing utilities:
+
 - `PDFProcessor`: Extracts text content from PDF files
 - `TextSplitter`: Intelligently splits text into chunks
 - `DocumentProcessor`: High-level document processing orchestration
@@ -84,6 +98,7 @@ python upload_to_db.py --directory files --chunk-size 1000 --chunk-overlap 200
 ### Migrations (`migrations/`)
 
 Database migration files for schema changes:
+
 - Creates pgvector extension and vector tables
 - Sets up indexes for optimal performance
 - Includes vector similarity search indexes
@@ -152,19 +167,20 @@ Configure embedding settings in `../llm_config.yaml`:
 ```yaml
 api:
   openai:
-    embedding_model: "text-embedding-3-small"  # or "text-embedding-3-large"
+    embedding_model: "text-embedding-3-small" # or "text-embedding-3-large"
     timeout_ms: 30000
 ```
 
 ### Chunking Parameters
 
-```python
-# Smaller chunks for more precise search
-processor = DocumentProcessor(chunk_size=500, chunk_overlap=100)
+The upload script uses fixed chunking parameters defined as constants:
 
-# Larger chunks for more context
-processor = DocumentProcessor(chunk_size=2000, chunk_overlap=400)
-```
+- Chunk size: 1000 characters
+- Chunk overlap: 200 characters
+
+To modify these values, edit the `DEFAULT_CHUNK_SIZE` and `DEFAULT_CHUNK_OVERLAP` constants in `upload_to_db.py`.
+
+````
 
 ## Development
 
@@ -184,11 +200,11 @@ processor = DocumentProcessor(chunk_size=2000, chunk_overlap=400)
 
 ```bash
 # Run the upload script with test data
-python upload_to_db.py --directory test_files --chunk-size 500
+python upload_to_db.py --directory test_files
 
 # Check database contents
 python -c "from models.document import Document; print('Models loaded successfully')"
-```
+````
 
 ## Performance Considerations
 

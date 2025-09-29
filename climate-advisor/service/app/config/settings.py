@@ -111,8 +111,15 @@ class OpenRouterConfig(BaseModel):
     retry_delay_ms: Optional[int] = None
 
 
+class OpenAIConfig(BaseModel):
+    base_url: str
+    timeout_ms: Optional[int] = None
+    embedding_model: str
+
+
 class APIConfig(BaseModel):
     openrouter: OpenRouterConfig
+    openai: OpenAIConfig
     requests: Optional[Dict[str, Any]] = None
 
 
@@ -178,6 +185,9 @@ class Settings(BaseModel):
     openrouter_base_url: str | None = None  # Will be overridden by LLM config
     openrouter_model: str | None = None     # Will be overridden by LLM config
     request_timeout_ms: int | None = None   # Will be overridden by LLM config
+
+    # OpenAI configuration for embeddings
+    openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
 
     # Database configuration
     database_url: str | None = os.getenv("CA_DATABASE_URL")

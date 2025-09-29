@@ -5,15 +5,12 @@
 models:
   # Default model to use when none is specified
   default: "openai/gpt-4.1"
-  
+
   # Available models with their capabilities and default parameters
   available:
-      
     "openai/gpt-4.1":
       name: "GPT-4.1"
       default_temperature: 0.7
-      
-
 
 # Generation Parameters
 generation:
@@ -41,7 +38,14 @@ api:
     timeout_ms: 30000
     retry_attempts: 3
     retry_delay_ms: 1000
-    
+
+  # OpenAI configuration for embeddings
+  openai:
+    base_url: "https://api.openai.com/v1"
+    # API key should be set via environment variable OPENAI_API_KEY
+    timeout_ms: 30000
+    embedding_model: "text-embedding-3-small"
+
   # Request configuration
   requests:
     # Maximum time to wait for a response
@@ -58,10 +62,8 @@ features:
   # Enable/disable streaming responses
   streaming_enabled: true
 
-
 # Logging Configuration
 logging:
   log_requests: false
   log_responses: false
   log_performance: true
-

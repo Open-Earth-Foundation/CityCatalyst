@@ -44,6 +44,11 @@ class EmbeddingService:
     def __init__(self):
         """Initialize the embedding service with OpenAI client."""
         self.settings = get_settings()
+
+        # Check if OpenAI API key is available
+        if not self.settings.openai_api_key:
+            raise ValueError("OPENAI_API_KEY environment variable is required for embedding service")
+
         self.client = AsyncOpenAI(
             api_key=self.settings.openai_api_key,
             base_url=self.settings.llm.api.openai.base_url,

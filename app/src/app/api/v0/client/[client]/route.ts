@@ -1,3 +1,11 @@
+import { apiHandler } from "@/util/api";
+import createHttpError from "http-errors";
+import { NextResponse } from "next/server";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { OAuthClient } from "@/models/OAuthClient";
+import { OAuthClientI18N } from "@/models/OAuthClientI18N";
+import { Client } from "@/util/types";
+
 /**
  * @swagger
  * /api/v0/client/{client}:
@@ -56,14 +64,6 @@
  *       500:
  *         description: OAuth not enabled or server error.
  */
-import { apiHandler } from "@/util/api";
-import createHttpError from "http-errors";
-import { NextResponse } from "next/server";
-import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { OAuthClient } from "@/models/OAuthClient";
-import { OAuthClientI18N } from "@/models/OAuthClientI18N";
-import { Client } from "@/util/types";
-
 export const GET = apiHandler(async (_req, { params, session }) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");

@@ -1,23 +1,3 @@
-/**
- * @swagger
- * /api/v0/city/{city}/user:
- *   get:
- *     tags:
- *       - City Users
- *     summary: List users for a city
- *     parameters:
- *       - in: path
- *         name: city
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     responses:
- *       200:
- *         description: Users returned.
- *       404:
- *         description: Users not found.
- */
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
@@ -71,6 +51,27 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
   return NextResponse.json({ data: existingUser });
 });
+
+/**
+ * @swagger
+ * /api/v0/city/{city}/user:
+ *   get:
+ *     tags:
+ *       - City Users
+ *     summary: List users for a city
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Users returned.
+ *       404:
+ *         description: Users not found.
+ */
 
 export const GET = apiHandler(async (req, { params, session }) => {
   const city = await UserService.findUserCity(params.city, session);

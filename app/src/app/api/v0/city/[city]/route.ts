@@ -1,3 +1,13 @@
+import UserService from "@/backend/UserService";
+import { apiHandler } from "@/util/api";
+import { createCityRequest } from "@/util/validation";
+import { NextResponse } from "next/server";
+import { Inventory } from "@/models/Inventory";
+import { User } from "@/models/User";
+import { db } from "@/models";
+import { QueryTypes } from "sequelize";
+import { logger } from "@/services/logger";
+import { DEFAULT_PROJECT_ID } from "@/util/constants";
 /**
  * @swagger
  * /api/v0/city/{city}:
@@ -57,16 +67,6 @@
  *                           name:
  *                             type: string
  */
-import UserService from "@/backend/UserService";
-import { apiHandler } from "@/util/api";
-import { createCityRequest } from "@/util/validation";
-import { NextResponse } from "next/server";
-import { Inventory } from "@/models/Inventory";
-import { User } from "@/models/User";
-import { db } from "@/models";
-import { QueryTypes } from "sequelize";
-import { logger } from "@/services/logger";
-import { DEFAULT_PROJECT_ID } from "@/util/constants";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
   const city = await UserService.findUserCity(params.city, session, true);

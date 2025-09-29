@@ -258,7 +258,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
               {t("cancel") || "Cancel"}
             </Button>
             <Button
-              type="submit"
+              variant="submit"
               bg="interactive.secondary"
               color="base.light"
               loading={isLoading}

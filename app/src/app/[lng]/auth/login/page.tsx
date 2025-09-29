@@ -138,7 +138,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
             </Link>
           </Box>
           <Button
-            type="submit"
+            variant="submit"
             formNoValidate
             loading={isSubmitting}
             h={16}

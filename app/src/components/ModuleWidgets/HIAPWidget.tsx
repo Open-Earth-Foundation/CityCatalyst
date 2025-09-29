@@ -5,7 +5,7 @@ import { useTranslation } from "@/i18n/client";
 import { ACTION_TYPES, HIAction } from "@/util/types";
 import { ClimateActionCard } from "@/components/ClimateActionCard";
 import { ActionDrawer } from "@/components/ActionDrawer";
-import { HeadlineSmall } from "../Texts/Headline";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { Button } from "../ui/button";
 import { MdOpenInNew } from "react-icons/md";
 import { useRouter } from "next/navigation";

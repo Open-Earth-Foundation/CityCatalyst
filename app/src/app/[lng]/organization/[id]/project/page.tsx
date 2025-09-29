@@ -2,10 +2,10 @@
 import { OrganizationHero } from "@/components/Organization/OrganizationHero";
 import ProjectCard from "@/components/Organization/ProjectCard";
 import ProgressLoader from "@/components/ProgressLoader";
-import { BodyLarge, BodyMedium } from "@/components/Texts/Body";
-import { ButtonMedium } from "@/components/Texts/Button";
-import { HeadlineLarge, HeadlineSmall } from "@/components/Texts/Headline";
-import { LabelLarge } from "@/components/Texts/Label";
+import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
+import { ButtonMedium } from "@/components/package/Texts/Button";
+import { HeadlineLarge, HeadlineSmall } from "@/components/package/Texts/Headline";
+import { LabelLarge } from "@/components/package/Texts/Label";
 import { useTranslation } from "@/i18n/client";
 import { useGetOrganizationQuery, useGetProjectsQuery } from "@/services/api";
 import { ProjectWithCities } from "@/util/types";

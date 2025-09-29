@@ -177,7 +177,7 @@ const BulkDownloadTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
               {t("cancel")}
             </Button>
             <Button
-              type="submit"
+              variant="submit"
               alignSelf="flex-start"
               loading={isDownloadLoading}
               p="32px"

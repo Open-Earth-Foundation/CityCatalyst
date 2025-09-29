@@ -253,7 +253,7 @@ export default function OnboardingSetup(props: {
                   px="24px"
                   onClick={handleSubmit(onSubmit)}
                   h="64px"
-                  type="submit"
+                  variant="submit"
                 >
                   <Text
                     fontFamily="button.md"

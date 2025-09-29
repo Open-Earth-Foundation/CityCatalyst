@@ -5,7 +5,7 @@ import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
 
 import { Box, Heading, Icon, Input, Link, Text } from "@chakra-ui/react";
-import LabelLarge from "@/components/Texts/Label";
+import LabelLarge from "@/components/package/Texts/Label";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, use } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -250,7 +250,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         </Field>
         {error && <Text color="semantic.danger">{error}</Text>}
         <Button
-          type="submit"
+          variant="submit"
           formNoValidate
           loading={isSubmitting}
           h={16}

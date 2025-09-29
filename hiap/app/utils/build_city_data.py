@@ -2,7 +2,9 @@ from typing import Optional, List
 
 
 def build_city_data(
-    contextData: dict, requestData: dict, ccra: Optional[List[dict]] = None
+    requestData: dict,
+    contextData: Optional[dict] = None,
+    ccra: Optional[List[dict]] = None,
 ) -> dict:
     """
     Build the city_data dictionary as required.
@@ -12,9 +14,10 @@ def build_city_data(
     - Initiates ccra as empty list (for now)
 
     Input:
-        contextData: general city context data from global api
+        contextData: general city context data from global api (optional). If not provided,
+            the context keys below are set to None.
         requestData: flat dict with keys: locode, populationSize, stationaryEnergyEmissions, transportationEmissions, wasteEmissions, ippuEmissions, afoluEmissions
-        ccra: ccra data from global api
+        ccra: ccra data from global api (optional). If not provided, the ccra key is set to an empty list.
 
     Returns:
     A dictionary with the following structure:
@@ -40,7 +43,7 @@ def build_city_data(
     # Step 1: Copy all relevant fields from contextData
     cityData = {}
 
-    # Step 2: Directly copy simple fields
+    # Step 2: Directly copy simple fields if contextData is provided. Otherwise, set to None.
     for key in [
         "locode",
         "name",
@@ -53,7 +56,7 @@ def build_city_data(
         "socioEconomicFactors",
         "accessToPublicServices",
     ]:
-        cityData[key] = contextData.get(key)
+        cityData[key] = None if contextData is None else contextData.get(key)
 
     # Step 3: Override populationSize with value from requestBody
     cityData["populationSize"] = requestData.get("populationSize")

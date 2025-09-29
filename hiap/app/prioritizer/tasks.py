@@ -1,4 +1,5 @@
 from typing import Dict, List, Union, Callable, Tuple
+import warnings
 from datetime import datetime
 import time
 import logging
@@ -120,7 +121,14 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
     It extracts the necessary data from the city data, calls the prioritization logic,
     and stores the result in the task.
 
-    It uses the slower but more accurate tournament_ranking function instead of the faster quickselect_top_k function.
+    It uses the slower but more accurate tournament_ranking function instead of the
+    faster quickselect_top_k function.
+
+    Data fetching behavior:
+    - City context is fetched only for mitigation or BOTH; if missing, we log a warning
+      and proceed without context.
+    - CCRA is fetched only for adaptation or BOTH; if missing, the task fails since
+      adaptation requires CCRA.
     """
 
     try:
@@ -152,37 +160,62 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
 
         start_time = time.time()
         try:
-            # API call to get city context data from global API
-            cityContext = get_context(requestData["locode"])
-            if not cityContext:
-                task_storage[task_uuid]["status"] = "failed"
-                task_storage[task_uuid][
-                    "error"
-                ] = "No city context data found from global API."
-                return
 
-            # API call to get CCRA data from global API
-            cityCCRA = get_ccra(requestData["locode"], "current")
-            if not cityCCRA:
-                task_storage[task_uuid]["status"] = "failed"
-                task_storage[task_uuid]["error"] = "No CCRA data found from CCRA API."
-                return
+            # Initialize city context and CCRA as None
+            cityContext = None
+            cityCCRA = None
 
-            # Build city data
-            cityData_dict = build_city_data(cityContext, requestData, cityCCRA)
+            # Get city context data from global API if needed
+            if prioritizationType in [
+                PrioritizationType.MITIGATION,
+                PrioritizationType.BOTH,
+            ]:
+                # API call to get city context data from global API
+                cityContext = get_context(requestData["locode"])
+                if not cityContext:
+                    logger.warning(
+                        f"Task {task_uuid}: No city context data found from global API."
+                    )
+                    logger.warning(
+                        f"Continuing with no specific city context data from global API."
+                    )
+                    # task_storage[task_uuid]["status"] = "failed"
+                    # task_storage[task_uuid][
+                    #     "error"
+                    # ] = "No city context data found from global API."
+                    # return
 
-            # Load actions passed as argument
+            # Get CCRA data from global API if needed
+            if prioritizationType in [
+                PrioritizationType.ADAPTATION,
+                PrioritizationType.BOTH,
+            ]:
+
+                # API call to get CCRA data from global API
+                cityCCRA = get_ccra(requestData["locode"], "current")
+                if not cityCCRA:
+                    logger.error(f"Task {task_uuid}: No CCRA data found from CCRA API.")
+                    logger.error(
+                        f"Cannot continue with prioritization for adaptation actions without CCRA data from global API."
+                    )
+                    logger.error(
+                        "You may try to run the prioritization for mitigation actions only."
+                    )
+                    task_storage[task_uuid]["status"] = "failed"
+                    task_storage[task_uuid][
+                        "error"
+                    ] = "No CCRA data found from CCRA API."
+                    return
+
+            # Build city data, if no city context or CCRA data is provided, the city data will be built with the request data only.
+            cityData_dict = build_city_data(requestData, cityContext, cityCCRA)
+
+            # Load actions passed as argument (validated upstream in API)
             actions = background_task_input.get("actions")
-            if not actions:
-                task_storage[task_uuid]["status"] = "failed"
-                task_storage[task_uuid][
-                    "error"
-                ] = "No actions data found from global API."
-                return
             filteredActions = filter_actions_by_biome(cityData_dict, actions)
-            prioritizationType = background_task_input.get(
-                "prioritizationType", PrioritizationType.BOTH
-            )
+            # prioritizationType = background_task_input.get(
+            #     "prioritizationType", PrioritizationType.BOTH
+            # )
 
             rankedActionsMitigation, rankedActionsAdaptation = _rank_actions_for_city(
                 cityData_dict=cityData_dict,
@@ -223,8 +256,11 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
         task_storage[task_uuid]["error"] = f"Error during prioritization: {str(e)}"
 
 
-def compute_prioritization_bulk_subtask(
-    background_task_input: Dict, mode: str = "quickselect_top_k"
+def _compute_prioritization_bulk_subtask(
+    background_task_input: Dict,
+    main_task_id: str,
+    subtask_idx: int,
+    mode: str = "quickselect_top_k",
 ) -> Dict[str, Union[str, Dict]]:
     """
     Compute-only version of the bulk subtask suitable for execution in a separate process.
@@ -232,7 +268,9 @@ def compute_prioritization_bulk_subtask(
     The default mode is "quickselect_top_k".
 
     Inputs:
-    - background_task_input: Dict
+    - background_task_input: Dict containing request and emission data
+    - main_task_id: str identifier for the parent bulk task (used in logging)
+    - subtask_idx: int index of this subtask (used in logging)
     - mode: str, either "quickselect_top_k" or "tournament_ranking"
 
     Expects background_task_input with keys:
@@ -245,6 +283,12 @@ def compute_prioritization_bulk_subtask(
       {"status": "completed", "result": PrioritizerResponse as dict}
       or
       {"status": "failed", "error": str}
+
+    Data fetching behavior:
+    - City context is fetched only for mitigation or BOTH; if missing, we log a warning
+      and proceed without context.
+    - CCRA is fetched only for adaptation or BOTH; if missing, the subtask fails since
+      adaptation requires CCRA.
     """
 
     if mode == "quickselect_top_k":
@@ -266,27 +310,48 @@ def compute_prioritization_bulk_subtask(
         languages: List[str] = background_task_input["language"]
         country_code: str = background_task_input["countryCode"]
 
-        # Fetch context and data
-        cityContext = get_context(requestData["locode"])
-        if not cityContext:
-            return {
-                "status": "failed",
-                "error": "No city context data found from global API.",
-            }
+        # Conditionally fetch context and CCRA based on prioritization type
+        cityContext = None
+        cityCCRA = None
 
-        cityCCRA = get_ccra(requestData["locode"], "current")
-        if not cityCCRA:
-            return {"status": "failed", "error": "No CCRA data found from CCRA API."}
+        if prioritizationType in [
+            PrioritizationType.MITIGATION,
+            PrioritizationType.BOTH,
+        ]:
+            cityContext = get_context(requestData["locode"])
+            if not cityContext:
+                logger.warning(
+                    f"Bulk subtask {subtask_idx} of {main_task_id}: No city context data from global API for {requestData['locode']}"
+                )
+                logger.warning(
+                    f"Continuing with no specific city context data from global API."
+                )
 
-        cityData_dict = build_city_data(cityContext, requestData, cityCCRA)
+        if prioritizationType in [
+            PrioritizationType.ADAPTATION,
+            PrioritizationType.BOTH,
+        ]:
+            cityCCRA = get_ccra(requestData["locode"], "current")
+            if not cityCCRA:
+                logger.error(
+                    f"Bulk subtask {subtask_idx} of {main_task_id}: No CCRA data found from CCRA API for {requestData['locode']}"
+                )
+                logger.error(
+                    f"Cannot continue with prioritization for adaptation actions without CCRA data from global API."
+                )
+                logger.error(
+                    "You may try to run the prioritization for mitigation actions only."
+                )
+                return {
+                    "status": "failed",
+                    "error": "No CCRA data found from CCRA API.",
+                }
 
-        # Load actions passed as argument
+        # Build city data, if no city context or CCRA data is provided, the city data will be built with the request data only.
+        cityData_dict = build_city_data(requestData, cityContext, cityCCRA)
+
+        # Load actions passed as argument (validated upstream in API)
         actions = background_task_input.get("actions")
-        if not actions:
-            return {
-                "status": "failed",
-                "error": "No actions data found from global API.",
-            }
         filteredActions = filter_actions_by_biome(cityData_dict, actions)
 
         rankedActionsMitigation, rankedActionsAdaptation = _rank_actions_for_city(
@@ -309,7 +374,7 @@ def compute_prioritization_bulk_subtask(
 
         process_time = time.time() - start_time
         logger.info(
-            f"Bulk subtask {requestData['locode']}: Prioritization completed in {process_time:.2f}s"
+            f"Bulk subtask {subtask_idx} of {main_task_id} ({requestData['locode']}): Prioritization completed in {process_time:.2f}s"
         )
         return {"status": "completed", "result": prioritizer_response.model_dump()}
 
@@ -327,6 +392,8 @@ def _execute_prioritization_bulk_subtask(
     background_task_input: dict,
 ):
     """
+    DEPRECATED: Use `_compute_prioritization_bulk_subtask` instead.
+
     Execute a single subtask of a bulk prioritization task.
 
     This function is called by the bulk prioritization task to process a single city.
@@ -334,8 +401,20 @@ def _execute_prioritization_bulk_subtask(
     and stores the result in the subtask.
 
     It uses tournament_ranking function instead of the faster quickselect_top_k function.
-    It is aimed to to be used for the cap_off_app implementation for 50 cities.
+    Context is fetched only for mitigation or BOTH; missing context results in a warning
+    and the subtask continues. CCRA is fetched only for adaptation or BOTH; missing CCRA
+    fails the subtask since adaptation requires it. Intended for cap_off_app usage.
     """
+
+    # Emit deprecation warnings at runtime
+    warnings.warn(
+        "_execute_prioritization_bulk_subtask is deprecated; use _compute_prioritization_bulk_subtask",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    logger.warning(
+        "_execute_prioritization_bulk_subtask is deprecated; use _compute_prioritization_bulk_subtask"
+    )
 
     try:
         task_storage[main_task_id]["subtasks"][subtask_idx]["status"] = "running"
@@ -366,37 +445,52 @@ def _execute_prioritization_bulk_subtask(
 
         start_time = time.time()
         try:
-            # API call to get city context data from global API
-            cityContext = get_context(requestData["locode"])
-            if not cityContext:
-                task_storage[main_task_id]["subtasks"][subtask_idx]["status"] = "failed"
-                task_storage[main_task_id]["subtasks"][subtask_idx][
-                    "error"
-                ] = "No city context data found from global API."
-                _update_bulk_task_status(main_task_id)
-                return
+            # Conditionally fetch context and CCRA based on prioritization type
+            cityContext = None
+            cityCCRA = None
 
-            # API call to get CCRA data from global API
-            cityCCRA = get_ccra(requestData["locode"], "current")
-            if not cityCCRA:
-                task_storage[main_task_id]["subtasks"][subtask_idx]["status"] = "failed"
-                task_storage[main_task_id]["subtasks"][subtask_idx][
-                    "error"
-                ] = "No CCRA data found from CCRA API."
-                _update_bulk_task_status(main_task_id)
-                return
+            if prioritizationType in [
+                PrioritizationType.MITIGATION,
+                PrioritizationType.BOTH,
+            ]:
+                cityContext = get_context(requestData["locode"])
+                if not cityContext:
+                    logger.warning(
+                        f"Bulk Task {main_task_id} subtask {subtask_idx}: No city context data from global API"
+                    )
+                    logger.warning(
+                        f"Continuing with no specific city context data from global API."
+                    )
 
-            cityData_dict = build_city_data(cityContext, requestData, cityCCRA)
+            if prioritizationType in [
+                PrioritizationType.ADAPTATION,
+                PrioritizationType.BOTH,
+            ]:
+                cityCCRA = get_ccra(requestData["locode"], "current")
+                if not cityCCRA:
+                    logger.error(
+                        f"Bulk Task {main_task_id} subtask {subtask_idx}: No CCRA data found from CCRA API."
+                    )
+                    logger.error(
+                        f"Cannot continue with prioritization for adaptation actions without CCRA data from global API."
+                    )
+                    logger.error(
+                        "You may try to run the prioritization for mitigation actions only."
+                    )
+                    task_storage[main_task_id]["subtasks"][subtask_idx][
+                        "status"
+                    ] = "failed"
+                    task_storage[main_task_id]["subtasks"][subtask_idx][
+                        "error"
+                    ] = "No CCRA data found from CCRA API."
+                    _update_bulk_task_status(main_task_id)
+                    return
 
-            # Load actions passed as argument
+            # Build city data, if no city context or CCRA data is provided, the city data will be built with the request data only.
+            cityData_dict = build_city_data(requestData, cityContext, cityCCRA)
+
+            # Load actions passed as argument (validated upstream in API)
             actions = background_task_input.get("actions")
-            if not actions:
-                task_storage[main_task_id]["subtasks"][subtask_idx]["status"] = "failed"
-                task_storage[main_task_id]["subtasks"][subtask_idx][
-                    "error"
-                ] = "No actions data found from global API."
-                _update_bulk_task_status(main_task_id)
-                return
             filteredActions = filter_actions_by_biome(cityData_dict, actions)
 
             rankedActionsMitigation, rankedActionsAdaptation = _rank_actions_for_city(

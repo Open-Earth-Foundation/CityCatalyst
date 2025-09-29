@@ -161,4 +161,4 @@ mypy==1.16.0
 pathspec==0.12.1
 
 # Testing dependencies
-pytest==8.3.4
+pytest==8.4.2

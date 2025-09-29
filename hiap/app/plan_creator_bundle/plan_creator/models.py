@@ -186,15 +186,14 @@ class PlanContent(BaseModel):
 
 
 class PlanCreatorMetadata(BaseModel):
-    locode: str
-    cityName: str
+    locode: str  # Locode comes from frontend request, there it is always known, even if the city is not found in global API
+    cityName: Optional[str] = (
+        None  # If the locode is not found in global API, this will be None
+    )
     actionId: str
     actionName: str
     language: str
     createdAt: datetime
-
-
-# LanguageCode = str  # should be ISO 639-1 codes like 'en', 'es', 'pt'
 
 
 class PlanResponse(BaseModel):

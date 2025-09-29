@@ -54,7 +54,10 @@ def _rank_actions_for_city(
     rankedActionsMitigation: List[RankedAction] = []
     rankedActionsAdaptation: List[RankedAction] = []
 
-    if prioritizationType in [PrioritizationType.MITIGATION, PrioritizationType.BOTH]:
+    if (
+        prioritizationType == PrioritizationType.MITIGATION.value
+        or prioritizationType == PrioritizationType.BOTH.value
+    ):
         mitigationActions = [
             action
             for action in filteredActions
@@ -83,7 +86,10 @@ def _rank_actions_for_city(
                 )
             )
 
-    if prioritizationType in [PrioritizationType.ADAPTATION, PrioritizationType.BOTH]:
+    if (
+        prioritizationType == PrioritizationType.ADAPTATION.value
+        or prioritizationType == PrioritizationType.BOTH.value
+    ):
         adaptationActions = [
             action
             for action in filteredActions
@@ -166,10 +172,10 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
             cityCCRA = None
 
             # Get city context data from global API if needed
-            if prioritizationType in [
-                PrioritizationType.MITIGATION,
-                PrioritizationType.BOTH,
-            ]:
+            if (
+                prioritizationType == PrioritizationType.MITIGATION.value
+                or prioritizationType == PrioritizationType.BOTH.value
+            ):
                 # API call to get city context data from global API
                 cityContext = get_context(requestData["locode"])
                 if not cityContext:
@@ -179,17 +185,12 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
                     logger.warning(
                         f"Continuing with no specific city context data from global API."
                     )
-                    # task_storage[task_uuid]["status"] = "failed"
-                    # task_storage[task_uuid][
-                    #     "error"
-                    # ] = "No city context data found from global API."
-                    # return
 
             # Get CCRA data from global API if needed
-            if prioritizationType in [
-                PrioritizationType.ADAPTATION,
-                PrioritizationType.BOTH,
-            ]:
+            if (
+                prioritizationType == PrioritizationType.ADAPTATION.value
+                or prioritizationType == PrioritizationType.BOTH.value
+            ):
 
                 # API call to get CCRA data from global API
                 cityCCRA = get_ccra(requestData["locode"], "current")
@@ -213,9 +214,6 @@ def _execute_prioritization(task_uuid: str, background_task_input: Dict):
             # Load actions passed as argument (validated upstream in API)
             actions = background_task_input.get("actions")
             filteredActions = filter_actions_by_biome(cityData_dict, actions)
-            # prioritizationType = background_task_input.get(
-            #     "prioritizationType", PrioritizationType.BOTH
-            # )
 
             rankedActionsMitigation, rankedActionsAdaptation = _rank_actions_for_city(
                 cityData_dict=cityData_dict,
@@ -314,10 +312,10 @@ def _compute_prioritization_bulk_subtask(
         cityContext = None
         cityCCRA = None
 
-        if prioritizationType in [
-            PrioritizationType.MITIGATION,
-            PrioritizationType.BOTH,
-        ]:
+        if (
+            prioritizationType == PrioritizationType.MITIGATION.value
+            or prioritizationType == PrioritizationType.BOTH.value
+        ):
             cityContext = get_context(requestData["locode"])
             if not cityContext:
                 logger.warning(
@@ -327,10 +325,10 @@ def _compute_prioritization_bulk_subtask(
                     f"Continuing with no specific city context data from global API."
                 )
 
-        if prioritizationType in [
-            PrioritizationType.ADAPTATION,
-            PrioritizationType.BOTH,
-        ]:
+        if (
+            prioritizationType == PrioritizationType.ADAPTATION.value
+            or prioritizationType == PrioritizationType.BOTH.value
+        ):
             cityCCRA = get_ccra(requestData["locode"], "current")
             if not cityCCRA:
                 logger.error(
@@ -449,10 +447,10 @@ def _execute_prioritization_bulk_subtask(
             cityContext = None
             cityCCRA = None
 
-            if prioritizationType in [
-                PrioritizationType.MITIGATION,
-                PrioritizationType.BOTH,
-            ]:
+            if (
+                prioritizationType == PrioritizationType.MITIGATION.value
+                or prioritizationType == PrioritizationType.BOTH.value
+            ):
                 cityContext = get_context(requestData["locode"])
                 if not cityContext:
                     logger.warning(
@@ -462,10 +460,10 @@ def _execute_prioritization_bulk_subtask(
                         f"Continuing with no specific city context data from global API."
                     )
 
-            if prioritizationType in [
-                PrioritizationType.ADAPTATION,
-                PrioritizationType.BOTH,
-            ]:
+            if (
+                prioritizationType == PrioritizationType.ADAPTATION.value
+                or prioritizationType == PrioritizationType.BOTH.value
+            ):
                 cityCCRA = get_ccra(requestData["locode"], "current")
                 if not cityCCRA:
                     logger.error(

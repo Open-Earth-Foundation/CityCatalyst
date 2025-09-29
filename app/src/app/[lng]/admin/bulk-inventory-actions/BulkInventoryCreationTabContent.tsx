@@ -543,7 +543,7 @@ const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
               {t("cancel")}
             </Button>
             <Button
-              variant="submit"
+              type="submit"
               alignSelf="flex-start"
               loading={isLoading || isConnectSourcesLoading}
               p="32px"

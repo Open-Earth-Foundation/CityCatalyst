@@ -104,13 +104,12 @@ export default function UpdatePassword(props: {
             t={t}
           />
           {error && <Text color="semantic.danger">{error}</Text>}
-          <Button variant="submit" loading={isSubmitting} h={16} width="full">
+          <Button type="submit" loading={isSubmitting} h={16} width="full">
             {t("reset-button")}
           </Button>
           <Button
-            variant="reset"
-            disabled={isSubmitting}
             variant="ghost"
+            disabled={isSubmitting}
             h={16}
             width="full"
             mt={4}

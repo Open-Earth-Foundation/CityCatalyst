@@ -61,7 +61,7 @@ export default function ForgotPassword(props: {
           <EmailInput register={register} error={errors.email} t={t} />
           {error && <Text color="semantic.danger">{error}</Text>}
           <Button
-            variant="submit"
+            type="submit"
             formNoValidate
             loading={isSubmitting}
             h={16}
@@ -71,9 +71,8 @@ export default function ForgotPassword(props: {
             {t("reset-password")}
           </Button>
           <Button
-            variant="reset"
-            disabled={isSubmitting}
             variant="ghost"
+            disabled={isSubmitting}
             h={16}
             width="full"
             mt={4}

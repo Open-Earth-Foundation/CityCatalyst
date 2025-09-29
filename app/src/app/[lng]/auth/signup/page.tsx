@@ -250,7 +250,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         </Field>
         {error && <Text color="semantic.danger">{error}</Text>}
         <Button
-          variant="submit"
+          type="submit"
           formNoValidate
           loading={isSubmitting}
           h={16}

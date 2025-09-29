@@ -90,7 +90,7 @@ opentelemetry-instrumentation-fastapi==0.54b1
 opentelemetry-proto==1.33.1
 opentelemetry-sdk==1.33.1
 opentelemetry-semantic-conventions==0.54b1
-opentelemetry-util-http==0.54b1
+opentelemetry-util-http==0.58b0
 orjson==3.10.18
 ormsgpack==1.10.0
 overrides==7.7.0

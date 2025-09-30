@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Icon } from "@chakra-ui/react";
 import { LuRefreshCw } from "react-icons/lu";
 import { MdOutlineInfo } from "react-icons/md";
-import { HIAction, HIAPResponse } from "@/util/types";
+import { HIAction, HIAPResponse, InventoryResponse } from "@/util/types";
 import { ButtonMedium } from "../Texts/Button";
 import { HeadlineSmall } from "../Texts/Headline";
 import { BodyLarge } from "../Texts/Body";
@@ -13,12 +13,14 @@ interface ClimateActionsSectionProps {
   t: (key: string) => string;
   onReprioritize?: () => void;
   actions: HIAPResponse | undefined;
+  inventory?: InventoryResponse | null;
 }
 
 export function ClimateActionsSection({
   t,
   onReprioritize,
   actions,
+  inventory,
 }: ClimateActionsSectionProps) {
   const [actionsByLng, setActionsByLng] = useState<HIAction[] | undefined>(
     actions?.rankedActions,
@@ -28,6 +30,7 @@ export function ClimateActionsSection({
   useEffect(() => {
     setActionsByLng(actions?.rankedActions);
   }, [actions?.rankedActions]);
+
   return (
     <>
       {actionsByLng && actionsByLng.length > 0 ? (
@@ -119,22 +122,25 @@ export function ClimateActionsSection({
                 {t("actions-for-your-city-description")}
               </BodyLarge>
             </Box>
-            <Box
-              w="full"
-              display="flex"
-              flexDirection="row"
-              gap="8px"
-              alignItems="center"
-              border="1px solid"
-              borderColor="border.neutral"
-              borderRadius="8px"
-              p="16px"
-            >
-              <Icon as={MdOutlineInfo} boxSize="16px" color="content.link" />
-              <BodyLarge fontFamily="body" color="content.secondary">
-                {t("top-actions-tip")}
-              </BodyLarge>
-            </Box>
+            {/* if inventory is not null, show the tip */}
+            {inventory && (
+              <Box
+                w="full"
+                display="flex"
+                flexDirection="row"
+                gap="8px"
+                alignItems="center"
+                border="1px solid"
+                borderColor="border.neutral"
+                borderRadius="8px"
+                p="16px"
+              >
+                <Icon as={MdOutlineInfo} boxSize="16px" color="content.link" />
+                <BodyLarge fontFamily="body" color="content.secondary">
+                  {t("top-actions-tip")}
+                </BodyLarge>
+              </Box>
+            )}
           </Box>
         </Box>
       )}

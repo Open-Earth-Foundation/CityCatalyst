@@ -88,7 +88,7 @@ export function HiapTab({
   cityData,
 }: {
   type: ACTION_TYPES;
-  inventory: InventoryResponse;
+  inventory: InventoryResponse | null;
   cityData: CityWithProjectDataResponse;
 }) {
   const lng = i18next.language as LANGUAGES;
@@ -98,6 +98,22 @@ export function HiapTab({
   const [selectedActions, setSelectedActions] = useState<HIAction[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
 
+  // If no inventory, show empty state
+  if (!inventory) {
+    return (
+      <ClimateActionsEmptyState
+        t={t}
+        inventory={null}
+        hasActions={false}
+        actionType={type}
+        onRefetch={() => {
+          // This will be handled by the parent component
+        }}
+        isActionsPending={false}
+      />
+    );
+  }
+
   const {
     data: hiapData,
     isLoading,
@@ -105,11 +121,11 @@ export function HiapTab({
     refetch,
   } = useGetHiapQuery(
     {
-      inventoryId: inventory.inventoryId || "",
+      inventoryId: inventory?.inventoryId || "",
       lng: lng,
       actionType: type,
     },
-    { skip: !inventory.inventoryId },
+    { skip: !inventory?.inventoryId },
   );
 
   const [updateHiapSelection, { isLoading: isUpdatingSelection }] =

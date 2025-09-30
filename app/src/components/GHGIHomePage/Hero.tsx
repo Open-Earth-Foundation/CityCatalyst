@@ -23,12 +23,12 @@ import { useTranslation } from "@/i18n/client";
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 interface HeroProps {
-  inventory: InventoryResponse;
+  inventory: InventoryResponse | null;
   isPublic: boolean;
   currentInventoryId: string | null;
   isInventoryLoading: boolean;
   formattedEmissions: { value: string; unit: string };
-  population?: PopulationAttributes;
+  population?: PopulationAttributes | null;
   lng: string;
 }
 
@@ -42,9 +42,12 @@ export function Hero({
   lng,
 }: HeroProps) {
   const { t } = useTranslation(lng, "dashboard");
-  const { data: cityData } = useGetOCCityDataQuery(inventory.city?.locode!, {
-    skip: !inventory.city?.locode,
-  });
+  const { data: cityData } = useGetOCCityDataQuery(
+    inventory?.city?.locode || "",
+    {
+      skip: !inventory?.city?.locode,
+    },
+  );
 
   const popWithDS = useMemo(
     () =>
@@ -321,7 +324,7 @@ function ProjectTitle({
   inventory,
   t,
 }: {
-  inventory: InventoryResponse;
+  inventory: InventoryResponse | null;
   t: TFunction;
 }) {
   return (

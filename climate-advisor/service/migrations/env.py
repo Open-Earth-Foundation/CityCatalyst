@@ -7,12 +7,29 @@ and provides both offline and online migration capabilities.
 
 import asyncio
 import os
+from pathlib import Path
 from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
+
+# Load environment variables
+try:
+    from dotenv import load_dotenv
+    # Try multiple paths to find .env file
+    possible_paths = [
+        Path(__file__).parent.parent.parent / '.env',  # From service/migrations -> climate-advisor/.env
+        Path.cwd() / '.env',  # Current working directory
+        Path.cwd().parent / '.env',  # Parent of current directory
+    ]
+    for env_path in possible_paths:
+        if env_path.exists():
+            load_dotenv(env_path)
+            break
+except ImportError:
+    pass
 
 # Import your application's Base and models
 from app.db.base import Base
@@ -42,15 +59,22 @@ target_metadata = Base.metadata
 
 
 def get_database_url():
-    """Get database URL from application settings."""
-    settings = get_settings()
-    if not settings.database_url:
-        raise ValueError("CA_DATABASE_URL environment variable is not set")
+    """Get database URL from application settings or environment variable."""
+    # Try to get from environment variable directly first
+    database_url = os.getenv("CA_DATABASE_URL")
+    
+    if not database_url:
+        # Fall back to settings
+        settings = get_settings()
+        if not settings.database_url:
+            raise ValueError("CA_DATABASE_URL environment variable is not set")
+        database_url = settings.database_url
 
-    # Keep asyncpg URL for async migrations
-    database_url = settings.database_url
+    # Convert to asyncpg URL for async migrations
     if database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql+asyncpg://", 1)
+    elif database_url.startswith("postgresql://"):
+        database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
 
     return database_url
 
@@ -108,9 +132,9 @@ async def run_async_migrations() -> None:
     # Get database URL and create async engine configuration
     database_url = get_database_url()
     
-    configuration = config.get_section(config.config_ini_section)
+    configuration = config.get_section(config.config_ini_section) or {}
     configuration["sqlalchemy.url"] = database_url
-    
+
     connectable = async_engine_from_config(
         configuration,
         prefix="sqlalchemy.",

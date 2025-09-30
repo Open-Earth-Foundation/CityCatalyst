@@ -44,7 +44,7 @@ api:
     base_url: "https://api.openai.com/v1"
     # API key should be set via environment variable OPENAI_API_KEY
     timeout_ms: 30000
-    embedding_model: "text-embedding-3-small"
+    embedding_model: "text-embedding-3-large"
 
   # Request configuration
   requests:

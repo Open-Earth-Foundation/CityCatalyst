@@ -56,14 +56,52 @@ cp ../.env.example ../.env
 # Edit .env with your actual database URL and API keys
 ```
 
-### 2. Database Migration
+### 2. Database Setup
+
+#### Prerequisites
+
+The PostgreSQL container must have the pgvector extension installed. If not already installed:
 
 ```bash
-cd climate-advisor/service/migrations
-python migrate.py upgrade head
+# Install pgvector in the PostgreSQL container
+docker exec ca-postgres apt update
+docker exec ca-postgres apt install -y postgresql-15-pgvector
+
+# Create the extension as superuser
+docker exec ca-postgres psql -U postgres -d climateadvisor -c "CREATE EXTENSION IF NOT EXISTS vector;"
 ```
 
-### 2. Process Your PDFs
+#### Run Vector Database Migration
+
+```bash
+# Navigate to vector_db directory
+cd climate-advisor/vector_db
+
+# Run the migration using the service virtual environment
+../.venv/Scripts/python.exe -m alembic upgrade head
+
+# Verify migration was successful
+../.venv/Scripts/python.exe -m alembic current
+# Should show: 20250126_120000 (head)
+```
+
+#### Verify Setup
+
+```bash
+# Connect to database and verify
+docker exec ca-postgres psql -U climateadvisor -d climateadvisor
+
+# Check pgvector extension
+\dx vector
+
+# Check document_embeddings table
+\d document_embeddings
+
+# Test vector operations
+SELECT '[1,2,3]'::vector <=> '[1,2,4]'::vector as distance;
+```
+
+### 3. Process Your PDFs
 
 ```bash
 python upload_to_db.py --directory files
@@ -97,11 +135,34 @@ python upload_to_db.py --directory files
 
 ### Migrations (`migrations/`)
 
-Database migration files for schema changes:
+Database migration files managed by Alembic:
 
-- Creates pgvector extension and vector tables
-- Sets up indexes for optimal performance
-- Includes vector similarity search indexes
+**Structure:**
+
+```
+migrations/
+├── env.py                          # Alembic environment configuration
+├── versions/                       # Migration version files
+│   └── 20250126_120000_vector_database.py  # Initial vector DB schema
+└── __init__.py
+```
+
+**Current Migration (20250126_120000):**
+
+- Creates pgvector extension (requires superuser)
+- Creates `document_embeddings` table with VECTOR type
+- Sets up indexes for model_name lookups
+- Note: Vector similarity index (IVFFlat) is created after data insertion
+
+**Running Migrations:**
+
+```bash
+# From climate-advisor/vector_db directory
+../.venv/Scripts/python.exe -m alembic upgrade head  # Upgrade to latest
+../.venv/Scripts/python.exe -m alembic downgrade -1  # Rollback one version
+../.venv/Scripts/python.exe -m alembic current       # Show current version
+../.venv/Scripts/python.exe -m alembic history       # Show migration history
+```
 
 ## Usage Examples
 
@@ -149,13 +210,44 @@ async def store_document(session: AsyncSession, doc_data, embedding_results):
     await session.commit()
 ```
 
+### Creating Vector Similarity Index
+
+After inserting embeddings, create the IVFFlat index for fast similarity search:
+
+```sql
+-- Connect to database
+docker exec ca-postgres psql -U climateadvisor -d climateadvisor
+
+-- Create IVFFlat index (only after data is inserted)
+CREATE INDEX IF NOT EXISTS ix_document_embeddings_vector
+ON document_embeddings
+USING ivfflat (embedding_vector vector_cosine_ops)
+WITH (lists = 100);
+```
+
 ### Vector Search
 
 ```python
-from services.vector_search import VectorSearchService
+from sqlalchemy import text
 
-search_service = VectorSearchService()
-results = await search_service.search_similar("climate change impacts", limit=5)
+async def search_similar(session, query_embedding, limit=5):
+    """Search for similar documents using vector similarity."""
+    query = text("""
+        SELECT
+            de.embedding_id,
+            de.model_name,
+            de.embedding_vector <=> :query_vector as distance,
+            de.created_at
+        FROM document_embeddings de
+        ORDER BY de.embedding_vector <=> :query_vector
+        LIMIT :limit
+    """)
+
+    result = await session.execute(
+        query,
+        {"query_vector": query_embedding, "limit": limit}
+    )
+    return result.fetchall()
 ```
 
 ## Configuration
@@ -213,6 +305,64 @@ python -c "from models.document import Document; print('Models loaded successful
 - **Chunk Strategy**: Experiment with different chunk sizes for your use case
 - **Memory Usage**: Large documents may require streaming or batch processing
 
+## Migration Setup Issues & Solutions
+
+### Common issues
+
+**Problem 1: Migration File Location**
+
+- **Symptom**: `alembic upgrade head` ran without errors but created nothing
+- **Root Cause**: Migration file was in `migrations/` instead of `migrations/versions/`
+- **Why**: Alembic requires migrations in a `versions/` subdirectory
+- **Solution**: Created `migrations/versions/` and moved `20250126_120000_vector_database.py` there
+- **Verification**: `alembic history` now shows the migration
+
+**Problem 2: pgvector Extension Not Installed**
+
+- **Symptom**: `ERROR: extension "vector" is not available`
+- **Root Cause**: pgvector extension not installed in PostgreSQL container
+- **Why**: Base `postgres:15` image doesn't include pgvector
+- **Solution**:
+  ```bash
+  docker exec ca-postgres apt install -y postgresql-15-pgvector
+  docker exec ca-postgres psql -U postgres -d climateadvisor -c "CREATE EXTENSION IF NOT EXISTS vector;"
+  ```
+- **Note**: Must use `postgres` superuser, not `climateadvisor` user
+
+**Problem 3: Vector Type Column Creation**
+
+- **Symptom**: `column "embedding_vector" cannot be cast automatically to type vector`
+- **Root Cause**: SQLAlchemy's `sa.dialects.postgresql.VECTOR()` doesn't work in `op.create_table()`
+- **Why**: Alembic can't serialize custom VECTOR type properly
+- **Failed Attempts**:
+  - Using `sa.dialects.postgresql.VECTOR()` → Import/serialization error
+  - Creating as `TEXT` then `ALTER COLUMN` → Type casting error
+- **Solution**: Use raw SQL with `op.execute()`:
+  ```python
+  op.execute("""
+      CREATE TABLE document_embeddings (
+          embedding_vector VECTOR NOT NULL,
+          ...
+      );
+  """)
+  ```
+
+**Problem 4: IVFFlat Index on Empty Table**
+
+- **Symptom**: `ERROR: column does not have dimensions`
+- **Root Cause**: pgvector can't create IVFFlat index without data
+- **Why**: Index needs sample data to determine vector dimensions
+- **Solution**: Removed index from migration, documented manual creation after data insertion
+- **Best Practice**: Create index after inserting first batch of embeddings
+
+### Key Learnings
+
+1. **Alembic Directory Structure Matters**: Migrations must be in `versions/` subdirectory
+2. **pgvector Requires Superuser**: Regular users can't create extensions
+3. **Custom Types Need Raw SQL**: SQLAlchemy can't always serialize custom types
+4. **Vector Indexes Need Data**: Create IVFFlat/HNSW indexes after data insertion
+5. **Environment Loading**: Explicitly load `.env` in migration scripts
+
 ## Troubleshooting
 
 ### Common Issues
@@ -221,6 +371,22 @@ python -c "from models.document import Document; print('Models loaded successful
 2. **Database Connection**: Verify `CA_DATABASE_URL` environment variable
 3. **OpenAI API Limits**: Implement rate limiting and error handling
 4. **Memory Issues**: Reduce chunk sizes for large documents
+5. **pgvector Extension Missing**:
+   ```bash
+   # Install in container
+   docker exec ca-postgres apt install -y postgresql-15-pgvector
+   docker exec ca-postgres psql -U postgres -d climateadvisor -c "CREATE EXTENSION IF NOT EXISTS vector;"
+   ```
+6. **Migration Not Found**: Ensure migration files are in `migrations/versions/` directory
+7. **Alembic Version Mismatch**:
+
+   ```bash
+   # Check current version
+   ../.venv/Scripts/python.exe -m alembic current
+
+   # Force to specific version if needed
+   ../.venv/Scripts/python.exe -m alembic stamp 20250126_120000
+   ```
 
 ### Debug Mode
 
@@ -229,12 +395,86 @@ python -c "from models.document import Document; print('Models loaded successful
 CA_LOG_LEVEL=debug python upload_to_db.py
 ```
 
+### Clean Slate Setup
+
+If you need to completely reset the vector database:
+
+```bash
+# 1. Drop all tables
+docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "DROP TABLE IF EXISTS document_embeddings CASCADE;"
+docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "TRUNCATE TABLE alembic_version;"
+
+# 2. Re-run migration
+cd climate-advisor/vector_db
+../.venv/Scripts/python.exe -m alembic upgrade head
+```
+
+## Production Deployment
+
+### Database Setup Checklist
+
+1. **Install pgvector in PostgreSQL**
+
+   ```bash
+   # For Docker deployments
+   docker exec <postgres-container> apt update
+   docker exec <postgres-container> apt install -y postgresql-15-pgvector
+
+   # For managed databases (e.g., AWS RDS)
+   # pgvector must be enabled by the cloud provider
+   ```
+
+2. **Create Extension (Requires Superuser)**
+
+   ```sql
+   CREATE EXTENSION IF NOT EXISTS vector;
+   ```
+
+3. **Run Migrations**
+
+   ```bash
+   cd climate-advisor/vector_db
+   python -m alembic upgrade head
+   ```
+
+4. **Verify Setup**
+   ```bash
+   python -m alembic current  # Should show: 20250126_120000 (head)
+   ```
+
+### Migration Reproducibility
+
+The setup is **fully reproducible** with these guarantees:
+
+✅ **Idempotent Operations**: All migrations use `IF NOT EXISTS` clauses  
+✅ **Version Tracking**: Alembic tracks applied migrations in `alembic_version` table  
+✅ **Rollback Support**: `alembic downgrade` available if needed  
+✅ **Environment-Agnostic**: Works with local Docker or cloud databases
+
+### CI/CD Integration
+
+```bash
+# In your deployment pipeline
+cd climate-advisor/vector_db
+
+# Check if migration is needed
+python -m alembic current
+
+# Run migrations
+python -m alembic upgrade head
+
+# Verify success
+python -m alembic current | grep "20250126_120000 (head)"
+```
+
 ## Security
 
 - Store API keys securely using environment variables
 - Validate file uploads to prevent malicious content
 - Implement rate limiting for embedding generation
 - Consider document access controls for sensitive content
+- **pgvector Extension**: Requires PostgreSQL superuser to install
+- **Database Access**: Use least-privilege principles for application users
 
 ## Future Enhancements
 

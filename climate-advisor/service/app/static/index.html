@@ -176,8 +176,38 @@
             buffer += decoder.decode(value, { stream: true });
             const events = buffer.split('\n\n');
             buffer = events.pop() || '';
-            for (const e of events) {
-              out.textContent += e + '\n\n';
+            for (const rawEvent of events) {
+              if (!rawEvent.trim()) continue;
+              out.textContent += rawEvent + '\n\n';
+              const lines = rawEvent.split('\n');
+              let eventType = 'message';
+              const dataLines = [];
+              for (const line of lines) {
+                if (line.startsWith('event:')) {
+                  eventType = line.slice(6).trim() || 'message';
+                } else if (line.startsWith('data:')) {
+                  dataLines.push(line.slice(5).trim());
+                }
+              }
+              const dataStr = dataLines.join('\n');
+              let parsed = dataStr;
+              if (dataStr) {
+                try {
+                  parsed = JSON.parse(dataStr);
+                } catch {
+                  parsed = dataStr;
+                }
+              }
+              if (eventType === 'warning' || eventType === 'error') {
+                console.error(`[SSE ${eventType}]`, parsed);
+              } else if (
+                eventType === 'done' &&
+                parsed &&
+                typeof parsed === 'object' &&
+                parsed.history_saved === false
+              ) {
+                console.warn('[SSE warning] Chat history was not saved.', parsed);
+              }
             }
           }
         } catch (e) {

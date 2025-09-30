@@ -32,9 +32,11 @@ def create_db_connection():
     DATABASE_URL = database_url
 
     # Create async engine with asyncpg driver
+    # Use environment variable to control SQL echo logging
+    echo_sql = os.getenv("CA_DATABASE_ECHO", "false").lower() in ("true", "1", "yes")
     engine = create_async_engine(
         DATABASE_URL.replace('postgresql://', 'postgresql+asyncpg://'),
-        echo=True,  # Set to False in production
+        echo=echo_sql,
         future=True,
     )
 
@@ -92,9 +94,12 @@ async def create_vector_tables() -> None:
     """
     Create vector-related tables if they don't exist.
 
-    This is a convenience function to ensure all vector tables are created.
-    In production, you should use proper Alembic migrations.
+    This function is kept for development convenience.
+    For production deployments, use proper Alembic migrations instead.
     """
+    print("Warning: Using create_all() for table creation.")
+    print("For production, consider using: alembic upgrade head")
+
     engine, async_session_factory = create_db_connection()
 
     async with async_session_factory() as session:
@@ -114,25 +119,6 @@ async def create_vector_tables() -> None:
     await engine.dispose()
 
 
-async def run_migrations() -> None:
-    """
-    Run database migrations to set up the complete vector database schema.
-    """
-    engine, async_session_factory = create_db_connection()
-
-    async with async_session_factory() as session:
-        # Run the vector database migration
-        # Import the migration function directly from the migration file
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'migrations'))
-        from vector_database import upgrade
-
-        async with engine.begin() as conn:
-            await conn.run_sync(lambda sync_conn: upgrade(sync_conn))
-
-        await session.commit()
-        print("Database migrations completed successfully!")
-
-    await engine.dispose()
 
 
 async def main() -> None:
@@ -145,11 +131,12 @@ async def main() -> None:
         # Step 1: Initialize pgvector extension
         await init_pgvector()
 
-        # Step 2: Create vector tables using migrations
-        await run_migrations()
+        # Step 2: Create vector tables (development approach)
+        await create_vector_tables()
 
         print("pgvector database setup completed successfully!")
         print("You can now use the vector database functionality.")
+        print("Note: For production, consider using proper Alembic migrations.")
 
     except Exception as e:
         print(f"Error during database setup: {e}")

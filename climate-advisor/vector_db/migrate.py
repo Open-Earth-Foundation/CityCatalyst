@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-Climate Advisor Database Migration Helper
+Climate Advisor Vector Database Migration Helper
 
-This script provides easy commands for managing database migrations,
-similar to the npm scripts used in the main CityCatalyst application.
+This script provides easy commands for managing vector database migrations.
 
 Usage:
     python migrate.py upgrade    # Apply all pending migrations
@@ -11,7 +10,6 @@ Usage:
     python migrate.py current    # Show current migration revision
     python migrate.py history    # Show migration history
     python migrate.py create "description"  # Create new migration
-    python migrate.py auto "description"    # Auto-generate migration from model changes
 """
 
 import sys
@@ -22,9 +20,9 @@ from pathlib import Path
 
 def run_alembic(cmd_args: list[str]) -> int:
     """Run alembic command with proper configuration."""
-    # Ensure we're in the service directory
-    service_dir = Path(__file__).parent
-    os.chdir(service_dir)
+    # Ensure we're in the vector_db directory
+    vector_db_dir = Path(__file__).parent
+    os.chdir(vector_db_dir)
     
     # Build the alembic command
     alembic_cmd = ["python", "-m", "alembic"] + cmd_args
@@ -44,7 +42,7 @@ def run_alembic(cmd_args: list[str]) -> int:
 
 def upgrade():
     """Apply all pending migrations."""
-    print("[*] Applying database migrations...")
+    print("[*] Applying vector database migrations...")
     return run_alembic(["upgrade", "head"])
 
 
@@ -77,17 +75,6 @@ def create_migration(description: str):
     return run_alembic(["revision", "-m", description])
 
 
-def auto_migration(description: str):
-    """Auto-generate migration from model changes."""
-    if not description:
-        print("[!] Error: Migration description is required")
-        print("Usage: python migrate.py auto 'description of changes'")
-        return 1
-    
-    print(f"[+] Auto-generating migration: {description}")
-    return run_alembic(["revision", "--autogenerate", "-m", description])
-
-
 def show_help():
     """Show usage help."""
     print(__doc__)
@@ -112,9 +99,6 @@ def main():
     elif command == "create":
         description = sys.argv[2] if len(sys.argv) > 2 else ""
         return create_migration(description)
-    elif command == "auto":
-        description = sys.argv[2] if len(sys.argv) > 2 else ""
-        return auto_migration(description)
     elif command in ["help", "-h", "--help"]:
         show_help()
         return 0

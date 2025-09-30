@@ -12,5 +12,8 @@
   "chat-suggestion-collect-data": "Comment puis-je collecter des données ?",
   "chat-suggestion-collect-data-message": "Comment puis-je ajouter de nouvelles sources de données à CityCatalyst ?",
   "chat-suggestion-ipcc": "Qu'est-ce que le GIEC ?",
-  "chat-suggestion-ipcc-message": "Qu'est-ce que le Groupe d'experts intergouvernemental sur l'évolution du climat ?"
+  "chat-suggestion-ipcc-message": "Qu'est-ce que le Groupe d'experts intergouvernemental sur l'évolution du climat ?",
+  "cancel": "Annuler",
+  "start-using-clima-ai": "Commencer à utiliser Clima AI",
+  "clima-ai-assistant-disclaimer-title": "Présentation de Clima AI"
 }

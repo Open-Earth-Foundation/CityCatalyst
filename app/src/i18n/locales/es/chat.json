@@ -12,5 +12,8 @@
   "chat-suggestion-collect-data": "¿Cómo puedo recolectar datos?",
   "chat-suggestion-collect-data-message": "¿Cómo puedo agregar nuevas fuentes de datos a CityCatalyst?",
   "chat-suggestion-ipcc": "¿Qué es el IPCC?",
-  "chat-suggestion-ipcc-message": "¿Qué es el Panel Intergubernamental sobre Cambio Climático (IPCC)?"
+  "chat-suggestion-ipcc-message": "¿Qué es el Panel Intergubernamental sobre Cambio Climático (IPCC)?",
+  "cancel": "Cancelar",
+  "start-using-clima-ai": "Comenzar a usar Clima AI",
+  "clima-ai-assistant-disclaimer-title": "Presentando Clima AI"
 }

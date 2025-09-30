@@ -23,13 +23,17 @@ import DialogItem from "./DialogItem";
 
 export default function ClimaAIAssistantDisclaimerDialog({
   t,
+  open,
+  onOpenChange,
+  onAccept,
 }: {
   t: TFunction;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onAccept: () => void;
 }) {
-  const [open, setOpen] = useState(true);
-
   return (
-    <Dialog.Root open={open} onOpenChange={(e) => setOpen(e.open)}>
+    <Dialog.Root open={open} onOpenChange={(e) => onOpenChange(e.open)}>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
@@ -92,11 +96,15 @@ export default function ClimaAIAssistantDisclaimerDialog({
             </Dialog.Body>
             <Dialog.Footer>
               <Dialog.ActionTrigger asChild>
-                <Button variant="ghost" color="content.link">
+                <Button
+                  variant="ghost"
+                  color="content.link"
+                  onClick={() => onOpenChange(false)}
+                >
                   {t("cancel")}
                 </Button>
               </Dialog.ActionTrigger>
-              <Button py="32px" bg="interactive.secondary">
+              <Button py="32px" bg="interactive.secondary" onClick={onAccept}>
                 {t("start-using-clima-ai")}
               </Button>
             </Dialog.Footer>

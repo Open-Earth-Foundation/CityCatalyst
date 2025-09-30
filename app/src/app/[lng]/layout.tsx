@@ -8,6 +8,9 @@ import { Toaster } from "@/components/ui/toaster";
 import ClientRootLayout from "@/components/ClientRootLayout";
 import CookieConsent from "@/components/CookieConsent";
 import { use } from "react";
+import { useTranslation } from "@/i18n/client";
+import { TFunction } from "i18next";
+import ChatPopover from "@/components/ChatBot/chat-popover";
 
 export const metadata: Metadata = {
   title: "CityCatalyst",
@@ -20,9 +23,10 @@ export async function generateStaticParams() {
 
 export default function RootLayout(props: {
   children: React.ReactNode;
-  params: Promise<{ lng: string }>;
+  params: Promise<{ lng: string; inventory: string }>;
 }) {
-  const { lng } = use(props.params);
+  const { lng, inventory } = use(props.params);
+  // const { t } = useTranslation(lng as string, "chat");
 
   return (
     <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
@@ -36,6 +40,7 @@ export default function RootLayout(props: {
           <Toaster />
           <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
           <CookieConsent lng={lng} />
+          <ChatPopover lng={lng} />
         </Providers>
       </body>
     </html>

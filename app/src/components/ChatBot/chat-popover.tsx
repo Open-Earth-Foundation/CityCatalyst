@@ -16,6 +16,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { OpenChangeDetails } from "@zag-js/popover";
+import { api } from "@/services/api";
+import { useSession } from "next-auth/react";
 
 export default function ChatPopover({
   lng,
@@ -23,11 +25,20 @@ export default function ChatPopover({
 }: {
   userName?: string;
   lng?: string;
-  inventoryId: string;
+  inventoryId?: string; // optional value to override the default inventory ID
 }) {
   const { open, onOpen, onClose } = useDisclosure();
   const inputRef = React.useRef(null);
   const { t } = useTranslation(lng as string, "chat");
+
+  const { data: session } = useSession();
+
+  // get user info
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+
+  const effectiveInventoryId =
+    inventoryId ?? userInfo?.defaultInventoryId ?? "";
 
   const onOpenChange = (e: OpenChangeDetails) => {
     if (!e.open) {
@@ -39,6 +50,8 @@ export default function ChatPopover({
 
   // adjust the position of the popover based on the scroll position (i.e when the user scrolls to the bottom of the page)
   const [scrollPosition, setScrollPosition] = useState(0);
+
+  // Get
 
   const handleScroll = () => {
     const scrollPosition = window.scrollY;
@@ -115,7 +128,11 @@ export default function ChatPopover({
             {t("ask-ai-expert")}
           </PopoverHeader>
           <PopoverBody w="full" p={6} borderRadius={4}>
-            <ChatBot inputRef={inputRef} t={t} inventoryId={inventoryId} />
+            <ChatBot
+              inputRef={inputRef}
+              t={t}
+              inventoryId={effectiveInventoryId}
+            />
           </PopoverBody>
           <PopoverCloseTrigger
             color="content.secondary"

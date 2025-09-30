@@ -120,7 +120,8 @@ export const startActionRankingJob = async (
   // If there's already a ranking in progress, return it instead of starting a new one
   if (
     existingRanking &&
-    existingRanking.status === HighImpactActionRankingStatus.PENDING
+    existingRanking.status === HighImpactActionRankingStatus.PENDING &&
+    existingRanking.jobId
   ) {
     logger.info(
       {
@@ -562,8 +563,9 @@ function getSelectedActionsFileName(locode: string, type: ACTION_TYPES) {
 }
 
 const streamToString = async (stream: any) => {
+  // AWS S3 returns a stream-like object with 'on' method in Node.js backend
   const chunks: Uint8Array[] = [];
-
+  
   return new Promise<string>((resolve, reject) => {
     stream.on("data", (chunk: Uint8Array) => chunks.push(chunk));
     stream.on("error", reject);

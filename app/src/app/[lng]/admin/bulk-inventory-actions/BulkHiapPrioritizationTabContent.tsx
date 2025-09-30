@@ -22,7 +22,7 @@ import {
   useMigrateHiapSelectionsMutation,
   useStartBulkHiapPrioritizationMutation,
 } from "@/services/api";
-import { ACTION_TYPES } from "@/util/types";
+import { ACTION_TYPES, HighImpactActionRankingStatus } from "@/util/types";
 
 interface BulkHiapPrioritizationTabContentProps {
   t: TFunction;
@@ -56,7 +56,7 @@ const BulkHiapPrioritizationTabContent: FC<
       cityId: string;
       cityName: string;
       inventoryId: string;
-      status: "started" | "failed";
+      status: HighImpactActionRankingStatus;
       taskId?: string;
       error?: string;
     }>;
@@ -140,7 +140,15 @@ const BulkHiapPrioritizationTabContent: FC<
       }).unwrap();
       setResults(result);
 
-      if (result.failedCount > 0) {
+      if (result.startedCount === 0) {
+        // No inventories found for the specified year - this is not an error
+        showToast(
+          "no-inventories-found",
+          "no-inventories-for-year",
+          "info",
+          5000,
+        );
+      } else if (result.failedCount > 0) {
         showToast(
           "bulk-prioritization-partial-success",
           "some-cities-failed",
@@ -378,7 +386,7 @@ const BulkHiapPrioritizationTabContent: FC<
             <Button
               type="submit"
               alignSelf="flex-start"
-              loading={isBulkProcessing}
+              loading={isBulkProcessing || isLoadingJobs}
               p="32px"
               onClick={handleSubmit(onSubmit)}
               disabled={!selectedProjectId || isLoadingJobs}

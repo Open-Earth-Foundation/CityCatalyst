@@ -215,6 +215,8 @@
   "all-cities-started": "All cities started successfully",
   "bulk-prioritization-partial-success": "Bulk prioritization partially successful",
   "some-cities-failed": "Some cities failed to start",
+  "no-inventories-found": "No inventories found",
+  "no-inventories-for-year": "No inventories found for the selected year in this project",
   "hiap-prioritization-jobs": "HIA Prioritization Jobs",
   "loading-jobs": "Loading jobs",
   "no-hiap-jobs-found": "No HIA prioritization jobs found",

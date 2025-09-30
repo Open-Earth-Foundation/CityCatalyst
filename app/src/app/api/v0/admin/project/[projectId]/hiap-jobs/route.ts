@@ -6,6 +6,24 @@ import { logger } from "@/services/logger";
 import { z } from "zod";
 import { ACTION_TYPES } from "@/util/types";
 
+// Type for HighImpactActionRanking with included associations
+type HighImpactActionRankingWithIncludes = {
+  id: string;
+  jobId: string;
+  status: string;
+  type: string;
+  created: Date;
+  inventory?: {
+    inventoryId: string;
+    year: number;
+    city?: {
+      cityId: string;
+      name: string;
+      locode: string;
+    };
+  };
+};
+
 const hiapJobsQuerySchema = z.object({
   projectId: z.string().uuid(),
   year: z
@@ -99,11 +117,17 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
   });
 
   if (!validationResult.success) {
-    const errors = validationResult.error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join(', ');
+    const errors = validationResult.error.errors
+      .map((err) => `${err.path.join(".")}: ${err.message}`)
+      .join(", ");
     throw new createHttpError.BadRequest(`Validation failed: ${errors}`);
   }
 
-  const { projectId: validatedProjectId, year: validatedYear, actionType: validatedActionType } = validationResult.data;
+  const {
+    projectId: validatedProjectId,
+    year: validatedYear,
+    actionType: validatedActionType,
+  } = validationResult.data;
 
   // Verify project exists
   const project = await db.models.Project.findByPk(validatedProjectId);
@@ -139,8 +163,9 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
 
   // Transform the data to match the expected response format
   const hiapJobs = rankings.map((ranking) => {
-    const city = ranking.inventory?.city;
-    const inventory = ranking.inventory;
+    const rankingWithIncludes = ranking as HighImpactActionRankingWithIncludes;
+    const city = rankingWithIncludes.inventory?.city;
+    const inventory = rankingWithIncludes.inventory;
 
     if (!city || !inventory) {
       return null;
@@ -158,8 +183,10 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
     };
   });
 
-  logger.info(`HIAP Jobs API called for project ${validatedProjectId}, year: ${validatedYear}, actionType: ${validatedActionType}, found ${hiapJobs.length} jobs`);
-  
+  logger.info(
+    `HIAP Jobs API called for project ${validatedProjectId}, year: ${validatedYear}, actionType: ${validatedActionType}, found ${hiapJobs.length} jobs`,
+  );
+
   return NextResponse.json({
     data: hiapJobs,
   });

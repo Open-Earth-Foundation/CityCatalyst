@@ -118,9 +118,14 @@ export const POST = apiHandler(async (req: NextRequest) => {
   });
 
   if (!citiesWithInventories || citiesWithInventories.length === 0) {
-    throw new createHttpError.NotFound(
-      `No cities with inventories for year ${year} found in this project`,
-    );
+    // Return empty result instead of throwing an error - this is a valid state
+    return NextResponse.json({
+      data: {
+        startedCount: 0,
+        failedCount: 0,
+        results: [],
+      },
+    });
   }
 
   const results: BulkHiapPrioritizationResult[] = [];
@@ -168,7 +173,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
         cityName,
         inventoryId: inventory.inventoryId,
         status: HighImpactActionRankingStatus.PENDING,
-        taskId: ranking.jobId!,
+        taskId: ranking.jobId,
       });
       startedCount++;
     } catch (error) {
@@ -180,7 +185,8 @@ export const POST = apiHandler(async (req: NextRequest) => {
         cityId: city.cityId,
         cityName,
         inventoryId: inventory.inventoryId,
-        status: "failed",
+        status: HighImpactActionRankingStatus.FAILURE,
+        taskId: "", // No taskId available for failed jobs - no DB record created
         error: error instanceof Error ? error.message : String(error),
       });
       failedCount++;

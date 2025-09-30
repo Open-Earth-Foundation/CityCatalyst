@@ -219,14 +219,13 @@ export function NavigationBar({
               <Link href={dashboardPath}>
                 <Heading color="base.light" size="md" opacity={0.75} ml={6}>
                   {t("dashboard")}
-                </Heading>
-              </Link>
-              <Link
-                target="_blank"
-                rel="help noopener noreferrer"
-                href="https://citycatalyst.openearth.org/learning-hub"
-              >
-                <Heading
+              </Heading>
+            </Link>
+            <Link
+              rel="help noopener"
+              href="https://citycatalyst.openearth.org/learning-hub"
+            >
+              <Heading
                   color="base.light"
                   size="md"
                   opacity={0.75}

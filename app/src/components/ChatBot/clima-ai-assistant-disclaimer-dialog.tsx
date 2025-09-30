@@ -60,33 +60,30 @@ export default function ClimaAIAssistantDisclaimerDialog({
                 {/* Dialog component items */}
                 <DialogItem
                   icon={<AskAiIconOutline />}
-                  title="Ask AI Anything"
-                  description="To unlock the full potential of Clima AI, make your questions clear and specific"
+                  title={t("ask-ai-anything-title")}
+                  description={t("ask-ai-anything-description")}
                 />
                 <DialogItem
                   icon={<VerifyKeyInformationIcon />}
-                  title="Verify key information"
-                  description="Clima AI can help you with your GHG emissions inventory and provide support, but always double-check critical information."
+                  title={t("verify-key-information-title")}
+                  description={t("verify-key-information-description")}
                 />
                 <DialogItem
                   icon={<AboutPrivacyIcon />}
-                  title="About your privacy"
+                  title={t("about-privacy-title")}
                   description={
                     <>
-                      By using Clima AI, you agree to the anonymous storage and
-                      analysis of your conversation data to improve the AI's
-                      accuracy and efficiency.{" "}
+                      {t("about-privacy-description")}{" "}
                       <Text as="span" fontWeight="bold">
-                        No personal data is published or used beyond model
-                        training.
+                        {t("about-privacy-bold")}
                       </Text>{" "}
-                      For privacy concerns, please{" "}
+                      {t("about-privacy-contact")}{" "}
                       <Link
                         color="content.link"
                         textDecoration="underline"
                         fontWeight="bold"
                       >
-                        contact support
+                        {t("contact-support")}
                       </Link>
                       .
                     </>

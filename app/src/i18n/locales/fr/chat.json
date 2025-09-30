@@ -15,5 +15,14 @@
   "chat-suggestion-ipcc-message": "Qu'est-ce que le Groupe d'experts intergouvernemental sur l'évolution du climat ?",
   "cancel": "Annuler",
   "start-using-clima-ai": "Commencer à utiliser Clima AI",
-  "clima-ai-assistant-disclaimer-title": "Présentation de Clima AI"
+  "clima-ai-assistant-disclaimer-title": "Présentation de Clima AI",
+  "ask-ai-anything-title": "Demandez n'importe quoi à l'IA",
+  "ask-ai-anything-description": "Pour débloquer tout le potentiel de Clima AI, posez des questions claires et spécifiques",
+  "verify-key-information-title": "Vérifiez les informations clés",
+  "verify-key-information-description": "Clima AI peut vous aider avec votre inventaire d'émissions GES et fournir un support, mais vérifiez toujours les informations critiques.",
+  "about-privacy-title": "À propos de votre confidentialité",
+  "about-privacy-description": "En utilisant Clima AI, vous acceptez le stockage anonyme et l'analyse de vos données de conversation pour améliorer la précision et l'efficacité de l'IA.",
+  "about-privacy-bold": "Aucune donnée personnelle n'est publiée ou utilisée au-delà de l'entraînement du modèle.",
+  "about-privacy-contact": "Pour les préoccupations de confidentialité, veuillez",
+  "contact-support": "contacter le support"
 }

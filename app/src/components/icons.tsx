@@ -1826,22 +1826,22 @@ export const AskAiIconOutline = () => {
       fill="none"
     >
       <path
-        fill-rule="evenodd"
+        fillRule="evenodd"
         clip-rule="evenodd"
         d="M13.5 1C13.4892 3.8272 14.868 5.44 18 5.5C15.0924 5.4892 13.6476 7.0492 13.5 10C13.4748 7.216 12.228 5.5 9 5.5C11.8884 5.4604 13.4892 4.066 13.5 1Z"
         stroke="#2351DC"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         fill-rule="evenodd"
-        clip-rule="evenodd"
+        clipRule="evenodd"
         d="M7.00057 9C6.9858 13.0827 8.81789 15.3985 13 15.5006C9.12115 15.4846 7.19707 17.7376 7.00057 22C6.96309 17.9788 5.30364 15.4945 1 15.5006C4.85045 15.4416 6.9858 13.4285 7.00057 9Z"
         stroke="#2351DC"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

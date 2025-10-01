@@ -72,7 +72,8 @@ export default function OnboardingSetup(props: {
     setValue,
     watch,
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors },
+    setError,
   } = useForm<Inputs>();
 
   const params = useSearchParams();
@@ -174,6 +175,10 @@ export default function OnboardingSetup(props: {
       selectedProject?.length > 0 ? selectedProject[0] : undefined;
 
     try {
+      if (!data.locode || !data.name) {
+        throw new Error("City name and locode are required");
+      }
+
       city = await addCity({
         name: data.name,
         locode: data.locode!,
@@ -184,6 +189,14 @@ export default function OnboardingSetup(props: {
         countryLocode: country?.actor_id ?? undefined,
         projectId: EnterpriseMode ? projectId : undefined,
       }).unwrap();
+
+      if (!cityPopulation || !cityPopulationYear) {
+        throw new Error("City population and year are required");
+      } else if (!regionPopulation || !regionPopulationYear) {
+        throw new Error("Region population and year are required");
+      } else if (!countryPopulation || !countryPopulationYear) {
+        throw new Error("Country population and year are required");
+      }
 
       // Log population data before sending
       const populationData = {
@@ -219,16 +232,16 @@ export default function OnboardingSetup(props: {
         inventoryType: inventoryGoal,
         globalWarmingPotentialType: globalWarmingPotential,
       }).unwrap();
-      
+
       // Track inventory creation
       trackEvent("inventory_created", {
         city_name: data.name,
         inventory_year: data.year,
         inventory_type: inventoryGoal,
         gwp_type: globalWarmingPotential,
-        from_onboarding: true
+        from_onboarding: true,
       });
-      
+
       await setUserInfo({
         defaultInventoryId: inventory.inventoryId,
         defaultCityId: city?.cityId!,

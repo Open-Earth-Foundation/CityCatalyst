@@ -55,12 +55,32 @@
  *                         oneOf:
  *                           - type: string
  *                           - type: object
- *                             additionalProperties: true
+ *                             properties:
+ *                               cityId:
+ *                                 type: string
+ *                                 format: uuid
+ *                               name:
+ *                                 type: string
+ *                               status:
+ *                                 type: string
+ *                                 enum: ['success', 'error', 'warning']
+ *                               message:
+ *                                 type: string
  *                 results:
  *                   type: array
  *                   items:
  *                     type: object
  *                     properties:
+ *                       locode:
+ *                         type: string
+ *                       result:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                           format: uuid
+ *                       error:
+ *                         type: string
+ *                         nullable: true
  *                       locode:
  *                         type: string
  *                       result:
@@ -77,8 +97,9 @@
  *                   results:
  *                     - locode: "US-BBB"
  *                       result:
- *                         - "a1111111-1111-1111-1111-111111111111"
- *                         - "b2222222-2222-2222-2222-222222222222"
+ *                         - "c9d8a3c2-1234-4c1a-9de1-6f3f25a2b111"
+ *                         - "a7b5c9d1-e8f2-4a6b-9c3d-8e1f2a5b6c7d"
+ *                       error: null
  *       400:
  *         description: Invalid request or users not found for invitation.
  *       404:

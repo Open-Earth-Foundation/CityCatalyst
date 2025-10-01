@@ -27,68 +27,6 @@
  *         description: Invalid inventory ID
  *       404:
  *         description: Inventory not found
- *   delete:
- *     summary: Delete an inventory by ID
- *     description: Deletes the specified inventory. Only users with ORG_ADMIN permission can delete inventories.
- *     tags:
- *       - Inventory
- *     parameters:
- *       - in: path
- *         name: inventory
- *         required: true
- *         schema:
- *           type: string
- *         description: Inventory UUID
- *     responses:
- *       200:
- *         description: Inventory deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   $ref: '#/components/schemas/Inventory'
- *                 deleted:
- *                   type: boolean
- *       403:
- *         description: Forbidden - insufficient permissions
- *       404:
- *         description: Inventory not found
- *   patch:
- *     summary: Update inventory details
- *     description: Updates the specified inventory. Only users with edit permission can update inventories.
- *     tags:
- *       - Inventory
- *     parameters:
- *       - in: path
- *         name: inventory
- *         required: true
- *         schema:
- *           type: string
- *         description: Inventory UUID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UpsertInventoryRequest'
- *     responses:
- *       200:
- *         description: Inventory updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   $ref: '#/components/schemas/Inventory'
- *       400:
- *         description: Invalid request body
- *       403:
- *         description: Forbidden - insufficient permissions
- *       404:
- *         description: Inventory not found
  */
 import { NextResponse } from "next/server";
 
@@ -145,13 +83,44 @@ export const GET = apiHandler(async (req, { session, params }) => {
   return NextResponse.json({ data: inventory });
 });
 
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}:
+ *   delete:
+ *     summary: Delete an inventory by ID
+ *     description: Deletes the specified inventory. Only users with ORG_ADMIN permission can delete inventories.
+ *     tags:
+ *       - Inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Inventory UUID
+ *     responses:
+ *       200:
+ *         description: Inventory deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Inventory'
+ *                 deleted:
+ *                   type: boolean
+ *       403:
+ *         description: Forbidden - insufficient permissions
+ *       404:
+ *         description: Inventory not found
+ */
 export const DELETE = apiHandler(async (_req, { params, session }) => {
   // Use PermissionService for delete permission (ORG_ADMIN only)
   const { resource } = await PermissionService.canDeleteInventory(
     session,
-    params.inventory
+    params.inventory,
   );
-
 
   const inventory = resource as Inventory;
 
@@ -159,13 +128,51 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
   return NextResponse.json({ data: inventory, deleted: true });
 });
 
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}:
+ *   patch:
+ *     summary: Update inventory details
+ *     description: Updates the specified inventory. Only users with edit permission can update inventories.
+ *     tags:
+ *       - Inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Inventory UUID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpsertInventoryRequest'
+ *     responses:
+ *       200:
+ *         description: Inventory updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Inventory'
+ *       400:
+ *         description: Invalid request body
+ *       403:
+ *         description: Forbidden - insufficient permissions
+ *       404:
+ *         description: Inventory not found
+ */
 export const PATCH = apiHandler(async (req, context) => {
   const { params, session } = context;
   const body = upsertInventoryRequest.parse(await req.json());
   // Use PermissionService for edit permission
-  const { resource} = await PermissionService.canEditInventory(
+  const { resource } = await PermissionService.canEditInventory(
     session,
-    params.inventory
+    params.inventory,
   );
 
   const inventory = resource as Inventory;

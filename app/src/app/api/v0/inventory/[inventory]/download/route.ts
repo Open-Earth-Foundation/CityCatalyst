@@ -114,7 +114,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
       break;
   }
 
-  return new NextResponse(body, { headers });
+  return new NextResponse(body ? new Uint8Array(body) : undefined, { headers });
 });
 
 function converKgToTons(amount: bigint | null | undefined): string {

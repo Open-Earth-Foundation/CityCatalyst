@@ -189,8 +189,8 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
           w="100%"
           variant={"outline"}
           value={wasteCompositionType}
-          onValueChange={(e: CustomValueDetail) =>
-            setValue("activity.wasteCompositionType", e.value)
+          onValueChange={(e) =>
+            setValue("activity.wasteCompositionType", e.value || "")
           }
         >
           <HStack

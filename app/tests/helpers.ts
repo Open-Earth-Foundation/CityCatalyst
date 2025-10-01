@@ -57,7 +57,8 @@ export async function getFileDataFromStream(filePath: string): Promise<Blob> {
 
   await finished(fileStream);
 
-  const blob = new Blob(chunks, { type: "application/octet-stream" });
+  const blobParts = chunks.map((chunk) => new Uint8Array(chunk));
+  const blob = new Blob(blobParts, { type: "application/octet-stream" });
   return blob;
 }
 

@@ -23,7 +23,18 @@
   "no-actions-found-title": "Ihre wichtigsten Klimamaßnahmen werden verarbeitet",
   "no-actions-found-description": "Dieser Prozess kann bis zu 15 Minuten dauern. Sie erhalten eine E-Mail und sehen sie hier, wenn er abgeschlossen ist",
   "generate-climate-actions-widget-description": "Sie können Umsetzungspläne für jede der ausgewählten Maßnahmen erstellen. Durchsuchen Sie gerne die vollständige Liste der Maßnahmen unten und wählen Sie aus, welche Sie hier anzeigen möchten.",
+  "action-plan": "Aktionsplan",
   "download-action-plan": "herunterladen",
+  "additional-info": "Zusätzliche Informationen",
+  "action-type-label": "Aktionstyp",
+  "actions-of": {
+    "mitigation": "Minderungsmaßnahmen",
+    "adaptation": "Anpassungsmaßnahmen"
+  },
+  "action-type": {
+    "mitigation": "Minderung",
+    "adaptation": "Anpassung"
+  },
   "top-pick-action-title": "top-auswahl",
   "integrate-renewables-into-municipal-water-systems": "erneuerbare Energien in kommunale Wassersysteme integrieren",
   "reduction-potential": "Reduktionspotenzial",
@@ -119,5 +130,8 @@
   "plan-generation-started-description": "Ihr Aktionsplan wird generiert. Sie erhalten eine E-Mail-Benachrichtigung, wenn er fertig ist.",
   "plan-generation-failed": "Generierung Fehlgeschlagen",
   "plan-generation-failed-description": "Fehler beim Starten der Plan-Generierung. Bitte versuchen Sie es erneut.",
-  "exit-selection": "Auswahl verlassen"
+  "exit-selection": "Auswahl verlassen",
+  "download-csv": "CSV",
+  "export-as-csv": "Als CSV exportieren",
+  "unknown": "Unbekannt"
 }

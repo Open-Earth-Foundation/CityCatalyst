@@ -16,11 +16,19 @@
  *               items:
  *                 type: object
  *                 properties:
- *                   themeId: { type: string, format: uuid }
- *                   themeKey: { type: string }
- *                   primaryColor: { type: string }
- *                   created: { type: string, format: date-time }
- *                   lastUpdated: { type: string, format: date-time }
+ *                   themeId:
+ *                     type: string
+ *                     format: uuid
+ *                   themeKey:
+ *                     type: string
+ *                   primaryColor:
+ *                     type: string
+ *                   created:
+ *                     type: string
+ *                     format: date-time
+ *                   lastUpdated:
+ *                     type: string
+ *                     format: date-time
  */
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";

@@ -17,6 +17,50 @@
  *         description: Invitations returned.
  *       404:
  *         description: Invitations not found.
+ */
+
+import { OrganizationInvite } from "@/models/OrganizationInvite";
+import { Organization } from "@/models/Organization";
+import { json, Op } from "sequelize";
+import {
+  CreateOrganizationInviteRequest,
+  createOrganizationInviteRequest,
+} from "@/util/validation";
+import { apiHandler } from "@/util/api";
+import { NextResponse } from "next/server";
+import createHttpError from "http-errors";
+import UserService from "@/backend/UserService";
+import { randomUUID } from "node:crypto";
+import jwt from "jsonwebtoken";
+import { InviteStatus, OrganizationRole } from "@/util/types";
+import InviteToOrganizationTemplate from "@/lib/emails/InviteToOrganizationTemplate";
+import { User } from "@/models/User";
+import EmailService from "@/backend/EmailService";
+import { logger } from "@/services/logger";
+import { OrganizationAdmin } from "@/models/OrganizationAdmin";
+import {
+  CustomInviteError,
+  InviteErrorCodes,
+} from "@/lib/custom-errors/custom-invite-error";
+
+export const GET = apiHandler(async (_req, { params, session }) => {
+  const { organization: organizationId } = params;
+  await UserService.validateIsAdminOrOrgAdmin(session, organizationId);
+
+  const invitations = await OrganizationInvite.findAll({
+    where: { organizationId },
+  });
+
+  if (!invitations || invitations.length === 0) {
+    throw new createHttpError.NotFound("invitations-not-found");
+  }
+
+  return NextResponse.json(invitations);
+});
+
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}/invitations:
  *   post:
  *     tags:
  *       - Organization Invitations
@@ -56,42 +100,6 @@
  *       500:
  *         description: Failed to send some invitations.
  */
-import { OrganizationInvite } from "@/models/OrganizationInvite";
-import { Organization } from "@/models/Organization";
-import { Op } from "sequelize";
-import {
-  CreateOrganizationInviteRequest,
-  createOrganizationInviteRequest,
-} from "@/util/validation";
-import { apiHandler } from "@/util/api";
-import { NextResponse } from "next/server";
-import createHttpError from "http-errors";
-import UserService from "@/backend/UserService";
-import { randomUUID } from "node:crypto";
-import jwt from "jsonwebtoken";
-import { InviteStatus, OrganizationRole } from "@/util/types";
-import InviteToOrganizationTemplate from "@/lib/emails/InviteToOrganizationTemplate";
-import { User } from "@/models/User";
-import EmailService from "@/backend/EmailService";
-import { logger } from "@/services/logger";
-import { OrganizationAdmin } from "@/models/OrganizationAdmin";
-import { CustomInviteError, InviteErrorCodes } from "@/lib/custom-errors/custom-invite-error";
-
-export const GET = apiHandler(async (_req, { params, session }) => {
-  const { organization: organizationId } = params;
-  await UserService.validateIsAdminOrOrgAdmin(session, organizationId);
-
-  const invitations = await OrganizationInvite.findAll({
-    where: { organizationId },
-  });
-
-  if (!invitations || invitations.length === 0) {
-    throw new createHttpError.NotFound("invitations-not-found");
-  }
-
-  return NextResponse.json(invitations);
-});
-
 export const POST = apiHandler(async (req, { params, session }) => {
   const { organization: organizationId } = params;
   await UserService.validateIsAdminOrOrgAdmin(session, organizationId);
@@ -121,7 +129,9 @@ export const POST = apiHandler(async (req, { params, session }) => {
   if (existingOrgAdmins.length > 0) {
     throw new CustomInviteError({
       errorKey: InviteErrorCodes.USER_ALREADY_ORG_ADMIN,
-      emails: existingOrgAdmins.map((admin) => admin.user.email).filter((email): email is string => !!email),
+      emails: existingOrgAdmins
+        .map((admin) => admin.user.email)
+        .filter((email): email is string => !!email),
       message: "user-already-org-admin",
     });
   }
@@ -169,18 +179,16 @@ export const POST = apiHandler(async (req, { params, session }) => {
         if (!invite) {
           failedInvites.push({ email });
           logger.error(
-            `error in organization/${organizationId}/invitations/route POST: `,
-            "error creating invite",
             { email, organizationId },
+            `error in organization/${organizationId}/invitations/route POST`
           );
         }
         return invite;
       } catch (e) {
         failedInvites.push({ email });
         logger.error(
-          `error in organization/${organizationId}/invitations/route POST: `,
-          email,
-          e,
+          { err: e, email, organizationId },
+          `error in organization/${organizationId}/invitations/route POST`
         );
       }
     }),

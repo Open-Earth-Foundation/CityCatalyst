@@ -61,7 +61,7 @@ export class ModuleDashboardService {
         year: inventory.year,
       };
     } catch (error) {
-      logger.error("Error fetching GHGI dashboard data:", { error, cityId });
+      logger.error({ error, cityId }, "Error fetching GHGI dashboard data");
       if (error instanceof createHttpError.HttpError) {
         throw error;
       }
@@ -123,7 +123,7 @@ export class ModuleDashboardService {
         inventoryId: inventory.inventoryId,
       };
     } catch (error) {
-      logger.error("Error fetching HIAP dashboard data:", { error, cityId });
+      logger.error({ error, cityId }, "Error fetching HIAP dashboard data");
       return {
         error: `Failed to fetch HIAP data: ${(error as Error).message}`,
       };
@@ -175,7 +175,7 @@ export class ModuleDashboardService {
         inventoryId: inventory.inventoryId,
       };
     } catch (error) {
-      logger.error("Error fetching CCRA dashboard data:", { error, cityId });
+      logger.error({ error, cityId }, "Error fetching CCRA dashboard data");
       if (error instanceof createHttpError.HttpError) {
         throw error;
       }

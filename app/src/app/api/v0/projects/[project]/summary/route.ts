@@ -21,10 +21,14 @@
  *             schema:
  *               type: object
  *               properties:
- *                 totalCities: { type: integer }
- *                 totalEmissions: { type: number }
- *                 totalPopulation: { type: number }
- *                 totalDataSources: { type: integer }
+ *                 totalCities:
+ *                   type: integer
+ *                 totalEmissions:
+ *                   type: number
+ *                 totalPopulation:
+ *                   type: number
+ *                 totalDataSources:
+ *                   type: integer
  *       404:
  *         description: Project not found.
  */

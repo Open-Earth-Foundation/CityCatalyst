@@ -343,7 +343,7 @@ export default function GHGIInventoryDetailsStep({
                   value={field.value}
                   onValueChange={(e) => {
                     field.onChange(e);
-                    setSelectedGlobalWarmingPotentialValue(e.value);
+                    setSelectedGlobalWarmingPotentialValue(e.value || "");
                   }}
                 >
                   <HStack gap="16px">
@@ -370,4 +370,4 @@ export default function GHGIInventoryDetailsStep({
       </Box>
     </Box>
   );
-} 
+}

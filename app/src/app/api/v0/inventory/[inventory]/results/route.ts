@@ -5,7 +5,7 @@
  *     tags:
  *       - Inventory Results
  *     summary: Get emissions totals by sector and top emitters for an inventory.
- *     description: Computes the inventory’s total emissions and top sub-sector emitters. Requires a signed‑in user with access to the inventory. Response is wrapped in { data: { totalEmissions, topEmissions } }.
+ *     description: Computes the inventory's total emissions and top sub-sector emitters. Requires a signed‑in user with access to the inventory. Response is wrapped in '{' data: { totalEmissions, topEmissions } '}'.
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -27,12 +27,41 @@
  *                     totalEmissions:
  *                       type: object
  *                       properties:
- *                         bySector: { type: array, items: { type: object, additionalProperties: true } }
- *                         total: { type: number }
+ *                         bySector:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               sectorId:
+ *                                 type: string
+ *                                 format: uuid
+ *                               sectorName:
+ *                                 type: string
+ *                               emissions:
+ *                                 type: number
+ *                               percentage:
+ *                                 type: number
+ *                         total:
+ *                           type: number
  *                     topEmissions:
  *                       type: object
  *                       properties:
- *                         bySubSector: { type: array, items: { type: object, additionalProperties: true } }
+ *                         bySubSector:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               subsectorId:
+ *                                 type: string
+ *                                 format: uuid
+ *                               subsectorName:
+ *                                 type: string
+ *                               sectorName:
+ *                                 type: string
+ *                               emissions:
+ *                                 type: number
+ *                               percentage:
+ *                                 type: number
  */
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";

@@ -29,13 +29,58 @@
  *               properties:
  *                 data:
  *                   type: array
- *                   items: { type: object, additionalProperties: true }
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       datasourceId:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                       data:
+ *                         type: object
+ *                         additionalProperties: true
+ *                         description: Fetched data from the data source
+ *                       error:
+ *                         type: string
+ *                         nullable: true
+ *                         description: Error message if data fetch failed
  *                 removedSources:
  *                   type: array
- *                   items: { type: object, additionalProperties: true }
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       datasourceId:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                       data:
+ *                         type: object
+ *                         additionalProperties: true
+ *                         description: Fetched data from the data source
+ *                       error:
+ *                         type: string
+ *                         nullable: true
+ *                         description: Error message if data fetch failed
  *                 failedSources:
  *                   type: array
- *                   items: { type: object, additionalProperties: true }
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       datasourceId:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                       data:
+ *                         type: object
+ *                         additionalProperties: true
+ *                         description: Fetched data from the data source
+ *                       error:
+ *                         type: string
+ *                         nullable: true
+ *                         description: Error message if data fetch failed
  *       404:
  *         description: Inventory or sector not found.
  */

@@ -25,7 +25,7 @@ import { getSession } from "next-auth/react";
 import { AppSession } from "@/lib/auth";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
-logger.info("Using HIAP API at", HIAP_API_URL);
+logger.info(`Using HIAP API at ${HIAP_API_URL}`);
 
 const getClient = (() => {
   let client: S3Client | null = null;
@@ -39,12 +39,12 @@ const getClient = (() => {
     const bucketId = process.env.AWS_S3_BUCKET_ID;
 
     if (!region || !accessKeyId || !secretAccessKey || !bucketId) {
-      logger.error("Missing AWS credentials:", {
+      logger.error({
         region: !!region,
         accessKeyId: !!accessKeyId,
         secretAccessKey: !!secretAccessKey,
         bucketId: !!bucketId,
-      });
+      }, 'Missing AWS credentials');
       throw new Error("Missing AWS credentials");
     }
 
@@ -127,11 +127,11 @@ const startActionRankingJob = async (
     existingRanking &&
     existingRanking.status === HighImpactActionRankingStatus.PENDING
   ) {
-    logger.info("Ranking already in progress, returning existing ranking", {
+    logger.info({
       rankingId: existingRanking.id,
       inventoryId,
       locode,
-    });
+    }, "Ranking already in progress, returning existing ranking");
     return existingRanking;
   }
 
@@ -264,7 +264,7 @@ async function createRankedActionRecord(
     });
     return true;
   } catch (err) {
-    logger.error("Failed to save ranked action", { rankedAction, err });
+    logger.error({ rankedAction, err }, "Failed to save ranked action");
     throw err;
   }
 }
@@ -322,7 +322,7 @@ export const checkActionRankingJob = async (
     ) {
       await new Promise((resolve) => setTimeout(resolve, pollInterval));
       const statusData = await checkPrioritizationProgress(jobId);
-      logger.info("Polled job status:", jobStatus);
+      logger.info({ jobStatus }, "Polled job status");
       switch (statusData.status) {
         case "completed":
           jobStatus = HighImpactActionRankingStatus.SUCCESS;

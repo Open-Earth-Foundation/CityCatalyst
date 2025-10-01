@@ -58,9 +58,8 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
   });
   if (!invite) {
     logger.error(
-      "error in invites/[cityInviteId]/route DELETE: ",
-      "CityInvite not found",
-      cityInviteId,
+      { cityInviteId },
+      "error in invites/[cityInviteId]/route DELETE: CityInvite not found"
     );
     throw createHttpError.Unauthorized("Unauthorized");
   }
@@ -105,9 +104,8 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
   if (!invite) {
     logger.error(
-      "error in invites/[cityInviteId]/route DELETE: ",
-      "CityInvite not found",
-      cityInviteId,
+      { cityInviteId },
+      "error in invites/[cityInviteId]/route DELETE: CityInvite not found"
     );
     throw createHttpError.Unauthorized("Unauthorized");
   }

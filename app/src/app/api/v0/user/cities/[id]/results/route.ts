@@ -20,7 +20,31 @@
  *             schema:
  *               type: object
  *               properties:
- *                 data: { type: object, additionalProperties: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                     inventoryId:
+ *                       type: string
+ *                       format: uuid
+ *                     year:
+ *                       type: number
+ *                     totalEmissions:
+ *                       type: number
+ *                     sectorResults:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           sectorId:
+ *                             type: string
+ *                             format: uuid
+ *                           sectorName:
+ *                             type: string
+ *                           emissions:
+ *                             type: number
  *       404:
  *         description: City not found.
  */

@@ -25,13 +25,15 @@ export class ModuleAccessService {
     const result = hasAccess && !isExpired;
 
     logger.info(
-      `Module access check completed for project ${projectId} and module ${moduleId}`,
       {
         hasAccess,
         isExpired,
         expiresOn,
         result,
+        projectId,
+        moduleId,
       },
+      `Module access check completed`,
     );
 
     return result;

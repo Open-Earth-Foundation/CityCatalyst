@@ -347,7 +347,7 @@ export default function SetInventoryDetailsStep({
                   value={field.value}
                   onValueChange={(e) => {
                     field.onChange(e);
-                    setSelectedGlobalWarmingPotentialValue(e.value);
+                    setSelectedGlobalWarmingPotentialValue(e.value || "");
                   }}
                 >
                   <HStack gap="16px">

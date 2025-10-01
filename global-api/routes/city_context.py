@@ -8,7 +8,7 @@ def db_city_context(locode: str):
     with SessionLocal() as session:
         query = text(
             """
-            SELECT a.locode, cp.city_name, cp.region_code,
+            SELECT cp.locode, cp.city_name, cp.region_code,
             a.region_name as region_name,
             MAX(CASE WHEN attribute_type = 'population' THEN attribute_value END)::numeric AS population,
             MAX(CASE WHEN attribute_type = 'population density' THEN attribute_value END)::numeric AS population_density,
@@ -18,11 +18,11 @@ def db_city_context(locode: str):
             MAX(CASE WHEN attribute_type = 'income' THEN attribute_value END) AS low_income,
             MAX(CASE WHEN attribute_type = 'inadequate water access' THEN attribute_value END) AS inadequate_water_access,
             MAX(CASE WHEN attribute_type = 'inadequate sanitation' THEN attribute_value END) AS inadequate_sanitation
-            FROM modelled.city_attribute a
-            INNER JOIN modelled.city_polygon cp
+            FROM modelled.city_polygon cp 
+            LEFT JOIN modelled.city_attribute a
             ON a.locode = cp.locode
-            WHERE a.locode = :locode
-            GROUP BY a.locode, cp.city_name, cp.region_code, a.region_name
+            WHERE cp.locode = :locode
+            GROUP BY cp.locode, cp.city_name, cp.region_code, a.region_name
             """
         )
 

@@ -16,24 +16,33 @@
  *             properties:
  *               name:
  *                 type: string
+ *                 description: Full name of the user
+ *                 minLength: 4
  *               email:
  *                 type: string
  *                 format: email
+ *                 description: Valid email address for account creation and notifications
  *               password:
  *                 type: string
+ *                 description: Must be at least 4 characters with at least one lowercase letter, one uppercase letter, and one number
+ *                 minLength: 4
  *               confirmPassword:
  *                 type: string
+ *                 description: Must match the password field exactly
  *               acceptTerms:
  *                 type: boolean
+ *                 description: Must be true to accept the terms and conditions
  *               inventory:
  *                 type: string
  *                 format: uuid
- *                 nullable: true
+ *                 description: Optional inventory ID to associate the user with a city's inventory
  *               preferredLanguage:
  *                 type: string
+ *                 enum: ['en', 'es', 'pt', 'de', 'fr']
+ *                 description: User's preferred language for the application
  *     responses:
  *       200:
- *         description: Minimal user object wrapped in data.
+ *         description: Minimal user object wrapped in user.
  *         content:
  *           application/json:
  *             schema:
@@ -45,15 +54,20 @@
  *                     userId:
  *                       type: string
  *                       format: uuid
+ *                       description: Unique identifier for the user
  *                     name:
  *                       type: string
+ *                       description: Full name of the user
  *                     email:
  *                       type: string
  *                       format: email
+ *                       description: User's email address
  *                     role:
  *                       type: string
+ *                       description: User's role in the system
  *                     preferredLanguage:
  *                       type: string
+ *                       description: User's preferred language setting
  *             examples:
  *               example:
  *                 value:
@@ -65,6 +79,10 @@
  *                     preferredLanguage: "en"
  *       400:
  *         description: Email could not be sent or invalid input.
+ *       422:
+ *         description: Validation error - invalid or missing required fields.
+ *       500:
+ *         description: Internal server error during user creation or email processing.
  */
 import { sendEmail } from "@/lib/email";
 import ConfirmRegistrationTemplate from "@/lib/emails/confirmRegistrationTemplate";

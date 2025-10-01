@@ -21,6 +21,46 @@
  *     responses:
  *       200:
  *         description: Inventory values returned.
+ */
+import { apiHandler } from "@/util/api";
+import { db } from "@/models";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import { NextResponse } from "next/server";
+import { patchInventoryValue } from "@/util/validation";
+import createHttpError from "http-errors";
+import { randomUUID } from "node:crypto";
+import { Inventory } from "@/models/Inventory";
+
+export const GET = apiHandler(async (_req, { params, session }) => {
+  const { resource } = await PermissionService.canEditInventory(
+    session,
+    params.inventory,
+  );
+
+  const inventory = resource as Inventory;
+
+  const inventoryValues = await db.models.InventoryValue.findAll({
+    where: {
+      subSectorId: params.subsector,
+      inventoryId: inventory.inventoryId,
+    },
+    include: [
+      { model: db.models.DataSource, as: "dataSource" },
+      {
+        model: db.models.SubCategory,
+        as: "subCategory",
+      },
+      { model: db.models.Sector, as: "sector" },
+      { model: db.models.SubSector, as: "subSector" },
+    ],
+  });
+
+  return NextResponse.json({ data: inventoryValues });
+});
+
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/value/subsector/{subsector}:
  *   patch:
  *     tags:
  *       - Inventory Values
@@ -53,72 +93,14 @@
  *         description: Inventory value updated or created.
  *       400:
  *         description: Invalid request.
- *   delete:
- *     tags:
- *       - Inventory Values
- *     summary: Delete inventory value for a subsector
- *     parameters:
- *       - in: path
- *         name: inventory
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *       - in: path
- *         name: subsector
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     responses:
- *       200:
- *         description: Inventory value deleted.
- *       404:
- *         description: Inventory value not found.
  */
-import { apiHandler } from "@/util/api";
-import { db } from "@/models";
-import { PermissionService } from "@/backend/permissions/PermissionService";
-import { NextResponse } from "next/server";
-import { patchInventoryValue } from "@/util/validation";
-import createHttpError from "http-errors";
-import { randomUUID } from "node:crypto";
-import { Inventory } from "@/models/Inventory";
-
-export const GET = apiHandler(async (_req, { params, session }) => {
-  const { resource} = await PermissionService.canEditInventory(
-    session,
-    params.inventory
-  );
-
-  const inventory = resource as Inventory;
-
-  const inventoryValues = await db.models.InventoryValue.findAll({
-    where: {
-      subSectorId: params.subsector,
-      inventoryId: inventory.inventoryId,
-    },
-    include: [
-      { model: db.models.DataSource, as: "dataSource" },
-      {
-        model: db.models.SubCategory,
-        as: "subCategory",
-      },
-      { model: db.models.Sector, as: "sector" },
-      { model: db.models.SubSector, as: "subSector" },
-    ],
-  });
-
-  return NextResponse.json({ data: inventoryValues });
-});
-
 // update if it exists, create if it doesn't
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const body = patchInventoryValue.parse(await req.json());
 
   const { resource } = await PermissionService.canEditInventory(
     session,
-    params.inventory
+    params.inventory,
   );
 
   const inventory = resource as Inventory;
@@ -185,10 +167,37 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   return NextResponse.json({ data: inventoryValue });
 });
 
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/value/subsector/{subsector}:
+ *   delete:
+ *     tags:
+ *       - Inventory Values
+ *     summary: Delete inventory value for a subsector
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: subsector
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Inventory value deleted.
+ *       404:
+ *         description: Inventory value not found.
+ */
+
 export const DELETE = apiHandler(async (_req, { params, session }) => {
   const { resource } = await PermissionService.canEditInventory(
     session,
-    params.inventory
+    params.inventory,
   );
 
   const inventory = resource as Inventory;

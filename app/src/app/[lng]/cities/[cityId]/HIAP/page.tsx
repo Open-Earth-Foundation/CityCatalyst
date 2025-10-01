@@ -63,8 +63,6 @@ export default function HIAPPage(props: {
     skip: !cityId,
   });
 
-  console.log("cityData", cityData);
-
   // Show loading state while fetching
   if (isInventoryLoading) {
     return (

@@ -43,12 +43,20 @@ import { HighImpactActionRankingStatus } from "@/util/types";
 import ClimateActionsEmptyState from "./ClimateActionsEmptyState";
 import ActionPlanSection from "./ActionPlanSection";
 import { DownloadIcon } from "@/components/icons";
-import { FaCaretDown } from "react-icons/fa";
 import { MdCheckBox } from "react-icons/md";
 import { TitleLarge } from "@/components/Texts/Title";
 import { BodyLarge } from "@/components/Texts/Body";
 import { IoMdCheckboxOutline } from "react-icons/io";
 import { TopPickIcon } from "@/components/icons";
+import {
+  MenuContent,
+  MenuItem,
+  MenuRoot,
+  MenuTrigger,
+} from "@/components/ui/menu";
+import { MdArrowDropDown } from "react-icons/md";
+import { ButtonMedium } from "@/components/Texts/Button";
+import { ButtonSmall } from "@/components/Texts/Button";
 
 const BarVisualization = ({
   value,
@@ -258,7 +266,7 @@ export function HiapTab({
           size="sm"
           onClick={() => {
             setSelectedAction(row.original);
-            logger.info("Open drawer for action:", row.original);
+            logger.info(row.original, "Open drawer for action");
           }}
         >
           <Icon as={RiExpandDiagonalFill} color="interactive.control" />
@@ -287,9 +295,9 @@ export function HiapTab({
       }).unwrap();
 
       setRowSelection(newRowSelection);
-      logger.info("Updated selection:", selectedActionIds);
+      logger.info(selectedActionIds, "Updated selection");
     } catch (error) {
-      logger.error("Failed to update selection:", error);
+      logger.error(error, "Failed to update selection");
     }
   };
 
@@ -323,12 +331,53 @@ export function HiapTab({
       setSelectedActions([]);
       logger.info("Cleared all action selections");
     } catch (error) {
-      logger.error("Failed to clear selection:", error);
+      logger.error(error, "Failed to clear selection");
     }
   };
 
   const toggleSelectionMode = () => {
     setIsSelectionMode(!isSelectionMode);
+  };
+
+  const handleDownloadPDF = async () => {
+    const toExport = selectedActions.length > 0 ? selectedActions : actions;
+    if (!toExport || toExport.length === 0) return;
+
+    const [{ pdf }, { default: PrintableActionPlanPDF }] = await Promise.all([
+      import("@react-pdf/renderer"),
+      import("@/components/HIAP/PrintableActionPlanPDF"),
+    ]);
+
+    const blob = await pdf(
+      <PrintableActionPlanPDF
+        actions={toExport}
+        t={t}
+        cityName={cityData?.name || cityData?.locode}
+      />,
+    ).toBlob();
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    const typePart =
+      type === ACTION_TYPES.Adaptation ? "Adaptation" : "Mitigation";
+    link.download = `${(cityData?.name || cityData?.locode || "actions").replace(/\s+/g, "_")}_${typePart}_actions.pdf`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
+  const handleDownloadCSV = () => {
+    const toExport = selectedActions.length > 0 ? selectedActions : actions;
+    if (!toExport || toExport.length === 0) return;
+
+    (async () => {
+      const { downloadActionPlanCsv } = await import("@/util/csv");
+      downloadActionPlanCsv({
+        actions: toExport,
+        t,
+        type,
+        cityName: cityData?.name || cityData?.locode,
+      });
+    })();
   };
 
   if (isLoading) {
@@ -407,11 +456,27 @@ export function HiapTab({
                   : t("pick-actions")}
               </Text>
             </Button>
-            <Button variant="ghost" color="interactive.control" p="4px">
-              <Icon as={DownloadIcon} />
-              <Text>{t("download-action-plan")}</Text>
-              <Icon as={FaCaretDown} color="interactive.control" />
-            </Button>
+            <MenuRoot>
+              <MenuTrigger asChild>
+                <Button variant="ghost" color="interactive.control" p="4px">
+                  <Icon as={DownloadIcon} />
+                  <Text>{t("download-action-plan")}</Text>
+                  <Icon as={MdArrowDropDown} color="interactive.control" />
+                </Button>
+              </MenuTrigger>
+              <MenuContent minW="180px" zIndex={2000}>
+                <MenuItem onClick={handleDownloadPDF} value="pdf">
+                  <ButtonMedium color="interactive.control">
+                    {t("export-as-pdf")}
+                  </ButtonMedium>
+                </MenuItem>
+                <MenuItem onClick={handleDownloadCSV} value="csv">
+                  <ButtonMedium color="interactive.control">
+                    {t("export-as-csv")}
+                  </ButtonMedium>
+                </MenuItem>
+              </MenuContent>
+            </MenuRoot>
           </Box>
         </Box>
         <BodyLarge

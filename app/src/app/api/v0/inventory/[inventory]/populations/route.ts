@@ -5,7 +5,7 @@
  *     tags:
  *       - Inventory Populations
  *     summary: Get population values used by the inventory’s city and year.
- *     description: Returns city/region/country population values aligned to the inventory’s year (nearest within thresholds). Requires a signed‑in user with access to the inventory. Response is wrapped in { data } with population fields.
+ *     description: Returns city/region/country population values aligned to the inventory’s year (nearest within thresholds). Requires a signed‑in user with access to the inventory. Response is wrapped in '{' data '}' with population fields.
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -24,13 +24,21 @@
  *                 data:
  *                   type: object
  *                   properties:
- *                     cityId: { type: string, format: uuid }
- *                     population: { type: number }
- *                     year: { type: number }
- *                     countryPopulation: { type: number }
- *                     countryPopulationYear: { type: number }
- *                     regionPopulation: { type: number }
- *                     regionPopulationYear: { type: number }
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                     population:
+ *                       type: number
+ *                     year:
+ *                       type: number
+ *                     countryPopulation:
+ *                       type: number
+ *                     countryPopulationYear:
+ *                       type: number
+ *                     regionPopulation:
+ *                       type: number
+ *                     regionPopulationYear:
+ *                       type: number
  *       404:
  *         description: Inventory not found.
  */

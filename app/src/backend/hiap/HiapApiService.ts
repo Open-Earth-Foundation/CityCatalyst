@@ -17,7 +17,7 @@ export async function startPrioritization(
   contextData: any,
   type: ACTION_TYPES,
 ): Promise<{ taskId: string }> {
-  logger.info("Sending request to prioritizer", JSON.stringify(contextData));
+  logger.info(contextData, "Sending request to prioritizer");
 
   const body = {
     cityData: contextData,
@@ -180,16 +180,16 @@ export const startActionPlanJob = async ({
         },
       );
 
-      logger.info("Check progress response status:", statusResponse.status);
+      logger.info(statusResponse, "Check progress response status:");
 
       if (!statusResponse.ok) {
         const errorText = await statusResponse.text();
-        logger.error("Check progress error:", errorText);
+        logger.error({errorText}, "Check progress error:");
         throw new Error(`Failed to check progress: ${errorText}`);
       }
 
       const statusData = await statusResponse.json();
-      logger.info("Check progress response:", statusData);
+      logger.info(statusData, "Check progress response:");
 
       status = statusData.status;
 
@@ -223,11 +223,11 @@ export const startActionPlanJob = async ({
       },
     );
 
-    logger.info("Get plan response status:", planResponse.status);
+    logger.info(planResponse, "Get plan response status:");
 
     if (!planResponse.ok) {
       const errorText = await planResponse.text();
-      logger.error("Get plan error:", errorText);
+      logger.error({errorText}, "Get plan error:");
       throw new Error(`Failed to retrieve plan: ${errorText}`);
     }
 

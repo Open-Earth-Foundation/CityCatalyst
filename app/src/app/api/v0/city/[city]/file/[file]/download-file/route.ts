@@ -48,5 +48,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
     "Content-Disposition": `attachment; filename="${userFile.fileName}"`,
   };
 
-  return new NextResponse(body, { headers });
+  const responseBody = body ? new Uint8Array(body) : undefined;
+
+  return new NextResponse(responseBody, { headers });
 });

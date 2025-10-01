@@ -219,14 +219,13 @@ export function NavigationBar({
               <Link href={dashboardPath}>
                 <Heading color="base.light" size="md" opacity={0.75} ml={6}>
                   {t("dashboard")}
-                </Heading>
-              </Link>
-              <Link
-                target="_blank"
-                rel="help noopener noreferrer"
-                href="https://citycatalyst.openearth.org/learning-hub"
-              >
-                <Heading
+              </Heading>
+            </Link>
+            <Link
+              rel="help noopener"
+              href="https://citycatalyst.openearth.org/learning-hub"
+            >
+              <Heading
                   color="base.light"
                   size="md"
                   opacity={0.75}
@@ -503,8 +502,8 @@ export function NavigationBar({
             </Box>
           </Box>
           {/* JN Drawer */}
-          {/* Should be shown if JN is enabled and url has /cities*/}
-          {fullPath.includes("/cities") && (
+          {/* Should be shown if JN is enabled */}
+          {hasFeatureFlag(FeatureFlags.JN_ENABLED) && (
             <JNDrawer
               lng={lng}
               currentInventoryId={currentInventoryId as string}
@@ -515,7 +514,7 @@ export function NavigationBar({
           )}
           {/* TODO: [ON-4452] Remove project drawer and replace with JN drawer after JN is live */}
           {/* Project Drawer */}
-          {!fullPath.includes("/cities") && (
+          {!hasFeatureFlag(FeatureFlags.JN_ENABLED) && (
             <ProjectDrawer
               lng={lng}
               currentInventoryId={currentInventoryId as string}

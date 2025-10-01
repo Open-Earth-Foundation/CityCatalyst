@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - City Modules
- *     summary: Get HIAP dashboard data for a city inventory
+ *     summary: Get Heatwave Impact Assessment Plan (HIAP) dashboard data for a city inventory
  *     parameters:
  *       - in: path
  *         name: city
@@ -23,14 +23,37 @@
  *         required: false
  *         schema:
  *           type: string
+ *         description: Language code for localized content (default: 'en')
  *       - in: query
  *         name: ignoreExisting
  *         required: false
  *         schema:
  *           type: boolean
+ *         description: Whether to ignore existing HIAP data and recalculate
  *     responses:
  *       200:
  *         description: HIAP dashboard data returned.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   description: HIAP dashboard data
+ *                 metadata:
+ *                   type: object
+ *                   properties:
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                     inventoryId:
+ *                       type: string
+ *                       format: uuid
+ *                     year:
+ *                       type: integer
+ *                     moduleId:
+ *                       type: string
  *       400:
  *         description: Inventory does not belong to city.
  *       404:

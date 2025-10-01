@@ -14,25 +14,51 @@
  *             schema:
  *               type: object
  *               properties:
- *                 issuer: { type: string }
- *                 authorization_endpoint: { type: string }
- *                 token_endpoint: { type: string }
+ *                 issuer:
+ *                   type: string
+ *                 authorization_endpoint:
+ *                   type: string
+ *                 token_endpoint:
+ *                   type: string
  *                 scopes_supported:
  *                   type: array
- *                   items: { type: string }
+ *                   items:
+ *                     type: string
+ *                     description: OAuth scope identifiers supported by the authorization server
+ *                     example: "read"
+ *                   description: List of OAuth 2.0 scopes supported by the authorization server
  *                 response_types_supported:
  *                   type: array
- *                   items: { type: string }
+ *                   items:
+ *                     type: string
+ *                     description: OAuth response type identifier
+ *                     example: "code"
+ *                   description: OAuth 2.0 response types supported by the authorization server
  *                 grant_types_supported:
  *                   type: array
- *                   items: { type: string }
- *                 service_documentation: { type: string }
+ *                   items:
+ *                     type: string
+ *                     description: OAuth grant type identifier
+ *                     example: "authorization_code"
+ *                   description: OAuth 2.0 grant types supported by the authorization server
+ *                 service_documentation:
+ *                   type: string
+ *                   description: URL to the authorization server's documentation
+ *                   example: "https://github.com/Open-Earth-Foundation/CityCatalyst/wiki/CityCatalyst-Backend-API"
  *                 ui_locales_supported:
  *                   type: array
- *                   items: { type: string }
+ *                   items:
+ *                     type: string
+ *                     description: Language tag for supported UI locales
+ *                     example: "en"
+ *                   description: Languages supported for the user interface
  *                 code_challenge_methods_supported:
  *                   type: array
- *                   items: { type: string }
+ *                   items:
+ *                     type: string
+ *                     description: PKCE code challenge method
+ *                     example: "S256"
+ *                   description: PKCE code challenge methods supported by the authorization server
  *             examples:
  *               example:
  *                 value:
@@ -97,7 +123,7 @@ export const GET = apiHandler(async (_req) => {
     );
   }
 
-  const origin = process.env.HOST || (new URL(_req.url)).origin;
+  const origin = process.env.HOST || new URL(_req.url).origin;
 
   if (!origin) {
     throw createHttpError.InternalServerError(

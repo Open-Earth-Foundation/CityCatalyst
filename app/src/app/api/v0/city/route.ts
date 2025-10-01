@@ -1,37 +1,6 @@
 /**
  * @swagger
  * /api/v0/city:
- *   get:
- *     tags:
- *       - City
- *     summary: List cities that the current user is a member of.
- *     description: Returns all cities linked to the authenticated user via CityUser membership. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in { data: City[] }.
- *     responses:
- *       200:
- *         description: Cities wrapped in data.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       cityId: { type: string, format: uuid }
- *                       name: { type: string }
- *                       locode: { type: string }
- *                     additionalProperties: true
- *             examples:
- *               example:
- *                 value:
- *                   data:
- *                     - cityId: "11111111-1111-1111-1111-111111111111"
- *                       name: "Sample City"
- *                       locode: "US-XXX"
- *       401:
- *         description: Unauthorized.
  *   post:
  *     tags:
  *       - City
@@ -47,30 +16,39 @@
  *             properties:
  *               locode:
  *                 type: string
+ *                 description: Location code for the city (e.g., "US-NYC")
  *               name:
  *                 type: string
+ *                 description: Display name of the city
  *               shape:
  *                 type: object
  *                 nullable: true
+ *                 description: GeoJSON geometry object defining the city boundaries
  *               country:
  *                 type: string
  *                 nullable: true
+ *                 description: Country name where the city is located
  *               region:
  *                 type: string
  *                 nullable: true
+ *                 description: Region or state name where the city is located
  *               countryLocode:
  *                 type: string
  *                 nullable: true
+ *                 description: Country location code
  *               regionLocode:
  *                 type: string
  *                 nullable: true
+ *                 description: Region location code
  *               area:
  *                 type: integer
  *                 nullable: true
+ *                 description: City area in square kilometers
  *               projectId:
  *                 type: string
  *                 format: uuid
  *                 nullable: true
+ *                 description: Project ID to associate the city with (defaults to default project)
  *     responses:
  *       200:
  *         description: City wrapped in data.
@@ -82,17 +60,63 @@
  *                 data:
  *                   type: object
  *                   properties:
- *                     cityId: { type: string, format: uuid }
- *                     name: { type: string }
- *                     locode: { type: string }
- *                   additionalProperties: true
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                     locode:
+ *                       type: string
+ *                       nullable: true
+ *                     name:
+ *                       type: string
+ *                       nullable: true
+ *                     shape:
+ *                       type: object
+ *                       nullable: true
+ *                     country:
+ *                       type: string
+ *                       nullable: true
+ *                     region:
+ *                       type: string
+ *                       nullable: true
+ *                     countryLocode:
+ *                       type: string
+ *                       nullable: true
+ *                     regionLocode:
+ *                       type: string
+ *                       nullable: true
+ *                     area:
+ *                       type: integer
+ *                       nullable: true
+ *                     created:
+ *                       type: string
+ *                       format: date-time
+ *                       nullable: true
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
+ *                       nullable: true
+ *                     projectId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
  *             examples:
  *               example:
  *                 value:
  *                   data:
- *                     cityId: "22222222-2222-2222-2222-222222222222"
- *                     name: "New City"
+ *                     cityId: "a7b5c9d1-e8f2-4a6b-9c3d-8e1f2a5b6c7d"
  *                     locode: "US-YYY"
+ *                     name: "New City"
+ *                     shape: null
+ *                     country: null
+ *                     region: null
+ *                     countryLocode: null
+ *                     regionLocode: null
+ *                     area: null
+ *                     created: "2025-01-01T00:00:00.000Z"
+ *                     lastUpdated: "2025-01-01T00:00:00.000Z"
+ *                     projectId: null
+ *       400:
+ *         description: City count limit reached for the project.
  *       401:
  *         description: Unauthorized.
  *       404:
@@ -230,6 +254,87 @@ export const POST = apiHandler(async (req, { session }) => {
   return NextResponse.json({ data: city });
 });
 
+/**
+ * @swagger
+ * /api/v0/city:
+ *   get:
+ *     tags:
+ *       - City
+ *     summary: List cities that the current user is a member of.
+ *     description: Returns all cities linked to the authenticated user via CityUser membership. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in '{' data: City[] '}'.
+ *     responses:
+ *       200:
+ *         description: Cities wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       cityId:
+ *                         type: string
+ *                         format: uuid
+ *                       locode:
+ *                         type: string
+ *                         nullable: true
+ *                       name:
+ *                         type: string
+ *                         nullable: true
+ *                       shape:
+ *                         type: object
+ *                         nullable: true
+ *                       country:
+ *                         type: string
+ *                         nullable: true
+ *                       region:
+ *                         type: string
+ *                         nullable: true
+ *                       countryLocode:
+ *                         type: string
+ *                         nullable: true
+ *                       regionLocode:
+ *                         type: string
+ *                         nullable: true
+ *                       area:
+ *                         type: integer
+ *                         nullable: true
+ *                       created:
+ *                         type: string
+ *                         format: date-time
+ *                         nullable: true
+ *                       lastUpdated:
+ *                         type: string
+ *                         format: date-time
+ *                         nullable: true
+ *                       projectId:
+ *                         type: string
+ *                         format: uuid
+ *                         nullable: true
+ *             examples:
+ *               example:
+ *                 value:
+ *                   data:
+ *                     - cityId: "c9d8a3c2-1234-4c1a-9de1-6f3f25a2b111"
+ *                       name: "Sample City"
+ *                       locode: "US-XXX"
+ *                       shape: null
+ *                       country: null
+ *                       region: null
+ *                       countryLocode: null
+ *                       regionLocode: null
+ *                       area: null
+ *                       created: null
+ *                       lastUpdated: null
+ *                       projectId: null
+ *       401:
+ *         description: Unauthorized - user not signed in.
+ *       404:
+ *         description: No cities found for the authenticated user.
+ */
 export const GET = apiHandler(async (_req, { session }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Unauthorized");

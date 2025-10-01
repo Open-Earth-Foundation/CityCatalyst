@@ -105,6 +105,47 @@ export const GET = apiHandler(async (_req: Request, context) => {
   });
 });
 
+/**
+ * @swagger
+ * /api/v0/projects/{project}/modules/{module}/access:
+ *   post:
+ *     tags:
+ *       - Project Modules
+ *     summary: Enable module access for a project (admin only).
+ *     description: Grants a project access to a specific module. Requires admin or organization admin privileges. Returns the created project-module relationship.
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: module
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Module access enabled successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   description: Created project-module relationship
+ *       400:
+ *         description: ModuleId is missing.
+ *       403:
+ *         description: Access denied - user lacks admin privileges.
+ *       404:
+ *         description: Project not found.
+ *       500:
+ *         description: Failed to enable module access.
+ */
 // enable admin to grant project access to the module
 export const POST = apiHandler(async (_req: Request, context) => {
   const { project: projectId, module: moduleId } = paramsSchema.parse(
@@ -147,6 +188,47 @@ export const POST = apiHandler(async (_req: Request, context) => {
   });
 });
 
+/**
+ * @swagger
+ * /api/v0/projects/{project}/modules/{module}/access:
+ *   delete:
+ *     tags:
+ *       - Project Modules
+ *     summary: Disable module access for a project (admin only).
+ *     description: Revokes a project's access to a specific module. Requires admin or organization admin privileges. Returns the updated project-module relationship.
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: module
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Module access disabled successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   description: Updated project-module relationship
+ *       400:
+ *         description: ModuleId is missing.
+ *       403:
+ *         description: Access denied - user lacks admin privileges.
+ *       404:
+ *         description: Project not found.
+ *       500:
+ *         description: Failed to disable module access.
+ */
 // disable admin to revoke project access to the module
 export const DELETE = apiHandler(async (_req: Request, context) => {
   const { project: projectId, module: moduleId } = paramsSchema.parse(

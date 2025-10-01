@@ -5,7 +5,7 @@
  *     tags:
  *       - City Inventory
  *     summary: List inventories for a city the user can access.
- *     description: Returns all inventories for the given city after access is validated. Requires a signed‑in user with access to the city. Response is wrapped in { data: Inventory[] }.
+ *     description: Returns all inventories for the given city after access is validated. Requires a signed‑in user with access to the city. Response is wrapped in '{' data: Inventory[] '}'.
  *     parameters:
  *       - in: path
  *         name: city
@@ -26,60 +26,24 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       inventoryId: { type: string, format: uuid }
- *                       year: { type: integer }
- *                     additionalProperties: true
- *   post:
- *     tags:
- *       - City Inventory
- *     summary: Create an inventory for a city (with permissions).
- *     description: Creates a new inventory for the city and year if one does not already exist. Requires a signed‑in user with ORG/PROJECT admin rights to the city’s project. Returns the inventory and a didExistAlready flag in { data, didExistAlready }.
- *     parameters:
- *       - in: path
- *         name: city
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [inventoryName, year, inventoryType, globalWarmingPotentialType]
- *             properties:
- *               inventoryName:
- *                 type: string
- *               year:
- *                 type: integer
- *               inventoryType:
- *                 type: string
- *               globalWarmingPotentialType:
- *                 type: string
- *     responses:
- *       200:
- *         description: Inventory and existence flag.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: object
- *                   properties:
- *                     inventoryId: { type: string, format: uuid }
- *                     year: { type: integer }
- *                   additionalProperties: true
- *                 didExistAlready:
- *                   type: boolean
- *             examples:
- *               example:
- *                 value:
- *                   data: { inventoryId: "...", year: 2023 }
- *                   didExistAlready: false
- *       404:
- *         description: City not found.
+ *                       inventoryId:
+ *                         type: string
+ *                         format: uuid
+ *                       year:
+ *                         type: integer
+ *                     properties:
+ *                       inventoryId:
+ *                         type: string
+ *                         format: uuid
+ *                       year:
+ *                         type: number
+ *                       cityId:
+ *                         type: string
+ *                         format: uuid
+ *                       projectId:
+ *                         type: string
+ *                         format: uuid
+ *                         nullable: true
  */
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
@@ -125,6 +89,47 @@ export const POST = apiHandler(
   },
 );
 
+/**
+ * @swagger
+ * /api/v0/city/{city}/inventory:
+ *   get:
+ *     tags:
+ *       - City Inventory
+ *     summary: List inventories for a city the user can access.
+ *     description: Returns all inventories for the given city after access is validated. Requires a signed‑in user with access to the city. Response is wrapped in '{' data: Inventory[] '}'.
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Inventories wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       inventoryId:
+ *                         type: string
+ *                         format: uuid
+ *                       year:
+ *                         type: number
+ *                       cityId:
+ *                         type: string
+ *                         format: uuid
+ *                       projectId:
+ *                         type: string
+ *                         format: uuid
+ *                         nullable: true
+ */
 export const GET = apiHandler(
   async (_req: NextRequest, { session, params }) => {
     // Check permission to access city

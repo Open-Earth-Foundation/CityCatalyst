@@ -5,7 +5,7 @@
  *     tags:
  *       - User
  *     summary: List the user’s cities with inventory year metadata.
- *     description: Returns the cities the current user belongs to along with inventory IDs, years, and last updated timestamps. Requires a signed‑in session. Response is wrapped in { data: [{ city, years[] }] }.
+ *     description: Returns the cities the current user belongs to along with inventory IDs, years, and last updated timestamps. Requires a signed‑in session. Response is wrapped in '{' data: [{ city, years[] }] '}'.
  *     responses:
  *       200:
  *         description: Cities with inventory years wrapped in data.
@@ -19,15 +19,33 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       city: { type: object, additionalProperties: true }
+ *                       city:
+ *                         type: object
+ *                         properties:
+ *                           cityId:
+ *                             type: string
+ *                             format: uuid
+ *                           name:
+ *                             type: string
+ *                           region:
+ *                             type: string
+ *                           country:
+ *                             type: string
+ *                           locode:
+ *                             type: string
  *                       years:
  *                         type: array
  *                         items:
  *                           type: object
  *                           properties:
- *                             year: { type: integer }
- *                             inventoryId: { type: string, format: uuid }
- *                             lastUpdate: { type: string, format: date-time }
+ *                             year:
+ *                               type: integer
+ *                             inventoryId:
+ *                               type: string
+ *                               format: uuid
+ *                             lastUpdate:
+ *                               type: string
+ *                               format: date-time
  *       401:
  *         description: Unauthorized.
  *       404:

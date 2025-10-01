@@ -125,6 +125,9 @@ export default function OnboardingSetup(props: {
   const [ocCityData, setOcCityData] = useState<OCCityAttributes>();
   const [isConfirming, setConfirming] = useState(false);
   const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
+  const [populationErrorMessage, setPopulationErrorMessage] = useState<
+    string | undefined
+  >(undefined);
 
   const makeErrorToast = (title: string, description?: string) => {
     const { showErrorToast } = UseErrorToast({ description, title });
@@ -176,6 +179,9 @@ export default function OnboardingSetup(props: {
 
     try {
       if (!data.locode || !data.name) {
+        // TODO this error will appear on the last step, and users need to navigate back
+        // make sure validation is applied on each step, either using react-hook-form or manually
+        setPopulationErrorMessage(t("city-name-locode-required"));
         throw new Error("City name and locode are required");
       }
 
@@ -191,12 +197,18 @@ export default function OnboardingSetup(props: {
       }).unwrap();
 
       if (!cityPopulation || !cityPopulationYear) {
-        throw new Error("City population and year are required");
+        setPopulationErrorMessage(t("city-population-required"));
+        return;
       } else if (!regionPopulation || !regionPopulationYear) {
-        throw new Error("Region population and year are required");
+        setPopulationErrorMessage(t("region-population-required"));
+        return;
       } else if (!countryPopulation || !countryPopulationYear) {
-        throw new Error("Country population and year are required");
+        setPopulationErrorMessage(t("country-population-required"));
+        return;
       }
+
+      // clear error if all is well
+      setPopulationErrorMessage(undefined);
 
       // Log population data before sending
       const populationData = {
@@ -363,6 +375,7 @@ export default function OnboardingSetup(props: {
               setValue={setValue}
               watch={watch}
               ocCityData={ocCityData}
+              populationErrorMessage={populationErrorMessage}
             />
           )}
           {activeStep === 3 && (

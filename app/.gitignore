@@ -41,3 +41,6 @@ next-env.d.ts
 /playwright/.cache/
 
 playwright/.auth
+
+# generated files
+/public/openapi-spec.json

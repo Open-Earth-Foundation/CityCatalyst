@@ -136,7 +136,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           ...gasValue,
           gas: gasValue.gas as string,
           factor: parseFloat(data[`${gasValue.gas}EmissionFactor`]),
-          unit: gasValue.emissionsFactor.units as string,
+          unit: data[`${gasValue.gas}EmissionFactorUnit`] as string,
         };
         gasArray.push(gasObject);
       });
@@ -159,7 +159,11 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   }
 
   const onSubmit: SubmitHandler<Inputs> = async ({ activity }) => {
+    console.log(activity);
     const gasValues = extractGasesAndUnits(activity);
+
+    console.log(gasValues);
+    return null; // temporary disable submit
 
     // extract field values
     const values: Record<string, any> = {};

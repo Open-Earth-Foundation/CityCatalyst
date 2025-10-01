@@ -316,6 +316,7 @@ const ActivityModalBody = ({
           control={control}
           errors={errors}
           isDirectMeasure={isDirectMeasure}
+          setValue={setValue}
         />
         
         <EmissionFactorsSection

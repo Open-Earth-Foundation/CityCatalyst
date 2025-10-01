@@ -64,7 +64,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
     const { cityId, language, actionId } =
       getActionPlansSchema.parse(queryParams);
 
-    const actionPlans = await ActionPlanService.getActionPlansByCityId(
+    const actionPlans = await ActionPlanService.fetchOrTranslateActionPlan(
       cityId,
       language,
       actionId,

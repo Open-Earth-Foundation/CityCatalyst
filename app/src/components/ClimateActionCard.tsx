@@ -319,6 +319,7 @@ const GeneratePlanDialog = ({
         planToDisplay,
         actionTitle,
         cityName,
+        t,
       );
     } catch (error) {
       console.error("Failed to export PDF:", error);
@@ -446,8 +447,7 @@ const GeneratePlanDialog = ({
                       color="content.primary"
                       pb="12px"
                     >
-                      {planToDisplay.metadata?.actionName || action.name} -{" "}
-                      {t("implementation-plan")}
+                      {action.name} - {t("implementation-plan")}
                     </HeadlineMedium>
 
                     {/* Introduction */}

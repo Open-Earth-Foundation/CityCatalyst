@@ -5,7 +5,7 @@
  *     tags:
  *       - OAuth Clients
  *     summary: List registered OAuth clients with localized names.
- *     description: Returns all OAuth clients configured on the server, merging i18n name/description records per language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in { data: Client[] }.
+ *     description: Returns all OAuth clients configured on the server, merging i18n name/description records per language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in '{' data: Client[] '}'.
  *     responses:
  *       200:
  *         description: Clients array wrapped in data.
@@ -21,17 +21,21 @@
  *                     properties:
  *                       clientId:
  *                         type: string
+ *                         description: Unique identifier for the OAuth client
  *                       redirectUri:
  *                         type: string
  *                         format: uri
+ *                         description: Registered redirect URI for the OAuth flow
  *                       name:
  *                         type: object
  *                         additionalProperties:
  *                           type: string
+ *                         description: Localized client names by language code
  *                       description:
  *                         type: object
  *                         additionalProperties:
  *                           type: string
+ *                         description: Localized client descriptions by language code
  *             examples:
  *               example:
  *                 value:
@@ -40,66 +44,6 @@
  *                       redirectUri: "https://app.example.com/callback"
  *                       name: { en: "Example App" }
  *                       description: { en: "Demo client" }
- *       401:
- *         description: Must be logged in.
- *       500:
- *         description: OAuth not enabled or server error.
- *   post:
- *     tags:
- *       - OAuth Clients
- *     summary: Create a new OAuth client with localized metadata.
- *     description: Creates a client id with redirect URI and localized name/description entries. Requires a signed‑in session and OAUTH_ENABLED. Returns the created client in { data } and sets a Location header to the new resource.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [redirectUri, name, description]
- *             properties:
- *               redirectUri:
- *                 type: string
- *                 format: uri
- *               name:
- *                 type: object
- *                 additionalProperties:
- *                   type: string
- *               description:
- *                 type: object
- *                 additionalProperties:
- *                   type: string
- *     responses:
- *       201:
- *         description: Created client wrapped in data.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: object
- *                   properties:
- *                     clientId:
- *                       type: string
- *                     redirectUri:
- *                       type: string
- *                       format: uri
- *                     name:
- *                       type: object
- *                       additionalProperties:
- *                         type: string
- *                     description:
- *                       type: object
- *                       additionalProperties:
- *                         type: string
- *             examples:
- *               example:
- *                 value:
- *                   data:
- *                     clientId: "def456"
- *                     redirectUri: "https://app.example.com/callback"
- *                     name: { en: "New App" }
- *                     description: { en: "Client description" }
  *       401:
  *         description: Must be logged in.
  *       500:
@@ -163,6 +107,78 @@ const NewClientRequest = z.object({
   description: z.record(z.string().length(2), z.string()),
 });
 
+/**
+ * @swagger
+ * /api/v0/client:
+ *   post:
+ *     tags:
+ *       - OAuth Clients
+ *     summary: Create a new OAuth client with localized metadata.
+ *     description: Creates a client id with redirect URI and localized name/description entries. Requires a signed‑in session and OAUTH_ENABLED. Returns the created client in { data } and sets a Location header to the new resource.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [redirectUri, name, description]
+ *             properties:
+ *               redirectUri:
+ *                 type: string
+ *                 format: uri
+ *                 description: Valid URL to redirect back to after OAuth flow
+ *                 maxLength: 256
+ *               name:
+ *                 type: object
+ *                 additionalProperties:
+ *                   type: string
+ *                 description: Localized names by language code (e.g., {"en": "My App"})
+ *               description:
+ *                 type: object
+ *                 additionalProperties:
+ *                   type: string
+ *                 description: Localized descriptions by language code
+ *     responses:
+ *       201:
+ *         description: Created client wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     clientId:
+ *                       type: string
+ *                       description: Generated unique identifier for the OAuth client
+ *                     redirectUri:
+ *                       type: string
+ *                       format: uri
+ *                       description: Registered redirect URI for the OAuth flow
+ *                     name:
+ *                       type: object
+ *                       additionalProperties:
+ *                         type: string
+ *                       description: Localized client names by language code
+ *                     description:
+ *                       type: object
+ *                       additionalProperties:
+ *                         type: string
+ *                       description: Localized client descriptions by language code
+ *             examples:
+ *               example:
+ *                 value:
+ *                   data:
+ *                     clientId: "def456"
+ *                     redirectUri: "https://app.example.com/callback"
+ *                     name: { en: "New App" }
+ *                     description: { en: "Client description" }
+ *       401:
+ *         description: Must be logged in.
+ *       500:
+ *         description: OAuth not enabled or server error.
+ */
 /** creates a new client */
 export const POST = apiHandler(async (_req, { session }) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {

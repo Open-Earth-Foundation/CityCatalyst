@@ -203,7 +203,7 @@ export default function HomePage({
             <Separator borderColor="divider.neutral" borderWidth="2px" />
             {/* Accordions for stages */}
             {modulesByStage && projectModules && (
-              <AccordionRoot multiple>
+              <AccordionRoot multiple defaultValue={stageOrder}>
                 {stageOrder.map((stage) => {
                   const modules = projectModules.filter((mod) => {
                     // Filter out CCRA module unless feature flag is enabled

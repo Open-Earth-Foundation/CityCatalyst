@@ -11,7 +11,7 @@
  *         required: true
  *         schema:
  *           type: string
- *           format: uuid
+ *         description: City location code (locode), not a UUID
  *     responses:
  *       200:
  *         description: City boundary returned.

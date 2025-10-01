@@ -5,7 +5,7 @@
  *     tags:
  *       - Public
  *     summary: Get public city information by ID.
- *     description: Public endpoint that returns city details only if the city has at least one public inventory. No authentication is required. Response is wrapped in { data } and includes basic project/organization branding fields.
+ *     description: Public endpoint that returns city details only if the city has at least one public inventory. No authentication is required. Response is wrapped in '{' data '}' and includes basic project/organization branding fields.
  *     parameters:
  *       - in: path
  *         name: cityId
@@ -23,7 +23,30 @@
  *               properties:
  *                 data:
  *                   type: object
- *                   additionalProperties: true
+ *                   properties:
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     region:
+ *                       type: string
+ *                       nullable: true
+ *                     country:
+ *                       type: string
+ *                       nullable: true
+ *                     locode:
+ *                       type: string
+ *                       nullable: true
+ *                     population:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           year:
+ *                             type: number
+ *                           population:
+ *                             type: number
  *       400:
  *         description: Invalid city ID.
  *       401:

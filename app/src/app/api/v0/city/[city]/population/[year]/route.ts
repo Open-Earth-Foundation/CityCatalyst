@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - City Population
- *     summary: Get population data for city and year
+ *     summary: Get population data for a specific city and year
  *     parameters:
  *       - in: path
  *         name: city
@@ -12,14 +12,24 @@
  *         schema:
  *           type: string
  *           format: uuid
+ *         description: City ID for which to retrieve population data
  *       - in: path
  *         name: year
  *         required: true
  *         schema:
  *           type: integer
+ *         description: Year for which to retrieve population data
  *     responses:
  *       200:
  *         description: Population data returned.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   description: Population data for the specified city and year
  */
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";

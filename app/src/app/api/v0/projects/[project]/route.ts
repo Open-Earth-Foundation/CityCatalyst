@@ -13,6 +13,7 @@
  *         schema:
  *           type: string
  *           format: uuid
+ *         description: Project ID to update
  *     responses:
  *       200:
  *         description: Project object.
@@ -20,70 +21,21 @@
  *           application/json:
  *             schema:
  *               type: object
- *               additionalProperties: true
- *       404:
- *         description: Project not found.
- *   patch:
- *     tags:
- *       - Projects
- *     summary: Update a project (admin only).
- *     description: Modifies project properties, and if cityCountLimit changes, notifies organization admins. Requires an admin session. Response is the updated project object (not wrapped).
- *     parameters:
- *       - in: path
- *         name: project
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               cityCountLimit:
- *                 type: integer
- *                 minimum: 1
- *               description:
- *                 type: string
- *     responses:
- *       200:
- *         description: Updated project object.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               additionalProperties: true
- *       400:
- *         description: Invalid request or default project cannot be updated.
- *       404:
- *         description: Project not found.
- *   delete:
- *     tags:
- *       - Projects
- *     summary: Delete a project (admin only).
- *     description: Deletes the project and its cities, then emails organization admins about the deletion. Requires an admin session; default project cannot be deleted. Response is { deleted: true }.
- *     parameters:
- *       - in: path
- *         name: project
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     responses:
- *       200:
- *         description: Deletion flag.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
  *               properties:
- *                 deleted: { type: boolean }
- *       400:
- *         description: Cannot delete default project.
+ *                 projectId:
+ *                   type: string
+ *                   format: uuid
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                   nullable: true
+ *                 created:
+ *                   type: string
+ *                   format: date-time
+ *                 lastUpdated:
+ *                   type: string
+ *                   format: date-time
  *       404:
  *         description: Project not found.
  */
@@ -109,6 +61,68 @@ export const GET = apiHandler(async (req, { params, session }) => {
   return NextResponse.json(project);
 });
 
+/**
+ * @swagger
+ * /api/v0/projects/{project}:
+ *   patch:
+ *     tags:
+ *       - Projects
+ *     summary: Update a project by ID (admin only).
+ *     description: Updates project properties (name, description, cityCountLimit). If cityCountLimit is changed, organization admins are notified via email. Cannot update the default project. Requires an admin session. Response is the updated project object (not wrapped).
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Project ID to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: New name for the project
+ *               cityCountLimit:
+ *                 type: integer
+ *                 minimum: 1
+ *                 description: Maximum number of cities allowed in the project
+ *               description:
+ *                 type: string
+ *                 description: New description for the project
+ *     responses:
+ *       200:
+ *         description: Updated project object.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 projectId:
+ *                   type: string
+ *                   format: uuid
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                   nullable: true
+ *                 created:
+ *                   type: string
+ *                   format: date-time
+ *                 lastUpdated:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Cannot update default project or invalid request data.
+ *       401:
+ *         description: Unauthorized - user lacks admin privileges.
+ *       404:
+ *         description: Project not found.
+ */
 // update a project
 export const PATCH = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
@@ -149,6 +163,39 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   return NextResponse.json(project);
 });
 
+/**
+ * @swagger
+ * /api/v0/projects/{project}:
+ *   delete:
+ *     tags:
+ *       - Projects
+ *     summary: Delete a project by ID (admin only).
+ *     description: Permanently deletes the project and all associated cities. Organization admins are notified via email about the deletion. Cannot delete the default project. Requires an admin session. Response is { deleted: true }.
+ *     parameters:
+ *       - in: path
+ *         name: project
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Project ID to update
+ *     responses:
+ *       200:
+ *         description: Deletion flag.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 deleted:
+ *                   type: boolean
+ *       400:
+ *         description: Cannot delete default project.
+ *       401:
+ *         description: Unauthorized - user lacks admin privileges.
+ *       404:
+ *         description: Project not found.
+ */
 // delete a project
 export const DELETE = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);

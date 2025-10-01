@@ -5,7 +5,7 @@
  *     tags:
  *       - User
  *     summary: Get the current user’s access status across resources.
- *     description: Returns a summary of the user’s access and roles across organizations/projects/cities. Requires a signed‑in session. Response is wrapped in { data } with access metadata.
+ *     description: Returns a summary of the user’s access and roles across organizations/projects/cities. Requires a signed‑in session. Response is wrapped in '{' data '}' with access metadata.
  *     responses:
  *       200:
  *         description: Access status wrapped in data.
@@ -16,7 +16,21 @@
  *               properties:
  *                 data:
  *                   type: object
- *                   additionalProperties: true
+ *                   properties:
+ *                     userId:
+ *                       type: string
+ *                       format: uuid
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                     role:
+ *                       type: string
+ *                       enum: ['Admin', 'User', 'Viewer']
+ *                     permissions:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       description: List of user permissions
  *       401:
  *         description: Unauthorized.
  *       404:

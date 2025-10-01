@@ -54,8 +54,6 @@ export function Hero({
     },
   );
 
-  console.log("city", city);
-
   const popWithDS = useMemo(
     () =>
       cityData?.population?.find(
@@ -65,8 +63,6 @@ export function Hero({
       ),
     [cityData?.population, population?.population, population?.year],
   );
-
-  console.log("inventory", city?.name);
 
   return (
     <Box bg="content.alternative" w="full" h="491px" pt="150px" px={8}>

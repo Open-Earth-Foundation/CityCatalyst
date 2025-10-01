@@ -5,6 +5,15 @@ export async function expectText(page: Page, text: string) {
   await expect(page.getByText(text).first()).toBeVisible();
 }
 
+export async function dismissCookieConsent(page: Page) {
+  try {
+    await page.getByTestId("cookie-decline-button").waitFor({ timeout: 2000 });
+    await page.getByTestId("cookie-decline-button").click();
+  } catch {
+    // Consent banner not present, continue
+  }
+}
+
 export async function signup(
   request: APIRequestContext,
   email: string,
@@ -54,6 +63,9 @@ export async function createCityThroughOnboarding(page: Page): Promise<string> {
 
   // Wait a moment for any animations to settle
   await page.waitForTimeout(500);
+
+  // Click analytics decline button if it appears
+  await dismissCookieConsent(page);
 
   // Click "Get Started" button to start city selection
   const getStartedButton = page.getByRole("button", { name: /Get Started/i });
@@ -116,6 +128,8 @@ export async function createInventoryThroughOnboarding(
   }
   const lng = "en";
   await page.goto(`/${lng}/cities/${cityId}/GHGI/onboarding`);
+
+  await dismissCookieConsent(page);
 
   // Step 3: Click "Start Inventory" button
   const startButton = page.getByTestId("start-inventory-button");
@@ -248,7 +262,8 @@ export async function navigateToGHGIModule(page: Page) {
   const assessButtonCount = await assessButton.count();
   if (assessButtonCount === 0) {
     // Fallback: if the button doesn't exist, ensure a city + inventory exist via onboarding
-    const { cityId, inventoryId } = await createCityAndInventoryThroughOnboarding(page);
+    const { cityId, inventoryId } =
+      await createCityAndInventoryThroughOnboarding(page);
     await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
     await page.waitForLoadState("networkidle");
     return;
@@ -264,13 +279,16 @@ export async function navigateToGHGIModule(page: Page) {
   await page.waitForLoadState("networkidle");
   await moduleButton.click();
   await page.waitForLoadState("networkidle");
-  
+
   // If we're at GHGI onboarding, complete it to reach the inventory dashboard
   if (page.url().includes("/GHGI/onboarding")) {
     const match = page.url().match(/\/cities\/([^/]+)\/GHGI\/onboarding/);
     if (match) {
       const cityId = match[1];
-      const { inventoryId } = await createInventoryThroughOnboarding(page, cityId);
+      const { inventoryId } = await createInventoryThroughOnboarding(
+        page,
+        cityId,
+      );
       await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
       await page.waitForLoadState("networkidle");
     }

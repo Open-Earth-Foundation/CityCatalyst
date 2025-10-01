@@ -37,7 +37,6 @@ jobs:
   pushToGHCR:
     # needs: runTests  # Commented out since we're skipping tests
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v4
 
@@ -48,7 +47,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pushing Climate Advisor to GHCR
+      - name: Pushing Climate Advisor to GHCR (develop)
+        if: github.ref == 'refs/heads/develop'
         env:
           VERSION: ${{ github.sha }}
           IMAGE: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor
@@ -58,9 +58,19 @@ jobs:
           docker push $IMAGE:$VERSION
           docker push $IMAGE:latest
 
+      - name: Pushing Climate Advisor to GHCR (PR)
+        if: github.event_name == 'pull_request'
+        env:
+          VERSION: pr-${{ github.event.pull_request.number }}
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor
+        run: |
+          docker build -t $IMAGE:$VERSION -f climate-advisor/service/Dockerfile climate-advisor
+          docker push $IMAGE:$VERSION
+
   deployToEKS:
     needs: pushToGHCR
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}

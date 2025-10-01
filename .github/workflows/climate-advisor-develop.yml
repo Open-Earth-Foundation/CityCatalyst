@@ -19,7 +19,7 @@ on:
       - k8s/ca-service.yml
       - k8s/cc-climate-advisor-db-configmap.yml
       - .github/workflows/climate-advisor-develop.yml
-    branches: ["develop"]
+    branches: ["develop", "ON-4672"]
   pull_request:
     paths:
       - climate-advisor/service/**
@@ -57,6 +57,15 @@ jobs:
           docker tag $IMAGE:$VERSION $IMAGE:latest
           docker push $IMAGE:$VERSION
           docker push $IMAGE:latest
+
+      - name: Pushing Climate Advisor to GHCR (ON-4672 branch)
+        if: github.ref == 'refs/heads/ON-4672'
+        env:
+          VERSION: ON-4672
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor
+        run: |
+          docker build -t $IMAGE:$VERSION -f climate-advisor/service/Dockerfile climate-advisor
+          docker push $IMAGE:$VERSION
 
       - name: Pushing Climate Advisor to GHCR (PR)
         if: github.event_name == 'pull_request'

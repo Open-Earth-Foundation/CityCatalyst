@@ -98,22 +98,6 @@ export function HiapTab({
   const [selectedActions, setSelectedActions] = useState<HIAction[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
 
-  // If no inventory, show empty state
-  if (!inventory) {
-    return (
-      <ClimateActionsEmptyState
-        t={t}
-        inventory={null}
-        hasActions={false}
-        actionType={type}
-        onRefetch={() => {
-          // This will be handled by the parent component
-        }}
-        isActionsPending={false}
-      />
-    );
-  }
-
   const {
     data: hiapData,
     isLoading,
@@ -153,6 +137,34 @@ export function HiapTab({
       setSelectedActions(initialSelectedActions);
     }
   }, [actions]);
+
+  const handleRowSelectionChange = async (
+    updaterOrValue:
+      | RowSelectionState
+      | ((old: RowSelectionState) => RowSelectionState),
+  ) => {
+    if (!inventory) return;
+
+    const newRowSelection =
+      typeof updaterOrValue === "function"
+        ? updaterOrValue(rowSelection)
+        : updaterOrValue;
+
+    try {
+      const selectedActionIds = Object.keys(newRowSelection).filter(
+        (id) => newRowSelection[id],
+      );
+      await updateHiapSelection({
+        inventoryId: inventory.inventoryId,
+        selectedActionIds,
+      }).unwrap();
+
+      setRowSelection(newRowSelection);
+      logger.info(selectedActionIds, "Updated selection");
+    } catch (error) {
+      logger.error(error, "Failed to update selection");
+    }
+  };
 
   const columns: ColumnDef<HIAction>[] = [
     ...(isSelectionMode
@@ -291,32 +303,6 @@ export function HiapTab({
     },
   ];
 
-  const handleRowSelectionChange = async (
-    updaterOrValue:
-      | RowSelectionState
-      | ((old: RowSelectionState) => RowSelectionState),
-  ) => {
-    const newRowSelection =
-      typeof updaterOrValue === "function"
-        ? updaterOrValue(rowSelection)
-        : updaterOrValue;
-
-    try {
-      const selectedActionIds = Object.keys(newRowSelection).filter(
-        (id) => newRowSelection[id],
-      );
-      await updateHiapSelection({
-        inventoryId: inventory.inventoryId,
-        selectedActionIds,
-      }).unwrap();
-
-      setRowSelection(newRowSelection);
-      logger.info(selectedActionIds, "Updated selection");
-    } catch (error) {
-      logger.error(error, "Failed to update selection");
-    }
-  };
-
   const table = useReactTable({
     data: actions,
     columns,
@@ -335,6 +321,22 @@ export function HiapTab({
     const newSelectedActions = selectedRows.map((row) => row.original);
     setSelectedActions(newSelectedActions);
   }, [rowSelection, table]);
+
+  // If no inventory, show empty state (after all hooks)
+  if (!inventory) {
+    return (
+      <ClimateActionsEmptyState
+        t={t}
+        inventory={null}
+        hasActions={false}
+        actionType={type}
+        onRefetch={() => {
+          // This will be handled by the parent component
+        }}
+        isActionsPending={false}
+      />
+    );
+  }
 
   const handleClearSelection = async () => {
     try {

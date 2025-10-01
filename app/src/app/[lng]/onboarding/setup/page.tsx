@@ -196,13 +196,13 @@ export default function OnboardingSetup(props: {
         projectId: EnterpriseMode ? projectId : undefined,
       }).unwrap();
 
-      if (!cityPopulation || !cityPopulationYear) {
+      if (cityPopulation == null || cityPopulationYear == null) {
         setPopulationErrorMessage(t("city-population-required"));
         return;
-      } else if (!regionPopulation || !regionPopulationYear) {
+      } else if (regionPopulation == null || regionPopulationYear == null) {
         setPopulationErrorMessage(t("region-population-required"));
         return;
-      } else if (!countryPopulation || !countryPopulationYear) {
+      } else if (countryPopulation == null || countryPopulationYear == null) {
         setPopulationErrorMessage(t("country-population-required"));
         return;
       }

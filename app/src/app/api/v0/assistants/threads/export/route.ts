@@ -31,9 +31,6 @@
  *                       type: string
  *                     assistantId:
  *                       type: string
- *                   properties:
- *                     assistantId:
- *                       type: string
  *                       description: OpenAI Assistant ID to export from
  *                     threadId:
  *                       type: string
